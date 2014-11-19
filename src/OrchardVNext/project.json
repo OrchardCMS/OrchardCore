@@ -1,0 +1,22 @@
+﻿{
+    "dependencies": {
+        "Microsoft.AspNet.Mvc": "",
+        "Microsoft.AspNet.RequestContainer": "",
+        "Microsoft.Framework.Runtime": "1.0.0-beta2-10709",
+        "Microsoft.Framework.Runtime.Loader": "1.0.0-beta2-10709"
+    },
+
+    "frameworks" : {
+        "aspnet50" : { 
+            "dependencies": {
+            }
+        },
+        "aspnetcore50" : { 
+            "dependencies": {
+                "System.Runtime": "4.0.20-beta-*",
+                "System.Xml.XDocument": "4.0.0-beta-*",
+                "System.IO.FileSystem.Primitives": "4.0.0-beta-*"
+            }
+        }
+    }
+}
