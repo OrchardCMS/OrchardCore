@@ -27,6 +27,7 @@ namespace OrchardVNext.Environment {
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IDependenciesFolder, DefaultDependenciesFolder>();
                 services.AddSingleton<IExtensionDependenciesManager, DefaultExtensionDependenciesManager>();
+                services.AddSingleton<IAssemblyProbingFolder, DefaultAssemblyProbingFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
 
                 services.AddTransient<IOrchardHost, DefaultOrchardHost>();
@@ -46,6 +47,7 @@ namespace OrchardVNext.Environment {
                                 services.AddSingleton<IExtensionFolders, ThemeFolders>();
 
                                 services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
+                                services.AddSingleton<IExtensionLoader, ReferencedExtensionLoader>();
                             }
                         }
 

@@ -3,6 +3,7 @@ using OrchardVNext.Environment.Extensions.Models;
 using OrchardVNext.FileSystems.Dependencies;
 using OrchardVNext.FileSystems.VirtualPath;
 using System.Reflection;
+using Microsoft.Framework.Runtime;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     /// <summary>
@@ -16,7 +17,8 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         public ReferencedExtensionLoader(IDependenciesFolder dependenciesFolder, 
             IVirtualPathProvider virtualPathProvider, 
             IBuildManager buildManager, 
-            IAssemblyLoader assemblyLoader )
+            IAssemblyLoader assemblyLoader,
+            IAssemblyLoadContextFactory xsd)
             : base(dependenciesFolder) {
 
             _virtualPathProvider = virtualPathProvider;
@@ -51,7 +53,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         public override ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {
             if (Disabled)
                 return null;
-            //Microsoft.Framework.Runtime.Loader.AssemblyLoadContextFactory;
+
             var assemblyPath = _virtualPathProvider.Combine("~/bin", descriptor.Id + ".dll");
 
             if (!_virtualPathProvider.FileExists(assemblyPath))

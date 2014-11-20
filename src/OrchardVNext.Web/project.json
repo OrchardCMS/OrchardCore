@@ -2,10 +2,10 @@
     "webroot" : "wwwroot",
     "exclude": "wwwroot/**/*.*",
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
-        "Microsoft.AspNet.Mvc": "",
-        "Microsoft.AspNet.Hosting": "1.0.0-*",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta2-*",
+        "Microsoft.AspNet.Mvc": "6.0.0-beta2-*",
+        "Microsoft.AspNet.Hosting": "1.0.0-beta2-*",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta2-*",
         "OrchardVNext": ""
     },
     "commands": {
