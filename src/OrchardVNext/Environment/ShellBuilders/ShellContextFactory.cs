@@ -18,7 +18,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
     }
 
     public class ShellContextFactory : IShellContextFactory {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
 

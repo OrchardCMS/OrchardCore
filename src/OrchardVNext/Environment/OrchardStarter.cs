@@ -45,7 +45,6 @@ namespace OrchardVNext.Environment {
                                 services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
                                 services.AddSingleton<IExtensionFolders, ThemeFolders>();
 
-                                services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
                                 services.AddSingleton<IExtensionLoader, ReferencedExtensionLoader>();
                             }
                         }

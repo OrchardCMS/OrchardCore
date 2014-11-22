@@ -7,14 +7,6 @@ namespace OrchardVNext.Environment {
             _applicationEnvrionment = applicationEnvrionment;
         }
 
-        public bool IsFullTrust {
-            get {
-
-                Logger.Error("TODO: Check Is Full Trust");
-                return true; // AppDomain.CurrentDomain.IsHomogenous && AppDomain.CurrentDomain.IsFullyTrusted; 
-            }
-        }
-
         public string MapPath(string virtualPath) {
             return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty).Replace('/', '\\');
         }

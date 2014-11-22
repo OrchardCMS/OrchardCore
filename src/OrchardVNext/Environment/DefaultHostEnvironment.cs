@@ -4,7 +4,6 @@ using System;
 
 namespace OrchardVNext.Environment {
     public class DefaultHostEnvironment : HostEnvironment {
-        private const string WebConfigPath = "~/web.config";
         private const string RefreshHtmlPath = "~/refresh.html";
         private const string HostRestartPath = "~/bin/HostRestart";
 

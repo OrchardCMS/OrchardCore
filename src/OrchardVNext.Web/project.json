@@ -1,4 +1,5 @@
 ﻿{
+    "version": "2.0.0-*",
     "webroot" : "wwwroot",
     "exclude": "wwwroot/**/*.*",
     "dependencies": {
@@ -9,7 +10,9 @@
         "OrchardVNext": ""
     },
     "commands": {
-        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://local.orchardvnext.test1.com;http://local.orchardvnext.test2.com" },
+        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://local.orchardvnext.test1.com;http://local.orchardvnext.test2.com --lib /module"
+    },
+    "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks" : {
         "aspnet50" : { },
         "aspnetcore50" : { }
