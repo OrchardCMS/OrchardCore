@@ -84,7 +84,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             return new ExtensionEntry {
                 Descriptor = descriptor,
                 Assembly = assembly,
-                ExportedTypes = assembly.GetExportedTypes()
+                ExportedTypes = assembly.ExportedTypes
             };
         }
     }

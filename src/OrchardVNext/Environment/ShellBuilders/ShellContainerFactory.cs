@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
+using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Routing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -48,7 +51,36 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 }
             }
 
-            return serviceCollection.BuildServiceProvider(_serviceProvider);
+            return BuildFallbackServiceProvider(
+                            serviceCollection,
+                            _serviceProvider);
+
+            //return serviceCollection.BuildServiceProvider();
+        }
+
+
+        private static IServiceProvider BuildFallbackServiceProvider(IEnumerable<IServiceDescriptor> services, IServiceProvider fallback) {
+            var sc = HostingServices.Create(fallback);
+            sc.Add(services);
+
+            // Build the manifest
+            var manifestTypes = services.Where(t => t.ServiceType.GetTypeInfo().GenericTypeParameters.Length == 0
+                    && t.ServiceType != typeof(IServiceManifest)
+                    && t.ServiceType != typeof(IServiceProvider))
+                    .Select(t => t.ServiceType).Distinct();
+            sc.AddInstance<IServiceManifest>(new ServiceManifest(manifestTypes, fallback.GetRequiredService<IServiceManifest>()));
+            return sc.BuildServiceProvider();
+        }
+
+        private class ServiceManifest : IServiceManifest {
+            public ServiceManifest(IEnumerable<Type> services, IServiceManifest fallback = null) {
+                Services = services;
+                if (fallback != null) {
+                    Services = Services.Concat(fallback.Services).Distinct();
+                }
+            }
+
+            public IEnumerable<Type> Services { get; private set; }
         }
     }
 }

@@ -76,7 +76,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     }
                 },
                 ExportedTypes =
-                    typeof(OrchardStarter).GetTypeInfo().Assembly.GetExportedTypes()
+                    typeof(OrchardStarter).GetTypeInfo().Assembly.ExportedTypes
                     .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
                     .Except(new[] { typeof(DefaultOrchardHost) })
                     .ToArray()
