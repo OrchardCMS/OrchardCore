@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -16,8 +15,6 @@ namespace OrchardVNext.Environment {
     public class OrchardStarter {
         private static void CreateHostContainer(IApplicationBuilder app) {
             app.UseServices(services => {
-                services.AddSingleton<ILoggerFactory, LoggerFactory>();
-
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IBuildManager, DefaultBuildManager>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
