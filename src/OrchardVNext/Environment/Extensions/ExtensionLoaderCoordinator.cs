@@ -18,22 +18,19 @@ namespace OrchardVNext.Environment.Extensions {
         private readonly IExtensionManager _extensionManager;
         private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IEnumerable<IExtensionLoader> _loaders;
-        private readonly IBuildManager _buildManager;
 
         public ExtensionLoaderCoordinator(
             IDependenciesFolder dependenciesFolder,
             IExtensionDependenciesManager extensionDependenciesManager,
             IExtensionManager extensionManager,
             IVirtualPathProvider virtualPathProvider,
-            IEnumerable<IExtensionLoader> loaders,
-            IBuildManager buildManager) {
+            IEnumerable<IExtensionLoader> loaders) {
 
             _dependenciesFolder = dependenciesFolder;
             _extensionDependenciesManager = extensionDependenciesManager;
             _extensionManager = extensionManager;
             _virtualPathProvider = virtualPathProvider;
             _loaders = loaders.OrderBy(l => l.Order);
-            _buildManager = buildManager;
 
             T = NullLocalizer.Instance;
         }
@@ -315,10 +312,6 @@ namespace OrchardVNext.Environment.Extensions {
 
                 return;
             }
-
-            // Skip references from "~/bin"
-            if (_buildManager.HasReferencedAssembly(referenceName))
-                return;
 
             // Binary references
             var references = context.ReferencesByName.ContainsKey(referenceName) ?

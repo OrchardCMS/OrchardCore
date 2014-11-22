@@ -16,10 +16,7 @@ namespace OrchardVNext.Environment {
         private static void CreateHostContainer(IApplicationBuilder app) {
             app.UseServices(services => {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
-                services.AddSingleton<IBuildManager, DefaultBuildManager>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
-                services.AddSingleton<IAssemblyLoader, DefaultAssemblyLoader>();
-                services.AddSingleton<IAssemblyNameResolver, OrchardFrameworkAssemblyNameResolver>();
 
 
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();

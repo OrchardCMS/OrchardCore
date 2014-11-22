@@ -6,7 +6,6 @@ using Microsoft.Framework.Runtime;
 using Microsoft.Framework.PackageManager;
 using System.Linq;
 using System;
-using System.Reflection;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     /// <summary>
@@ -14,24 +13,18 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
     /// </summary>
     public class ReferencedExtensionLoader : ExtensionLoaderBase {
         private readonly IVirtualPathProvider _virtualPathProvider;
-        private readonly IBuildManager _buildManager;
-        private readonly IAssemblyLoader _assemblyLoader;
         private readonly IServiceProvider _serviceProvider;
         private readonly ILibraryManager _libraryManager;
         private readonly IAssemblyLoadContextFactory _assemblyLoadContextFactory;
 
         public ReferencedExtensionLoader(IDependenciesFolder dependenciesFolder,
             IVirtualPathProvider virtualPathProvider,
-            IBuildManager buildManager,
-            IAssemblyLoader assemblyLoader,
             IServiceProvider serviceProvider,
             ILibraryManager libraryManager,
             IAssemblyLoadContextFactory assemblyLoadContextFactory)
             : base(dependenciesFolder) {
 
             _virtualPathProvider = virtualPathProvider;
-            _buildManager = buildManager;
-            _assemblyLoader = assemblyLoader;
             _serviceProvider = serviceProvider;
             _libraryManager = libraryManager;
             _assemblyLoadContextFactory = assemblyLoadContextFactory;
@@ -88,15 +81,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             //if (export == null) {
             //    return null;
             //}
-
-            var a = _assemblyLoadContextFactory.Create();//.Load(project.Name);
-
-            var assembly = _assemblyLoader.Load(descriptor.Id);
-
-
-
-
-
 
 
             return new ExtensionProbeEntry {

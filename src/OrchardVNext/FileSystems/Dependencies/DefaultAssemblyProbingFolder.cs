@@ -2,16 +2,17 @@
 using System.Reflection;
 using OrchardVNext.Environment;
 using OrchardVNext.FileSystems.AppData;
+using Microsoft.Framework.Runtime;
 
 namespace OrchardVNext.FileSystems.Dependencies {
     public class DefaultAssemblyProbingFolder : IAssemblyProbingFolder {
         private const string BasePath = "Dependencies";
         private readonly IAppDataFolder _appDataFolder;
-        private readonly IAssemblyLoader _assemblyLoader;
+        private readonly IAssemblyLoadContextFactory _assemblyLoadContextFactory;
 
-        public DefaultAssemblyProbingFolder(IAppDataFolder appDataFolder, IAssemblyLoader assemblyLoader) {
+        public DefaultAssemblyProbingFolder(IAppDataFolder appDataFolder, IAssemblyLoadContextFactory assemblyLoadContextFactory) {
             _appDataFolder = appDataFolder;
-            _assemblyLoader = assemblyLoader;
+            _assemblyLoadContextFactory = assemblyLoadContextFactory;
         }
 
         public bool AssemblyExists(string moduleName) {
@@ -37,7 +38,7 @@ namespace OrchardVNext.FileSystems.Dependencies {
             if (!_appDataFolder.FileExists(path))
                 return null;
 
-            return _assemblyLoader.Load(moduleName);
+            return _assemblyLoadContextFactory.Create().Load(moduleName);
         }
 
         public void DeleteAssembly(string moduleName) {
