@@ -23,8 +23,6 @@ namespace OrchardVNext.Environment.Extensions {
         public IList<Action> DeleteActions { get; private set; }
         public IList<Action> CopyActions { get; private set; }
 
-        public bool RestartAppDomain { get; set; }
-
         /// <summary>
         /// Keep track of modification date of files (VirtualPath => DateTime)
         /// </summary>

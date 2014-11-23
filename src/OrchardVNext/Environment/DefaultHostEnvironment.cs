@@ -13,9 +13,5 @@ namespace OrchardVNext.Environment {
         }
 
         public Localizer T { get; set; }
-
-        public override void RestartAppDomain() {
-            Logger.Error("TODO: Restart App Domain");
-        }
     }
 }

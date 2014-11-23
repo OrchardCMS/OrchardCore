@@ -14,7 +14,7 @@ namespace OrchardVNext.Environment {
         void IOrchardHost.Initialize() {
             Logger.Information("Initialize Host");
 
-            _extensionLoaderCoordinator.SetupExtensions();
+            //_extensionLoaderCoordinator.SetupExtensions();
 
             Logger.Information("Host Initialized");
         }

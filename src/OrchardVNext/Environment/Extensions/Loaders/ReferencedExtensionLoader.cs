@@ -35,26 +35,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public override int Order { get { return 20; } }
 
-        public override void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
-            DeleteAssembly(ctx, extension.Id);
-        }
-
-        public override void ExtensionRemoved(ExtensionLoadingContext ctx, DependencyDescriptor dependency) {
-            DeleteAssembly(ctx, dependency.Name);
-        }
-
-        private void DeleteAssembly(ExtensionLoadingContext ctx, string moduleName) {
-            var assemblyPath = _virtualPathProvider.Combine("~/bin", moduleName + ".dll");
-            if (_virtualPathProvider.FileExists(assemblyPath)) {
-                ctx.DeleteActions.Add(
-                    () => {
-                        Logger.Information("ExtensionRemoved: Deleting assembly \"{0}\" from bin directory (AppDomain will restart)", moduleName);
-                        File.Delete(_virtualPathProvider.MapPath(assemblyPath));
-                    });
-                ctx.RestartAppDomain = true;
-            }
-        }
-
         public override ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {
             if (Disabled)
                 return null;
@@ -78,7 +58,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
                 }
             }
             catch (Exception) {
-                Logger.Warning("project not built - you probably F5 from VS right!?");
+                Logger.Warning("project not built - you probably F5 from VS right!? - Exception Swollowed.");
             }
 
             return new ExtensionProbeEntry {

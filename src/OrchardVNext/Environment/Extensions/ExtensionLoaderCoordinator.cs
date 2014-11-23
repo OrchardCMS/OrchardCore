@@ -66,12 +66,6 @@ namespace OrchardVNext.Environment.Extensions {
             _extensionDependenciesManager.StoreDependencies(context.NewDependencies, desc => GetExtensionHash(context, desc));
 
             Logger.Information("Done loading extensions...");
-
-            // Very last step: Notify the host environment to restart the AppDomain if needed
-            if (context.RestartAppDomain) {
-                Logger.Information("TODO: AppDomain restart required.");
-                //_hostEnvironment.RestartAppDomain();
-            }
         }
 
         private string GetExtensionHash(ExtensionLoadingContext context, DependencyDescriptor dependencyDescriptor) {

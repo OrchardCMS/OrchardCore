@@ -13,10 +13,8 @@ namespace OrchardVNext.Environment {
 
         public bool IsAssemblyLoaded(string name) {
 
-            Logger.Error("TODO: Check Assembly Is Loaded");
+            Logger.Error("TODO: Check Assembly Is Loaded - could check DI Container...");
             return false;// AppDomain.CurrentDomain.GetAssemblies().Any(assembly => new AssemblyName(assembly.FullName).Name == name);
         }
-
-        public abstract void RestartAppDomain();
     }
 }

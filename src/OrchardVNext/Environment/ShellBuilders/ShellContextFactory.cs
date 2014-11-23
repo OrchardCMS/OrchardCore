@@ -3,7 +3,6 @@ using Microsoft.Framework.DependencyInjection;
 using System;
 using OrchardVNext.Environment.Descriptor.Models;
 using System.Linq;
-using Microsoft.Framework.DependencyInjection.Fallback;
 
 namespace OrchardVNext.Environment.ShellBuilders {
     /// <summary>

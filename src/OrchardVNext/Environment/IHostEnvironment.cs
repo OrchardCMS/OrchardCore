@@ -6,7 +6,5 @@
         string MapPath(string virtualPath);
 
         bool IsAssemblyLoaded(string name);
-
-        void RestartAppDomain();
     }
 }
