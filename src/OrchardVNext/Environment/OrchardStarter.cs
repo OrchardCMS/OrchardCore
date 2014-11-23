@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -18,7 +19,6 @@ namespace OrchardVNext.Environment {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
 
-
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IDependenciesFolder, DefaultDependenciesFolder>();
@@ -34,7 +34,7 @@ namespace OrchardVNext.Environment {
                     {
                         services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                         {
-                            services.AddSingleton<IExtensionLoaderCoordinator, ExtensionLoaderCoordinator>();
+                            //services.AddSingleton<IExtensionLoaderCoordinator, ExtensionLoaderCoordinator>();
                             services.AddSingleton<IExtensionManager, ExtensionManager>();
                             {
                                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
@@ -42,7 +42,7 @@ namespace OrchardVNext.Environment {
                                 services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
                                 services.AddSingleton<IExtensionFolders, ThemeFolders>();
 
-                                services.AddSingleton<IExtensionLoader, ReferencedExtensionLoader>();
+                                services.AddSingleton<IExtensionLoader, DefaultExtensionLoader>();
                             }
                         }
 

@@ -7,10 +7,10 @@ namespace OrchardVNext.Environment {
     }
 
     public class DefaultOrchardHost : IOrchardHost {
-        private readonly IExtensionLoaderCoordinator _extensionLoaderCoordinator;
-        public DefaultOrchardHost(IExtensionLoaderCoordinator extensionLoaderCoordinator) {
-            _extensionLoaderCoordinator = extensionLoaderCoordinator;
-        }
+        //private readonly IExtensionLoaderCoordinator _extensionLoaderCoordinator;
+        //public DefaultOrchardHost(IExtensionLoaderCoordinator extensionLoaderCoordinator) {
+        //    _extensionLoaderCoordinator = extensionLoaderCoordinator;
+        //}
         void IOrchardHost.Initialize() {
             Logger.Information("Initialize Host");
 
