@@ -1,6 +1,6 @@
 ﻿{
     "version": "2.0.0-*",
-    "webroot" : "wwwroot",
+    "webroot": "wwwroot",
     "exclude": "wwwroot/**/*.*",
     "dependencies": {
         "Microsoft.AspNet.Server.IIS": "1.0.0-beta2-*",
@@ -13,8 +13,8 @@
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://local.orchardvnext.test1.com;http://local.orchardvnext.test2.com --lib /module"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
-    "frameworks" : {
-        "aspnet50" : { },
-        "aspnetcore50" : { }
+    "frameworks": {
+        "aspnet50": { },
+        "aspnetcore50": { }
     }
 }

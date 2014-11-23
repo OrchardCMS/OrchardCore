@@ -71,17 +71,15 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             buildOptions.Reports = CreateReports(false, false);
 
             var buildManager = new BuildManager(_serviceProvider, buildOptions);
-            if (!buildManager.Build()) {
-                return null;
+            try {
+                // Not working when F5 from VS
+                if (!buildManager.Build()) {
+                    return null;
+                }
             }
-
-
-            //var export = _libraryManager.GetLibraryExport(descriptor.Id, string.Empty);
-
-            //if (export == null) {
-            //    return null;
-            //}
-
+            catch (Exception) {
+                Logger.Warning("project not built - you probably F5 from VS right!?");
+            }
 
             return new ExtensionProbeEntry {
                 Descriptor = descriptor,
