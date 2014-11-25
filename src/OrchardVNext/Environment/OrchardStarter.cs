@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.Runtime.Roslyn;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -11,6 +12,7 @@ using OrchardVNext.FileSystems.Dependencies;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
 using OrchardVNext.Routing;
+using System;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
@@ -18,14 +20,14 @@ namespace OrchardVNext.Environment {
             app.UseServices(services => {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
-
+                
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IDependenciesFolder, DefaultDependenciesFolder>();
                 services.AddSingleton<IExtensionDependenciesManager, DefaultExtensionDependenciesManager>();
                 services.AddSingleton<IAssemblyProbingFolder, DefaultAssemblyProbingFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
-
+                
                 services.AddTransient<IOrchardHost, DefaultOrchardHost>();
                 {
                     services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
@@ -34,7 +36,6 @@ namespace OrchardVNext.Environment {
                     {
                         services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                         {
-                            //services.AddSingleton<IExtensionLoaderCoordinator, ExtensionLoaderCoordinator>();
                             services.AddSingleton<IExtensionManager, ExtensionManager>();
                             {
                                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();

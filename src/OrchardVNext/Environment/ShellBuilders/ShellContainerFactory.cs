@@ -3,7 +3,9 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Routing;
 using System;
@@ -25,7 +27,17 @@ namespace OrchardVNext.Environment.ShellBuilders {
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) {
 
+            //var originalLibraryExportProvider = _serviceProvider.GetService<ILibraryExportProvider>();
+            //var projectResolver = _serviceProvider.GetService<IProjectResolver>();
+            //var projectReferenceProvider = _serviceProvider.GetService<IProjectReferenceProvider>();
+
             ServiceCollection serviceCollection = new ServiceCollection();
+
+            //serviceCollection.AddInstance(typeof(ILibraryExportProvider), new OrchardCompositeLibraryExportProvider(new[] {
+            //        new OrchardLibraryExportProvider(projectResolver, _serviceProvider, projectReferenceProvider),
+            //        originalLibraryExportProvider
+            //    }));
+
 
             serviceCollection.AddScoped<IOrchardShell, DefaultOrchardShell>();
             serviceCollection.AddScoped<IRouteBuilder, DefaultShellRouteBuilder>();
