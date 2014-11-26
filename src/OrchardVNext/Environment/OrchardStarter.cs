@@ -20,7 +20,7 @@ namespace OrchardVNext.Environment {
             app.UseServices(services => {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
-                
+
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IDependenciesFolder, DefaultDependenciesFolder>();

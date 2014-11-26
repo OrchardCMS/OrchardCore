@@ -3,8 +3,8 @@
         "Microsoft.AspNet.Server.IIS": "1.0.0-beta2-*",
         "OrchardVNext": ""
     },
-    "frameworks" : {
-        "aspnet50" : { },
-        "aspnetcore50" : { }
+    "frameworks": {
+        "aspnet50": { },
+        "aspnetcore50": { }
     }
 }
