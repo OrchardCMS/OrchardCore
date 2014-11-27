@@ -101,19 +101,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {
-            var plocation = _virtualPathProvider.MapPath(_virtualPathProvider.Combine(descriptor.Location, descriptor.Id));
-            Project project = null;
-            if (!Project.TryGetProject(plocation, out project)) {
-                return null;
-            }
-
-            return new ExtensionProbeEntry {
-                Descriptor = descriptor,
-                Loader = this,
-                Priority = 100, // Higher priority because assemblies in ~/bin always take precedence
-                VirtualPath = project.ProjectDirectory,
-                VirtualPathDependencies = new[] { project.ProjectDirectory },
-            };
+            return null;
         }
 
         public IEnumerable<ExtensionReferenceProbeEntry> ProbeReferences(ExtensionDescriptor extensionDescriptor) {

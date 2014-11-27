@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Roslyn;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -12,7 +10,6 @@ using OrchardVNext.FileSystems.Dependencies;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
 using OrchardVNext.Routing;
-using System;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
