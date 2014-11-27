@@ -26,18 +26,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) {
-
-            //var originalLibraryExportProvider = _serviceProvider.GetService<ILibraryExportProvider>();
-            //var projectResolver = _serviceProvider.GetService<IProjectResolver>();
-            //var projectReferenceProvider = _serviceProvider.GetService<IProjectReferenceProvider>();
-
             ServiceCollection serviceCollection = new ServiceCollection();
-
-            //serviceCollection.AddInstance(typeof(ILibraryExportProvider), new OrchardCompositeLibraryExportProvider(new[] {
-            //        new OrchardLibraryExportProvider(projectResolver, _serviceProvider, projectReferenceProvider),
-            //        originalLibraryExportProvider
-            //    }));
-
 
             serviceCollection.AddScoped<IOrchardShell, DefaultOrchardShell>();
             serviceCollection.AddScoped<IRouteBuilder, DefaultShellRouteBuilder>();
