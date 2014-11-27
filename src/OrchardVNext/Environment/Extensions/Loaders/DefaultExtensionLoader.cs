@@ -2,19 +2,10 @@
 using System.Collections.Generic;
 using System.Reflection;
 using OrchardVNext.Environment.Extensions.Models;
-using OrchardVNext.FileSystems.Dependencies;
 using System.Linq;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.FileSystems.VirtualPath;
 using System.Runtime.Versioning;
-using Microsoft.Framework.Runtime.Roslyn;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection.PortableExecutable;
-using NuGet;
-using System.Reflection.Metadata;
-using OrchardVNext.Environment.Extensions.Loaders;
-using Microsoft.Framework.DependencyInjection;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class DefaultExtensionLoader : IExtensionLoader {
@@ -61,17 +52,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         public void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
         }
 
-        public void ExtensionRemoved(ExtensionLoadingContext ctx, DependencyDescriptor dependency) {
-        }
-
-        public IEnumerable<ExtensionCompilationReference> GetCompilationReferences(DependencyDescriptor dependency) {
-            return Enumerable.Empty<ExtensionCompilationReference>();
-        }
-
-        public IEnumerable<string> GetVirtualPathDependencies(DependencyDescriptor dependency) {
-            return Enumerable.Empty<string>();
-        }
-
         public bool IsCompatibleWithModuleReferences(ExtensionDescriptor extension, IEnumerable<ExtensionProbeEntry> references) {
             return true;
         }
@@ -94,10 +74,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
                 Assembly = assembly,
                 ExportedTypes = assembly.ExportedTypes
             };
-        }
-
-        public Assembly LoadReference(DependencyReferenceDescriptor reference) {
-            return null;
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {

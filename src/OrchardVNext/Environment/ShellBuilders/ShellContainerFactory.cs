@@ -66,8 +66,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
             return BuildFallbackServiceProvider(
                             serviceCollection,
                             _serviceProvider);
-
-            //return serviceCollection.BuildServiceProvider();
         }
 
 

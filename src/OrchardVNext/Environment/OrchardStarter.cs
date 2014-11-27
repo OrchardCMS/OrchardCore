@@ -6,7 +6,6 @@ using OrchardVNext.Environment.Extensions.Folders;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders;
 using OrchardVNext.FileSystems.AppData;
-using OrchardVNext.FileSystems.Dependencies;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
 using OrchardVNext.Routing;
@@ -20,9 +19,6 @@ namespace OrchardVNext.Environment {
 
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
-                services.AddSingleton<IDependenciesFolder, DefaultDependenciesFolder>();
-                services.AddSingleton<IExtensionDependenciesManager, DefaultExtensionDependenciesManager>();
-                services.AddSingleton<IAssemblyProbingFolder, DefaultAssemblyProbingFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
                 
                 services.AddTransient<IOrchardHost, DefaultOrchardHost>();
