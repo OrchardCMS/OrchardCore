@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.Versioning;
 using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Common.DependencyInjection;
 using Microsoft.Framework.Runtime.FileSystem;
 using Microsoft.Framework.Runtime.Loader;
 using Microsoft.Framework.DependencyInjection;
@@ -13,8 +12,7 @@ using Microsoft.Framework.Runtime.Roslyn.Services;
 using Microsoft.Framework.Runtime.Roslyn;
 using System.IO;
 
-namespace OrchardVNext.Environment.Extensions.Loaders
-{
+namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ProjectHostContext {
         private readonly ServiceProvider _serviceProvider;
 
