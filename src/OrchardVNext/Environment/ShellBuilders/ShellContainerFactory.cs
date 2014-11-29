@@ -42,7 +42,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     serviceCollection.AddScoped(dependency.Type, interfaceType);
 
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
-                        serviceCollection.AddScoped(interfaceType, dependency.Type);
+                        serviceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
