@@ -19,6 +19,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         public ProjectHostContext(IServiceProvider serviceProvider,
                                       string projectDirectory,
                                       string packagesDirectory,
+                                      string[] sourcePaths,
                                       string configuration,
                                       FrameworkName targetFramework,
                                       ICache cache,
@@ -28,7 +29,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             ProjectDirectory = projectDirectory;
             Configuration = configuration;
             RootDirectory = Microsoft.Framework.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
-            ProjectResolver = new ProjectResolver(ProjectDirectory, RootDirectory);
+            ProjectResolver = new ProjectResolver(ProjectDirectory, RootDirectory, sourcePaths);
             FrameworkReferenceResolver = new FrameworkReferenceResolver();
             _serviceProvider = new ServiceProvider(serviceProvider);
 
@@ -233,9 +234,12 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ProjectResolver : IProjectResolver {
         private readonly IList<string> _searchPaths;
 
-        public ProjectResolver(string projectPath, string rootPath) {
-            // We could find all project.json files in the search paths up front here
-            _searchPaths = ResolveSearchPaths(projectPath, rootPath).ToList();
+        public ProjectResolver(
+            string projectPath, 
+            string rootPath, 
+            string[] sourcePaths) {
+            // Go hunting for projects.
+            _searchPaths = ResolveSearchPaths(projectPath, rootPath, sourcePaths).ToList();
         }
 
         public IEnumerable<string> SearchPaths {
@@ -266,7 +270,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             return project;
         }
 
-        private IEnumerable<string> ResolveSearchPaths(string projectPath, string rootPath) {
+        private IEnumerable<string> ResolveSearchPaths(string projectPath, string rootPath, string[] sourcePaths) {
             var paths = new List<string>
             {
                 Path.GetDirectoryName(projectPath)
@@ -275,9 +279,11 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             GlobalSettings global;
 
             if (GlobalSettings.TryGetGlobalSettings(rootPath, out global)) {
-                foreach (var sourcePath in global.SourcePaths) {
-                    paths.Add(Path.Combine(rootPath, sourcePath));
-                }
+                sourcePaths = sourcePaths.Concat(global.SourcePaths).ToArray();
+            }
+
+            foreach (var sourcePath in sourcePaths) {
+                paths.Add(Path.Combine(rootPath, sourcePath));
             }
 
             return paths.Distinct();

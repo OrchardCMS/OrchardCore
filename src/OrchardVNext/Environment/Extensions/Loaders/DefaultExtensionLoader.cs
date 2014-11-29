@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.FileSystems.VirtualPath;
 using System.Runtime.Versioning;
+using OrchardVNext.Environment.Extensions.Folders;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class DefaultExtensionLoader : IExtensionLoader {
@@ -13,17 +14,20 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         private readonly IServiceProvider _serviceProvider;
         private readonly IAssemblyLoadContextFactory _assemblyLoadContextFactory;
         private readonly IApplicationEnvironment _applicationEnvironment;
+        private readonly IEnumerable<IExtensionFolders> _extensionFolders;
 
         public DefaultExtensionLoader(
             IVirtualPathProvider virtualPathProvider,
             IServiceProvider serviceProvider,
             IAssemblyLoadContextFactory assemblyLoadContextFactory,
-            IApplicationEnvironment applicationEnvironment) {
+            IApplicationEnvironment applicationEnvironment,
+            IEnumerable<IExtensionFolders> extensionFolders) {
 
             _virtualPathProvider = virtualPathProvider;
             _serviceProvider = serviceProvider;
             _assemblyLoadContextFactory = assemblyLoadContextFactory;
             _applicationEnvironment = applicationEnvironment;
+            _extensionFolders = extensionFolders;
         }
         public string Name { get { return this.GetType().Name; } }
 
@@ -88,6 +92,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
                 _serviceProvider,
                 project.ProjectDirectory,
                 null,
+                _extensionFolders.SelectMany(ef => ef.SearchPaths).ToArray(),
                 target.Configuration,
                 target.TargetFramework,
                 new Cache(accessor),

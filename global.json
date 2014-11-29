@@ -1,3 +1,3 @@
 ﻿{
-    "sources": [ "src", "src\\orchardvnext.web\\modules" ]
+    "sources": [ "src" ]
 }
