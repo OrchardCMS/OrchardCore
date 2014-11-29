@@ -37,7 +37,8 @@ namespace OrchardVNext.Environment.ShellBuilders {
             foreach (var dependency in blueprint.Dependencies) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
-                    Console.WriteLine(dependency.Type);
+                    Logger.Debug("Concrete Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
+
                     serviceCollection.AddScoped(dependency.Type, interfaceType);
 
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
