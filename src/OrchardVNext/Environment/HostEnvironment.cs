@@ -10,11 +10,5 @@ namespace OrchardVNext.Environment {
         public string MapPath(string virtualPath) {
             return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty).Replace('/', '\\');
         }
-
-        public bool IsAssemblyLoaded(string name) {
-
-            Logger.Error("TODO: Check Assembly Is Loaded - could check DI Container...");
-            return false;// AppDomain.CurrentDomain.GetAssemblies().Any(assembly => new AssemblyName(assembly.FullName).Name == name);
-        }
     }
 }

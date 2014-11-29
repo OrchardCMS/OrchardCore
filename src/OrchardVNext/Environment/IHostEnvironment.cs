@@ -4,7 +4,5 @@
     /// </summary>
     public interface IHostEnvironment {
         string MapPath(string virtualPath);
-
-        bool IsAssemblyLoaded(string name);
     }
 }
