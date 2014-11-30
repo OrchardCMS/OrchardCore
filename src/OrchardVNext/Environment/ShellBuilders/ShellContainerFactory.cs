@@ -3,9 +3,7 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
-using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Routing;
 using System;
@@ -39,7 +37,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
                     Logger.Debug("Concrete Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
 
-                    serviceCollection.AddScoped(dependency.Type, interfaceType);
+                    serviceCollection.AddScoped(interfaceType, dependency.Type);
 
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddSingleton(interfaceType, dependency.Type);

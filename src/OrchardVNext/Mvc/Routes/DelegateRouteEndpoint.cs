@@ -1,0 +1,26 @@
+﻿using Microsoft.AspNet.Routing;
+using System;
+using System.Threading.Tasks;
+
+namespace OrchardVNext.Mvc.Routes {
+    public class DelegateRouteEndpoint : IRouter {
+        public delegate Task RoutedDelegate(RouteContext context);
+
+        private readonly RoutedDelegate _appFunc;
+
+        public DelegateRouteEndpoint(RoutedDelegate appFunc) {
+            _appFunc = appFunc;
+        }
+
+        public async Task RouteAsync(RouteContext context) {
+            await _appFunc(context);
+            context.IsHandled = true;
+        }
+
+        public string GetVirtualPath(VirtualPathContext context) {
+            // We don't really care what the values look like.
+            context.IsBound = true;
+            return null;
+        }
+    }
+}

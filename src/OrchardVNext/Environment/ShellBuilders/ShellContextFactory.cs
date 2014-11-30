@@ -34,12 +34,18 @@ namespace OrchardVNext.Environment.ShellBuilders {
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            return new ShellContext {
-                Settings = settings,
-                Blueprint = blueprint,
-                LifetimeScope = provider,
-                Shell = provider.GetService<IOrchardShell>()
-            };
+            try {
+                return new ShellContext {
+                    Settings = settings,
+                    Blueprint = blueprint,
+                    LifetimeScope = provider,
+                    Shell = provider.GetService<IOrchardShell>()
+                };
+            }
+            catch (Exception ex) {
+                Logger.Error(ex.ToString());
+                throw;
+            }
         }
 
         private static ShellDescriptor MinimumShellDescriptor() {
@@ -48,6 +54,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 Features = new[] {
                     new ShellFeature {Name = "OrchardVNext.Framework"},
                     new ShellFeature {Name = "OrchardVNext.Test1"},
+                    new ShellFeature {Name = "OrchardVNext.Demo" }
                 },
                 Parameters = Enumerable.Empty<ShellParameter>(),
             };
