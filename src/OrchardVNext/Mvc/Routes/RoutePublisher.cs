@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNet.Routing;
+using Microsoft.AspNet.Routing.Template;
+using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 using System.Collections.Generic;
 
@@ -16,8 +18,17 @@ namespace OrchardVNext.Mvc.Routes {
 
         public void Publish(IEnumerable<RouteDescriptor> routes) {
             foreach (var route in routes) {
+                
+                IRouter router = new TemplateRoute(
+                    _routeBuilder.DefaultHandler,
+                    route.Route.RouteName,
+                    route.Route.RouteTemplate,
+                    route.Route.Defaults,
+                    route.Route.DataTokens,
+                    route.Route.Constraints,
+                    _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>());
 
-                _routeBuilder.AddPrefixRoute(_shellSettings.RequestUrlPrefix, route.Prefix, route.Route);
+                _routeBuilder.AddPrefixRoute(_shellSettings.RequestUrlPrefix, route.Prefix, router);
             }
         }
     }

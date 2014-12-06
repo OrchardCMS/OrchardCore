@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
@@ -16,6 +17,8 @@ namespace OrchardVNext.Environment {
             app.UseServices(services => {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
+
+                services.AddSingleton<IInlineConstraintResolver, DefaultInlineConstraintResolver>();
 
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
