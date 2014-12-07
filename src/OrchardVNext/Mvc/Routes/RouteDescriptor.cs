@@ -6,10 +6,4 @@ namespace OrchardVNext.Mvc.Routes {
         public int Priority { get; set; }
         public Route Route { get; set; }
     }
-
-    public class HttpRouteDescriptor : RouteDescriptor {
-        public string RouteTemplate { get; set; }
-        public object Defaults { get; set; }
-        public object Constraints { get; set; }
-    }
 }

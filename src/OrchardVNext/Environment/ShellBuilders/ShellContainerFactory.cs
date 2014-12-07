@@ -34,6 +34,8 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
 
+            serviceCollection.AddScoped<ITypeActivator, TypeActivator>();
+
             serviceCollection.AddMvc();
 
             serviceCollection.Configure<RazorViewEngineOptions>(options => {
@@ -44,7 +46,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
             foreach (var dependency in blueprint.Dependencies) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
-                    Logger.Debug("Concrete Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
+                    Logger.Debug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
 
                     serviceCollection.AddScoped(interfaceType, dependency.Type);
 

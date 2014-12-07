@@ -25,6 +25,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
 
                 Settings = null;
                 Blueprint = null;
+                LifetimeScope = null;
                 Shell = null;
 
                 _disposed = true;

@@ -39,17 +39,15 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             NuGetDependencyProvider = new NuGetDependencyResolver(PackagesDirectory, RootDirectory);
             var gacDependencyResolver = new GacDependencyResolver();
             ProjectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
-            UnresolvedDependencyProvider = new UnresolvedDependencyProvider();
+            var unresolvedDependencyProvider = new UnresolvedDependencyProvider();
 
             DependencyWalker = new DependencyWalker(new IDependencyProvider[] {
                 ProjectDepencyProvider,
                 NuGetDependencyProvider,
                 referenceAssemblyDependencyResolver,
                 gacDependencyResolver,
-                UnresolvedDependencyProvider
+                unresolvedDependencyProvider
             });
-
-            UnresolvedDependencyProvider.AttemptedProviders = DependencyWalker.DependencyProviders;
 
             LibraryExportProvider = new CompositeLibraryExportProvider(new ILibraryExportProvider[] {
                 new ProjectLibraryExportProvider(ProjectResolver, ServiceProvider),
@@ -114,8 +112,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         }
 
         public IAssemblyLoadContextFactory AssemblyLoadContextFactory { get; private set; }
-
-        public UnresolvedDependencyProvider UnresolvedDependencyProvider { get; private set; }
 
         public NuGetDependencyResolver NuGetDependencyProvider { get; private set; }
 
