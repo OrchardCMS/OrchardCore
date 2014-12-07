@@ -3,11 +3,10 @@ using System;
 
 namespace OrchardVNext.Mvc.Routes {
     public static class RouteBuilderExtensions {
-        public static IRouteBuilder AddPrefixRoute(this IRouteBuilder routeBuilder,
+        public static IRouteBuilder AddTenantRoute(this IRouteBuilder routeBuilder,
                                                    string urlHost,
-                                                   string prefix,
                                                    IRouter handler) {
-            routeBuilder.Routes.Add(new PrefixRoute(handler, urlHost, prefix));
+            routeBuilder.Routes.Add(new TenantRoute(handler, urlHost));
             return routeBuilder;
         }
     }

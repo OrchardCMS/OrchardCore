@@ -6,8 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrchardVNext.Demo
-{
+namespace OrchardVNext.Demo {
     public class Routes : IRouteProvider {
         public readonly ShellSettings _shellSettings;
         public Routes(ShellSettings shellSettings) {
@@ -25,9 +24,9 @@ namespace OrchardVNext.Demo
                 //}
                 new RouteDescriptor {
                     Route = new Route(
-                        "Home Index",
-                        "home/index",
-                        defaults:  new 
+                        null,
+                        "{controller}/{action}",
+                        defaults:  new
                             {
                                 area = "OrchardVNext.Demo",
                                 controller = "Home",

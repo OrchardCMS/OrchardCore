@@ -24,11 +24,12 @@ namespace OrchardVNext.Mvc.Routes {
                     route.Route.RouteName,
                     route.Route.RouteTemplate,
                     route.Route.Defaults,
-                    route.Route.DataTokens,
                     route.Route.Constraints,
+                    route.Route.DataTokens,
                     _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>());
 
-                _routeBuilder.AddPrefixRoute(_shellSettings.RequestUrlPrefix, route.Prefix, router);
+                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlPrefix, router);
+
             }
         }
     }

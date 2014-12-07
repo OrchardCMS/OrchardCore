@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
@@ -9,7 +11,9 @@ using OrchardVNext.Environment.ShellBuilders;
 using OrchardVNext.FileSystems.AppData;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
+using OrchardVNext.Mvc;
 using OrchardVNext.Routing;
+using Microsoft.Framework.ConfigurationModel;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
@@ -48,7 +52,6 @@ namespace OrchardVNext.Environment {
                 };
 
                 services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
-                services.AddMvc();
             });
 
             app.UseMiddleware<OrchardContainerMiddleware>();

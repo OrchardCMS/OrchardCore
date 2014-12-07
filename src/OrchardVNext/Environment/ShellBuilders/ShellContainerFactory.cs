@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.ShellBuilders.Models;
+using OrchardVNext.Mvc;
 using OrchardVNext.Routing;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,13 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
+
+            serviceCollection.AddMvc();
+
+            serviceCollection.Configure<RazorViewEngineOptions>(options => {
+                var expander = new ModuleViewLocationExpander();
+                options.ViewLocationExpanders.Add(expander);
+            });
 
             foreach (var dependency in blueprint.Dependencies) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
