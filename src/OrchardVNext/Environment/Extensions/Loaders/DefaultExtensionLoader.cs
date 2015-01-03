@@ -12,22 +12,22 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
     public class DefaultExtensionLoader : IExtensionLoader {
         private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IAssemblyLoadContextFactory _assemblyLoadContextFactory;
         private readonly IApplicationEnvironment _applicationEnvironment;
         private readonly IEnumerable<IExtensionFolders> _extensionFolders;
+        private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
 
         public DefaultExtensionLoader(
             IVirtualPathProvider virtualPathProvider,
             IServiceProvider serviceProvider,
-            IAssemblyLoadContextFactory assemblyLoadContextFactory,
             IApplicationEnvironment applicationEnvironment,
-            IEnumerable<IExtensionFolders> extensionFolders) {
+            IEnumerable<IExtensionFolders> extensionFolders,
+            IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
 
             _virtualPathProvider = virtualPathProvider;
             _serviceProvider = serviceProvider;
-            _assemblyLoadContextFactory = assemblyLoadContextFactory;
             _applicationEnvironment = applicationEnvironment;
             _extensionFolders = extensionFolders;
+            _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
         }
         public string Name { get { return this.GetType().Name; } }
 
@@ -86,6 +86,13 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
                 TargetFramework = project.GetTargetFramework(_applicationEnvironment.RuntimeFramework).FrameworkName
             };
 
+
+            var provider2 = (ILibraryManager)_serviceProvider.GetService(typeof(ILibraryManager));
+
+            ILibraryExport export2 = provider2.GetLibraryExport(target.Name, target.Aspect);
+
+
+
             var accessor = (ICacheContextAccessor)_serviceProvider.GetService(typeof(ICacheContextAccessor));
 
             ProjectHostContext hostContext = new ProjectHostContext(
@@ -112,7 +119,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
             foreach (var projectReference in export.MetadataReferences.OfType<IMetadataProjectReference>()) {
                 if (string.Equals(projectReference.Name, project.Name, StringComparison.OrdinalIgnoreCase)) {
-                    return projectReference.Load(_assemblyLoadContextFactory.Create());
+                    return projectReference.Load(_assemblyLoadContextAccessor.Default);
                 }
             }
 

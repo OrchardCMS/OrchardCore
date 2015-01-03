@@ -8,9 +8,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using System.Linq;
+using System.IO;
 using Microsoft.Framework.Runtime.Roslyn.Services;
 using Microsoft.Framework.Runtime.Roslyn;
-using System.IO;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ProjectHostContext {

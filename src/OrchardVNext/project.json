@@ -1,12 +1,11 @@
 ﻿{
     "version": "2.0.0-*",
     "dependencies": {
-        "Microsoft.AspNet.Mvc": "6.0.0-beta2-*",
-        "Microsoft.AspNet.RequestContainer": "1.0.0-beta2-*",
-        "Microsoft.Framework.Runtime": "1.0.0-beta2-*",
-        "Microsoft.Framework.Runtime.Loader": "1.0.0-beta2-*",
-        "Microsoft.Framework.PackageManager": "1.0.0-beta2-*",
-        "Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta2-*"
+        "Microsoft.AspNet.Mvc": "6.0.0-rc1-*",
+        "Microsoft.AspNet.RequestContainer": "1.0.0-rc1-*",
+        "Microsoft.Framework.Runtime": "1.0.0-rc1-*",
+        "Microsoft.Framework.Runtime.Loader": "1.0.0-rc1-*",
+        "Microsoft.Framework.Runtime.Roslyn" : "1.0.0-rc1-*"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {
