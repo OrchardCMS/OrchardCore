@@ -4,8 +4,8 @@
         "Microsoft.AspNet.Mvc": "6.0.0-rc1-*",
         "Microsoft.AspNet.RequestContainer": "1.0.0-rc1-*",
         "Microsoft.Framework.Runtime": "1.0.0-rc1-*",
-        "Microsoft.Framework.Runtime.Loader": "1.0.0-rc1-*",
-        "Microsoft.Framework.Runtime.Roslyn" : "1.0.0-rc1-*"
+        "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-rc1-*",
+        "Microsoft.Framework.Runtime.Roslyn": "1.0.0-rc1-*"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {

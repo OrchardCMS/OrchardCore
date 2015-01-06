@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -23,7 +24,11 @@ namespace OrchardVNext.Environment {
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
-                
+
+                // Caching - Move out?
+                services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
+                services.AddSingleton<ICache, Cache>();
+
                 services.AddTransient<IOrchardHost, DefaultOrchardHost>();
                 {
                     services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
@@ -37,7 +42,6 @@ namespace OrchardVNext.Environment {
                                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
                                 services.AddSingleton<IExtensionFolders, ModuleFolders>();
                                 services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
-                                services.AddSingleton<IExtensionFolders, ThemeFolders>();
 
                                 services.AddSingleton<IExtensionLoader, DefaultExtensionLoader>();
                             }

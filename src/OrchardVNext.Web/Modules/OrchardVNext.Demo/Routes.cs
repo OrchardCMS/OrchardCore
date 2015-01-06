@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Routing.Template;
-using OrchardVNext.Environment.Configuration;
+﻿using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Mvc.Routes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardVNext.Demo {
     public class Routes : IRouteProvider {
