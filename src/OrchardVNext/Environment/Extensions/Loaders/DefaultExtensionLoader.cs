@@ -17,7 +17,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         private readonly IApplicationEnvironment _applicationEnvironment;
         private readonly IEnumerable<IExtensionFolders> _extensionFolders;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
-        private readonly ILibraryManager _libraryManager;
+        private readonly IOrchardLibraryManager _orchardLibraryManager;
         private readonly ICompilerOptionsProvider _compilerOptionsProvider;
         private readonly IFileWatcher _watcher;
 
@@ -28,7 +28,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             IApplicationEnvironment applicationEnvironment,
             IEnumerable<IExtensionFolders> extensionFolders,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
-            ILibraryManager libraryManager,
+            IOrchardLibraryManager orchardLibraryManager,
             ICompilerOptionsProvider compilerOptionsProvider,
             IFileWatcher watcher) {
 
@@ -37,14 +37,10 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             _applicationEnvironment = applicationEnvironment;
             _extensionFolders = extensionFolders;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
-            _libraryManager = libraryManager;
+            _orchardLibraryManager = orchardLibraryManager;
             _compilerOptionsProvider = compilerOptionsProvider;
             _watcher = watcher;
 
-        }
-
-        public Assembly Load(Project project) {
-            return null;
         }
 
         public string Name { get { return this.GetType().Name; } }
@@ -96,15 +92,14 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
                new NamedCacheDependencyProvider(),
                loadContextFactory,
                _watcher,
+               _applicationEnvironment,
                _serviceProvider);
 
-            var library = moduleContext.DependencyWalker.Libraries.First(i => i.Identity.Name == project.Name);
-            
-            var libInfo = new LibraryInformation(library);
+            _orchardLibraryManager.AddAdditionalRegistrations(moduleContext.DependencyWalker.Libraries);
 
             var exports = ProjectExportProviderHelper.GetExportsRecursive(
                 cache,
-                new LibraryManagerWrapper(_libraryManager, libInfo),
+                _orchardLibraryManager,
                 moduleContext.LibraryExportProvider,
                 target,
                 true);
@@ -145,69 +140,5 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         public FrameworkName TargetFramework { get; set; }
         public string Configuration { get; set; }
         public string Aspect { get; set; }
-    }
-
-    public class LibraryManagerWrapper : ILibraryManager {
-        private readonly ILibraryManager _libraryManager;
-        private readonly ILibraryInformation _additionalLibrary;
-
-        public LibraryManagerWrapper(ILibraryManager libraryManager, ILibraryInformation additionalLibrary) {
-            _libraryManager = libraryManager;
-            _additionalLibrary = additionalLibrary;
-        }
-
-        public ILibraryExport GetAllExports(string name) {
-            return _libraryManager.GetAllExports(name);
-        }
-
-        public ILibraryExport GetAllExports(string name, string aspect) {
-            return _libraryManager.GetAllExports(name, aspect);
-        }
-
-        public IEnumerable<ILibraryInformation> GetLibraries() {
-            return _libraryManager.GetLibraries();
-        }
-
-        public IEnumerable<ILibraryInformation> GetLibraries(string aspect) {
-            return _libraryManager.GetLibraries(aspect);
-        }
-
-        public ILibraryExport GetLibraryExport(string name) {
-            return _libraryManager.GetLibraryExport(name);
-        }
-
-        public ILibraryExport GetLibraryExport(string name, string aspect) {
-            return _libraryManager.GetLibraryExport(name, aspect);
-        }
-
-        public ILibraryInformation GetLibraryInformation(string name) {
-            var info = _libraryManager.GetLibraryInformation(name);
-            if (info != null)
-                return info;
-
-            if (_additionalLibrary.Name == name)
-                return _additionalLibrary;
-
-            return null;
-        }
-
-        public ILibraryInformation GetLibraryInformation(string name, string aspect) {
-            var info = _libraryManager.GetLibraryInformation(name, aspect);
-            if (info != null)
-                return info;
-
-            if (_additionalLibrary.Name == name)
-                return _additionalLibrary;
-
-            return null;
-        }
-
-        public IEnumerable<ILibraryInformation> GetReferencingLibraries(string name) {
-            return _libraryManager.GetReferencingLibraries(name);
-        }
-
-        public IEnumerable<ILibraryInformation> GetReferencingLibraries(string name, string aspect) {
-            return _libraryManager.GetReferencingLibraries(name, aspect);
-        }
     }
 }

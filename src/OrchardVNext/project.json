@@ -1,24 +1,24 @@
 ﻿{
-    "version": "2.0.0-*",
-    "dependencies": {
-        "Microsoft.AspNet.Mvc": "6.0.0-rc1-*",
-        "Microsoft.AspNet.RequestContainer": "1.0.0-rc1-*",
-        "Microsoft.Framework.Runtime": "1.0.0-rc1-*",
-        "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-rc1-*",
-        "Microsoft.Framework.Runtime.Roslyn": "1.0.0-rc1-*"
-    },
-    "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
-    "frameworks": {
-        "aspnet50": {
-            "dependencies": {
-            }
-        },
-        "aspnetcore50": {
-            "dependencies": {
-                "System.Runtime": "4.0.20-beta-*",
-                "System.Xml.XDocument": "4.0.0-beta-*",
-                "System.IO.FileSystem.Primitives": "4.0.0-beta-*"
-            }
-        }
-    }
+	"version": "2.0.0-*",
+	"dependencies": {
+		"Microsoft.AspNet.Mvc": "6.0.0-*",
+		"Microsoft.AspNet.RequestContainer": "1.0.0-beta3-*",
+		"Microsoft.Framework.Runtime": "1.0.0-beta3-*",
+		"Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta3-*",
+		"Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta3-*"
+	},
+	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
+	"frameworks": {
+		"aspnet50": {
+			"dependencies": {
+			}
+		},
+		"aspnetcore50": {
+			"dependencies": {
+				"System.Runtime": "4.0.20-beta-*",
+				"System.Xml.XDocument": "4.0.0-beta-*",
+				"System.IO.FileSystem.Primitives": "4.0.0-beta-*"
+			}
+		}
+	}
 }

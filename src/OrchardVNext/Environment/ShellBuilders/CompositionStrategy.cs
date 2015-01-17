@@ -1,4 +1,5 @@
-﻿using OrchardVNext.Environment.Configuration;
+﻿using Microsoft.AspNet.Mvc;
+using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Descriptor.Models;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Models;
@@ -39,13 +40,13 @@ namespace OrchardVNext.Environment.ShellBuilders {
             var excludedTypes = GetExcludedTypes(features);
 
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor), excludedTypes);
-            ////var controllers = BuildBlueprint(features, IsController, BuildController, excludedTypes);
+            var controllers = BuildBlueprint(features, IsController, BuildController, excludedTypes);
 
             var result = new ShellBlueprint {
                 Settings = settings,
                 Descriptor = descriptor,
                 Dependencies = dependencies.ToArray(),
-                //Controllers = controllers,
+                Controllers = controllers,
             };
 
             Logger.Debug("Done composing blueprint");
@@ -98,6 +99,10 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 .ToArray();
         }
 
+        private static bool IsController(Type type) {
+            return typeof(Controller).IsAssignableFrom(type);
+        }
+
         private static bool IsDependency(Type type) {
             return typeof(IDependency).IsAssignableFrom(type);
         }
@@ -107,6 +112,21 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 Type = type,
                 Feature = feature,
                 Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()
+            };
+        }
+
+        private static ControllerBlueprint BuildController(Type type, Feature feature) {
+            var areaName = feature.Descriptor.Extension.Id;
+
+            var controllerName = type.Name;
+            if (controllerName.EndsWith("Controller"))
+                controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
+
+            return new ControllerBlueprint {
+                Type = type,
+                Feature = feature,
+                AreaName = areaName,
+                ControllerName = controllerName,
             };
         }
     }

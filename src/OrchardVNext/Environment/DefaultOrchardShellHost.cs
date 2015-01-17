@@ -12,11 +12,11 @@ namespace OrchardVNext.Environment {
         }
 
         void IOrchardShellHost.BeginRequest(ShellSettings settings) {
-            Console.WriteLine("Begin Request for tenant {0}", settings.Name);
+            Logger.Debug("Begin Request for tenant {0}", settings.Name);
         }
 
         void IOrchardShellHost.EndRequest(ShellSettings settings) {
-            Console.WriteLine("End Request for tenant {0}", settings.Name);
+            Logger.Debug("End Request for tenant {0}", settings.Name);
         }
     }
 }

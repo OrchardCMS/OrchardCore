@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
@@ -19,11 +20,11 @@ namespace OrchardVNext.Environment {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
                 services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
 
-                services.AddSingleton<IInlineConstraintResolver, DefaultInlineConstraintResolver>();
-
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
                 services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
+
+                services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
 
                 // Caching - Move out?
                 services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
@@ -37,6 +38,7 @@ namespace OrchardVNext.Environment {
                     {
                         services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                         {
+                            services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
                             services.AddSingleton<IExtensionManager, ExtensionManager>();
                             {
                                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
@@ -52,8 +54,9 @@ namespace OrchardVNext.Environment {
                 };
 
                 services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
-
             });
+
+
 
             app.UseMiddleware<OrchardContainerMiddleware>();
             app.UseMiddleware<OrchardShellHostMiddleware>();

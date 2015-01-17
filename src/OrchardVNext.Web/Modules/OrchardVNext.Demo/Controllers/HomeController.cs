@@ -8,6 +8,7 @@ namespace OrchardVNext.Demo.Controllers {
         //public HomeController(ITestDependency foo) {
         //    _foo = foo;
         //}
+        public HomeController(){}
 
         public ActionResult Index() {
 

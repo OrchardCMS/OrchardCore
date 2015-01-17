@@ -16,11 +16,11 @@ namespace OrchardVNext.Environment.Extensions.Loaders
             _cache = cache;
 
             ProjectDirectory = projectDirectory;
-            RootDirectory = ProjectResolver.ResolveRootDirectory(ProjectDirectory);
+            RootDirectory = Microsoft.Framework.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
 
             // A new project resolver is required. you cannot reuse the one from the 
             // parent service provider as that will be for the parent context.
-            var projectResolver = new ProjectResolver(ProjectDirectory, RootDirectory);
+            ProjectResolver = new ProjectResolver(ProjectDirectory, RootDirectory);
 
             var referenceAssemblyDependencyResolver = new ReferenceAssemblyDependencyResolver(new FrameworkReferenceResolver());
 
@@ -28,7 +28,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders
             var NuGetDependencyProvider = new NuGetDependencyResolver(
                 NuGetDependencyResolver.ResolveRepositoryPath(RootDirectory), RootDirectory);
             var gacDependencyResolver = new GacDependencyResolver();
-            var ProjectDepencyProvider = new ProjectReferenceDependencyProvider(projectResolver);
+            var ProjectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
             var unresolvedDependencyProvider = new UnresolvedDependencyProvider();
             
             DependencyWalker = new DependencyWalker(new IDependencyProvider[] {
@@ -41,7 +41,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders
 
             LibraryExportProvider = new CompositeLibraryExportProvider(new ILibraryExportProvider[] {
                 new ModuleProjectLibraryExportProvider(
-                    projectResolver, _serviceProvider),
+                    ProjectResolver, _serviceProvider),
                 referenceAssemblyDependencyResolver,
                 gacDependencyResolver,
                 NuGetDependencyProvider
@@ -53,5 +53,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders
 
         public DependencyWalker DependencyWalker { get; private set; }
         public ILibraryExportProvider LibraryExportProvider { get; private set; }
+        public IProjectResolver ProjectResolver { get; private set; }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Mvc;
 using OrchardVNext.Routing;
@@ -34,14 +36,17 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
 
-            serviceCollection.AddScoped<ITypeActivator, TypeActivator>();
-
             serviceCollection.AddMvc();
 
             serviceCollection.Configure<RazorViewEngineOptions>(options => {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
             });
+
+            var p = _serviceProvider.GetService<IOrchardLibraryManager>();
+            //serviceCollection.AddScoped<IActionSelector, DefaultActionSelectorTest>();
+            //serviceCollection.AddTransient<INestedProvider<ActionDescriptorProviderContext>, ControllerActionDescriptorProviderTest>();
+            serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p));
 
             foreach (var dependency in blueprint.Dependencies) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
@@ -61,6 +66,13 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     }
                 }
             }
+
+            //foreach (var item in blueprint.Controllers) {
+            //    var serviceKeyName = (item.AreaName + "/" + item.ControllerName).ToLowerInvariant();
+            //    var serviceKeyType = item.Type;
+            //    serviceCollection.AddScoped(serviceKeyType);
+
+            //}
 
             return BuildFallbackServiceProvider(
                             serviceCollection,
