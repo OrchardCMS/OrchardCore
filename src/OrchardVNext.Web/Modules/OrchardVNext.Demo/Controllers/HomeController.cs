@@ -9,12 +9,11 @@ namespace OrchardVNext.Demo.Controllers {
         public HomeController(ITestDependency foo) {
             _foo = foo;
         }
-        public HomeController(){}
 
         public ActionResult Index() {
 
 
-            return View();
+            return View("Index", _foo.SayHi());
 
         }
     }
