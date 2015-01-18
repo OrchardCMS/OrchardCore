@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
@@ -8,7 +7,6 @@ using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders;
-using OrchardVNext.FileSystems.AppData;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
 using OrchardVNext.Routing;
@@ -18,10 +16,8 @@ namespace OrchardVNext.Environment {
         private static void CreateHostContainer(IApplicationBuilder app) {
             app.UseServices(services => {
                 services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
-                services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
 
                 services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
-                services.AddSingleton<IAppDataFolder, AppDataFolder>();
                 services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
 
                 services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
