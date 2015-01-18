@@ -55,9 +55,7 @@ namespace OrchardVNext.Environment {
 
                 services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
             });
-
-
-
+            
             app.UseMiddleware<OrchardContainerMiddleware>();
             app.UseMiddleware<OrchardShellHostMiddleware>();
             app.UseMiddleware<OrchardRouterMiddleware>();

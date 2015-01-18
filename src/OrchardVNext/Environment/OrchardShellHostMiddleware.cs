@@ -24,6 +24,7 @@ namespace OrchardVNext.Environment {
         public async Task Invoke(HttpContext httpContext) {
             var shellSettings = httpContext.RequestServices.GetService<ShellSettings>();
             _orchardHost.BeginRequest(shellSettings);
+            httpContext.Response.Headers.Append("X-Generator", "Orchard");
             await _next.Invoke(httpContext).ContinueWith(x => {
                 _orchardHost.EndRequest(shellSettings);
             });
