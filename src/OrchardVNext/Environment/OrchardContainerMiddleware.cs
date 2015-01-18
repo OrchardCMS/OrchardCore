@@ -30,7 +30,8 @@ namespace OrchardVNext.Environment {
             var currentRequestServices = httpContext.RequestServices;
 
             var shellSettings = _shellSettingsManager.LoadSettings();
-            var shellSetting = shellSettings.SingleOrDefault(x => x.RequestUrlPrefix == httpContext.Request.Host.Value);
+            var shellSetting = shellSettings
+                .SingleOrDefault(x => x.RequestUrlPrefix == httpContext.Request.Host.Value);
 
             if (shellSetting != null) {
                 using (var shell = _shellContextFactory.CreateShellContext(shellSetting)) {

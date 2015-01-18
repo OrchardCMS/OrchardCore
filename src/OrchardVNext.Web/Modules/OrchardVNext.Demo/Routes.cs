@@ -21,7 +21,7 @@ namespace OrchardVNext.Demo {
                 new RouteDescriptor {
                     Route = new Route(
                         null,
-                        "{controller}/{action}",
+                        "Home/Index",
                         defaults:  new
                             {
                                 area = "OrchardVNext.Demo",
