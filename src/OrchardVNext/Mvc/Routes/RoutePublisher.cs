@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Routing;
 using Microsoft.AspNet.Routing.Template;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
@@ -17,7 +18,7 @@ namespace OrchardVNext.Mvc.Routes {
             _shellSettings = shellSettings;
         }
 
-        public void Publish(IEnumerable<RouteDescriptor> routes) {
+        public void Publish(IEnumerable<RouteDescriptor> routes, RequestDelegate pipeline) {
             var routesArray = routes
                 .OrderByDescending(r => r.Priority)
                 .ToArray();
@@ -33,7 +34,7 @@ namespace OrchardVNext.Mvc.Routes {
                     route.Route.DataTokens,
                     _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>());
 
-                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlPrefix, router);
+                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlPrefix, router, pipeline);
 
             }
         }

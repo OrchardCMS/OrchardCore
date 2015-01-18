@@ -4,6 +4,8 @@ using Microsoft.AspNet.Routing;
 using System;
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
+using System.Collections.Generic;
+using OrchardVNext.Middleware;
 
 namespace OrchardVNext.Routing {
     public class OrchardRouterMiddleware {

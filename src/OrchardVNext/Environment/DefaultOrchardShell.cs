@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
 using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Middleware;
 using OrchardVNext.Mvc.Routes;
 using System;
 using System.Collections.Generic;
@@ -16,44 +18,47 @@ namespace OrchardVNext.Environment {
     public class DefaultOrchardShell : IOrchardShell {
         private readonly IEnumerable<IRouteProvider> _routeProviders;
         private readonly IRoutePublisher _routePublisher;
+        private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
+        private readonly ShellSettings _shellSettings;
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultOrchardShell(
             IEnumerable<IRouteProvider> routeProviders,
-            IRoutePublisher routePublisher) {
+            IRoutePublisher routePublisher,
+            IEnumerable<IMiddlewareProvider> middlewareProviders,
+            ShellSettings shellSettings,
+            IServiceProvider serviceProvider) {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
+            _middlewareProviders = middlewareProviders;
+            _shellSettings = shellSettings;
+            _serviceProvider = serviceProvider;
         }
 
         public void Activate() {
+            IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
+            
+            appBuilder.Properties["host.AppName"] = _shellSettings.Name;
+
+            var orderedMiddlewares = _middlewareProviders
+                .SelectMany(p => p.GetMiddlewares())
+                .OrderBy(obj => obj.Priority);
+
+            foreach (var middleware in orderedMiddlewares) {
+                middleware.Configure(appBuilder);
+            }
+
+            appBuilder.UseOrchard();
+
+            var pipeline = appBuilder.Build();
+
             var allRoutes = new List<RouteDescriptor>();
             allRoutes.AddRange(_routeProviders.SelectMany(provider => provider.GetRoutes()));
 
-            _routePublisher.Publish(allRoutes);
-
-            //var endpoint = new DelegateRouteEndpoint(async (context) =>
-            //                                        await context
-            //                                                .HttpContext
-            //                                                .Response
-            //                                                .WriteAsync("Hello, World! from " + _shellSettings.Name));
-
-            //_routeBuilder.AddPrefixRoute(_shellSettings.RequestUrlPrefix, "hello/world", endpoint);
+            _routePublisher.Publish(allRoutes, pipeline);
         }
 
         public void Terminate() {
         }
     }
-
-    //var endpoint = new DelegateRouteEndpoint(async (context) =>
-    //                                        await context
-    //                                                .HttpContext
-    //                                                .Response
-    //                                                .WriteAsync("Hello, World! from " + _shellSettings.Name));
-
-    //_routeBuilder.AddPrefixRoute(_shellSettings.RequestUrlPrefix, "hello/world", endpoint);
-
-
-
-
-
-
 }
