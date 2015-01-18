@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Microsoft.Framework.Runtime;
+using OrchardVNext.Environment;
 using OrchardVNext.Environment.Extensions.Loaders;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,15 @@ namespace OrchardVNext.Mvc {
         };
 
         private readonly IOrchardLibraryManager _libraryManager;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IAssemblyLoaderContainer _loaderContainer;
 
-        public DefaultAssemblyProviderTest(IOrchardLibraryManager libraryManager) {
+        public DefaultAssemblyProviderTest(IOrchardLibraryManager libraryManager,
+            IServiceProvider serviceProvider,
+            IAssemblyLoaderContainer container) {
             _libraryManager = libraryManager;
+            _serviceProvider = serviceProvider;
+            _loaderContainer = container;
         }
 
         /// <inheritdoc />
@@ -55,8 +62,14 @@ namespace OrchardVNext.Mvc {
                                       .Where(IsCandidateLibrary);
         }
 
-        private static Assembly Load(AssemblyName assemblyName) {
-            return Assembly.Load(assemblyName);
+        private Assembly Load(AssemblyName assemblyName) {
+            var assembly = Assembly.Load(assemblyName);
+            if (assembly != null)
+                return assembly;
+
+            using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(@"", _serviceProvider))) {
+                return Assembly.Load(assemblyName);
+            }
         }
 
         private bool IsCandidateLibrary(ILibraryInformation library) {

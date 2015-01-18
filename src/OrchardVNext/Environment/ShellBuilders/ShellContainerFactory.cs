@@ -5,6 +5,7 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
@@ -46,7 +47,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
             var p = _serviceProvider.GetService<IOrchardLibraryManager>();
             //serviceCollection.AddScoped<IActionSelector, DefaultActionSelectorTest>();
             //serviceCollection.AddTransient<INestedProvider<ActionDescriptorProviderContext>, ControllerActionDescriptorProviderTest>();
-            serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p));
+            serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
 
             foreach (var dependency in blueprint.Dependencies) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()

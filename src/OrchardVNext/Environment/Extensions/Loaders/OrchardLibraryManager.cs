@@ -6,7 +6,10 @@ using System.Runtime.Versioning;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public interface IOrchardLibraryManager : ILibraryManager {
+        IDictionary<string, IMetadataReference> MetadataReferences { get; }
         void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations);
+        void AddAdditionalLibraryExportRegistrations(string name, ILibraryExport additionalRegistration);
+        void AddMetadataReference(string name, IMetadataReference metadataReference);
     }
 
     public class OrchardLibraryManager : IOrchardLibraryManager {
@@ -16,15 +19,27 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             _libraryManager = libraryManager;
 
             AdditionalRegistrations = new List<LibraryDescription>();
+            AdditionalLibraryExportRegistrations = new Dictionary<string, ILibraryExport>();
+            MetadataReferences = new Dictionary<string, IMetadataReference>();
         }
 
-        private IList<LibraryDescription> AdditionalRegistrations { get; }
+        public IList<LibraryDescription> AdditionalRegistrations { get; }
+        public IDictionary<string, ILibraryExport> AdditionalLibraryExportRegistrations { get; }
+        public IDictionary<string, IMetadataReference> MetadataReferences { get; }
 
         public void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations) {
             foreach (var registration in additionalRegistrations) {
                 if (!AdditionalRegistrations.Any(x => x.Identity.Name == registration.Identity.Name))
                     AdditionalRegistrations.Add(registration);
             }
+        }
+
+        public void AddAdditionalLibraryExportRegistrations(string name, ILibraryExport additionalRegistration) {
+            AdditionalLibraryExportRegistrations[name] = additionalRegistration;
+        }
+
+        public void AddMetadataReference(string name, IMetadataReference metadataReference) {
+            MetadataReferences[name] = metadataReference;
         }
 
         public ILibraryExport GetAllExports(string name) {
@@ -48,7 +63,11 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         }
 
         public ILibraryExport GetLibraryExport(string name, string aspect) {
-            return _libraryManager.GetLibraryExport(name, aspect);
+            var export =  _libraryManager.GetLibraryExport(name, aspect);
+            if (export != null)
+                return export;
+
+            return AdditionalLibraryExportRegistrations[name];
         }
 
         public ILibraryInformation GetLibraryInformation(string name) {
@@ -77,7 +96,9 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public IEnumerable<ILibraryInformation> GetReferencingLibraries(string name) {
             return _libraryManager.GetReferencingLibraries(name)
-                .Union(AdditionalRegistrations.Select(x => new LibraryInformation(x)));
+                .Union(AdditionalRegistrations
+                    .Where(x => x.Dependencies.FirstOrDefault(o => o.Name == name) != null)
+                    .Select(x => new LibraryInformation(x)));
         }
 
         public IEnumerable<ILibraryInformation> GetReferencingLibraries(string name, string aspect) {

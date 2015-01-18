@@ -41,7 +41,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders
                 metadataReferences.Add(new CompiledProjectMetadataReference(project, assemblyPath, pdbPath));
             }
             else {
-                var libraryManager = _serviceProvider.GetService<ILibraryManager>();
+                var libraryManager = _serviceProvider.GetService<IOrchardLibraryManager>();
 
                return libraryManager.GetLibraryExport(target.Name, target.Aspect);
             }

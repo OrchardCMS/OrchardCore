@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Reflection;
 using OrchardVNext.Environment.Extensions.Models;
-using System.Linq;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.FileSystems.VirtualPath;
 using System.Runtime.Versioning;
 using OrchardVNext.Environment.Extensions.Folders;
-using Microsoft.Framework.Runtime.Roslyn;
-using Microsoft.Framework.Runtime.Loader;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class DefaultExtensionLoader : IExtensionLoader {
@@ -20,6 +17,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         private readonly IOrchardLibraryManager _orchardLibraryManager;
         private readonly ICompilerOptionsProvider _compilerOptionsProvider;
         private readonly IFileWatcher _watcher;
+        private readonly IAssemblyLoaderContainer _loaderContainer;
 
 
         public DefaultExtensionLoader(
@@ -30,7 +28,8 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IOrchardLibraryManager orchardLibraryManager,
             ICompilerOptionsProvider compilerOptionsProvider,
-            IFileWatcher watcher) {
+            IFileWatcher watcher,
+            IAssemblyLoaderContainer container) {
 
             _virtualPathProvider = virtualPathProvider;
             _serviceProvider = serviceProvider;
@@ -40,6 +39,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             _orchardLibraryManager = orchardLibraryManager;
             _compilerOptionsProvider = compilerOptionsProvider;
             _watcher = watcher;
+            _loaderContainer = container;
 
         }
 
@@ -62,66 +62,21 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         }
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor) {
-            var plocation = _virtualPathProvider.MapPath(_virtualPathProvider.Combine(descriptor.Location, descriptor.Id));
-            Project project = null;
-            if (!Project.TryGetProject(plocation, out project)) {
-                return null;
+
+            var plocation = _virtualPathProvider.MapPath(descriptor.Location);
+
+            using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(plocation, _serviceProvider))) {
+                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+
+                Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+
+
+                return new ExtensionEntry {
+                    Descriptor = descriptor,
+                    Assembly = assembly,
+                    ExportedTypes = assembly.ExportedTypes
+                };
             }
-
-            var cache = (ICache)_serviceProvider.GetService(typeof(ICache));
-
-            var target = new LibraryKey {
-                Name = project.Name,
-                Configuration = _applicationEnvironment.Configuration,
-                TargetFramework = project.GetTargetFramework(_applicationEnvironment.RuntimeFramework).FrameworkName
-            };
-
-            ModuleLoaderContext moduleContext = new ModuleLoaderContext(
-                _serviceProvider, 
-                project.ProjectDirectory,
-                cache);
-
-            moduleContext.DependencyWalker.Walk(project.Name, project.Version, target.TargetFramework);
-
-            var cacheContextAccessor = (ICacheContextAccessor)_serviceProvider.GetService(typeof(ICacheContextAccessor));
-            var loadContextFactory = (IAssemblyLoadContextFactory)_serviceProvider.GetService(typeof(IAssemblyLoadContextFactory)) ?? new AssemblyLoadContextFactory(_serviceProvider);
-
-            var compiler = new InternalRoslynCompiler(
-               cache,
-               cacheContextAccessor,
-               new NamedCacheDependencyProvider(),
-               loadContextFactory,
-               _watcher,
-               _applicationEnvironment,
-               _serviceProvider);
-
-            _orchardLibraryManager.AddAdditionalRegistrations(moduleContext.DependencyWalker.Libraries);
-
-            var exports = ProjectExportProviderHelper.GetExportsRecursive(
-                cache,
-                _orchardLibraryManager,
-                moduleContext.LibraryExportProvider,
-                target,
-                true);
-
-            var compliationContext = compiler.CompileProject(project, 
-                target,
-                exports.MetadataReferences,
-                exports.SourceReferences,
-                Enumerable.Empty<IMetadataReference>().ToList());
-
-            var roslynProjectReference = new RoslynProjectReference(compliationContext);
-
-            var loadContext = _assemblyLoadContextAccessor.Default;
-            var assembly = roslynProjectReference.Load(loadContext);
-
-            Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
-
-            return new ExtensionEntry {
-                Descriptor = descriptor,
-                Assembly = assembly,
-                ExportedTypes = assembly.ExportedTypes
-            };
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {
