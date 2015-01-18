@@ -8,7 +8,8 @@
 		"Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta4-*",
 		"Microsoft.Framework.ConfigurationModel": "1.0.0-beta4-*",
 		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4-*",
-		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*"
+		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*",
+		"EntityFramework.Core": "7.0.0-beta3-*"
 	},
 	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
 	"frameworks": {
