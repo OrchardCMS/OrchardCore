@@ -10,14 +10,6 @@ namespace OrchardVNext.Demo {
         }
         public IEnumerable<RouteDescriptor> GetRoutes() {
             return new[] {
-                //new RouteDescriptor {
-                //    Prefix = "hello/world",
-                //    Route = new DelegateRouteEndpoint(async (context) =>
-                //                                        await context
-                //                                                .HttpContext
-                //                                                .Response
-                //                                                .WriteAsync("Hello, World! from " + _shellSettings.Name))
-                //}
                 new RouteDescriptor {
                     Route = new Route(
                         null,

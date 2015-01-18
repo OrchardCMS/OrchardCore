@@ -1,20 +1,16 @@
 ﻿using Microsoft.AspNet.Mvc;
 using OrchardVNext.Test1;
-//using OrchardVNext.Test1;
 
 namespace OrchardVNext.Demo.Controllers {
     public class HomeController : Controller {
-        private readonly ITestDependency _foo;
+        private readonly ITestDependency _testDependency;
 
-        public HomeController(ITestDependency foo) {
-            _foo = foo;
+        public HomeController(ITestDependency testDependency) {
+            _testDependency = testDependency;
         }
 
         public ActionResult Index() {
-
-
-            return View("Index", _foo.SayHi());
-
+            return View("Index", _testDependency.SayHi());
         }
     }
 }

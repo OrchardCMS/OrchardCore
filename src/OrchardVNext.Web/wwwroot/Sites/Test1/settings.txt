@@ -5,8 +5,8 @@ Name: Test1
 DataProvider: SqlCe
 DataConnectionString: null
 DataTablePrefix: null
-RequestUrlHost: local.orchardvnext.test1.com
-RequestUrlPrefix: null
+RequestUrlHost: null
+RequestUrlPrefix: local.orchardvnext.test1.com
 EncryptionAlgorithm: AES
 EncryptionKey: 70FD36224BA0F4995FAC4F412ECD84E63545950139CC4AA0234575EECB8FDABC
 HashAlgorithm: HMACSHA256
