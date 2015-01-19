@@ -5,6 +5,7 @@ namespace OrchardVNext.Data
 {
     public interface ITransactionManager : IDependency {
         void Demand();
+        void RequireNew();
         void Cancel();
     }
 
@@ -19,8 +20,14 @@ namespace OrchardVNext.Data
 
         public void Demand() {
             _dataContext = new DataContext(_shellSettings);
-            
         }
+
+        public void RequireNew() {
+            _dataContext.SaveChanges();
+            _dataContext.Dispose();
+            Demand();
+        }
+
         public void Cancel() {
             _isCancel = true;
             _dataContext.Dispose();
