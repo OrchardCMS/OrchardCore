@@ -12,6 +12,8 @@ namespace OrchardVNext.Data {
         private readonly ShellSettings _shellSettings;
         private readonly IDataServicesProviderFactory _dataServicesProviderFactory;
 
+        private DbContextOptions _dbContextOptions;
+
         public DbContextFactoryHolder(
             ShellSettings shellSettings,
             IDataServicesProviderFactory dataServicesProviderFactory) {
@@ -20,13 +22,14 @@ namespace OrchardVNext.Data {
         }
 
         public DbContextOptions BuildConfiguration() {
-            _dataServicesProviderFactory.CreateProvider(
-                new DataServiceParameters {
-
-
+            lock (this) {
+                if (_dbContextOptions == null) {
+                    _dbContextOptions = _dataServicesProviderFactory.CreateProvider(
+                        new DataServiceParameters { })
+                .BuildContextOptions();
                 }
-                );
-            return null;
+            }
+            return _dbContextOptions;
         }
 
         public void Dispose() {

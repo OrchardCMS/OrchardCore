@@ -5,7 +5,7 @@ using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Data
 {
-    public interface IDataContext : IUnitOfWorkDependency {
+    public interface IDataContext {
         DbContext Context { get; }
     }
 

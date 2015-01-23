@@ -6,6 +6,7 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using Microsoft.Framework.Runtime;
+using OrchardVNext.Data;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
@@ -36,6 +37,8 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
+
+            serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             serviceCollection.AddMvc();
 

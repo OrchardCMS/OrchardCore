@@ -7,8 +7,8 @@ using System.Linq.Expressions;
 
 namespace OrchardVNext.Data {
     public class Repository<T> : IRepository<T> where T : class {
-        public Repository(IDataContext dataContext) {
-            DbSet = dataContext.Context.Set<T>();
+        public Repository(IDbContextLocator contentLocator) {
+            DbSet = contentLocator.For(typeof(T)).Set<T>();
         }
 
         public virtual DbSet<T> DbSet { get; private set; }
