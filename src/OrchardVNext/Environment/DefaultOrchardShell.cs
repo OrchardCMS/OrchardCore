@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Routing;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNet.Builder;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Middleware;
 using OrchardVNext.Mvc.Routes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardVNext.Environment {
     public interface IOrchardShell {

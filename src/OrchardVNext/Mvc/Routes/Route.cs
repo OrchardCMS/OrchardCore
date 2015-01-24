@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNet.Routing;
-using OrchardVNext.Environment.Configuration;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNet.Routing;
 
 namespace OrchardVNext.Mvc.Routes {
     public class Route {

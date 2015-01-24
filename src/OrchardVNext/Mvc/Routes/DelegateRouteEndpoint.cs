@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNet.Routing;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNet.Routing;
 
 namespace OrchardVNext.Mvc.Routes {
     public class DelegateRouteEndpoint : IRouter {

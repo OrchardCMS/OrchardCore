@@ -1,5 +1,3 @@
-using Microsoft.AspNet.Routing;
-
 namespace OrchardVNext.Mvc.Routes {
     public class RouteDescriptor {
         public string Name { get; set; }

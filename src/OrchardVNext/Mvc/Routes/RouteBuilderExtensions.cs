@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
-using System;
 
 namespace OrchardVNext.Mvc.Routes {
     public static class RouteBuilderExtensions {

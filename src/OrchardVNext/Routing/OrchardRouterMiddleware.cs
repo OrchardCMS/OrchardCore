@@ -1,22 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
-using System;
-using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
-using System.Collections.Generic;
-using OrchardVNext.Middleware;
 
 namespace OrchardVNext.Routing {
     public class OrchardRouterMiddleware {
         private readonly RequestDelegate _next;
-        private readonly IServiceProvider _serviceProvider;
 
         public OrchardRouterMiddleware(
-            RequestDelegate next,
-            IServiceProvider serviceProvider) {
+            RequestDelegate next) {
             _next = next;
-            _serviceProvider = serviceProvider;
         }
 
         public async Task Invoke(HttpContext httpContext) {

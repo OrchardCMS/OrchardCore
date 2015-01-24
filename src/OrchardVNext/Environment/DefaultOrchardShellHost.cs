@@ -1,5 +1,4 @@
 ﻿using OrchardVNext.Environment.Configuration;
-using System;
 
 namespace OrchardVNext.Environment {
     public interface IOrchardShellHost {
@@ -8,9 +7,6 @@ namespace OrchardVNext.Environment {
     }
 
     public class DefaultOrchardShellHost : IOrchardShellHost {
-        public DefaultOrchardShellHost() {
-        }
-
         void IOrchardShellHost.BeginRequest(ShellSettings settings) {
             Logger.Debug("Begin Request for tenant {0}", settings.Name);
         }

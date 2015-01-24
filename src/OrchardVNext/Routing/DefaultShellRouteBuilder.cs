@@ -17,7 +17,6 @@ namespace OrchardVNext.Routing {
 
         public IList<IRouter> Routes {
             get;
-            private set;
         }
 
         public IRouter Build() {

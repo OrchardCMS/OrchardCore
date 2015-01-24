@@ -47,7 +47,7 @@ namespace OrchardVNext.Environment {
 
                         services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                     }
-                };
+                }
 
                 services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
             });

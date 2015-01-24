@@ -1,19 +1,19 @@
-﻿using Microsoft.Framework.Runtime;
-using OrchardVNext.FileSystems.VirtualPath;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNet.Hosting;
+using OrchardVNext.FileSystems.VirtualPath;
 
 namespace OrchardVNext.FileSystems.WebSite {
     public class WebSiteFolder : IWebSiteFolder {
-        private readonly IApplicationEnvironment _applicationEnvrionment;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IVirtualPathProvider _virtualPathProvider;
 
-        public WebSiteFolder(IApplicationEnvironment applicationEnvrionment,
+        public WebSiteFolder(IHostingEnvironment hostingEnvironment,
             IVirtualPathProvider virtualPathProvider) {
+            _hostingEnvironment = hostingEnvironment;
             _virtualPathProvider = virtualPathProvider;
-            _applicationEnvrionment = applicationEnvrionment;
         }
 
         public IEnumerable<string> ListDirectories(string virtualPath) {
@@ -43,7 +43,7 @@ namespace OrchardVNext.FileSystems.WebSite {
             return ReadFile(virtualPath, false);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public string ReadFile(string virtualPath, bool actualContent) {
             if (!_virtualPathProvider.FileExists(virtualPath)) {
                 return null;
@@ -90,7 +90,7 @@ namespace OrchardVNext.FileSystems.WebSite {
         }
 
         string Normalize(string virtualPath) {
-            return virtualPath.Replace(_applicationEnvrionment.ApplicationBasePath, "~").Replace('\\', '/');
+            return virtualPath.Replace(_hostingEnvironment.WebRoot, "~").Replace('\\', '/');
         }
     }
 }

@@ -1,26 +1,22 @@
-﻿using Microsoft.AspNet.Builder;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.ShellBuilders;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardVNext.Environment {
     public class OrchardContainerMiddleware {
         private readonly RequestDelegate _next;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
 
 
         public OrchardContainerMiddleware(
             RequestDelegate next,
-            IServiceProvider serviceProvider,
             IShellSettingsManager shellSettingsManager,
             IShellContextFactory shellContextFactory) {
             _next = next;
-            _serviceProvider = serviceProvider;
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
         }

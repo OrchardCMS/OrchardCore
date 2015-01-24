@@ -1,23 +1,19 @@
-﻿using Microsoft.AspNet.Builder;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
-using System;
-using System.Threading.Tasks;
 
 namespace OrchardVNext.Environment {
     public class OrchardShellHostMiddleware {
         private readonly RequestDelegate _next;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IOrchardShellHost _orchardHost;
 
         public OrchardShellHostMiddleware(
             RequestDelegate next,
-            IServiceProvider serviceProvider,
             IOrchardShellHost orchardHost) {
 
             _next = next;
-            _serviceProvider = serviceProvider;
             _orchardHost = orchardHost;
         }
 

@@ -1,0 +1,21 @@
+﻿{
+    "compilationOptions": {
+        "warningsAsErrors": true
+    },
+    "dependencies": {
+        "xunit.runner.kre": "1.0.0-beta4-*",
+        "Microsoft.AspNet.Testing": "1.0.0-*",
+        "OrchardVNext": ""
+    },
+    "commands": {
+        "test": "xunit.runner.kre"
+    },
+    "frameworks": {
+        "aspnet50": {
+            "dependencies": {
+                "Moq": "4.2.1312.1622"
+            }
+        },
+        "aspnetcore50": { }
+    }
+}

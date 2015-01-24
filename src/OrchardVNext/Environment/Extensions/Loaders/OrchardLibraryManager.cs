@@ -1,8 +1,6 @@
-﻿using Microsoft.Framework.Runtime;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Versioning;
+using Microsoft.Framework.Runtime;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public interface IOrchardLibraryManager : ILibraryManager {
@@ -29,7 +27,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations) {
             foreach (var registration in additionalRegistrations) {
-                if (!AdditionalRegistrations.Any(x => x.Identity.Name == registration.Identity.Name))
+                if (AdditionalRegistrations.All(x => x.Identity.Name != registration.Identity.Name))
                     AdditionalRegistrations.Add(registration);
             }
         }

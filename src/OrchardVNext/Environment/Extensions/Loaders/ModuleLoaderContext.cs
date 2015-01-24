@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Framework.Runtime;
-using Microsoft.Framework.DependencyInjection;
 
 namespace OrchardVNext.Environment.Extensions.Loaders
 {
