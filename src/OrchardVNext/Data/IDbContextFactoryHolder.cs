@@ -31,8 +31,8 @@ namespace OrchardVNext.Data {
 
                     _dbContextOptions = _dataServicesProviderFactory.CreateProvider(
                         new DataServiceParameters {
-                            Provider = _shellSettings.Provider,
-                            ConnectionString = _shellSettings.ConnectionString,
+                            Provider = _shellSettings.DataProvider,
+                            ConnectionString = _shellSettings.DataConnectionString,
                             DataFolder = shellFolder
                         })
                 .BuildContextOptions();
