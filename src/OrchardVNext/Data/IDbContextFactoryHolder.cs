@@ -24,8 +24,17 @@ namespace OrchardVNext.Data {
         public DbContextOptions BuildConfiguration() {
             lock (this) {
                 if (_dbContextOptions == null) {
+                    var shellPath = _appDataFolder.Combine("Sites", _shellSettings.Name);
+                    _appDataFolder.CreateDirectory(shellPath);
+
+                    var shellFolder = _appDataFolder.MapPath(shellPath);
+
                     _dbContextOptions = _dataServicesProviderFactory.CreateProvider(
-                        new DataServiceParameters { })
+                        new DataServiceParameters {
+                            Provider = _shellSettings.Provider,
+                            ConnectionString = _shellSettings.ConnectionString,
+                            DataFolder = shellFolder
+                        })
                 .BuildContextOptions();
                 }
             }

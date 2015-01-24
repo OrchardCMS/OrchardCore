@@ -4,11 +4,12 @@ using System.Data.Common;
 
 namespace OrchardVNext.Data.Providers {
     public interface IDataServicesProvider : ITransientDependency {
+        string ProviderName { get; }
         DbContextOptions BuildContextOptions();
     }
 
     public class SqlServerDataServicesProvider : IDataServicesProvider {
-        public static string ProviderName {
+        public string ProviderName {
             get { return "SqlServer"; }
         }
 
