@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Framework.ConfigurationModel;
 using OrchardVNext.Environment.Configuration.Sources;
+using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Environment.Configuration {
     public interface IShellSettingsManager {
@@ -11,16 +12,18 @@ namespace OrchardVNext.Environment.Configuration {
     }
 
     public class ShellSettingsManager : IShellSettingsManager {
+        private readonly IAppDataFolder _appDataFolder;
         private const string _settingsFileNameFormat = "Settings.{0}";
         private readonly string[] _settingFileNameExtensions = new string[] { "txt", "json" };
 
-        IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
-            var fiolders = Directory
-                .GetDirectories(@"D:\Brochard\src\OrchardVNext.Web\wwwroot\Sites");
+        public ShellSettingsManager(IAppDataFolder appDataFolder) {
+            _appDataFolder = appDataFolder;
+        }
 
-            var filePaths = Directory
-                .GetDirectories(@"D:\Brochard\src\OrchardVNext.Web\wwwroot\Sites")
-                .SelectMany(path => Directory.GetFiles(path))
+        IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
+            var filePaths = _appDataFolder
+                .ListDirectories("Sites")
+                .SelectMany(path => _appDataFolder.ListFiles(path))
                 .Where(path => {
                     var filePathName = Path.GetFileName(path);
 
