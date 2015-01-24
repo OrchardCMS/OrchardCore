@@ -54,16 +54,17 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
                     Logger.Debug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
 
-                    serviceCollection.AddScoped(interfaceType, dependency.Type);
-
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
-                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType)) {
+                    else if (typeof (ITransientDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddTransient(interfaceType, dependency.Type);
+                    }
+                    else {
+                        serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                 }
             }
