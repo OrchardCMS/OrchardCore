@@ -2,6 +2,7 @@
 using OrchardVNext.Data.Providers;
 using OrchardVNext.Environment.Configuration;
 using System;
+using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Data {
     public interface IDbContextFactoryHolder : ISingletonDependency {
@@ -11,14 +12,17 @@ namespace OrchardVNext.Data {
     public class DbContextFactoryHolder : IDbContextFactoryHolder, IDisposable {
         private readonly ShellSettings _shellSettings;
         private readonly IDataServicesProviderFactory _dataServicesProviderFactory;
+        private readonly IAppDataFolder _appDataFolder;
 
         private DbContextOptions _dbContextOptions;
 
         public DbContextFactoryHolder(
             ShellSettings shellSettings,
-            IDataServicesProviderFactory dataServicesProviderFactory) {
+            IDataServicesProviderFactory dataServicesProviderFactory,
+            IAppDataFolder appDataFolder) {
             _shellSettings = shellSettings;
             _dataServicesProviderFactory = dataServicesProviderFactory;
+            _appDataFolder = appDataFolder;
         }
 
         public DbContextOptions BuildConfiguration() {
