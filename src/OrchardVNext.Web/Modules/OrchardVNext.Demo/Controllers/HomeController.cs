@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.AspNet.Mvc;
 using OrchardVNext.Data;
+using OrchardVNext.Demo.Models;
 using OrchardVNext.Test1;
 
 namespace OrchardVNext.Demo.Controllers {
@@ -18,10 +19,5 @@ namespace OrchardVNext.Demo.Controllers {
             var p = _testRepository.Table.ToList();
             return View("Index", _testDependency.SayHi());
         }
-    }
-
-    public class TestRecord {
-        public int Id { get; set; }
-        public string TestLine { get; set; }
     }
 }

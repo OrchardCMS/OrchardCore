@@ -1,19 +1,25 @@
 ﻿using System;
+using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Environment.Extensions.Loaders;
 
 namespace OrchardVNext.Data {
     public class DbContextLocator : IDbContextLocator, ITransactionManager, IDisposable {
         private readonly ShellSettings _shellSettings;
         private readonly IDbContextFactoryHolder _dbContextFactoryHolder;
+        private readonly IServiceProvider _serviceProvider;
 
         private DataContext _dataContext;
         private bool _isCancel;
 
         public DbContextLocator(ShellSettings shellSettings,
-            IDbContextFactoryHolder dbContextFactoryHolder) {
+            IDbContextFactoryHolder dbContextFactoryHolder,
+            IServiceProvider serviceProvider) {
             _shellSettings = shellSettings;
             _dbContextFactoryHolder = dbContextFactoryHolder;
+            _serviceProvider = serviceProvider;
         }
 
         public DbContext For(Type entityType) {
@@ -25,7 +31,10 @@ namespace OrchardVNext.Data {
         }
 
         public void Demand() {
-            _dataContext = new DataContext(_shellSettings, _dbContextFactoryHolder.BuildConfiguration());
+            _dataContext = new DataContext(
+                _shellSettings, 
+                _dbContextFactoryHolder.BuildConfiguration(),
+                (IAssemblyProvider)_serviceProvider.GetService(typeof(IAssemblyProvider)));
         }
 
         public void RequireNew() {
