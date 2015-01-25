@@ -1,7 +1,4 @@
-﻿using OrchardVNext.Environment.Configuration;
-using System;
-
-namespace OrchardVNext.Data
+﻿namespace OrchardVNext.Data
 {
     public interface ITransactionManager : IDependency {
         void Demand();

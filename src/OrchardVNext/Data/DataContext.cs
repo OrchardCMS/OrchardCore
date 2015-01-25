@@ -1,13 +1,10 @@
-﻿using Microsoft.Data.Entity;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Mvc;
+using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.Metadata;
-using Microsoft.Framework.Runtime;
-using OrchardVNext.Environment;
 using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Extensions.Loaders;
 
 namespace OrchardVNext.Data
 {
@@ -39,10 +36,7 @@ namespace OrchardVNext.Data
                 return this;
             }
         }
-
-        protected override void OnConfiguring(DbContextOptions options) {
-        }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             var entityMethod = modelBuilder.GetType().GetRuntimeMethod("Entity", new Type[] {});
 

@@ -27,7 +27,7 @@ namespace OrchardVNext.Data.Providers {
 
         public DbContextOptions BuildContextOptions() {
             DbContextOptions foo = new DbContextOptions();
-            foo.UseInMemoryStore();
+            foo.UseInMemoryStore(persist: true);
             return foo;
         }
     }

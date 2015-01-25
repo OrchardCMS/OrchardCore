@@ -8,16 +8,15 @@ using System.Linq.Expressions;
 namespace OrchardVNext.Data {
     public class Repository<T> : IRepository<T> where T : class {
         public Repository(IDbContextLocator contentLocator) {
-            DbSet = contentLocator.For(typeof(T)).Set<T>();
+            Context = contentLocator.For(typeof (T));
+            DbSet = Context.Set<T>();
         }
 
-        public virtual DbSet<T> DbSet { get; private set; }
+        private DbContext Context { get; }
 
-        public virtual IQueryable<T> Table {
-            get {
-                return DbSet.AsQueryable();
-            }
-        }
+        public virtual DbSet<T> DbSet { get; }
+
+        public virtual IQueryable<T> Table => DbSet.AsQueryable();
 
         #region IRepository<T> Members
 
@@ -80,16 +79,19 @@ namespace OrchardVNext.Data {
         public virtual void Create(T entity) {
             Logger.Debug("Create {0}", entity);
             DbSet.Add(entity);
+            Context.SaveChanges();
         }
 
         public virtual void Update(T entity) {
             Logger.Debug("Update {0}", entity);
             DbSet.Update(entity);
+            Context.SaveChanges();
         }
 
         public virtual void Delete(T entity) {
             Logger.Debug("Delete {0}", entity);
             DbSet.Remove(entity);
+            Context.SaveChanges();
         }
 
         public virtual void Copy(T source, T target) {

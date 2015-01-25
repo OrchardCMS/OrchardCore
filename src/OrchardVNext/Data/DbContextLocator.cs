@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
-using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Extensions.Loaders;
 
 namespace OrchardVNext.Data {
     public class DbContextLocator : IDbContextLocator, ITransactionManager, IDisposable {

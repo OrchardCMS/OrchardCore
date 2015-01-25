@@ -37,9 +37,10 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
-
+            
+            // Data
             serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
+            
             serviceCollection.AddMvc();
 
             serviceCollection.Configure<RazorViewEngineOptions>(options => {
@@ -69,13 +70,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     }
                 }
             }
-
-            //foreach (var item in blueprint.Controllers) {
-            //    var serviceKeyName = (item.AreaName + "/" + item.ControllerName).ToLowerInvariant();
-            //    var serviceKeyType = item.Type;
-            //    serviceCollection.AddScoped(serviceKeyType);
-
-            //}
 
             return BuildFallbackServiceProvider(
                             serviceCollection,

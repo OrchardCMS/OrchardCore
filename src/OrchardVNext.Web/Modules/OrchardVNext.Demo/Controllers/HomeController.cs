@@ -16,7 +16,11 @@ namespace OrchardVNext.Demo.Controllers {
         }
 
         public ActionResult Index() {
-            var p = _testRepository.Table.ToList();
+            var testRecord = new TestRecord { TestLine = "foo"};
+            _testRepository.Create(testRecord);
+            // Always returning 0!?
+            var p = _testRepository.Table.Where(x => x.TestLine == "foo").ToList();
+            Logger.Debug("Records returned {0}", p.Count());
             return View("Index", _testDependency.SayHi());
         }
     }
