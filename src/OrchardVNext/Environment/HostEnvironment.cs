@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNet.Hosting;
+using Microsoft.Framework.Runtime;
 
 namespace OrchardVNext.Environment {
     public abstract class HostEnvironment : IHostEnvironment {
-        private readonly IHostingEnvironment _hostingEnvrionment;
-        public HostEnvironment(IHostingEnvironment hostingEnvrionment) {
-            _hostingEnvrionment = hostingEnvrionment;
+        private readonly IApplicationEnvironment _applicationEnvrionment;
+
+        protected HostEnvironment(IApplicationEnvironment applicationEnvrionment) {
+            _applicationEnvrionment = applicationEnvrionment;
         }
 
         public string MapPath(string virtualPath) {
-            return _hostingEnvrionment.WebRoot + virtualPath.Replace("~", string.Empty).Replace('/', '\\');
+            return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty).Replace('/', '\\');
         }
     }
 }

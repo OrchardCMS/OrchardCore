@@ -54,7 +54,7 @@ namespace OrchardVNext.Environment.Configuration {
                         break;
                     case ".txt":
                         configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()
-                            .Add(new DefaultFileConfigurationSource(filePath));
+                            .Add(new DefaultFileConfigurationSource(_appDataFolder, filePath));
                         break;
                 }
 

@@ -2,15 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Environment.Configuration.Sources
 {
     public class DefaultFileConfigurationSource : BaseConfigurationSource, ICommitableConfigurationSource {
+        private readonly IAppDataFolder _appDataFolder;
+
         public const char Separator = ':';
         public const string EmptyValue = "null";
         public const char ThemesSeparator = ';';
 
-        public DefaultFileConfigurationSource(string path) {
+        public DefaultFileConfigurationSource(IAppDataFolder appDataFolder, string path) {
+            _appDataFolder = appDataFolder;
             if (string.IsNullOrEmpty(path)) {
                 throw new ArgumentException("Invalid Filepath", "path");
             }
@@ -21,7 +25,7 @@ namespace OrchardVNext.Environment.Configuration.Sources
         public string Path { get; private set; }
 
         public override void Load() {
-            using (var stream = new FileStream(Path, FileMode.Open, FileAccess.Read)) {
+            using (var stream = _appDataFolder.OpenFile(Path)) {
                 Load(stream);
             }
         }

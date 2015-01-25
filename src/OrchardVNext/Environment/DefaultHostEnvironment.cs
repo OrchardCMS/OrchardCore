@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNet.Hosting;
+using Microsoft.Framework.Runtime;
 using OrchardVNext.Localization;
 
 namespace OrchardVNext.Environment {
     public class DefaultHostEnvironment : HostEnvironment {
         public DefaultHostEnvironment(
-            IHostingEnvironment hostingEnvrionment) : base(hostingEnvrionment) {
+            IApplicationEnvironment applicationEnvironment) : base(applicationEnvironment) {
             T = NullLocalizer.Instance;
         }
 
