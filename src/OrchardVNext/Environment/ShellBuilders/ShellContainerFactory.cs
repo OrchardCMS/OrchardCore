@@ -82,7 +82,8 @@ namespace OrchardVNext.Environment.ShellBuilders {
         }
 
 
-        private static IServiceProvider BuildFallbackServiceProvider(IEnumerable<IServiceDescriptor> services, IServiceProvider fallback) {
+        private static IServiceProvider BuildFallbackServiceProvider(IEnumerable<IServiceDescriptor> services, 
+            IServiceProvider fallback) {
             var sc = HostingServices.Create(fallback);
             sc.Add(services);
 
