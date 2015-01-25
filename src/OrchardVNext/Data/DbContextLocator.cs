@@ -20,7 +20,7 @@ namespace OrchardVNext.Data {
             Logger.Debug("Acquiring session for {0}", entityType);
 
             Demand();
-
+            
             return _dataContext.Context;
         }
 

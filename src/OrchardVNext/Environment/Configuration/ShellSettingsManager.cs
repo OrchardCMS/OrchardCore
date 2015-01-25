@@ -61,6 +61,10 @@ namespace OrchardVNext.Environment.Configuration {
                 if (configurationContainer != null) {
                     var shellSetting = new ShellSettings {
                         Name = configurationContainer.Get<string>("Name"),
+                        DataConnectionString = configurationContainer.Get<string>("DataConnectionString"),
+                        DataProvider = configurationContainer.Get<string>("DataProvider"),
+                        DataTablePrefix = configurationContainer.Get<string>("DataTablePrefix"),
+                        RequestUrlHost = configurationContainer.Get<string>("RequestUrlHost"),
                         RequestUrlPrefix = configurationContainer.Get<string>("RequestUrlPrefix")
                     };
 

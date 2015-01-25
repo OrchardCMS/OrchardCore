@@ -14,11 +14,20 @@ namespace OrchardVNext.Data.Providers {
         }
 
         public DbContextOptions BuildContextOptions() {
-
-
-
             DbContextOptions foo = new DbContextOptions();
             foo.UseSqlServer(@"");
+            return foo;
+        }
+    }
+
+    public class InMemoryDataServicesProvider : IDataServicesProvider {
+        public string ProviderName {
+            get { return "InMemory"; }
+        }
+
+        public DbContextOptions BuildContextOptions() {
+            DbContextOptions foo = new DbContextOptions();
+            foo.UseInMemoryStore();
             return foo;
         }
     }
