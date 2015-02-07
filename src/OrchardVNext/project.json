@@ -1,14 +1,14 @@
 ﻿{
 	"version": "2.0.0-*",
 	"dependencies": {
-		"Microsoft.AspNet.Mvc": "6.0.0-*",
-		"Microsoft.AspNet.RequestContainer": "1.0.0-beta3-*",
-		"Microsoft.Framework.Runtime": "1.0.0-beta3-*",
-		"Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta3-*",
-		"Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta3-*",
-		"Microsoft.Framework.ConfigurationModel": "1.0.0-beta3-*",
-		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta3-*",
-		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta3-*"
+		"Microsoft.AspNet.Mvc": "6.0.0-beta4-*",
+		"Microsoft.AspNet.RequestContainer": "1.0.0-beta4-*",
+		"Microsoft.Framework.Runtime": "1.0.0-beta4-*",
+		"Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta4-*",
+		"Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta4-*",
+		"Microsoft.Framework.ConfigurationModel": "1.0.0-beta4-*",
+		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4-*",
+		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*"
 	},
 	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
 	"frameworks": {
