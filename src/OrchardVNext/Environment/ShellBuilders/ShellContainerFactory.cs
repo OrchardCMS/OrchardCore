@@ -37,7 +37,11 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
-            
+
+            serviceCollection.AddEntityFramework()
+                .AddInMemoryStore()
+                .AddDbContext<DataContext>();
+
             serviceCollection.AddMvc();
 
             serviceCollection.Configure<RazorViewEngineOptions>(options => {

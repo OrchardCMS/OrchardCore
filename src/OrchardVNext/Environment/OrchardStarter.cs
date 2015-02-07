@@ -31,7 +31,7 @@ namespace OrchardVNext.Environment {
 
                 services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
 
-                // Caching - Move out?
+                // Caching - Move out
                 services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
                 services.AddSingleton<ICache, Cache>();
 

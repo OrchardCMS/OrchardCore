@@ -1,6 +1,4 @@
 ﻿using Microsoft.Data.Entity;
-using System;
-using System.Data.Common;
 
 namespace OrchardVNext.Data.Providers {
     public interface IDataServicesProvider : ITransientDependency {
