@@ -9,7 +9,7 @@ using OrchardVNext.Environment.Configuration;
 namespace OrchardVNext.Data
 {
     public interface IDataContext {
-        DbContext Context { get; }
+        DataContext Context { get; }
     }
 
     public class DataContext : DbContext, IDataContext
@@ -23,15 +23,13 @@ namespace OrchardVNext.Data
             ShellSettings shellSettings, 
             DbContextOptions dbContextOptions,
             IAssemblyProvider assemblyProvider) : base(dbContextOptions) {
-
+            
             _shellSettings = shellSettings;
             _assemblyProvider = assemblyProvider;
             _instanceId = Guid.NewGuid();
-
-            Configuration.AutoDetectChangesEnabled = true;
         }
 
-        public DbContext Context {
+        public DataContext Context {
             get {
                 return this;
             }

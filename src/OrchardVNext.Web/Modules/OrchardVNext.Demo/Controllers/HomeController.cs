@@ -7,19 +7,23 @@ using OrchardVNext.Test1;
 namespace OrchardVNext.Demo.Controllers {
     public class HomeController : Controller {
         private readonly ITestDependency _testDependency;
-        private readonly IRepository<TestRecord> _testRepository;
+        private readonly IDataContextLocator _dataContextLocator;
 
         public HomeController(ITestDependency testDependency,
-            IRepository<TestRecord> testRepository) {
+            IDataContextLocator dataContextLocator) {
             _testDependency = testDependency;
-            _testRepository = testRepository;
+            _dataContextLocator = dataContextLocator;
         }
 
         public ActionResult Index() {
+            var context = _dataContextLocator.For(typeof (TestRecord));
+
             var testRecord = new TestRecord { TestLine = "foo"};
-            _testRepository.Create(testRecord);
+            context.Set<TestRecord>().Add(testRecord);
+            context.SaveChanges();
+
             // Always returning 0!?
-            var p = _testRepository.Table.Where(x => x.TestLine == "foo").ToList();
+            var p = context.Set<TestRecord>().Where(x => x.TestLine == "foo").ToList();
             Logger.Debug("Records returned {0}", p.Count());
             return View("Index", _testDependency.SayHi());
         }

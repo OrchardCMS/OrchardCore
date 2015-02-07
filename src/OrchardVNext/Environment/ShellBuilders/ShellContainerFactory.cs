@@ -38,9 +38,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
             
-            // Data
-            serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            
             serviceCollection.AddMvc();
 
             serviceCollection.Configure<RazorViewEngineOptions>(options => {
