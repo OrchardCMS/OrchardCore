@@ -45,8 +45,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
             });
 
             var p = _serviceProvider.GetService<IOrchardLibraryManager>();
-            //serviceCollection.AddScoped<IActionSelector, DefaultActionSelectorTest>();
-            //serviceCollection.AddTransient<INestedProvider<ActionDescriptorProviderContext>, ControllerActionDescriptorProviderTest>();
             serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
 
             foreach (var dependency in blueprint.Dependencies) {

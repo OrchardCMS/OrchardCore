@@ -37,6 +37,17 @@ namespace OrchardVNext {
             Console.Error.WriteLine(value, args);
             Console.Error.WriteLine(e.ToString());
         }
+        public static void TraceError(string message, params object[] args) {
+                Console.WriteLine("Error: " + message, args);
+        }
+
+        public static void TraceInformation(string message, params object[] args) {
+                Console.WriteLine("Information: " + message, args);
+        }
+
+        public static void TraceWarning(string message, params object[] args) {
+                Console.WriteLine("Warning: " + message, args);
+        }
 
         public static bool IsEnabled(OrchardVNext.Logging.LogLevel x) {
             return true;

@@ -83,8 +83,7 @@ namespace OrchardVNext.Environment
             var compliationContext = compiler.CompileProject(project,
                 target,
                 exports.MetadataReferences,
-                exports.SourceReferences,
-                Enumerable.Empty<IMetadataReference>().ToList());
+                exports.SourceReferences);
             
             var roslynProjectReference = new RoslynProjectReference(compliationContext);
 
