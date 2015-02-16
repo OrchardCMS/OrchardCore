@@ -80,12 +80,12 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var compilationSettings = project.GetCompilerOptions(target.TargetFramework, target.Configuration)
                                              .ToCompilationSettings(target.TargetFramework);
 
-            var sourceFiles = Enumerable.Empty<String>();
+            var sourceFiles = Enumerable.Empty<string>();
             if (isMainAspect) {
-                sourceFiles = project.SourceFiles;
+                sourceFiles = project.Files.SourceFiles;
             }
             else if (isPreprocessAspect) {
-                sourceFiles = project.PreprocessSourceFiles;
+                sourceFiles = project.Files.PreprocessSourceFiles;
             }
 
             var parseOptions = new CSharpParseOptions(languageVersion: compilationSettings.LanguageVersion,
@@ -118,7 +118,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
             var modules = new List<ICompileModule>();
 
-            if (isMainAspect && project.PreprocessSourceFiles.Any()) {
+            if (isMainAspect && project.Files.PreprocessSourceFiles.Any()) {
                 try {
                     modules = GetCompileModules(target).Modules;
                 }

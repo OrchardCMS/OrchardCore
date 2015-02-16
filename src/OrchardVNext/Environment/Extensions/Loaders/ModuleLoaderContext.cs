@@ -1,18 +1,12 @@
 ﻿using System;
 using Microsoft.Framework.Runtime;
+using NuGet;
 
 namespace OrchardVNext.Environment.Extensions.Loaders
 {
     public class ModuleLoaderContext {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ICache _cache;
-
-
         public ModuleLoaderContext(IServiceProvider serviceProvider,
-                                       string projectDirectory,
-                                       ICache cache) {
-            _serviceProvider = serviceProvider;
-            _cache = cache;
+                                       string projectDirectory) {
 
             ProjectDirectory = projectDirectory;
             RootDirectory = Microsoft.Framework.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
@@ -24,15 +18,15 @@ namespace OrchardVNext.Environment.Extensions.Loaders
             var referenceAssemblyDependencyResolver = new ReferenceAssemblyDependencyResolver(new FrameworkReferenceResolver());
 
             // Need to pass through package directory incase you download a package from the gallary, this needs to know about it
-            var NuGetDependencyProvider = new NuGetDependencyResolver(
-                NuGetDependencyResolver.ResolveRepositoryPath(RootDirectory), RootDirectory);
+            var nuGetDependencyProvider = new NuGetDependencyResolver(new PackageRepository(
+                NuGetDependencyResolver.ResolveRepositoryPath(RootDirectory)));
             var gacDependencyResolver = new GacDependencyResolver();
-            var ProjectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
+            var projectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
             var unresolvedDependencyProvider = new UnresolvedDependencyProvider();
             
             DependencyWalker = new DependencyWalker(new IDependencyProvider[] {
-                ProjectDepencyProvider,
-                NuGetDependencyProvider,
+                projectDepencyProvider,
+                nuGetDependencyProvider,
                 referenceAssemblyDependencyResolver,
                 gacDependencyResolver,
                 unresolvedDependencyProvider
@@ -40,18 +34,18 @@ namespace OrchardVNext.Environment.Extensions.Loaders
 
             LibraryExportProvider = new CompositeLibraryExportProvider(new ILibraryExportProvider[] {
                 new ModuleProjectLibraryExportProvider(
-                    ProjectResolver, _serviceProvider),
+                    ProjectResolver, serviceProvider),
                 referenceAssemblyDependencyResolver,
                 gacDependencyResolver,
-                NuGetDependencyProvider
+                nuGetDependencyProvider
             });
         }
-        public string RootDirectory { get; private set; }
+        public string RootDirectory { get; }
 
-        public string ProjectDirectory { get; private set; }
+        public string ProjectDirectory { get; }
 
         public DependencyWalker DependencyWalker { get; private set; }
         public ILibraryExportProvider LibraryExportProvider { get; private set; }
-        public IProjectResolver ProjectResolver { get; private set; }
+        public IProjectResolver ProjectResolver { get; }
     }
 }
