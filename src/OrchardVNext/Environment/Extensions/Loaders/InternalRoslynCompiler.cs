@@ -48,7 +48,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             IEnumerable<IMetadataReference> incomingReferences,
             IEnumerable<ISourceReference> incomingSourceReferences) {
             var path = project.ProjectDirectory;
-            var name = project.Name;
+            var name = project.Name.TrimStart('/');
 
             var isMainAspect = string.IsNullOrEmpty(target.Aspect);
             var isPreprocessAspect = string.Equals(target.Aspect, "preprocess", StringComparison.OrdinalIgnoreCase);
