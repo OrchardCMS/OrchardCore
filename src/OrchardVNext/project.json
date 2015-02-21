@@ -10,8 +10,9 @@
 		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4-*",
 		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*",
 		"EntityFramework.Core": "7.0.0-beta4-*",
-        "EntityFramework.SqlServer":  "7.0.0-beta4-*",
-        "EntityFramework.InMemory": "7.0.0-beta4-*" 
+        "EntityFramework.SqlServer": "7.0.0-beta4-*",
+        "EntityFramework.InMemory": "7.0.0-beta4-*",
+        "Remotion.Linq": "1.15.15"
 	},
 	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
 	"frameworks": {

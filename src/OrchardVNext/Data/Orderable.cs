@@ -24,7 +24,7 @@ namespace OrchardVNext.Data {
                                               Expression<Func<T, TKey2>> keySelector2) {
             _queryable = _queryable
                 .OrderBy(keySelector1)
-                .OrderBy(keySelector2);
+                .ThenBy(keySelector2);
             return this;
         }
 
@@ -33,8 +33,8 @@ namespace OrchardVNext.Data {
                                                      Expression<Func<T, TKey3>> keySelector3) {
             _queryable = _queryable
                 .OrderBy(keySelector1)
-                .OrderBy(keySelector2)
-                .OrderBy(keySelector3);
+                .ThenBy(keySelector2)
+                .ThenBy(keySelector3);
             return this;
         }
 
@@ -48,7 +48,7 @@ namespace OrchardVNext.Data {
                                                Expression<Func<T, TKey2>> keySelector2) {
             _queryable = _queryable
                 .OrderByDescending(keySelector1)
-                .OrderByDescending(keySelector2);
+                .ThenByDescending(keySelector2);
             return this;
         }
 
@@ -57,8 +57,8 @@ namespace OrchardVNext.Data {
                                                       Expression<Func<T, TKey3>> keySelector3) {
             _queryable = _queryable
                 .OrderByDescending(keySelector1)
-                .OrderByDescending(keySelector2)
-                .OrderByDescending(keySelector3);
+                .ThenByDescending(keySelector2)
+                .ThenByDescending(keySelector3);
             return this;
         }
     }

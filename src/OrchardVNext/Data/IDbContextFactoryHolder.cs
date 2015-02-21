@@ -1,20 +1,17 @@
 ﻿using Microsoft.Data.Entity;
 using OrchardVNext.Data.Providers;
 using OrchardVNext.Environment.Configuration;
-using System;
 using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Data {
-    public interface IDbContextFactoryHolder : ISingletonDependency {
-        DbContextOptions BuildConfiguration();
+    public interface IDbContextFactoryHolder : IDependency {
+        void Configure(DbContextOptions options);
     }
 
-    public class DbContextFactoryHolder : IDbContextFactoryHolder, IDisposable {
+    public class DbContextFactoryHolder : IDbContextFactoryHolder {
         private readonly ShellSettings _shellSettings;
         private readonly IDataServicesProviderFactory _dataServicesProviderFactory;
         private readonly IAppDataFolder _appDataFolder;
-
-        private DbContextOptions _dbContextOptions;
 
         public DbContextFactoryHolder(
             ShellSettings shellSettings,
@@ -25,27 +22,19 @@ namespace OrchardVNext.Data {
             _appDataFolder = appDataFolder;
         }
 
-        public DbContextOptions BuildConfiguration() {
-            lock (this) {
-                if (_dbContextOptions == null) {
-                    var shellPath = _appDataFolder.Combine("Sites", _shellSettings.Name);
-                    _appDataFolder.CreateDirectory(shellPath);
+        public void Configure(DbContextOptions options) {
+            var shellPath = _appDataFolder.Combine("Sites", _shellSettings.Name);
+            _appDataFolder.CreateDirectory(shellPath);
 
-                    var shellFolder = _appDataFolder.MapPath(shellPath);
+            var shellFolder = _appDataFolder.MapPath(shellPath);
 
-                    _dbContextOptions = _dataServicesProviderFactory.CreateProvider(
-                        new DataServiceParameters {
-                            Provider = _shellSettings.DataProvider,
-                            ConnectionString = _shellSettings.DataConnectionString,
-                            DataFolder = shellFolder
-                        })
-                .BuildContextOptions();
-                }
-            }
-            return _dbContextOptions;
-        }
-
-        public void Dispose() {
+            _dataServicesProviderFactory.CreateProvider(
+                new DataServiceParameters {
+                    Provider = _shellSettings.DataProvider,
+                    ConnectionString = _shellSettings.DataConnectionString,
+                    DataFolder = shellFolder
+                })
+            .ConfigureContextOptions(options);
         }
     }
 }

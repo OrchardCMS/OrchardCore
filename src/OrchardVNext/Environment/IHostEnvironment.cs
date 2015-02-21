@@ -2,7 +2,7 @@
     /// <summary>
     /// Abstraction of the running environment
     /// </summary>
-    public interface IHostEnvironment : ISingletonDependency {
+    public interface IHostEnvironment {
         string MapPath(string virtualPath);
     }
 }
