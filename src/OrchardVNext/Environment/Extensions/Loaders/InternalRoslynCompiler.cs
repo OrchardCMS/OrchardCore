@@ -48,7 +48,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             IEnumerable<IMetadataReference> incomingReferences,
             IEnumerable<ISourceReference> incomingSourceReferences) {
             var path = project.ProjectDirectory;
-            var name = project.Name.TrimStart('/');
+            var name = project.Name;
 
             var isMainAspect = string.IsNullOrEmpty(target.Aspect);
             var isPreprocessAspect = string.Equals(target.Aspect, "preprocess", StringComparison.OrdinalIgnoreCase);
@@ -80,7 +80,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var compilationSettings = project.GetCompilerOptions(target.TargetFramework, target.Configuration)
                                              .ToCompilationSettings(target.TargetFramework);
 
-            var sourceFiles = Enumerable.Empty<string>();
+            var sourceFiles = Enumerable.Empty<String>();
             if (isMainAspect) {
                 sourceFiles = project.Files.SourceFiles;
             }
@@ -112,15 +112,15 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
             compilation = ApplyVersionInfo(compilation, project, parseOptions);
 
-            var compilationContext = new CompilationContext(compilation,
-                incomingReferences.ToList(),
-                project);
-
-            var modules = new List<ICompileModule>();
+            var compilationContext = new CompilationContext(compilation, project, target.TargetFramework, target.Configuration);
 
             if (isMainAspect && project.Files.PreprocessSourceFiles.Any()) {
                 try {
-                    modules = GetCompileModules(target).Modules;
+                    var modules = GetCompileModules(target).Modules;
+
+                    foreach (var m in modules) {
+                        compilationContext.Modules.Add(m);
+                    }
                 }
                 catch (Exception ex) {
                     var compilationException = ex.InnerException as RoslynCompilationException;
@@ -139,9 +139,9 @@ namespace Microsoft.Framework.Runtime.Roslyn {
                 }
             }
 
-            if (modules.Count > 0) {
+            if (compilationContext.Modules.Count > 0) {
                 var precompSw = Stopwatch.StartNew();
-                foreach (var module in modules) {
+                foreach (var module in compilationContext.Modules) {
                     module.BeforeCompile(compilationContext);
                 }
 
@@ -238,7 +238,8 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var ctx = _cacheContextAccessor.Current;
 
             foreach (var d in dirs) {
-                ctx?.Monitor(new FileWriteTimeCacheDependency(d));
+                if (ctx != null)
+                    ctx.Monitor(new FileWriteTimeCacheDependency(d));
 
                 // TODO: Make the file watcher hand out cache dependencies as well
                 _watcher.WatchDirectory(d, ".cs");

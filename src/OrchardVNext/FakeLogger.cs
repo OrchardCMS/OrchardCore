@@ -55,13 +55,14 @@ namespace OrchardVNext {
     }
 
     public class TestLoggerFactory : ILoggerFactory {
-
         public ILogger Create(string name) {
             return new TestLogger(name, true);
         }
 
         public void AddProvider(ILoggerProvider provider) {
         }
+
+        public Microsoft.Framework.Logging.LogLevel MinimumLevel { get; set; }
     }
 
     public class TestLogger : ILogger {
