@@ -1,4 +1,4 @@
-﻿namespace Orchard.Mvc.Routes {
+﻿namespace OrchardVNext.Mvc.Routes {
     //public class DefaultRouteProvider : IRouteProvider {
     //    public IEnumerable<RouteDescriptor> GetRoutes() {
     //        return new[] {

@@ -3,7 +3,7 @@ using OrchardVNext.Data.Providers;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.FileSystems.AppData;
 
-namespace OrchardVNext.Data {
+namespace OrchardVNext.Data.EF {
     public interface IDbContextFactoryHolder : IDependency {
         void Configure(DbContextOptions options);
     }

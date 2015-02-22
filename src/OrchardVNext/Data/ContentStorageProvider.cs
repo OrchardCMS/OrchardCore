@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement;
 
-namespace OrchardVNext.Demo.Services {
+namespace OrchardVNext.Data {
     public class ContentStorageProvider : IContentStorageProvider {
         private readonly IContentStore _contentStore;
         private readonly IContentIndexProvider _contentIndexProvider;

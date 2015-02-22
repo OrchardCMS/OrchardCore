@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.ContentManagement {
@@ -18,12 +19,13 @@ namespace OrchardVNext.ContentManagement {
         public int Version { get { return VersionRecord?.Number ?? 0; } }
 
         public string ContentType { get; set; }
-
+        public ContentTypeDefinition TypeDefinition { get; set; }
         public ContentItemRecord Record { get { return VersionRecord?.ContentItemRecord; } }
         public ContentItemVersionRecord VersionRecord { get; set; }
-
-
+        
         public IEnumerable<ContentPart> Parts => _parts;
+
+        public IContentManager ContentManager { get; set; }
 
         public bool Has(Type partType) {
             return partType == typeof(ContentItem) || _parts.Any(partType.IsInstanceOfType);

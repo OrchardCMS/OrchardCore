@@ -15,9 +15,8 @@ namespace OrchardVNext.Environment
         private readonly IFileWatcher _fileWatcher;
         private readonly IOrchardLibraryManager _orchardLibraryManager;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
-        private readonly IVirtualPathProvider _virtualPathProvider;
-        private readonly string _path;
-
+        private readonly IVirtualPathProvider _virtualPathProvider;private readonly string _path;
+        
         public ExtensionAssemblyLoader(string path, IServiceProvider serviceProvider) {
             _path = path;
             _serviceProvider = serviceProvider;

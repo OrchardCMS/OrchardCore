@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement;
 
-namespace OrchardVNext.Demo.Services {
+namespace OrchardVNext.Data {
     public interface IContentStorageProvider : IDependency {
         void Store(ContentItem contentItem);
         IContent Get(int id);

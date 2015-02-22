@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
+using Microsoft.Data.Entity.ChangeTracking;
 using OrchardVNext.Environment.Configuration;
 
-namespace OrchardVNext.Data {
+namespace OrchardVNext.Data.EF {
     public interface IDataContext {
         DataContext Context { get; }
     }
@@ -53,6 +54,30 @@ namespace OrchardVNext.Data {
 
         protected override void OnConfiguring(DbContextOptions options) {
             _dbContextFactoryHolder.Configure(options);
+        }
+
+        public override EntityEntry<TEntity> Add<TEntity>([NotNull]TEntity entity) {
+            var entry = base.Add<TEntity>(entity);
+            SaveChanges();
+            return entry;
+        }
+
+        public override EntityEntry Add([NotNull]object entity) {
+            var entry = base.Add(entity);
+            SaveChanges();
+            return entry;
+        }
+
+        public override EntityEntry<TEntity> Remove<TEntity>([NotNull]TEntity entity) {
+            var entry = base.Remove<TEntity>(entity);
+            SaveChanges();
+            return entry;
+        }
+
+        public override EntityEntry Remove([NotNull]object entity) {
+            var entry = base.Remove(entity);
+            SaveChanges();
+            return entry;
         }
 
         //public override int SaveChanges() {

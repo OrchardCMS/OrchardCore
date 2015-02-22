@@ -12,6 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 	EndProjectSection
+	ProjectSection(FolderGlobals) = preProject
+		global_1json__JSONSchema = http://json.schemastore.org/global
+	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Framework", "src\OrchardVNext\OrchardVNext.Framework.kproj", "{60B5B61F-09C1-4F5C-8A5A-953574D0DCA2}"
 EndProject
@@ -31,6 +34,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C362E36F-3F0F-40B3-8BBF-2B0252E77A34}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Tests", "src\OrchardVNext.Tests\OrchardVNext.Tests.kproj", "{B8431B91-F908-416A-A82C-B29528FCA4E9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Core", "src\OrchardVNext.Web\Core\OrchardVNext.Core\OrchardVNext.Core.kproj", "{D2B2A745-17BA-4B5F-8992-93EA803BD068}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +67,10 @@ Global
 		{B8431B91-F908-416A-A82C-B29528FCA4E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8431B91-F908-416A-A82C-B29528FCA4E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8431B91-F908-416A-A82C-B29528FCA4E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B2A745-17BA-4B5F-8992-93EA803BD068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B2A745-17BA-4B5F-8992-93EA803BD068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B2A745-17BA-4B5F-8992-93EA803BD068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B2A745-17BA-4B5F-8992-93EA803BD068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -75,5 +84,6 @@ Global
 		{19089E81-CEFD-4008-A31C-541D82F58C54} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{C362E36F-3F0F-40B3-8BBF-2B0252E77A34} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{B8431B91-F908-416A-A82C-B29528FCA4E9} = {C362E36F-3F0F-40B3-8BBF-2B0252E77A34}
+		{D2B2A745-17BA-4B5F-8992-93EA803BD068} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 EndGlobal

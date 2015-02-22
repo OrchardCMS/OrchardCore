@@ -6,7 +6,7 @@ namespace OrchardVNext.Environment.Extensions.Folders {
         private readonly IExtensionHarvester _extensionHarvester;
 
         public CoreModuleFolders(IExtensionHarvester extensionHarvester) {
-            SearchPaths = new[] { "~/Core" };
+            SearchPaths = new[] { "~/Core/OrchardVNext.Core" };
             _extensionHarvester = extensionHarvester;
         }
 

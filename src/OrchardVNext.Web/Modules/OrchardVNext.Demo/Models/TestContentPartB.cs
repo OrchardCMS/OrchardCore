@@ -2,6 +2,9 @@
 
 namespace OrchardVNext.Demo.Models {
     public class TestContentPartB : ContentPart {
-        public string LineB { get; set; }
+        public int Line {
+            get { return this.Retrieve(x => x.Line); }
+            set { this.Store(x => x.Line, value); }
+        }
     }
 }

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OrchardVNext.Data.EF;
 
 namespace OrchardVNext.Environment.ShellBuilders {
     public interface IShellContainerFactory {

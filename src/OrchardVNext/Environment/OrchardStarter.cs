@@ -47,10 +47,11 @@ namespace OrchardVNext.Environment {
                             services.AddSingleton<IExtensionManager, ExtensionManager>();
                             {
                                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
-                                services.AddSingleton<IExtensionFolders, ModuleFolders>();
                                 services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
+                                services.AddSingleton<IExtensionFolders, ModuleFolders>();
 
-                                services.AddSingleton<IExtensionLoader, DefaultExtensionLoader>();
+                                services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
+                                services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                             }
                         }
 

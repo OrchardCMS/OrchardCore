@@ -16,10 +16,7 @@
 	},
 	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
 	"frameworks": {
-		"aspnet50": {
-			"dependencies": {
-			}
-		},
+        "aspnet50": { },
 		"aspnetcore50": {
 			"dependencies": {
 				"System.Runtime": "4.0.20-beta-*",

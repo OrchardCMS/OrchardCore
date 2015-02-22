@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using OrchardVNext.ContentManagement;
 using OrchardVNext.ContentManagement.Records;
-using OrchardVNext.Data;
 
-namespace OrchardVNext.Demo.Services {
+namespace OrchardVNext.Data.EF {
     public class EFContentStore : IContentStore {
         private readonly DataContext _dataContext;
         public EFContentStore(DataContext dataContext) {
@@ -14,13 +13,12 @@ namespace OrchardVNext.Demo.Services {
         public void Store(ContentItem contentItem) {
             _dataContext.Add(contentItem.Record);
             _dataContext.Add(contentItem.VersionRecord);
-            _dataContext.SaveChanges();
         }
 
         public ContentItem Get(int id) {
             var record = _dataContext.Set<ContentItemVersionRecord>().FirstOrDefault(x => x.Id == id);
 
-            return new ContentItem {VersionRecord = record};
+            return new ContentItem { VersionRecord = record };
         }
 
         public IEnumerable<ContentItem> GetMany(IEnumerable<int> ids) {

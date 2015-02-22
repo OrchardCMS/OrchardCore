@@ -1,0 +1,12 @@
+﻿{
+    "version": "2.0.0-*",
+    "dependencies": {
+        "Microsoft.AspNet.Mvc": "6.0.0-beta4-*",
+        "OrchardVNext": ""
+    },
+	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
+    "frameworks": {
+        "aspnet50": { },
+        "aspnetcore50": { }
+    }
+}
