@@ -1,5 +1,4 @@
 using OrchardVNext.ContentManagement.Records;
-using OrchardVNext.Logging;
 
 namespace OrchardVNext.ContentManagement.Handlers {
     public class ContentContextBase {

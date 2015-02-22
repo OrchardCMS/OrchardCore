@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.Mvc;
 using OrchardVNext.ContentManagement;
+using OrchardVNext.ContentManagement.Handlers;
 using OrchardVNext.Data;
+using OrchardVNext.Demo.Models;
 using OrchardVNext.Test1;
 
 namespace OrchardVNext.Demo.Controllers {
@@ -46,13 +48,19 @@ namespace OrchardVNext.Demo.Controllers {
 
 
             var contentItem = _contentManager.New("Foo");
-
+            contentItem.As<TestContentPartA>().Line = "Nick Rocks";
             _contentManager.Create(contentItem);
 
 
 
 
             return View("Index", _testDependency.SayHi());
+        }
+    }
+
+    public class TestContentPartAHandler : ContentHandlerBase {
+        public override void Activating(ActivatingContentContext context) {
+            context.Builder.Weld<TestContentPartA>();
         }
     }
 }

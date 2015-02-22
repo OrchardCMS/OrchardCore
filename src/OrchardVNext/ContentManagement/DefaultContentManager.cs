@@ -84,123 +84,122 @@ namespace OrchardVNext.ContentManagement {
             return context3.ContentItem;
         }
 
-        //    public virtual ContentItem Get(int id) {
-        //        return Get(id, VersionOptions.Published);
-        //    }
+        public virtual ContentItem Get(int id) {
+            return Get(id, VersionOptions.Published);
+        }
 
-        //    public virtual ContentItem Get(int id, VersionOptions options) {
-        //        var session = _contentManagerSession();
-        //        ContentItem contentItem;
+        public virtual ContentItem Get(int id, VersionOptions options) {
+            ContentItem contentItem = null;
 
-        //        ContentItemVersionRecord versionRecord = null;
+            //ContentItemVersionRecord versionRecord = null;
 
-        //        // obtain the root records based on version options
-        //        if (options.VersionRecordId != 0) {
-        //            // short-circuit if item held in session
-        //            if (session.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
-        //                return contentItem;
-        //            }
+            //        // obtain the root records based on version options
+            //        if (options.VersionRecordId != 0) {
+            //            // short-circuit if item held in session
+            //            if (session.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
+            //                return contentItem;
+            //            }
 
-        //            versionRecord = _contentItemVersionRepository.Get(options.VersionRecordId);
-        //        }
-        //        else if (options.VersionNumber != 0) {
-        //            // short-circuit if item held in session
-        //            if (session.RecallVersionNumber(id, options.VersionRecordId, out contentItem)) {
-        //                return contentItem;
-        //            }
+            //            versionRecord = _contentItemVersionRepository.Get(options.VersionRecordId);
+            //        }
+            //        else if (options.VersionNumber != 0) {
+            //            // short-circuit if item held in session
+            //            if (session.RecallVersionNumber(id, options.VersionRecordId, out contentItem)) {
+            //                return contentItem;
+            //            }
 
-        //            versionRecord = _contentItemVersionRepository.Get(x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
-        //        }
-        //        else if (session.RecallContentRecordId(id, out contentItem)) {
-        //            // try to reload a previously loaded published content item
+            //            versionRecord = _contentItemVersionRepository.Get(x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
+            //        }
+            //        else if (session.RecallContentRecordId(id, out contentItem)) {
+            //            // try to reload a previously loaded published content item
 
-        //            if (options.IsPublished) {
-        //                return contentItem;
-        //            }
+            //            if (options.IsPublished) {
+            //                return contentItem;
+            //            }
 
-        //            versionRecord = contentItem.VersionRecord;
-        //        }
-        //        else {
-        //            // do a query to load the records in case Get is called directly
-        //            var contentItemVersionRecords = GetManyImplementation(hints,
-        //                (contentItemCriteria, contentItemVersionCriteria) => {
-        //                    contentItemCriteria.Add(Restrictions.Eq("Id", id));
-        //                    if (options.IsPublished) {
-        //                        contentItemVersionCriteria.Add(Restrictions.Eq("Published", true));
-        //                    }
-        //                    else if (options.IsLatest) {
-        //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
-        //                    }
-        //                    else if (options.IsDraft && !options.IsDraftRequired) {
-        //                        contentItemVersionCriteria.Add(
-        //                            Restrictions.And(Restrictions.Eq("Published", false),
-        //                                            Restrictions.Eq("Latest", true)));
-        //                    }
-        //                    else if (options.IsDraft || options.IsDraftRequired) {
-        //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
-        //                    }
+            //            versionRecord = contentItem.VersionRecord;
+            //        }
+            //        else {
+            //            // do a query to load the records in case Get is called directly
+            //            var contentItemVersionRecords = GetManyImplementation(hints,
+            //                (contentItemCriteria, contentItemVersionCriteria) => {
+            //                    contentItemCriteria.Add(Restrictions.Eq("Id", id));
+            //                    if (options.IsPublished) {
+            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Published", true));
+            //                    }
+            //                    else if (options.IsLatest) {
+            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
+            //                    }
+            //                    else if (options.IsDraft && !options.IsDraftRequired) {
+            //                        contentItemVersionCriteria.Add(
+            //                            Restrictions.And(Restrictions.Eq("Published", false),
+            //                                            Restrictions.Eq("Latest", true)));
+            //                    }
+            //                    else if (options.IsDraft || options.IsDraftRequired) {
+            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
+            //                    }
 
-        //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord", FetchMode.Eager);
-        //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord.ContentType", FetchMode.Eager);
-        //                    //contentItemVersionCriteria.SetMaxResults(1);
-        //                });
+            //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord", FetchMode.Eager);
+            //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord.ContentType", FetchMode.Eager);
+            //                    //contentItemVersionCriteria.SetMaxResults(1);
+            //                });
 
 
-        //            if (options.VersionNumber != 0) {
-        //                versionRecord = contentItemVersionRecords.FirstOrDefault(
-        //                    x => x.Number == options.VersionNumber) ??
-        //                       _contentItemVersionRepository.Get(
-        //                           x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
-        //            }
-        //            else {
-        //                versionRecord = contentItemVersionRecords.LastOrDefault();
-        //            }
-        //        }
+            //            if (options.VersionNumber != 0) {
+            //                versionRecord = contentItemVersionRecords.FirstOrDefault(
+            //                    x => x.Number == options.VersionNumber) ??
+            //                       _contentItemVersionRepository.Get(
+            //                           x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
+            //            }
+            //            else {
+            //                versionRecord = contentItemVersionRecords.LastOrDefault();
+            //            }
+            //        }
 
-        //        // no record means content item is not in db
-        //        if (versionRecord == null) {
-        //            // check in memory
-        //            var record = _contentItemRepository.Get(id);
-        //            if (record == null) {
-        //                return null;
-        //            }
+            //        // no record means content item is not in db
+            //        if (versionRecord == null) {
+            //            // check in memory
+            //            var record = _contentItemRepository.Get(id);
+            //            if (record == null) {
+            //                return null;
+            //            }
 
-        //            versionRecord = GetVersionRecord(options, record);
+            //            versionRecord = GetVersionRecord(options, record);
 
-        //            if (versionRecord == null) {
-        //                return null;
-        //            }
-        //        }
+            //            if (versionRecord == null) {
+            //                return null;
+            //            }
+            //        }
 
-        //        // return item if obtained earlier in session
-        //        if (session.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
-        //            if (options.IsDraftRequired && versionRecord.Published) {
-        //                return BuildNewVersion(contentItem);
-        //            }
-        //            return contentItem;
-        //        }
+            //        // return item if obtained earlier in session
+            //        if (session.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
+            //            if (options.IsDraftRequired && versionRecord.Published) {
+            //                return BuildNewVersion(contentItem);
+            //            }
+            //            return contentItem;
+            //        }
 
-        //        // allocate instance and set record property
-        //        contentItem = New(versionRecord.ContentItemRecord.ContentType.Name);
-        //        contentItem.VersionRecord = versionRecord;
+            //        // allocate instance and set record property
+            //        contentItem = New(versionRecord.ContentItemRecord.ContentType.Name);
+            //        contentItem.VersionRecord = versionRecord;
 
-        //        // store in session prior to loading to avoid some problems with simple circular dependencies
-        //        session.Store(contentItem);
+            //        // store in session prior to loading to avoid some problems with simple circular dependencies
+            //        session.Store(contentItem);
 
-        //        // create a context with a new instance to load            
-        //        var context = new LoadContentContext(contentItem);
+            //        // create a context with a new instance to load            
+            //        var context = new LoadContentContext(contentItem);
 
-        //        // invoke handlers to acquire state, or at least establish lazy loading callbacks
-        //        Handlers.Invoke(handler => handler.Loading(context), Logger);
-        //        Handlers.Invoke(handler => handler.Loaded(context), Logger);
+            //        // invoke handlers to acquire state, or at least establish lazy loading callbacks
+            //        Handlers.Invoke(handler => handler.Loading(context), Logger);
+            //        Handlers.Invoke(handler => handler.Loaded(context), Logger);
 
-        //        // when draft is required and latest is published a new version is appended 
-        //        if (options.IsDraftRequired && versionRecord.Published) {
-        //            contentItem = BuildNewVersion(context.ContentItem);
-        //        }
+            //        // when draft is required and latest is published a new version is appended 
+            //        if (options.IsDraftRequired && versionRecord.Published) {
+            //            contentItem = BuildNewVersion(context.ContentItem);
+            //        }
 
-        //        return contentItem;
-        //    }
+            return contentItem;
+        }
 
         //    private ContentItemVersionRecord GetVersionRecord(VersionOptions options, ContentItemRecord itemRecord) {
         //        if (options.IsPublished) {

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.ServiceLookup;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
@@ -16,7 +15,6 @@ using OrchardVNext.FileSystems.AppData;
 using OrchardVNext.FileSystems.VirtualPath;
 using OrchardVNext.FileSystems.WebSite;
 using OrchardVNext.Routing;
-using System.Reflection;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
