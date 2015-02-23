@@ -47,18 +47,18 @@ namespace OrchardVNext.ContentManagement {
         ///// <returns>Returns the latest version of the content item, which is based on the specified version.</returns>
         //ContentItem Restore(ContentItem contentItem, VersionOptions options);
 
-        ///// <summary>
-        ///// Gets the content item with the specified id
-        ///// </summary>
-        ///// <param name="id">Numeric id of the content item</param>
-        //ContentItem Get(int id);
+        /// <summary>
+        /// Gets the content item with the specified id
+        /// </summary>
+        /// <param name="id">Numeric id of the content item</param>
+        ContentItem Get(int id);
 
-        ///// <summary>
-        ///// Gets the content item with the specified id and version
-        ///// </summary>
-        ///// <param name="id">Numeric id of the content item</param>
-        ///// <param name="options">The version option</param>
-        //ContentItem Get(int id, VersionOptions options);
+        /// <summary>
+        /// Gets the content item with the specified id and version
+        /// </summary>
+        /// <param name="id">Numeric id of the content item</param>
+        /// <param name="options">The version option</param>
+        ContentItem Get(int id, VersionOptions options);
 
         ///// <summary>
         ///// Gets all versions of the content item specified with its id
@@ -71,7 +71,7 @@ namespace OrchardVNext.ContentManagement {
         //IEnumerable<ContentItem> GetManyByVersionId(IEnumerable<int> versionRecordIds);
 
         void Publish(ContentItem contentItem);
-        //void Unpublish(ContentItem contentItem);
+        void Unpublish(ContentItem contentItem);
         //void Remove(ContentItem contentItem);
 
         ///// <summary>

@@ -19,6 +19,7 @@ using OrchardVNext.Logging;
 namespace OrchardVNext.ContentManagement {
     public class DefaultContentManager : IContentManager {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManagerSession _contentManagerSession;
         private readonly IEnumerable<IContentHandler> _handlers;
         private readonly IContentStore _contentStore;
         private readonly DataContext _dataContext;
@@ -29,17 +30,19 @@ namespace OrchardVNext.ContentManagement {
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
+            IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             IContentStore contentStore,
             DataContext dataContext,
             ShellSettings shellSettings) {
             _contentDefinitionManager = contentDefinitionManager;
+            _contentManagerSession = contentManagerSession;
             _shellSettings = shellSettings;
             _handlers = handlers;
             _contentStore = contentStore;
             _dataContext = dataContext;
-            }
-        
+        }
+
         public IEnumerable<IContentHandler> Handlers => _handlers;
 
         public IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions() {
@@ -89,36 +92,36 @@ namespace OrchardVNext.ContentManagement {
         }
 
         public virtual ContentItem Get(int id, VersionOptions options) {
-            ContentItem contentItem = null;
+            ContentItem contentItem;
 
-            //ContentItemVersionRecord versionRecord = null;
+            ContentItemVersionRecord versionRecord = null;
 
-            //        // obtain the root records based on version options
-            //        if (options.VersionRecordId != 0) {
-            //            // short-circuit if item held in session
-            //            if (session.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
-            //                return contentItem;
-            //            }
+            // obtain the root records based on version options
+            if (options.VersionRecordId != 0) {
+                // short-circuit if item held in session
+                if (_contentManagerSession.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
+                    return contentItem;
+                }
 
-            //            versionRecord = _contentItemVersionRepository.Get(options.VersionRecordId);
-            //        }
-            //        else if (options.VersionNumber != 0) {
-            //            // short-circuit if item held in session
-            //            if (session.RecallVersionNumber(id, options.VersionRecordId, out contentItem)) {
-            //                return contentItem;
-            //            }
+                versionRecord = _contentStore.Get(id, options).VersionRecord;
+            }
+            else if (options.VersionNumber != 0) {
+                // short-circuit if item held in session
+                if (_contentManagerSession.RecallVersionNumber(id, options.VersionNumber, out contentItem)) {
+                    return contentItem;
+                }
 
-            //            versionRecord = _contentItemVersionRepository.Get(x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
-            //        }
-            //        else if (session.RecallContentRecordId(id, out contentItem)) {
-            //            // try to reload a previously loaded published content item
+                versionRecord = _contentStore.Get(id, options).VersionRecord;
+            }
+            else if (_contentManagerSession.RecallContentRecordId(id, out contentItem)) {
+                // try to reload a previously loaded published content item
 
-            //            if (options.IsPublished) {
-            //                return contentItem;
-            //            }
+                if (options.IsPublished) {
+                    return contentItem;
+                }
 
-            //            versionRecord = contentItem.VersionRecord;
-            //        }
+                versionRecord = contentItem.VersionRecord;
+            }
             //        else {
             //            // do a query to load the records in case Get is called directly
             //            var contentItemVersionRecords = GetManyImplementation(hints,
@@ -156,79 +159,47 @@ namespace OrchardVNext.ContentManagement {
             //            }
             //        }
 
-            //        // no record means content item is not in db
-            //        if (versionRecord == null) {
-            //            // check in memory
-            //            var record = _contentItemRepository.Get(id);
-            //            if (record == null) {
-            //                return null;
-            //            }
+            // no record means content item is not in db
+            if (versionRecord == null) {
+                // check in memory
+                var record = _contentStore.Get(id, options).VersionRecord;
+                if (record == null) {
+                    return null;
+                }
 
-            //            versionRecord = GetVersionRecord(options, record);
+                versionRecord = record;
+            }
 
-            //            if (versionRecord == null) {
-            //                return null;
-            //            }
-            //        }
+            // return item if obtained earlier in session
+            if (_contentManagerSession.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
+                if (options.IsDraftRequired && versionRecord.Published) {
+                    return BuildNewVersion(contentItem);
+                }
+                return contentItem;
+            }
 
-            //        // return item if obtained earlier in session
-            //        if (session.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
-            //            if (options.IsDraftRequired && versionRecord.Published) {
-            //                return BuildNewVersion(contentItem);
-            //            }
-            //            return contentItem;
-            //        }
+            // allocate instance and set record property
+            contentItem = New(versionRecord.ContentItemRecord.ContentType.Name);
+            contentItem.VersionRecord = versionRecord;
 
-            //        // allocate instance and set record property
-            //        contentItem = New(versionRecord.ContentItemRecord.ContentType.Name);
-            //        contentItem.VersionRecord = versionRecord;
+            // store in session prior to loading to avoid some problems with simple circular dependencies
+            _contentManagerSession.Store(contentItem);
 
-            //        // store in session prior to loading to avoid some problems with simple circular dependencies
-            //        session.Store(contentItem);
+            // create a context with a new instance to load            
+            var context = new LoadContentContext(contentItem);
 
-            //        // create a context with a new instance to load            
-            //        var context = new LoadContentContext(contentItem);
+            // invoke handlers to acquire state, or at least establish lazy loading callbacks
+            Handlers.Invoke(handler => handler.Loading(context));
+            Handlers.Invoke(handler => handler.Loaded(context));
 
-            //        // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            //        Handlers.Invoke(handler => handler.Loading(context), Logger);
-            //        Handlers.Invoke(handler => handler.Loaded(context), Logger);
-
-            //        // when draft is required and latest is published a new version is appended 
-            //        if (options.IsDraftRequired && versionRecord.Published) {
-            //            contentItem = BuildNewVersion(context.ContentItem);
-            //        }
+            // when draft is required and latest is published a new version is appended 
+            if (options.IsDraftRequired && versionRecord.Published) {
+                contentItem = BuildNewVersion(context.ContentItem);
+            }
 
             return contentItem;
         }
-
-        //    private ContentItemVersionRecord GetVersionRecord(VersionOptions options, ContentItemRecord itemRecord) {
-        //        if (options.IsPublished) {
-        //            return itemRecord.Versions.FirstOrDefault(
-        //                x => x.Published) ??
-        //                   _contentItemVersionRepository.Get(
-        //                       x => x.ContentItemRecord == itemRecord && x.Published);
-        //        }
-        //        if (options.IsLatest || options.IsDraftRequired) {
-        //            return itemRecord.Versions.FirstOrDefault(
-        //                x => x.Latest) ??
-        //                   _contentItemVersionRepository.Get(
-        //                       x => x.ContentItemRecord == itemRecord && x.Latest);
-        //        }
-        //        if (options.IsDraft) {
-        //            return itemRecord.Versions.FirstOrDefault(
-        //                x => x.Latest && !x.Published) ??
-        //                   _contentItemVersionRepository.Get(
-        //                       x => x.ContentItemRecord == itemRecord && x.Latest && !x.Published);
-        //        }
-        //        if (options.VersionNumber != 0) {
-        //            return itemRecord.Versions.FirstOrDefault(
-        //                x => x.Number == options.VersionNumber) ??
-        //                   _contentItemVersionRepository.Get(
-        //                       x => x.ContentItemRecord == itemRecord && x.Number == options.VersionNumber);
-        //        }
-        //        return null;
-        //    }
-
+        
         //    public virtual IEnumerable<ContentItem> GetAllVersions(int id) {
         //        return _contentItemVersionRepository
         //            .Fetch(x => x.ContentItemRecord.Id == id)
@@ -350,35 +321,35 @@ namespace OrchardVNext.ContentManagement {
             Handlers.Invoke(handler => handler.Published(context));
         }
 
-        //public virtual void Unpublish(ContentItem contentItem) {
-        //    ContentItem publishedItem;
-        //    if (contentItem.VersionRecord.Published) {
-        //        // the version passed in is the published one
-        //        publishedItem = contentItem;
-        //    }
-        //    else {
-        //        // try to locate the published version of this item
-        //        publishedItem = Get(contentItem.Id, VersionOptions.Published);
-        //    }
+        public virtual void Unpublish(ContentItem contentItem) {
+            ContentItem publishedItem;
+            if (contentItem.VersionRecord.Published) {
+                // the version passed in is the published one
+                publishedItem = contentItem;
+            }
+            else {
+                // try to locate the published version of this item
+                publishedItem = Get(contentItem.Id, VersionOptions.Published);
+            }
 
-        //    if (publishedItem == null) {
-        //        // no published version exists. no work to perform.
-        //        return;
-        //    }
+            if (publishedItem == null) {
+                // no published version exists. no work to perform.
+                return;
+            }
 
-        //    // create a context for the item. the publishing version is null in this case
-        //    // and the previous version is the one active prior to unpublishing. handlers
-        //    // should take this null check into account
-        //    var context = new PublishContentContext(contentItem, publishedItem.VersionRecord) {
-        //        PublishingItemVersionRecord = null
-        //    };
+            // create a context for the item. the publishing version is null in this case
+            // and the previous version is the one active prior to unpublishing. handlers
+            // should take this null check into account
+            var context = new PublishContentContext(contentItem, publishedItem.VersionRecord) {
+                PublishingItemVersionRecord = null
+            };
 
-        //    Handlers.Invoke(handler => handler.Unpublishing(context));
+            Handlers.Invoke(handler => handler.Unpublishing(context));
 
-        //    publishedItem.VersionRecord.Published = false;
+            publishedItem.VersionRecord.Published = false;
 
-        //    Handlers.Invoke(handler => handler.Unpublished(context));
-        //}
+            Handlers.Invoke(handler => handler.Unpublished(context));
+        }
 
         //    public virtual void Remove(ContentItem contentItem) {
         //        var activeVersions = _contentItemVersionRepository.Fetch(x => x.ContentItemRecord == contentItem.Record && (x.Published || x.Latest));
@@ -420,49 +391,49 @@ namespace OrchardVNext.ContentManagement {
         //        Handlers.Invoke(handler => handler.Destroyed(context), Logger);
         //    }
 
-        //    protected virtual ContentItem BuildNewVersion(ContentItem existingContentItem) {
-        //        var contentItemRecord = existingContentItem.Record;
+        protected virtual ContentItem BuildNewVersion(ContentItem existingContentItem) {
+            var contentItemRecord = existingContentItem.Record;
 
-        //        // locate the existing and the current latest versions, allocate building version
-        //        var existingItemVersionRecord = existingContentItem.VersionRecord;
-        //        var buildingItemVersionRecord = new ContentItemVersionRecord {
-        //            ContentItemRecord = contentItemRecord,
-        //            Latest = true,
-        //            Published = false,
-        //            Data = existingItemVersionRecord.Data,
-        //        };
+            // locate the existing and the current latest versions, allocate building version
+            var existingItemVersionRecord = existingContentItem.VersionRecord;
+            var buildingItemVersionRecord = new ContentItemVersionRecord {
+                ContentItemRecord = contentItemRecord,
+                Latest = true,
+                Published = false,
+                Data = existingItemVersionRecord.Data,
+            };
 
 
-        //        var latestVersion = contentItemRecord.Versions.SingleOrDefault(x => x.Latest);
+            var latestVersion = contentItemRecord.Versions.SingleOrDefault(x => x.Latest);
 
-        //        if (latestVersion != null) {
-        //            latestVersion.Latest = false;
-        //            buildingItemVersionRecord.Number = latestVersion.Number + 1;
-        //        }
-        //        else {
-        //            buildingItemVersionRecord.Number = contentItemRecord.Versions.Max(x => x.Number) + 1;
-        //        }
+            if (latestVersion != null) {
+                latestVersion.Latest = false;
+                buildingItemVersionRecord.Number = latestVersion.Number + 1;
+            }
+            else {
+                buildingItemVersionRecord.Number = contentItemRecord.Versions.Max(x => x.Number) + 1;
+            }
 
-        //        contentItemRecord.Versions.Add(buildingItemVersionRecord);
-        //        _contentItemVersionRepository.Create(buildingItemVersionRecord);
+            contentItemRecord.Versions.Add(buildingItemVersionRecord);
+            //_contentItemVersionRepository.Create(buildingItemVersionRecord);
 
-        //        var buildingContentItem = New(existingContentItem.ContentType);
-        //        buildingContentItem.VersionRecord = buildingItemVersionRecord;
+            var buildingContentItem = New(existingContentItem.ContentType);
+            buildingContentItem.VersionRecord = buildingItemVersionRecord;
 
-        //        var context = new VersionContentContext {
-        //            Id = existingContentItem.Id,
-        //            ContentType = existingContentItem.ContentType,
-        //            ContentItemRecord = contentItemRecord,
-        //            ExistingContentItem = existingContentItem,
-        //            BuildingContentItem = buildingContentItem,
-        //            ExistingItemVersionRecord = existingItemVersionRecord,
-        //            BuildingItemVersionRecord = buildingItemVersionRecord,
-        //        };
-        //        Handlers.Invoke(handler => handler.Versioning(context), Logger);
-        //        Handlers.Invoke(handler => handler.Versioned(context), Logger);
+            var context = new VersionContentContext {
+                Id = existingContentItem.Id,
+                ContentType = existingContentItem.ContentType,
+                ContentItemRecord = contentItemRecord,
+                ExistingContentItem = existingContentItem,
+                BuildingContentItem = buildingContentItem,
+                ExistingItemVersionRecord = existingItemVersionRecord,
+                BuildingItemVersionRecord = buildingItemVersionRecord,
+            };
+            Handlers.Invoke(handler => handler.Versioning(context));
+            Handlers.Invoke(handler => handler.Versioned(context));
 
-        //        return context.BuildingContentItem;
-        //    }
+            return context.BuildingContentItem;
+        }
 
         public virtual void Create(ContentItem contentItem) {
             Create(contentItem, VersionOptions.Published);

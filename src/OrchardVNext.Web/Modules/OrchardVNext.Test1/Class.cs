@@ -3,7 +3,7 @@ using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Test1 {
     public interface ITestDependency : IDependency {
-        string SayHi();
+        string SayHi(string line);
     }
 
     public class Class : ITestDependency {
@@ -12,8 +12,8 @@ namespace OrchardVNext.Test1 {
             _shellSettings = shellSettings;
         }
 
-        public string SayHi() {
-            return string.Format("Hi from tenant {0}", _shellSettings.Name);
+        public string SayHi(string line) {
+            return string.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
         }
     }
 }

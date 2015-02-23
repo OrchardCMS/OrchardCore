@@ -51,10 +51,10 @@ namespace OrchardVNext.Demo.Controllers {
             contentItem.As<TestContentPartA>().Line = "Nick Rocks";
             _contentManager.Create(contentItem);
 
+            var retrieveContentItem = _contentManager.Get(contentItem.Id);
+            var lineToSay = retrieveContentItem.As<TestContentPartA>().Line;
 
-
-
-            return View("Index", _testDependency.SayHi());
+            return View("Index", _testDependency.SayHi(lineToSay));
         }
     }
 

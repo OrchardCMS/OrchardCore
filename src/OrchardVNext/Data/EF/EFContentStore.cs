@@ -16,16 +16,37 @@ namespace OrchardVNext.Data.EF {
         }
 
         public ContentItem Get(int id) {
-            var record = _dataContext.Set<ContentItemVersionRecord>().FirstOrDefault(x => x.Id == id);
+            return Get(id, VersionOptions.Published);
+        }
 
-            return new ContentItem { VersionRecord = record };
+        public ContentItem Get(int id, VersionOptions options) {
+            var record = _dataContext.Set<ContentItemRecord>().FirstOrDefault(x => x.Id == id);
+
+            return new ContentItem { VersionRecord = GetVersionRecord(options, record) };
         }
 
         public IEnumerable<ContentItem> GetMany(IEnumerable<int> ids) {
-            return _dataContext.Set<ContentItemVersionRecord>().Where(x => ids.Contains(x.Id)).Select(x => new ContentItem
-            {
+            return _dataContext.Set<ContentItemVersionRecord>().Where(x => ids.Contains(x.Id)).Select(x => new ContentItem {
                 VersionRecord = x
             });
+        }
+
+        private ContentItemVersionRecord GetVersionRecord(VersionOptions options, ContentItemRecord itemRecord) {
+            if (options.IsPublished) {
+                return itemRecord.Versions.FirstOrDefault(x => x.Published);
+            }
+            if (options.IsLatest || options.IsDraftRequired) {
+                return itemRecord.Versions.FirstOrDefault(x => x.Latest);
+            }
+            if (options.IsDraft) {
+                return itemRecord.Versions.FirstOrDefault(
+                    x => x.Latest && !x.Published);
+            }
+            if (options.VersionNumber != 0) {
+                return itemRecord.Versions.FirstOrDefault(
+                    x => x.Number == options.VersionNumber);
+            }
+            return null;
         }
     }
 }
