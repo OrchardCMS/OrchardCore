@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.Runtime.DependencyManagement;
 using NuGet;
 
 namespace OrchardVNext.Environment.Extensions.Loaders
@@ -23,7 +25,14 @@ namespace OrchardVNext.Environment.Extensions.Loaders
             var gacDependencyResolver = new GacDependencyResolver();
             var projectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
             var unresolvedDependencyProvider = new UnresolvedDependencyProvider();
-            
+
+            var projectLockJsonPath = Path.Combine(ProjectDirectory, LockFileFormat.LockFileName);
+            if (File.Exists(projectLockJsonPath)) {
+                var lockFileFormat = new LockFileFormat();
+                var lockFile = lockFileFormat.Read(projectLockJsonPath);
+                nuGetDependencyProvider.ApplyLockFile(lockFile);
+            }
+
             DependencyWalker = new DependencyWalker(new IDependencyProvider[] {
                 projectDepencyProvider,
                 nuGetDependencyProvider,
