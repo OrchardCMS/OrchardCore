@@ -6,7 +6,7 @@ using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Environment.Configuration.Sources
 {
-    public class DefaultFileConfigurationSource : BaseConfigurationSource, ICommitableConfigurationSource {
+    public class DefaultFileConfigurationSource : ConfigurationSource {
         private readonly IAppDataFolder _appDataFolder;
 
         public const char Separator = ':';
@@ -28,10 +28,6 @@ namespace OrchardVNext.Environment.Configuration.Sources
             using (var stream = _appDataFolder.OpenFile(Path)) {
                 Load(stream);
             }
-        }
-
-        public void Commit() {
-            throw new NotImplementedException();
         }
 
         internal void Load(Stream stream) {
@@ -66,7 +62,7 @@ namespace OrchardVNext.Environment.Configuration.Sources
                 }
             }
 
-            ReplaceData(data);
+            Data = data;
         }
     }
 }
