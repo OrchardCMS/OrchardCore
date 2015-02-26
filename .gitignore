@@ -47,6 +47,7 @@ app.publish/
 *.pidb
 *.log
 *.scc
+project.lock.json
 
 # Visual C++ cache files
 ipch/
