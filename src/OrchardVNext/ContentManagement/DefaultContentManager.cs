@@ -122,42 +122,42 @@ namespace OrchardVNext.ContentManagement {
 
                 versionRecord = contentItem.VersionRecord;
             }
-            //        else {
-            //            // do a query to load the records in case Get is called directly
-            //            var contentItemVersionRecords = GetManyImplementation(hints,
-            //                (contentItemCriteria, contentItemVersionCriteria) => {
-            //                    contentItemCriteria.Add(Restrictions.Eq("Id", id));
-            //                    if (options.IsPublished) {
-            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Published", true));
-            //                    }
-            //                    else if (options.IsLatest) {
-            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
-            //                    }
-            //                    else if (options.IsDraft && !options.IsDraftRequired) {
-            //                        contentItemVersionCriteria.Add(
-            //                            Restrictions.And(Restrictions.Eq("Published", false),
-            //                                            Restrictions.Eq("Latest", true)));
-            //                    }
-            //                    else if (options.IsDraft || options.IsDraftRequired) {
-            //                        contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
-            //                    }
+            else {
+                // do a query to load the records in case Get is called directly
+                //var contentItemVersionRecords = GetManyImplementation(hints,
+                //    (contentItemCriteria, contentItemVersionCriteria) => {
+                //        contentItemCriteria.Add(Restrictions.Eq("Id", id));
+                //        if (options.IsPublished) {
+                //            contentItemVersionCriteria.Add(Restrictions.Eq("Published", true));
+                //        }
+                //        else if (options.IsLatest) {
+                //            contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
+                //        }
+                //        else if (options.IsDraft && !options.IsDraftRequired) {
+                //            contentItemVersionCriteria.Add(
+                //                Restrictions.And(Restrictions.Eq("Published", false),
+                //                                Restrictions.Eq("Latest", true)));
+                //        }
+                //        else if (options.IsDraft || options.IsDraftRequired) {
+                //            contentItemVersionCriteria.Add(Restrictions.Eq("Latest", true));
+                //        }
 
-            //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord", FetchMode.Eager);
-            //                    contentItemVersionCriteria.SetFetchMode("ContentItemRecord.ContentType", FetchMode.Eager);
-            //                    //contentItemVersionCriteria.SetMaxResults(1);
-            //                });
+                //        contentItemVersionCriteria.SetFetchMode("ContentItemRecord", FetchMode.Eager);
+                //        contentItemVersionCriteria.SetFetchMode("ContentItemRecord.ContentType", FetchMode.Eager);
+                //                //contentItemVersionCriteria.SetMaxResults(1);
+                //            });
 
 
-            //            if (options.VersionNumber != 0) {
-            //                versionRecord = contentItemVersionRecords.FirstOrDefault(
-            //                    x => x.Number == options.VersionNumber) ??
-            //                       _contentItemVersionRepository.Get(
-            //                           x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
-            //            }
-            //            else {
-            //                versionRecord = contentItemVersionRecords.LastOrDefault();
-            //            }
-            //        }
+                //if (options.VersionNumber != 0) {
+                //    versionRecord = contentItemVersionRecords.FirstOrDefault(
+                //        x => x.Number == options.VersionNumber) ??
+                //           _contentItemVersionRepository.Get(
+                //               x => x.ContentItemRecord.Id == id && x.Number == options.VersionNumber);
+                //}
+                //else {
+                //    //versionRecord = contentItemVersionRecords.LastOrDefault();
+                //}
+            }
 
             // no record means content item is not in db
             if (versionRecord == null) {
@@ -740,6 +740,7 @@ namespace OrchardVNext.ContentManagement {
         //    }
 
         private ContentTypeRecord AcquireContentTypeRecord(string contentType) {
+            
             var context = _dataContext.Set<ContentTypeRecord>();
             var contentTypeRecord = context.FirstOrDefault(x => x.Name == contentType);
 
