@@ -9,7 +9,9 @@ namespace OrchardVNext.Environment.Extensions.Folders {
             SearchPaths = new [] { "~/Modules" };
             _extensionHarvester = extensionHarvester;
         }
-        public string[] SearchPaths { get; private set; }
+
+        public string[] SearchPaths { get; }
+
         public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
             return _extensionHarvester.HarvestExtensions(SearchPaths, DefaultExtensionTypes.Module, "Module.txt", false/*isManifestOptional*/);
         }
