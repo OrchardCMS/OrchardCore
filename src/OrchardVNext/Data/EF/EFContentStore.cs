@@ -37,7 +37,10 @@ namespace OrchardVNext.Data.EF {
         }
 
         public ContentItem Get(int id, VersionOptions options) {
-            var record = _dataContext.Set<ContentItemVersionRecord>().FirstOrDefault(x => _query(x, id, options));
+            var record = _dataContext
+                .Set<ContentItemVersionRecord>()
+                .OrderBy(x => x.Number)
+                .LastOrDefault(x => _query(x, id, options));
 
             return new ContentItem { VersionRecord = record };
         }
