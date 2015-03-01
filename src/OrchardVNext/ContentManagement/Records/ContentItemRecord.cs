@@ -1,22 +1,16 @@
 ﻿using System.Collections.Generic;
-using OrchardVNext.ContentManagement.FieldStorage.InfosetStorage;
 using OrchardVNext.Data;
-using OrchardVNext.Data.Conventions;
 
 namespace OrchardVNext.ContentManagement.Records {
     [Persistent]
-    public class ContentItemRecord {
+    public class ContentItemRecord : DocumentRecord {
         public ContentItemRecord() {
+            // ReSharper disable DoNotCallOverridableMethodsInConstructor
             Versions = new List<ContentItemVersionRecord>();
-            Infoset = new Infoset();
+            // ReSharper restore DoNotCallOverridableMethodsInConstructor
         }
-
-        public int Id { get; set; }
-        public ContentTypeRecord ContentType { get; set; }
-        public IList<ContentItemVersionRecord> Versions { get; set; }
-
-        [StringLengthMax]
-        public string Data { get { return Infoset.Data; } set { Infoset.Data = value; } }
-        public Infoset Infoset { get; protected set; }
+        
+        public virtual ContentTypeRecord ContentType { get; set; }
+        public virtual IList<ContentItemVersionRecord> Versions { get; set; }
     }
 }

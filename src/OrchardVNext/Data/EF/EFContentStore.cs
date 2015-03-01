@@ -5,10 +5,12 @@ using OrchardVNext.ContentManagement;
 using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.Data.EF {
-    public class EFContentStore : IContentStore {
-        private readonly DataContext _dataContext;
-        public EFContentStore(DataContext dataContext) {
-            _dataContext = dataContext;
+    public class EfContentItemStore : IContentItemStore {
+        private readonly IContentStorageProvider _contentStorageProvider;
+
+        public EfContentItemStore(
+            IContentStorageProvider contentStorageProvider) {
+            _contentStorageProvider = contentStorageProvider;
         }
 
         private readonly Func<ContentItemVersionRecord, int, VersionOptions, bool> _query = (versionRecord, id, options) => {
@@ -28,8 +30,8 @@ namespace OrchardVNext.Data.EF {
         };
 
         public void Store(ContentItem contentItem) {
-            _dataContext.Add(contentItem.Record);
-            _dataContext.Add(contentItem.VersionRecord);
+            _contentStorageProvider.Store(contentItem.Record);
+            _contentStorageProvider.Store(contentItem.VersionRecord);
         }
 
         public ContentItem Get(int id) {
@@ -37,18 +39,18 @@ namespace OrchardVNext.Data.EF {
         }
 
         public ContentItem Get(int id, VersionOptions options) {
-            var record = _dataContext
-                .Set<ContentItemVersionRecord>()
+            var record = _contentStorageProvider
+                .Query<ContentItemVersionRecord>(x => _query(x, id, options))
                 .OrderBy(x => x.Number)
-                .LastOrDefault(x => _query(x, id, options));
+                .LastOrDefault();
 
             return new ContentItem { VersionRecord = record };
         }
 
         public IEnumerable<ContentItem> GetMany(IEnumerable<int> ids) {
-            return _dataContext.Set<ContentItemVersionRecord>().Where(x => ids.Contains(x.Id)).Select(x => new ContentItem {
-                VersionRecord = x
-            });
+            return _contentStorageProvider
+                .Query<ContentItemVersionRecord>(x => ids.Contains(x.Id))
+                .Select(x => new ContentItem { VersionRecord = x });
         }
     }
 }

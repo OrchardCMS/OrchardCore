@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -33,6 +34,9 @@ namespace OrchardVNext.Data.EF {
         public DataContext Context => this;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            Logger.TraceInformation("[{0}]: Mapping Records to DB Context", GetType().Name);
+            var sw = Stopwatch.StartNew();
+
             var entityMethod = modelBuilder.GetType().GetRuntimeMethod("Entity", new Type[0]);
 
             foreach (var assembly in _assemblyProvider.CandidateAssemblies.Distinct()) {
@@ -50,6 +54,9 @@ namespace OrchardVNext.Data.EF {
                         .Invoke(modelBuilder, new object[0]);
                 }
             }
+
+            sw.Stop();
+            Logger.TraceInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
         protected override void OnConfiguring(DbContextOptions options) {

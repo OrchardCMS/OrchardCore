@@ -2,32 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardVNext.ContentManagement;
+using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.Data.EF {
     public class EFContentIndexProvider : IContentIndexProvider {
-        private readonly DataContext _dataContext;
-
-        public EFContentIndexProvider(DataContext dataContext)
+        public void Index(DocumentRecord content)
         {
-            _dataContext = dataContext;
+            // Get Lambda and store this content.
+            var data = content.Infoset.Data;
         }
 
-        public void Index(IContent content) {
-            var contentType = content.ContentItem.ContentType;
-
-            //_dataContext
-            //    .Set<ContentItemVersionRecord>()
-            //    .Where(n => n.ContentItemRecord.ContentType == "foo");
-
-
-            //var p = GetByFilter(x => x.ContentItem.ContentType == "ddd");
-
-            //Func<IContent, bool> filter = (contentItem) => contentItem.ContentItem.ContentType == "foo";
-            //filter.
+        public IEnumerable<int> Query<T>() where T : DocumentRecord
+        {
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<int> GetByFilter(Func<IContent, bool> filter) {
-            return Enumerable.Empty<int>();
+        public IEnumerable<int> Query<T>(Func<T, bool> filter) where T : DocumentRecord
+        {
+            throw new NotImplementedException();
         }
     }
 }

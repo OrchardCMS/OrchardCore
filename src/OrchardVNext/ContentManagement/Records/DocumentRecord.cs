@@ -1,24 +1,23 @@
-﻿using System.Xml;
+﻿using System.Reflection;
+using System.Xml;
 using System.Xml.Linq;
-using System.Reflection;
-using OrchardVNext.ContentManagement.Records;
+using OrchardVNext.ContentManagement.FieldStorage.InfosetStorage;
+using OrchardVNext.Data.Conventions;
 
-namespace OrchardVNext.ContentManagement.FieldStorage.InfosetStorage {
-    public class InfosetPart : ContentPart {
-        public InfosetPart() {
-            Document = new DocumentRecord();
+namespace OrchardVNext.ContentManagement.Records {
+    public class DocumentRecord {
+        public DocumentRecord() {
+            Infoset = new Infoset();
+            VersionInfoset = new Infoset();
         }
 
-        private DocumentRecord Document { get; set; }
+        public int Id { get; set; }
 
-        public Infoset Infoset {
-            get { return Document.Infoset; }
-            set { Document.Infoset = value; }
-        }
-        public Infoset VersionInfoset {
-            get { return Document.VersionInfoset; }
-            set { Document.VersionInfoset = value; }
-        }
+        [StringLengthMax]
+        public string Data { get { return Infoset.Data; } set { Infoset.Data = value; } }
+        public Infoset Infoset { get; set; }
+        public Infoset VersionInfoset { get; set; }
+
 
         public string Get<TPart>(string fieldName) {
             return Get<TPart>(fieldName, null);

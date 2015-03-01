@@ -2,8 +2,10 @@
 
 namespace OrchardVNext.ContentManagement.Records {
     [Persistent]
-    public class ContentTypeRecord {
-        public int Id { get; set; }
-        public string Name { get; set; }
+    public class ContentTypeRecord : DocumentRecord {
+        public string Name {
+            get { return this.RetrieveValue(x => x.Name); }
+            set { this.StoreValue(x => x.Name, value); }
+        }
     }
 }

@@ -1,30 +1,40 @@
 using System;
 using System.Collections.Generic;
-using OrchardVNext.ContentManagement;
+using System.Linq;
+using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.Data {
     public class ContentStorageProvider : IContentStorageProvider {
-        private readonly IContentStore _contentStore;
+        private readonly IContentDocumentStore _contentDocumentStore;
         private readonly IContentIndexProvider _contentIndexProvider;
 
-        public ContentStorageProvider(IContentStore contentStore,
+        public ContentStorageProvider(IContentDocumentStore contentDocumentStore,
             IContentIndexProvider contentIndexProvider) {
-            _contentStore = contentStore;
+            _contentDocumentStore = contentDocumentStore;
             _contentIndexProvider = contentIndexProvider;
         }
 
-        public void Store(ContentItem contentItem) {
-            _contentStore.Store(contentItem);
-            _contentIndexProvider.Index(contentItem);
+        public void Store<T>(T document) where T : DocumentRecord {
+            _contentDocumentStore.Store(document);
+            _contentIndexProvider.Index(document);
         }
 
-        public IContent Get(int id) {
-            return _contentStore.Get(id);
+        public void Remove<T>(T document) where T : DocumentRecord {
+            _contentDocumentStore.Remove(document);
         }
 
-        public IEnumerable<IContent> GetMany(Func<IContent, bool> filter) {
-            var indexedItemIds = _contentIndexProvider.GetByFilter(filter);
-            return _contentStore.GetMany(indexedItemIds);
+        public IEnumerable<T> Query<T>() where T : DocumentRecord {
+            var itemIds = _contentIndexProvider
+                .Query<T>();
+
+            return _contentDocumentStore.Query<T>(x => itemIds.Contains(x.Id));
+        }
+
+        public IEnumerable<T> Query<T>(Func<T, bool> filter) where T : DocumentRecord {
+            var itemIds = _contentIndexProvider
+                .Query(filter);
+
+            return _contentDocumentStore.Query<T>(x => itemIds.Contains(x.Id));
         }
     }
 }

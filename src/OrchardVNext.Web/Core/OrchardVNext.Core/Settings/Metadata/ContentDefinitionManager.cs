@@ -6,16 +6,17 @@ using OrchardVNext.ContentManagement.MetaData;
 using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.MetaData.Services;
 using OrchardVNext.Core.Settings.Metadata.Records;
-using OrchardVNext.Data.EF;
+using OrchardVNext.Data;
 
 namespace OrchardVNext.Core.Settings.Metadata {
     public class ContentDefinitionManager : Component, IContentDefinitionManager {
-        private readonly DataContext _dataContext;
+        private readonly IContentStorageProvider _contentStorageProvider;
         private readonly ISettingsFormatter _settingsFormatter;
 
-        public ContentDefinitionManager(DataContext dataContext,
+        public ContentDefinitionManager(
+            IContentStorageProvider contentStorageProvider,
             ISettingsFormatter settingsFormatter) {
-            _dataContext = dataContext;
+            _contentStorageProvider = contentStorageProvider;
             _settingsFormatter = settingsFormatter;
         }
 
@@ -58,11 +59,13 @@ namespace OrchardVNext.Core.Settings.Metadata {
         }
 
         public void DeleteTypeDefinition(string name) {
-            var record = _dataContext.Set<ContentTypeDefinitionRecord>().SingleOrDefault(x => x.Name == name);
+            var record = _contentStorageProvider
+                .Query<ContentTypeDefinitionRecord>(x => x.Name == name)
+                .SingleOrDefault();
 
             // deletes the content type record associated
             if (record != null) {
-                _dataContext.Remove(record);
+                _contentStorageProvider.Remove(record);
             }
         }
 
@@ -75,10 +78,12 @@ namespace OrchardVNext.Core.Settings.Metadata {
             }
 
             // delete part
-            var record = _dataContext.Set<ContentPartDefinitionRecord>().SingleOrDefault(x => x.Name == name);
+            var record = _contentStorageProvider
+                .Query<ContentPartDefinitionRecord>(x => x.Name == name)
+                .SingleOrDefault();
 
             if (record != null) {
-                _dataContext.Remove(record);
+                _contentStorageProvider.Remove(record);
             }
         }
 
@@ -94,50 +99,60 @@ namespace OrchardVNext.Core.Settings.Metadata {
         private IDictionary<string, ContentTypeDefinition> AcquireContentTypeDefinitions() {
             AcquireContentPartDefinitions();
 
-            var contentTypeDefinitionRecords = _dataContext
-                .Set<ContentTypeDefinitionRecord>()
-                .AsQueryable()
+            var contentTypeDefinitionRecords = _contentStorageProvider
+                .Query<ContentTypeDefinitionRecord>()
                 .Select(Build);
 
             return contentTypeDefinitionRecords.ToDictionary(x => x.Name, y => y, StringComparer.OrdinalIgnoreCase);
         }
 
         private IDictionary<string, ContentPartDefinition> AcquireContentPartDefinitions() {
-            var contentPartDefinitionRecords = _dataContext
-                .Set<ContentPartDefinitionRecord>()
-                .AsQueryable()
+            var contentPartDefinitionRecords = _contentStorageProvider
+                .Query<ContentPartDefinitionRecord>()
                 .Select(Build);
 
             return contentPartDefinitionRecords.ToDictionary(x => x.Name, y => y, StringComparer.OrdinalIgnoreCase);
         }
 
         private IDictionary<string, ContentFieldDefinition> AcquireContentFieldDefinitions() {
-            return _dataContext.Set<ContentFieldDefinitionRecord>().Select(Build).ToDictionary(x => x.Name, y => y);
+            return _contentStorageProvider
+                .Query<ContentFieldDefinitionRecord>()
+                .Select(Build)
+                .ToDictionary(x => x.Name, y => y);
         }
 
         private ContentTypeDefinitionRecord Acquire(ContentTypeDefinition contentTypeDefinition) {
-            var result = _dataContext.Set<ContentTypeDefinitionRecord>().SingleOrDefault(x => x.Name == contentTypeDefinition.Name);
+            var result = _contentStorageProvider
+                .Query<ContentTypeDefinitionRecord>(x => x.Name == contentTypeDefinition.Name)
+                .SingleOrDefault();
+
             if (result == null) {
                 result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
-                _dataContext.Add(result);
+                _contentStorageProvider.Store(result);
             }
             return result;
         }
 
         private ContentPartDefinitionRecord Acquire(ContentPartDefinition contentPartDefinition) {
-            var result = _dataContext.Set<ContentPartDefinitionRecord>().SingleOrDefault(x => x.Name == contentPartDefinition.Name);
+            var result = _contentStorageProvider
+                .Query<ContentPartDefinitionRecord>(x => x.Name == contentPartDefinition.Name)
+                .SingleOrDefault();
+
             if (result == null) {
                 result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name };
-                _dataContext.Add(result);
+                _contentStorageProvider.Store(result);
             }
             return result;
         }
 
         private ContentFieldDefinitionRecord Acquire(ContentFieldDefinition contentFieldDefinition) {
-            var result = _dataContext.Set<ContentFieldDefinitionRecord>().SingleOrDefault(x => x.Name == contentFieldDefinition.Name);
+            var result = _contentStorageProvider
+                .Query<ContentFieldDefinitionRecord>(x => x.Name == contentFieldDefinition.Name)
+                .SingleOrDefault();
+
             if (result == null) {
                 result = new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
-                _dataContext.Add(result);
+                _contentStorageProvider.Store(result);
             }
             return result;
         }
@@ -163,7 +178,6 @@ namespace OrchardVNext.Core.Settings.Metadata {
                 }
                 Apply(part, typePartRecord);
             }
-            _dataContext.SaveChanges();
         }
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record) {
@@ -193,7 +207,6 @@ namespace OrchardVNext.Core.Settings.Metadata {
                 }
                 Apply(field, partFieldRecord);
             }
-            _dataContext.SaveChanges();
         }
 
         private void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record) {
