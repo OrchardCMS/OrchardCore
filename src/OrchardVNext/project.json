@@ -11,13 +11,13 @@
         "Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*",
         "EntityFramework.Core": "7.0.0-beta4-*",
         "EntityFramework.SqlServer": "7.0.0-beta4-*",
-        "EntityFramework.InMemory": "7.0.0-beta4-*",
+        "EntityFramework.InMemory":  "7.0.0-beta4-*",
         "Remotion.Linq": "1.15.15"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {
-        "aspnet50": { },
-        "aspnetcore50": {
+        "dnx451": { },
+        "dnxcore50": {
             "dependencies": {
                 "System.Runtime": "4.0.20-beta-*",
                 "System.Xml.XDocument": "4.0.10-beta-*",

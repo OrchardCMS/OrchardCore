@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Test1 {

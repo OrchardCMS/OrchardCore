@@ -6,7 +6,7 @@
     },
 	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {
-        "aspnet50": { },
-        "aspnetcore50": { }
+        "dnx451": { },
+        "dnxcore50": { }
     }
 }

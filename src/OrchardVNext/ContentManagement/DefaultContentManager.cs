@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Xml;
-using System.Xml.Linq;
 using OrchardVNext.ContentManagement.Handlers;
 using OrchardVNext.ContentManagement.MetaData;
 using OrchardVNext.ContentManagement.MetaData.Builders;
@@ -12,7 +8,6 @@ using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.Records;
 using OrchardVNext.Data;
 using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Logging;
 
 namespace OrchardVNext.ContentManagement {
     public class DefaultContentManager : IContentManager {
@@ -377,7 +372,7 @@ namespace OrchardVNext.ContentManagement {
             }
 
             contentItemRecord.Versions.Add(buildingItemVersionRecord);
-            //_contentItemVersionRepository.Create(buildingItemVersionRecord);
+            _contentStorageProvider.Store(buildingItemVersionRecord);
 
             var buildingContentItem = New(existingContentItem.ContentType);
             buildingContentItem.VersionRecord = buildingItemVersionRecord;

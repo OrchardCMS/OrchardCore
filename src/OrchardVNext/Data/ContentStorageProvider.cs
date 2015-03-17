@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.Data {
@@ -21,20 +22,15 @@ namespace OrchardVNext.Data {
 
         public void Remove<T>(T document) where T : DocumentRecord {
             _contentDocumentStore.Remove(document);
+            _contentIndexProvider.DeIndex(document);
         }
 
         public IEnumerable<T> Query<T>() where T : DocumentRecord {
-            var itemIds = _contentIndexProvider
-                .Query<T>();
-
-            return _contentDocumentStore.Query<T>(x => itemIds.Contains(x.Id));
+            return _contentIndexProvider.Query<T>();
         }
 
-        public IEnumerable<T> Query<T>(Func<T, bool> filter) where T : DocumentRecord {
-            var itemIds = _contentIndexProvider
-                .Query(filter);
-
-            return _contentDocumentStore.Query<T>(x => itemIds.Contains(x.Id));
+        public IEnumerable<T> Query<T>(Expression<Func<T, bool>> filter) where T : DocumentRecord {
+            return _contentIndexProvider.Query(filter);
         }
     }
 }

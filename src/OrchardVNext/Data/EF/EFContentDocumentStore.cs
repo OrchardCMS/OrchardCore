@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using OrchardVNext.ContentManagement.Records;
 
 namespace OrchardVNext.Data.EF
@@ -20,12 +21,12 @@ namespace OrchardVNext.Data.EF
             _dataContext.Remove(document);
         }
 
-        public IEnumerable<T> Query<T>() where T : DocumentRecord {
-            return _dataContext.Set<T>().AsQueryable();
-        }
+        //public IEnumerable<T> Query<T>() where T : DocumentRecord {
+        //    return _dataContext.Set<T>().AsQueryable();
+        //}
 
-        public IEnumerable<T> Query<T>(Func<T, bool> filter) where T : DocumentRecord {
-            return _dataContext.Set<T>().Where(filter);
-        }
+        //public IEnumerable<T> Query<T>(Expression<Func<T, bool>> filter) where T : DocumentRecord {
+        //    return _dataContext.Set<T>().Where(filter);
+        //}
     }
 }

@@ -9,16 +9,13 @@ namespace OrchardVNext.Demo.Controllers {
     public class HomeController : Controller {
         private readonly ITestDependency _testDependency;
         private readonly IContentStorageProvider _contentStorageProvider;
-        private readonly IContentIndexProvider _contentIndexProvider;
         private readonly IContentManager _contentManager;
 
         public HomeController(ITestDependency testDependency,
             IContentStorageProvider contentStorageProvider,
-            IContentIndexProvider contentIndexProvider,
             IContentManager contentManager) {
             _testDependency = testDependency;
             _contentStorageProvider = contentStorageProvider;
-            _contentIndexProvider = contentIndexProvider;
             _contentManager = contentManager;
             }
 
