@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OrchardVNext.ContentManagement.MetaData.Models;
 
@@ -14,7 +14,6 @@ namespace OrchardVNext.ContentManagement.FieldStorage {
         }
 
         public IFieldStorageProvider GetProvider(ContentPartFieldDefinition partFieldDefinition) {
-
             IFieldStorageProvider provider = null;
 
             string storage;

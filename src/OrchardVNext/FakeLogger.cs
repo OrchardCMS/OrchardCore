@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+using Microsoft.Framework.Logging;
 using OrchardVNext.Logging;
 using System;
 using System.Linq;
@@ -22,7 +22,7 @@ namespace OrchardVNext {
         }
 
         public static void Warning(string value, params object[] args) {
-            Console.WriteLine(value, args);
+            Console.WriteLine(value, args)
         }
         public static void Warning(Exception e, string value, params object[] args) {
             Console.WriteLine(value, args);
@@ -45,8 +45,9 @@ namespace OrchardVNext {
                 Console.WriteLine("Information: " + message, args);
         }
 
-        public static void TraceWarning(string message, params object[] args) {
-                Console.WriteLine("Warning: " + message, args);
+        public static void TraceWarning(string message, params object[] args)
+        {
+            Console.WriteLine("Warning: " + message, args);
         }
 
         public static bool IsEnabled(OrchardVNext.Logging.LogLevel x) {
@@ -56,8 +57,7 @@ namespace OrchardVNext {
 
     public class TestLoggerFactory : ILoggerFactory {
         public ILogger Create(string name) {
-            return new TestLogger(name, true);
-        }
+            return new TestLogger(name, true)        }
 
         public void AddProvider(ILoggerProvider provider) {
         }
@@ -83,7 +83,7 @@ namespace OrchardVNext {
 
             return NullDisposable.Instance;
         }
-
+ 
         public void Write(Microsoft.Framework.Logging.LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter) {
            Logger.Information(
                string.Format("LogLevel: {0}, EventId: {1}, State: {2}, Exception: {3}, Formatter: {4}, LoggerName: {5}, Scope: {6}",
