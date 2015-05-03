@@ -6,7 +6,7 @@ This is the initial ground with for Orchard CMS running on ASP.Net VNext (DNX)
 Getting Started
 ---------------
 
-First off, follow the instrcutions here https://github.com/aspnet/home inorder to install DNVM. Next install Visual Studio 2015, or what ever you flavour of editor is. 
+First off, follow the instructions here https://github.com/aspnet/home inorder to install DNVM. Next install Visual Studio 2015, or what ever you flavour of editor is. 
 
 Dont forget to run 'dnvm update' from the command line, and to make sure you are pointing at the aspnetvnext nuget url, not the master nuget url.
 
