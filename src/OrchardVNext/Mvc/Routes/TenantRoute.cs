@@ -18,14 +18,20 @@ namespace OrchardVNext.Mvc.Routes {
         public async Task RouteAsync(RouteContext context) {
             if (context.HttpContext.Request.Host.Value == _urlHost) {
                 context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () => {
-                    await _target.RouteAsync(context);
+                    try {
+                        await _target.RouteAsync(context);
+                    }
+                    catch (Exception e) {
+                        Logger.Error(e, e.Message);
+                        throw;
+                    }
                 });
 
                 await _pipeline.Invoke(context.HttpContext);
             }
         }
 
-        public string GetVirtualPath(VirtualPathContext context) {
+        public VirtualPathData GetVirtualPath(VirtualPathContext context) {
             return null;
         }
     }

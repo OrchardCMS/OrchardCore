@@ -6,11 +6,11 @@ namespace OrchardVNext.Environment.Extensions.Folders {
         private readonly IExtensionHarvester _extensionHarvester;
 
         public CoreModuleFolders(IExtensionHarvester extensionHarvester) {
-            SearchPaths = new[] { "~/Core" };
+            SearchPaths = new[] { "~/Core/OrchardVNext.Core" };
             _extensionHarvester = extensionHarvester;
         }
 
-        public string[] SearchPaths { get; private set; }
+        public string[] SearchPaths { get; }
 
         public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
             return _extensionHarvester.HarvestExtensions(SearchPaths, DefaultExtensionTypes.Module, "Module.txt", false/*isManifestOptional*/);

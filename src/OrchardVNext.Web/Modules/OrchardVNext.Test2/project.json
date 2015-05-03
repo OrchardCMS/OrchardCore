@@ -1,10 +1,10 @@
 ﻿{
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta4-*",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta5-*",
         "OrchardVNext": ""
     },
     "frameworks": {
-        "aspnet50": { },
-        "aspnetcore50": { }
+        "dnx451": { },
+        "dnxcore50": { }
     }
 }

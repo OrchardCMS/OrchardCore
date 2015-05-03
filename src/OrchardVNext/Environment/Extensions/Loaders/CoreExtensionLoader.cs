@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Extensions.Models;
 using OrchardVNext.FileSystems.VirtualPath;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
-    public class DefaultExtensionLoader : IExtensionLoader {
+    public class CoreExtensionLoader : IExtensionLoader {
+        private const string CoreAssemblyName = "OrchardVNext.Core";
         private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IServiceProvider _serviceProvider;
         private readonly IAssemblyLoaderContainer _loaderContainer;
 
-        public DefaultExtensionLoader(
+        public CoreExtensionLoader(
             IVirtualPathProvider virtualPathProvider,
             IServiceProvider serviceProvider,
             IAssemblyLoaderContainer container) {
@@ -25,7 +26,7 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public string Name => GetType().Name;
 
-        public int Order => 1;
+        public int Order => 10;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
         }
@@ -39,18 +40,21 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor) {
 
-            var plocation = _virtualPathProvider.MapPath(descriptor.Location);
+            if (!descriptor.Location.StartsWith("~/Core/")) {
+                return null;
+            }
+
+            var plocation = _virtualPathProvider.MapPath("~/Core"); 
 
             using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(plocation, _serviceProvider))) {
-                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+                var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
                 Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
-
 
                 return new ExtensionEntry {
                     Descriptor = descriptor,
                     Assembly = assembly,
-                    ExportedTypes = assembly.ExportedTypes
+                    ExportedTypes = assembly.ExportedTypes.Where(x => IsTypeFromModule(x, descriptor))
                 };
             }
         }
@@ -64,12 +68,8 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry) {
         }
-    }
-
-    internal class LibraryKey : ILibraryKey {
-        public string Name { get; set; }
-        public FrameworkName TargetFramework { get; set; }
-        public string Configuration { get; set; }
-        public string Aspect { get; set; }
+        private static bool IsTypeFromModule(Type type, ExtensionDescriptor descriptor) {
+            return (type.Namespace + ".").StartsWith(CoreAssemblyName + "." + descriptor.Id + ".");
+        }
     }
 }

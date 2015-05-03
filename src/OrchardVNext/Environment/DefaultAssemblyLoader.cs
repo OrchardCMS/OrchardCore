@@ -2,6 +2,8 @@
 using System.Reflection;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.Runtime.Caching;
+using Microsoft.Framework.Runtime.Compilation;
 using Microsoft.Framework.Runtime.Loader;
 using Microsoft.Framework.Runtime.Roslyn;
 using OrchardVNext.Environment.Extensions.Loaders;
@@ -15,9 +17,8 @@ namespace OrchardVNext.Environment
         private readonly IFileWatcher _fileWatcher;
         private readonly IOrchardLibraryManager _orchardLibraryManager;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
-        private readonly IVirtualPathProvider _virtualPathProvider;
-        private readonly string _path;
-
+        private readonly IVirtualPathProvider _virtualPathProvider;private readonly string _path;
+        
         public ExtensionAssemblyLoader(string path, IServiceProvider serviceProvider) {
             _path = path;
             _serviceProvider = serviceProvider;
@@ -27,6 +28,7 @@ namespace OrchardVNext.Environment
             _assemblyLoadContextAccessor = serviceProvider.GetService<IAssemblyLoadContextAccessor>();
             _virtualPathProvider = serviceProvider.GetService<IVirtualPathProvider>();
         }
+
         public Assembly Load(string name) {
             Project project;
 
@@ -81,7 +83,8 @@ namespace OrchardVNext.Environment
             var compliationContext = compiler.CompileProject(project,
                 target,
                 exports.MetadataReferences,
-                exports.SourceReferences);
+                exports.SourceReferences,
+                () => CompositeResourceProvider.Default.GetResources(project));
             
             var roslynProjectReference = new RoslynProjectReference(compliationContext);
 

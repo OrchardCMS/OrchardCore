@@ -1,27 +1,27 @@
-﻿{
-	"version": "2.0.0-*",
-	"dependencies": {
-		"Microsoft.AspNet.Mvc": "6.0.0-beta4-*",
-		"Microsoft.AspNet.RequestContainer": "1.0.0-beta4-*",
-		"Microsoft.Framework.Runtime": "1.0.0-beta4-*",
-		"Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta4-*",
-		"Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta4-*",
-		"Microsoft.Framework.ConfigurationModel": "1.0.0-beta4-*",
-		"Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4-*",
-		"Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta4-*"
-	},
-	"compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
-	"frameworks": {
-		"aspnet50": {
-			"dependencies": {
-			}
-		},
-		"aspnetcore50": {
-			"dependencies": {
-				"System.Runtime": "4.0.20-beta-*",
-				"System.Xml.XDocument": "4.0.0-beta-*",
-				"System.IO.FileSystem.Primitives": "4.0.0-beta-*"
-			}
-		}
-	}
+{
+    "version": "2.0.0-*",
+    "dependencies": {
+        "Microsoft.AspNet.Mvc": "6.0.0-beta5-*",
+        "Microsoft.Framework.Runtime": "1.0.0-beta5-*",
+        "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta5-*",
+        "Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta5-*",
+        "Microsoft.Framework.ConfigurationModel": "1.0.0-beta5-*",
+        "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta5-*",
+        "Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta5-*",
+        "EntityFramework.Core": "7.0.0-beta5-*",
+        "EntityFramework.SqlServer": "7.0.0-beta5-*",
+        "EntityFramework.InMemory": "7.0.0-beta5-*",
+        "System.Console": "4.0.0-beta-*"
+    },
+    "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
+    "frameworks": {
+        "dnx451": { },
+        "dnxcore50": {
+            "dependencies": {
+                "System.Runtime": "4.0.20-beta-*",
+                "System.Xml.XDocument": "4.0.10-beta-*",
+                "System.IO.FileSystem.Primitives": "4.0.0-beta-*"
+            }
+        }
+    }
 }

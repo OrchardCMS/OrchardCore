@@ -1,0 +1,867 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/OrchardVNext.Web/Modules/OrchardVNext.Test1/Class.cs",
+			"settings":
+			{
+				"buffer_size": 541,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext.Web/Modules/OrchardVNext.Test1/TestMiddleware.cs",
+			"settings":
+			{
+				"buffer_size": 626,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/project.json",
+			"settings":
+			{
+				"buffer_size": 1139,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/InvokeExtensions.cs",
+			"settings":
+			{
+				"buffer_size": 1987,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext.Web/Startup.cs",
+			"settings":
+			{
+				"buffer_size": 281,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/Environment/OrchardStarter.cs",
+			"settings":
+			{
+				"buffer_size": 4096,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "using System;\nusing System.Collections.Generic;\nusing System.IO;\nusing System.Linq;\nusing Microsoft.Framework.ConfigurationModel;\nusing OrchardVNext.Environment.Configuration.Sources;\nusing OrchardVNext.FileSystems.AppData;\n\nnamespace OrchardVNext.Environment.Configuration {\n    public interface IShellSettingsManager {\n        IEnumerable<ShellSettings> LoadSettings();\n    }\n\n    public class ShellSettingsManager : IShellSettingsManager {\n        private readonly IAppDataFolder _appDataFolder;\n        private const string _settingsFileNameFormat = \"Settings.{0}\";\n        private readonly string[] _settingFileNameExtensions = new string[] { \"txt\", \"json\" };\n\n        public ShellSettingsManager(IAppDataFolder appDataFolder) {\n            _appDataFolder = appDataFolder;\n        }\n\n        IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {\n            var filePaths = _appDataFolder\n                .ListDirectories(\"Sites\")\n                .SelectMany(path => _appDataFolder.ListFiles(path))\n                .Where(path => {\n                    var filePathName = Path.GetFileName(path);\n\n                    return _settingFileNameExtensions.Any(p =>\n                        string.Equals(filePathName, string.Format(_settingsFileNameFormat, p), StringComparison.OrdinalIgnoreCase)\n                    );\n                });\n\n            List<ShellSettings> shellSettings = new List<ShellSettings>();\n\n            foreach (var filePath in filePaths) {\n                IConfigurationSourceContainer configurationContainer = null;\n\n                var extension = Path.GetExtension(filePath);\n\n                switch (extension) {\n                    case \".json\":\n                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()\n                            .AddJsonFile(filePath);\n                        break;\n                    case \".xml\":\n                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()\n                            .AddXmlFile(filePath);\n                        break;\n                    case \".ini\":\n                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()\n                            .AddIniFile(filePath);\n                        break;\n                    case \".txt\":\n                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()\n                            .Add(new DefaultFileConfigurationSource(_appDataFolder, filePath));\n                        break;\n                }\n\n                if (configurationContainer != null) {\n                    var shellSetting = new ShellSettings {\n                        Name = configurationContainer.Get<string>(\"Name\"),\n                        DataConnectionString = configurationContainer.Get<string>(\"DataConnectionString\"),\n                        DataProvider = configurationContainer.Get<string>(\"DataProvider\"),\n                        DataTablePrefix = configurationContainer.Get<string>(\"DataTablePrefix\"),\n                        RequestUrlHost = configurationContainer.Get<string>(\"RequestUrlHost\"),\n                        RequestUrlPrefix = configurationContainer.Get<string>(\"RequestUrlPrefix\")\n                    };\n\n                    TenantState state;\n                    shellSetting.State = Enum.TryParse(configurationContainer.Get<string>(\"State\"), true, out state) ? state : TenantState.Uninitialized;\n\n                    shellSettings.Add(shellSetting);\n                }\n            }\n\n            return shellSettings;\n        }\n    }\n}",
+			"file": "src/OrchardVNext/Environment/Configuration/ShellSettingsManager.cs",
+			"file_size": 3723,
+			"file_write_time": 130711908279920244,
+			"settings":
+			{
+				"buffer_size": 3643,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/C#.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 163,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/FileSystems/AppData/AppDataFolder.cs",
+			"settings":
+			{
+				"buffer_size": 6615,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/FileSystems/AppData/IAppDataFolderRoot.cs",
+			"settings":
+			{
+				"buffer_size": 948,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/FileSystems/WebSite/WebSiteFolder.cs",
+			"settings":
+			{
+				"buffer_size": 3951,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/Environment/ShellBuilders/CompositionStrategy.cs",
+			"settings":
+			{
+				"buffer_size": 5420,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/Environment/ShellBuilders/Models/ShellBlueprint.cs",
+			"settings":
+			{
+				"buffer_size": 1228,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/ContentManagement/ContentExtensions.cs",
+			"settings":
+			{
+				"buffer_size": 1641,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/ContentManagement/IContent.cs",
+			"settings":
+			{
+				"buffer_size": 235,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/csharp.sublime-build",
+			"settings":
+			{
+				"buffer_size": 79,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
+			}
+		},
+		{
+			"file": "src/OrchardVNext/Environment/DefaultOrchardHost.cs",
+			"settings":
+			{
+				"buffer_size": 704,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "OrchardVNext.sublime-project",
+			"settings":
+			{
+				"buffer_size": 152,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 119.0,
+		"selected_items":
+		[
+			[
+				"Omnisharp Reli",
+				"OmniSharpSublime: Reload Solution"
+			],
+			[
+				"OmniSharpSublime: Re",
+				"OmniSharpSublime: Reload Solution"
+			]
+		],
+		"width": 588.0
+	},
+	"console":
+	{
+		"height": 651.0,
+		"history":
+		[
+			"install",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)  ",
+			"install",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)  "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Brochard",
+		"/D/Brochard/src",
+		"/D/Brochard/src/OrchardVNext",
+		"/D/Brochard/src/OrchardVNext/ContentManagement",
+		"/D/Brochard/src/OrchardVNext.Web"
+	],
+	"file_history":
+	[
+		"/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/C#.sublime-settings"
+	],
+	"find":
+	{
+		"height": 31.0
+	},
+	"find_in_files":
+	{
+		"height": 138.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"ctrl+s\"",
+			"ctrl+s"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/OrchardVNext.Web/Modules/OrchardVNext.Test1/Class.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 541,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								490,
+								490
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/OrchardVNext.Web/Modules/OrchardVNext.Test1/TestMiddleware.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 626,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								507,
+								507
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/OrchardVNext/project.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1139,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								933,
+								933
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/OrchardVNext/InvokeExtensions.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1987,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								559,
+								559
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 132.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/OrchardVNext.Web/Startup.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 281,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								219,
+								219
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/OrchardVNext/Environment/OrchardStarter.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4096,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1628,
+								1628
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 178.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/OrchardVNext/Environment/Configuration/ShellSettingsManager.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3643,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1878,
+								1878
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 321.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/C#.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 163,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2,
+								2
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/OrchardVNext/FileSystems/AppData/AppDataFolder.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6615,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								378,
+								378
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/OrchardVNext/FileSystems/AppData/IAppDataFolderRoot.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 948,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								252,
+								252
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/OrchardVNext/FileSystems/WebSite/WebSiteFolder.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3951,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2026,
+								2026
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "src/OrchardVNext/Environment/ShellBuilders/CompositionStrategy.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5420,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1978,
+								1978
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "src/OrchardVNext/Environment/ShellBuilders/Models/ShellBlueprint.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1228,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								580,
+								580
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "src/OrchardVNext/ContentManagement/ContentExtensions.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1641,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								722,
+								722
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "src/OrchardVNext/ContentManagement/IContent.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 235,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								225,
+								225
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "/C/Users/Nicholas/AppData/Roaming/Sublime Text 3/Packages/User/csharp.sublime-build",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 79,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								63,
+								63
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "src/OrchardVNext/Environment/DefaultOrchardHost.cs",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 704,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								628,
+								628
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "OrchardVNext.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 152,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 30.0
+	},
+	"input":
+	{
+		"height": 42.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 596.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.variable_get":
+	{
+		"height": 498.0
+	},
+	"project": "OrchardVNext.sublime-project",
+	"replace":
+	{
+		"height": 58.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 326.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

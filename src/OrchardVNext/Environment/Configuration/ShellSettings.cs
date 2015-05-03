@@ -22,6 +22,10 @@ namespace OrchardVNext.Environment.Configuration {
             _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
 
             Name = settings.Name;
+            DataProvider = settings.DataProvider;
+            DataConnectionString = settings.DataConnectionString;
+            DataTablePrefix = settings.DataTablePrefix;
+            RequestUrlHost = settings.RequestUrlHost;
             RequestUrlPrefix = settings.RequestUrlPrefix;
             State = settings.State;
         }
@@ -37,20 +41,58 @@ namespace OrchardVNext.Environment.Configuration {
         /// <summary>
         /// Gets all keys held by this shell settings.
         /// </summary>
-        public IEnumerable<string> Keys { get { return _values.Keys; } }
+        public IEnumerable<string> Keys => _values.Keys;
 
         /// <summary>
         /// The name of the tenant
         /// </summary>
-        public string Name {
+        public string Name
+        {
             get { return this["Name"] ?? ""; }
             set { this["Name"] = value; }
         }
 
         /// <summary>
+        /// The database provider for the tenant
+        /// </summary>
+        public string DataProvider
+        {
+            get { return this["DataProvider"] ?? ""; }
+            set { this["DataProvider"] = value; }
+        }
+
+        /// <summary>
+        /// The database connection string
+        /// </summary>
+        public string DataConnectionString
+        {
+            get { return this["DataConnectionString"]; }
+            set { this["DataConnectionString"] = value; }
+        }
+
+        /// <summary>
+        /// The data table prefix added to table names for this tenant
+        /// </summary>
+        public string DataTablePrefix
+        {
+            get { return this["DataTablePrefix"]; }
+            set { this["DataTablePrefix"] = value; }
+        }
+
+        /// <summary>
+        /// The host name of the tenant
+        /// </summary>
+        public string RequestUrlHost
+        {
+            get { return this["RequestUrlHost"]; }
+            set { this["RequestUrlHost"] = value; }
+        }
+
+        /// <summary>
         /// The request url prefix of the tenant
         /// </summary>
-        public string RequestUrlPrefix {
+        public string RequestUrlPrefix
+        {
             get { return this["RequestUrlPrefix"]; }
             set { _values["RequestUrlPrefix"] = value; }
         }

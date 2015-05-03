@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace OrchardVNext.Environment.Configuration {
             List<ShellSettings> shellSettings = new List<ShellSettings>();
 
             foreach (var filePath in filePaths) {
-                IConfigurationSourceContainer configurationContainer = null;
+                IConfigurationSourceRoot configurationContainer = null;
 
                 var extension = Path.GetExtension(filePath);
 
@@ -61,6 +61,10 @@ namespace OrchardVNext.Environment.Configuration {
                 if (configurationContainer != null) {
                     var shellSetting = new ShellSettings {
                         Name = configurationContainer.Get<string>("Name"),
+                        DataConnectionString = configurationContainer.Get<string>("DataConnectionString"),
+                        DataProvider = configurationContainer.Get<string>("DataProvider"),
+                        DataTablePrefix = configurationContainer.Get<string>("DataTablePrefix"),
+                        RequestUrlHost = configurationContainer.Get<string>("RequestUrlHost"),
                         RequestUrlPrefix = configurationContainer.Get<string>("RequestUrlPrefix")
                     };
 

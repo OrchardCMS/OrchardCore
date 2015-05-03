@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using OrchardVNext.Middleware;
 using System;

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.Runtime;
+﻿using Microsoft.Framework.Runtime;
 using OrchardVNext.Localization;
 
 namespace OrchardVNext.Environment {

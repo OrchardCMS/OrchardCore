@@ -3,28 +3,31 @@
     "version": "2.0.0-*",
     "exclude": [
         "wwwroot",
+        "App_Data",
         "Core",
         "Modules",
         "Themes"
     ],
     "packExclude": [
+        "node_modules",
+        "bower_components",
         "**.kproj",
         "**.user",
         "**.vspscc"
     ],
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta4-*",
-        "Microsoft.AspNet.Mvc": "6.0.0-beta4-*",
-        "Microsoft.AspNet.Hosting": "1.0.0-beta4-*",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta4-*",
-		"OrchardVNext": ""
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta5-*",
+        "Microsoft.AspNet.Mvc": "6.0.0-beta5-*",
+        "Microsoft.AspNet.Hosting": "1.0.0-beta5-*",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta5-*",
+        "OrchardVNext": ""
     },
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://local.orchardvnext.test1.com;http://local.orchardvnext.test2.com"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {
-        "aspnet50": { },
-        "aspnetcore50": { }
+        "dnx451": { },
+        "dnxcore50": { }
     }
 }

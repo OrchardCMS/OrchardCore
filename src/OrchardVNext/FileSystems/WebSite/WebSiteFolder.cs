@@ -90,7 +90,7 @@ namespace OrchardVNext.FileSystems.WebSite {
         }
 
         string Normalize(string virtualPath) {
-            return virtualPath.Replace(_hostingEnvironment.WebRoot, "~").Replace('\\', '/');
+            return virtualPath.Replace(_hostingEnvironment.WebRootPath, "~").Replace('\\', '/');
         }
     }
 }

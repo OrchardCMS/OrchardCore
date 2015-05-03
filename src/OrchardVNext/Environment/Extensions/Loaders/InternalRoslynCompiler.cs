@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -12,9 +12,11 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Runtime.Caching;
 using Microsoft.Framework.Runtime.Common.DependencyInjection;
+using Microsoft.Framework.Runtime.Compilation;
 using OrchardVNext;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Microsoft.Framework.Runtime.Roslyn {
     public class InternalRoslynCompiler {
@@ -43,10 +45,11 @@ namespace Microsoft.Framework.Runtime.Roslyn {
         }
 
         public CompilationContext CompileProject(
-            Project project,
+            ICompilationProject project,
             ILibraryKey target,
             IEnumerable<IMetadataReference> incomingReferences,
-            IEnumerable<ISourceReference> incomingSourceReferences) {
+            IEnumerable<ISourceReference> incomingSourceReferences,
+            Func<IList<ResourceDescriptor>> resourcesResolver) {
             var path = project.ProjectDirectory;
             var name = project.Name.TrimStart('/');
 
@@ -70,6 +73,8 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
                     _cacheContextAccessor.Current.Monitor(_namedDependencyProvider.GetNamedDependency(buildOutputsName));
                 }
+
+                _cacheContextAccessor.Current.Monitor(_namedDependencyProvider.GetNamedDependency(project.Name + "_Dependencies"));
             }
 
             var exportedReferences = incomingReferences.Select(ConvertMetadataReference);
@@ -112,7 +117,21 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
             compilation = ApplyVersionInfo(compilation, project, parseOptions);
 
-            var compilationContext = new CompilationContext(compilation, project, target.TargetFramework, target.Configuration);
+            var compilationContext = new CompilationContext(
+                compilation,
+                project,
+                target.TargetFramework,
+                target.Configuration,
+                incomingReferences,
+                () => resourcesResolver()
+                    .Select(res => new ResourceDescription(
+                        res.Name,
+                        res.StreamFactory,
+                        isPublic: true))
+                    .ToList());
+
+            // Apply strong-name settings
+            ApplyStrongNameSettings(compilationContext);
 
             if (isMainAspect && project.Files.PreprocessSourceFiles.Any()) {
                 try {
@@ -142,7 +161,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             if (compilationContext.Modules.Count > 0) {
                 var precompSw = Stopwatch.StartNew();
                 foreach (var module in compilationContext.Modules) {
-                    module.BeforeCompile(compilationContext);
+                    module.BeforeCompile(compilationContext.BeforeCompileContext);
                 }
 
                 precompSw.Stop();
@@ -153,6 +172,31 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             Logger.TraceInformation("[{0}]: Compiled '{1}' in {2}ms", GetType().Name, name, sw.ElapsedMilliseconds);
 
             return compilationContext;
+        }
+
+        private void ApplyStrongNameSettings(CompilationContext compilationContext) {
+            // This is temporary, eventually we'll want a project.json feature for this
+            var keyFile = Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile);
+            if (!string.IsNullOrEmpty(keyFile)) {
+#if DNX451
+                var delaySignString = Environment.GetEnvironmentVariable(EnvironmentNames.BuildDelaySign);
+                var delaySign = !string.IsNullOrEmpty(delaySignString) && (
+                    string.Equals(delaySignString, "true", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(delaySignString, "1", StringComparison.OrdinalIgnoreCase));
+
+                var strongNameProvider = new DesktopStrongNameProvider();
+                var newOptions = compilationContext.Compilation.Options
+                    .WithStrongNameProvider(strongNameProvider)
+                    .WithCryptoKeyFile(keyFile)
+                    .WithDelaySign(delaySign);
+                compilationContext.Compilation = compilationContext.Compilation.WithOptions(newOptions);
+#else
+                var diag = Diagnostic.Create(
+                    RoslynDiagnostics.StrongNamingNotSupported,
+                    null);
+                compilationContext.Diagnostics.Add(diag);
+#endif
+            }
         }
 
         private CompilationModules GetCompileModules(ILibraryKey target) {
@@ -187,23 +231,69 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             });
         }
 
-        private static CSharpCompilation ApplyVersionInfo(CSharpCompilation compilation, Project project,
+        private static CSharpCompilation ApplyVersionInfo(CSharpCompilation compilation, ICompilationProject project,
             CSharpParseOptions parseOptions) {
-            var emptyVersion = new Version(0, 0, 0, 0);
+            const string assemblyFileVersionName = "System.Reflection.AssemblyFileVersionAttribute";
+            const string assemblyVersionName = "System.Reflection.AssemblyVersionAttribute";
+            const string assemblyInformationalVersion = "System.Reflection.AssemblyInformationalVersionAttribute";
 
-            // If the assembly version is empty then set the version
-            if (compilation.Assembly.Identity.Version == emptyVersion) {
-                return compilation.AddSyntaxTrees(new[]
+            var assemblyAttributes = compilation.Assembly.GetAttributes();
+
+            var foundAssemblyFileVersion = false;
+            var foundAssemblyVersion = false;
+            var foundAssemblyInformationalVersion = false;
+
+            foreach (var assembly in assemblyAttributes) {
+                string attributeName = assembly.AttributeClass.ToString();
+
+                if (string.Equals(attributeName, assemblyFileVersionName, StringComparison.Ordinal)) {
+                    foundAssemblyFileVersion = true;
+                }
+                else if (string.Equals(attributeName, assemblyVersionName, StringComparison.Ordinal)) {
+                    foundAssemblyVersion = true;
+                }
+                else if (string.Equals(attributeName, assemblyInformationalVersion, StringComparison.Ordinal)) {
+                    foundAssemblyInformationalVersion = true;
+                }
+            }
+
+            var versionAttributes = new StringBuilder();
+            if (!foundAssemblyFileVersion) {
+                versionAttributes.AppendLine($"[assembly:{assemblyFileVersionName}(\"{project.AssemblyFileVersion}\")]");
+            }
+
+            if (!foundAssemblyVersion) {
+                versionAttributes.AppendLine($"[assembly:{assemblyVersionName}(\"{RemovePrereleaseTag(project.Version)}\")]");
+            }
+
+            if (!foundAssemblyInformationalVersion) {
+                versionAttributes.AppendLine($"[assembly:{assemblyInformationalVersion}(\"{project.Version}\")]");
+            }
+
+            if (versionAttributes.Length != 0) {
+                compilation = compilation.AddSyntaxTrees(new[]
                 {
-                    CSharpSyntaxTree.ParseText("[assembly: System.Reflection.AssemblyVersion(\"" + project.Version.Version + "\")]", parseOptions),
-                    CSharpSyntaxTree.ParseText("[assembly: System.Reflection.AssemblyInformationalVersion(\"" + project.Version + "\")]", parseOptions)
+                    CSharpSyntaxTree.ParseText(versionAttributes.ToString(), parseOptions)
                 });
             }
 
             return compilation;
         }
 
-        private IList<SyntaxTree> GetSyntaxTrees(Project project,
+        private static string RemovePrereleaseTag(string version) {
+            // Simple reparse of the version string (because we don't want to pull in NuGet stuff
+            // here because we're in an old-runtime/new-runtime limbo)
+
+            var dashIdx = version.IndexOf('-');
+            if (dashIdx < 0) {
+                return version;
+            }
+            else {
+                return version.Substring(0, dashIdx);
+            }
+        }
+
+        private IList<SyntaxTree> GetSyntaxTrees(ICompilationProject project,
                                                  IEnumerable<string> sourceFiles,
                                                  IEnumerable<ISourceReference> sourceReferences,
                                                  CSharpParseOptions parseOptions,
@@ -238,8 +328,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var ctx = _cacheContextAccessor.Current;
 
             foreach (var d in dirs) {
-                if (ctx != null)
-                    ctx.Monitor(new FileWriteTimeCacheDependency(d));
+                ctx?.Monitor(new FileWriteTimeCacheDependency(d));
 
                 // TODO: Make the file watcher hand out cache dependencies as well
                 _watcher.WatchDirectory(d, ".cs");
@@ -308,11 +397,56 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
         private class CompilationModules : IDisposable {
             public IAssemblyLoadContext LoadContext { get; set; }
+
             public List<ICompileModule> Modules { get; set; }
 
             public void Dispose() {
                 LoadContext.Dispose();
             }
         }
+
+        static class Constants {
+            public const string BootstrapperExeName = "dnx";
+            public const string BootstrapperFullName = "Microsoft .NET Execution environment";
+            public const string DefaultLocalRuntimeHomeDir = ".dnx";
+            public const string RuntimeShortName = "dnx";
+            public const string RuntimeNamePrefix = RuntimeShortName + "-";
+            public const string WebConfigRuntimeVersion = RuntimeNamePrefix + "version";
+            public const string WebConfigRuntimeFlavor = RuntimeNamePrefix + "clr";
+            public const string WebConfigRuntimeAppBase = RuntimeNamePrefix + "app-base";
+            public const string WebConfigBootstrapperVersion = "bootstrapper-version";
+            public const string WebConfigRuntimePath = "runtime-path";
+            public const string BootstrapperHostName = RuntimeShortName + ".host";
+            public const string BootstrapperClrName = RuntimeShortName + ".clr";
+            public const string BootstrapperCoreclrManagedName = RuntimeShortName + ".coreclr.managed";
+        }
+
+        static class EnvironmentNames {
+            public static readonly string CommonPrefix = Constants.RuntimeShortName.ToUpper() + "_";
+            public static readonly string Packages = CommonPrefix + "PACKAGES";
+            public static readonly string PackagesCache = CommonPrefix + "PACKAGES_CACHE";
+            public static readonly string Servicing = CommonPrefix + "SERVICING";
+            public static readonly string Trace = CommonPrefix + "TRACE";
+            public static readonly string CompilationServerPort = CommonPrefix + "COMPILATION_SERVER_PORT";
+            public static readonly string Home = CommonPrefix + "HOME";
+            public static readonly string GlobalPath = CommonPrefix + "GLOBAL_PATH";
+            public static readonly string AppBase = CommonPrefix + "APPBASE";
+            public static readonly string Framework = CommonPrefix + "FRAMEWORK";
+            public static readonly string Configuration = CommonPrefix + "CONFIGURATION";
+            public static readonly string ConsoleHost = CommonPrefix + "CONSOLE_HOST";
+            public static readonly string DefaultLib = CommonPrefix + "DEFAULT_LIB";
+            public static readonly string BuildKeyFile = CommonPrefix + "BUILD_KEY_FILE";
+            public static readonly string BuildDelaySign = CommonPrefix + "BUILD_DELAY_SIGN";
+        }
+    }
+
+    internal class RoslynDiagnostics {
+        internal static readonly DiagnosticDescriptor StrongNamingNotSupported = new DiagnosticDescriptor(
+            id: "DNX1001",
+            title: "Strong name generation is not supported on this platform",
+            messageFormat: "Strong name generation is not supported on CoreCLR. Skipping strong name generation.",
+            category: "StrongNaming",
+            defaultSeverity: DiagnosticSeverity.Warning,
+            isEnabledByDefault: true);
     }
 }

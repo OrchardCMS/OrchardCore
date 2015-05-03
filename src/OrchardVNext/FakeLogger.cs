@@ -1,7 +1,7 @@
-﻿using Microsoft.Framework.Logging;
-using OrchardVNext.Logging;
 using System;
 using System.Linq;
+using Microsoft.Framework.Logging;
+using LogLevel = OrchardVNext.Logging.LogLevel;
 
 namespace OrchardVNext {
     public static class Logger {
@@ -24,6 +24,7 @@ namespace OrchardVNext {
         public static void Warning(string value, params object[] args) {
             Console.WriteLine(value, args);
         }
+
         public static void Warning(Exception e, string value, params object[] args) {
             Console.WriteLine(value, args);
             Console.Error.WriteLine(e.ToString());
@@ -45,24 +46,20 @@ namespace OrchardVNext {
                 Console.WriteLine("Information: " + message, args);
         }
 
-        public static void TraceWarning(string message, params object[] args) {
-                Console.WriteLine("Warning: " + message, args);
+        public static void TraceWarning(string message, params object[] args)
+        {
+            Console.WriteLine("Warning: " + message, args);
         }
 
-        public static bool IsEnabled(OrchardVNext.Logging.LogLevel x) {
+        public static bool IsEnabled(LogLevel x) {
             return true;
         }
     }
 
-    public class TestLoggerFactory : ILoggerFactory {
-        public ILogger Create(string name) {
+    public class TestLoggerProvider : ILoggerProvider {
+        public ILogger CreateLogger(string name) {
             return new TestLogger(name, true);
         }
-
-        public void AddProvider(ILoggerProvider provider) {
-        }
-
-        public Microsoft.Framework.Logging.LogLevel MinimumLevel { get; set; }
     }
 
     public class TestLogger : ILogger {
@@ -77,22 +74,27 @@ namespace OrchardVNext {
 
         public string Name { get; set; }
 
-        public IDisposable BeginScope(object state) {
-            _scope = state;
-
-
-            return NullDisposable.Instance;
-        }
-
-        public void Write(Microsoft.Framework.Logging.LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter) {
-           Logger.Information(
-               string.Format("LogLevel: {0}, EventId: {1}, State: {2}, Exception: {3}, Formatter: {4}, LoggerName: {5}, Scope: {6}",
-                logLevel, eventId, state, exception, formatter, _name, _scope
-            ));
+        public void Log(Microsoft.Framework.Logging.LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        {
+            Logger.Information(
+                string.Format("LogLevel: {0}, EventId: {1}, State: {2}, Exception: {3}, Formatter: {4}, LoggerName: {5}, Scope: {6}",
+                 logLevel, eventId, state, exception, formatter, _name, _scope
+             ));
         }
 
         public bool IsEnabled(Microsoft.Framework.Logging.LogLevel logLevel) {
             return _enabled;
+        }
+
+        public IDisposable BeginScopeImpl(object state) {
+            _scope = state;
+
+            return new TestDisposable();
+        }
+
+        private class TestDisposable : IDisposable {
+            public void Dispose() {
+            }
         }
     }
 }
