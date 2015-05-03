@@ -44,7 +44,7 @@ namespace OrchardVNext.Demo.Controllers {
 
 
             var contentItem = _contentManager.New("Foo");
-            contentItem.As<TestContentPartA>().Line = "Nick Rocks";
+            contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
             _contentManager.Create(contentItem);
 
             var retrieveContentItem = _contentManager.Get(contentItem.Id);
