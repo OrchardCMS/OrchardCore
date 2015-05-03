@@ -35,7 +35,7 @@ namespace OrchardVNext.Environment.Configuration {
             List<ShellSettings> shellSettings = new List<ShellSettings>();
 
             foreach (var filePath in filePaths) {
-                IConfigurationSourceContainer configurationContainer = null;
+                IConfigurationSourceRoot configurationContainer = null;
 
                 var extension = Path.GetExtension(filePath);
 

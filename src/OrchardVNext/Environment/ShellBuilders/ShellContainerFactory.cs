@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
@@ -10,8 +9,11 @@ using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Mvc;
 using OrchardVNext.Routing;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNet.Hosting;
+using Microsoft.Framework.Logging;
 using OrchardVNext.Data.EF;
 
 namespace OrchardVNext.Environment.ShellBuilders {
@@ -23,8 +25,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ShellContainerFactory(IServiceProvider serviceProvider)
-        {
+        public ShellContainerFactory(IServiceProvider serviceProvider) {
             _serviceProvider = serviceProvider;
         }
 
@@ -79,10 +80,48 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 }
             }
 
-            var sc = HostingServices.Create(_serviceProvider);
-            sc.Add(serviceCollection);
+            serviceCollection.AddLogging();
 
-            return sc.BuildServiceProvider();
+            return new WrappingServiceProvider(_serviceProvider, serviceCollection);
+        }
+
+        private class WrappingServiceProvider : IServiceProvider
+        {
+            private readonly IServiceProvider _services;
+
+            // Need full wrap for generics like IOptions
+            public WrappingServiceProvider(IServiceProvider fallback, IServiceCollection replacedServices)
+            {
+                var services = new ServiceCollection();
+                var manifest = fallback.GetRequiredService<IServiceManifest>();
+                foreach (var service in manifest.Services) {
+                    services.AddTransient(service, sp => fallback.GetService(service));
+                }
+                
+                services.AddSingleton<IServiceManifest>(sp => new HostingManifest(services));
+                services.Add(replacedServices);
+
+                _services = services.BuildServiceProvider();
+            }
+
+            public object GetService(Type serviceType) {
+                return _services.GetService(serviceType);
+            }
+
+
+            // Manifest exposes the fallback manifest in addition to ITypeActivator, IHostingEnvironment, and ILoggerFactory
+            private class HostingManifest : IServiceManifest {
+                public HostingManifest(IServiceCollection hostServices) {
+                    Services = new Type[] {
+                    typeof(IHostingEnvironment),
+                    typeof(ILoggerFactory),
+                    typeof(IHttpContextAccessor),
+                    typeof(IApplicationLifetime)
+                }.Concat(hostServices.Select(s => s.ServiceType)).Distinct();
+                }
+
+                public IEnumerable<Type> Services { get; private set; }
+            }
         }
     }
 }

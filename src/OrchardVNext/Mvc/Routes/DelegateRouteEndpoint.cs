@@ -16,7 +16,7 @@ namespace OrchardVNext.Mvc.Routes {
             context.IsHandled = true;
         }
 
-        public string GetVirtualPath(VirtualPathContext context) {
+        public VirtualPathData GetVirtualPath(VirtualPathContext context) {
             // We don't really care what the values look like.
             context.IsBound = true;
             return null;

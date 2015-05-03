@@ -3,7 +3,7 @@
 namespace OrchardVNext.Data.Providers {
     public interface IDataServicesProvider : ITransientDependency {
         string ProviderName { get; }
-        void ConfigureContextOptions(DbContextOptions options);
+        void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders);
     }
 
     public class SqlServerDataServicesProvider : IDataServicesProvider {
@@ -11,8 +11,8 @@ namespace OrchardVNext.Data.Providers {
             get { return "SqlServer"; }
         }
 
-        public void ConfigureContextOptions(DbContextOptions options) {
-            options.UseSqlServer(@"");
+        public void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders) {
+            optionsBuilders.UseSqlServer(@"");
         }
     }
 
@@ -21,8 +21,8 @@ namespace OrchardVNext.Data.Providers {
             get { return "InMemory"; }
         }
 
-        public void ConfigureContextOptions(DbContextOptions options) {
-            options.UseInMemoryStore(persist: true);
+        public void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders) {
+            optionsBuilders.UseInMemoryStore(persist: true);
         }
     }
 }

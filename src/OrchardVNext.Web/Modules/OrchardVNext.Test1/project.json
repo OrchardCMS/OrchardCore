@@ -1,6 +1,5 @@
 ﻿{
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta5-*",
         "OrchardVNext": ""
     },
     "frameworks": {

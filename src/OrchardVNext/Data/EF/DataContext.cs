@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
+using Microsoft.Data.Entity.Infrastructure;
 using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Data.EF {
@@ -59,8 +60,8 @@ namespace OrchardVNext.Data.EF {
             Logger.TraceInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
-        protected override void OnConfiguring(DbContextOptions options) {
-            _dbContextFactoryHolder.Configure(options);
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+            _dbContextFactoryHolder.Configure(optionsBuilder);
         }
 
         public override EntityEntry<TEntity> Add<TEntity>([NotNull]TEntity entity) {

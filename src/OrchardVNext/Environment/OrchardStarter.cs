@@ -6,6 +6,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.Runtime.Caching;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -18,61 +19,57 @@ using OrchardVNext.Routing;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
-        private static void CreateHostContainer(IApplicationBuilder app) {
-            app.UseServices(services => {
-                services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
-                services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
+        public static void ConfigureHost(IServiceCollection services) {
+            services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
+            services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
 
-                services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
-                services.AddSingleton<IAppDataFolder, AppDataFolder>();
-                services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
+            services.AddSingleton<IWebSiteFolder, WebSiteFolder>();
+            services.AddSingleton<IAppDataFolder, AppDataFolder>();
+            services.AddSingleton<IVirtualPathProvider, DefaultVirtualPathProvider>();
 
-                services.AddSingleton<ILoggerFactory, TestLoggerFactory>();
+            // Caching - Move out
+            services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
+            services.AddSingleton<ICache, Cache>();
 
-                // Caching - Move out
-                services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
-                services.AddSingleton<ICache, Cache>();
+            services.AddTransient<IOrchardHost, DefaultOrchardHost>();
+            {
+                services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 
-                services.AddTransient<IOrchardHost, DefaultOrchardHost>();
+                services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {
-                    services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
-
-                    services.AddSingleton<IShellContextFactory, ShellContextFactory>();
+                    services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                     {
-                        services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
+                        services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
+                        services.AddSingleton<IExtensionManager, ExtensionManager>();
                         {
-                            services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
-                            services.AddSingleton<IExtensionManager, ExtensionManager>();
-                            {
-                                services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
-                                services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
-                                services.AddSingleton<IExtensionFolders, ModuleFolders>();
+                            services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
+                            services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
+                            services.AddSingleton<IExtensionFolders, ModuleFolders>();
 
-                                services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
-                                services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
-                            }
+                            services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
+                            services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                         }
-
-                        services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                     }
+
+                    services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }
+            }
                 
-                services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
+            services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
                 
-                services.AddInstance<IServiceManifest>(new ServiceManifest(services));
-            });
-            
+            services.AddInstance<IServiceManifest>(new ServiceManifest(services));
+        }
+
+        public static IOrchardHost CreateHost(IApplicationBuilder app, ILoggerFactory loggerFactory) {
+            loggerFactory.AddProvider(new TestLoggerProvider());
+
             app.UseMiddleware<OrchardContainerMiddleware>();
             app.UseMiddleware<OrchardShellHostMiddleware>();
 
             // Think this needs to be inserted in a different part of the pipeline, possibly
             // dhen DI is created for the shell
             app.UseMiddleware<OrchardRouterMiddleware>();
-        }
-
-        public static IOrchardHost CreateHost(IApplicationBuilder app) {
-            CreateHostContainer(app);
-
+            
             return app.ApplicationServices.GetService<IOrchardHost>();
         }
     }

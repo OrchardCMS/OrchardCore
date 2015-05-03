@@ -1,8 +1,7 @@
-﻿{
+{
     "version": "2.0.0-*",
     "dependencies": {
         "Microsoft.AspNet.Mvc": "6.0.0-beta5-*",
-        "Microsoft.AspNet.RequestContainer": "1.0.0-beta4-*",
         "Microsoft.Framework.Runtime": "1.0.0-beta5-*",
         "Microsoft.Framework.Runtime.Roslyn.Common": "1.0.0-beta5-*",
         "Microsoft.Framework.Runtime.Roslyn": "1.0.0-beta5-*",
@@ -11,7 +10,8 @@
         "Microsoft.Framework.ConfigurationModel.Xml": "1.0.0-beta5-*",
         "EntityFramework.Core": "7.0.0-beta5-*",
         "EntityFramework.SqlServer": "7.0.0-beta5-*",
-        "EntityFramework.InMemory":  "7.0.0-beta5-*"
+        "EntityFramework.InMemory": "7.0.0-beta5-*",
+        "System.Console": "4.0.0-beta-*"
     },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {

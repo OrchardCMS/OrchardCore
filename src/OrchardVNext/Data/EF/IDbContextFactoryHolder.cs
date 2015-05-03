@@ -5,7 +5,7 @@ using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Data.EF {
     public interface IDbContextFactoryHolder : IDependency {
-        void Configure(DbContextOptions options);
+        void Configure(DbContextOptionsBuilder optionsBuilder);
     }
 
     public class DbContextFactoryHolder : IDbContextFactoryHolder {
@@ -22,7 +22,7 @@ namespace OrchardVNext.Data.EF {
             _appDataFolder = appDataFolder;
         }
 
-        public void Configure(DbContextOptions options) {
+        public void Configure(DbContextOptionsBuilder optionsBuilders) {
             var shellPath = _appDataFolder.Combine("Sites", _shellSettings.Name);
             _appDataFolder.CreateDirectory(shellPath);
 
@@ -34,7 +34,7 @@ namespace OrchardVNext.Data.EF {
                     ConnectionString = _shellSettings.DataConnectionString,
                     DataFolder = shellFolder
                 })
-            .ConfigureContextOptions(options);
+            .ConfigureContextOptions(optionsBuilders);
         }
     }
 }

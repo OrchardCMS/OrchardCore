@@ -21,7 +21,6 @@ namespace OrchardVNext.Demo.Controllers {
 
         public ActionResult Index()
         {
-
             //var contentItem = new ContentItem
             //{
             //    VersionRecord = new ContentItemVersionRecord
