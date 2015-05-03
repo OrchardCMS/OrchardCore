@@ -1,15 +1,22 @@
 Brochard
 ========
 
-Orchard vNext
+This is the initial ground with for Orchard CMS running on ASP.Net VNext (DNX)
 
 Getting Started
 ---------------
 
-First install the KVM, and make sure you are on the Dev Branch. You will know this once you do a kvm update and it pulls down beta-3 files. Also note you should be using the CLR and not CoreCLR for the time being (unless you want to get it running in CoreCLR and do a PR back)
+First off, follow the instrcutions here https://github.com/aspnet/home inorder to install DNVM. Next install Visual Studio 2015, or what ever you flavour of editor is.
 
-git clone https://github.com/OrchardCMS/Brochard.git
+Next you want to clone the Repo. 'git clone https://github.com/OrchardCMS/Brochard.git' and checkout the master branch.
 
-load in VS15 and Build - Check the project properties to make sure you are targetting the right runtime. (target the one you use as default in 'kvm list')
+Load up the solution in Visual studio and do a compile.
 
-Next run "k web" from Brochard\src\OrchardVNext.Web
+Next navigate to 'D:\Brochard\src\OrchardVNext.Web' or whereever your retrospective folder is on the command line in Administrative mode.
+
+run.. 'dnx . web' -> Hey you just kicked up the Orchard host.
+
+Then in your browser, call the url... http://local.orchardvnext.test1.com/home/index
+
+Note: 
+You may need to add local.orchardvnext.test1.com to your host file.
