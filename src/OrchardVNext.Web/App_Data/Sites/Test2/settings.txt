@@ -2,11 +2,11 @@ State: Running
 Themes: 
 Modules: 
 Name: Test2
-DataProvider: SqlCe
+DataProvider: InMemory
 DataConnectionString: null
 DataTablePrefix: null
 RequestUrlHost: null
-RequestUrlPrefix: local.orchardvnext.test2.com
+RequestUrlPrefix: localhost:5004
 EncryptionAlgorithm: AES
 EncryptionKey: 70FD36224BA0F4995FAC4F412ECD84E63545950139CC4AA0234575EECB8FDABC
 HashAlgorithm: HMACSHA256
