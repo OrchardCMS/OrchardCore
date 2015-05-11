@@ -10,7 +10,7 @@ namespace OrchardVNext.Environment {
         }
 
         public string MapPath(string virtualPath) {
-            return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty).Replace('/', '\\');
+       		return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty);
         }
     }
 }
