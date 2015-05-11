@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Razor;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Logging;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Mvc;
 using OrchardVNext.Routing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+#if DNXCORE50
 using System.Reflection;
-using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.Logging;
-using OrchardVNext.Data.EF;
+#endif
 
 namespace OrchardVNext.Environment.ShellBuilders {
     public interface IShellContainerFactory {
@@ -38,23 +38,22 @@ namespace OrchardVNext.Environment.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
+            
+            foreach (var dependency in blueprint.Dependencies
+                .Where(t => typeof (IModule).IsAssignableFrom(t.Type))) {
 
-            serviceCollection.AddEntityFramework()
-                .AddInMemoryStore()
-                .AddDbContext<DataContext>();
+                Logger.Debug("IModule Type: {0}", dependency.Type);
 
-            serviceCollection.AddMvc();
-
-            serviceCollection.Configure<RazorViewEngineOptions>(options =>
-            {
-                var expander = new ModuleViewLocationExpander();
-                options.ViewLocationExpanders.Add(expander);
-            });
+                // TODO: Rewrite to get rid of reflection.
+                var instance = (IModule) Activator.CreateInstance(dependency.Type);
+                instance.Configure(serviceCollection);
+            }
 
             var p = _serviceProvider.GetService<IOrchardLibraryManager>();
             serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
 
-            foreach (var dependency in blueprint.Dependencies)
+            foreach (var dependency in blueprint.Dependencies
+                .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
             {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf)))

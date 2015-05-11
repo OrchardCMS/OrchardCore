@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.Runtime;
+﻿using Microsoft.Framework.Runtime;
 
 namespace OrchardVNext.Environment {
     public abstract class HostEnvironment : IHostEnvironment {
