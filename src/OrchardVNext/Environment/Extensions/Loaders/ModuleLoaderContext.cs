@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Framework.Runtime;
 using Microsoft.Framework.Runtime.Compilation;
-using Microsoft.Framework.Runtime.DependencyManagement;
+using Microsoft.Framework.PackageManager;
 using NuGet;
 
 namespace OrchardVNext.Environment.Extensions.Loaders
