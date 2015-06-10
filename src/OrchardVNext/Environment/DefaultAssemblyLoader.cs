@@ -29,9 +29,9 @@ namespace OrchardVNext.Environment
             _virtualPathProvider = serviceProvider.GetService<IVirtualPathProvider>();
         }
 
-        public Assembly Load(string name) {
+        public Assembly Load(AssemblyName assemblyName) {
             Project project;
-
+            string name = assemblyName.FullName;
             if (!Project.TryGetProject(_virtualPathProvider.Combine(_path, name), out project)) {
                 return null;
             }
@@ -93,5 +93,7 @@ namespace OrchardVNext.Environment
             var loadContext = _assemblyLoadContextAccessor.Default;
             return roslynProjectReference.Load(loadContext);
         }
+
+        
     }
 }

@@ -60,7 +60,7 @@ namespace OrchardVNext.Data.EF {
             Logger.TraceInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        protected override void OnConfiguring(EntityOptionsBuilder optionsBuilder) {
             _dbContextFactoryHolder.Configure(optionsBuilder);
         }
 

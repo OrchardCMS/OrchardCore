@@ -2,8 +2,8 @@ State: Running
 Themes: 
 Modules: 
 Name: Default
-DataProvider: SqlCe
-DataConnectionString: null
+DataProvider: SqlServer
+DataConnectionString: Data Source=.\SQLExpress;Initial Catalog=OrchardvNext;Persist Security Info=True;Integrated Security=SSPI;
 DataTablePrefix: null
 RequestUrlHost: null
 RequestUrlPrefix: localhost:61562
