@@ -1,5 +1,5 @@
 ﻿{
-    "webroot": "wwwroot",
+    "webroot": ".",
     "version": "2.0.0-*",
     "exclude": [
         "wwwroot",
