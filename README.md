@@ -1,7 +1,7 @@
 Brochard
 ========
 
-This is the initial ground with for Orchard CMS running on ASP.Net VNext (DNX)
+Orchard CMS running on ASP.Net VNext (DNX)
 
 Getting Started
 ---------------
