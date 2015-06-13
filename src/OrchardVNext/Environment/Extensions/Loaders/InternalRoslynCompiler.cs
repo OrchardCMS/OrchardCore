@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,8 +16,9 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.Framework.Runtime.Caching;
 using Microsoft.Framework.Runtime.Common.DependencyInjection;
 using Microsoft.Framework.Runtime.Compilation;
-using OrchardVNext;
 using Microsoft.Framework.DependencyInjection;
+using OrchardVNext;
+using OrchardVNext.Environment;
 
 namespace Microsoft.Framework.Runtime.Roslyn {
     public class InternalRoslynCompiler {
@@ -175,16 +177,21 @@ namespace Microsoft.Framework.Runtime.Roslyn {
         }
 
         private void ApplyStrongNameSettings(CompilationContext compilationContext) {
-            // This is temporary, eventually we'll want a project.json feature for this
-            var keyFile = Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile);
-            if (!string.IsNullOrEmpty(keyFile)) {
+            var keyFile =
+                Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile) ??
+                compilationContext.Compilation.Options.CryptoKeyFile;
+
+            if (!string.IsNullOrEmpty(keyFile) && !PlatformHelper.IsMono) {
 #if DNX451
                 var delaySignString = Environment.GetEnvironmentVariable(EnvironmentNames.BuildDelaySign);
-                var delaySign = !string.IsNullOrEmpty(delaySignString) && (
-                    string.Equals(delaySignString, "true", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(delaySignString, "1", StringComparison.OrdinalIgnoreCase));
+                var delaySign =
+                    delaySignString == null
+                        ? compilationContext.Compilation.Options.DelaySign
+                        : string.Equals(delaySignString, "true", StringComparison.OrdinalIgnoreCase) ||
+                          string.Equals(delaySignString, "1", StringComparison.OrdinalIgnoreCase);
 
-                var strongNameProvider = new DesktopStrongNameProvider();
+                var strongNameProvider = new DesktopStrongNameProvider(
+                    ImmutableArray.Create(compilationContext.Project.ProjectDirectory));
                 var newOptions = compilationContext.Compilation.Options
                     .WithStrongNameProvider(strongNameProvider)
                     .WithCryptoKeyFile(keyFile)
@@ -196,6 +203,13 @@ namespace Microsoft.Framework.Runtime.Roslyn {
                     null);
                 compilationContext.Diagnostics.Add(diag);
 #endif
+            }
+
+            // If both CryptoPublicKey and CryptoKeyFile compilation will fail so we don't need a check
+            if (compilationContext.Compilation.Options.CryptoPublicKey != null) {
+                var options = compilationContext.Compilation.Options
+                    .WithCryptoPublicKey(compilationContext.Compilation.Options.CryptoPublicKey);
+                compilationContext.Compilation = compilationContext.Compilation.WithOptions(options);
             }
         }
 

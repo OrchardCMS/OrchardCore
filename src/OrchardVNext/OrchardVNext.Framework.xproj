@@ -7,11 +7,14 @@
   <Import Project="$(VSToolsPath)\DNX\Microsoft.DNX.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>60b5b61f-09c1-4f5c-8a5a-953574d0dca2</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>OrchardVNext</RootNamespace>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AssemblyName>OrchardVNext.Framework</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <RootNamespace>OrchardVNext</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>

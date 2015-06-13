@@ -1,7 +1,7 @@
 ﻿{
     "dependencies": {
         "Microsoft.AspNet.Mvc": "6.0.0-beta5-*",
-        "OrchardVNext": "",
+        "OrchardVNext": "2.0.0-*",
         "OrchardVNext.Test1": ""
     },
     "frameworks": {
