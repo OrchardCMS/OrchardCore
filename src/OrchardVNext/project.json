@@ -12,7 +12,6 @@
         "EntityFramework.Core": "7.0.0-*",
         "EntityFramework.SqlServer": "7.0.0-*",
         "EntityFramework.InMemory": "7.0.0-*",
-        "System.Console": "4.0.0-*",
         "Microsoft.Net.Http.Client": "1.0.0-beta3-10053"
         },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
@@ -22,7 +21,8 @@
             "dependencies": {
                 "System.Runtime": "4.0.20-*",
                 "System.Xml.XDocument": "4.0.10-*",
-                "System.IO.FileSystem.Primitives": "4.0.0-*"
+                "System.IO.FileSystem.Primitives": "4.0.0-*",
+                "System.Console": "4.0.0-*"
             }
         }
     }

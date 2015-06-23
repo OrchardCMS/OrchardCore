@@ -15,7 +15,7 @@ namespace OrchardVNext.Routing {
         }
 
         public async Task Invoke(HttpContext httpContext) {
-            Console.WriteLine("Begin Routing Request");
+            Logger.Information("Begin Routing Request");
 
             var router = httpContext.RequestServices.GetService<IRouteBuilder>().Build();
 
@@ -28,7 +28,7 @@ namespace OrchardVNext.Routing {
                 await _next.Invoke(httpContext);
             }
 
-            Console.WriteLine("End Routing Request");
+            Logger.Information("End Routing Request");
         }
     }
 }

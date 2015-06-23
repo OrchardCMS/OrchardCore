@@ -1,6 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22512.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Web", "src\OrchardVNext.Web\OrchardVNext.Web.xproj", "{07D91819-4C81-434F-8DE4-51D2B5A4EDA8}"
 	ProjectSection(ProjectDependencies) = postProject

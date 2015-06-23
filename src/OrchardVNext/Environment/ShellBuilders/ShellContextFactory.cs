@@ -29,7 +29,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
 
         ShellContext IShellContextFactory.CreateShellContext(
             ShellSettings settings) {
-            Console.WriteLine("Creating shell context for tenant {0}", settings.Name);
+            Logger.Information("Creating shell context for tenant {0}", settings.Name);
 
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
