@@ -161,10 +161,10 @@ namespace OrchardVNext.ContentManagement {
         //        return _contentItemVersionRepository
         //            .Fetch(x => x.ContentItemRecord.Id == id)
         //            .OrderBy(x => x.Number)
-        //            .Select(x => Get(x.Id, VersionOptions.VersionRecord(x.Id)));
+        //            .Select(x => GetAsync(x.Id, VersionOptions.VersionRecord(x.Id)));
         //    }
 
-        //    public IEnumerable<T> GetMany<T>(IEnumerable<int> ids, VersionOptions options) where T : class, IContent {
+        //    public IEnumerable<T> GetManyAsync<T>(IEnumerable<int> ids, VersionOptions options) where T : class, IContent {
         //        var contentItemVersionRecords = GetManyImplementation(hints, (contentItemCriteria, contentItemVersionCriteria) => {
         //            contentItemCriteria.Add(Restrictions.In("Id", ids.ToArray()));
         //            if (options.IsPublished) {
@@ -184,7 +184,7 @@ namespace OrchardVNext.ContentManagement {
         //        });
 
         //        var itemsById = contentItemVersionRecords
-        //            .Select(r => Get(r.ContentItemRecord.Id, options.IsDraftRequired ? options : VersionOptions.VersionRecord(r.Id)))
+        //            .Select(r => GetAsync(r.ContentItemRecord.Id, options.IsDraftRequired ? options : VersionOptions.VersionRecord(r.Id)))
         //            .GroupBy(ci => ci.Id)
         //            .ToDictionary(g => g.Key);
 
@@ -200,7 +200,7 @@ namespace OrchardVNext.ContentManagement {
         //            contentItemVersionCriteria.Add(Restrictions.In("Id", versionRecordIds.ToArray())));
 
         //        var itemsById = contentItemVersionRecords
-        //            .Select(r => Get(r.ContentItemRecord.Id, VersionOptions.VersionRecord(r.Id)))
+        //            .Select(r => GetAsync(r.ContentItemRecord.Id, VersionOptions.VersionRecord(r.Id)))
         //            .GroupBy(ci => ci.VersionRecord.Id)
         //            .ToDictionary(g => g.Key);
 
@@ -467,22 +467,22 @@ namespace OrchardVNext.ContentManagement {
 
         //        Import(element, importContentSession);
 
-        //        return importContentSession.Get(copyId, element.Name.LocalName);
+        //        return importContentSession.GetAsync(copyId, element.Name.LocalName);
         //    }
 
         //    public virtual ContentItem Restore(ContentItem contentItem, VersionOptions options) {
         //        // Invoke handlers.
         //        Handlers.Invoke(handler => handler.Restoring(new RestoreContentContext(contentItem, options)), Logger);
 
-        //        // Get the latest version.
+        //        // GetAsync the latest version.
         //        var versions = contentItem.Record.Versions.OrderBy(x => x.Number).ToArray();
         //        var latestVersionRecord = versions.SingleOrDefault(x => x.Latest) ?? versions.Last();
 
-        //        // Get the specified version.
+        //        // GetAsync the specified version.
         //        var specifiedVersionContentItem =
         //            contentItem.VersionRecord.Number == options.VersionNumber || contentItem.VersionRecord.Id == options.VersionRecordId 
         //            ? contentItem 
-        //            : Get(contentItem.Id, options);
+        //            : GetAsync(contentItem.Id, options);
 
         //        // Create a new version record based on the specified version record.
         //        var rolledBackContentItem = BuildNewVersion(specifiedVersionContentItem);
@@ -621,7 +621,7 @@ namespace OrchardVNext.ContentManagement {
 
         //        var status = element.Attribute("Status");
 
-        //        var item = importContentSession.Get(identity, VersionOptions.Latest, XmlConvert.DecodeName(element.Name.LocalName));
+        //        var item = importContentSession.GetAsync(identity, VersionOptions.Latest, XmlConvert.DecodeName(element.Name.LocalName));
         //        if (item == null) {
         //            item = New(XmlConvert.DecodeName(element.Name.LocalName));
         //            if (status != null && status.Value == "Draft") {
@@ -653,7 +653,7 @@ namespace OrchardVNext.ContentManagement {
         //            contentHandler.Imported(context);
         //        }
 
-        //        var savedItem = Get(item.Id, VersionOptions.Latest);
+        //        var savedItem = GetAsync(item.Id, VersionOptions.Latest);
 
         //        // the item has been pre-created in the first pass of the import, create it in db
         //        if(savedItem == null) {

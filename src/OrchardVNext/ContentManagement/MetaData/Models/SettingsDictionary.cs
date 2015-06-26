@@ -8,7 +8,7 @@ namespace OrchardVNext.ContentManagement.MetaData.Models {
         public SettingsDictionary(IDictionary<string, string> dictionary) : base(dictionary) { }
 
         public T TryGetModel<T>(string key) where T : class {
-            throw new NotImplementedException("TODO: Get this working!");
+            throw new NotImplementedException("TODO: GetAsync this working!");
             //var binder = new DefaultModelBinder();
             //var controllerContext = new ControllerContext();
             //var context = new ModelBindingContext {

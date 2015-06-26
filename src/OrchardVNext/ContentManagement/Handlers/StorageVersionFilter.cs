@@ -9,7 +9,7 @@
 //        }
 
 //        protected override TRecord GetRecordCore(ContentItemVersionRecord versionRecord) {
-//            return _repository.Get(versionRecord.Id);
+//            return _repository.GetAsync(versionRecord.Id);
 //        }
 
 //        protected override TRecord CreateRecordCore(ContentItemVersionRecord versionRecord, TRecord record) {
@@ -31,12 +31,12 @@
 //        }
 
 //        protected override void Destroying(DestroyContentContext context, ContentPart<TRecord> instance) {
-//            // Get all content item version records.
+//            // GetAsync all content item version records.
 //            var allVersions = context.ContentItem.Record.Versions.ToArray();
 
 //            // For each version record, delete its part record (ID of versioned part records is the same as the ID of a version record).
 //            foreach (var versionRecord in allVersions) {
-//                var partRecord = _repository.Get(versionRecord.Id);
+//                var partRecord = _repository.GetAsync(versionRecord.Id);
 
 //                if (partRecord != null)
 //                    _repository.Delete(partRecord);

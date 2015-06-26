@@ -27,13 +27,9 @@ namespace OrchardVNext.Data {
 
         public TDocument Get<TDocument>(int id) where TDocument : StorageDocument {
             var tasks = _contentStores
-                .Select(s => s.Get<TDocument>(id))
+                .Select(s => s.GetAsync<TDocument>(id))
                 .OrderByCompletion();
-
-            foreach (var task in tasks) {
-                task.Start();
-            }
-
+            
             TDocument result = null;
 
             foreach (var task in tasks) {
@@ -48,13 +44,9 @@ namespace OrchardVNext.Data {
 
         public IEnumerable<TDocument> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
             var tasks = _contentStores
-                .Select(s => s.GetMany<TDocument>(ids))
+                .Select(s => s.GetManyAsync<TDocument>(ids))
                 .OrderByCompletion();
-
-            foreach (var task in tasks) {
-                task.Start();
-            }
-
+            
             List<TDocument> results = new List<TDocument>();
 
             foreach (var task in tasks) {
@@ -74,7 +66,7 @@ namespace OrchardVNext.Data {
         
         public void Store<TDocument>(TDocument document) where TDocument : StorageDocument {
             foreach (var contentStore in _contentStores) {
-                contentStore.Store(document).ContinueWith(x => {
+                contentStore.StoreAsync(document).ContinueWith(x => {
                     if (x.Result > 0)
                         _contentQueryStore.Index(document, contentStore.GetType());
                 }).Start();
@@ -88,10 +80,10 @@ namespace OrchardVNext.Data {
     }
 
     public interface IContentStore : IDependency {
-        Task<TDocument> Get<TDocument>(int id) where TDocument : StorageDocument;
-        Task<int> Store<TDocument>(TDocument document) where TDocument : StorageDocument;
+        Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument;
+        Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument;
         Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument;
-        Task<IEnumerable<TDocument>> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument;
+        Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument;
     }
 
     public interface IContentQueryStore : IDependency {

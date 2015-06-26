@@ -27,7 +27,7 @@
 //        }
 
 //        protected virtual TRecord GetRecordCore(ContentItemVersionRecord versionRecord) {
-//            return _repository.Get(versionRecord.ContentItemRecord.Id);
+//            return _repository.GetAsync(versionRecord.ContentItemRecord.Id);
 //        }
 
 //        protected virtual TRecord CreateRecordCore(ContentItemVersionRecord versionRecord, TRecord record) {

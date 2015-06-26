@@ -183,6 +183,14 @@ namespace OrchardVNext.Tests.Data {
                 return await Task.FromResult<TDocument>(_documents.SingleOrDefault(x => x.Id == id) as TDocument);
             }
 
+            public Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
+                throw new NotImplementedException();
+            }
+
             public async Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
                 return await Task.FromResult<IEnumerable<TDocument>>(_documents
                     .Where(x => x.GetType().Name == typeof(TDocument).Name)
@@ -196,6 +204,10 @@ namespace OrchardVNext.Tests.Data {
                     _documents.Add(document);
                     return document.Id;
                 }).Result);
+            }
+
+            public Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
+                throw new NotImplementedException();
             }
         }
 

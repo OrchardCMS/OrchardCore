@@ -66,7 +66,7 @@ namespace OrchardVNext.ContentManagement {
         ///// <param name="id">Numeric id of the content item</param>
         //IEnumerable<ContentItem> GetAllVersions(int id);
 
-        //IEnumerable<T> GetMany<T>(IEnumerable<int> ids, VersionOptions options) where T : class, IContent;
+        //IEnumerable<T> GetManyAsync<T>(IEnumerable<int> ids, VersionOptions options) where T : class, IContent;
         //IEnumerable<T> GetManyByVersionId<T>(IEnumerable<int> versionRecordIds) where T : class, IContent;
         //IEnumerable<ContentItem> GetManyByVersionId(IEnumerable<int> versionRecordIds);
 

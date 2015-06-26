@@ -18,7 +18,7 @@ namespace OrchardVNext.Data.EF {
         }
 
         public void Index<T>(T content) where T : DocumentRecord {
-            // Get Lambda and store this content.
+            // GetAsync Lambda and store this content.
             var data = content.Infoset.Data;
 
             foreach (var handler in _contentQueryExpressionHandlers) {
