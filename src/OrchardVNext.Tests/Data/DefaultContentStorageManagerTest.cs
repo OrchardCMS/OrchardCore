@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Framework.DependencyInjection;
+using System.Threading.Tasks;
 #if DNXCORE50
 using System.Reflection;
 #endif
@@ -173,20 +174,23 @@ namespace OrchardVNext.Tests.Data {
         public class FakeContentStore : IContentStore {
             private readonly IList<StorageDocument> _documents = new List<StorageDocument>();
 
-            public TDocument Get<TDocument>(int id) where TDocument : StorageDocument {
-                return _documents.SingleOrDefault(x => x.Id == id) as TDocument;
+            public async Task<TDocument> Get<TDocument>(int id) where TDocument : StorageDocument {
+                return await Task.FromResult<TDocument>(_documents.SingleOrDefault(x => x.Id == id) as TDocument);
             }
 
-            public IEnumerable<TDocument> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
-                return _documents
+            public async Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
+                return await Task.FromResult<IEnumerable<TDocument>>(_documents
                     .Where(x => x.GetType().Name == typeof(TDocument).Name)
                     .Cast<TDocument>()
-                    .Where(map.Compile());
+                    .Where(map.Compile()));
             }
 
-            public void Store<TDocument>(TDocument document) where TDocument : StorageDocument {
-                document.Id = _documents.Max(x => x.Id) + 1;
-                _documents.Add(document);
+            public async Task<int> Store<TDocument>(TDocument document) where TDocument : StorageDocument {
+                return await Task.FromResult<int>(Task.Run(() => {
+                    document.Id = _documents.Max(x => x.Id) + 1;
+                    _documents.Add(document);
+                    return document.Id;
+                }).Result);
             }
         }
 
@@ -255,7 +259,7 @@ namespace OrchardVNext.Tests.Data {
                 foreach (var contentStore in _contentStores) {
                     var result = contentStore.Query(map);
                     if (result != null)
-                        documents.AddRange(result);
+                        documents.AddRange(result.Result);
                 }
 
                 for (int i = 0; i < documents.Count; i++) {

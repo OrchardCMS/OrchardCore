@@ -3,18 +3,17 @@ using System.Xml;
 using System.Xml.Linq;
 using OrchardVNext.ContentManagement.FieldStorage.InfosetStorage;
 using OrchardVNext.Data.Conventions;
+using OrchardVNext.Data;
 
 namespace OrchardVNext.ContentManagement.Records {
-    public class DocumentRecord {
+    public class DocumentRecord : StorageDocument {
         public DocumentRecord() {
             Infoset = new Infoset();
             VersionInfoset = new Infoset();
         }
 
-        public int Id { get; set; }
-
         [StringLengthMax]
-        public string Data { get { return Infoset.Data; } set { Infoset.Data = value; } }
+        public override object Data { get { return Infoset.Data; } set { Infoset.Data = (string)value; } }
         public Infoset Infoset { get; set; }
         public Infoset VersionInfoset { get; set; }
 

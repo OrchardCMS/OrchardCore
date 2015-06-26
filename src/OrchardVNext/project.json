@@ -12,7 +12,8 @@
         "EntityFramework.Core": "7.0.0-*",
         "EntityFramework.SqlServer": "7.0.0-*",
         "EntityFramework.InMemory": "7.0.0-*",
-        "Microsoft.Net.Http.Client": "1.0.0-beta3-10053"
+        "Microsoft.Net.Http.Client": "1.0.0-beta3-10053",
+        "Nito.AsyncEx": "3.0.1-pre"
         },
     "compilationOptions": { "define": [ "TRACE" ], "warningsAsErrors": true },
     "frameworks": {

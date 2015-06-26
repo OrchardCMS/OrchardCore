@@ -22,7 +22,7 @@ namespace OrchardVNext.Data.Providers {
         }
 
         public void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders,string connectionString) {
-            optionsBuilders.UseInMemoryStore(persist: true);
+            optionsBuilders.UseInMemoryDatabase(persist: true);
         }
     }
 }

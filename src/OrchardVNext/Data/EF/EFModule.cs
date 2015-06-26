@@ -4,7 +4,7 @@ namespace OrchardVNext.Data.EF {
     public class EFModule : IModule {
         public void Configure(IServiceCollection serviceCollection) {
             serviceCollection.AddEntityFramework()
-                .AddInMemoryStore()
+                .AddInMemoryDatabase()
                 .AddDbContext<DataContext>();
         }
     }
