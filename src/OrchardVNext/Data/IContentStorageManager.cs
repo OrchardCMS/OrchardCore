@@ -47,7 +47,24 @@ namespace OrchardVNext.Data {
         }
 
         public IEnumerable<TDocument> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
-            throw new NotImplementedException();
+            var tasks = _contentStores
+                .Select(s => s.GetMany<TDocument>(ids))
+                .OrderByCompletion();
+
+            foreach (var task in tasks) {
+                task.Start();
+            }
+
+            List<TDocument> results = new List<TDocument>();
+
+            foreach (var task in tasks) {
+                if (task.Result != null) {
+                    results.AddRange(task.Result);
+                    break;
+                }
+            }
+
+            return results;
         }
 
         public IEnumerable<TDocument> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
@@ -57,8 +74,10 @@ namespace OrchardVNext.Data {
         
         public void Store<TDocument>(TDocument document) where TDocument : StorageDocument {
             foreach (var contentStore in _contentStores) {
-                contentStore.Store(document);
-                _contentQueryStore.Index(document, contentStore.GetType());
+                contentStore.Store(document).ContinueWith(x => {
+                    if (x.Result > 0)
+                        _contentQueryStore.Index(document, contentStore.GetType());
+                }).Start();
             }
         }
     }
@@ -72,6 +91,7 @@ namespace OrchardVNext.Data {
         Task<TDocument> Get<TDocument>(int id) where TDocument : StorageDocument;
         Task<int> Store<TDocument>(TDocument document) where TDocument : StorageDocument;
         Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument;
+        Task<IEnumerable<TDocument>> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument;
     }
 
     public interface IContentQueryStore : IDependency {

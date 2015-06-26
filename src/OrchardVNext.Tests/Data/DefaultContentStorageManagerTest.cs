@@ -125,6 +125,11 @@ namespace OrchardVNext.Tests.Data {
             Assert.Equal(document3.Id, reducedRecords.ElementAt(1).Id);
         }
 
+        [Fact]
+        public void ShouldReturnTheRecordFromTheFastestDataStore() {
+            Assert.False(true);
+        }
+
         //[Fact]
         //public void ShouldFilterByNumericComparison() {
         //    IContentStorageManager manager = new FakeContentStorageManager(new List<StorageDocument>());
