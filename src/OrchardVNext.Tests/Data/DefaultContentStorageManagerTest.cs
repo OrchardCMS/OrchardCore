@@ -183,11 +183,11 @@ namespace OrchardVNext.Tests.Data {
                 return await Task.FromResult<TDocument>(_documents.SingleOrDefault(x => x.Id == id) as TDocument);
             }
 
-            public Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
+            public async Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
                 throw new NotImplementedException();
             }
 
-            public Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
+            public async Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
                 throw new NotImplementedException();
             }
 
