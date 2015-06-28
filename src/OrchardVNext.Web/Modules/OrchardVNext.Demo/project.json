@@ -1,6 +1,6 @@
 ﻿{
     "dependencies": {
-        "Microsoft.AspNet.Mvc": "6.0.0-beta5-*",
+        "Microsoft.AspNet.Mvc": "6.0.0-*",
         "OrchardVNext": "2.0.0-*",
         "OrchardVNext.Test1": ""
     },

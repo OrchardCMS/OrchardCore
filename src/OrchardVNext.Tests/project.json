@@ -3,7 +3,7 @@
     "warningsAsErrors": "true"
   },
   "dependencies": {
-    "Moq": "4.2.1502.0911",
+    "Moq": "4.2-*",
     "xunit": "2.1.0-*",
     "xunit.runner.dnx": "2.1.0-*",
     "OrchardVNext": "2.0.0-*"
@@ -15,10 +15,10 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816"
+        "System.Collections":  "4.0.10-beta-*",
+        "System.Linq": "4.0.0-beta-*",
+        "System.Threading": "4.0.10-beta-*",
+        "Microsoft.CSharp": "4.0.0-beta-*"
       }
     }
   }
