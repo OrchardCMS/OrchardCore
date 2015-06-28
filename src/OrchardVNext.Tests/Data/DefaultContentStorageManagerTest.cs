@@ -130,6 +130,24 @@ namespace OrchardVNext.Tests.Data {
             Assert.False(true);
         }
 
+        [Fact]
+        public void ShouldReturnNullWhenRecordIsRemoved() {
+            var container = CreateContainer();
+            var manager = container.GetService(typeof(IContentStorageManager)) as IContentStorageManager;
+
+            StorageDocument document = new FakeStorageDocument();
+            manager.Store(document);
+
+            var returnedDocument = manager.Get<FakeStorageDocument>(document.Id);
+
+            manager.Remove<FakeStorageDocument>(document.Id);
+
+            var returnedDocumentAfterRemove = manager.Get<FakeStorageDocument>(document.Id);
+
+            Assert.NotNull(returnedDocument);
+            Assert.Null(returnedDocumentAfterRemove);
+        }
+
         //[Fact]
         //public void ShouldFilterByNumericComparison() {
         //    IContentStorageManager manager = new FakeContentStorageManager(new List<StorageDocument>());
@@ -165,7 +183,7 @@ namespace OrchardVNext.Tests.Data {
         //}
 
         private class FakeStorageDocument : StorageDocument {
-            public override object Data {
+            public override string Data {
                 get {
                     throw new NotImplementedException();
                 }
@@ -179,16 +197,15 @@ namespace OrchardVNext.Tests.Data {
         public class FakeContentStore : IContentStore {
             private readonly IList<StorageDocument> _documents = new List<StorageDocument>();
 
-            public async Task<TDocument> Get<TDocument>(int id) where TDocument : StorageDocument {
+            public async Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
                 return await Task.FromResult<TDocument>(_documents.SingleOrDefault(x => x.Id == id) as TDocument);
             }
 
-            public async Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
-                throw new NotImplementedException();
-            }
-
             public async Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
-                throw new NotImplementedException();
+                return await Task.FromResult<IEnumerable<TDocument>>(_documents
+                    .Where(x => x.GetType().Name == typeof(TDocument).Name)
+                    .Where(x => ids.Contains(x.Id))
+                    .Cast<TDocument>());
             }
 
             public async Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
@@ -198,16 +215,16 @@ namespace OrchardVNext.Tests.Data {
                     .Where(map.Compile()));
             }
 
-            public async Task<int> Store<TDocument>(TDocument document) where TDocument : StorageDocument {
+            public Task RemoveAsync<TDocument>(int id) where TDocument : StorageDocument {
+                throw new NotImplementedException();
+            }
+
+            public async Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
                 return await Task.FromResult<int>(Task.Run(() => {
                     document.Id = _documents.Max(x => x.Id) + 1;
                     _documents.Add(document);
                     return document.Id;
                 }).Result);
-            }
-
-            public Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
-                throw new NotImplementedException();
             }
         }
 
@@ -293,6 +310,15 @@ namespace OrchardVNext.Tests.Data {
                     Id = _indexCollection.Max(x => x.Id) + 1,
                     IndexName = indexName,
                 });
+            }
+
+            public void DeIndex<TDocument>(int id, Type contentStore) {
+                var type = typeof(TDocument);
+                var documents = _documents.Where(x => x.Type == type && x.ReferencedDocumentId == id).ToList();
+
+                foreach (var document in documents) {
+                    _documents.Remove(document);
+                }
             }
 
             public class InternalIndexCollection {

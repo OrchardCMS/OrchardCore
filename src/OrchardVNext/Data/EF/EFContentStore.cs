@@ -1,56 +1,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardVNext.ContentManagement;
-using OrchardVNext.ContentManagement.Records;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.Data.Entity;
 
 namespace OrchardVNext.Data.EF {
-    public class EfContentItemStore : IContentItemStore {
-        private readonly IContentStorageProvider _contentStorageProvider;
+    public class EFContentStore : IContentStore {
+        private readonly DataContext _dataContext;
 
-        public EfContentItemStore(
-            IContentStorageProvider contentStorageProvider) {
-            _contentStorageProvider = contentStorageProvider;
+        public EFContentStore(DataContext dataContext) {
+            _dataContext = dataContext;
         }
 
-        private readonly Func<ContentItemVersionRecord, int, VersionOptions, bool> _query = (versionRecord, id, options) => {
-            if (options.IsPublished) {
-                return versionRecord.ContentItemRecord.Id == id && versionRecord.Published;
-            }
-            if (options.IsLatest || options.IsDraftRequired) {
-                return versionRecord.ContentItemRecord.Id == id && versionRecord.Latest;
-            }
-            if (options.IsDraft) {
-                return versionRecord.ContentItemRecord.Id == id && versionRecord.Latest && !versionRecord.Published;
-            }
-            if (options.VersionNumber != 0) {
-                return versionRecord.ContentItemRecord.Id == id && versionRecord.Number == options.VersionNumber;
-            }
-            return versionRecord.ContentItemRecord.Id == id;
-        };
-
-        public void Store(ContentItem contentItem) {
-            _contentStorageProvider.Store(contentItem.Record);
-            _contentStorageProvider.Store(contentItem.VersionRecord);
+        public async Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument {
+            return await _dataContext.Set<TDocument>().SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public ContentItem Get(int id) {
-            return Get(id, VersionOptions.Published);
+        public async Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
+            return await Task.FromResult<IEnumerable<TDocument>>(_dataContext.Set<TDocument>()
+                .Where(x => x.GetType().Name == typeof(TDocument).Name)
+                .Where(x => ids.Contains(x.Id))
+                .Cast<TDocument>());
         }
 
-        public ContentItem Get(int id, VersionOptions options) {
-            var record = _contentStorageProvider
-                .Query<ContentItemVersionRecord>(x => _query(x, id, options))
-                .OrderBy(x => x.Number)
-                .LastOrDefault();
-
-            return new ContentItem { VersionRecord = record };
+        public async Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
+            return await Task.FromResult<IEnumerable<TDocument>>(_dataContext.Set<TDocument>()
+                .Where(x => x.GetType().Name == typeof(TDocument).Name)
+                .Cast<TDocument>()
+                .Where(map.Compile()));
         }
 
-        public IEnumerable<ContentItem> GetMany(IEnumerable<int> ids) {
-            return _contentStorageProvider
-                .Query<ContentItemVersionRecord>(x => ids.Contains(x.Id))
-                .Select(x => new ContentItem { VersionRecord = x });
+        public async Task RemoveAsync<TDocument>(int id) where TDocument : StorageDocument {
+            await Task.Run(() => {
+                _dataContext.Remove(_dataContext.Set<TDocument>().SingleOrDefault(d => d.Id == id));
+            });
+        }
+
+        public async Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
+            return await Task.FromResult<int>(Task.Run(() => {
+                _dataContext.Set<TDocument>().Add(document);
+                return document.Id;
+            }).Result);
         }
     }
 }

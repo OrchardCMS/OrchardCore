@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -6,7 +7,6 @@ using JetBrains.Annotations;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
-using Microsoft.Data.Entity.Infrastructure;
 using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Data.EF {
@@ -62,6 +62,16 @@ namespace OrchardVNext.Data.EF {
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             _dbContextFactoryHolder.Configure(optionsBuilder);
+        }
+
+        public override void AddRange([NotNull]IEnumerable<object> entities) {
+            base.AddRange(entities);
+            SaveChanges();
+        }
+
+        public override void AddRange([NotNull]params object[] entities) {
+            base.AddRange(entities);
+            SaveChanges();
         }
 
         public override EntityEntry<TEntity> Add<TEntity>([NotNull]TEntity entity) {

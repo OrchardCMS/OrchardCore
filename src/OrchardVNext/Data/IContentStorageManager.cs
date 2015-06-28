@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Nito.AsyncEx;
 
 namespace OrchardVNext.Data {
@@ -12,6 +11,7 @@ namespace OrchardVNext.Data {
         IEnumerable<TDocument> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument;
         void Store<TDocument>(TDocument document) where TDocument : StorageDocument;
         IEnumerable<TDocument> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument;
+        void Remove<TDocument>(int id) where TDocument : StorageDocument;
     }
 
     public class DefaultContentStorageManager : IContentStorageManager {
@@ -39,7 +39,7 @@ namespace OrchardVNext.Data {
                 }
             }
 
-            return null;
+            return result;
         }
 
         public IEnumerable<TDocument> GetMany<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
@@ -69,33 +69,16 @@ namespace OrchardVNext.Data {
                 contentStore.StoreAsync(document).ContinueWith(x => {
                     if (x.Result > 0)
                         _contentQueryStore.Index(document, contentStore.GetType());
-                }).Start();
+                });
             }
         }
-    }
 
-    public abstract class StorageDocument {
-        public int Id { get; set; }
-        public abstract object Data { get; set; }
-    }
-
-    public interface IContentStore : IDependency {
-        Task<TDocument> GetAsync<TDocument>(int id) where TDocument : StorageDocument;
-        Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument;
-        Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument;
-        Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument;
-    }
-
-    public interface IContentQueryStore : IDependency {
-        void Index<TDocument>(TDocument document, Type contentStore) where TDocument : StorageDocument;
-        ContentIndexResult<TDocument> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument;
-    }
-
-    public class ContentIndexResult<TDocument> {
-        public IEnumerable<TDocument> Records { get; set; }
-
-        public IEnumerable<TDocument> Reduce(Func<TDocument, bool> reduce) {
-            return Records.Where(reduce);
+        public void Remove<TDocument>(int id) where TDocument : StorageDocument {
+            foreach (var contentStore in _contentStores) {
+                contentStore.RemoveAsync<TDocument>(id).ContinueWith(x => {
+                    _contentQueryStore.DeIndex<TDocument>(id, contentStore.GetType());
+                });
+            }
         }
     }
 }

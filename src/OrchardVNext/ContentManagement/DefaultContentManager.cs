@@ -15,7 +15,7 @@ namespace OrchardVNext.ContentManagement {
         private readonly IContentManagerSession _contentManagerSession;
         private readonly IEnumerable<IContentHandler> _handlers;
         private readonly IContentItemStore _contentItemStore;
-        private readonly IContentStorageProvider _contentStorageProvider;
+        private readonly IContentStorageManager _contentStorageManager;
         private readonly ShellSettings _shellSettings;
 
         private const string Published = "Published";
@@ -26,14 +26,14 @@ namespace OrchardVNext.ContentManagement {
             IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             IContentItemStore contentItemStore,
-            IContentStorageProvider contentStorageProvider,
+            IContentStorageManager contentStorageManager,
             ShellSettings shellSettings) {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManagerSession = contentManagerSession;
             _shellSettings = shellSettings;
             _handlers = handlers;
             _contentItemStore = contentItemStore;
-            _contentStorageProvider = contentStorageProvider;
+            _contentStorageManager = contentStorageManager;
         }
 
         public IEnumerable<IContentHandler> Handlers => _handlers;
@@ -372,7 +372,7 @@ namespace OrchardVNext.ContentManagement {
             }
 
             contentItemRecord.Versions.Add(buildingItemVersionRecord);
-            _contentStorageProvider.Store(buildingItemVersionRecord);
+            _contentStorageManager.Store(buildingItemVersionRecord);
 
             var buildingContentItem = New(existingContentItem.ContentType);
             buildingContentItem.VersionRecord = buildingItemVersionRecord;
@@ -409,6 +409,7 @@ namespace OrchardVNext.ContentManagement {
 
             // add to the collection manually for the created case
             contentItem.VersionRecord.ContentItemRecord.Versions.Add(contentItem.VersionRecord);
+            contentItem.VersionRecord.ContentItemRecord.ContentType = AcquireContentTypeRecord(contentItem.ContentType);
 
             // version may be specified
             if (options.VersionNumber != 0) {
@@ -428,12 +429,7 @@ namespace OrchardVNext.ContentManagement {
             // invoke handlers to add information to persistent stores
             Handlers.Invoke(handler => handler.Creating(context));
 
-            // deferring the assignment of ContentType as loading a Record might force NHibernate to AutoFlush 
-            // the ContentPart, and needs the ContentItemRecord to be created before (created in previous statement)
-            contentItem.VersionRecord.ContentItemRecord.ContentType = AcquireContentTypeRecord(contentItem.ContentType);
-
             Handlers.Invoke(handler => handler.Created(context));
-
 
             if (options.IsPublished) {
                 var publishContext = new PublishContentContext(contentItem, null);
@@ -698,14 +694,14 @@ namespace OrchardVNext.ContentManagement {
 
         private ContentTypeRecord AcquireContentTypeRecord(string contentType) {
             
-            var contentTypeRecord = _contentStorageProvider
+            var contentTypeRecord = _contentStorageManager
                 .Query<ContentTypeRecord>(x => x.Name == contentType)
-                .FirstOrDefault();
+                .SingleOrDefault();
 
             if (contentTypeRecord == null) {
                 //TEMP: this is not safe... ContentItem types could be created concurrently?
                 contentTypeRecord = new ContentTypeRecord { Name = contentType };
-                _contentStorageProvider.Store(contentTypeRecord);
+                _contentStorageManager.Store(contentTypeRecord);
             }
 
             var contentTypeId = contentTypeRecord.Id;
@@ -715,9 +711,8 @@ namespace OrchardVNext.ContentManagement {
             // content type. Thus we need to ensure that the cache is valid, or invalidate it and retrieve it 
             // another time.
 
-            var result = _contentStorageProvider
-                .Query<ContentTypeRecord>(x => x.Id == contentTypeId)
-                .FirstOrDefault();
+            var result = _contentStorageManager
+                .Get<ContentTypeRecord>(contentTypeId);
 
             if (result != null && result.Name.Equals(contentType, StringComparison.OrdinalIgnoreCase)) {
                 return result;

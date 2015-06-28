@@ -13,7 +13,7 @@ namespace OrchardVNext.ContentManagement.Records {
         }
 
         [StringLengthMax]
-        public override object Data { get { return Infoset.Data; } set { Infoset.Data = (string)value; } }
+        public override string Data { get { return Infoset.Data; } set { Infoset.Data = value; } }
         public Infoset Infoset { get; set; }
         public Infoset VersionInfoset { get; set; }
 
