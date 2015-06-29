@@ -67,6 +67,12 @@ namespace OrchardVNext.Environment.Configuration {
                 _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false);
 
             configurationSource.Set("Name", shellSettings.Name);
+            configurationSource.Set("State", shellSettings.State.ToString());
+            configurationSource.Set("DataConnectionString", shellSettings.DataConnectionString);
+            configurationSource.Set("DataProvider", shellSettings.DataProvider);
+            configurationSource.Set("DataTablePrefix", shellSettings.DataTablePrefix);
+            configurationSource.Set("RequestUrlHost", shellSettings.RequestUrlHost);
+            configurationSource.Set("RequestUrlPrefix", shellSettings.RequestUrlPrefix);
 
             configurationSource.Commit();
         }
