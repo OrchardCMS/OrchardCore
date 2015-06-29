@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.Framework.ConfigurationModel;
 using OrchardVNext.Environment.Configuration.Sources;
@@ -9,73 +8,67 @@ using OrchardVNext.FileSystems.AppData;
 namespace OrchardVNext.Environment.Configuration {
     public interface IShellSettingsManager {
         IEnumerable<ShellSettings> LoadSettings();
+        void SaveSettings(ShellSettings shellSettings);
     }
 
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
         private const string _settingsFileNameFormat = "Settings.{0}";
-        private readonly string[] _settingFileNameExtensions = new string[] { "txt", "json" };
 
         public ShellSettingsManager(IAppDataFolder appDataFolder) {
             _appDataFolder = appDataFolder;
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
-            var filePaths = _appDataFolder
+            var tenantPaths = _appDataFolder
                 .ListDirectories("Sites")
-                .SelectMany(path => _appDataFolder.ListFiles(path))
-                .Where(path => {
-                    var filePathName = Path.GetFileName(path);
+                .Select(path => _appDataFolder.MapPath(path));
 
-                    return _settingFileNameExtensions.Any(p =>
-                        string.Equals(filePathName, string.Format(_settingsFileNameFormat, p), StringComparison.OrdinalIgnoreCase)
-                    );
-                });
+            var shellSettings = new List<ShellSettings>();
 
-            List<ShellSettings> shellSettings = new List<ShellSettings>();
+            foreach (var tenantPath in tenantPaths) {
+                IConfigurationSourceRoot configurationContainer =
+                    new Microsoft.Framework.ConfigurationModel.Configuration()
+                        .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "json")),
+                            true)
+                        .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "xml")),
+                            true)
+                        .AddIniFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "ini")),
+                            true)
+                        .Add(
+                            new DefaultFileConfigurationSource(
+                                _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false));
 
-            foreach (var filePath in filePaths) {
-                IConfigurationSourceRoot configurationContainer = null;
+                var shellSetting = new ShellSettings {
+                    Name = configurationContainer.Get<string>("Name"),
+                    DataConnectionString = configurationContainer.Get<string>("DataConnectionString"),
+                    DataProvider = configurationContainer.Get<string>("DataProvider"),
+                    DataTablePrefix = configurationContainer.Get<string>("DataTablePrefix"),
+                    RequestUrlHost = configurationContainer.Get<string>("RequestUrlHost"),
+                    RequestUrlPrefix = configurationContainer.Get<string>("RequestUrlPrefix")
+                };
 
-                var extension = Path.GetExtension(filePath);
+                TenantState state;
+                shellSetting.State = Enum.TryParse(configurationContainer.Get<string>("State"), true, out state)
+                    ? state
+                    : TenantState.Uninitialized;
 
-                switch (extension) {
-                    case ".json":
-                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()
-                            .AddJsonFile(filePath);
-                        break;
-                    case ".xml":
-                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()
-                            .AddXmlFile(filePath);
-                        break;
-                    case ".ini":
-                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()
-                            .AddIniFile(filePath);
-                        break;
-                    case ".txt":
-                        configurationContainer = new Microsoft.Framework.ConfigurationModel.Configuration()
-                            .Add(new DefaultFileConfigurationSource(_appDataFolder, filePath));
-                        break;
-                }
-
-                if (configurationContainer != null) {
-                    var shellSetting = new ShellSettings {
-                        Name = configurationContainer.Get<string>("Name"),
-                        DataConnectionString = configurationContainer.Get<string>("DataConnectionString"),
-                        DataProvider = configurationContainer.Get<string>("DataProvider"),
-                        DataTablePrefix = configurationContainer.Get<string>("DataTablePrefix"),
-                        RequestUrlHost = configurationContainer.Get<string>("RequestUrlHost"),
-                        RequestUrlPrefix = configurationContainer.Get<string>("RequestUrlPrefix")
-                    };
-
-                    TenantState state;
-                    shellSetting.State = Enum.TryParse(configurationContainer.Get<string>("State"), true, out state) ? state : TenantState.Uninitialized;
-
-                    shellSettings.Add(shellSetting);
-                }
+                shellSettings.Add(shellSetting);
             }
 
             return shellSettings;
+        }
+
+        void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
+
+            var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
+
+            var configurationSource = new DefaultFileConfigurationSource(
+                _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false);
+
+            configurationSource.Set("Name", shellSettings.Name);
+
+            configurationSource.Commit();
         }
     }
 }
