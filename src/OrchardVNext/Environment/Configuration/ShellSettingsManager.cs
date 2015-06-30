@@ -72,28 +72,24 @@ namespace OrchardVNext.Environment.Configuration {
             return shellSettings;
         }
 
-        void IShellSettingsManager.SaveSettings(ShellSettings shellSetting) {
-            if (shellSetting == null)
-                throw new ArgumentNullException(nameof(shellSetting));
-            if (string.IsNullOrWhiteSpace(shellSetting.Name))
+        void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
+            if (shellSettings == null)
+                throw new ArgumentNullException(nameof(shellSettings));
+            if (string.IsNullOrWhiteSpace(shellSettings.Name))
                 throw new ArgumentException(
                     "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.",
-                    nameof(shellSetting.Name));
+                    nameof(shellSettings.Name));
 
-            Logger.Information("Saving ShellSettings for tenant '{0}'", shellSetting.Name);
+            Logger.Information("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
 
-            var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSetting.Name));
+            var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
             var configurationSource = new DefaultFileConfigurationSource(
                 _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false);
 
-            configurationSource.Set("Name", shellSetting.Name);
-            configurationSource.Set("State", shellSetting.State.ToString());
-            configurationSource.Set("DataConnectionString", shellSetting.DataConnectionString);
-            configurationSource.Set("DataProvider", shellSetting.DataProvider);
-            configurationSource.Set("DataTablePrefix", shellSetting.DataTablePrefix);
-            configurationSource.Set("RequestUrlHost", shellSetting.RequestUrlHost);
-            configurationSource.Set("RequestUrlPrefix", shellSetting.RequestUrlPrefix);
+            foreach (var key in shellSettings.Keys) {
+                configurationSource.Set(key, (settings[key] ?? string.Empty).ToString());
+            }
 
             configurationSource.Commit();
 
