@@ -122,7 +122,7 @@ namespace OrchardVNext.Environment.Configuration.Sources {
             var outputWriter = new StreamWriter(outputStream);
 
             foreach (var entry in Data) {
-                outputWriter.WriteLine("{0}: {1}", entry.Key, entry.Value);
+                outputWriter.WriteLine("{0}: {1}", entry.Key, (entry.Value ?? EmptyValue));
             }
 
             outputWriter.Flush();
