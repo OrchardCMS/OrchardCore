@@ -89,6 +89,9 @@ namespace OrchardVNext.Environment.Configuration.Sources {
                 File.Delete(Path);
             }
 
+            if (!new FileInfo(Path).Directory.Exists)
+                Directory.CreateDirectory(new FileInfo(Path).Directory.FullName);
+
             // TODO: Revisit to make fully atomic.
             // https://github.com/aspnet/Configuration/pull/147/files
 

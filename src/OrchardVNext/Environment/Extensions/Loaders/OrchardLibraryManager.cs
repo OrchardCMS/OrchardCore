@@ -50,15 +50,23 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
         }
 
         public IEnumerable<ILibraryInformation> GetLibraries() {
-            return _libraryManager.GetLibraries();
+            return _libraryManager
+                .GetLibraries()
+                .Concat(AdditionalRegistrations.Select(x => new LibraryInformation(x)));
         }
 
         public IEnumerable<ILibraryInformation> GetLibraries(string aspect) {
-            return _libraryManager.GetLibraries(aspect);
+            return _libraryManager
+                .GetLibraries(aspect)
+                .Concat(AdditionalRegistrations.Select(x => new LibraryInformation(x)));
         }
 
         public ILibraryExport GetLibraryExport(string name) {
-            return _libraryManager.GetLibraryExport(name);
+            var export = _libraryManager.GetLibraryExport(name);
+            if (export != null)
+                return export;
+
+            return AdditionalLibraryExportRegistrations[name];
         }
 
         public ILibraryExport GetLibraryExport(string name, string aspect) {

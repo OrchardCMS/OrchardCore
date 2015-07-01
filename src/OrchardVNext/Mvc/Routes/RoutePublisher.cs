@@ -34,7 +34,7 @@ namespace OrchardVNext.Mvc.Routes {
                     route.Route.DataTokens,
                     _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>());
 
-                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlPrefix, router, pipeline);
+                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlHost, router, pipeline);
 
             }
         }

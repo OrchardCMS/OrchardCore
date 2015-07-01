@@ -14,6 +14,12 @@ namespace OrchardVNext.Environment.ShellBuilders {
         /// Builds a shell context given a specific tenant settings structure
         /// </summary>
         ShellContext CreateShellContext(ShellSettings settings);
+
+        /// <summary>
+        /// Builds a shell context for an uninitialized Orchard instance. Needed
+        /// to display setup user interface.
+        /// </summary>
+        ShellContext CreateSetupContext(ShellSettings settings);
     }
 
     public class ShellContextFactory : IShellContextFactory {
@@ -58,6 +64,27 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     new ShellFeature {Name = "OrchardVNext.Demo" }
                 },
                 Parameters = Enumerable.Empty<ShellParameter>(),
+            };
+        }
+
+        ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings) {
+            Logger.Debug("No shell settings available. Creating shell context for setup");
+
+            var descriptor = new ShellDescriptor {
+                SerialNumber = -1,
+                Features = new[] {
+                    new ShellFeature { Name = "OrchardVNext.Setup" },
+                },
+            };
+
+            var blueprint = _compositionStrategy.Compose(settings, descriptor);
+            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+
+            return new ShellContext {
+                Settings = settings,
+                Blueprint = blueprint,
+                LifetimeScope = provider,
+                Shell = provider.GetService<IOrchardShell>()
             };
         }
     }

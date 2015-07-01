@@ -74,7 +74,7 @@ namespace OrchardVNext.Mvc {
             if (assembly != null)
                 return assembly;
 
-            using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(@"", _serviceProvider))) {
+            using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(string.Empty, _serviceProvider))) {
                 return Assembly.Load(assemblyName);
             }
         }

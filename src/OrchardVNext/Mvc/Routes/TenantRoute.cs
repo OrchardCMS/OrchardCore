@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
+using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.Environment.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -16,7 +18,7 @@ namespace OrchardVNext.Mvc.Routes {
         }
 
         public async Task RouteAsync(RouteContext context) {
-            if (context.HttpContext.Request.Host.Value == _urlHost) {
+            if (IsValidRequest(context)) {
                 context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () => {
                     try {
                         await _target.RouteAsync(context);
@@ -29,6 +31,25 @@ namespace OrchardVNext.Mvc.Routes {
 
                 await _pipeline.Invoke(context.HttpContext);
             }
+        }
+
+        private bool IsValidRequest(RouteContext context) {
+            if (context.HttpContext.Request.Host.Value == _urlHost) {
+                return true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_urlHost))
+                return false;
+
+            // TODO: ngm: revise this.
+            // This is normally when requesting the default tenant.
+            var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
+
+            if (shellSettings.RequestUrlHost == _urlHost) {
+                return true;
+            }
+
+            return false;
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context) {
