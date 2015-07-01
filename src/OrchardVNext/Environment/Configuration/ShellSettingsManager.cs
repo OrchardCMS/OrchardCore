@@ -88,12 +88,12 @@ namespace OrchardVNext.Environment.Configuration {
                 _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false);
 
             foreach (var key in shellSettings.Keys) {
-                configurationSource.Set(key, (settings[key] ?? string.Empty).ToString());
+                configurationSource.Set(key, (shellSettings[key] ?? string.Empty).ToString());
             }
 
             configurationSource.Commit();
 
-            Logger.Information("Saved ShellSettings for tenant '{0}'", shellSetting.Name);
+            Logger.Information("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
         }
     }
 }
