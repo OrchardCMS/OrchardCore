@@ -19,7 +19,7 @@ using OrchardVNext.Routing;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {
-        public static void ConfigureHost(IServiceCollection services) {
+        public static IServiceProvider ConfigureHost(IServiceCollection services) {
             services.AddSingleton<IHostEnvironment, DefaultHostEnvironment>();
             services.AddSingleton<IAppDataFolderRoot, AppDataFolderRoot>();
 
@@ -58,6 +58,8 @@ namespace OrchardVNext.Environment {
             services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
                 
             services.AddInstance<IServiceManifest>(new ServiceManifest(services));
+
+            return services.BuildServiceProvider();
         }
 
         public static IOrchardHost CreateHost(IApplicationBuilder app, ILoggerFactory loggerFactory) {

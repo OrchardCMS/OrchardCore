@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace OrchardVNext.Mvc {
-    public class DefaultAssemblyProviderTest : IAssemblyProvider {
+    public class OrchardMvcAssemblyProvider : IAssemblyProvider {
         /// <summary>
         /// Gets the set of assembly names that are used as root for discovery of
         /// MVC controllers, view components and views.
@@ -25,10 +25,14 @@ namespace OrchardVNext.Mvc {
             "Microsoft.AspNet.Mvc.Abstractions",
             "Microsoft.AspNet.Mvc.ApiExplorer",
             "Microsoft.AspNet.Mvc.Core",
+            "Microsoft.AspNet.Mvc.Cors",
+            "Microsoft.AspNet.Mvc.DataAnnotations",
+            "Microsoft.AspNet.Mvc.Formatters.Json",
+            "Microsoft.AspNet.Mvc.Formatters.Xml",
             "Microsoft.AspNet.Mvc.Razor",
             "Microsoft.AspNet.Mvc.Razor.Host",
             "Microsoft.AspNet.Mvc.TagHelpers",
-            "Microsoft.AspNet.Mvc.Xml",
+            "Microsoft.AspNet.Mvc.ViewFeatures",
             "Microsoft.AspNet.PageExecutionInstrumentation.Interfaces",
         };
 
@@ -36,12 +40,12 @@ namespace OrchardVNext.Mvc {
         private readonly IServiceProvider _serviceProvider;
         private readonly IAssemblyLoaderContainer _loaderContainer;
 
-        public DefaultAssemblyProviderTest(IOrchardLibraryManager libraryManager,
+        public OrchardMvcAssemblyProvider(IOrchardLibraryManager libraryManager,
             IServiceProvider serviceProvider,
-            IAssemblyLoaderContainer container) {
+            IAssemblyLoaderContainer assemblyLoaderContainer) {
             _libraryManager = libraryManager;
             _serviceProvider = serviceProvider;
-            _loaderContainer = container;
+            _loaderContainer = assemblyLoaderContainer;
         }
 
         /// <inheritdoc />

@@ -1,8 +1,7 @@
-﻿using Microsoft.Framework.ConfigurationModel;
+﻿using Microsoft.Framework.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using OrchardVNext.FileSystems.AppData;
 
 namespace OrchardVNext.Environment.Configuration.Sources {
     public class DefaultFileConfigurationSource : ConfigurationSource {
@@ -24,12 +23,12 @@ namespace OrchardVNext.Environment.Configuration.Sources {
         }
 
         /// <summary>
-        /// Gets a value that determines if this instance of <see cref="JsonConfigurationSource"/> is optional.
+        /// Gets a value that determines if this instance of <see cref="DefaultFileConfigurationSource"/> is optional.
         /// </summary>
         public bool Optional { get; }
 
         /// <summary>
-        /// The absolute path of the file backing this instance of <see cref="JsonConfigurationSource"/>.
+        /// The absolute path of the file backing this instance of <see cref="DefaultFileConfigurationSource"/>.
         /// </summary>
         public string Path { get; }
 

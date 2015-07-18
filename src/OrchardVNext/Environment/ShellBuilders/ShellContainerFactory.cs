@@ -50,7 +50,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
             }
 
             var p = _serviceProvider.GetService<IOrchardLibraryManager>();
-            serviceCollection.AddInstance<IAssemblyProvider>(new DefaultAssemblyProviderTest(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
+            serviceCollection.AddInstance<IAssemblyProvider>(new OrchardMvcAssemblyProvider(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
 
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))

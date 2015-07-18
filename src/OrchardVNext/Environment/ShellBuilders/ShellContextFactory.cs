@@ -45,7 +45,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     Settings = settings,
                     Blueprint = blueprint,
                     LifetimeScope = provider,
-                    Shell = provider.GetService<IOrchardShell>()
+                    Shell = provider.GetRequiredService<IOrchardShell>()
                 };
             }
             catch (Exception ex) {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.Configuration;
 using OrchardVNext.Environment.Configuration.Sources;
 using OrchardVNext.FileSystems.AppData;
 
@@ -38,29 +38,29 @@ namespace OrchardVNext.Environment.Configuration {
             foreach (var tenantPath in tenantPaths) {
                 Logger.Information("ShellSettings found in '{0}', attempting to load.", tenantPath);
 
-                IConfigurationSourceRoot configurationContainer =
-                    new Microsoft.Framework.ConfigurationModel.Configuration()
+                var configurationContainer =
+                    new ConfigurationBuilder()
                         .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "json")),
                             true)
                         .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "xml")),
-                            true)
-                        .AddIniFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "ini")),
                             true)
                         .Add(
                             new DefaultFileConfigurationSource(
                                 _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false));
 
+                var config = configurationContainer.Build();
+
                 var shellSetting = new ShellSettings {
-                    Name = configurationContainer.Get<string>("Name"),
-                    DataConnectionString = configurationContainer.Get<string>("DataConnectionString"),
-                    DataProvider = configurationContainer.Get<string>("DataProvider"),
-                    DataTablePrefix = configurationContainer.Get<string>("DataTablePrefix"),
-                    RequestUrlHost = configurationContainer.Get<string>("RequestUrlHost"),
-                    RequestUrlPrefix = configurationContainer.Get<string>("RequestUrlPrefix")
+                    Name = config.Get("Name"),
+                    DataConnectionString = config.Get("DataConnectionString"),
+                    DataProvider = config.Get("DataProvider"),
+                    DataTablePrefix = config.Get("DataTablePrefix"),
+                    RequestUrlHost = config.Get("RequestUrlHost"),
+                    RequestUrlPrefix = config.Get("RequestUrlPrefix")
                 };
 
                 TenantState state;
-                shellSetting.State = Enum.TryParse(configurationContainer.Get<string>("State"), true, out state)
+                shellSetting.State = Enum.TryParse(config.Get("State"), true, out state)
                     ? state
                     : TenantState.Uninitialized;
 

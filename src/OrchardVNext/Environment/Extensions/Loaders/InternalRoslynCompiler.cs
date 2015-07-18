@@ -181,7 +181,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
                 Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile) ??
                 compilationContext.Compilation.Options.CryptoKeyFile;
 
-            if (!string.IsNullOrEmpty(keyFile) && !PlatformHelper.IsMono) {
+            if (!string.IsNullOrEmpty(keyFile) && !RuntimeEnvironmentHelper.IsMono) {
 #if DNX451
                 var delaySignString = Environment.GetEnvironmentVariable(EnvironmentNames.BuildDelaySign);
                 var delaySign =
