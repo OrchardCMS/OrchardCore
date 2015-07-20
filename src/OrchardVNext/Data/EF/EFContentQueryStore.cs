@@ -37,7 +37,7 @@ namespace OrchardVNext.Data.EF {
             var ids = indexedRecords.Select(x => x.ReferencedDocumentId);
             
             return new ContentIndexResult<TDocument>() {
-                Records = _contentStores.Select(x => x.GetManyAsync<TDocument>(ids).Result).SelectMany(x => x)
+                Records = _contentStores.Select(x => x.GetManyAsync<TDocument>(ids).Result).SelectMany(x => x).ToList()
             };
         }
 

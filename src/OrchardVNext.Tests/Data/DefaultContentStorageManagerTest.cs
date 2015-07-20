@@ -201,18 +201,20 @@ namespace OrchardVNext.Tests.Data {
                 return await Task.FromResult<TDocument>(_documents.SingleOrDefault(x => x.Id == id) as TDocument);
             }
 
-            public async Task<IEnumerable<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
-                return await Task.FromResult<IEnumerable<TDocument>>(_documents
+            public async Task<IReadOnlyList<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
+                return await Task.FromResult<IReadOnlyList<TDocument>>(_documents
                     .Where(x => x.GetType().Name == typeof(TDocument).Name)
                     .Where(x => ids.Contains(x.Id))
-                    .Cast<TDocument>());
+                    .Cast<TDocument>()
+                    .ToList());
             }
 
-            public async Task<IEnumerable<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
-                return await Task.FromResult<IEnumerable<TDocument>>(_documents
+            public async Task<IReadOnlyList<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
+                return await Task.FromResult<IReadOnlyList<TDocument>>(_documents
                     .Where(x => x.GetType().Name == typeof(TDocument).Name)
                     .Cast<TDocument>()
-                    .Where(map.Compile()));
+                    .Where(map.Compile())
+                    .ToList());
             }
 
             public Task RemoveAsync<TDocument>(int id) where TDocument : StorageDocument {
@@ -253,7 +255,7 @@ namespace OrchardVNext.Tests.Data {
                     .Where(x => x.IndexName == indexName && x.Type == type);
 
                 return new ContentIndexResult<TDocument>() {
-                    Records = _contentStorageManager.Value.GetMany<TDocument>(indexedRecords.Select(x => x.Id))
+                    Records = _contentStorageManager.Value.GetMany<TDocument>(indexedRecords.Select(x => x.Id)).ToList()
                 };
             }
 

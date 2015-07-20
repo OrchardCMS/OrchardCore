@@ -47,10 +47,11 @@ namespace OrchardVNext.Data {
             return new ContentItem { VersionRecord = record };
         }
 
-        public IEnumerable<ContentItem> GetMany(IEnumerable<int> ids) {
+        public IReadOnlyList<ContentItem> GetMany(IEnumerable<int> ids) {
             return _contentStorageManager
                 .Query<ContentItemVersionRecord>(x => ids.Contains(x.Id))
-                .Select(x => new ContentItem { VersionRecord = x });
+                .Select(x => new ContentItem { VersionRecord = x })
+                .ToList();
         }
     }
 }
