@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Versioning;
 using System.Linq;
 using Microsoft.Framework.Runtime;
 using OrchardVNext.Environment.Extensions.Models;
@@ -69,12 +68,5 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
 
         public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry) {
         }
-    }
-
-    internal class LibraryKey : ILibraryKey {
-        public string Name { get; set; }
-        public FrameworkName TargetFramework { get; set; }
-        public string Configuration { get; set; }
-        public string Aspect { get; set; }
     }
 }

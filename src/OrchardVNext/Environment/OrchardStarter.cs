@@ -57,7 +57,7 @@ namespace OrchardVNext.Environment {
                 
             services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
                 
-            services.AddInstance<IServiceManifest>(new ServiceManifest(services));
+            services.AddInstance<IRuntimeServices>(new ServiceManifest(services));
 
             return services.BuildServiceProvider();
         }
@@ -76,11 +76,11 @@ namespace OrchardVNext.Environment {
         }
     }
 
-    public class ServiceManifest : IServiceManifest {
+    public class ServiceManifest : IRuntimeServices {
         public ServiceManifest(IServiceCollection fallback) {
 
             var manifestTypes = fallback.Where(t => t.ServiceType.GetTypeInfo().GenericTypeParameters.Length == 0
-                    && t.ServiceType != typeof(IServiceManifest)
+                    && t.ServiceType != typeof(IRuntimeServices)
                     && t.ServiceType != typeof(IServiceProvider))
                     .Select(t => t.ServiceType).Distinct();
 

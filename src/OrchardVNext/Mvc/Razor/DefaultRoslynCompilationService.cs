@@ -11,7 +11,6 @@ using Microsoft.AspNet.Mvc.Razor.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.Framework.Internal;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.Runtime;
 using Microsoft.Framework.Runtime.Compilation;
@@ -30,7 +29,7 @@ namespace OrchardVNext.Mvc.Razor {
         private readonly ConcurrentDictionary<string, AssemblyMetadata> _metadataFileCache =
             new ConcurrentDictionary<string, AssemblyMetadata>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly IOrchardLibraryManager _libraryManager;
+        private readonly ILibraryExporter _libraryExporter;
         private readonly IApplicationEnvironment _environment;
         private readonly IAssemblyLoadContext _loader;
         private readonly ICompilerOptionsProvider _compilerOptionsProvider;
@@ -52,13 +51,13 @@ namespace OrchardVNext.Mvc.Razor {
         /// <param name="host">The <see cref="IMvcRazorHost"/> that was used to generate the code.</param>
         public DefaultRoslynCompilationService(IApplicationEnvironment environment,
                                         IAssemblyLoadContextAccessor loaderAccessor,
-                                        IOrchardLibraryManager libraryManager,
+                                        IOrchardLibraryManager libraryExporter,
                                         ICompilerOptionsProvider compilerOptionsProvider,
                                         IMvcRazorHost host,
                                         IOptions<RazorViewEngineOptions> optionsAccessor) {
             _environment = environment;
             _loader = loaderAccessor.GetLoadContext(typeof(RoslynCompilationService).GetTypeInfo().Assembly);
-            _libraryManager = libraryManager;
+            _libraryExporter = libraryExporter;
             _applicationReferences = new Lazy<List<MetadataReference>>(GetApplicationReferences);
             _compilerOptionsProvider = compilerOptionsProvider;
             _fileProvider = optionsAccessor.Options.FileProvider;
@@ -130,7 +129,7 @@ namespace OrchardVNext.Mvc.Razor {
                 .Where(IsError)
                 .GroupBy(diagnostic => GetFilePath(relativePath, diagnostic), StringComparer.Ordinal);
 
-            var failures = new List<ICompilationFailure>();
+            var failures = new List<CompilationFailure>();
             foreach (var group in diagnosticGroups) {
                 var sourceFilePath = group.Key;
                 string sourceFileContent;
@@ -143,11 +142,7 @@ namespace OrchardVNext.Mvc.Razor {
                     sourceFileContent = ReadFileContentsSafely(_fileProvider, sourceFilePath);
                 }
 
-                var compilationFailure = new RoslynCompilationFailure(group) {
-                    CompiledContent = compilationContent,
-                    SourceFileContent = sourceFileContent,
-                    SourceFilePath = sourceFilePath
-                };
+                var compilationFailure = new CompilationFailure(sourceFilePath, sourceFileContent, compilationContent, group.Select(d => d.ToDiagnosticMessage(_environment.RuntimeFramework)));
 
                 failures.Add(compilationFailure);
             }
@@ -169,7 +164,7 @@ namespace OrchardVNext.Mvc.Razor {
             // Get the MetadataReference for the executing application. If it's a Roslyn reference,
             // we can copy the references created when compiling the application to the Razor page being compiled.
             // This avoids performing expensive calls to MetadataReference.CreateFromImage.
-            var libraryExport = _libraryManager.GetLibraryExport(_environment.ApplicationName);
+            var libraryExport = _libraryExporter.GetLibraryExport(_environment.ApplicationName);
             if (libraryExport?.MetadataReferences != null && libraryExport.MetadataReferences.Count > 0) {
                 Debug.Assert(libraryExport.MetadataReferences.Count == 1,
                              "Expected 1 MetadataReferences, found " + libraryExport.MetadataReferences.Count);
@@ -178,14 +173,11 @@ namespace OrchardVNext.Mvc.Razor {
                 if (compilationReference != null) {
                     references.AddRange(compilationReference.Compilation.References);
                     references.Add(roslynReference.MetadataReference);
-                    references.AddRange(
-                        _libraryManager.MetadataReferences.Select(
-                            x => (x.Value as IRoslynMetadataReference).MetadataReference));
                     return references;
                 }
             }
 
-            var export = _libraryManager.GetAllExports(_environment.ApplicationName);
+            var export = _libraryExporter.GetAllExports(_environment.ApplicationName);
             foreach (var metadataReference in export.MetadataReferences) {
                 // Taken from https://github.com/aspnet/KRuntime/blob/757ba9bfdf80bd6277e715d6375969a7f44370ee/src/...
                 // Microsoft.Framework.Runtime.Roslyn/RoslynCompiler.cs#L164

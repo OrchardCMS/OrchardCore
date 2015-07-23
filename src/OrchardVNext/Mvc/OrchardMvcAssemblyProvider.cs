@@ -51,7 +51,8 @@ namespace OrchardVNext.Mvc {
         /// <inheritdoc />
         public IEnumerable<Assembly> CandidateAssemblies {
             get {
-                return GetCandidateLibraries().SelectMany(l => l.LoadableAssemblies).Select(Load);
+                return GetCandidateLibraries().SelectMany(l => l.Assemblies)
+                                              .Select(Load);
             }
         }
 
@@ -61,9 +62,9 @@ namespace OrchardVNext.Mvc {
         /// while ignoring MVC assemblies.
         /// </summary>
         /// <returns>A set of <see cref="ILibraryInformation"/>.</returns>
-        protected virtual IEnumerable<ILibraryInformation> GetCandidateLibraries() {
+        protected virtual IEnumerable<Library> GetCandidateLibraries() {
             if (ReferenceAssemblies == null) {
-                return Enumerable.Empty<ILibraryInformation>();
+                return Enumerable.Empty<Library>();
             }
 
             // GetReferencingLibraries returns the transitive closure of referencing assemblies
@@ -83,7 +84,7 @@ namespace OrchardVNext.Mvc {
             }
         }
 
-        private bool IsCandidateLibrary(ILibraryInformation library) {
+        private bool IsCandidateLibrary(Library library) {
             Debug.Assert(ReferenceAssemblies != null);
             return !ReferenceAssemblies.Contains(library.Name);
         }

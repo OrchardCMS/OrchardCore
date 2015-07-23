@@ -8,6 +8,7 @@ using Microsoft.Framework.Runtime.Loader;
 using Microsoft.Framework.Runtime.Roslyn;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.FileSystems.VirtualPath;
+using Microsoft.Framework.Runtime.Infrastructure;
 
 namespace OrchardVNext.Environment
 {
@@ -38,11 +39,11 @@ namespace OrchardVNext.Environment
 
             var cache = (ICache)_serviceProvider.GetService(typeof(ICache));
 
-            var target = new LibraryKey {
-                Name = name,
-                Configuration = _applicationEnvironment.Configuration,
-                TargetFramework = project.GetTargetFramework(_applicationEnvironment.RuntimeFramework).FrameworkName
-            };
+            var target = new CompilationTarget(
+                name,
+                project.GetTargetFramework(_applicationEnvironment.RuntimeFramework).FrameworkName,
+                _applicationEnvironment.Configuration,
+                null);
 
             ModuleLoaderContext moduleContext = new ModuleLoaderContext(
                 _serviceProvider,
@@ -68,7 +69,7 @@ namespace OrchardVNext.Environment
                 cache,
                 _orchardLibraryManager,
                 moduleContext.LibraryExportProvider,
-                target,
+                new CompilationTarget(name, target.TargetFramework, target.Configuration, target.Aspect),
                 true);
 
             _orchardLibraryManager.AddAdditionalLibraryExportRegistrations(name, exports);
@@ -80,8 +81,8 @@ namespace OrchardVNext.Environment
                 exports.MetadataReferences.Add(_orchardLibraryManager.MetadataReferences[dependency.Name]);
             }
 
-            var compliationContext = compiler.CompileProject(project,
-                target,
+            var compliationContext = compiler.CompileProject(
+                project.ToCompilationContext(target),
                 exports.MetadataReferences,
                 exports.SourceReferences,
                 () => CompositeResourceProvider.Default.GetResources(project));

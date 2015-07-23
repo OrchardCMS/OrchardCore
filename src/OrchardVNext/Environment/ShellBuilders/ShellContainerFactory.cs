@@ -92,12 +92,12 @@ namespace OrchardVNext.Environment.ShellBuilders {
             public WrappingServiceProvider(IServiceProvider fallback, IServiceCollection replacedServices)
             {
                 var services = new ServiceCollection();
-                var manifest = fallback.GetRequiredService<IServiceManifest>();
+                var manifest = fallback.GetRequiredService<IRuntimeServices>();
                 foreach (var service in manifest.Services) {
                     services.AddTransient(service, sp => fallback.GetService(service));
                 }
                 
-                services.AddSingleton<IServiceManifest>(sp => new HostingManifest(services));
+                services.AddSingleton<IRuntimeServices>(sp => new HostingManifest(services));
                 services.Add(replacedServices);
 
                 _services = services.BuildServiceProvider();
@@ -109,7 +109,7 @@ namespace OrchardVNext.Environment.ShellBuilders {
 
 
             // Manifest exposes the fallback manifest in addition to ITypeActivator, IHostingEnvironment, and ILoggerFactory
-            private class HostingManifest : IServiceManifest {
+            private class HostingManifest : IRuntimeServices {
                 public HostingManifest(IServiceCollection hostServices) {
                     Services = new Type[] {
                     typeof(IHostingEnvironment),

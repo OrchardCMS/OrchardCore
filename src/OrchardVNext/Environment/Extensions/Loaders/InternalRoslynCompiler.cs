@@ -14,11 +14,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Framework.Runtime.Caching;
-using Microsoft.Framework.Runtime.Common.DependencyInjection;
 using Microsoft.Framework.Runtime.Compilation;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext;
 using OrchardVNext.Environment;
+using Microsoft.Framework.Runtime.Infrastructure;
 
 namespace Microsoft.Framework.Runtime.Roslyn {
     public class InternalRoslynCompiler {
@@ -47,36 +47,35 @@ namespace Microsoft.Framework.Runtime.Roslyn {
         }
 
         public CompilationContext CompileProject(
-            ICompilationProject project,
-            ILibraryKey target,
+            CompilationProjectContext projectContext,
             IEnumerable<IMetadataReference> incomingReferences,
             IEnumerable<ISourceReference> incomingSourceReferences,
             Func<IList<ResourceDescriptor>> resourcesResolver) {
-            var path = project.ProjectDirectory;
-            var name = project.Name.TrimStart('/');
+            var path = projectContext.ProjectDirectory;
+            var name = projectContext.Target.Name;
 
-            var isMainAspect = string.IsNullOrEmpty(target.Aspect);
-            var isPreprocessAspect = string.Equals(target.Aspect, "preprocess", StringComparison.OrdinalIgnoreCase);
+            var isMainAspect = string.IsNullOrEmpty(projectContext.Target.Aspect);
+            var isPreprocessAspect = string.Equals(projectContext.Target.Aspect, "preprocess", StringComparison.OrdinalIgnoreCase);
 
-            if (!string.IsNullOrEmpty(target.Aspect)) {
-                name += "!" + target.Aspect;
+            if (!string.IsNullOrEmpty(projectContext.Target.Aspect)) {
+                name += "!" + projectContext.Target.Aspect;
             }
 
             _watcher.WatchProject(path);
 
-            _watcher.WatchFile(project.ProjectFilePath);
+            _watcher.WatchFile(projectContext.ProjectFilePath);
 
             if (_cacheContextAccessor.Current != null) {
-                _cacheContextAccessor.Current.Monitor(new FileWriteTimeCacheDependency(project.ProjectFilePath));
+                _cacheContextAccessor.Current.Monitor(new FileWriteTimeCacheDependency(projectContext.ProjectFilePath));
 
                 if (isMainAspect) {
                     // Monitor the trigger {projectName}_BuildOutputs
-                    var buildOutputsName = project.Name + "_BuildOutputs";
+                    var buildOutputsName = projectContext.Target.Name + "_BuildOutputs";
 
                     _cacheContextAccessor.Current.Monitor(_namedDependencyProvider.GetNamedDependency(buildOutputsName));
                 }
 
-                _cacheContextAccessor.Current.Monitor(_namedDependencyProvider.GetNamedDependency(project.Name + "_Dependencies"));
+                _cacheContextAccessor.Current.Monitor(_namedDependencyProvider.GetNamedDependency(projectContext.Target.Name + "_Dependencies"));
             }
 
             var exportedReferences = incomingReferences.Select(ConvertMetadataReference);
@@ -84,22 +83,22 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             Logger.TraceInformation("[{0}]: Compiling '{1}'", GetType().Name, name);
             var sw = Stopwatch.StartNew();
 
-            var compilationSettings = project.GetCompilerOptions(target.TargetFramework, target.Configuration)
-                                             .ToCompilationSettings(target.TargetFramework);
+            var compilationSettings = projectContext.CompilerOptions.ToCompilationSettings(
+                projectContext.Target.TargetFramework);
 
             var sourceFiles = Enumerable.Empty<String>();
             if (isMainAspect) {
-                sourceFiles = project.Files.SourceFiles;
+                sourceFiles = projectContext.Files.SourceFiles;
             }
             else if (isPreprocessAspect) {
-                sourceFiles = project.Files.PreprocessSourceFiles;
+                sourceFiles = projectContext.Files.PreprocessSourceFiles;
             }
 
             var parseOptions = new CSharpParseOptions(languageVersion: compilationSettings.LanguageVersion,
                                                       preprocessorSymbols: compilationSettings.Defines);
 
             IList<SyntaxTree> trees = GetSyntaxTrees(
-                project,
+                projectContext,
                 sourceFiles,
                 incomingSourceReferences,
                 parseOptions,
@@ -117,13 +116,11 @@ namespace Microsoft.Framework.Runtime.Roslyn {
                 references,
                 compilationSettings.CompilationOptions);
 
-            compilation = ApplyVersionInfo(compilation, project, parseOptions);
+            compilation = ApplyVersionInfo(compilation, projectContext, parseOptions);
 
             var compilationContext = new CompilationContext(
                 compilation,
-                project,
-                target.TargetFramework,
-                target.Configuration,
+                projectContext,
                 incomingReferences,
                 () => resourcesResolver()
                     .Select(res => new ResourceDescription(
@@ -135,9 +132,9 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             // Apply strong-name settings
             ApplyStrongNameSettings(compilationContext);
 
-            if (isMainAspect && project.Files.PreprocessSourceFiles.Any()) {
+            if (isMainAspect && projectContext.Files.PreprocessSourceFiles.Any()) {
                 try {
-                    var modules = GetCompileModules(target).Modules;
+                    var modules = GetCompileModules(projectContext.Target).Modules;
 
                     foreach (var m in modules) {
                         compilationContext.Modules.Add(m);
@@ -213,7 +210,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             }
         }
 
-        private CompilationModules GetCompileModules(ILibraryKey target) {
+        private CompilationModules GetCompileModules(CompilationTarget target) {
             // The only thing that matters is the runtime environment
             // when loading the compilation modules, so use that as the cache key
             var key = Tuple.Create(
@@ -245,7 +242,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             });
         }
 
-        private static CSharpCompilation ApplyVersionInfo(CSharpCompilation compilation, ICompilationProject project,
+        private static CSharpCompilation ApplyVersionInfo(CSharpCompilation compilation, CompilationProjectContext project,
             CSharpParseOptions parseOptions) {
             const string assemblyFileVersionName = "System.Reflection.AssemblyFileVersionAttribute";
             const string assemblyVersionName = "System.Reflection.AssemblyVersionAttribute";
@@ -307,7 +304,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             }
         }
 
-        private IList<SyntaxTree> GetSyntaxTrees(ICompilationProject project,
+        private IList<SyntaxTree> GetSyntaxTrees(CompilationProjectContext project,
                                                  IEnumerable<string> sourceFiles,
                                                  IEnumerable<ISourceReference> sourceReferences,
                                                  CSharpParseOptions parseOptions,
@@ -342,7 +339,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var ctx = _cacheContextAccessor.Current;
 
             foreach (var d in dirs) {
-                ctx?.Monitor(new FileWriteTimeCacheDependency(d));
+                ctx.Monitor(new FileWriteTimeCacheDependency(d));
 
                 // TODO: Make the file watcher hand out cache dependencies as well
                 _watcher.WatchDirectory(d, ".cs");
