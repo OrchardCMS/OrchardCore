@@ -52,7 +52,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             IEnumerable<ISourceReference> incomingSourceReferences,
             Func<IList<ResourceDescriptor>> resourcesResolver) {
             var path = projectContext.ProjectDirectory;
-            var name = projectContext.Target.Name;
+            var name = projectContext.Target.Name.TrimStart('/');
 
             var isMainAspect = string.IsNullOrEmpty(projectContext.Target.Aspect);
             var isPreprocessAspect = string.Equals(projectContext.Target.Aspect, "preprocess", StringComparison.OrdinalIgnoreCase);
@@ -339,7 +339,7 @@ namespace Microsoft.Framework.Runtime.Roslyn {
             var ctx = _cacheContextAccessor.Current;
 
             foreach (var d in dirs) {
-                ctx.Monitor(new FileWriteTimeCacheDependency(d));
+                ctx?.Monitor(new FileWriteTimeCacheDependency(d));
 
                 // TODO: Make the file watcher hand out cache dependencies as well
                 _watcher.WatchDirectory(d, ".cs");
