@@ -66,7 +66,6 @@ namespace OrchardVNext.Environment
             _orchardLibraryManager.AddAdditionalRegistrations(moduleContext.DependencyWalker.Libraries);
 
             var exports = ProjectExportProviderHelper.GetExportsRecursive(
-                cache,
                 _orchardLibraryManager,
                 moduleContext.LibraryExportProvider,
                 new CompilationTarget(name, target.TargetFramework, target.Configuration, target.Aspect),
