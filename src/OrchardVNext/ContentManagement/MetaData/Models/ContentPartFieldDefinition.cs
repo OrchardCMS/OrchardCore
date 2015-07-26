@@ -1,4 +1,4 @@
-﻿using OrchardVNext.Utility.Extensions;
+﻿using OrchardVNext.Utility;
 
 namespace OrchardVNext.ContentManagement.MetaData.Models {
     public class ContentPartFieldDefinition {

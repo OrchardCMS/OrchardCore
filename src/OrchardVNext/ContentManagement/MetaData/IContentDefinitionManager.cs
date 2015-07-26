@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement.MetaData.Builders;
 using OrchardVNext.ContentManagement.MetaData.Models;
-using OrchardVNext.Utility.Extensions;
+using OrchardVNext.Utility;
 
 namespace OrchardVNext.ContentManagement.MetaData {
     public interface IContentDefinitionManager : IDependency {

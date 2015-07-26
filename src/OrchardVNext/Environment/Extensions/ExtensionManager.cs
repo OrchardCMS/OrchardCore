@@ -1,14 +1,12 @@
-﻿using OrchardVNext.Environment.Extensions.Folders;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using OrchardVNext.Environment.Extensions.Folders;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.Extensions.Models;
 using OrchardVNext.Utility;
-using OrchardVNext.Utility.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using OrchardVNext.Localization;
-using System.Reflection;
 
 namespace OrchardVNext.Environment.Extensions {
     public class ExtensionManager : IExtensionManager {

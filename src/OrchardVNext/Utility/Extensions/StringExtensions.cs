@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OrchardVNext.Utility.Extensions {
+namespace OrchardVNext.Utility {
     public static class StringExtensions {
         public static string CamelFriendly(this string camel) {
             if (String.IsNullOrWhiteSpace(camel))

@@ -1,4 +1,5 @@
-﻿@model OrchardVNext.Setup.ViewModels.SetupViewModel
+﻿@using OrchardVNext.Setup.Controllers
+@model OrchardVNext.Setup.ViewModels.SetupViewModel
 <html>
 <head>
     <title>Get Started</title>
@@ -9,9 +10,32 @@
     <fieldset class="site">
         <div>
             <label for="SiteName">What is the name of your site?</label>
-            @Html.TextBoxFor(svm => svm.SiteName, new { autofocus = "autofocus" })
+            @Html.TextBoxFor(svm => svm.SiteName, new {autofocus = "autofocus"})
         </div>
     </fieldset>
+    if (!Model.DatabaseIsPreconfigured) {
+        <fieldset class="data">
+            <legend>@T("How would you like to store your data?")</legend>
+            @Html.ValidationMessage("DatabaseOptions", "Unable to setup data storage.")
+            <div>
+                @Html.RadioButtonFor(svm => svm.DatabaseProvider, SetupDatabaseType.Builtin.ToString(), new { id = "builtin" })
+                <label for="inmemory" class="forcheckbox">@T("Use inmemory data storage (In Memory)")</label>
+            </div>
+            <div>
+                @Html.RadioButtonFor(svm => svm.DatabaseProvider, SetupDatabaseType.SqlServer.ToString(), new { id = "sqlserver" })
+                <label for="sqlserver" class="forcheckbox">@T("Use an existing SQL Server, SQL Express database")</label>
+            </div>
+            <div data-controllerid="builtin" data-defaultstate="hidden">
+                <label for="DatabaseConnectionString">@T("Connection string")</label>
+                @Html.EditorFor(svm => svm.DatabaseConnectionString)
+
+                <span data-controllerid="sqlserver" class="hint databaseTypeHint">
+                    @T("Data Source=sqlServerName;Initial Catalog=dbName;User ID=userName;Password=password")
+                </span>
+            </div>
+
+        </fieldset>
+    }
     <fieldset>
         <button class="primaryAction setupButton" type="submit">Finish Setup</button>
     </fieldset>

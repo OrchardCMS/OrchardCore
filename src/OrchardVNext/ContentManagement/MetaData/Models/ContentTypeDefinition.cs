@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using OrchardVNext.Utility.Extensions;
+using OrchardVNext.Utility;
 
 namespace OrchardVNext.ContentManagement.MetaData.Models {
     public class ContentTypeDefinition {
