@@ -31,22 +31,6 @@ namespace OrchardVNext.ContentManagement {
         /// <param name="options">The version to create the item with</param>
         void Create(ContentItem contentItem, VersionOptions options);
 
-
-        ///// <summary>
-        ///// Makes a clone of the content item
-        ///// </summary>
-        ///// <param name="contentItem">The content item to clone</param>
-        ///// <returns>Clone of the item</returns>
-        //ContentItem Clone(ContentItem contentItem);
-
-        ///// <summary>
-        ///// Rolls back the specified content item by creating a new version based on the specified version.
-        ///// </summary>
-        ///// <param name="contentItem">The content item to roll back.</param>
-        ///// <param name="options">The version to roll back to. Either specify the version record id, version number, and IsPublished to publish the new version.</param>
-        ///// <returns>Returns the latest version of the content item, which is based on the specified version.</returns>
-        //ContentItem Restore(ContentItem contentItem, VersionOptions options);
-
         /// <summary>
         /// Gets the content item with the specified id
         /// </summary>
@@ -60,24 +44,8 @@ namespace OrchardVNext.ContentManagement {
         /// <param name="options">The version option</param>
         ContentItem Get(int id, VersionOptions options);
 
-        ///// <summary>
-        ///// Gets all versions of the content item specified with its id
-        ///// </summary>
-        ///// <param name="id">Numeric id of the content item</param>
-        //IEnumerable<ContentItem> GetAllVersions(int id);
-
-        //IEnumerable<T> GetManyAsync<T>(IEnumerable<int> ids, VersionOptions options) where T : class, IContent;
-        //IEnumerable<T> GetManyByVersionId<T>(IEnumerable<int> versionRecordIds) where T : class, IContent;
-        //IEnumerable<ContentItem> GetManyByVersionId(IEnumerable<int> versionRecordIds);
-
         void Publish(ContentItem contentItem);
         void Unpublish(ContentItem contentItem);
-        //void Remove(ContentItem contentItem);
-
-        ///// <summary>
-        ///// Permanently deletes the specified content item, including all of its content part records.
-        ///// </summary>
-        //void Destroy(ContentItem contentItem);
     }
     
     public class VersionOptions {
