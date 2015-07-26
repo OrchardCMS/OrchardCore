@@ -415,49 +415,5 @@ namespace Microsoft.Framework.Runtime.Roslyn {
                 LoadContext.Dispose();
             }
         }
-
-        static class Constants {
-            public const string BootstrapperExeName = "dnx";
-            public const string BootstrapperFullName = "Microsoft .NET Execution environment";
-            public const string DefaultLocalRuntimeHomeDir = ".dnx";
-            public const string RuntimeShortName = "dnx";
-            public const string RuntimeNamePrefix = RuntimeShortName + "-";
-            public const string WebConfigRuntimeVersion = RuntimeNamePrefix + "version";
-            public const string WebConfigRuntimeFlavor = RuntimeNamePrefix + "clr";
-            public const string WebConfigRuntimeAppBase = RuntimeNamePrefix + "app-base";
-            public const string WebConfigBootstrapperVersion = "bootstrapper-version";
-            public const string WebConfigRuntimePath = "runtime-path";
-            public const string BootstrapperHostName = RuntimeShortName + ".host";
-            public const string BootstrapperClrName = RuntimeShortName + ".clr";
-            public const string BootstrapperCoreclrManagedName = RuntimeShortName + ".coreclr.managed";
-        }
-
-        static class EnvironmentNames {
-            public static readonly string CommonPrefix = Constants.RuntimeShortName.ToUpper() + "_";
-            public static readonly string Packages = CommonPrefix + "PACKAGES";
-            public static readonly string PackagesCache = CommonPrefix + "PACKAGES_CACHE";
-            public static readonly string Servicing = CommonPrefix + "SERVICING";
-            public static readonly string Trace = CommonPrefix + "TRACE";
-            public static readonly string CompilationServerPort = CommonPrefix + "COMPILATION_SERVER_PORT";
-            public static readonly string Home = CommonPrefix + "HOME";
-            public static readonly string GlobalPath = CommonPrefix + "GLOBAL_PATH";
-            public static readonly string AppBase = CommonPrefix + "APPBASE";
-            public static readonly string Framework = CommonPrefix + "FRAMEWORK";
-            public static readonly string Configuration = CommonPrefix + "CONFIGURATION";
-            public static readonly string ConsoleHost = CommonPrefix + "CONSOLE_HOST";
-            public static readonly string DefaultLib = CommonPrefix + "DEFAULT_LIB";
-            public static readonly string BuildKeyFile = CommonPrefix + "BUILD_KEY_FILE";
-            public static readonly string BuildDelaySign = CommonPrefix + "BUILD_DELAY_SIGN";
-        }
-    }
-
-    internal class RoslynDiagnostics {
-        internal static readonly DiagnosticDescriptor StrongNamingNotSupported = new DiagnosticDescriptor(
-            id: "DNX1001",
-            title: "Strong name generation is not supported on this platform",
-            messageFormat: "Strong name generation is not supported on CoreCLR. Skipping strong name generation.",
-            category: "StrongNaming",
-            defaultSeverity: DiagnosticSeverity.Warning,
-            isEnabledByDefault: true);
     }
 }
