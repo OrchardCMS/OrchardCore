@@ -14,7 +14,7 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Collections":  "4.0.10-beta-*",
+        "System.Collections": "4.0.10-beta-*",
         "System.Linq": "4.0.0-beta-*",
         "System.Threading": "4.0.10-beta-*",
         "Microsoft.CSharp": "4.0.0-beta-*"
