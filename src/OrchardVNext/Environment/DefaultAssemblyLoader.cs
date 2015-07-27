@@ -76,7 +76,7 @@ namespace OrchardVNext.Environment
             foreach (var dependency in project.Dependencies) {
                 if (!_orchardLibraryManager.MetadataReferences.ContainsKey(dependency.Name))
                     continue;
-
+                
                 exports.MetadataReferences.Add(_orchardLibraryManager.MetadataReferences[dependency.Name]);
             }
 

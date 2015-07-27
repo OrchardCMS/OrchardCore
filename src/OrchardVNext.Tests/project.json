@@ -20,5 +20,9 @@
         "Microsoft.CSharp": "4.0.0-beta-*"
       }
     }
-  }
+  },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OrchardCMS/Brochard"
+    }
 }
