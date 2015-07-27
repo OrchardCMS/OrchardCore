@@ -18,7 +18,7 @@ Next navigate to 'D:\Brochard\src\OrchardVNext.Web' or where ever your retrospec
 
 run.. 'dnx . web' -> Hey you just kicked up the Orchard host.
 
-Then in your browser, call the url... http://local.orchardvnext.test1.com/home/index
+Then in your browser, call the url... http://local.orchardvnext.test1.com/setup/index
 
 Note:
 You may need to add local.orchardvnext.test1.com to your host file.
