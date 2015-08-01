@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Runtime;
+﻿using Microsoft.Dnx.Runtime;
 using OrchardVNext.Localization;
 
 namespace OrchardVNext.Environment {

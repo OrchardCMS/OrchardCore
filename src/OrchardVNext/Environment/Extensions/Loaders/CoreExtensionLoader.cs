@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Framework.Runtime;
+using Microsoft.Dnx.Runtime;
 using OrchardVNext.Environment.Extensions.Models;
 using OrchardVNext.FileSystems.VirtualPath;
 

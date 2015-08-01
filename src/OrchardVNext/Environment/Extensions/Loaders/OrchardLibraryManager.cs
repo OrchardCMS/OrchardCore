@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Compilation;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Runtime;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public interface IOrchardLibraryManager : ILibraryManager, ILibraryExporter {

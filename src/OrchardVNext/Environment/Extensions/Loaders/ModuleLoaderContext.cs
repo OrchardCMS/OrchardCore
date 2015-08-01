@@ -1,18 +1,17 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Compilation;
-using Microsoft.Framework.PackageManager;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Runtime;
+using Microsoft.Dnx.Tooling;
 using NuGet;
 
-namespace OrchardVNext.Environment.Extensions.Loaders
-{
+namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ModuleLoaderContext {
         public ModuleLoaderContext(IServiceProvider serviceProvider,
                                        string projectDirectory) {
 
             ProjectDirectory = projectDirectory;
-            RootDirectory = Microsoft.Framework.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
+            RootDirectory = Microsoft.Dnx.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
 
             // A new project resolver is required. you cannot reuse the one from the 
             // parent service provider as that will be for the parent context.

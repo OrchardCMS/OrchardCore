@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.Records;
+#if DNXCORE50
+using System.Reflection;
+#endif
 
 namespace OrchardVNext.ContentManagement {
     public class ContentItem : IContent {

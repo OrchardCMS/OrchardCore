@@ -1,12 +1,9 @@
-﻿using Microsoft.Framework.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Runtime.Versioning;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Runtime.Compilation;
-using System.Linq;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ModuleProjectLibraryExportProvider : ILibraryExportProvider {

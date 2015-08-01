@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Compilation.CSharp;
+using Microsoft.Dnx.Runtime;
+using Microsoft.Dnx.Runtime.Caching;
+using Microsoft.Dnx.Runtime.Infrastructure;
+using Microsoft.Dnx.Runtime.Loader;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Caching;
-using Microsoft.Framework.Runtime.Compilation;
-using Microsoft.Framework.Runtime.Loader;
-using Microsoft.Framework.Runtime.Roslyn;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.FileSystems.VirtualPath;
-using Microsoft.Framework.Runtime.Infrastructure;
 
 namespace OrchardVNext.Environment
 {

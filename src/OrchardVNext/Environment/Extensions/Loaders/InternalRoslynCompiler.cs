@@ -13,14 +13,14 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.Framework.Runtime.Caching;
-using Microsoft.Framework.Runtime.Compilation;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Compilation.CSharp;
+using Microsoft.Dnx.Runtime;
+using Microsoft.Dnx.Runtime.Caching;
+using Microsoft.Dnx.Runtime.Infrastructure;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext;
-using OrchardVNext.Environment;
-using Microsoft.Framework.Runtime.Infrastructure;
 
-namespace Microsoft.Framework.Runtime.Roslyn {
+namespace OrchardVNext.Environment.Extensions.Loaders {
     public class InternalRoslynCompiler {
         private readonly ICache _cache;
         private readonly ICacheContextAccessor _cacheContextAccessor;
@@ -175,12 +175,12 @@ namespace Microsoft.Framework.Runtime.Roslyn {
 
         private void ApplyStrongNameSettings(CompilationContext compilationContext) {
             var keyFile =
-                Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile) ??
+                System.Environment.GetEnvironmentVariable(EnvironmentNames.BuildKeyFile) ??
                 compilationContext.Compilation.Options.CryptoKeyFile;
 
             if (!string.IsNullOrEmpty(keyFile) && !RuntimeEnvironmentHelper.IsMono) {
 #if DNX451
-                var delaySignString = Environment.GetEnvironmentVariable(EnvironmentNames.BuildDelaySign);
+                var delaySignString = System.Environment.GetEnvironmentVariable(EnvironmentNames.BuildDelaySign);
                 var delaySign =
                     delaySignString == null
                         ? compilationContext.Compilation.Options.DelaySign

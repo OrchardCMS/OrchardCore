@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Runtime;
+﻿using Microsoft.Dnx.Runtime;
 
 namespace OrchardVNext.Environment {
     public abstract class HostEnvironment : IHostEnvironment {

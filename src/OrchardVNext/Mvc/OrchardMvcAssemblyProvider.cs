@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNet.Mvc;
-using Microsoft.Framework.Runtime;
+using Microsoft.Dnx.Runtime;
 using OrchardVNext.Environment;
 using OrchardVNext.Environment.Extensions.Loaders;
 using System;

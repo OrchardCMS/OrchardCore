@@ -1,7 +1,6 @@
-﻿using System;
-using System.Runtime.Versioning;
+﻿using System.Runtime.Versioning;
 
-namespace Microsoft.Framework.Runtime {
+namespace Microsoft.Dnx.Runtime {
     internal static class CompilationTargetExtensions {
         public static CompilationTarget ChangeName(this CompilationTarget target, string name) {
             return new CompilationTarget(name, target.TargetFramework, target.Configuration, target.Aspect);

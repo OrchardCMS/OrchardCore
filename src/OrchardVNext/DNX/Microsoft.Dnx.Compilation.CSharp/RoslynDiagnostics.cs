@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Microsoft.Framework.Runtime.Roslyn {
+namespace Microsoft.Dnx.Compilation.CSharp {
     internal class RoslynDiagnostics {
         internal static readonly DiagnosticDescriptor StrongNamingNotSupported = new DiagnosticDescriptor(
             id: "DNX1001",

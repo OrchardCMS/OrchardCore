@@ -3,9 +3,9 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Framework.Runtime.Compilation;
+using Microsoft.Dnx.Compilation;
 
-namespace Microsoft.Framework.Runtime {
+namespace Microsoft.Dnx.Runtime {
     public static class ProjectExtensions {
         internal static CompilationProjectContext ToCompilationContext(this Project project, CompilationTarget target) {
             Debug.Assert(string.Equals(target.Name, project.Name, StringComparison.Ordinal), "The provided target should be for the current project!");

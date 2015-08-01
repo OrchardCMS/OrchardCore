@@ -6,18 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using JetBrains.Annotations;
 using Microsoft.AspNet.FileProviders;
+using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Compilation.CSharp;
+using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.OptionsModel;
-using Microsoft.Framework.Runtime;
-using Microsoft.Framework.Runtime.Compilation;
-using Microsoft.Framework.Runtime.Roslyn;
-using Microsoft.AspNet.Mvc.Razor.Compilation;
-using Microsoft.AspNet.Mvc.Razor;
-using JetBrains.Annotations;
 using OrchardVNext.Environment.Extensions.Loaders;
 
 namespace OrchardVNext.Mvc.Razor {
@@ -173,7 +173,7 @@ namespace OrchardVNext.Mvc.Razor {
                 if (compilationReference != null) {
                     references.AddRange(compilationReference.Compilation.References);
                     references.Add(roslynReference.MetadataReference);
-                    
+
                     references.AddRange(_libraryExporter
                             .MetadataReferences
                             .Select(x => x.Value as IRoslynMetadataReference)

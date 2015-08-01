@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Framework.Runtime {
+namespace Microsoft.Dnx.Runtime {
     internal static class RuntimeEnvironmentHelper {
         private static Lazy<bool> _isMono = new Lazy<bool>(() =>
             _runtimeEnv.Value.RuntimeType == "Mono");
