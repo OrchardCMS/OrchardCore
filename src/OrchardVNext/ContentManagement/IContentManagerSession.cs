@@ -1,3 +1,5 @@
+using OrchardVNext.DependencyInjection;
+
 namespace OrchardVNext.ContentManagement
 {
     public interface IContentManagerSession : IDependency {

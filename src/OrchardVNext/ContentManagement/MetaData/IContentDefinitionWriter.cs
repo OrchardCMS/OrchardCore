@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using OrchardVNext.ContentManagement.MetaData.Models;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.ContentManagement.MetaData {
     public interface IContentDefinitionWriter : IDependency{

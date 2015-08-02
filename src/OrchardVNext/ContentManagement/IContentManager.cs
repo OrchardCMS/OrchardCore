@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement.MetaData.Models;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.ContentManagement {
     /// <summary>

@@ -2,8 +2,8 @@
 using System.Xml;
 using System.Xml.Linq;
 using OrchardVNext.ContentManagement.FieldStorage.InfosetStorage;
-using OrchardVNext.Data.Conventions;
 using OrchardVNext.Data;
+using OrchardVNext.Data.Conventions;
 
 namespace OrchardVNext.ContentManagement.Records {
     public class DocumentRecord : StorageDocument {

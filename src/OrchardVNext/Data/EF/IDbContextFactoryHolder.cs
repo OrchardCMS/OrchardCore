@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Entity;
 using OrchardVNext.Data.Providers;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.FileSystems.AppData;
 

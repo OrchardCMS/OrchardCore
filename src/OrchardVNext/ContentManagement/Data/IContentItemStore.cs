@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using OrchardVNext.ContentManagement;
+using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.Data {
+namespace OrchardVNext.ContentManagement.Data {
     public interface IContentItemStore : IDependency {
         void Store(ContentItem contentItem);
         ContentItem Get(int id);

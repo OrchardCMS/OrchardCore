@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
-using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Data.EF {
     public interface IDataContext {
@@ -15,18 +13,15 @@ namespace OrchardVNext.Data.EF {
     }
 
     public class DataContext : DbContext, IDataContext {
-        private readonly ShellSettings _shellSettings;
         private readonly IDbContextFactoryHolder _dbContextFactoryHolder;
         private readonly IAssemblyProvider _assemblyProvider;
 
         private readonly Guid _instanceId;
 
         public DataContext(
-            ShellSettings shellSettings,
             IDbContextFactoryHolder dbContextFactoryHolder,
             IAssemblyProvider assemblyProvider) {
-
-            _shellSettings = shellSettings;
+            
             _dbContextFactoryHolder = dbContextFactoryHolder;
             _assemblyProvider = assemblyProvider;
             _instanceId = Guid.NewGuid();
@@ -43,10 +38,10 @@ namespace OrchardVNext.Data.EF {
             foreach (var assembly in _assemblyProvider.CandidateAssemblies.Distinct()) {
                 // Keep persistent attribute, but also introduce a convention like ContentPart
                 var entityTypes = assembly
-                    .GetTypes()
+                    .ExportedTypes
                     .Where(t =>
-                        t.GetTypeInfo().GetCustomAttributes<PersistentAttribute>(true)
-                            .Any());
+                        typeof(StorageDocument).IsAssignableFrom(t) &&
+                        !t.GetTypeInfo().IsAbstract && !t.GetTypeInfo().IsInterface);
 
                 foreach (var type in entityTypes) {
                     Logger.Debug("Mapping record {0}", type.FullName);

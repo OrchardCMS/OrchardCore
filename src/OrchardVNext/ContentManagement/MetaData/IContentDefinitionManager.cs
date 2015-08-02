@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement.MetaData.Builders;
 using OrchardVNext.ContentManagement.MetaData.Models;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Utility;
 
 namespace OrchardVNext.ContentManagement.MetaData {

@@ -1,7 +1,4 @@
-﻿using OrchardVNext.Data;
-
-namespace OrchardVNext.ContentManagement.Records {
-    [Persistent]
+﻿namespace OrchardVNext.ContentManagement.Records {
     public class ContentItemVersionRecord : DocumentRecord {
         public ContentItemRecord ContentItemRecord { get; set; }
         public int Number { get; set; }

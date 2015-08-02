@@ -36,16 +36,13 @@ namespace OrchardVNext.Mvc {
         };
 
         private readonly IOrchardLibraryManager _libraryManager;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
 
         public OrchardMvcAssemblyProvider(IOrchardLibraryManager libraryManager,
-            IServiceProvider serviceProvider,
             IAssemblyLoaderContainer assemblyLoaderContainer,
             IExtensionAssemblyLoader extensionAssemblyLoader) {
             _libraryManager = libraryManager;
-            _serviceProvider = serviceProvider;
             _loaderContainer = assemblyLoaderContainer;
             _extensionAssemblyLoader = extensionAssemblyLoader;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Nito.AsyncEx;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Data {
     public interface IContentStorageManager : IDependency {

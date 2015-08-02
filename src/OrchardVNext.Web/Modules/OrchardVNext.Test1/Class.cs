@@ -1,4 +1,5 @@
 using System;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Test1 {

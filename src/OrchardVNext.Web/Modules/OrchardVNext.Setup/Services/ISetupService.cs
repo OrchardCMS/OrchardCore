@@ -1,3 +1,4 @@
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Setup.Services {

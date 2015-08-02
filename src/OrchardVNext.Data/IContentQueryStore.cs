@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Data {
     public interface IContentQueryStore : IDependency {

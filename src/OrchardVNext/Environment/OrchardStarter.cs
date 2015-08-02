@@ -72,7 +72,7 @@ namespace OrchardVNext.Environment {
             app.UseMiddleware<OrchardShellHostMiddleware>();
 
             // Think this needs to be inserted in a different part of the pipeline, possibly
-            // dhen DI is created for the shell
+            // when DI is created for the shell
             app.UseMiddleware<OrchardRouterMiddleware>();
             
             return app.ApplicationServices.GetService<IOrchardHost>();

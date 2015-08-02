@@ -117,21 +117,19 @@ namespace OrchardVNext.Data.EF {
             }
         }
 
-        [Persistent]
-        public class InternalIndexCollection {
-            [Key]
-            public int Id { get; set; }
+        public class InternalIndexCollection : IndexDocument {
             public string IndexName { get; set; }
             public string Type { get; set; }
         }
 
-        [Persistent]
-        public class InternalIndexDocumentCollection {
-            [Key]
-            public int Id { get; set; }
+        public class InternalIndexDocumentCollection : IndexDocument {
             public string IndexName { get; set; }
             public string Type { get; set; }
             public int ReferencedDocumentId { get; set; }
+        }
+
+        public class IndexDocument : StorageDocument {
+            public override string Data { get; set; }
         }
     }
 }

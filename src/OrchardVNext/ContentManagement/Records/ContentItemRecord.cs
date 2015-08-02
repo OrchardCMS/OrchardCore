@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using OrchardVNext.Data;
 
 namespace OrchardVNext.ContentManagement.Records {
-    [Persistent]
     public class ContentItemRecord : DocumentRecord {
         public ContentItemRecord() {
             // ReSharper disable DoNotCallOverridableMethodsInConstructor

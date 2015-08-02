@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Data.Providers {
     public interface IDataServicesProviderFactory : IDependency {

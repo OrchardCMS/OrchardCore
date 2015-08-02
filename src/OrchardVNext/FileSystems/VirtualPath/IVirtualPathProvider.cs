@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.FileSystems.VirtualPath {
     public interface IVirtualPathProvider : ISingletonDependency {

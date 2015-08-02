@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using OrchardVNext.ContentManagement;
 using OrchardVNext.ContentManagement.Records;
-using OrchardVNext.Data;
 using OrchardVNext.Data.Conventions;
 
 namespace OrchardVNext.Core.Settings.Metadata.Records {
-    [Persistent]
     public class ContentTypeDefinitionRecord : DocumentRecord {
         public ContentTypeDefinitionRecord() {
             ContentTypePartDefinitionRecords = new List<ContentTypePartDefinitionRecord>();

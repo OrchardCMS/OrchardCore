@@ -1,7 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Dnx.Runtime": "1.0.0-*"
+    "Microsoft.Dnx.Runtime": "1.0.0-*",
+    "Nito.AsyncEx": "3.0.1-*",
+    "OrchardVNext.DependencyInjection": "2.0.0-*" 
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -15,7 +17,8 @@
     },
     "dnxcore50": {
       "dependencies": {
-        "System.ComponentModel.Annotations": "4.0.10-*"
+        "System.ComponentModel.Annotations": "4.0.10-*",
+        "System.Linq.Queryable": "4.0.0-beta-*"
       }
     }
   },

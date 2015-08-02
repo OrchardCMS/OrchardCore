@@ -1,6 +1,4 @@
-﻿using OrchardVNext.Localization;
-
-namespace OrchardVNext {
+﻿namespace OrchardVNext.DependencyInjection {
     /// <summary>
     /// Base interface for services that are instantiated per unit of work (i.e. web request).
     /// </summary>
@@ -24,14 +22,5 @@ namespace OrchardVNext {
     /// Base interface for services that are instantiated per usage.
     /// </summary>
     public interface ITransientDependency : IDependency {
-    }
-
-
-    public abstract class Component : IDependency {
-        protected Component() {
-            T = NullLocalizer.Instance;
-        }
-
-        public Localizer T { get; set; }
     }
 }

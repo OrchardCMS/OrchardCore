@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Entity;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Data.Providers {
     public interface IDataServicesProvider : ITransientDependency {

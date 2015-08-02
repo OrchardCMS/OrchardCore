@@ -1,4 +1,6 @@
-﻿namespace OrchardVNext.ContentManagement.Handlers {
+﻿using OrchardVNext.DependencyInjection;
+
+namespace OrchardVNext.ContentManagement.Handlers {
     public interface IContentHandler : IDependency {
         void Activating(ActivatingContentContext context);
         void Activated(ActivatedContentContext context);

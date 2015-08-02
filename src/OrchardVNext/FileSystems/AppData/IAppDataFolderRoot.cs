@@ -1,4 +1,5 @@
-﻿using OrchardVNext.Environment;
+﻿using OrchardVNext.DependencyInjection;
+using OrchardVNext.Environment;
 
 namespace OrchardVNext.FileSystems.AppData {
     /// <summary>

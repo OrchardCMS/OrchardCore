@@ -7,6 +7,7 @@ using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.MetaData.Services;
 using OrchardVNext.Core.Settings.Metadata.Records;
 using OrchardVNext.Data;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Core.Settings.Metadata {
     public class ContentDefinitionManager : Component, IContentDefinitionManager {

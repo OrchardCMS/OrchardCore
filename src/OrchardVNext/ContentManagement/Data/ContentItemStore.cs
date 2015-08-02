@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OrchardVNext.ContentManagement;
 using OrchardVNext.ContentManagement.Records;
+using OrchardVNext.Data;
 
-namespace OrchardVNext.Data {
+namespace OrchardVNext.ContentManagement.Data {
     public class ContentItemStore : IContentItemStore {
         private readonly IContentStorageManager _contentStorageManager;
 
