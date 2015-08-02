@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Routing;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Routing;
 
-namespace OrchardVNext.Routing {
+namespace OrchardVNext.Mvc.Routing {
     public class DefaultShellRouteBuilder : IRouteBuilder {
         public DefaultShellRouteBuilder(IServiceProvider serviceProvider) {
             Routes = new List<IRouter>();

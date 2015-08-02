@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Routing;
+using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
-using Microsoft.Dnx.Runtime;
-using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
-using OrchardVNext.Mvc;
-using OrchardVNext.Routing;
+using OrchardVNext.Mvc.Routing;
+
 #if DNXCORE50
 using System.Reflection;
 #endif
