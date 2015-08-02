@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ModuleProjectLibraryExportProvider : ILibraryExportProvider {

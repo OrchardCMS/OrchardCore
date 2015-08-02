@@ -22,9 +22,6 @@ namespace OrchardVNext.Environment {
         }
 
         public async Task Invoke(HttpContext httpContext) {
-            var currentApplicationServices = httpContext.ApplicationServices;
-            var currentRequestServices = httpContext.RequestServices;
-
             var shellSetting = GetSettings(httpContext.Request.Host.Value);
 
             if (shellSetting != null) {

@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Microsoft.Dnx.Runtime;
-using OrchardVNext.Environment;
-using OrchardVNext.Environment.Extensions.Loaders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Mvc {
     public class OrchardMvcAssemblyProvider : IAssemblyProvider {
@@ -39,13 +38,16 @@ namespace OrchardVNext.Mvc {
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly IAssemblyLoaderContainer _loaderContainer;
+        private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
 
         public OrchardMvcAssemblyProvider(IOrchardLibraryManager libraryManager,
             IServiceProvider serviceProvider,
-            IAssemblyLoaderContainer assemblyLoaderContainer) {
+            IAssemblyLoaderContainer assemblyLoaderContainer,
+            IExtensionAssemblyLoader extensionAssemblyLoader) {
             _libraryManager = libraryManager;
             _serviceProvider = serviceProvider;
             _loaderContainer = assemblyLoaderContainer;
+            _extensionAssemblyLoader = extensionAssemblyLoader;
         }
 
         /// <inheritdoc />
@@ -79,7 +81,7 @@ namespace OrchardVNext.Mvc {
             if (assembly != null)
                 return assembly;
 
-            using (_loaderContainer.AddLoader(new ExtensionAssemblyLoader(string.Empty, _serviceProvider))) {
+            using (_loaderContainer.AddLoader(_extensionAssemblyLoader)) {
                 return Assembly.Load(assemblyName);
             }
         }

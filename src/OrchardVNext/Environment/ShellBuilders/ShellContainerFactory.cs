@@ -7,6 +7,7 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Dnx.Runtime;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders.Models;
@@ -49,9 +50,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
                 instance.Configure(serviceCollection);
             }
 
-            var p = _serviceProvider.GetService<IOrchardLibraryManager>();
-            serviceCollection.AddInstance<IAssemblyProvider>(new OrchardMvcAssemblyProvider(p, _serviceProvider, _serviceProvider.GetService<IAssemblyLoaderContainer>()));
-
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
             {
@@ -78,8 +76,6 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     }
                 }
             }
-
-            serviceCollection.AddLogging();
 
             return new WrappingServiceProvider(_serviceProvider, serviceCollection);
         }

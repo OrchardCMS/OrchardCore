@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Runtime;
 
-namespace OrchardVNext.Environment.Extensions.Loaders {
+namespace OrchardVNext.DependencyInjection {
     public interface IOrchardLibraryManager : ILibraryManager, ILibraryExporter {
         IDictionary<string, IMetadataReference> MetadataReferences { get; }
         void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations);

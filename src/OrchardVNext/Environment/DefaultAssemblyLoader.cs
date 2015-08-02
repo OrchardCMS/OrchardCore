@@ -6,28 +6,38 @@ using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Runtime.Caching;
 using Microsoft.Dnx.Runtime.Infrastructure;
 using Microsoft.Dnx.Runtime.Loader;
-using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.FileSystems.VirtualPath;
 
 namespace OrchardVNext.Environment
 {
-    public class ExtensionAssemblyLoader : IAssemblyLoader {
+    public class ExtensionAssemblyLoader : IExtensionAssemblyLoader {
         private readonly IServiceProvider _serviceProvider;
         private readonly IApplicationEnvironment _applicationEnvironment;
         private readonly IFileWatcher _fileWatcher;
         private readonly IOrchardLibraryManager _orchardLibraryManager;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
-        private readonly IVirtualPathProvider _virtualPathProvider;private readonly string _path;
+        private readonly IVirtualPathProvider _virtualPathProvider;
+        private string _path;
         
-        public ExtensionAssemblyLoader(string path, IServiceProvider serviceProvider) {
-            _path = path;
+        public ExtensionAssemblyLoader(IServiceProvider serviceProvider,
+            IApplicationEnvironment applicationEnvironment,
+            IFileWatcher fileWatcher,
+            IOrchardLibraryManager orchardLibraryManager,
+            IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
+            IVirtualPathProvider virtualPathProvider) {
             _serviceProvider = serviceProvider;
-            _applicationEnvironment = serviceProvider.GetService<IApplicationEnvironment>();
-            _fileWatcher = serviceProvider.GetService<IFileWatcher>();
-            _orchardLibraryManager = serviceProvider.GetService<IOrchardLibraryManager>();
-            _assemblyLoadContextAccessor = serviceProvider.GetService<IAssemblyLoadContextAccessor>();
-            _virtualPathProvider = serviceProvider.GetService<IVirtualPathProvider>();
+            _applicationEnvironment = applicationEnvironment;
+            _fileWatcher = fileWatcher;
+            _orchardLibraryManager = orchardLibraryManager;
+            _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
+            _virtualPathProvider = virtualPathProvider;
+        }
+
+        public IExtensionAssemblyLoader WithPath(string path) {
+            _path = path;
+            return this;
         }
 
         public Assembly Load(AssemblyName assemblyName) {

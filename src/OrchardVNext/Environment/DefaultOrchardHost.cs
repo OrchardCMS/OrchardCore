@@ -1,7 +1,5 @@
 ﻿using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.ShellBuilders;
-using System;
 
 namespace OrchardVNext.Environment {
     public interface IOrchardHost {

@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
-using JetBrains.Annotations;
 using Microsoft.AspNet.FileProviders;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
@@ -18,7 +17,7 @@ using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.CSharp;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.OptionsModel;
-using OrchardVNext.Environment.Extensions.Loaders;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Mvc.Razor {
     /// <summary>

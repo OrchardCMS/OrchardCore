@@ -7,6 +7,7 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Runtime.Caching;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
@@ -42,6 +43,8 @@ namespace OrchardVNext.Environment {
                         services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
                         services.AddSingleton<IExtensionManager, ExtensionManager>();
                         {
+                            services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
+
                             services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
                             services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
                             services.AddSingleton<IExtensionFolders, ModuleFolders>();

@@ -1,18 +1,19 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "OrchardVNext": "2.0.0-*",
-    "OrchardVNext.Mvc": "2.0.0-*",
-    "OrchardVNext.Logging": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
+    "net45": { },
     "dnx451": { },
-    "dnxcore50": { }
+    "dotnet": {
+      "dependencies": {
+        "System.Runtime": "4.0.20-*"
+      }
+    }
   },
   "repository": {
     "type": "git",

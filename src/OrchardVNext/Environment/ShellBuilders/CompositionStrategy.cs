@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Dnx.Runtime;
 
 namespace OrchardVNext.Environment.ShellBuilders
 {
@@ -25,9 +26,12 @@ namespace OrchardVNext.Environment.ShellBuilders
 
     public class CompositionStrategy : ICompositionStrategy {
         private readonly IExtensionManager _extensionManager;
+        private readonly ILibraryManager _libraryManager;
 
-        public CompositionStrategy(IExtensionManager extensionManager) {
+        public CompositionStrategy(IExtensionManager extensionManager,
+            ILibraryManager libraryManager) {
             _extensionManager = extensionManager;
+            _libraryManager = libraryManager;
         }
 
         public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor) {
@@ -74,20 +78,28 @@ namespace OrchardVNext.Environment.ShellBuilders
             return excludedTypes;
         }
 
-        private static IEnumerable<Feature> BuiltinFeatures() {
-            yield return new Feature {
-                Descriptor = new FeatureDescriptor {
-                    Id = "OrchardVNext.Framework",
-                    Extension = new ExtensionDescriptor {
-                        Id = "OrchardVNext.Framework"
-                    }
-                },
-                ExportedTypes =
-                    typeof (OrchardStarter).GetTypeInfo().Assembly.ExportedTypes
-                        .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
-                        .Except(new[] {typeof (DefaultOrchardHost)})
-                        .ToArray()
-            };
+        private IEnumerable<Feature> BuiltinFeatures() {
+            var additionalLibraries = _libraryManager
+                .GetLibraries()
+                .Where(x => x.Name.StartsWith("OrchardVNext"))
+                .Select(x => Assembly.Load(new AssemblyName(x.Name)));
+
+            foreach (var additonalLib in additionalLibraries) {
+                yield return new Feature {
+                    Descriptor = new FeatureDescriptor {
+                        Id = additonalLib.GetName().Name,
+                        Extension = new ExtensionDescriptor {
+                            Id = additonalLib.GetName().Name
+                        }
+                    },
+                    ExportedTypes =
+                        additonalLib.ExportedTypes
+                            .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
+                            .Except(new[] { typeof(DefaultOrchardHost) })
+                            .ToArray()
+                };
+            }
+
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
