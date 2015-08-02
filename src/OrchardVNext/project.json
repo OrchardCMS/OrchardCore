@@ -17,7 +17,8 @@
     "OrchardVNext.DependencyInjection": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*",
     "OrchardVNext.Mvc": "2.0.0-*",
-    "OrchardVNext.Routing": "2.0.0-*"
+    "OrchardVNext.Routing": "2.0.0-*",
+    "OrchardVNext.Data": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
