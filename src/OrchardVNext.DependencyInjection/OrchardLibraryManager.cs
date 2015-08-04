@@ -51,8 +51,8 @@ namespace OrchardVNext.DependencyInjection {
                     .Select(x => x.ToLibrary()));
         }
 
-        public Library GetLibraryInformation(string name) {
-            var info = _libraryManager.GetLibraryInformation(name);
+        public Library GetLibrary(string name) {
+            var info = _libraryManager.GetLibrary(name);
             if (info != null)
                 return info;
 

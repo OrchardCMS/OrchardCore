@@ -3,12 +3,12 @@ using System.Reflection;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.CSharp;
 using Microsoft.Dnx.Runtime;
-using Microsoft.Dnx.Runtime.Caching;
 using Microsoft.Dnx.Runtime.Infrastructure;
 using Microsoft.Dnx.Runtime.Loader;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.FileSystems.VirtualPath;
+using Microsoft.Dnx.Compilation.Caching;
 
 namespace OrchardVNext.Environment
 {
