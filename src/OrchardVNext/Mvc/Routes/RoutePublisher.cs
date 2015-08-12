@@ -2,9 +2,9 @@
 using Microsoft.AspNet.Routing;
 using Microsoft.AspNet.Routing.Template;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
 using System.Collections.Generic;
 using System.Linq;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Mvc.Routes {
     public class RoutePublisher : IRoutePublisher {

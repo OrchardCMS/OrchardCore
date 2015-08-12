@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Mvc;
-using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Localization;
+using OrchardVNext.Abstractions.Localization;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Setup.Services;
 using OrchardVNext.Setup.ViewModels;
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Mvc;
-using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Descriptor.Models;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Models;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Dnx.Runtime;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Environment.ShellBuilders

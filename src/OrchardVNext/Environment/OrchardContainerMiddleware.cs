@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-using OrchardVNext.Environment.Configuration;
 using System;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Environment {
     public class OrchardContainerMiddleware {

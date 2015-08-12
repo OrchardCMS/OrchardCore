@@ -1,5 +1,6 @@
 ﻿using OrchardVNext.Mvc.Routes;
 using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Logging;
 using OrchardVNext.Mvc;
 

@@ -53,7 +53,7 @@ namespace OrchardVNext.ContentManagement.MetaData.Services {
 
             var partElement = NewElement(contentPartDefinition.Name, contentPartDefinition.Settings);
             foreach (var partField in contentPartDefinition.Fields) {
-                var attributeName = string.Format("{0}.{1}", partField.Name, partField.FieldDefinition.Name);
+                var attributeName = $"{partField.Name}.{partField.FieldDefinition.Name}";
                 var partFieldElement = NewElement(attributeName, partField.Settings);
                 partElement.Add(partFieldElement);
             }

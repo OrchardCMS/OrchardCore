@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using OrchardVNext.Security;
-using OrchardVNext.Logging;
 using OrchardVNext.Exceptions;
+using OrchardVNext.Security;
 
 namespace OrchardVNext {
 

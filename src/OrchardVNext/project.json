@@ -9,15 +9,15 @@
     "Microsoft.Framework.Configuration.Json": "1.0.0-*",
     "Microsoft.Framework.Configuration.Xml": "1.0.0-*",
     "Microsoft.Dnx.Tooling": "1.0.0-*",
-    "EntityFramework.Core": "7.0.0-*",
-    "EntityFramework.SqlServer": "7.0.0-*",
-    "EntityFramework.InMemory": "7.0.0-*",
     "OrchardVNext.Logging": "2.0.0-*",
     "OrchardVNext.DependencyInjection": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*",
     "OrchardVNext.Mvc": "2.0.0-*",
     "OrchardVNext.Routing": "2.0.0-*",
-    "OrchardVNext.Data": "2.0.0-*"
+    "OrchardVNext.Data": "2.0.0-*",
+    "OrchardVNext.Configuration": "2.0.0-*",
+    "OrchardVNext.FileSystem": "2.0.0-*",
+    "OrchardVNext.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -27,9 +27,9 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Runtime": "4.0.20-*",
-        "System.Xml.XDocument": "4.0.10-*",
-        "System.IO.FileSystem.Primitives": "4.0.0-*",
+        "System.Runtime": "4.0.21-*",
+        "System.Xml.XDocument": "4.0.11-*",
+        "System.IO.FileSystem.Primitives": "4.0.1-*",
         "System.Console": "4.0.0-*"
       }
     }

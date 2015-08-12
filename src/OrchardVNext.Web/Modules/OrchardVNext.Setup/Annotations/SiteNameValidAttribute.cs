@@ -1,4 +1,4 @@
-﻿using OrchardVNext.Localization;
+﻿using OrchardVNext.Abstractions.Localization;
 
 namespace OrchardVNext.Setup.Annotations {
     public class SiteNameValidAttribute : System.ComponentModel.DataAnnotations.RangeAttribute {
@@ -18,9 +18,9 @@ namespace OrchardVNext.Setup.Annotations {
 
         public override string FormatErrorMessage(string name) {
             if (string.IsNullOrWhiteSpace(_value))
-                return T("Site name is required.").Text;
+                return T("Site name is required.");
 
-            return T("Site name can be no longer than {0} characters.", Maximum).Text;
+            return T("Site name can be no longer than {0} characters.", Maximum);
         }
     }
 }

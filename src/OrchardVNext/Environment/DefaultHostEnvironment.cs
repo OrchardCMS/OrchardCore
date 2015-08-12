@@ -1,5 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
-using OrchardVNext.Localization;
+using OrchardVNext.Abstractions.Localization;
 
 namespace OrchardVNext.Environment {
     public class DefaultHostEnvironment : HostEnvironment {

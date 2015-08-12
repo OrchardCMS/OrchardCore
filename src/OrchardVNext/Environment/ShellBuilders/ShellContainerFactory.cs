@@ -6,8 +6,8 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.ShellBuilders.Models;
 using OrchardVNext.Mvc.Routing;
 

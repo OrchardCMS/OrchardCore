@@ -7,15 +7,16 @@ using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Dnx.Runtime;
+using OrchardVNext.Abstractions.Environment;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.Extensions.Folders;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.ShellBuilders;
-using OrchardVNext.FileSystems.AppData;
-using OrchardVNext.FileSystems.VirtualPath;
-using OrchardVNext.FileSystems.WebSite;
+using OrchardVNext.FileSystem.AppData;
+using OrchardVNext.FileSystem.VirtualPath;
+using OrchardVNext.FileSystem.WebSite;
 using OrchardVNext.Routing;
 
 namespace OrchardVNext.Environment {

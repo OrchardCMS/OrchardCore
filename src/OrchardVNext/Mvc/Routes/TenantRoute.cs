@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
 using System;
 using System.Threading.Tasks;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Mvc.Routes {
     public class TenantRoute : IRouter {

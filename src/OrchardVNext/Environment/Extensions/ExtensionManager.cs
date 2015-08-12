@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OrchardVNext.Abstractions;
+using OrchardVNext.Abstractions.Localization;
 using OrchardVNext.Environment.Extensions.Folders;
 using OrchardVNext.Environment.Extensions.Loaders;
 using OrchardVNext.Environment.Extensions.Models;
 using OrchardVNext.Utility;
-using OrchardVNext.Localization;
 
 namespace OrchardVNext.Environment.Extensions {
     public class ExtensionManager : IExtensionManager {

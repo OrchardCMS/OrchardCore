@@ -1,5 +1,5 @@
-using OrchardVNext.Environment;
-using OrchardVNext.FileSystems.VirtualPath;
+using OrchardVNext.Abstractions.Environment;
+using OrchardVNext.FileSystem.VirtualPath;
 using Xunit;
 
 namespace OrchardVNext.Tests.FileSystems.VirtualPath {

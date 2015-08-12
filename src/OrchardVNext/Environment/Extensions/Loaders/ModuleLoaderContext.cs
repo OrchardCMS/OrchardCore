@@ -1,60 +1,54 @@
 ﻿using System;
-using System.IO;
+using System.Runtime.Versioning;
 using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Dnx.Runtime;
-using Microsoft.Dnx.Tooling;
+using Microsoft.Dnx.Runtime.Infrastructure;
 using NuGet;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class ModuleLoaderContext {
-        public ModuleLoaderContext(IServiceProvider serviceProvider,
-                                       string projectDirectory) {
+        public ModuleLoaderContext(
+            IServiceProvider hostServices,
+            Project project, 
+            string configuration, 
+            FrameworkName targetFramework) {
+            var cacheContextAccessor = new CacheContextAccessor();
+            var cache = new Cache(cacheContextAccessor);
 
-            ProjectDirectory = projectDirectory;
-            RootDirectory = Microsoft.Dnx.Runtime.ProjectResolver.ResolveRootDirectory(ProjectDirectory);
+            var applicationHostContext = new ApplicationHostContext(
+                hostServices: hostServices,
+                projectDirectory: project.ProjectDirectory,
+                packagesDirectory: null,
+                configuration: configuration,
+                targetFramework: targetFramework,
+                cache: cache,
+                cacheContextAccessor: cacheContextAccessor,
+                namedCacheDependencyProvider: NamedCacheDependencyProvider.Empty);
+            
+            DependencyWalker = applicationHostContext.DependencyWalker;
+            FrameworkName = targetFramework;
+            CacheContextAccessor = cacheContextAccessor;
+            Cache = cache;
+            LibraryExportProvider = applicationHostContext.LibraryExportProvider;
+            ServiceProvider =  applicationHostContext.ServiceProvider;
+            AssemblyLoadContextFactory = applicationHostContext.AssemblyLoadContextFactory;
+            LibraryManager = applicationHostContext.LibraryManager;
 
-            // A new project resolver is required. you cannot reuse the one from the 
-            // parent service provider as that will be for the parent context.
-            ProjectResolver = new ProjectResolver(ProjectDirectory, RootDirectory);
-
-            var referenceAssemblyDependencyResolver = new ReferenceAssemblyDependencyResolver(new FrameworkReferenceResolver());
-
-            // Need to pass through package directory incase you download a package from the gallary, this needs to know about it
-            var nuGetDependencyProvider = new NuGetDependencyResolver(new PackageRepository(
-                NuGetDependencyResolver.ResolveRepositoryPath(RootDirectory)));
-            var gacDependencyResolver = new GacDependencyResolver();
-            var projectDepencyProvider = new ProjectReferenceDependencyProvider(ProjectResolver);
-            var unresolvedDependencyProvider = new UnresolvedDependencyProvider();
-
-            var projectLockJsonPath = Path.Combine(ProjectDirectory, LockFileFormat.LockFileName);
-            if (File.Exists(projectLockJsonPath)) {
-                var lockFileFormat = new LockFileFormat();
-                var lockFile = lockFileFormat.Read(projectLockJsonPath);
-                nuGetDependencyProvider.ApplyLockFile(lockFile);
-            }
-
-            DependencyWalker = new DependencyWalker(new IDependencyProvider[] {
-                projectDepencyProvider,
-                nuGetDependencyProvider,
-                referenceAssemblyDependencyResolver,
-                gacDependencyResolver,
-                unresolvedDependencyProvider
-            });
-
-            LibraryExportProvider = new CompositeLibraryExportProvider(new ILibraryExportProvider[] {
-                new ModuleProjectLibraryExportProvider(
-                    ProjectResolver, serviceProvider),
-                referenceAssemblyDependencyResolver,
-                gacDependencyResolver,
-                nuGetDependencyProvider
-            });
+            Walk(project.Name, project.Version);
         }
-        public string RootDirectory { get; }
 
-        public string ProjectDirectory { get; }
+        public DependencyWalker DependencyWalker { get; set; }
+        public FrameworkName FrameworkName { get; set; }
+        public ICacheContextAccessor CacheContextAccessor { get; set; }
+        public ICache Cache { get; set; }
+        public ILibraryExportProvider LibraryExportProvider { get; set; }
+        public IServiceProvider ServiceProvider { get; set; }
+        public IAssemblyLoadContextFactory AssemblyLoadContextFactory { get; set; }
+        public ILibraryManager LibraryManager { get; set; }
 
-        public DependencyWalker DependencyWalker { get; private set; }
-        public ILibraryExportProvider LibraryExportProvider { get; private set; }
-        public IProjectResolver ProjectResolver { get; }
+        private void Walk(string projectName, SemanticVersion projectVersion) {
+            DependencyWalker.Walk(projectName, projectVersion, FrameworkName);
+        }
     }
 }

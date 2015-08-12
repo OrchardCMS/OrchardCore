@@ -1,8 +1,8 @@
-﻿using OrchardVNext.Environment.Configuration;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using System;
 using OrchardVNext.Environment.Descriptor.Models;
 using System.Linq;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Environment.ShellBuilders {
     /// <summary>
@@ -61,7 +61,8 @@ namespace OrchardVNext.Environment.ShellBuilders {
                     new ShellFeature {Name = "OrchardVNext.Framework"},
                     new ShellFeature {Name = "Settings"},
                     new ShellFeature {Name = "OrchardVNext.Test1"},
-                    new ShellFeature {Name = "OrchardVNext.Demo" }
+                    new ShellFeature {Name = "OrchardVNext.Demo" },
+                    new ShellFeature {Name = "OrchardVNext.Data.EntityFramework" }
                 },
                 Parameters = Enumerable.Empty<ShellParameter>(),
             };

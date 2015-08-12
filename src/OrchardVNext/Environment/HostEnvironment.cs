@@ -1,4 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
+using OrchardVNext.Abstractions.Environment;
 
 namespace OrchardVNext.Environment {
     public abstract class HostEnvironment : IHostEnvironment {
@@ -9,7 +10,7 @@ namespace OrchardVNext.Environment {
         }
 
         public string MapPath(string virtualPath) {
-       		return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~", string.Empty);
+       		return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~/", "\\");
         }
     }
 }

@@ -11,7 +11,7 @@
     "dnx451": { },
     "dotnet": {
       "dependencies": {
-        "System.Runtime": "4.0.20-*"
+        "System.Runtime": "4.0.21-*"
       }
     }
   },

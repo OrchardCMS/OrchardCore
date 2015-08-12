@@ -2,7 +2,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Environment {
     public class OrchardShellHostMiddleware {

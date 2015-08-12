@@ -1,11 +1,11 @@
-﻿using OrchardVNext.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Framework.Localization;
 
 namespace OrchardVNext.Utility {
     public static class StringExtensions {
@@ -85,9 +85,9 @@ namespace OrchardVNext.Utility {
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue) {
-            return String.IsNullOrEmpty(text)
+            return string.IsNullOrEmpty(text)
                 ? defaultValue
-                : new LocalizedString(text);
+                : new LocalizedString(null, text);
         }
 
         public static string RemoveTags(this string html, bool htmlDecode = false) {
@@ -169,13 +169,13 @@ namespace OrchardVNext.Utility {
         /// Uses a white list set of chars.
         /// </remarks>
         public static string ToSafeName(this string name) {
-            if (String.IsNullOrWhiteSpace(name))
-                return String.Empty;
+            if (string.IsNullOrWhiteSpace(name))
+                return string.Empty;
 
             name = RemoveDiacritics(name);
             name = name.Strip(c => 
                 !c.IsLetter()
-                && !Char.IsDigit(c)
+                && !char.IsDigit(c)
                 );
 
             name = name.Trim();
@@ -217,7 +217,7 @@ namespace OrchardVNext.Utility {
         }
 
         public static string Strip(this string subject, params char[] stripped) {
-            if(stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(subject)) {
+            if(stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject)) {
                 return subject;
             }
 
@@ -297,7 +297,7 @@ namespace OrchardVNext.Utility {
             }
 
             if (from.Length != to.Length) {
-                throw new ArgumentNullException("from", "Parameters must have the same length");
+                throw new ArgumentNullException(nameof(from), "Parameters must have the same length");
             }
 
             var map = new Dictionary<char, char>(from.Length);
@@ -321,7 +321,7 @@ namespace OrchardVNext.Utility {
         }
 
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements) {
-            var pattern = String.Format("{0}", String.Join("|", replacements.Keys));
+            var pattern = $"{string.Join("|", replacements.Keys)}";
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
     }

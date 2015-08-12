@@ -1,5 +1,5 @@
-﻿using OrchardVNext.DependencyInjection;
-using OrchardVNext.Localization;
+﻿using OrchardVNext.Abstractions.Localization;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext
 {

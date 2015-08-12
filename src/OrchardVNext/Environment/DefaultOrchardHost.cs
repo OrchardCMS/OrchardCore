@@ -1,4 +1,4 @@
-﻿using OrchardVNext.Environment.Configuration;
+﻿using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Environment.ShellBuilders;
 
 namespace OrchardVNext.Environment {

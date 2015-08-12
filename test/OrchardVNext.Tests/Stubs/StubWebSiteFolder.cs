@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OrchardVNext.FileSystems.WebSite;
+using OrchardVNext.FileSystem.WebSite;
 
 namespace OrchardVNext.Tests.Stubs {
     public class StubWebSiteFolder : IWebSiteFolder {

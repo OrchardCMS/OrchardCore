@@ -1,8 +1,8 @@
-﻿using OrchardVNext.Environment.Configuration;
-using OrchardVNext.Environment.Descriptor.Models;
+﻿using OrchardVNext.Environment.Descriptor.Models;
 using OrchardVNext.Environment.Extensions.Models;
 using System;
 using System.Collections.Generic;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Environment.ShellBuilders.Models {
     /// <summary>

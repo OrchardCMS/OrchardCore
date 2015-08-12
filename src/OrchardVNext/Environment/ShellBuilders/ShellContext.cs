@@ -1,5 +1,5 @@
 ﻿using System;
-using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Environment.ShellBuilders.Models;
 
 namespace OrchardVNext.Environment.ShellBuilders {

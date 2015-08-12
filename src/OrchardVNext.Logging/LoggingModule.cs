@@ -1,4 +1,5 @@
 using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.DependencyInjection;
 
 namespace OrchardVNext.Logging {
     public class LoggingModule : IModule {

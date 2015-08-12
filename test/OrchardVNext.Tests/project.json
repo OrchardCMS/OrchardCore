@@ -5,7 +5,8 @@
   "dependencies": {
     "xunit": "2.1.0-*",
     "xunit.runner.dnx": "2.1.0-*",
-    "OrchardVNext": "2.0.0-*"
+    "OrchardVNext": "2.0.0-*",
+    "OrchardVNext.FileSystem": "2.0.0-*"
   },
   "commands": {
     "test": "xunit.runner.dnx"
@@ -14,10 +15,10 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Collections": "4.0.10-beta-*",
-        "System.Linq": "4.0.0-beta-*",
-        "System.Threading": "4.0.10-beta-*",
-        "Microsoft.CSharp": "4.0.0-beta-*"
+        "System.Collections": "4.0.11-*",
+        "System.Linq": "4.0.1-*",
+        "System.Threading": "4.0.11-*",
+        "Microsoft.CSharp": "4.0.1-*"
       }
     }
   },

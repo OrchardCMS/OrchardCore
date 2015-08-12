@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using Microsoft.Dnx.Runtime;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Environment.Extensions.Models;
-using OrchardVNext.FileSystems.VirtualPath;
+using OrchardVNext.FileSystem.VirtualPath;
 
 namespace OrchardVNext.Environment.Extensions.Loaders {
     public class DynamicExtensionLoader : IExtensionLoader {
+        // TODO : Remove.
         public static readonly string[] ExtensionsVirtualPathPrefixes = { "~/Modules", "~/Themes" };
 
         private readonly IVirtualPathProvider _virtualPathProvider;
@@ -47,8 +47,13 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             var plocation = _virtualPathProvider.MapPath(descriptor.Location);
 
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
-                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
 
+#if !(DNXCORE50)
+                var assem = Assembly.LoadFrom("C:\\Users\\Nicholas\\.dnx\\packages\\EntityFramework.Core\\7.0.0-beta7-13922\\lib\\dnx451\\EntityFramework.Core.dll");
+#endif
+
+                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+                
                 Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
 
                 return new ExtensionEntry {

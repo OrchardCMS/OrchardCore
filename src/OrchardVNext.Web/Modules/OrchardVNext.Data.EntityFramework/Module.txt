@@ -1,0 +1,6 @@
+﻿Name: Entity Framework data providers
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x

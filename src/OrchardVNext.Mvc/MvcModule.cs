@@ -2,6 +2,7 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.Framework.DependencyInjection;
+using OrchardVNext.DependencyInjection;
 using OrchardVNext.Mvc.Razor;
 
 namespace OrchardVNext.Mvc {

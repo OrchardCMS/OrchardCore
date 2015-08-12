@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
-using OrchardVNext.Environment.Configuration;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Middleware;
 using OrchardVNext.Mvc.Routes;
 

@@ -1,15 +1,14 @@
-using System;
+using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;
-using OrchardVNext.Environment.Configuration;
 
 namespace OrchardVNext.Test1 {
     public interface ITestDependency : IDependency {
         string SayHi(string line);
     }
-
-    public class Class : ITestDependency {
+    
+    public class ClassFoo : ITestDependency {
         private readonly ShellSettings _shellSettings;
-        public Class(ShellSettings shellSettings) {
+        public ClassFoo(ShellSettings shellSettings) {
             _shellSettings = shellSettings;
         }
 

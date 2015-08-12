@@ -6,7 +6,7 @@ using Microsoft.Dnx.Runtime;
 namespace OrchardVNext.DependencyInjection {
     public interface IOrchardLibraryManager : ILibraryManager, ILibraryExporter {
         IDictionary<string, IMetadataReference> MetadataReferences { get; }
-        void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations);
+        void AddLibrary(Library library);
         void AddAdditionalLibraryExportRegistrations(string name, LibraryExport additionalRegistration);
         void AddMetadataReference(string name, IMetadataReference metadataReference);
     }
@@ -19,20 +19,20 @@ namespace OrchardVNext.DependencyInjection {
             _libraryManager = libraryManager;
             _libraryExporter = libraryExporter;
 
-            AdditionalRegistrations = new List<LibraryDescription>();
+            AdditionalLibraries = new List<Library>();
             AdditionalLibraryExportRegistrations = new Dictionary<string, LibraryExport>();
             MetadataReferences = new Dictionary<string, IMetadataReference>();
         }
 
-        public IList<LibraryDescription> AdditionalRegistrations { get; }
+        private IList<Library> AdditionalLibraries { get; }
         public IDictionary<string, LibraryExport> AdditionalLibraryExportRegistrations { get; }
         public IDictionary<string, IMetadataReference> MetadataReferences { get; }
 
-        public void AddAdditionalRegistrations(IList<LibraryDescription> additionalRegistrations) {
-            foreach (var registration in additionalRegistrations) {
-                if (AdditionalRegistrations.All(x => x.Identity.Name != registration.Identity.Name))
-                    AdditionalRegistrations.Add(registration);
-            }
+        public void AddLibrary(Library library) {
+            if (AdditionalLibraries.Any(lib => lib.Name == library.Name))
+                return;
+
+            AdditionalLibraries.Add(library);
         }
 
         public void AddAdditionalLibraryExportRegistrations(string name, LibraryExport additionalRegistration) {
@@ -46,9 +46,8 @@ namespace OrchardVNext.DependencyInjection {
 
         public IEnumerable<Library> GetReferencingLibraries(string name) {
             return _libraryManager.GetReferencingLibraries(name)
-                .Union(AdditionalRegistrations
-                    .Where(x => x.Dependencies.FirstOrDefault(o => o.Name == name) != null)
-                    .Select(x => x.ToLibrary()));
+                .Union(AdditionalLibraries
+                    .Where(x => x.Dependencies.FirstOrDefault(o => o == name) != null));
         }
 
         public Library GetLibrary(string name) {
@@ -56,17 +55,13 @@ namespace OrchardVNext.DependencyInjection {
             if (info != null)
                 return info;
 
-            var lib = AdditionalRegistrations.SingleOrDefault(x => x.Identity.Name == name);
-            if (lib != null)
-                return lib.ToLibrary();
-
-            return null;
+            return AdditionalLibraries.SingleOrDefault(x => x.Name == name);
         }
 
         public IEnumerable<Library> GetLibraries() {
             return _libraryManager
                 .GetLibraries()
-                .Concat(AdditionalRegistrations.Select(x => x.ToLibrary()));
+                .Concat(AdditionalLibraries);
         }
 
         public LibraryExport GetLibraryExport(string name) {
@@ -78,7 +73,7 @@ namespace OrchardVNext.DependencyInjection {
         }
 
         public LibraryExport GetLibraryExport(string name, string aspect) {
-            var export = _libraryExporter.GetLibraryExport(name);
+            var export = _libraryExporter.GetLibraryExport(name, aspect);
             if (export != null)
                 return export;
 
@@ -88,19 +83,43 @@ namespace OrchardVNext.DependencyInjection {
         public LibraryExport GetAllExports(string name) {
             var internalExports = _libraryExporter.GetAllExports(name);
 
-            return new LibraryExport(
-                internalExports.MetadataReferences.AsEnumerable().Concat(AdditionalLibraryExportRegistrations.SelectMany(x => x.Value.MetadataReferences)).ToList(),
-                internalExports.SourceReferences.AsEnumerable().Concat(AdditionalLibraryExportRegistrations.SelectMany(x => x.Value.SourceReferences)).ToList()
-                );
+            return new LibraryExportWrapper(internalExports,
+                AdditionalLibraryExportRegistrations.Select(x => x.Value).ToList());
         }
 
         public LibraryExport GetAllExports(string name, string aspect) {
             var internalExports = _libraryExporter.GetAllExports(name, aspect);
 
-            return new LibraryExport(
-                internalExports.MetadataReferences.AsEnumerable().Concat(AdditionalLibraryExportRegistrations.SelectMany(x => x.Value.MetadataReferences)).ToList(),
-                internalExports.SourceReferences.AsEnumerable().Concat(AdditionalLibraryExportRegistrations.SelectMany(x => x.Value.SourceReferences)).ToList()
-                );
+            return new LibraryExportWrapper(internalExports,
+                AdditionalLibraryExportRegistrations.Select(x => x.Value).ToList());
+        }
+
+        private class LibraryExportWrapper : LibraryExport {
+            public LibraryExportWrapper(
+                LibraryExport internalExports, IReadOnlyList<LibraryExport> additionalExports) 
+                : base(JoinMetadataReferences(internalExports, additionalExports),
+                      JoinSourceReferences(internalExports, additionalExports)) {
+            }
+
+            private static IList<ISourceReference> JoinSourceReferences(
+                LibraryExport internalExports,
+                IReadOnlyList<LibraryExport> additionalExports) {
+                return internalExports
+                    .SourceReferences
+                    .AsEnumerable()
+                    .Concat(
+                        additionalExports.SelectMany(x => x.SourceReferences)).ToList();
+            }
+
+            private static IList<IMetadataReference> JoinMetadataReferences(
+                LibraryExport internalExports, 
+                IReadOnlyList<LibraryExport> additionalExports) {
+                return internalExports
+                    .MetadataReferences
+                    .AsEnumerable()
+                    .Concat(
+                        additionalExports.SelectMany(x => x.MetadataReferences)).ToList();
+            }
         }
     }
 }

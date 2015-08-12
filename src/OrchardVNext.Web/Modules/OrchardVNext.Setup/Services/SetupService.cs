@@ -1,12 +1,12 @@
 using Microsoft.AspNet.Hosting;
 using OrchardVNext.Environment;
-using OrchardVNext.Environment.Configuration;
 using OrchardVNext.Environment.Descriptor.Models;
 using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.ShellBuilders;
-using OrchardVNext.Localization;
 using System;
 using System.Linq;
+using OrchardVNext.Abstractions.Localization;
+using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Setup.Services {
     public class SetupService : ISetupService {

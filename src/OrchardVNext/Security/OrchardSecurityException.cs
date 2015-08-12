@@ -1,5 +1,6 @@
 ﻿using System;
-using OrchardVNext.Localization;
+using Microsoft.Framework.Localization;
+using OrchardVNext.Abstractions;
 
 namespace OrchardVNext.Security {
     public class OrchardSecurityException : OrchardCoreException {
