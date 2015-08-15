@@ -5,10 +5,10 @@ using Microsoft.Dnx.Runtime;
 
 namespace OrchardVNext.DependencyInjection {
     public interface IOrchardLibraryManager : ILibraryManager, ILibraryExporter {
-        IDictionary<string, IMetadataReference> MetadataReferences { get; }
+        IList<IMetadataReference> MetadataReferences { get; }
         void AddLibrary(Library library);
         void AddAdditionalLibraryExportRegistrations(string name, LibraryExport additionalRegistration);
-        void AddMetadataReference(string name, IMetadataReference metadataReference);
+        void AddMetadataReference(IMetadataReference metadataReference);
     }
 
     public class OrchardLibraryManager : IOrchardLibraryManager {
@@ -21,12 +21,12 @@ namespace OrchardVNext.DependencyInjection {
 
             AdditionalLibraries = new List<Library>();
             AdditionalLibraryExportRegistrations = new Dictionary<string, LibraryExport>();
-            MetadataReferences = new Dictionary<string, IMetadataReference>();
+            MetadataReferences = new List<IMetadataReference>();
         }
 
         private IList<Library> AdditionalLibraries { get; }
         public IDictionary<string, LibraryExport> AdditionalLibraryExportRegistrations { get; }
-        public IDictionary<string, IMetadataReference> MetadataReferences { get; }
+        public IList<IMetadataReference> MetadataReferences { get; }
 
         public void AddLibrary(Library library) {
             if (AdditionalLibraries.Any(lib => lib.Name == library.Name))
@@ -39,8 +39,11 @@ namespace OrchardVNext.DependencyInjection {
             AdditionalLibraryExportRegistrations[name] = additionalRegistration;
         }
 
-        public void AddMetadataReference(string name, IMetadataReference metadataReference) {
-            MetadataReferences[name] = metadataReference;
+        public void AddMetadataReference(IMetadataReference metadataReference) {
+            if (MetadataReferences.Any(x => x.Name == metadataReference.Name))
+                return;
+
+            MetadataReferences.Add(metadataReference);
         }
 
 

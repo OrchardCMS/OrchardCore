@@ -175,8 +175,7 @@ namespace OrchardVNext.Mvc.Razor {
 
                     references.AddRange(_libraryExporter
                             .MetadataReferences
-                            .Select(x => x.Value as IRoslynMetadataReference)
-                            .Where(x => x != null)
+                            .OfType<IRoslynMetadataReference>()
                             .Select(x => x.MetadataReference));
 
                     return references;

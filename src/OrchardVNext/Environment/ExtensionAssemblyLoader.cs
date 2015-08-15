@@ -86,7 +86,14 @@ namespace OrchardVNext.Environment
                 _packageAssemblyLookup.AddLoader(
                     _moduleContext.NuGetDependencyProvider);
                 
-                return engine.LoadProject(project, null, _assemblyLoadContextAccessor.Default);
+                var p = engine.LoadProject(project, null, _assemblyLoadContextAccessor.Default);
+
+                var exports = engine.RootLibraryExporter.GetExport(project.Name);
+                foreach (var metadataReference in exports.MetadataReferences) {
+                    _libraryManager.AddMetadataReference(metadataReference);
+                }
+                
+                return p;
             });
         }
     }
