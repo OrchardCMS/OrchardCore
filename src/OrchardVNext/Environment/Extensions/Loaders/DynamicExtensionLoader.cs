@@ -47,11 +47,6 @@ namespace OrchardVNext.Environment.Extensions.Loaders {
             var plocation = _virtualPathProvider.MapPath(descriptor.Location);
 
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
-
-#if !(DNXCORE50)
-                var assem = Assembly.LoadFrom("C:\\Users\\Nicholas\\.dnx\\packages\\EntityFramework.Core\\7.0.0-beta7-13922\\lib\\dnx451\\EntityFramework.Core.dll");
-#endif
-
                 var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
                 
                 Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);

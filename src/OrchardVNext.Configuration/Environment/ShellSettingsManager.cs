@@ -22,7 +22,7 @@ namespace OrchardVNext.Configuration.Environment {
 
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
-        private const string _settingsFileNameFormat = "Settings.{0}";
+        private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder) {
             _appDataFolder = appDataFolder;
@@ -40,27 +40,27 @@ namespace OrchardVNext.Configuration.Environment {
 
                 var configurationContainer =
                     new ConfigurationBuilder()
-                        .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "json")),
+                        .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "json")),
                             true)
-                        .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "xml")),
+                        .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "xml")),
                             true)
                         .Add(
                             new DefaultFileConfigurationSource(
-                                _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false));
+                                _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false));
 
                 var config = configurationContainer.Build();
-
+                
                 var shellSetting = new ShellSettings {
-                    Name = config.Get("Name"),
-                    DataConnectionString = config.Get("DataConnectionString"),
-                    DataProvider = config.Get("DataProvider"),
-                    DataTablePrefix = config.Get("DataTablePrefix"),
-                    RequestUrlHost = config.Get("RequestUrlHost"),
-                    RequestUrlPrefix = config.Get("RequestUrlPrefix")
+                    Name = config["Name"],
+                    DataConnectionString = config["DataConnectionString"],
+                    DataProvider = config["DataProvider"],
+                    DataTablePrefix = config["DataTablePrefix"],
+                    RequestUrlHost = config["RequestUrlHost"],
+                    RequestUrlPrefix = config["RequestUrlPrefix"]
                 };
 
                 TenantState state;
-                shellSetting.State = Enum.TryParse(config.Get("State"), true, out state)
+                shellSetting.State = Enum.TryParse(config["State"], true, out state)
                     ? state
                     : TenantState.Uninitialized;
 
@@ -85,7 +85,7 @@ namespace OrchardVNext.Configuration.Environment {
             var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
             var configurationSource = new DefaultFileConfigurationSource(
-                _appDataFolder.Combine(tenantPath, string.Format(_settingsFileNameFormat, "txt")), false);
+                _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
 
             foreach (var key in shellSettings.Keys) {
                 configurationSource.Set(key, (shellSettings[key] ?? string.Empty).ToString());

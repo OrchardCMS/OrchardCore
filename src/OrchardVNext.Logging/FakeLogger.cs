@@ -60,6 +60,9 @@ namespace OrchardVNext {
         public ILogger CreateLogger(string name) {
             return new TestLogger(name, true);
         }
+
+        public void Dispose() {
+        }
     }
 
     public class TestLogger : ILogger {

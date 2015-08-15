@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Dnx.Runtime;
@@ -12,6 +14,12 @@ namespace OrchardVNext.DependencyInjection {
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
+
+        protected virtual HashSet<string> ReferenceAssemblies { get; }
+            = new HashSet<string>(StringComparer.Ordinal)
+            {
+                        "OrchardVNext.Data",
+            };
 
         public OrchardAssemblyProvider(IOrchardLibraryManager libraryManager,
             IAssemblyLoaderContainer assemblyLoaderContainer,
@@ -29,8 +37,15 @@ namespace OrchardVNext.DependencyInjection {
         }
 
         protected virtual IEnumerable<Library> GetCandidateLibraries() {
-            return _libraryManager.GetLibraries()
-                                      .Distinct();
+            if (ReferenceAssemblies == null) {
+                return Enumerable.Empty<Library>();
+            }
+
+            // GetReferencingLibraries returns the transitive closure of referencing assemblies
+            // for a given assembly.
+            return ReferenceAssemblies.SelectMany(_libraryManager.GetReferencingLibraries)
+                                      .Distinct()
+                                      .Where(IsCandidateLibrary);
         }
 
         private Assembly Load(AssemblyName assemblyName) {
@@ -41,6 +56,11 @@ namespace OrchardVNext.DependencyInjection {
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader)) {
                 return Assembly.Load(assemblyName);
             }
+        }
+
+        private bool IsCandidateLibrary(Library library) {
+            Debug.Assert(ReferenceAssemblies != null);
+            return !ReferenceAssemblies.Contains(library.Name);
         }
     }
 }

@@ -45,7 +45,8 @@ namespace OrchardVNext.Environment {
                         services.AddSingleton<IExtensionManager, ExtensionManager>();
                         {
                             services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
-
+                            services.AddSingleton<IPackageAssemblyLookup, PackageAssemblyLookup>();
+                            
                             services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
                             services.AddSingleton<IExtensionFolders, CoreModuleFolders>();
                             services.AddSingleton<IExtensionFolders, ModuleFolders>();

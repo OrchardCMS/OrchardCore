@@ -5,6 +5,7 @@ using OrchardVNext.Environment.Extensions;
 using OrchardVNext.Environment.ShellBuilders;
 using System;
 using System.Linq;
+using Microsoft.AspNet.Http;
 using OrchardVNext.Abstractions.Localization;
 using OrchardVNext.Configuration.Environment;
 

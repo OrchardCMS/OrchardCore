@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.DependencyInjection.Extensions;
 using Microsoft.Framework.Logging;
 using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;

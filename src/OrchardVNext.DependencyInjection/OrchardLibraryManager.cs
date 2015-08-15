@@ -64,16 +64,16 @@ namespace OrchardVNext.DependencyInjection {
                 .Concat(AdditionalLibraries);
         }
 
-        public LibraryExport GetLibraryExport(string name) {
-            var export = _libraryExporter.GetLibraryExport(name);
+        public LibraryExport GetExport(string name) {
+            var export = _libraryExporter.GetExport(name);
             if (export != null)
                 return export;
 
             return AdditionalLibraryExportRegistrations[name];
         }
 
-        public LibraryExport GetLibraryExport(string name, string aspect) {
-            var export = _libraryExporter.GetLibraryExport(name, aspect);
+        public LibraryExport GetExport(string name, string aspect) {
+            var export = _libraryExporter.GetExport(name, aspect);
             if (export != null)
                 return export;
 

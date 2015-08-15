@@ -1,7 +1,8 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "OrchardVNext": "2.0.0-*"
+    "OrchardVNext": "2.0.0-*",
+    "OrchardVNext.Data": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

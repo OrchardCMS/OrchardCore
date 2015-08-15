@@ -12,7 +12,7 @@ namespace OrchardVNext.Environment.Extensions {
                 description.Path,
                 description.Type,
                 description.Dependencies.Select(d => d.Name),
-                description.LoadableAssemblies.Select(a => new AssemblyName(a)));
+                description.Assemblies.Select(a => new AssemblyName(a)));
         }
     }
 }
