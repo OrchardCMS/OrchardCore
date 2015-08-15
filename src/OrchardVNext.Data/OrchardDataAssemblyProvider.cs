@@ -4,13 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Dnx.Runtime;
+using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.DependencyInjection {
-    public interface IOrchardAssemblyProvider : IDependency {
-        IEnumerable<Assembly> CandidateAssemblies { get; }
-    }
-
-    public class OrchardAssemblyProvider : IOrchardAssemblyProvider {
+namespace OrchardVNext.Data {
+    public class OrchardDataAssemblyProvider : IOrchardDataAssemblyProvider {
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
@@ -21,7 +18,7 @@ namespace OrchardVNext.DependencyInjection {
                         "OrchardVNext.Data",
             };
 
-        public OrchardAssemblyProvider(IOrchardLibraryManager libraryManager,
+        public OrchardDataAssemblyProvider(IOrchardLibraryManager libraryManager,
             IAssemblyLoaderContainer assemblyLoaderContainer,
             IExtensionAssemblyLoader extensionAssemblyLoader) {
             _libraryManager = libraryManager;

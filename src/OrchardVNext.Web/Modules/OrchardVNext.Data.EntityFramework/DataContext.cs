@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
-using OrchardVNext.DependencyInjection;
 using System.Linq;
 
 namespace OrchardVNext.Data.EntityFramework {
@@ -14,13 +13,13 @@ namespace OrchardVNext.Data.EntityFramework {
 
     public class DataContext : DbContext, IDataContext {
         private readonly IDbContextFactoryHolder _dbContextFactoryHolder;
-        private readonly IOrchardAssemblyProvider _assemblyProvider;
+        private readonly IOrchardDataAssemblyProvider _assemblyProvider;
 
         private readonly Guid _instanceId;
 
         public DataContext(
             IDbContextFactoryHolder dbContextFactoryHolder,
-            IOrchardAssemblyProvider assemblyProvider) {
+            IOrchardDataAssemblyProvider assemblyProvider) {
             
             _dbContextFactoryHolder = dbContextFactoryHolder;
             _assemblyProvider = assemblyProvider;
