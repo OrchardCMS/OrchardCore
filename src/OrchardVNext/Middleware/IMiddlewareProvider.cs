@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.Middleware
-{
+namespace OrchardVNext.Middleware {
     /// <summary>
     /// Represents a provider that makes Owin middlewares available for the Orchard Owin pipeline.
     /// </summary>

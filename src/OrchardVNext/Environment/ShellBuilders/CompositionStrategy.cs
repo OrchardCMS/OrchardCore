@@ -49,13 +49,11 @@ namespace OrchardVNext.Environment.ShellBuilders
             var modules = BuildBlueprint(features, IsModule, BuildModule, excludedTypes);
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor),
                 excludedTypes);
-            var controllers = BuildBlueprint(features, IsController, BuildController, excludedTypes);
 
             var result = new ShellBlueprint {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = dependencies.Concat(modules).ToArray(),
-                Controllers = controllers,
+                Dependencies = dependencies.Concat(modules).ToArray()
             };
 
             Logger.Debug("Done composing blueprint");
@@ -139,25 +137,6 @@ namespace OrchardVNext.Environment.ShellBuilders
                 Type = type,
                 Feature = feature,
                 Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()
-            };
-        }
-
-        private static bool IsController(Type type) {
-            return typeof(Controller).IsAssignableFrom(type);
-        }
-
-        private static ControllerBlueprint BuildController(Type type, Feature feature) {
-            var areaName = feature.Descriptor.Extension.Id;
-
-            var controllerName = type.Name;
-            if (controllerName.EndsWith("Controller"))
-                controllerName = controllerName.Substring(0, controllerName.Length - "Controller".Length);
-
-            return new ControllerBlueprint {
-                Type = type,
-                Feature = feature,
-                AreaName = areaName,
-                ControllerName = controllerName,
             };
         }
     }
