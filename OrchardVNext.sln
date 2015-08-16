@@ -56,6 +56,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Abstractions",
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Data.EntityFramework", "src\OrchardVNext.Web\Modules\OrchardVNext.Data.EntityFramework\OrchardVNext.Data.EntityFramework.xproj", "{A4856A88-CFA7-4D95-A248-7D477CB05F01}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.ContentManagement", "src\OrchardVNext.ContentManagement\OrchardVNext.ContentManagement.xproj", "{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OrchardVNext.Logging.Abstractions", "src\OrchardVNext.Logging.Abstractions\OrchardVNext.Logging.Abstractions.xproj", "{6BC0328B-1EA8-49E9-831F-384718DE3E73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -134,6 +138,14 @@ Global
 		{A4856A88-CFA7-4D95-A248-7D477CB05F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4856A88-CFA7-4D95-A248-7D477CB05F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4856A88-CFA7-4D95-A248-7D477CB05F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BC0328B-1EA8-49E9-831F-384718DE3E73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BC0328B-1EA8-49E9-831F-384718DE3E73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BC0328B-1EA8-49E9-831F-384718DE3E73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BC0328B-1EA8-49E9-831F-384718DE3E73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,5 +170,7 @@ Global
 		{EFA1459E-85C7-420F-B53F-C2D29F0AC759} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{A1F3BB21-E9C7-4131-8682-50CE9730CD49} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{A4856A88-CFA7-4D95-A248-7D477CB05F01} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
+		{6BC0328B-1EA8-49E9-831F-384718DE3E73} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 	EndGlobalSection
 EndGlobal

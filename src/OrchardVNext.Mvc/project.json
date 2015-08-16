@@ -7,7 +7,7 @@
     "Microsoft.AspNet.Mvc.ViewFeatures": "6.0.0-*",
     "Microsoft.AspNet.Mvc.Razor": "6.0.0-*",
     "OrchardVNext.DependencyInjection": "2.0.0-*",
-    "OrchardVNext.Logging": "2.0.0-*",
+    "OrchardVNext.Logging.Abstractions": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*"
   },
   "compilationOptions": {

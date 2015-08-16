@@ -18,6 +18,7 @@ using OrchardVNext.FileSystem.AppData;
 using OrchardVNext.FileSystem.VirtualPath;
 using OrchardVNext.FileSystem.WebSite;
 using OrchardVNext.Routing;
+using OrchardVNext.Logging;
 
 namespace OrchardVNext.Environment {
     public class OrchardStarter {

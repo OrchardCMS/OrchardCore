@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Reflection;
-using OrchardVNext.Utility;
+using OrchardVNext.ContentManagement.Utility;
 
 namespace OrchardVNext.ContentManagement {
     public static class XmlHelper {

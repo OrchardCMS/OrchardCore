@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Xml.Linq;
 using OrchardVNext.ContentManagement.FieldStorage.InfosetStorage;
 using OrchardVNext.ContentManagement.Records;
-using OrchardVNext.Utility;
+using OrchardVNext.ContentManagement.Utility;
 
 namespace OrchardVNext.ContentManagement {
     public static class InfosetHelper {

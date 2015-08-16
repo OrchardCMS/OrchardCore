@@ -4,7 +4,7 @@
     "Microsoft.AspNet.Routing": "1.0.0-*",
     "Microsoft.AspNet.Http": "1.0.0-*",
     "Microsoft.Framework.DependencyInjection": "1.0.0-*",
-    "OrchardVNext.Logging": "2.0.0-*"
+    "OrchardVNext.Logging.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

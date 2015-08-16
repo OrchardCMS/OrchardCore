@@ -3,7 +3,7 @@ using OrchardVNext.Security;
 using System.Security;
 using System.Runtime.InteropServices;
 
-namespace OrchardVNext.Exceptions {
+namespace OrchardVNext {
     public static class ExceptionExtensions {
         public static bool IsFatal(this Exception ex) {
             return ex is OrchardSecurityException ||

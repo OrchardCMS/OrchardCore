@@ -4,7 +4,8 @@
     "Microsoft.Dnx.Runtime": "1.0.0-*",
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Framework.Logging": "1.0.0-*",
-    "OrchardVNext.DependencyInjection": "2.0.0-*"
+    "OrchardVNext.DependencyInjection": "2.0.0-*",
+    "OrchardVNext.Logging.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -12,11 +13,7 @@
   },
   "frameworks": {
     "dnx451": { },
-    "dnxcore50": {
-      "dependencies": {
-        "System.Console": "4.0.0-*"
-      }
-    }
+    "dnxcore50": { }
   },
   "repository": {
     "type": "git",

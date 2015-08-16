@@ -1,8 +1,6 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Framework.Localization.Abstractions": "1.0.0-*",
-    "OrchardVNext.Logging.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -12,8 +10,8 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Globalization.Extensions": "4.0.1-*",
-        "System.Text.RegularExpressions": "4.0.11-*"
+        "System.Linq": "4.0.1-*",
+        "System.Console": "4.0.0-*"
       }
     }
   },
