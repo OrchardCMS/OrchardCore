@@ -23,7 +23,7 @@
     "OrchardVNext.Hosting.Web": "2.0.0-*"
   },
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://local.orchardvnext.test1.com;http://local.orchardvnext.test2.com",
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5001;http://localhost:5002",
     "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5004"
   },
   "compilationOptions": {
