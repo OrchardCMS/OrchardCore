@@ -16,10 +16,11 @@
     "**.vspscc"
   ],
   "dependencies": {
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Microsoft.AspNet.Server.IIS": "1.0.0-*",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
     "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
+    "OrchardVNext.Hosting": "2.0.0-*",
     "OrchardVNext.Hosting.Web": "2.0.0-*"
   },
   "commands": {

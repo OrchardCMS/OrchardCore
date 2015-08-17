@@ -3,8 +3,8 @@
   "dependencies": {
     "Microsoft.AspNet.Mvc.DataAnnotations": "6.0.0-*",
     "OrchardVNext.Abstractions": "2.0.0-*",
-    "OrchardVNext.DependencyInjection": "2.0.0-*",
     "OrchardVNext.Data": "2.0.0-*",
+    "OrchardVNext.DependencyInjection": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*"
   },
   "compilationOptions": {

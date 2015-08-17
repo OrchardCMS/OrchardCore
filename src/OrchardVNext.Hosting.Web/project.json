@@ -1,16 +1,16 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-*",
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-*",
     "Microsoft.AspNet.Http": "1.0.0-*",
-    "Microsoft.AspNet.Routing": "1.0.0-*",
+    "Microsoft.AspNet.Http.Abstractions": "1.0.0-*",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "Microsoft.AspNet.Routing": "1.0.0-*",
+    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-*",
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "OrchardVNext.Abstractions": "2.0.0-*",
     "OrchardVNext.ContentManagement": "2.0.0-*",
-    "OrchardVNext.Hosting.Abstractions": "2.0.0-*",
     "OrchardVNext.Hosting": "2.0.0-*",
+    "OrchardVNext.Hosting.Abstractions": "2.0.0-*",
     "OrchardVNext.Logging": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*"
   },
