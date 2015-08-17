@@ -8,14 +8,14 @@ using OrchardVNext.Hosting.Middleware;
 using OrchardVNext.Hosting.Web.Routing.Routes;
 
 namespace OrchardVNext.Hosting {
-    public class DefaultOrchardShell : IOrchardShell {
+    public class OrchardShell : IOrchardShell {
         private readonly IEnumerable<IRouteProvider> _routeProviders;
         private readonly IRoutePublisher _routePublisher;
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IServiceProvider _serviceProvider;
 
-        public DefaultOrchardShell(
+        public OrchardShell (
             IEnumerable<IRouteProvider> routeProviders,
             IRoutePublisher routePublisher,
             IEnumerable<IMiddlewareProvider> middlewareProviders,

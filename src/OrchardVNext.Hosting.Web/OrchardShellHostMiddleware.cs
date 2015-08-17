@@ -7,24 +7,24 @@ using OrchardVNext.Configuration.Environment;
 namespace OrchardVNext.Hosting {
     public class OrchardShellHostMiddleware {
         private readonly RequestDelegate _next;
-        private readonly IShellHost _orchardHost;
+        private readonly IShellHost _shellHost;
 
         public OrchardShellHostMiddleware(
             RequestDelegate next,
-            IShellHost orchardHost) {
+            IShellHost shellHost) {
 
             _next = next;
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
         }
 
         public async Task Invoke(HttpContext httpContext) {
             var shellSettings = httpContext.RequestServices.GetService<ShellSettings>();
-            _orchardHost.BeginRequest(shellSettings);
+            _shellHost.BeginRequest(shellSettings);
 
             httpContext.Response.Headers.Append("X-Generator", "Orchard");
 
             await _next.Invoke(httpContext).ContinueWith(x => {
-                _orchardHost.EndRequest(shellSettings);
+                _shellHost.EndRequest(shellSettings);
             });
         }
     }

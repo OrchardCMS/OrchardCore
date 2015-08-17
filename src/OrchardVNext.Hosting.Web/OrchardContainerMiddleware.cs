@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using System;
-using System.Reflection;
 using Microsoft.Dnx.Runtime;
-using Microsoft.Dnx.Runtime.Loader;
 using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Hosting.Extensions;
+
+#if !(DNXCORE50)
+using System.Reflection;
+using Microsoft.Dnx.Runtime.Loader;
+#endif
 
 namespace OrchardVNext.Hosting {
     public class OrchardContainerMiddleware {
