@@ -1,0 +1,17 @@
+﻿using System.Linq;
+using System.Reflection;
+
+namespace Microsoft.Dnx.Runtime {
+    public static class LibraryDescriptionExtensions
+    {
+        public static Library ToLibrary(this LibraryDescription description) {
+            return new Library(
+                description.Identity.Name,
+                description.Identity.Version?.ToString(),
+                description.Path,
+                description.Type,
+                description.Dependencies.Select(d => d.Name),
+                description.Assemblies.Select(a => new AssemblyName(a)));
+        }
+    }
+}

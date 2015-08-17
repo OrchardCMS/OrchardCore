@@ -1,8 +1,6 @@
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using OrchardVNext.Middleware;
-using System;
 using System.Collections.Generic;
+using OrchardVNext.Hosting.Middleware;
 
 namespace OrchardVNext.Test1 {
     public class TestMiddleware : IMiddlewareProvider {

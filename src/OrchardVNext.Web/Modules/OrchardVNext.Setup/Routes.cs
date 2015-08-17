@@ -1,5 +1,5 @@
-﻿using OrchardVNext.Mvc.Routes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using OrchardVNext.Hosting.Routes;
 
 namespace OrchardVNext.Setup {
     public class Routes : IRouteProvider {

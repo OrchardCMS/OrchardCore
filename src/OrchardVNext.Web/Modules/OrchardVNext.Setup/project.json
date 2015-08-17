@@ -1,10 +1,13 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "OrchardVNext": "2.0.0-*",
-    "OrchardVNext.Mvc": "2.0.0-*",
-    "OrchardVNext.Logging": "2.0.0-*"
+    "Microsoft.AspNet.Mvc.Core": "6.0.0-*",
+    "OrchardVNext.Configuration": "2.0.0-*",
+    "OrchardVNext.Hosting.Abstractions": "2.0.0-*",
+    "OrchardVNext.Hosting": "2.0.0-*",
+    "OrchardVNext.Hosting.Web": "2.0.0-*",
+    "OrchardVNext.Logging": "2.0.0-*",
+    "OrchardVNext.Mvc": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

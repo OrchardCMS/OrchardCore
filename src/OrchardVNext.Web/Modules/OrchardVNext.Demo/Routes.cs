@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using OrchardVNext.Mvc.Routes;
+using OrchardVNext.Hosting.Routes;
 
 namespace OrchardVNext.Demo {
     public class Routes : IRouteProvider {

@@ -1,0 +1,9 @@
+using System.Collections.Generic;
+using Microsoft.AspNet.Builder;
+using OrchardVNext.DependencyInjection;
+
+namespace OrchardVNext.Hosting.Routes {
+    public interface IRoutePublisher : IDependency {
+        void Publish(IEnumerable<RouteDescriptor> routes, RequestDelegate pipeline);
+    }
+}

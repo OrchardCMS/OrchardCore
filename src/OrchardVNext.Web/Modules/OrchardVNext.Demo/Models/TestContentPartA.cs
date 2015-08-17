@@ -1,5 +1,4 @@
-﻿using System;
-using OrchardVNext.ContentManagement;
+﻿using OrchardVNext.ContentManagement;
 
 namespace OrchardVNext.Demo.Models {
     public class TestContentPartA : ContentPart {

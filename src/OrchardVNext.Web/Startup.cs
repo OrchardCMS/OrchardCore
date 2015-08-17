@@ -1,18 +1,21 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
-using OrchardVNext.Environment;
+using OrchardVNext.Hosting;
 using System;
 
 namespace OrchardVNext.Web {
     public class Startup {
         public IServiceProvider ConfigureServices(IServiceCollection services) {
-            return OrchardStarter.ConfigureHost(services);
+            return services
+                .AddWeb()
+                .BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory) {
-            var host = OrchardStarter.CreateHost(app, loggerFactory);
-            host.Initialize();
+        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory) {
+            builder.ConfigureWeb(loggerFactory);
+            
+            builder.InitializeHost();
         }
     }
 }

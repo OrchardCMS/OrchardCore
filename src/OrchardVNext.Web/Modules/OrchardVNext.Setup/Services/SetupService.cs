@@ -1,8 +1,7 @@
-using Microsoft.AspNet.Hosting;
-using OrchardVNext.Environment;
-using OrchardVNext.Environment.Descriptor.Models;
-using OrchardVNext.Environment.Extensions;
-using OrchardVNext.Environment.ShellBuilders;
+using OrchardVNext.Hosting;
+using OrchardVNext.Hosting.Descriptor.Models;
+using OrchardVNext.Hosting.Extensions;
+using OrchardVNext.Hosting.ShellBuilders;
 using System;
 using System.Linq;
 using Microsoft.AspNet.Http;
@@ -49,7 +48,7 @@ namespace OrchardVNext.Setup.Services {
             // The vanilla Orchard distibution has the following features enabled.
             string[] hardcoded = {
                 // Framework
-                "OrchardVNext.Framework",
+                "OrchardVNext.Hosting",
                 // Core
                 "Settings",
                 // Test Modules

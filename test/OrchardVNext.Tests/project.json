@@ -3,9 +3,11 @@
     "warningsAsErrors": "true"
   },
   "dependencies": {
+    "Microsoft.Framework.DependencyInjection": "1.0.0-*",
     "xunit": "2.1.0-*",
     "xunit.runner.dnx": "2.1.0-*",
-    "OrchardVNext": "2.0.0-*",
+    "OrchardVNext.Data": "2.0.0-*",
+    "OrchardVNext.ContentManagement": "2.0.0-*",
     "OrchardVNext.FileSystem": "2.0.0-*"
   },
   "commands": {
@@ -22,8 +24,8 @@
       }
     }
   },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/OrchardCMS/Brochard"
-    }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Brochard"
+  }
 }

@@ -24,6 +24,7 @@ namespace OrchardVNext.Routing {
             await router.RouteAsync(context);
 
             if (!context.IsHandled) {
+                Logger.Information("Request did not match any routes.");
                 await _next.Invoke(httpContext);
             }
 
