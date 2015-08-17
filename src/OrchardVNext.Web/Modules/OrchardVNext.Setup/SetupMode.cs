@@ -1,9 +1,9 @@
 ﻿using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Hosting;
-using OrchardVNext.Hosting.Routes;
+using OrchardVNext.Hosting.Web.Mvc;
+using OrchardVNext.Hosting.Web.Routing.Routes;
 using OrchardVNext.Logging;
-using OrchardVNext.Mvc;
 
 namespace OrchardVNext.Setup {
     public class SetupMode : IModule {

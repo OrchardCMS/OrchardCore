@@ -6,7 +6,7 @@ using Microsoft.AspNet.Routing.Template;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Configuration.Environment;
 
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public class RoutePublisher : IRoutePublisher {
         private readonly IRouteBuilder _routeBuilder;
         private readonly ShellSettings _shellSettings;

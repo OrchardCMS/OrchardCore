@@ -5,7 +5,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
 using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Hosting.Middleware;
-using OrchardVNext.Hosting.Routes;
+using OrchardVNext.Hosting.Web.Routing.Routes;
 
 namespace OrchardVNext.Hosting {
     public class DefaultOrchardShell : IOrchardShell {

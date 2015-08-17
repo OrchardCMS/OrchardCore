@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public interface IRouteProvider : IDependency {
         /// <summary>
         /// obsolete, prefer other format for extension methods

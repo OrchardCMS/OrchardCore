@@ -1,4 +1,4 @@
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public class RouteDescriptor {
         public string Name { get; set; }
         public int Priority { get; set; }

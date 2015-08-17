@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Routing;
 
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public class Route {
         public Route(
             string routeName,

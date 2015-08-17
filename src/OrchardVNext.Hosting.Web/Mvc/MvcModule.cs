@@ -1,14 +1,13 @@
 using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Core;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.DependencyInjection;
-using OrchardVNext.Mvc.Razor;
-using OrchardVNext.Mvc.Routing;
+using OrchardVNext.Hosting.Web.Mvc.Razor;
+using OrchardVNext.Hosting.Web.Mvc.Routing;
 
-namespace OrchardVNext.Mvc {
+namespace OrchardVNext.Hosting.Web.Mvc {
     public class MvcModule : IModule {
         public void Configure(IServiceCollection serviceCollection) {
             serviceCollection.AddScoped<IRouteBuilder, DefaultShellRouteBuilder>();

@@ -4,7 +4,7 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 
-namespace OrchardVNext.Routing {
+namespace OrchardVNext.Hosting.Web.Routing {
     public class OrchardRouterMiddleware {
         private readonly RequestDelegate _next;
 

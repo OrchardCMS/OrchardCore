@@ -4,7 +4,6 @@
     "OrchardVNext.ContentManagement": "2.0.0-*",
     "OrchardVNext.Hosting.Abstractions": "2.0.0-*",
     "OrchardVNext.Hosting.Web": "2.0.0-*",
-    "OrchardVNext.Mvc": "2.0.0-*",
     "OrchardVNext.Test1": ""
   },
   "frameworks": {

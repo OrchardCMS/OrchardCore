@@ -1,7 +1,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext.Routing;
+using OrchardVNext.Hosting.Web.Routing;
 using OrchardVNext.Logging;
 
 namespace OrchardVNext.Hosting {

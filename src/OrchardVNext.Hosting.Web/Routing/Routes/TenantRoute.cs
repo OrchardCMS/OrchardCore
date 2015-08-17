@@ -5,7 +5,7 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Configuration.Environment;
 
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public class TenantRoute : IRouter {
         private readonly IRouter _target;
         private readonly string _urlHost;

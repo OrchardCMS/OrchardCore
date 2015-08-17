@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Routing;
 
-namespace OrchardVNext.Mvc.Routing {
+namespace OrchardVNext.Hosting.Web.Mvc.Routing {
     public class DefaultShellRouteBuilder : IRouteBuilder {
         public DefaultShellRouteBuilder(IServiceProvider serviceProvider) {
             Routes = new List<IRouter>();

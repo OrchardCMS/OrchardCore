@@ -19,7 +19,7 @@ using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.OptionsModel;
 using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.Mvc.Razor {
+namespace OrchardVNext.Hosting.Web.Mvc.Razor {
     /// <summary>
     /// A type that uses Roslyn to compile C# content.
     /// </summary>

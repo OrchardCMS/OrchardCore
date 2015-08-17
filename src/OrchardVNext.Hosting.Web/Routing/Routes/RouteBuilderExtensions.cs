@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 
-namespace OrchardVNext.Hosting.Routes {
+namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public static class RouteBuilderExtensions {
         public static IRouteBuilder AddTenantRoute(this IRouteBuilder routeBuilder,
                                                    string urlHost,
