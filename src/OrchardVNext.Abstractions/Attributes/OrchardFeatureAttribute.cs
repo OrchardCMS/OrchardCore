@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OrchardVNext.Hosting.Extensions {
+namespace OrchardVNext {
     [AttributeUsage(AttributeTargets.Class)]
     public class OrchardFeatureAttribute : Attribute {
         public OrchardFeatureAttribute(string text) {
