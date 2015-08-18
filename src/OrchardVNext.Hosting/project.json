@@ -9,7 +9,9 @@
     "Microsoft.Framework.DependencyInjection": "1.0.0-*",
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
-    "OrchardVNext.Hosting.Abstractions": "2.0.0-*"
+    "OrchardVNext.Abstractions": "2.0.0-*",
+    "OrchardVNext.Configuration": "2.0.0-*",
+    "OrchardVNext.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

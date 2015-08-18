@@ -2,7 +2,6 @@
   "dependencies": {
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "OrchardVNext.ContentManagement": "2.0.0-*",
-    "OrchardVNext.Hosting.Abstractions": "2.0.0-*",
     "OrchardVNext.Hosting.Web": "2.0.0-*",
     "OrchardVNext.Test1": ""
   },
