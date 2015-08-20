@@ -170,20 +170,10 @@ src/Orchard.Web/Media/*
 log.xml
 profiling/
 *.orig
-src/Orchard.Web/Modules-temp/*
-src/Backup/*
-src/packages/*
-src/UpgradeLog.*
-*.itrace.csdef
-*.build.csdef
-src/Orchard.Azure/Orchard.Azure.Web/Core/
-src/Orchard.Azure/Orchard.Azure.Web/Modules/
-src/Orchard.Azure/Orchard.Azure.Web/Themes/
-src/Orchard.Azure/Orchard.Azure.CloudService/csx/Debug/*
-src/Orchard.Web/Orchard.Web.Publish.xml
-src/TestResults/*
-src/Orchard.Web/Properties/PublishProfiles
-src/Orchard.Azure/Orchard.Azure.CloudService/Staging/
+
+
+nuget.exe
+.nuget/
 
 #enable all /lib artifacts
 !lib/*/*.*

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Http;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.DependencyInjection.Extensions;
@@ -35,7 +33,19 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
-            
+
+            foreach (var dependency in blueprint.Dependencies
+                .Where(x => x.Type.Name == "ShellStartup" || 
+                            x.Type.Name == (settings.Name + "ShellStartup"))) {
+
+                Logger.Debug("Shell Startup: {0}", dependency.Type);
+
+                // TODO: Rewrite to get rid of reflection.
+                var instance = Activator.CreateInstance(dependency.Type);
+                var info = instance.GetType();
+                info.GetMethod("ConfigureServices").Invoke(instance, new[] { serviceCollection });
+            }
+
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof (IModule).IsAssignableFrom(t.Type))) {
 
@@ -103,12 +113,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             // Manifest exposes the fallback manifest in addition to ITypeActivator, IHostingEnvironment, and ILoggerFactory
             private class HostingManifest : IRuntimeServices {
                 public HostingManifest(IServiceCollection hostServices) {
-                    Services = new Type[] {
-                    typeof(IHostingEnvironment),
-                    typeof(ILoggerFactory),
-                    typeof(IHttpContextAccessor),
-                    typeof(IApplicationLifetime)
-                }.Concat(hostServices.Select(s => s.ServiceType)).Distinct();
+                    Services = hostServices.Select(s => s.ServiceType).Distinct();
                 }
 
                 public IEnumerable<Type> Services { get; private set; }

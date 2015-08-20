@@ -9,13 +9,12 @@ using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Runtime.Compilation;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Hosting.Extensions.Loaders;
-using OrchardVNext.FileSystem.VirtualPath;
+using System.IO;
 
 namespace OrchardVNext.Hosting.Extensions {
     public class ExtensionAssemblyLoader : IExtensionAssemblyLoader {
         private readonly IServiceProvider _serviceProvider;
         private readonly IApplicationEnvironment _applicationEnvironment;
-        private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly ICache _cache;
         private readonly IPackageAssemblyLookup _packageAssemblyLookup;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
@@ -26,14 +25,12 @@ namespace OrchardVNext.Hosting.Extensions {
 
         public ExtensionAssemblyLoader(IServiceProvider serviceProvider,
             IApplicationEnvironment applicationEnvironment,
-            IVirtualPathProvider virtualPathProvider,
             ICache cache,
             IPackageAssemblyLookup packageAssemblyLookup,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IOrchardLibraryManager libraryManager) {
             _serviceProvider = serviceProvider;
             _applicationEnvironment = applicationEnvironment;
-            _virtualPathProvider = virtualPathProvider;
             _cache = cache;
             _packageAssemblyLookup = packageAssemblyLookup;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
@@ -48,7 +45,7 @@ namespace OrchardVNext.Hosting.Extensions {
         public Assembly Load(AssemblyName assemblyName) {
             Project project;
             string name = assemblyName.FullName;
-            if (!Project.TryGetProject(_virtualPathProvider.Combine(_path, name), out project)) {
+            if (!Project.TryGetProject(Path.Combine(_path, name), out project)) {
                 return null;
             }
 
@@ -60,31 +57,26 @@ namespace OrchardVNext.Hosting.Extensions {
                     null);
 
                 _moduleContext = new ModuleLoaderContext(
-                    _serviceProvider,
                     project.ProjectDirectory,
-                    target.Configuration,
                     target.TargetFramework);
-
-                foreach (var lib in _moduleContext.DependencyWalker.Libraries) {
-                    _libraryManager.AddLibrary(lib.ToLibrary());
+                
+                foreach (var lib in _moduleContext.LibraryManager.GetLibraries()) {
+                    _libraryManager.AddLibrary(lib);
                 }
 
-                var compilationEngineFactory = new CompilationEngineFactory(
-                    NoopWatcher.Instance, new CompilationCache());
-
-                var engine = compilationEngineFactory.CreateEngine(new CompilationEngineContext(
-                    _moduleContext.LibraryManager,
-                    _moduleContext.ProjectGraphProvider,
-                    _moduleContext.ServiceProvider,
-                    target.TargetFramework,
-                    target.Configuration));
+                var engine = new CompilationEngine(new CompilationEngineContext(
+                    _applicationEnvironment,
+                    _assemblyLoadContextAccessor.Default,
+                    new CompilationCache()));
                 
-                _packageAssemblyLookup.AddLoader(
-                    _moduleContext.NuGetDependencyProvider);
+                _packageAssemblyLookup.AddPath(
+                    _moduleContext.PackagesDirectory);
                 
                 var p = engine.LoadProject(project, null, _assemblyLoadContextAccessor.Default);
 
-                var exports = engine.RootLibraryExporter.GetExport(project.Name);
+                var exporter = engine.CreateProjectExporter(project, target.TargetFramework, target.Configuration);
+
+                var exports = exporter.GetExport(project.Name);
                 foreach (var metadataReference in exports.MetadataReferences) {
                     _libraryManager.AddMetadataReference(metadataReference);
                 }
@@ -96,19 +88,17 @@ namespace OrchardVNext.Hosting.Extensions {
 
 
     public interface IPackageAssemblyLookup {
-        void AddLoader(NuGetDependencyResolver nugetLoader);
-        NuGetDependencyResolver GetLoaderForPackage(string name);
+        IList<string> PackagePaths { get; }
+        void AddPath(string packagePath);
     }
 
     public class PackageAssemblyLookup : IPackageAssemblyLookup {
-        private IList<NuGetDependencyResolver> Loaders { get; } = new List<NuGetDependencyResolver>();
+        public IList<string> PackagePaths { get; } = new List<string>();
 
-        public void AddLoader(NuGetDependencyResolver nugetLoader) {
-            Loaders.Add(nugetLoader);
-        }
-
-        public NuGetDependencyResolver GetLoaderForPackage(string name) {
-            return Loaders.FirstOrDefault(loader => loader.PackageAssemblyLookup.Any(x => x.Key.Name == name));
+        public void AddPath(string packagePath) {
+            if (!PackagePaths.Contains(packagePath)) {
+                PackagePaths.Add(packagePath);
+            }
         }
     }
 }

@@ -10,9 +10,7 @@ First off, follow the instructions here https://github.com/aspnet/home in order 
 
 Next you want to clone the Repo. 'git clone https://github.com/OrchardCMS/Brochard.git' and checkout the master branch.
 
-Run the bootstrap.cmd file included in the repository to bootstrap dnx.
-
-Load up the solution in Visual studio and do a build.
+Run the build.cmd file included in the repository to bootstrap dnx and build solution.
 
 Next navigate to 'D:\Brochard\src\OrchardVNext.Web' or where ever your retrospective folder is on the command line in Administrative mode.
 

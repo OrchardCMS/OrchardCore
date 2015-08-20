@@ -5,7 +5,7 @@ using System.IO;
 using OrchardVNext.Abstractions.Localization;
 using OrchardVNext.Hosting.Extensions.Models;
 using OrchardVNext.Utility;
-using OrchardVNext.FileSystem.WebSite;
+using OrchardVNext.FileSystem.Client;
 
 namespace OrchardVNext.Hosting.Extensions.Folders {
     public class ExtensionHarvester : IExtensionHarvester {
@@ -28,10 +28,10 @@ namespace OrchardVNext.Hosting.Extensions.Folders {
         private const string FeaturesSection = "features";
         private const string SessionStateSection = "sessionstate";
 
-        private readonly IWebSiteFolder _webSiteFolder;
+        private readonly IClientFolder _clientFolder;
 
-        public ExtensionHarvester(IWebSiteFolder webSiteFolder) {
-            _webSiteFolder = webSiteFolder;
+        public ExtensionHarvester(IClientFolder clientFolder) {
+            _clientFolder = clientFolder;
             T = NullLocalizer.Instance;
         }
 
@@ -50,7 +50,7 @@ namespace OrchardVNext.Hosting.Extensions.Folders {
 
         private List<ExtensionDescriptor> AvailableExtensionsInFolder(string path, string extensionType, string manifestName, bool manifestIsOptional) {
             Logger.Information("Start looking for extensions in '{0}'...", path);
-            var subfolderPaths = _webSiteFolder.ListDirectories(path);
+            var subfolderPaths = _clientFolder.ListDirectories(path);
             var localList = new List<ExtensionDescriptor>();
             foreach (var subfolderPath in subfolderPaths) {
                 var extensionId = Path.GetFileName(subfolderPath.TrimEnd('/', '\\'));
@@ -111,7 +111,7 @@ namespace OrchardVNext.Hosting.Extensions.Folders {
 
 
         private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional) {
-            var manifestText = _webSiteFolder.ReadFile(manifestPath);
+            var manifestText = _clientFolder.ReadFile(manifestPath);
             if (manifestText == null) {
                 if (manifestIsOptional) {
                     manifestText = string.Format("Id: {0}", extensionId);

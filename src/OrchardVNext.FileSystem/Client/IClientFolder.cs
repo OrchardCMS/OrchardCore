@@ -2,11 +2,11 @@
 using System.IO;
 using OrchardVNext.DependencyInjection;
 
-namespace OrchardVNext.FileSystem.WebSite {
+namespace OrchardVNext.FileSystem.Client {
     /// <summary>
     /// Abstraction over the virtual files/directories of a web site.
     /// </summary>
-    public interface IWebSiteFolder : ISingletonDependency {
+    public interface IClientFolder : ISingletonDependency {
         IEnumerable<string> ListDirectories(string virtualPath);
         IEnumerable<string> ListFiles(string virtualPath, bool recursive);
 

@@ -8,7 +8,8 @@
     "xunit.runner.dnx": "2.1.0-*",
     "OrchardVNext.Data": "2.0.0-*",
     "OrchardVNext.ContentManagement": "2.0.0-*",
-    "OrchardVNext.FileSystem": "2.0.0-*"
+    "OrchardVNext.FileSystem": "2.0.0-*",
+    "OrchardVNext.FileSystem.Web": "2.0.0-*"
   },
   "commands": {
     "test": "xunit.runner.dnx"

@@ -6,6 +6,8 @@ using System;
 using Microsoft.Dnx.Runtime;
 using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Hosting.Extensions;
+using System.Collections.Generic;
+using NuGet;
 
 #if !(DNXCORE50)
 using System.Reflection;
@@ -19,18 +21,24 @@ namespace OrchardVNext.Hosting {
         private readonly IOrchardHost _orchardHost;
         private readonly IPackageAssemblyLookup _packageAssemblyLookup;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
-        
+        private readonly IApplicationEnvironment _applicationEnvironement;
+        private readonly ILibraryManager _libraryManager;
+
         public OrchardContainerMiddleware(
             RequestDelegate next,
             IShellSettingsManager shellSettingsManager,
             IOrchardHost orchardHost,
             IPackageAssemblyLookup packageAssemblyLookup,
-            IAssemblyLoadContextAccessor assemblyLoadContextAccessor) {
+            IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
+            IApplicationEnvironment applicationEnvironement,
+            ILibraryManager libraryManager) {
             _next = next;
             _shellSettingsManager = shellSettingsManager;
             _orchardHost = orchardHost;
             _packageAssemblyLookup = packageAssemblyLookup;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
+            _applicationEnvironement = applicationEnvironement;
+            _libraryManager = libraryManager;
 
 #if !(DNXCORE50)
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -42,22 +50,36 @@ namespace OrchardVNext.Hosting {
             var assemblyName = new AssemblyName(args.Name);
 
             Logger.Debug("Resolving " + assemblyName);
+            var context = _assemblyLoadContextAccessor.Default;
 
-            var packageLoader = _packageAssemblyLookup.GetLoaderForPackage(assemblyName.Name);
+            var repository = new PackageRepository(_packageAssemblyLookup.PackagePaths.First());
 
-            if (packageLoader != null) {
-                var lookup = packageLoader
-                    .PackageAssemblyLookup
-                    .Single(x => x.Key.Name == assemblyName.Name);
+            var packages = repository.FindPackagesById(assemblyName.Name);
 
-                var loader = new NuGetAssemblyLoader(
-                    _assemblyLoadContextAccessor,
-                    packageLoader);
+            if (packages.Any()) {
+                var latestPackage = packages.Last(); //IsLAtestVersion and IsAbsoluteLAtest not working.
+                
 
-                Logger.Debug("Resolved " + assemblyName);
-                var assembly = loader.Load(lookup.Key);
-                return assembly;
+
+                var assembly = context.Load(new AssemblyName(assemblyName.Name));
+                if (assembly != null) {
+                    Logger.Debug("Resolved " + assemblyName);
+                    return assembly;
+                }
             }
+
+            //IDictionary<string, IEnumerable<NuGet.PackageInfo>> repository = _packageAssemblyLookup
+            //    .Repositories
+            //    .SelectMany(x => x.GetAllPackages())
+            //    .ToDictionary(x => x.Key, y => y.Value);
+
+            //if (repository.ContainsKey(assemblyName.Name)) {
+            //    var packageInfo = repository[assemblyName.Name].Last();
+
+
+            //    var assembly = Assembly.Load(new AssemblyName(assemblyName.Name));
+            //    return assembly;
+            //}
 
             Logger.Debug("Cannot resolve " + assemblyName);
             return null;

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using OrchardVNext.DependencyInjection;
+using OrchardVNext.Hosting.Extensions;
 
 namespace OrchardVNext.Hosting.Web.Mvc {
     public class OrchardMvcAssemblyProvider : IAssemblyProvider {

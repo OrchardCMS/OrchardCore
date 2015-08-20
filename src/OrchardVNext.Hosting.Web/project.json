@@ -11,6 +11,7 @@
     "OrchardVNext.ContentManagement": "2.0.0-*",
     "OrchardVNext.Hosting": "2.0.0-*",
     "OrchardVNext.Logging": "2.0.0-*",
+    "OrchardVNext.FileSystem.Web": "2.0.0-*",
     "OrchardVNext.Validation": "2.0.0-*"
   },
   "compilationOptions": {

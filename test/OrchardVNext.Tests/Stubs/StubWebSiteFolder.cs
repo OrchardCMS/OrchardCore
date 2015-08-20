@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OrchardVNext.FileSystem.WebSite;
+using OrchardVNext.FileSystem.Client;
 
 namespace OrchardVNext.Tests.Stubs {
-    public class StubWebSiteFolder : IWebSiteFolder {
+    public class StubWebSiteFolder : IClientFolder {
         public IEnumerable<string> ListDirectories(string path) {
             if (!Directory.Exists(path))
                 return Enumerable.Empty<string>();

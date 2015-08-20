@@ -2,6 +2,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.Framework.Logging;
 using OrchardVNext.Hosting.Web.Routing;
 using OrchardVNext.Logging;
+using Microsoft.Framework.DependencyInjection;
 
 namespace OrchardVNext.Hosting {
     public static class ApplicationBuilderExtensions {
@@ -18,6 +19,11 @@ namespace OrchardVNext.Hosting {
             builder.UseMiddleware<OrchardRouterMiddleware>();
 
             return builder;
+        }
+
+        public static void InitializeHost([NotNull] this IApplicationBuilder builder) {
+            var host = builder.ApplicationServices.GetRequiredService<IOrchardHost>();
+            host.Initialize();
         }
     }
 }

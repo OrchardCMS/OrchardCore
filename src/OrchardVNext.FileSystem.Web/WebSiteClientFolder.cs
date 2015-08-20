@@ -4,16 +4,17 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNet.Hosting;
 using OrchardVNext.FileSystem.VirtualPath;
+using OrchardVNext.FileSystem.Client;
 
 namespace OrchardVNext.FileSystem.WebSite {
     /// <summary>
     /// TODO: Take this out and move it to OrchardVNext.FileSystem.WebHosting
     /// </summary>
-    public class WebSiteFolder : IWebSiteFolder {
+    public class WebSiteClientFolder : IClientFolder {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IVirtualPathProvider _virtualPathProvider;
 
-        public WebSiteFolder(IHostingEnvironment hostingEnvironment,
+        public WebSiteClientFolder(IHostingEnvironment hostingEnvironment,
             IVirtualPathProvider virtualPathProvider) {
             _hostingEnvironment = hostingEnvironment;
             _virtualPathProvider = virtualPathProvider;

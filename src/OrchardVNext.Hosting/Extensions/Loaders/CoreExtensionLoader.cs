@@ -5,21 +5,21 @@ using System.Reflection;
 using Microsoft.Dnx.Runtime;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Hosting.Extensions.Models;
-using OrchardVNext.FileSystem.VirtualPath;
+using OrchardVNext.Abstractions.Environment;
 
 namespace OrchardVNext.Hosting.Extensions.Loaders {
     public class CoreExtensionLoader : IExtensionLoader {
         private const string CoreAssemblyName = "OrchardVNext.Core";
-        private readonly IVirtualPathProvider _virtualPathProvider;
+        private readonly IHostEnvironment _hostEnvironment;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
 
         public CoreExtensionLoader(
-            IVirtualPathProvider virtualPathProvider,
+            IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader) {
 
-            _virtualPathProvider = virtualPathProvider;
+            _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
         }
@@ -44,7 +44,7 @@ namespace OrchardVNext.Hosting.Extensions.Loaders {
                 return null;
             }
 
-            var plocation = _virtualPathProvider.MapPath("~/Core"); 
+            var plocation = _hostEnvironment.MapPath("~/Core"); 
 
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
                 var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));

@@ -7,17 +7,17 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.Framework.OptionsModel;
+using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.CSharp;
-using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.OptionsModel;
 using OrchardVNext.DependencyInjection;
+using Microsoft.AspNet.Mvc.Razor.Compilation;
+using Microsoft.AspNet.Mvc.Razor;
 
 namespace OrchardVNext.Hosting.Web.Mvc.Razor {
     /// <summary>
