@@ -21,7 +21,6 @@ namespace OrchardVNext.Hosting {
                         services.AddSingleton<IExtensionManager, ExtensionManager>();
                         {
                             services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
-                            services.AddSingleton<IPackageAssemblyLookup, PackageAssemblyLookup>();
                             
                             services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
                             services.AddSingleton<IExtensionFolders, CoreModuleFolders>();

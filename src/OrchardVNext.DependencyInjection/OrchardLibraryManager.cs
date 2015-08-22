@@ -72,7 +72,10 @@ namespace OrchardVNext.DependencyInjection {
             if (export != null)
                 return export;
 
-            return AdditionalLibraryExportRegistrations[name];
+            if (AdditionalLibraryExportRegistrations.Any(x => x.Key == name))
+                return AdditionalLibraryExportRegistrations.Single(x => x.Key == name).Value;
+
+            return null;
         }
 
         public LibraryExport GetExport(string name, string aspect) {
@@ -80,7 +83,10 @@ namespace OrchardVNext.DependencyInjection {
             if (export != null)
                 return export;
 
-            return AdditionalLibraryExportRegistrations[name];
+            if (AdditionalLibraryExportRegistrations.Any(x => x.Key == name))
+                return AdditionalLibraryExportRegistrations.Single(x => x.Key == name).Value;
+
+            return null;
         }
 
         public LibraryExport GetAllExports(string name) {

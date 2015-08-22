@@ -8,6 +8,8 @@ using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Hosting.Extensions;
 using System.Collections.Generic;
 using NuGet;
+using OrchardVNext.DependencyInjection;
+using Microsoft.Dnx.Compilation;
 
 #if !(DNXCORE50)
 using System.Reflection;
@@ -19,23 +21,20 @@ namespace OrchardVNext.Hosting {
         private readonly RequestDelegate _next;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IOrchardHost _orchardHost;
-        private readonly IPackageAssemblyLookup _packageAssemblyLookup;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
         private readonly IApplicationEnvironment _applicationEnvironement;
-        private readonly ILibraryManager _libraryManager;
+        private readonly IOrchardLibraryManager _libraryManager;
 
         public OrchardContainerMiddleware(
             RequestDelegate next,
             IShellSettingsManager shellSettingsManager,
             IOrchardHost orchardHost,
-            IPackageAssemblyLookup packageAssemblyLookup,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IApplicationEnvironment applicationEnvironement,
-            ILibraryManager libraryManager) {
+            IOrchardLibraryManager libraryManager) {
             _next = next;
             _shellSettingsManager = shellSettingsManager;
             _orchardHost = orchardHost;
-            _packageAssemblyLookup = packageAssemblyLookup;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
             _applicationEnvironement = applicationEnvironement;
             _libraryManager = libraryManager;
@@ -50,36 +49,17 @@ namespace OrchardVNext.Hosting {
             var assemblyName = new AssemblyName(args.Name);
 
             Logger.Debug("Resolving " + assemblyName);
-            var context = _assemblyLoadContextAccessor.Default;
 
-            var repository = new PackageRepository(_packageAssemblyLookup.PackagePaths.First());
+            var reference = _libraryManager.MetadataReferences.FirstOrDefault(x => x.Name == assemblyName.Name);
 
-            var packages = repository.FindPackagesById(assemblyName.Name);
-
-            if (packages.Any()) {
-                var latestPackage = packages.Last(); //IsLAtestVersion and IsAbsoluteLAtest not working.
-                
-
-
-                var assembly = context.Load(new AssemblyName(assemblyName.Name));
-                if (assembly != null) {
-                    Logger.Debug("Resolved " + assemblyName);
-                    return assembly;
+            if (reference != null) {
+                if (reference is MetadataFileReference) {
+                    var fileReference = (MetadataFileReference)reference;
+                    var context = _assemblyLoadContextAccessor.Default;
+                    return context.LoadFile(fileReference.Path);
+                    
                 }
             }
-
-            //IDictionary<string, IEnumerable<NuGet.PackageInfo>> repository = _packageAssemblyLookup
-            //    .Repositories
-            //    .SelectMany(x => x.GetAllPackages())
-            //    .ToDictionary(x => x.Key, y => y.Value);
-
-            //if (repository.ContainsKey(assemblyName.Name)) {
-            //    var packageInfo = repository[assemblyName.Name].Last();
-
-
-            //    var assembly = Assembly.Load(new AssemblyName(assemblyName.Name));
-            //    return assembly;
-            //}
 
             Logger.Debug("Cannot resolve " + assemblyName);
             return null;
