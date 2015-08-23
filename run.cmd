@@ -1,3 +1,3 @@
 @echo off
-CD /D .\src\OrchardVNext.Web
-call dnx web
+
+powershell -ExecutionPolicy Bypass -File ./run.ps1
