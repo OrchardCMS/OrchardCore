@@ -3,6 +3,7 @@ using System;
 using OrchardVNext.Hosting.Descriptor.Models;
 using System.Linq;
 using OrchardVNext.Configuration.Environment;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.ShellBuilders {
     /// <summary>
@@ -25,17 +26,20 @@ namespace OrchardVNext.Hosting.ShellBuilders {
     public class ShellContextFactory : IShellContextFactory {
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly ILogger _logger;
 
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
-            IShellContainerFactory shellContainerFactory) {
+            IShellContainerFactory shellContainerFactory,
+            ILoggerFactory loggerFactory) {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
+            _logger = loggerFactory.CreateLogger<ShellContextFactory>();
         }
 
         ShellContext IShellContextFactory.CreateShellContext(
             ShellSettings settings) {
-            Logger.Information("Creating shell context for tenant {0}", settings.Name);
+            _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
 
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
@@ -49,7 +53,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
                 };
             }
             catch (Exception ex) {
-                Logger.Error(ex.ToString());
+                _logger.LogError("Cannot create shell context", ex);
                 throw;
             }
         }
@@ -58,22 +62,24 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             return new ShellDescriptor {
                 SerialNumber = -1,
                 Features = new[] {
-                    new ShellFeature {Name = "OrchardVNext.Hosting"},
-                    new ShellFeature {Name = "Settings"},
-                    new ShellFeature {Name = "OrchardVNext.Test1"},
-                    new ShellFeature {Name = "OrchardVNext.Demo" },
-                    new ShellFeature {Name = "OrchardVNext.Data.EntityFramework" }
+                    new ShellFeature { Name = "OrchardVNext.Logging.Console" },
+                    new ShellFeature { Name = "OrchardVNext.Hosting" },
+                    new ShellFeature { Name = "Settings" },
+                    new ShellFeature { Name = "OrchardVNext.Test1" },
+                    new ShellFeature { Name = "OrchardVNext.Demo" },
+                    new ShellFeature { Name = "OrchardVNext.Data.EntityFramework" }
                 },
                 Parameters = Enumerable.Empty<ShellParameter>(),
             };
         }
 
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings) {
-            Logger.Debug("No shell settings available. Creating shell context for setup");
+            _logger.LogDebug("No shell settings available. Creating shell context for setup");
 
             var descriptor = new ShellDescriptor {
                 SerialNumber = -1,
                 Features = new[] {
+                    new ShellFeature { Name = "OrchardVNext.Logging.Console" },
                     new ShellFeature { Name = "OrchardVNext.Setup" },
                 },
             };

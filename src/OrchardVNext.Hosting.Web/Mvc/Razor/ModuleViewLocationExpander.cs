@@ -10,7 +10,6 @@ namespace OrchardVNext.Hosting.Web.Mvc.Razor {
         /// <inheritdoc />
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations) {
-            Logger.Debug("Expanding search paths");
             return ExpandViewLocationsCore(viewLocations);
         }
 

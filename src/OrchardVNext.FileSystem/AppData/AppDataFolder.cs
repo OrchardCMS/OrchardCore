@@ -6,13 +6,18 @@ using System.Linq;
 using OrchardVNext.Abstractions;
 using OrchardVNext.Abstractions.Localization;
 using OrchardVNext.FileSystem.Validation;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.FileSystem.AppData {
     public class AppDataFolder : IAppDataFolder {
         private readonly IAppDataFolderRoot _root;
+        private readonly ILogger _logger;
 
-        public AppDataFolder(IAppDataFolderRoot root) {
+        public AppDataFolder(IAppDataFolderRoot root,
+            ILoggerFactory loggerFactory) {
             _root = root;
+            _logger = loggerFactory.CreateLogger<AppDataFolder>();
+
             T = NullLocalizer.Instance;
         }
 
@@ -36,7 +41,7 @@ namespace OrchardVNext.FileSystem.AppData {
             }
 
             if (isDirectory && Directory.Exists(destinationFileName)) {
-                Logger.Warning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
+                _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
                 return;
             }
             // If destination doesn't exist, we are good
@@ -116,7 +121,7 @@ namespace OrchardVNext.FileSystem.AppData {
         }
 
         public void StoreFile(string sourceFileName, string destinationPath) {
-            Logger.Information("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
+            _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
 
             var destinationFileName = CombineToPhysicalPath(destinationPath);
             MakeDestinationFileNameAvailable(destinationFileName);
@@ -124,7 +129,7 @@ namespace OrchardVNext.FileSystem.AppData {
         }
 
         public void DeleteFile(string path) {
-            Logger.Information("Deleting file \"{0}\" from \"App_Data\" folder", path);
+            _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
             MakeDestinationFileNameAvailable(CombineToPhysicalPath(path));
         }
 

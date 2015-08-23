@@ -9,20 +9,24 @@ using OrchardVNext.Hosting.Extensions.Loaders;
 using OrchardVNext.Hosting.Extensions.Models;
 using OrchardVNext.Hosting.Utility;
 using OrchardVNext.Utility;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.Extensions {
     public class ExtensionManager : IExtensionManager {
         private readonly IEnumerable<IExtensionFolders> _folders;
         private readonly IEnumerable<IExtensionLoader> _loaders;
-        
+        private readonly ILogger _logger;
+
         public Localizer T { get; set; }
 
         public ExtensionManager(
             IEnumerable<IExtensionFolders> folders,
-            IEnumerable<IExtensionLoader> loaders) {
+            IEnumerable<IExtensionLoader> loaders,
+            ILoggerFactory loggerFactory) {
 
             _folders = folders;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
+            _logger = loggerFactory.CreateLogger<ExtensionManager>();
             T = NullLocalizer.Instance;
         }
 
@@ -72,13 +76,13 @@ namespace OrchardVNext.Hosting.Extensions {
         }
 
         public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors) {
-            Logger.Information("Loading features");
+            _logger.LogInformation("Loading features");
 
             var result = featureDescriptors
                 .Select(descriptor => LoadFeature(descriptor))
                 .ToArray();
 
-            Logger.Information("Done loading features");
+            _logger.LogInformation("Done loading features");
             return result;
         }
 
@@ -92,7 +96,7 @@ namespace OrchardVNext.Hosting.Extensions {
                 extensionEntry = BuildEntry(extensionDescriptor);
             }
             catch (Exception ex) {
-                Logger.Error(ex, "Error loading extension '{0}'", extensionId);
+                _logger.LogError(string.Format("Error loading extension '{0}'", extensionId), ex);
                 throw new OrchardException(T("Error while loading extension '{0}'.", extensionId), ex);
             }
 
@@ -135,7 +139,7 @@ namespace OrchardVNext.Hosting.Extensions {
                     return entry;
             }
 
-            Logger.Warning("No suitable loader found for extension \"{0}\"", descriptor.Id);
+            _logger.LogWarning("No suitable loader found for extension \"{0}\"", descriptor.Id);
             return null;
         }
     }

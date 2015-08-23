@@ -4,6 +4,7 @@ using Microsoft.Framework.Configuration;
 using OrchardVNext.Configuration.Environment.Sources;
 using OrchardVNext.FileSystem.AppData;
 using System.Linq;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Configuration.Environment {
     public interface IShellSettingsManager {
@@ -22,10 +23,13 @@ namespace OrchardVNext.Configuration.Environment {
 
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
+        private readonly ILogger _logger;
         private const string SettingsFileNameFormat = "Settings.{0}";
 
-        public ShellSettingsManager(IAppDataFolder appDataFolder) {
+        public ShellSettingsManager(IAppDataFolder appDataFolder,
+            ILoggerFactory loggerFactory) {
             _appDataFolder = appDataFolder;
+            _logger = loggerFactory.CreateLogger<ShellSettingsManager>();
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
@@ -36,7 +40,7 @@ namespace OrchardVNext.Configuration.Environment {
             var shellSettings = new List<ShellSettings>();
 
             foreach (var tenantPath in tenantPaths) {
-                Logger.Information("ShellSettings found in '{0}', attempting to load.", tenantPath);
+                _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenantPath);
 
                 var configurationContainer =
                     new ConfigurationBuilder()
@@ -66,7 +70,7 @@ namespace OrchardVNext.Configuration.Environment {
 
                 shellSettings.Add(shellSetting);
 
-                Logger.Information("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
+                _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
             }
 
             return shellSettings;
@@ -80,7 +84,7 @@ namespace OrchardVNext.Configuration.Environment {
                     "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.",
                     nameof(shellSettings.Name));
 
-            Logger.Information("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
+            _logger.LogInformation("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
 
             var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
@@ -93,7 +97,7 @@ namespace OrchardVNext.Configuration.Environment {
 
             configurationSource.Commit();
 
-            Logger.Information("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
+            _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
         }
     }
 }

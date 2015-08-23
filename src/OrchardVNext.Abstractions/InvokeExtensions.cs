@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using OrchardVNext.Logging;
 using OrchardVNext.Security;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext {
 
@@ -10,17 +10,17 @@ namespace OrchardVNext {
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them
         /// </summary>
-        public static void Invoke<TEvents>(this IEnumerable<TEvents> events, Action<TEvents> dispatch) {
+        public static void Invoke<TEvents>(this IEnumerable<TEvents> events, Action<TEvents> dispatch, ILogger logger) {
             foreach (var sink in events) {
                 try {
                     dispatch(sink);
                 }
                 catch (Exception ex) {
                     if (IsLogged(ex)) {
-                        Logger.Error(ex, "{2} thrown from {0} by {1}",
+                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
                             typeof(TEvents).Name,
                             sink.GetType().FullName,
-                            ex.GetType().Name);
+                            ex.GetType().Name), ex);
                     }
 
                     if (ex.IsFatal()) {
@@ -30,8 +30,8 @@ namespace OrchardVNext {
             }
         }
 
-        public static IEnumerable<TResult> Invoke<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, TResult> dispatch) {
-            
+        public static IEnumerable<TResult> Invoke<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, TResult> dispatch, ILogger logger) {
+
             foreach (var sink in events) {
                 TResult result = default(TResult);
                 try {
@@ -39,10 +39,10 @@ namespace OrchardVNext {
                 }
                 catch (Exception ex) {
                     if (IsLogged(ex)) {
-                        Logger.Error(ex, "{2} thrown from {0} by {1}",
+                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
                             typeof(TEvents).Name,
                             sink.GetType().FullName,
-                            ex.GetType().Name);
+                            ex.GetType().Name), ex);
                     }
 
                     if (ex.IsFatal()) {

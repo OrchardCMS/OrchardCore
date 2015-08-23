@@ -7,7 +7,7 @@ namespace OrchardVNext.Demo {
             return new[] {
                 new RouteDescriptor {
                     Route = new Route(
-                        null,
+                        "1",
                         "Home/Index",
                         defaults:  new
                             {
@@ -20,7 +20,22 @@ namespace OrchardVNext.Demo {
                                 area = "OrchardVNext.Demo"
                             }
                         )
-
+                },
+                new RouteDescriptor {
+                    Route = new Route(
+                        "2",
+                        "Home/IndexError",
+                        defaults:  new
+                            {
+                                area = "OrchardVNext.Demo",
+                                controller = "Home",
+                                action = "IndexError"
+                            },
+                        dataTokens:  new
+                            {
+                                area = "OrchardVNext.Demo"
+                            }
+                        )
                 }
             };
         }

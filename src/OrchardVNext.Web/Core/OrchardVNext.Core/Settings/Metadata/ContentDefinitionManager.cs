@@ -8,17 +8,21 @@ using OrchardVNext.ContentManagement.MetaData.Services;
 using OrchardVNext.Core.Settings.Metadata.Records;
 using OrchardVNext.Data;
 using OrchardVNext.DependencyInjection;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Core.Settings.Metadata {
     public class ContentDefinitionManager : Component, IContentDefinitionManager {
         private readonly IContentStorageManager _contentStorageManager;
         private readonly ISettingsFormatter _settingsFormatter;
+        private readonly ILogger _logger;
 
         public ContentDefinitionManager(
             IContentStorageManager contentStorageManager,
-            ISettingsFormatter settingsFormatter) {
+            ISettingsFormatter settingsFormatter,
+            ILoggerFactory loggerFactory) {
             _contentStorageManager = contentStorageManager;
             _settingsFormatter = settingsFormatter;
+            _logger = loggerFactory.CreateLogger<ContentDefinitionManager>();
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions() {
@@ -254,7 +258,7 @@ namespace OrchardVNext.Core.Settings.Metadata {
                 return XElement.Parse(settings);
             }
             catch (Exception ex) {
-                Logger.Error(ex, "Unable to parse settings xml");
+                _logger.LogError("Unable to parse settings xml", ex);
                 return null;
             }
         }

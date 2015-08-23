@@ -21,14 +21,19 @@ namespace OrchardVNext.Hosting.ShellBuilders {
     public class ShellContainerFactory : IShellContainerFactory
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
 
-        public ShellContainerFactory(IServiceProvider serviceProvider) {
+        public ShellContainerFactory(IServiceProvider serviceProvider,
+            ILoggerFactory loggerFactory) {
             _serviceProvider = serviceProvider;
+            _logger = loggerFactory.CreateLogger<ShellContainerFactory>();
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
             IServiceCollection serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging();
 
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
@@ -38,7 +43,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
                 .Where(x => x.Type.Name == "ShellStartup" || 
                             x.Type.Name == (settings.Name + "ShellStartup"))) {
 
-                Logger.Debug("Shell Startup: {0}", dependency.Type);
+                _logger.LogDebug("Shell Startup: {0}", dependency.Type);
 
                 // TODO: Rewrite to get rid of reflection.
                 var instance = Activator.CreateInstance(dependency.Type);
@@ -49,7 +54,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof (IModule).IsAssignableFrom(t.Type))) {
 
-                Logger.Debug("IModule Type: {0}", dependency.Type);
+                _logger.LogDebug("IModule Type: {0}", dependency.Type);
 
                 // TODO: Rewrite to get rid of reflection.
                 var instance = (IModule) Activator.CreateInstance(dependency.Type);
@@ -62,7 +67,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
                     .Where(itf => typeof(IDependency).IsAssignableFrom(itf)))
                 {
-                    Logger.Debug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
+                    _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
 
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
                     {

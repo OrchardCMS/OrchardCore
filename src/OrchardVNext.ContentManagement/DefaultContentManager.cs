@@ -8,6 +8,7 @@ using OrchardVNext.ContentManagement.MetaData.Builders;
 using OrchardVNext.ContentManagement.MetaData.Models;
 using OrchardVNext.ContentManagement.Records;
 using OrchardVNext.Data;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.ContentManagement {
     public class DefaultContentManager : IContentManager {
@@ -16,18 +17,21 @@ namespace OrchardVNext.ContentManagement {
         private readonly IEnumerable<IContentHandler> _handlers;
         private readonly IContentItemStore _contentItemStore;
         private readonly IContentStorageManager _contentStorageManager;
+        private readonly ILogger _logger;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             IContentItemStore contentItemStore,
-            IContentStorageManager contentStorageManager) {
+            IContentStorageManager contentStorageManager,
+            ILoggerFactory loggerFactory) {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManagerSession = contentManagerSession;
             _handlers = handlers;
             _contentItemStore = contentItemStore;
             _contentStorageManager = contentStorageManager;
+            _logger = loggerFactory.CreateLogger<DefaultContentManager>();
         }
 
         public IEnumerable<IContentHandler> Handlers => _handlers;
@@ -50,7 +54,7 @@ namespace OrchardVNext.ContentManagement {
             };
 
             // invoke handlers to weld aspects onto kernel
-            Handlers.Invoke(handler => handler.Activating(context));
+            Handlers.Invoke(handler => handler.Activating(context), _logger);
 
             var context2 = new ActivatedContentContext {
                 ContentType = contentType,
@@ -60,15 +64,15 @@ namespace OrchardVNext.ContentManagement {
             // back-reference for convenience (e.g. getting metadata when in a view)
             context2.ContentItem.ContentManager = this;
 
-            Handlers.Invoke(handler => handler.Activated(context2));
+            Handlers.Invoke(handler => handler.Activated(context2), _logger);
 
             var context3 = new InitializingContentContext {
                 ContentType = context2.ContentType,
                 ContentItem = context2.ContentItem,
             };
 
-            Handlers.Invoke(handler => handler.Initializing(context3));
-            Handlers.Invoke(handler => handler.Initialized(context3));
+            Handlers.Invoke(handler => handler.Initializing(context3), _logger);
+            Handlers.Invoke(handler => handler.Initialized(context3), _logger);
 
             // composite result is returned
             return context3.ContentItem;
@@ -140,8 +144,8 @@ namespace OrchardVNext.ContentManagement {
             var context = new LoadContentContext(contentItem);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            Handlers.Invoke(handler => handler.Loading(context));
-            Handlers.Invoke(handler => handler.Loaded(context));
+            Handlers.Invoke(handler => handler.Loading(context), _logger);
+            Handlers.Invoke(handler => handler.Loaded(context), _logger);
 
             // when draft is required and latest is published a new version is appended 
             if (options.IsDraftRequired && versionRecord.Published) {
@@ -160,7 +164,7 @@ namespace OrchardVNext.ContentManagement {
             var context = new PublishContentContext(contentItem, previous);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            Handlers.Invoke(handler => handler.Publishing(context));
+            Handlers.Invoke(handler => handler.Publishing(context), _logger);
 
             if (context.Cancel) {
                 return;
@@ -171,7 +175,7 @@ namespace OrchardVNext.ContentManagement {
             }
             contentItem.VersionRecord.Published = true;
 
-            Handlers.Invoke(handler => handler.Published(context));
+            Handlers.Invoke(handler => handler.Published(context), _logger);
         }
 
         public virtual void Unpublish(ContentItem contentItem) {
@@ -197,11 +201,11 @@ namespace OrchardVNext.ContentManagement {
                 PublishingItemVersionRecord = null
             };
 
-            Handlers.Invoke(handler => handler.Unpublishing(context));
+            Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.VersionRecord.Published = false;
 
-            Handlers.Invoke(handler => handler.Unpublished(context));
+            Handlers.Invoke(handler => handler.Unpublished(context), _logger);
         }
         
         protected virtual ContentItem BuildNewVersion(ContentItem existingContentItem) {
@@ -242,8 +246,8 @@ namespace OrchardVNext.ContentManagement {
                 ExistingItemVersionRecord = existingItemVersionRecord,
                 BuildingItemVersionRecord = buildingItemVersionRecord,
             };
-            Handlers.Invoke(handler => handler.Versioning(context));
-            Handlers.Invoke(handler => handler.Versioned(context));
+            Handlers.Invoke(handler => handler.Versioning(context), _logger);
+            Handlers.Invoke(handler => handler.Versioned(context), _logger);
 
             return context.BuildingContentItem;
         }
@@ -283,18 +287,18 @@ namespace OrchardVNext.ContentManagement {
             var context = new CreateContentContext(contentItem);
 
             // invoke handlers to add information to persistent stores
-            Handlers.Invoke(handler => handler.Creating(context));
+            Handlers.Invoke(handler => handler.Creating(context), _logger);
 
-            Handlers.Invoke(handler => handler.Created(context));
+            Handlers.Invoke(handler => handler.Created(context), _logger);
 
             if (options.IsPublished) {
                 var publishContext = new PublishContentContext(contentItem, null);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Publishing(publishContext));
+                Handlers.Invoke(handler => handler.Publishing(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Published(publishContext));
+                Handlers.Invoke(handler => handler.Published(publishContext), _logger);
             }
         }
 

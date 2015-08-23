@@ -5,6 +5,8 @@ using OrchardVNext.Hosting.Extensions;
 using OrchardVNext.Hosting.Extensions.Folders;
 using OrchardVNext.Hosting.Extensions.Loaders;
 using OrchardVNext.Hosting.ShellBuilders;
+using System;
+using System.Reflection;
 
 namespace OrchardVNext.Hosting {
     public static class ServiceCollectionExtensions {
@@ -34,7 +36,7 @@ namespace OrchardVNext.Hosting {
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }
             }
-            
+
             return services;
         }
     }

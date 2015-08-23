@@ -5,13 +5,14 @@ using OrchardVNext.FileSystem;
 namespace OrchardVNext.Hosting {
     public static class ServiceCollectionExtensions {
         public static IServiceCollection AddWeb([NotNull] this IServiceCollection services) {
-            services.AddHost(internalServices => {
-                services.AddHostCore();
-                services.AddWebFileSystems();
-            });
+            return services.AddHost(internalServices => {
+                internalServices.AddLogging();
 
-            services.AddSingleton<IHostEnvironment, WebHostEnvironment>();
-            return services;
+                internalServices.AddHostCore();
+                internalServices.AddWebFileSystems();
+
+                internalServices.AddSingleton<IHostEnvironment, WebHostEnvironment>();
+            });
         }
     }
 }

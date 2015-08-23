@@ -4,6 +4,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
 using OrchardVNext.Configuration.Environment;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.Web.Routing.Routes {
     public class TenantRoute : IRouter {
@@ -11,7 +12,9 @@ namespace OrchardVNext.Hosting.Web.Routing.Routes {
         private readonly string _urlHost;
         private readonly RequestDelegate _pipeline;
 
-        public TenantRoute(IRouter target, string urlHost, RequestDelegate pipeline) {
+        public TenantRoute(IRouter target, 
+            string urlHost, 
+            RequestDelegate pipeline) {
             _target = target;
             _urlHost = urlHost;
             _pipeline = pipeline;
@@ -20,11 +23,15 @@ namespace OrchardVNext.Hosting.Web.Routing.Routes {
         public async Task RouteAsync(RouteContext context) {
             if (IsValidRequest(context)) {
                 context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () => {
+                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger<TenantRoute>();
+                    
                     try {
                         await _target.RouteAsync(context);
                     }
-                    catch (Exception e) {
-                        Logger.Error(e, e.Message);
+                    catch (Exception ex) {
+
+                        logger.LogError("Error occured serving tenant route", ex);
                         throw;
                     }
                 });

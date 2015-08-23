@@ -5,12 +5,10 @@ using Microsoft.AspNet.Http;
 using System;
 using Microsoft.Dnx.Runtime;
 using OrchardVNext.Configuration.Environment;
-using OrchardVNext.Hosting.Extensions;
-using System.Collections.Generic;
-using NuGet;
 using OrchardVNext.DependencyInjection;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.Caching;
+using Microsoft.Framework.Logging;
 
 #if !(DNXCORE50)
 using System.Reflection;
@@ -26,6 +24,7 @@ namespace OrchardVNext.Hosting {
         private readonly IApplicationEnvironment _applicationEnvironement;
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly ICache _cache;
+        private readonly ILogger _logger;
 
         public OrchardContainerMiddleware(
             RequestDelegate next,
@@ -34,7 +33,8 @@ namespace OrchardVNext.Hosting {
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IApplicationEnvironment applicationEnvironement,
             IOrchardLibraryManager libraryManager,
-            ICache cache) {
+            ICache cache,
+            ILoggerFactory loggerFactory) {
             _next = next;
             _shellSettingsManager = shellSettingsManager;
             _orchardHost = orchardHost;
@@ -42,6 +42,7 @@ namespace OrchardVNext.Hosting {
             _applicationEnvironement = applicationEnvironement;
             _libraryManager = libraryManager;
             _cache = cache;
+            _logger = loggerFactory.CreateLogger<OrchardContainerMiddleware>();
 
 #if !(DNXCORE50)
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -53,21 +54,26 @@ namespace OrchardVNext.Hosting {
             return _cache.Get<Assembly>(args.Name, (context) => {
                 var assemblyName = new AssemblyName(args.Name);
 
-                Logger.Debug("Resolving " + assemblyName);
+                _logger.LogDebug("Resolving {0}", assemblyName);
 
                 var reference = _libraryManager.MetadataReferences.FirstOrDefault(x => x.Name == assemblyName.Name);
 
                 if (reference != null) {
                     if (reference is MetadataFileReference) {
                         var fileReference = (MetadataFileReference)reference;
-                        return _assemblyLoadContextAccessor
+
+                        var loadedAssembly = _assemblyLoadContextAccessor
                             .Default
                             .LoadFile(fileReference.Path);
 
+                        if (loadedAssembly != null) {
+                            _logger.LogDebug("Resolved {0}", assemblyName);
+                            return loadedAssembly;
+                        }
                     }
                 }
 
-                Logger.Debug("Cannot resolve " + assemblyName);
+                _logger.LogDebug("Cannot resolve {0}", assemblyName);
                 return null;
             });
         }

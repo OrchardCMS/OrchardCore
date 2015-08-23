@@ -5,8 +5,7 @@
     "Microsoft.Framework.Configuration.Json": "1.0.0-*",
     "Microsoft.Framework.Configuration.Xml": "1.0.0-*",
     "OrchardVNext.Abstractions": "2.0.0-*",
-    "OrchardVNext.FileSystem": "2.0.0-*",
-    "OrchardVNext.Logging.Abstractions": "2.0.0-*"
+    "OrchardVNext.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

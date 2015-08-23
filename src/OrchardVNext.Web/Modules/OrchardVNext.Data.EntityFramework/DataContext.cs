@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.Data.Entity;
 using Microsoft.Data.Entity.ChangeTracking;
 using System.Linq;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Data.EntityFramework {
     public interface IDataContext {
@@ -14,22 +15,25 @@ namespace OrchardVNext.Data.EntityFramework {
     public class DataContext : DbContext, IDataContext {
         private readonly IDbContextFactoryHolder _dbContextFactoryHolder;
         private readonly IOrchardDataAssemblyProvider _assemblyProvider;
+        private readonly ILogger _logger;
 
         private readonly Guid _instanceId;
 
         public DataContext(
             IDbContextFactoryHolder dbContextFactoryHolder,
-            IOrchardDataAssemblyProvider assemblyProvider) {
+            IOrchardDataAssemblyProvider assemblyProvider,
+            ILoggerFactory loggerFactory) {
             
             _dbContextFactoryHolder = dbContextFactoryHolder;
             _assemblyProvider = assemblyProvider;
+            _logger = loggerFactory.CreateLogger<DataContext>();
             _instanceId = Guid.NewGuid();
         }
 
         public DataContext Context => this;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            Logger.TraceInformation("[{0}]: Mapping Records to DB Context", GetType().Name);
+            _logger.LogInformation("[{0}]: Mapping Records to DB Context", GetType().Name);
             var sw = Stopwatch.StartNew();
 
             var entityMethod = modelBuilder.GetType().GetRuntimeMethod("Entity", new Type[0]);
@@ -43,7 +47,7 @@ namespace OrchardVNext.Data.EntityFramework {
                         !t.GetTypeInfo().IsAbstract && !t.GetTypeInfo().IsInterface);
 
                 foreach (var type in entityTypes) {
-                    Logger.Debug("Mapping record {0}", type.FullName);
+                    _logger.LogDebug("Mapping record {0}", type.FullName);
 
                     entityMethod.MakeGenericMethod(type)
                         .Invoke(modelBuilder, new object[0]);
@@ -51,7 +55,7 @@ namespace OrchardVNext.Data.EntityFramework {
             }
 
             sw.Stop();
-            Logger.TraceInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
+            _logger.LogInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {

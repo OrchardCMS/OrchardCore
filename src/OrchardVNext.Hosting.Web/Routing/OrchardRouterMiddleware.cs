@@ -3,18 +3,22 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.Web.Routing {
     public class OrchardRouterMiddleware {
         private readonly RequestDelegate _next;
+        private readonly ILogger _logger;
 
         public OrchardRouterMiddleware(
-            RequestDelegate next) {
+            RequestDelegate next,
+            ILoggerFactory loggerFactory) {
             _next = next;
+            _logger = loggerFactory.CreateLogger<OrchardRouterMiddleware>();
         }
 
         public async Task Invoke(HttpContext httpContext) {
-            Logger.Information("Begin Routing Request");
+            _logger.LogInformation("Begin Routing Request");
 
             var router = httpContext.RequestServices.GetService<IRouteBuilder>().Build();
 
@@ -24,11 +28,11 @@ namespace OrchardVNext.Hosting.Web.Routing {
             await router.RouteAsync(context);
 
             if (!context.IsHandled) {
-                Logger.Information("Request did not match any routes.");
+                _logger.LogInformation("Request did not match any routes.");
                 await _next.Invoke(httpContext);
             }
 
-            Logger.Information("End Routing Request");
+            _logger.LogInformation("End Routing Request");
         }
     }
 }

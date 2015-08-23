@@ -1,3 +1,4 @@
+using Microsoft.Framework.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Linq.Expressions;
 namespace OrchardVNext.Data.EntityFramework {
     public class EFContentQueryStore : IContentQueryStore {
         private readonly IEnumerable<IContentStore> _contentStores;
+        private readonly ILogger _logger;
         private readonly DataContext _dataContext;
 
         private IQueryable<InternalIndexCollection> _indexCollection {
@@ -17,8 +19,10 @@ namespace OrchardVNext.Data.EntityFramework {
         }
 
         public EFContentQueryStore(IEnumerable<IContentStore> contentStores,
+            ILoggerFactory loggerFactory,
             DataContext dataContext) {
             _contentStores = contentStores;
+            _logger = loggerFactory.CreateLogger<EFContentQueryStore>();
             _dataContext = dataContext;
         }
 
@@ -90,11 +94,11 @@ namespace OrchardVNext.Data.EntityFramework {
             }
 
             if (documents.Count == 0) {
-                Logger.TraceInformation("[{0}]: No records for index: {1} - so skipping...", type.Name, indexName);
+                _logger.LogInformation("[{0}]: No records for index: {1} - so skipping...", type.Name, indexName);
                 return;
             }
 
-            Logger.TraceInformation("[{0}]: {1} records to add to new index: {2}", type.Name, documents.Count, indexName);
+            _logger.LogInformation("[{0}]: {1} records to add to new index: {2}", type.Name, documents.Count, indexName);
 
             _dataContext.AddRange(documents);
 

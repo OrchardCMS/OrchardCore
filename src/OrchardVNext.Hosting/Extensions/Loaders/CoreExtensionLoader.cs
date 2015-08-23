@@ -6,6 +6,7 @@ using Microsoft.Dnx.Runtime;
 using OrchardVNext.DependencyInjection;
 using OrchardVNext.Hosting.Extensions.Models;
 using OrchardVNext.Abstractions.Environment;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.Extensions.Loaders {
     public class CoreExtensionLoader : IExtensionLoader {
@@ -13,15 +14,18 @@ namespace OrchardVNext.Hosting.Extensions.Loaders {
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
+        private readonly ILogger _logger;
 
         public CoreExtensionLoader(
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
-            IExtensionAssemblyLoader extensionAssemblyLoader) {
+            IExtensionAssemblyLoader extensionAssemblyLoader,
+            ILoggerFactory loggerFactory) {
 
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
+            _logger = loggerFactory.CreateLogger<CoreExtensionLoader>();
         }
 
         public string Name => GetType().Name;
@@ -49,7 +53,7 @@ namespace OrchardVNext.Hosting.Extensions.Loaders {
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
                 var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
-                Logger.Information("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
 
                 return new ExtensionEntry {
                     Descriptor = descriptor,

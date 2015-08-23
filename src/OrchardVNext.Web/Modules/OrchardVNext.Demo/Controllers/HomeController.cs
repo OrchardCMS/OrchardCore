@@ -17,28 +17,6 @@ namespace OrchardVNext.Demo.Controllers {
 
         public ActionResult Index()
         {
-            //var contentItem = new ContentItem
-            //{
-            //    VersionRecord = new ContentItemVersionRecord
-            //    {
-            //        ContentItemRecord = new ContentItemRecord(),
-            //        Number = 1,
-            //        Latest = true,
-            //        Published = true
-            //    }
-            //};
-
-            //contentItem.VersionRecord.ContentItemRecord.Versions.Add(contentItem.VersionRecord);
-
-            //_contentStorageProvider.Store(contentItem);
-
-            //var indexedRecordIds = _contentIndexProvider.GetByFilter(x => x.Id == 1);
-
-            //var retrievedRecord = _contentStorageProvider.Get(contentItem.Id);
-
-            //var indexedRetrievedRecords = _contentStorageProvider.GetMany(x => x.Id == 1);
-
-
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
             _contentManager.Create(contentItem);
@@ -47,6 +25,10 @@ namespace OrchardVNext.Demo.Controllers {
             var lineToSay = retrieveContentItem.As<TestContentPartA>().Line;
 
             return View("Index", _testDependency.SayHi(lineToSay));
+        }
+
+        public ActionResult IndexError() {
+            throw new System.Exception("ERROR!!!!");
         }
     }
 

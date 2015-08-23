@@ -9,6 +9,7 @@ using System.Reflection;
 using Microsoft.Dnx.Runtime;
 using OrchardVNext.Configuration.Environment;
 using OrchardVNext.DependencyInjection;
+using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.ShellBuilders
 {
@@ -27,15 +28,18 @@ namespace OrchardVNext.Hosting.ShellBuilders
     public class CompositionStrategy : ICompositionStrategy {
         private readonly IExtensionManager _extensionManager;
         private readonly ILibraryManager _libraryManager;
+        private readonly ILogger _logger;
 
         public CompositionStrategy(IExtensionManager extensionManager,
-            ILibraryManager libraryManager) {
+            ILibraryManager libraryManager,
+            ILoggerFactory loggerFactory) {
             _extensionManager = extensionManager;
             _libraryManager = libraryManager;
+            _logger = loggerFactory.CreateLogger<CompositionStrategy>();
         }
 
         public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor) {
-            Logger.Debug("Composing blueprint");
+            _logger.LogDebug("Composing blueprint");
 
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
@@ -56,7 +60,7 @@ namespace OrchardVNext.Hosting.ShellBuilders
                 Dependencies = dependencies.Concat(modules).Concat(hoststartup).ToArray()
             };
 
-            Logger.Debug("Done composing blueprint");
+            _logger.LogDebug("Done composing blueprint");
             return result;
         }
 

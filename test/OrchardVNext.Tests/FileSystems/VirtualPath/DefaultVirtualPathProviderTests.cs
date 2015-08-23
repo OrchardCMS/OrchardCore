@@ -49,7 +49,7 @@ namespace OrchardVNext.Tests.FileSystems.VirtualPath {
 
     internal class StubDefaultVirtualPathProvider : DefaultVirtualPathProvider
     {
-        public StubDefaultVirtualPathProvider() : base(new StubHostEnvironment())
+        public StubDefaultVirtualPathProvider() : base(new StubHostEnvironment(), null)
         {
         }
 
