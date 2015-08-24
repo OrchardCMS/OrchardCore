@@ -7,8 +7,7 @@ using OrchardVNext.Web;
 namespace OrchardVNext.Setup {
     public class SetupMode : IModule {
         public void Configure(IServiceCollection serviceCollection) {
-            new HostingModule().Configure(serviceCollection);
-            new ShellStartup().ConfigureServices(serviceCollection);
+            new ShellModule().Configure(serviceCollection);
 
             serviceCollection.AddScoped<IRoutePublisher, RoutePublisher>();
         }

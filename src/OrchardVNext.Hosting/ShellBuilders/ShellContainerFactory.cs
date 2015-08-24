@@ -34,23 +34,12 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddLogging();
+            serviceCollection.AddOptions();
 
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
-
-            foreach (var dependency in blueprint.Dependencies
-                .Where(x => x.Type.Name == "ShellStartup" || 
-                            x.Type.Name == (settings.Name + "ShellStartup"))) {
-
-                _logger.LogDebug("Shell Startup: {0}", dependency.Type);
-
-                // TODO: Rewrite to get rid of reflection.
-                var instance = Activator.CreateInstance(dependency.Type);
-                var info = instance.GetType();
-                info.GetMethod("ConfigureServices").Invoke(instance, new[] { serviceCollection });
-            }
-
+            
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof (IModule).IsAssignableFrom(t.Type))) {
 

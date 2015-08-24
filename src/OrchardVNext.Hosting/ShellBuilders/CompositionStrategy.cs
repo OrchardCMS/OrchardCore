@@ -52,12 +52,11 @@ namespace OrchardVNext.Hosting.ShellBuilders
             var modules = BuildBlueprint(features, IsModule, BuildModule, excludedTypes);
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor),
                 excludedTypes);
-            var hoststartup = BuildBlueprint(features, t => IsStartup(t, settings), BuildModule, excludedTypes);
 
             var result = new ShellBlueprint {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = dependencies.Concat(modules).Concat(hoststartup).ToArray()
+                Dependencies = dependencies.Concat(modules).ToArray()
             };
 
             _logger.LogDebug("Done composing blueprint");
@@ -122,10 +121,6 @@ namespace OrchardVNext.Hosting.ShellBuilders
         
         private static bool IsModule(Type type) {
             return typeof (IModule).IsAssignableFrom(type);
-        }
-
-        private bool IsStartup(Type type, ShellSettings settings) {
-            return type.Name == "ShellStartup" || type.Name == (settings.Name + "ShellStartup");
         }
 
         private static DependencyBlueprint BuildModule(Type type, Feature feature) {

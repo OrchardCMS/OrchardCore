@@ -6,7 +6,7 @@ using OrchardVNext.Hosting.Extensions.Models;
 
 namespace OrchardVNext.Hosting {
     public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddWeb([NotNull] this IServiceCollection services) {
+        public static IServiceCollection AddWebHost([NotNull] this IServiceCollection services) {
             return services.AddHost(internalServices => {
                 internalServices.AddLogging();
 

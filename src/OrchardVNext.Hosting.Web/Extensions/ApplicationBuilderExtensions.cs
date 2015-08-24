@@ -1,17 +1,20 @@
 using Microsoft.AspNet.Builder;
-using Microsoft.Framework.Logging;
-using OrchardVNext.Hosting.Web.Routing;
 using Microsoft.Framework.DependencyInjection;
-using OrchardVNext.DependencyInjection;
-using OrchardVNext.Hosting.Extensions.Loaders;
+using Microsoft.Framework.Logging;
 using OrchardVNext.Hosting.Extensions;
-using OrchardVNext.Abstractions.Logging;
-using System.Reflection;
+using OrchardVNext.Hosting.Extensions.Loaders;
+using OrchardVNext.Hosting.Web.Routing;
 using System;
+
+#if DNXCORE50
+using System.Reflection;
+using OrchardVNext.DependencyInjection;
+using OrchardVNext.Abstractions.Logging;
+#endif
 
 namespace OrchardVNext.Hosting {
     public static class ApplicationBuilderExtensions {
-        public static IApplicationBuilder ConfigureWeb(
+        public static IApplicationBuilder ConfigureWebHost(
             [NotNull] this IApplicationBuilder builder,
             [NotNull] ILoggerFactory loggerFactory) {
 
