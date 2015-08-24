@@ -13,18 +13,18 @@ using Microsoft.Framework.Logging;
 
 namespace OrchardVNext.Hosting.Extensions {
     public class ExtensionManager : IExtensionManager {
-        private readonly IEnumerable<IExtensionFolders> _folders;
+        private readonly IExtensionLocator _extensionLocator;
         private readonly IEnumerable<IExtensionLoader> _loaders;
         private readonly ILogger _logger;
 
         public Localizer T { get; set; }
 
         public ExtensionManager(
-            IEnumerable<IExtensionFolders> folders,
+            IExtensionLocator extensionLocator,
             IEnumerable<IExtensionLoader> loaders,
             ILoggerFactory loggerFactory) {
 
-            _folders = folders;
+            _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
             _logger = loggerFactory.CreateLogger<ExtensionManager>();
             T = NullLocalizer.Instance;
@@ -37,7 +37,7 @@ namespace OrchardVNext.Hosting.Extensions {
         }
 
         public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
-            return _folders.SelectMany(x => x.AvailableExtensions()).ToList();
+            return _extensionLocator.AvailableExtensions().ToList();
         }
 
         public IEnumerable<FeatureDescriptor> AvailableFeatures() {

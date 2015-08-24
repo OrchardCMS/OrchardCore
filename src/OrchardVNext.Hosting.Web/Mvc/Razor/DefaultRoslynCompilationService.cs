@@ -28,7 +28,8 @@ namespace OrchardVNext.Hosting.Web.Mvc.Razor {
         private readonly ConcurrentDictionary<string, AssemblyMetadata> _metadataFileCache =
             new ConcurrentDictionary<string, AssemblyMetadata>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly IOrchardLibraryManager _libraryExporter;
+        private readonly ILibraryExporter _libraryExporter;
+        private readonly IOrchardLibraryManager _libraryManager;
         private readonly IApplicationEnvironment _environment;
         private readonly IAssemblyLoadContext _loader;
         private readonly ICompilerOptionsProvider _compilerOptionsProvider;
@@ -50,13 +51,15 @@ namespace OrchardVNext.Hosting.Web.Mvc.Razor {
         /// <param name="host">The <see cref="IMvcRazorHost"/> that was used to generate the code.</param>
         public DefaultRoslynCompilationService(IApplicationEnvironment environment,
                                         IAssemblyLoadContextAccessor loaderAccessor,
-                                        IOrchardLibraryManager libraryExporter,
+                                        ILibraryExporter libraryExporter,
+                                        IOrchardLibraryManager libraryManager,
                                         ICompilerOptionsProvider compilerOptionsProvider,
                                         IMvcRazorHost host,
                                         IOptions<RazorViewEngineOptions> optionsAccessor) {
             _environment = environment;
             _loader = loaderAccessor.GetLoadContext(typeof(DefaultRoslynCompilationService).GetTypeInfo().Assembly);
             _libraryExporter = libraryExporter;
+            _libraryManager = libraryManager;
             _applicationReferences = new Lazy<List<MetadataReference>>(GetApplicationReferences);
             _compilerOptionsProvider = compilerOptionsProvider;
             _fileProvider = optionsAccessor.Options.FileProvider;
@@ -173,8 +176,8 @@ namespace OrchardVNext.Hosting.Web.Mvc.Razor {
                     references.AddRange(compilationReference.Compilation.References);
                     references.Add(roslynReference.MetadataReference);
 
-                    references.AddRange(_libraryExporter
-                            .MetadataReferences
+                    references.AddRange(_libraryManager
+                            .GetAllMetadataReferences()
                             .OfType<IRoslynMetadataReference>()
                             .Select(x => x.MetadataReference));
 

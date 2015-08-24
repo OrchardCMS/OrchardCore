@@ -56,7 +56,7 @@ namespace OrchardVNext.Hosting {
 
                 _logger.LogDebug("Resolving {0}", assemblyName);
 
-                var reference = _libraryManager.MetadataReferences.FirstOrDefault(x => x.Name == assemblyName.Name);
+                var reference = _libraryManager.GetMetadataReference(assemblyName.Name);
 
                 if (reference != null) {
                     if (reference is MetadataFileReference) {

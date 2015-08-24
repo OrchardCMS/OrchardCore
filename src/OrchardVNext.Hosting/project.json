@@ -10,6 +10,7 @@
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Framework.Logging": "1.0.0-*",
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Framework.OptionsModel":  "1.0.0-*",
     "OrchardVNext.Abstractions": "2.0.0-*",
     "OrchardVNext.Configuration": "2.0.0-*",
     "OrchardVNext.FileSystem": "2.0.0-*"

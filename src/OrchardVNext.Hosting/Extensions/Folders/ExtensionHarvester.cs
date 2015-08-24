@@ -49,7 +49,6 @@ namespace OrchardVNext.Hosting.Extensions.Folders {
         }
 
         private IEnumerable<ExtensionDescriptor> HarvestExtensions(string path, string extensionType, string manifestName, bool manifestIsOptional) {
-            string key = string.Format("{0}-{1}-{2}", path, manifestName, extensionType);
             return AvailableExtensionsInFolder(path, extensionType, manifestName, manifestIsOptional).ToReadOnlyCollection();
         }
 

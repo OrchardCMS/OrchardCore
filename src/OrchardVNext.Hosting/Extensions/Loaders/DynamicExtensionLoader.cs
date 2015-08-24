@@ -51,15 +51,22 @@ namespace OrchardVNext.Hosting.Extensions.Loaders {
             var plocation = _hostEnvironment.MapPath(descriptor.Location);
 
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
-                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+                try {
+                    var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
 
-                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                    _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
 
-                return new ExtensionEntry {
-                    Descriptor = descriptor,
-                    Assembly = assembly,
-                    ExportedTypes = assembly.ExportedTypes
-                };
+                    return new ExtensionEntry {
+                        Descriptor = descriptor,
+                        Assembly = assembly,
+                        ExportedTypes = assembly.ExportedTypes
+                    };
+                }
+                catch (System.Exception ex) {
+                    _logger.LogError(string.Format("Error trying to load extension {0}", descriptor.Id), ex);
+                    throw;
+                }
+
             }
         }
 
