@@ -28,7 +28,7 @@ namespace OrchardVNext.Hosting {
 
             additionalDependencies(services);
 
-            services.AddTransient<IShellHost, ShellHost>();
+            services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
 
             return services.AddFallback();
         }

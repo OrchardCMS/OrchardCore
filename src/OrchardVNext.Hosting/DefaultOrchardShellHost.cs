@@ -2,20 +2,20 @@
 using OrchardVNext.Configuration.Environment;
 
 namespace OrchardVNext.Hosting {
-    public class ShellHost : IShellHost {
+    public class DefaultOrchardShellHost : IOrchardShellHost {
         private readonly ILogger _logger;
 
-        public ShellHost(
+        public DefaultOrchardShellHost(
             ILoggerFactory loggerFactory) {
 
-            _logger = loggerFactory.CreateLogger<ShellHost>();
+            _logger = loggerFactory.CreateLogger<DefaultOrchardShellHost>();
         }
 
-        void IShellHost.BeginRequest(ShellSettings settings) {
+        void IOrchardShellHost.BeginRequest(ShellSettings settings) {
             _logger.LogDebug("Begin Request for tenant {0}", settings.Name);
         }
 
-        void IShellHost.EndRequest(ShellSettings settings) {
+        void IOrchardShellHost.EndRequest(ShellSettings settings) {
             _logger.LogDebug("End Request for tenant {0}", settings.Name);
         }
     }

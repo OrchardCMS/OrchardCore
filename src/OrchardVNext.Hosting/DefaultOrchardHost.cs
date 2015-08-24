@@ -3,12 +3,6 @@ using OrchardVNext.Configuration.Environment;
 using OrchardVNext.Hosting.ShellBuilders;
 
 namespace OrchardVNext.Hosting {
-    public interface IOrchardHost {
-        void Initialize();
-
-        ShellContext CreateShellContext(ShellSettings settings);
-    }
-
     public class DefaultOrchardHost : IOrchardHost {
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ILogger _logger;
