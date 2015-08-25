@@ -20,7 +20,7 @@ namespace OrchardVNext.Hosting.Mvc {
             services.AddScoped<IAssemblyProvider, OrchardMvcAssemblyProvider>();
 
             services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
-
+            
             services.Configure<RazorViewEngineOptions>(options => {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);

@@ -12,15 +12,8 @@ namespace OrchardVNext.Web {
             services
                 .AddWebHost();
 
-            services.Configure<ExtensionHarvestingOptions>(options => {
-                var expander = new ModuleLocationExpander(
-                    DefaultExtensionTypes.Module,
-                    new[] { "~/Core/OrchardVNext.Core", "~/Modules" },
-                    "Module.txt"
-                    );
-
-                options.ModuleLocationExpanders.Add(expander);
-            });
+            services.AddModuleFolder("~/Core/OrchardVNext.Core");
+            services.AddModuleFolder("~/Modules");
 
             return services.BuildServiceProvider();
         }

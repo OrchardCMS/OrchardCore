@@ -59,6 +59,11 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
     return services.AddHost(internalServices => {
         internalServices.AddHostCore();
 
+        // Add folders the easy way
+        internalServices.AddModuleFolder("~/Core/OrchardVNext.Core");
+        internalServices.AddModuleFolder("~/Modules");
+
+        // Add folders the move configurable way
         internalServices.Configure<ExtensionHarvestingOptions>(options => {
             var expander = new ModuleLocationExpander(
                 DefaultExtensionTypes.Module,
