@@ -7,6 +7,7 @@ namespace OrchardVNext.Hosting {
         public static IServiceCollection AddWebHost([NotNull] this IServiceCollection services) {
             return services.AddHost(internalServices => {
                 internalServices.AddLogging();
+                internalServices.AddOptions();
 
                 internalServices.AddHostCore();
 

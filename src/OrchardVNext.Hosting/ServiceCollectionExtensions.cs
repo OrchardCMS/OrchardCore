@@ -34,8 +34,6 @@ namespace OrchardVNext.Hosting {
         }
 
         public static IServiceCollection AddHostCore(this IServiceCollection services) {
-            services.AddOptions();
-
             services.AddTransient<IOrchardHost, DefaultOrchardHost>();
             {
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();

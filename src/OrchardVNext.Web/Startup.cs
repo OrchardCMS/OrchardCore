@@ -3,7 +3,6 @@ using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using OrchardVNext.Hosting;
 using OrchardVNext.Hosting.Extensions.Folders;
-using OrchardVNext.Hosting.Extensions.Models;
 using System;
 
 namespace OrchardVNext.Web {

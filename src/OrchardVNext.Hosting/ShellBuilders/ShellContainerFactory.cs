@@ -18,8 +18,7 @@ namespace OrchardVNext.Hosting.ShellBuilders {
         IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint);
     }
 
-    public class ShellContainerFactory : IShellContainerFactory
-    {
+    public class ShellContainerFactory : IShellContainerFactory {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
 
@@ -29,49 +28,39 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             _logger = loggerFactory.CreateLogger<ShellContainerFactory>();
         }
 
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
-        {
+        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) {
             IServiceCollection serviceCollection = new ServiceCollection();
-
-            serviceCollection.AddLogging();
-            serviceCollection.AddOptions();
 
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
-            
+
             foreach (var dependency in blueprint.Dependencies
-                .Where(t => typeof (IModule).IsAssignableFrom(t.Type))) {
+                .Where(t => typeof(IModule).IsAssignableFrom(t.Type))) {
 
                 _logger.LogDebug("IModule Type: {0}", dependency.Type);
 
                 // TODO: Rewrite to get rid of reflection.
-                var instance = (IModule) Activator.CreateInstance(dependency.Type);
+                var instance = (IModule)Activator.CreateInstance(dependency.Type);
                 instance.Configure(serviceCollection);
             }
 
             foreach (var dependency in blueprint.Dependencies
-                .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
-            {
+                .Where(t => !typeof(IModule).IsAssignableFrom(t.Type))) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
-                    .Where(itf => typeof(IDependency).IsAssignableFrom(itf)))
-                {
+                    .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
                     _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
 
-                    if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
-                    {
+                    if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
-                    else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType))
-                    {
+                    else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
-                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
-                    {
+                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType)) {
                         serviceCollection.AddTransient(interfaceType, dependency.Type);
                     }
-                    else
-                    {
+                    else {
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                 }
@@ -80,19 +69,17 @@ namespace OrchardVNext.Hosting.ShellBuilders {
             return new WrappingServiceProvider(_serviceProvider, serviceCollection);
         }
 
-        private class WrappingServiceProvider : IServiceProvider
-        {
+        private class WrappingServiceProvider : IServiceProvider {
             private readonly IServiceProvider _services;
 
             // Need full wrap for generics like IOptions
-            public WrappingServiceProvider(IServiceProvider fallback, IServiceCollection replacedServices)
-            {
+            public WrappingServiceProvider(IServiceProvider fallback, IServiceCollection replacedServices) {
                 var services = new ServiceCollection();
                 var manifest = fallback.GetRequiredService<IRuntimeServices>();
                 foreach (var service in manifest.Services) {
                     services.AddTransient(service, sp => fallback.GetService(service));
                 }
-                
+
                 services.AddSingleton<IRuntimeServices>(sp => new HostingManifest(services));
                 services.Add(replacedServices);
 
