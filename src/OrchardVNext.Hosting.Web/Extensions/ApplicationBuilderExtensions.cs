@@ -1,6 +1,7 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using OrchardVNext.Abstractions.Logging;
 using OrchardVNext.Hosting.Extensions;
 using OrchardVNext.Hosting.Extensions.Loaders;
 using OrchardVNext.Hosting.Web.Routing;
@@ -24,8 +25,8 @@ namespace OrchardVNext.Hosting {
             var descriptor = manager.GetExtension("OrchardVNext.Logging.Console");
             var entry = loader.Load(descriptor);
             var info = entry.Assembly.GetType("OrchardVNext.Logging.LoggingInitiator");
-            var instance = Activator.CreateInstance(info);
-            info.GetMethod("Initialize").Invoke(instance, new[] { loggerFactory });
+            var instance = (ILoggingInitiator)Activator.CreateInstance(info);
+            instance.Initialize(loggerFactory);
 
             builder.UseMiddleware<OrchardContainerMiddleware>();
             builder.UseMiddleware<OrchardShellHostMiddleware>();
