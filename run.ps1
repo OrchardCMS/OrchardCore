@@ -1,4 +1,4 @@
 
-$orchardwebDirectory = [System.IO.Path]::GetFullPath(".\src\OrchardVNext.Web")
+$orchardwebDirectory = [System.IO.Path]::GetFullPath(".\src\Orchard.Web")
 
 invoke-expression ($orchardwebDirectory + "\dnx web")

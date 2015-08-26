@@ -10,7 +10,7 @@ Next you want to clone the Repo. 'git clone https://github.com/OrchardCMS/Brocha
 
 Run the build.cmd file included in the repository to bootstrap DNX and build solution.
 
-Next navigate to 'D:\Brochard\src\OrchardVNext.Web' or where ever your retrospective folder is on the command line in Administrative mode.
+Next navigate to 'D:\Brochard\src\Orchard.Web' or where ever your retrospective folder is on the command line in Administrative mode.
 
 run.. 'dnx web' -> Hey you just kicked up the Orchard host.
 
@@ -30,7 +30,7 @@ To create the host in a web project you would do
 public class Startup {
     public IServiceProvider ConfigureServices(IServiceCollection services) {
         return services
-        // AddHostSample is where the magic is done. This extension method lives in the Host (OrchardVNext.Hosting.Web)
+        // AddHostSample is where the magic is done. This extension method lives in the Host (Orchard.Hosting.Web)
             .AddHostSample()
             .BuildServiceProvider();
     }
@@ -60,14 +60,14 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
         internalServices.AddHostCore();
 
         // Add folders the easy way
-        internalServices.AddModuleFolder("~/Core/OrchardVNext.Core");
+        internalServices.AddModuleFolder("~/Core/Orchard.Core");
         internalServices.AddModuleFolder("~/Modules");
 
         // Add folders the move configurable way
         internalServices.Configure<ExtensionHarvestingOptions>(options => {
             var expander = new ModuleLocationExpander(
                 DefaultExtensionTypes.Module,
-                new[] { "~/Core/OrchardVNext.Core", "~/Modules" },
+                new[] { "~/Core/Orchard.Core", "~/Modules" },
                 "Module.txt"
                 );
 

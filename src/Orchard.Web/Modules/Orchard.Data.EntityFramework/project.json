@@ -1,0 +1,26 @@
+﻿{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Ix-Async": "1.2.5",
+    "EntityFramework.Core": "7.0.0-*",
+    "EntityFramework.SqlServer": "7.0.0-*",
+    "EntityFramework.InMemory": "7.0.0-*",
+    "Orchard.DependencyInjection": "2.0.0-*",
+    "Orchard.Validation": "2.0.0-*",
+    "Orchard.Data": "2.0.0-*",
+    "Orchard.FileSystem": "2.0.0-*",
+    "Orchard.Configuration": "2.0.0-*"
+  },
+  "compilationOptions": {
+    "define": [ "TRACE" ],
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Brochard"
+  }
+}
