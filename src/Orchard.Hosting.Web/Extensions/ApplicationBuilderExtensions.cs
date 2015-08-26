@@ -19,7 +19,6 @@ namespace Orchard.Hosting {
             [NotNull] this IApplicationBuilder builder,
             [NotNull] ILoggerFactory loggerFactory) {
 
-            Console.ReadLine();
 
             /* TODO (ngm): Abstract this logger stuff outta here! */
             var loader = builder.ApplicationServices.GetRequiredService<IExtensionLoader>();

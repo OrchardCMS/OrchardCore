@@ -12,7 +12,6 @@ using Microsoft.Framework.Logging;
 
 #if !(DNXCORE50)
 using System.Reflection;
-using Microsoft.Dnx.Runtime.Loader;
 #endif
 
 namespace Orchard.Hosting {
