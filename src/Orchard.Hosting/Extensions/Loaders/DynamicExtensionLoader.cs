@@ -49,7 +49,7 @@ namespace Orchard.Hosting.Extensions.Loaders {
             }
 
             var plocation = _hostEnvironment.MapPath(descriptor.Location);
-
+            
             using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
                 try {
                     var assembly = Assembly.Load(new AssemblyName(descriptor.Id));

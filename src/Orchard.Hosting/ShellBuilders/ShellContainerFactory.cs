@@ -40,8 +40,8 @@ namespace Orchard.Hosting.ShellBuilders {
 
                 _logger.LogDebug("IModule Type: {0}", dependency.Type);
 
-                ActivatorUtilities
-                    .CreateInstance<IModule>(_serviceProvider, dependency.Type)
+                ((IModule)ActivatorUtilities
+                    .CreateInstance(_serviceProvider, dependency.Type))
                     .Configure(serviceCollection);
             }
 
