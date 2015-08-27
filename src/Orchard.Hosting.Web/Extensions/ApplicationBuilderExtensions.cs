@@ -11,8 +11,6 @@ namespace Orchard.Hosting {
             [NotNull] this IApplicationBuilder builder,
             [NotNull] ILoggerFactory loggerFactory) {
 
-            Console.ReadLine();
-
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
             
             builder.UseMiddleware<OrchardContainerMiddleware>();
