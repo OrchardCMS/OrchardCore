@@ -26,9 +26,6 @@ namespace Orchard.Console {
                 .UseServer("Microsoft.AspNet.Server.WebListener")
                 .Build();
             using (var host = webhost.Start()) {
-                
-                System.Console.WriteLine("Started the server..");
-
                 var orchardHost = new OrchardHost(webhost.ApplicationServices, System.Console.In, System.Console.Out, args);
 
                 return Task.FromResult(

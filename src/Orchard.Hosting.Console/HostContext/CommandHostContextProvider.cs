@@ -6,28 +6,27 @@ using System.Linq;
 
 namespace Orchard.Hosting.Console.HostContext {
     public class CommandHostContextProvider : ICommandHostContextProvider {
-        private readonly ILogger _logger;
         private readonly string[] _args;
-        private TextWriter _output;
-        private TextReader _input;
+        private OrchardConsoleLogger _logger;
 
         public CommandHostContextProvider(
             IServiceProvider serviceProvider,
-            ILoggerFactory loggerFactory,
+            OrchardConsoleLogger logger,
             string[] args) {
-            _logger = loggerFactory.CreateLogger<CommandHostContextProvider>();
-            _input = System.Console.In;
-            _output = System.Console.Out;
+            _logger = logger;
             _args = args;
         }
 
         public CommandHostContext CreateContext() {
             var context = new CommandHostContext { RetryResult = CommandReturnCodes.Retry };
+
+            _logger.LogInfo("Initializing Orchard session.");
             Initialize(context);
             return context;
         }
 
         public void Shutdown(CommandHostContext context) {
+            _logger.LogInfo("Shutting down Orchard session");
         }
 
         private void Initialize(CommandHostContext context) {
@@ -40,7 +39,7 @@ namespace Orchard.Hosting.Console.HostContext {
 
             context.DisplayUsageHelp = (context.Arguments.Arguments.Any() && context.Arguments.ResponseFiles.Any());
             if (context.DisplayUsageHelp) {
-                _output.WriteLine("Incorrect syntax: Response files cannot be used in conjunction with commands");
+                _logger.LogError("Incorrect syntax: Response files cannot be used in conjunction with commands");
                 return;
             }
 

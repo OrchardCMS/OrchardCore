@@ -9,9 +9,11 @@ using System.Linq;
 namespace Orchard.Hosting.Console {
     public class OrchardHost {
         private readonly IServiceProvider _serviceProvider;
+        private readonly OrchardConsoleLogger _logger;
+        private readonly ICommandHostContextProvider _commandHostContextProvider;
+
         private readonly TextReader _input;
         private readonly TextWriter _output;
-        private readonly ICommandHostContextProvider _commandHostContextProvider;
 
         public OrchardHost(
             IServiceProvider serviceProvider,
@@ -21,7 +23,10 @@ namespace Orchard.Hosting.Console {
             _serviceProvider = serviceProvider;
             _input = input;
             _output = output;
-            _commandHostContextProvider = new CommandHostContextProvider(serviceProvider, serviceProvider.GetService<ILoggerFactory>(), args);
+            _logger = new OrchardConsoleLogger(input, output);
+
+            _commandHostContextProvider = new CommandHostContextProvider(
+                serviceProvider, _logger, args);
         }
 
         public CommandReturnCodes Run() {
@@ -29,9 +34,9 @@ namespace Orchard.Hosting.Console {
                 return DoRun();
             }
             catch (Exception e) {
-                _output.WriteLine("Error:");
+                _logger.LogError("Error:");
                 for (; e != null; e = e.InnerException) {
-                    _output.WriteLine("  {0}", e.Message);
+                    _logger.LogError("  {0}", e.Message);
                 }
                 return CommandReturnCodes.Fail;
             }
@@ -62,16 +67,7 @@ namespace Orchard.Hosting.Console {
         }
 
         private CommandHostContext CommandHostContext() {
-            _output.WriteLine("Initializing Orchard session.");
-            var result = _commandHostContextProvider.CreateContext();
-            if (result.StartSessionResult == result.RetryResult) {
-                result = _commandHostContextProvider.CreateContext();
-            }
-            else if (result.StartSessionResult == CommandReturnCodes.Fail) {
-                _output.WriteLine("Failed to initialize Orchard session.");
-            }
-
-            return result;
+            return _commandHostContextProvider.CreateContext();
         }
 
         private void DisplayInteractiveHelp() {
