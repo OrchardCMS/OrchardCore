@@ -69,7 +69,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.AddExtensionFolderT
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "entropy", "entropy", "{19BEA761-717B-4C5C-AF55-A3491240ED9E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Hosting.CommandConsole", "src\Orchard.Hosting.CommandConsole\Orchard.Hosting.CommandConsole.xproj", "{6F9A75CF-69FD-4224-8672-CA8926E13198}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Hosting.Console", "src\Orchard.Hosting.Console\Orchard.Hosting.Console.xproj", "{6F9A75CF-69FD-4224-8672-CA8926E13198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
