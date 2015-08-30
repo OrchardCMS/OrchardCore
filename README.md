@@ -1,3 +1,5 @@
+[![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)
+
 # Brochard
 
 Brochard is the implementation of Orchard CMS in Asp.Net VNext (also known as DNX)
