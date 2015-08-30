@@ -66,14 +66,16 @@ namespace Orchard.AcceptanceTests.Features.Setup
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Create a site")]
+        [NUnit.Framework.IgnoreAttribute()]
         public virtual void CreateASite()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create a site", ((string[])(null)));
-#line 3
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Create a site", new string[] {
+                        "ignore"});
 #line 4
- testRunner.When("I create a site", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+this.ScenarioSetup(scenarioInfo);
 #line 5
+ testRunner.When("I create a site", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 6
  testRunner.Then("I should be able to see that site", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
