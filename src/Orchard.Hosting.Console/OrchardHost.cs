@@ -59,7 +59,7 @@ namespace Orchard.Hosting.Console {
             //else if (context.Arguments.ResponseFiles.Any())
             //    result = ExecuteResponseFiles(context);
             //else {
-            //    result = ExecuteInteractive(context);
+                result = ExecuteInteractive(context);
             //}
 
             _commandHostContextProvider.Shutdown(context);
@@ -68,6 +68,36 @@ namespace Orchard.Hosting.Console {
 
         private CommandHostContext CommandHostContext() {
             return _commandHostContextProvider.CreateContext();
+        }
+
+        public CommandReturnCodes ExecuteInteractive(CommandHostContext context) {
+            _output.WriteLine("Type \"?\" for help, \"exit\" to exit, \"cls\" to clear screen");
+            while (true) {
+                var command = ReadCommand(context);
+                switch (command.ToLowerInvariant()) {
+                    case "quit":
+                    case "q":
+                    case "exit":
+                    case "e":
+                        return 0;
+                    case "help":
+                    case "?":
+                        DisplayInteractiveHelp();
+                        break;
+                    case "cls":
+                        //System.Console..Clear();
+                        break;
+                    default:
+                        //context = RunCommand(context, command);
+                        break;
+                }
+            }
+        }
+
+        private string ReadCommand(CommandHostContext context) {
+            _output.WriteLine();
+            _output.Write("orchard> ");
+            return _input.ReadLine();
         }
 
         private void DisplayInteractiveHelp() {
