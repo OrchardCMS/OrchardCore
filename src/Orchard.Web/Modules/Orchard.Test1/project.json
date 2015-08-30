@@ -1,5 +1,4 @@
 ﻿{
-  "version": "2.0.0-*",
   "dependencies": {
     "Orchard.Configuration": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
