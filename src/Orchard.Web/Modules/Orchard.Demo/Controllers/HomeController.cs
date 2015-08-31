@@ -2,21 +2,28 @@
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
+using Orchard.Demo.TestEvents;
+using Orchard.Events;
 using Orchard.Test1;
 
 namespace Orchard.Demo.Controllers {
     public class HomeController : Controller {
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
+        private readonly IEventNotifier _eventNotifier;
 
         public HomeController(ITestDependency testDependency,
-            IContentManager contentManager) {
+            IContentManager contentManager,
+            IEventNotifier eventNotifier) {
             _testDependency = testDependency;
             _contentManager = contentManager;
+            _eventNotifier = eventNotifier;
             }
 
         public ActionResult Index()
         {
+            _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
+
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
             _contentManager.Create(contentItem);
