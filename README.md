@@ -32,7 +32,7 @@ To create the host in a web project you would do
 public class Startup {
     public IServiceProvider ConfigureServices(IServiceCollection services) {
         return services
-        // AddHostSample is where the magic is done. This extension method lives in the Host (Orchard.Hosting.Web)
+            // AddHostSample is where the magic is done. This extension method lives in the Host (Orchard.Hosting.Web)
             .AddHostSample()
             .BuildServiceProvider();
     }
@@ -48,7 +48,7 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
     return services.AddHost(internalServices => {
         // The core of the host
         internalServices.AddHostCore();
-        ///... All extra things you want registered so that you don't have to touch the core host.
+        //... All extra things you want registered so that you don't have to touch the core host.
     });
 ```
 
