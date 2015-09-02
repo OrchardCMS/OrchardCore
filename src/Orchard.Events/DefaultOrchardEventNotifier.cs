@@ -22,7 +22,7 @@ namespace Orchard.Events {
                 .ToDictionary(kv => kv.Name, kv => kv.Value);
 
             var key = interfaceName + "." + methodName;
-
+            
             _eventBus.Notify(key, data);
         }
 
