@@ -78,3 +78,24 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
     });
 }
 ```
+
+### Tenant Configuration
+
+All tenant configuration lives in .\App_Data\Sites\Default within settings files.
+
+i.e. Settings.txt
+```
+State: Running
+Name: Default
+DataProvider: InMemory
+DataConnectionString: 
+DataTablePrefix: 
+RequestUrlHost: localhost:5001
+RequestUrlPrefix: 
+```
+
+However, you may override these values within a json or xml file. The hierarchy is:
+
+Settings.txt
+  -> Settings.xml
+     -> Settings.json
