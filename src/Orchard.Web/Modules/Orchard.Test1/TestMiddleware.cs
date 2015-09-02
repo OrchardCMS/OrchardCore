@@ -8,7 +8,8 @@ namespace Orchard.Test1 {
         public IEnumerable<MiddlewareRegistration> GetMiddlewares() {
             yield return new MiddlewareRegistration {
                 Configure = app => app.Use(async (context, next) => {
-                    context.Response.Headers.Append("Middleware", "Hello Orchard");
+                    if (!context.Response.Headers.ContainsKey("Middleware"))
+                        context.Response.Headers.Add("Middleware", "Hello Orchard");
 
                     await next();
                 }),
