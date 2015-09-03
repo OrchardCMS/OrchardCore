@@ -14,6 +14,7 @@ using Orchard.Hosting.Extensions.Folders;
 using Microsoft.Framework.DependencyInjection.Extensions;
 using Orchard.Hosting.Extensions.Loaders;
 using Microsoft.Framework.OptionsModel;
+using Orchard.Events;
 
 namespace Orchard.Hosting {
     public static class WebServiceCollectionExtensions {
@@ -27,14 +28,14 @@ namespace Orchard.Hosting {
             services.AddSingleton<ICache, Cache>();
 
             additionalDependencies(services);
-
+            
             services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
 
             return services.AddFallback();
         }
 
         public static IServiceCollection AddHostCore(this IServiceCollection services) {
-            services.AddTransient<IOrchardHost, DefaultOrchardHost>();
+            services.AddSingleton<IOrchardHost, DefaultOrchardHost>();
             {
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 

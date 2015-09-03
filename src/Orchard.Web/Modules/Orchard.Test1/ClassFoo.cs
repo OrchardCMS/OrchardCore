@@ -1,5 +1,6 @@
 using Orchard.Configuration.Environment;
 using Orchard.DependencyInjection;
+using Orchard.Events;
 
 namespace Orchard.Test1 {
     public interface ITestDependency : IDependency {

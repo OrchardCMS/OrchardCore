@@ -75,7 +75,7 @@ namespace Orchard.Hosting.Extensions {
                 }
                 
                 var loadedProjectAssembly = engine.LoadProject(
-                    moduleContext.Project, null, _assemblyLoadContextAccessor.Default);
+                    moduleContext.Project, null, _assemblyLoadContextAccessor.Default, assemblyName);
 
                 IList<LibraryDependency> flattenedList = moduleContext
                     .Project

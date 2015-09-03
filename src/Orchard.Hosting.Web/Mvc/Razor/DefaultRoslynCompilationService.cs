@@ -62,7 +62,7 @@ namespace Orchard.Hosting.Web.Mvc.Razor {
             _libraryManager = libraryManager;
             _applicationReferences = new Lazy<List<MetadataReference>>(GetApplicationReferences);
             _compilerOptionsProvider = compilerOptionsProvider;
-            _fileProvider = optionsAccessor.Options.FileProvider;
+            _fileProvider = optionsAccessor.Value.FileProvider;
             _classPrefix = host.MainClassNamePrefix;
         }
 
