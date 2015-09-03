@@ -1,14 +1,8 @@
 ﻿using Orchard.Events;
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Orchard.Tests.Events
-{
+namespace Orchard.Tests.Events {
     public class InternalNotifierTests
     {
         [Fact]

@@ -17,7 +17,8 @@ namespace Orchard.Events
         }
 
         public override void EnlistTarget(object target) {
-            var typeInfo = target.GetType().GetTypeInfo();
+            var type = target.GetType();
+            var typeInfo = type.GetTypeInfo();
 
             var methodInfos = typeInfo.DeclaredMethods;
 
@@ -25,11 +26,11 @@ namespace Orchard.Events
                 var parameterNames = methodInfo.GetParameters().Select(x => x.Name);
                 var key = typeInfo.FullName + "_" + methodInfo.Name + "_" + string.Join("_", parameterNames);
 
-                Enlist(key, target, methodInfo);
+                Enlist(key, type, methodInfo);
             }
         }
 
-        private void Enlist(string notificationName, object target, MethodInfo methodInfo) {
+        private void Enlist(string notificationName, Type target, MethodInfo methodInfo) {
             var entries = _listeners.GetOrAdd(
                 notificationName,
                 _ => new ConcurrentBag<ListenerEntry>());
@@ -55,7 +56,7 @@ namespace Orchard.Events
 
                     if (!succeeded) {
                         // creates object
-                        var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, parameters);
+                        var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, entry.Target, parameters);
                         // sends values
                         succeeded = newAdapter(entry.Target, parameters);
 
@@ -78,7 +79,7 @@ namespace Orchard.Events
         }
 
         private class ListenerEntry {
-            public ListenerEntry(object target, MethodInfo methodInfo) {
+            public ListenerEntry(Type target, MethodInfo methodInfo) {
                 Target = target;
                 MethodInfo = methodInfo;
 
@@ -89,7 +90,7 @@ namespace Orchard.Events
 
             public MethodInfo MethodInfo { get; }
 
-            public object Target { get; }
+            public Type Target { get; }
         }
     }
 }

@@ -11,7 +11,7 @@
     "Orchard.FileSystem": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
     "Orchard.Events": "2.0.0-*",
-    "Xunit.runner.visualstudio": "2.0.1"
+    "Xunit.runner.visualstudio": "2.1.0-*"
   },
   "commands": {
     "test": "xunit.runner.dnx"
