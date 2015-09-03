@@ -1,23 +1,22 @@
-﻿using Microsoft.Framework.Notification;
+﻿using Microsoft.Framework.TelemetryAdapter;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace Orchard.Events
 {
-    public class InternalNotifier : INotifier {
-        private readonly NotificationListenerCache _listeners = new NotificationListenerCache();
+    public class InternalTelemetrySourceAdapter : TelemetrySourceAdapter {
+        private readonly ListenerCache _listeners = new ListenerCache();
 
-        private readonly INotifierMethodAdapter _methodAdapter;
-
-        public InternalNotifier(INotifierMethodAdapter methodAdapter) {
+        private readonly ITelemetrySourceMethodAdapter _methodAdapter;
+ 		 
+        public InternalTelemetrySourceAdapter(ITelemetrySourceMethodAdapter methodAdapter) { 
             _methodAdapter = methodAdapter;
         }
 
-        public void EnlistTarget(object target) {
+        public override void EnlistTarget(object target) {
             var typeInfo = target.GetType().GetTypeInfo();
 
             var methodInfos = typeInfo.DeclaredMethods;
@@ -37,18 +36,14 @@ namespace Orchard.Events
 
             entries.Add(new ListenerEntry(target, methodInfo));
         }
-
-        public bool ShouldNotify(string notificationName) {
-            return _listeners.ContainsKey(notificationName);
-        }
-
-        public void Notify(string notificationName, object parameters) {
+        
+        public override void WriteTelemetry(string telemetryName, object parameters) {
             if (parameters == null) {
                 return;
             }
 
             ConcurrentBag<ListenerEntry> entries;
-            if (_listeners.TryGetValue(notificationName, out entries)) {
+            if (_listeners.TryGetValue(telemetryName, out entries)) {
                 foreach (var entry in entries) {
                     var succeeded = false;
                     foreach (var adapter in entry.Adapters) {
@@ -63,7 +58,7 @@ namespace Orchard.Events
                         var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, parameters.GetType());
                         // sends values
                         succeeded = newAdapter(entry.Target, parameters);
-                        
+
                         Debug.Assert(succeeded);
 
                         entry.Adapters.Add(newAdapter);
@@ -72,8 +67,12 @@ namespace Orchard.Events
             }
         }
 
-        private class NotificationListenerCache : ConcurrentDictionary<string, ConcurrentBag<ListenerEntry>> {
-            public NotificationListenerCache()
+        public override bool IsEnabled(string telemetryName) {
+            return _listeners.ContainsKey(telemetryName);
+        }
+
+        private class ListenerCache : ConcurrentDictionary<string, ConcurrentBag<ListenerEntry>> {
+            public ListenerCache()
                 : base(StringComparer.Ordinal) {
             }
         }

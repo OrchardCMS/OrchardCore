@@ -1,17 +1,15 @@
-﻿using Microsoft.Framework.Notification;
+﻿using Microsoft.Framework.TelemetryAdapter;
 using System;
 using System.Collections.Generic;
 using Orchard.Abstractions.Localization;
-using System.Linq;
-using System.Dynamic;
 
 namespace Orchard.Events {
     public class DefaultOrchardEventBus : IEventBus {
         private readonly IEnumerable<IEventHandler> _eventHandlers;
-        private readonly INotifier _notifier;
+        private readonly TelemetrySourceAdapter _notifier;
 
         public DefaultOrchardEventBus(IEnumerable<IEventHandler> eventHandlers,
-            INotifier notifier) {
+            TelemetrySourceAdapter notifier) {
             _eventHandlers = eventHandlers;
             _notifier = notifier;
             foreach (var eventHandler in eventHandlers) {
@@ -34,7 +32,7 @@ namespace Orchard.Events {
             foreach (var eventHandler in _eventHandlers) {
                 var key = eventHandler.GetType().FullName + "_" + methodName + "_" + string.Join("_", eventData.Keys);
                 
-                _notifier.Notify(key, eventData);
+                _notifier.WriteTelemetry(key, eventData);
             }
         }
     }

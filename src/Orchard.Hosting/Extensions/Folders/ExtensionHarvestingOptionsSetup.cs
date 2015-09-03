@@ -10,7 +10,6 @@ namespace Orchard.Hosting.Extensions.Folders {
         /// </summary>
         public ExtensionHarvestingOptionsSetup()
             : base(options => {  }) {
-            Order = -1000; 
         }
     }
 }

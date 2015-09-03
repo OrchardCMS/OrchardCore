@@ -16,7 +16,7 @@ namespace Orchard.Hosting.Extensions.Folders {
         }
 
         public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
-            return _optionsAccessor.Options.ModuleLocationExpanders
+            return _optionsAccessor.Value.ModuleLocationExpanders
                 .SelectMany(x => _extensionHarvester.HarvestExtensions(
                     x.SearchPaths, x.ExtensionType, x.ManifestName, x.ManifestOptional));
         }

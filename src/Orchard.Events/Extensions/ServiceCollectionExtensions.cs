@@ -1,15 +1,17 @@
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Notification;
+using Microsoft.Framework.TelemetryAdapter;
 
 namespace Orchard.Events {
     public static class ServiceCollectionExtensions {
         public static IServiceCollection AddNotifierEvents([NotNull] this IServiceCollection services) {
-            //services.AddNotifier();
-            
+            services.AddTelemetrySourceAdapter();
+
             services.AddScoped<IEventBus, DefaultOrchardEventBus>();
             services.AddScoped<IEventNotifier, DefaultOrchardEventNotifier>();
-            services.AddSingleton<INotifierMethodAdapter, TestProxyNotifierMethodAdapter>();
-            services.AddSingleton<INotifier, InternalNotifier>();
+
+            services.AddSingleton<ITelemetrySourceMethodAdapter, ProxyTelemetrySourceMethodAdapter>();
+
+            services.AddSingleton<TelemetrySourceAdapter, InternalTelemetrySourceAdapter>();
 
             return services;
         }
