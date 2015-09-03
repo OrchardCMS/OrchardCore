@@ -10,9 +10,9 @@ namespace Orchard.Events
     public class InternalTelemetrySourceAdapter : TelemetrySourceAdapter {
         private readonly ListenerCache _listeners = new ListenerCache();
 
-        private readonly ITelemetrySourceMethodAdapter _methodAdapter;
+        private readonly IMethodAdaptor _methodAdapter;
  		 
-        public InternalTelemetrySourceAdapter(ITelemetrySourceMethodAdapter methodAdapter) { 
+        public InternalTelemetrySourceAdapter(IMethodAdaptor methodAdapter) { 
             _methodAdapter = methodAdapter;
         }
 
@@ -55,7 +55,7 @@ namespace Orchard.Events
 
                     if (!succeeded) {
                         // creates object
-                        var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, parameters.GetType());
+                        var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, parameters);
                         // sends values
                         succeeded = newAdapter(entry.Target, parameters);
 

@@ -9,7 +9,7 @@ namespace Orchard.Events {
             services.AddScoped<IEventBus, DefaultOrchardEventBus>();
             services.AddScoped<IEventNotifier, DefaultOrchardEventNotifier>();
 
-            services.AddSingleton<ITelemetrySourceMethodAdapter, ProxyTelemetrySourceMethodAdapter>();
+            services.AddSingleton<IMethodAdaptor, DefaultMethodAdaptor>();
 
             services.AddSingleton<TelemetrySourceAdapter, InternalTelemetrySourceAdapter>();
 
