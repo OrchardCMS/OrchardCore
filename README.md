@@ -84,14 +84,14 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
 All tenant configuration lives in .\App_Data\Sites\Default within settings files.
 
 i.e. Settings.txt
-```
+```yaml
 State: Running
 Name: Default
 DataProvider: InMemory
-DataConnectionString: 
-DataTablePrefix: 
+DataConnectionString:
+DataTablePrefix:
 RequestUrlHost: localhost:5001
-RequestUrlPrefix: 
+RequestUrlPrefix:
 ```
 
 However, you may override these values within a json or xml file. The hierarchy is:
@@ -99,3 +99,61 @@ However, you may override these values within a json or xml file. The hierarchy 
 Settings.txt
   -> Settings.xml
      -> Settings.json
+
+### Event Bus
+
+The event bus must be set up in your host (Anyone using the default host will have it)
+
+```c#
+public class ShellModule : IModule {
+    public void Configure(IServiceCollection serviceCollection) {
+        // More registration
+        serviceCollection.AddNotifierEvents(); // The important line
+        // More registration
+    }
+}
+```
+
+This will allow you to register types of IEventHandler, and in turn execute the eventing modal.
+
+Lets take the example of a Dog, you want to tell it to bark..
+
+```
+public interface ITestEvent : IEventHandler {
+    void Talk(string value);
+}
+
+public class TestEvent1 : ITestEvent {
+    public void Talk(string value) {
+        Console.WriteLine("Talk Event ONE! " + value);
+    }
+}
+
+public class TestEvent2 : ITestEvent {
+    public void Talk(string value) {
+        Console.WriteLine("Talk Event TWO! " + value);
+    }
+}
+```
+
+Next we want to call all Talk on ITestEvent... You need to inject in IEventNotifier,
+then call notify on the type of interface you want to call passing the method
+with the properties to it.
+
+```
+private readonly IEventNotifier _eventNotifier;
+
+public Class1(IEventNotifier eventNotifier) {
+    _eventNotifier = eventNotifier;
+}
+
+public void Call() {
+    _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
+}
+```
+
+The output will be
+```
+Talk Event ONE! Bark!
+Talk Event TWO! Bark!
+```
