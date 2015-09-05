@@ -1,22 +1,26 @@
-﻿using Microsoft.Framework.TelemetryAdapter;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
 
-namespace Orchard.Events
-{
-    public class InternalTelemetrySourceAdapter : TelemetrySourceAdapter {
+namespace Orchard.Events {
+    public interface INotifier {
+        void EnlistTarget(IEventHandler target);
+        void Notify(IEventHandler eventHandler, string telemetryName, object parameters);
+    }
+
+    public class Notifier : INotifier  {
         private readonly ListenerCache _listeners = new ListenerCache();
 
-        private readonly IMethodAdaptor _methodAdapter;
+        //private readonly IMethodAdaptor _methodAdapter;
  		 
-        public InternalTelemetrySourceAdapter(IMethodAdaptor methodAdapter) { 
-            _methodAdapter = methodAdapter;
-        }
+        //public InternalTelemetrySourceAdapter(IMethodAdaptor methodAdapter) { 
+        //    _methodAdapter = methodAdapter;
+        //}
 
-        public override void EnlistTarget(object target) {
+        public void EnlistTarget(IEventHandler target) {
             var type = target.GetType();
             var typeInfo = type.GetTypeInfo();
 
@@ -38,7 +42,7 @@ namespace Orchard.Events
             entries.Add(new ListenerEntry(target, methodInfo));
         }
         
-        public override void WriteTelemetry(string telemetryName, object parameters) {
+        public void Notify(IEventHandler eventHandler, string telemetryName, object parameters) {
             if (parameters == null) {
                 return;
             }
@@ -55,20 +59,31 @@ namespace Orchard.Events
                     }
 
                     if (!succeeded) {
-                        // creates object
-                        var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, entry.Target, parameters);
-                        // sends values
-                        succeeded = newAdapter(entry.Target, parameters);
+                        var cachedDelegate = Tuple.Create(entry.MethodInfo.GetParameters(), 
+                            DelegateHelper.CreateDelegate<IEventHandler>(entry.Target, entry.MethodInfo));
 
-                        Debug.Assert(succeeded);
+                        var args = cachedDelegate.Item1.Select(methodParameter => ((IDictionary<string, object>)parameters)[methodParameter.Name]).ToArray();
+                        var result = cachedDelegate.Item2(eventHandler, args);
 
-                        entry.Adapters.Add(newAdapter);
+                        var returnValue = result as IEnumerable;
+                        if (result != null && (returnValue == null || result is string))
+                            returnValue = new[] { result };
+
+
+                        //// creates object
+                        //var newAdapter = _methodAdapter.Adapt(entry.MethodInfo, entry.Target, parameters);
+                        //// sends values
+                        //succeeded = newAdapter(entry.Target, parameters);
+
+                        //Debug.Assert(succeeded);
+
+                        //entry.Adapters.Add(newAdapter);
                     }
                 }
             }
         }
 
-        public override bool IsEnabled(string telemetryName) {
+        public bool IsEnabled(string telemetryName) {
             return _listeners.ContainsKey(telemetryName);
         }
 

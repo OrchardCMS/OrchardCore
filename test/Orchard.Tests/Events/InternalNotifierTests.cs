@@ -9,13 +9,13 @@ namespace Orchard.Tests.Events {
         public void CallingNotifyWillInvokeMethod() {
 
             var target = new TestEvent1();
-            var notifier = new InternalTelemetrySourceAdapter(new DefaultMethodAdaptor());
+            var notifier = new Notifier();
 
             notifier.EnlistTarget(target);
 
             Assert.Equal(0, target.Counter);
-
-            notifier.WriteTelemetry("ITestEvent_Add", new Dictionary<string, object> {  { "value", 1 } });
+            
+            notifier.Notify(target, "Orchard.Tests.Events.TestEvent1_Add_value", new Dictionary<string, object> {  { "value", 1 } });
             
             Assert.Equal(1, target.Counter);
         }

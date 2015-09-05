@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Data.Entity;
-using Microsoft.Data.Entity.ChangeTracking;
 using System.Linq;
 using Microsoft.Framework.Logging;
 
@@ -61,53 +60,5 @@ namespace Orchard.Data.EntityFramework {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
             _dbContextFactoryHolder.Configure(optionsBuilder);
         }
-
-        public override void AddRange([NotNull]IEnumerable<object> entities) {
-            base.AddRange(entities);
-            SaveChanges();
-        }
-
-        public override void AddRange([NotNull]params object[] entities) {
-            base.AddRange(entities);
-            SaveChanges();
-        }
-
-        public override EntityEntry<TEntity> Add<TEntity>([NotNull]TEntity entity) {
-            var entry = base.Add<TEntity>(entity);
-            SaveChanges();
-            return entry;
-        }
-
-        public override EntityEntry Add([NotNull]object entity) {
-            var entry = base.Add(entity);
-            SaveChanges();
-            return entry;
-        }
-
-        public override EntityEntry<TEntity> Remove<TEntity>([NotNull]TEntity entity) {
-            var entry = base.Remove<TEntity>(entity);
-            SaveChanges();
-            return entry;
-        }
-
-        public override EntityEntry Remove([NotNull]object entity) {
-            var entry = base.Remove(entity);
-            SaveChanges();
-            return entry;
-        }
-
-        //public override int SaveChanges() {
-        //    var entriesToSave = ChangeTracker.StateManager.Entries
-        //        .Where(e => e.EntityState == EntityState.Added
-        //                    || e.EntityState == EntityState.Modified
-        //                    || e.EntityState == EntityState.Deleted)
-        //        .Select(e => e.PrepareToSave()) // do I need this line!?
-        //        .ToList();
-
-        //    // TODO: Call Api to store them in a seperate querying/indexing store i.e. lucene.
-        //    // Needs to be async? or place in a messaging queue of some sort.
-
-        //    return base.SaveChanges();
-        //}
     }
 }

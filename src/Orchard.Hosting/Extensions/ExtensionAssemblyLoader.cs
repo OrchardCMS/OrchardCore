@@ -6,7 +6,6 @@ using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Hosting.Extensions.Loaders;
 using System.IO;
-using Microsoft.Dnx.Runtime.Loader;
 using System.Collections.Generic;
 
 namespace Orchard.Hosting.Extensions {
@@ -14,6 +13,7 @@ namespace Orchard.Hosting.Extensions {
         private readonly IApplicationEnvironment _applicationEnvironment;
         private readonly ICache _cache;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
+        private readonly IRuntimeEnvironment _runtimeEnvironment;
         private readonly IOrchardLibraryManager _libraryManager;
         private string _path;
 
@@ -21,10 +21,12 @@ namespace Orchard.Hosting.Extensions {
             IApplicationEnvironment applicationEnvironment,
             ICache cache,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
+            IRuntimeEnvironment runtimeEnvironment,
             IOrchardLibraryManager libraryManager) {
             _applicationEnvironment = applicationEnvironment;
             _cache = cache;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
+            _runtimeEnvironment = runtimeEnvironment;
             _libraryManager = libraryManager;
         }
 
@@ -62,6 +64,7 @@ namespace Orchard.Hosting.Extensions {
 
                 var engine = new CompilationEngine(new CompilationEngineContext(
                     _applicationEnvironment,
+                    _runtimeEnvironment,
                     _assemblyLoadContextAccessor.Default,
                     new CompilationCache()));
 
@@ -75,7 +78,11 @@ namespace Orchard.Hosting.Extensions {
                 }
                 
                 var loadedProjectAssembly = engine.LoadProject(
-                    moduleContext.Project, null, _assemblyLoadContextAccessor.Default, assemblyName);
+                    moduleContext.Project, 
+                    _applicationEnvironment.RuntimeFramework, 
+                    null, 
+                    _assemblyLoadContextAccessor.Default, 
+                    assemblyName);
 
                 IList<LibraryDependency> flattenedList = moduleContext
                     .Project
