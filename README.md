@@ -118,7 +118,7 @@ This will allow you to register types of IEventHandler, and in turn execute the 
 
 Lets take the example of a Dog, you want to tell it to bark..
 
-```
+```c#
 public interface ITestEvent : IEventHandler {
     void Talk(string value);
 }
@@ -140,7 +140,7 @@ Next we want to call all Talk on ITestEvent... You need to inject in IEventNotif
 then call notify on the type of interface you want to call passing the method
 with the properties to it.
 
-```
+```c#
 private readonly IEventNotifier _eventNotifier;
 
 public Class1(IEventNotifier eventNotifier) {
