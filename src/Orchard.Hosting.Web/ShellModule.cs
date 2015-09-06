@@ -11,8 +11,7 @@ namespace Orchard.Web {
             serviceCollection.AddOptions();
             serviceCollection.AddNotifierEvents();
 
-            serviceCollection
-                .AddOrchardMvc();
+            serviceCollection.AddOrchardMvc();
 
             serviceCollection.AddScoped<IOrchardShell, OrchardShell>();
         }

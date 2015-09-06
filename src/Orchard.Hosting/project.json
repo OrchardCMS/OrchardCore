@@ -13,8 +13,7 @@
     "Microsoft.Framework.OptionsModel":  "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.Configuration": "2.0.0-*",
-    "Orchard.FileSystem": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*"
+    "Orchard.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
