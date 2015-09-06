@@ -87,7 +87,7 @@ namespace Orchard.Tests.Events {
             Assert.Equal(1110, stub1.Result);
         }
 
-        [Fact(Skip = "Not implemented yet"]
+        [Fact(Skip = "Not implemented yet")]
         public void EventParametersAreCorrectlyPassedToBestMatchingMethodAndExtraParametersAreIgnored() {
             var notifier = new Notifier();
 
@@ -105,7 +105,7 @@ namespace Orchard.Tests.Events {
             Assert.Equal(1110, stub1.Result);
         }
 
-        [Fact(Skip = "Not implemented yet"]
+        [Fact(Skip = "Not implemented yet")]
         public void EventParametersAreCorrectlyPassedToBestMatchingMethodAndExtraParametersAreIgnored2() {
             var notifier = new Notifier();
 
