@@ -1,6 +1,7 @@
 ﻿using Orchard.Events;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Orchard.Tests.Events {
@@ -9,11 +10,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventsAreCorrectlyDispatchedToEventHandlers() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Count);
             eventBus.Notify("ITestEventHandler.Increment", new Dictionary<string, object>());
@@ -22,11 +21,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersAreCorrectlyPassedToEventHandlers() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -39,11 +36,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersArePassedInCorrectOrderToEventHandlers() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -55,11 +50,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersAreCorrectlyPassedToMatchingMethod() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Null(stub1.Summary);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -72,11 +65,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersAreCorrectlyPassedToExactlyMatchingMethod() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -87,13 +78,11 @@ namespace Orchard.Tests.Events {
             Assert.Equal(1110, stub1.Result);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void EventParametersAreCorrectlyPassedToBestMatchingMethodAndExtraParametersAreIgnored() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -105,13 +94,11 @@ namespace Orchard.Tests.Events {
             Assert.Equal(1110, stub1.Result);
         }
 
-        [Fact(Skip = "Not implemented yet")]
+        [Fact]
         public void EventParametersAreCorrectlyPassedToBestMatchingMethodAndExtraParametersAreIgnored2() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -123,11 +110,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersAreCorrectlyPassedToExactlyMatchingMethodWhenThereIsOne() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -139,11 +124,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventParametersAreCorrectlyPassedToExactlyMatchingMethodWhenThereIsOne2() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -154,11 +137,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventHandlerWontBeCalledWhenNoParameterMatchExists() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -169,11 +150,9 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventHandlerWontBeCalledWhenNoParameterMatchExists2() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Equal(0, stub1.Result);
             Dictionary<string, object> arguments = new Dictionary<string, object>();
@@ -183,48 +162,58 @@ namespace Orchard.Tests.Events {
 
         [Fact]
         public void EventBusThrowsIfMessageNameIsNotCorrectlyFormatted() {
-            var notifier = new Notifier();
-
             var stub1 = new StubEventHandler();
             var stub2 = new StubEventHandler2();
-            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 }, notifier);
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
             Assert.Throws<ArgumentException>(() => eventBus.Notify("StubEventHandlerIncrement", new Dictionary<string, object>()));
         }
 
-        //[Fact]
-        //public void InterceptorCanCoerceResultingCollection() {
-        //    var data = new object[] { "5", "18", "2" };
-        //    var adjusted = EventsInterceptor.Adjust(data, typeof(IEnumerable<string>));
-        //    Assert.That(data, Is.InstanceOf<IEnumerable<object>>());
-        //    Assert.That(data, Is.Not.InstanceOf<IEnumerable<string>>());
-        //    Assert.That(adjusted, Is.InstanceOf<IEnumerable<string>>());
-        //}
+        [Fact]
+        public void InterceptorCanCoerceResultingCollection() {
+            var data = new object[] { "5", "18", "2" };
+            var adjusted = DefaultOrchardEventNotifier.Adjust(data, typeof(IEnumerable<string>));
+            Assert.IsAssignableFrom<IEnumerable<object>>(data);
+            Assert.IsNotType<IEnumerable<string>>(data);
+            Assert.IsAssignableFrom<IEnumerable<string>>(adjusted);
+        }
 
-        //[Fact]
-        //public void EnumerableResultsAreTreatedLikeSelectMany() {
-        //    var results = _eventBus.Notify("ITestEventHandler.Gather", new Dictionary<string, object> { { "a", 42 }, { "b", "alpha" } }).Cast<string>();
-        //    Assert.That(results.Count(), Is.EqualTo(3));
-        //    Assert.That(results, Has.Some.EqualTo("42"));
-        //    Assert.That(results, Has.Some.EqualTo("alpha"));
-        //    Assert.That(results, Has.Some.EqualTo("[42,alpha]"));
-        //}
+        [Fact]
+        public void EnumerableResultsAreTreatedLikeSelectMany() {
+            var stub1 = new StubEventHandler();
+            var stub2 = new StubEventHandler2();
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
 
-        //[Fact]
-        //public void StringResultsAreTreatedLikeSelect() {
-        //    var results = _eventBus.Notify("ITestEventHandler.GetString", new Dictionary<string, object>()).Cast<string>();
-        //    Assert.That(results.Count(), Is.EqualTo(2));
-        //    Assert.That(results, Has.Some.EqualTo("Foo"));
-        //    Assert.That(results, Has.Some.EqualTo("Bar"));
-        //}
+            var results = eventBus.Notify("ITestEventHandler.Gather", new Dictionary<string, object> { { "a", 42 }, { "b", "alpha" } }).Cast<string>();
+            Assert.Equal(3, results.Count());
+            Assert.Contains("42", results);
+            Assert.Contains("alpha", results);
+            Assert.Contains("[42,alpha]", results);
+        }
 
-        //[Fact]
-        //public void NonStringNonEnumerableResultsAreTreatedLikeSelect() {
-        //    var results = _eventBus.Notify("ITestEventHandler.GetInt", new Dictionary<string, object>()).Cast<int>();
-        //    Assert.That(results.Count(), Is.EqualTo(2));
-        //    Assert.That(results, Has.Some.EqualTo(1));
-        //    Assert.That(results, Has.Some.EqualTo(2));
-        //}
+        [Fact]
+        public void StringResultsAreTreatedLikeSelect() {
+            var stub1 = new StubEventHandler();
+            var stub2 = new StubEventHandler2();
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
+
+            var results = eventBus.Notify("ITestEventHandler.GetString", new Dictionary<string, object>()).Cast<string>();
+            Assert.Equal(2, results.Count());
+            Assert.Contains("Foo", results);
+            Assert.Contains("Bar", results);
+        }
+
+        [Fact]
+        public void NonStringNonEnumerableResultsAreTreatedLikeSelect() {
+            var stub1 = new StubEventHandler();
+            var stub2 = new StubEventHandler2();
+            var eventBus = new DefaultOrchardEventBus(new IEventHandler[] { stub1, stub2 });
+
+            var results = eventBus.Notify("ITestEventHandler.GetInt", new Dictionary<string, object>()).Cast<int>();
+            Assert.Equal(2, results.Count());
+            Assert.Contains(1, results);
+            Assert.Contains(2, results);
+        }
 
 
         public interface ITestEventHandler : IEventHandler {

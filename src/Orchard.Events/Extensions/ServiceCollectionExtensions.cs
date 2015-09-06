@@ -6,8 +6,6 @@ namespace Orchard.Events {
             services.AddScoped<IEventBus, DefaultOrchardEventBus>();
             services.AddScoped<IEventNotifier, DefaultOrchardEventNotifier>();
 
-            services.AddSingleton<INotifier, Notifier>();
-
             return services;
         }
     }
