@@ -20,10 +20,8 @@ namespace Orchard.Events {
             var data = expression.Method.GetParameters()
                 .Select((parameter, index) => new { parameter.Name, Value = GetValue(parameter, expression.Arguments[index]) })
                 .ToDictionary(kv => kv.Name, kv => kv.Value);
-
-            var key = interfaceName + "." + methodName;
             
-            _eventBus.Notify(key, data);
+            _eventBus.Notify(interfaceName + "." + methodName, data);
         }
 
         private MethodCallExpression GetExpression<TEventHandler>(Expression<Action<TEventHandler>> eventHandler) where TEventHandler : IEventHandler {

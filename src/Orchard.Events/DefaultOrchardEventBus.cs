@@ -27,7 +27,7 @@ namespace Orchard.Events {
             }
             string interfaceName = parameters[0];
             string methodName = parameters[1];
-            
+
             foreach (var eventHandler in _eventHandlers) {
                 var key = eventHandler.GetType().FullName + "_" + methodName + "_" + string.Join("_", eventData.Keys);
                 

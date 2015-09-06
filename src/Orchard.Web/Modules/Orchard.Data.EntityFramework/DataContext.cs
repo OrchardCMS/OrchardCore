@@ -59,9 +59,9 @@ namespace Orchard.Data.EntityFramework {
             _logger.LogInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
-       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-           _dbContextFactoryHolder.Configure(optionsBuilder);
-       }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+            _dbContextFactoryHolder.Configure(optionsBuilder);
+        }
 
 		
         public override void AddRange([NotNull]IEnumerable<object> entities, bool includeDependents = true) {		
