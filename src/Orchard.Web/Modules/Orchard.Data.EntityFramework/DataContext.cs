@@ -5,6 +5,8 @@ using System.Reflection;
 using Microsoft.Data.Entity;
 using System.Linq;
 using Microsoft.Framework.Logging;
+using JetBrains.Annotations;
+using Microsoft.Data.Entity.ChangeTracking;
 
 namespace Orchard.Data.EntityFramework {
     public interface IDataContext {
@@ -57,8 +59,43 @@ namespace Orchard.Data.EntityFramework {
             _logger.LogInformation("[{0}]: Records Mapped in {1}ms", GetType().Name, sw.ElapsedMilliseconds);
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            _dbContextFactoryHolder.Configure(optionsBuilder);
+       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+           _dbContextFactoryHolder.Configure(optionsBuilder);
+       }
+
+		
+        public override void AddRange([NotNull]IEnumerable<object> entities, bool includeDependents = true) {		
+            base.AddRange(entities, includeDependents);		
+            SaveChanges();		
+        }		
+		
+        public override void AddRange([NotNull]params object[] entities) {		
+            base.AddRange(entities);		
+            SaveChanges();		
+        }
+        
+        public override EntityEntry<TEntity> Add<TEntity>([NotNull]TEntity entity, bool includeDependents = true) {		
+            var entry = base.Add<TEntity>(entity, includeDependents);		
+            SaveChanges();		
+            return entry;		
+        }		
+		
+        public override EntityEntry Add([NotNull]object entity, bool includeDependents = true) {		
+            var entry = base.Add(entity, includeDependents);		
+            SaveChanges();		
+            return entry;		
+        }		
+		
+        public override EntityEntry<TEntity> Remove<TEntity>([NotNull]TEntity entity) {		
+            var entry = base.Remove<TEntity>(entity);		
+            SaveChanges();		
+            return entry;		
+        }		
+		
+        public override EntityEntry Remove([NotNull]object entity) {		
+            var entry = base.Remove(entity);		
+            SaveChanges();		
+            return entry;		
         }
     }
 }
