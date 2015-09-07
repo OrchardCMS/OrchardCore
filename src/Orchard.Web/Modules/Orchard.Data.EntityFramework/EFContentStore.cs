@@ -18,32 +18,29 @@ namespace Orchard.Data.EntityFramework {
         }
 
         public async Task<IReadOnlyList<TDocument>> GetManyAsync<TDocument>(IEnumerable<int> ids) where TDocument : StorageDocument {
-            return await Task.FromResult<IReadOnlyList<TDocument>>(_dataContext.Set<TDocument>()
+            return await _dataContext.Set<TDocument>()
                 .Where(x => x.GetType().Name == typeof(TDocument).Name)
                 .Where(x => ids.Contains(x.Id))
-                .Cast<TDocument>()
-                .ToList());
+                .ToListAsync();
         }
 
         public async Task<IReadOnlyList<TDocument>> Query<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {
-            return await Task.FromResult<IReadOnlyList<TDocument>>(_dataContext.Set<TDocument>()
+            return await Task.FromResult(_dataContext.Set<TDocument>()
                 .Where(x => x.GetType().Name == typeof(TDocument).Name)
-                .Cast<TDocument>()
                 .Where(map.Compile())
                 .ToList());
         }
 
         public async Task RemoveAsync<TDocument>(int id) where TDocument : StorageDocument {
-            await Task.Run(() => {
-                _dataContext.Remove(_dataContext.Set<TDocument>().SingleOrDefault(d => d.Id == id));
-            });
+            _dataContext.Remove(_dataContext.Set<TDocument>().SingleOrDefault(d => d.Id == id));
+
+            await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<int> StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
-            return await Task.FromResult<int>(Task.Run(() => {
-                _dataContext.Set<TDocument>().Add(document);
-                return document.Id;
-            }).Result);
+        public async Task StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
+            _dataContext.Set<TDocument>().Add(document);
+
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

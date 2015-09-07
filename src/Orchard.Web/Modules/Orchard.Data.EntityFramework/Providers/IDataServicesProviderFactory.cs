@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Data.EntityFramework.Providers {
-    public interface IDataServicesProviderFactory : IDependency {
+    public interface IDataServicesProviderFactory {
         IDataServicesProvider CreateProvider(DataServiceParameters sessionFactoryParameters);
     }
 

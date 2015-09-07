@@ -30,7 +30,7 @@ namespace Orchard.Hosting.ShellBuilders {
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) {
             IServiceCollection serviceCollection = new ServiceCollection();
-
+            
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);

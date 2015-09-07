@@ -1,8 +1,7 @@
 ﻿using Microsoft.Data.Entity;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Data.EntityFramework.Providers {
-    public interface IDataServicesProvider : ITransientDependency {
+    public interface IDataServicesProvider {
         string ProviderName { get; }
         void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders,string connectionString);
     }

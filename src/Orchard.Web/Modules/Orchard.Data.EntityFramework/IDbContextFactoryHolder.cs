@@ -1,11 +1,10 @@
 ﻿using Microsoft.Data.Entity;
 using Orchard.Configuration.Environment;
 using Orchard.Data.EntityFramework.Providers;
-using Orchard.DependencyInjection;
 using Orchard.FileSystem.AppData;
 
 namespace Orchard.Data.EntityFramework {
-    public interface IDbContextFactoryHolder : IDependency {
+    public interface IDbContextFactoryHolder {
         void Configure(DbContextOptionsBuilder optionsBuilder);
     }
 

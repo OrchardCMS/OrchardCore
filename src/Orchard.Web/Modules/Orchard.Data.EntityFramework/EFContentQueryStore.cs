@@ -54,23 +54,22 @@ namespace Orchard.Data.EntityFramework {
                 CreateIndex(defaultIndex);
             }
             else {
-                var index = _indexCollection.Any(x => x.IndexName == indexName && x.Type == type.ToString());
+                var indexedDocumentExists = _documents.Any(
+                    x => x.IndexName == indexName && 
+                    x.ReferencedDocumentId == document.Id && 
+                    x.Type == type.ToString());
 
-                var indexedDocument = _documents.SingleOrDefault(
-                    x => x.IndexName == indexName && x.ReferencedDocumentId == document.Id && x.Type == type.ToString());
-
-                if (indexedDocument != null) {
+                if (!indexedDocumentExists) {
                     _dataContext
-                        .Remove(indexedDocument);
+                        .Add(new InternalIndexDocumentCollection {
+                            IndexName = indexName,
+                            Type = type.ToString(),
+                            ReferencedDocumentId = document.Id
+                        });
                 }
-
-                _dataContext
-                    .Add(new InternalIndexDocumentCollection {
-                        IndexName = indexName,
-                        Type = type.ToString(),
-                        ReferencedDocumentId = document.Id
-                    });
             }
+
+            _dataContext.SaveChanges();
         }
 
         private void CreateIndex<TDocument>(Expression<Func<TDocument, bool>> map) where TDocument : StorageDocument {

@@ -67,10 +67,9 @@ namespace Orchard.Data {
         
         public void Store<TDocument>(TDocument document) where TDocument : StorageDocument {
             foreach (var contentStore in _contentStores) {
-                contentStore.StoreAsync(document).ContinueWith(x => {
-                    if (x.Result > 0)
-                        _contentQueryStore.Index(document, contentStore.GetType());
-                });
+                contentStore.StoreAsync(document).Wait();
+
+                 _contentQueryStore.Index(document, contentStore.GetType());
             }
         }
 
