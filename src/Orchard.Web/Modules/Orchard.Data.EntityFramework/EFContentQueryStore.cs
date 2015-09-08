@@ -88,6 +88,7 @@ namespace Orchard.Data.EntityFramework {
                             Type = type.ToString(),
                             ReferencedDocumentId = document.Id
                         });
+                        _dataContext.SaveChanges();
                     }
                 }
             }
@@ -107,6 +108,8 @@ namespace Orchard.Data.EntityFramework {
                     IndexName = indexName,
                     Type = type.ToString()
                 });
+
+            _dataContext.SaveChanges();
         }
 
         public void DeIndex<TDocument>(int id, Type contentStore) {

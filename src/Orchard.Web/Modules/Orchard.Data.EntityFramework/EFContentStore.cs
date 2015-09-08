@@ -38,8 +38,8 @@ namespace Orchard.Data.EntityFramework {
         }
 
         public async Task StoreAsync<TDocument>(TDocument document) where TDocument : StorageDocument {
-            _dataContext.Set<TDocument>().Add(document);
-
+            _dataContext.Set<TDocument>().Add(document, false);
+            
             await _dataContext.SaveChangesAsync();
         }
     }
