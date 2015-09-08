@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using Microsoft.Dnx.Compilation.Caching;
-using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
 using Orchard.FileSystem;
 using Orchard.DependencyInjection;

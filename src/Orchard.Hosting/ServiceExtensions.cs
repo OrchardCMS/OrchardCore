@@ -7,11 +7,9 @@ using System.Linq;
 using System.Reflection;
 
 #if DNXCORE50
-using System.Threading.Tasks;
 #endif
 
-namespace Orchard.Hosting
-{
+namespace Orchard.Hosting {
     public static class ServiceExtensions
     {
         internal static IServiceCollection AddFallback([NotNull] this IServiceCollection services) {
@@ -34,7 +32,8 @@ namespace Orchard.Hosting
                 var manifestTypes = fallback.Where(t => t.ServiceType.GetTypeInfo().GenericTypeParameters.Length == 0
                         && t.ServiceType != typeof(IRuntimeServices)
                         && t.ServiceType != typeof(IServiceProvider))
-                        .Select(t => t.ServiceType).Distinct();
+                        .Select(t => t.ServiceType)
+                        .Distinct();
 
                 Services = manifestTypes;
             }
@@ -52,8 +51,7 @@ namespace Orchard.Hosting
                 foreach (var service in manifest.Services) {
                     services.AddTransient(service, sp => fallback.GetService(service));
                 }
-
-                services.AddFallback();
+                
                 services.Add(replacedServices);
 
                 _services = services.BuildServiceProvider();

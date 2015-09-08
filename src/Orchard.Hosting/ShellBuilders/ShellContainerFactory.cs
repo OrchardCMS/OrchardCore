@@ -18,10 +18,12 @@ namespace Orchard.Hosting.ShellBuilders {
     public class ShellContainerFactory : IShellContainerFactory {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public ShellContainerFactory(IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory) {
             _serviceProvider = serviceProvider;
+            _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<ShellContainerFactory>();
         }
 
@@ -32,16 +34,20 @@ namespace Orchard.Hosting.ShellBuilders {
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
 
+            // Sure this is right?
+            serviceCollection.AddInstance(_loggerFactory);
+
+            IServiceCollection moduleServiceCollection = new ServiceCollection();
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type))) {
 
-                _logger.LogDebug("IModule Type: {0}", dependency.Type);
-
-                ((IModule)ActivatorUtilities
-                    .CreateInstance(_serviceProvider, dependency.Type))
-                    .Configure(serviceCollection);
+                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
             }
 
+            foreach (var service in moduleServiceCollection.BuildServiceProvider().GetServices<IModule>()) {
+                service.Configure(serviceCollection);
+            }
+            
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type))) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
