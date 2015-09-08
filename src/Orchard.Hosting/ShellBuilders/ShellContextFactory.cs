@@ -4,6 +4,7 @@ using Orchard.Hosting.Descriptor.Models;
 using System.Linq;
 using Orchard.Configuration.Environment;
 using Microsoft.Framework.Logging;
+using System.Diagnostics;
 
 namespace Orchard.Hosting.ShellBuilders {
     /// <summary>
@@ -39,6 +40,7 @@ namespace Orchard.Hosting.ShellBuilders {
 
         ShellContext IShellContextFactory.CreateShellContext(
             ShellSettings settings) {
+            var sw = Stopwatch.StartNew();
             _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
 
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
@@ -55,6 +57,9 @@ namespace Orchard.Hosting.ShellBuilders {
             catch (Exception ex) {
                 _logger.LogError("Cannot create shell context", ex);
                 throw;
+            }
+            finally {
+                _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
             }
         }
 

@@ -10,7 +10,7 @@ namespace Orchard.Web {
             serviceCollection.AddLogging();
             serviceCollection.AddOptions();
             serviceCollection.AddNotifierEvents();
-
+            
             serviceCollection.AddOrchardMvc();
 
             serviceCollection.AddScoped<IOrchardShell, OrchardShell>();

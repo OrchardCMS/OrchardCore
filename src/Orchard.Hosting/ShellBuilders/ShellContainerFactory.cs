@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Extensions;
 using Orchard.Configuration.Environment;
 using Orchard.DependencyInjection;
 using Orchard.Hosting.ShellBuilders.Models;
@@ -66,39 +63,7 @@ namespace Orchard.Hosting.ShellBuilders {
                 }
             }
 
-            return new WrappingServiceProvider(_serviceProvider, serviceCollection);
-        }
-
-        private class WrappingServiceProvider : IServiceProvider {
-            private readonly IServiceProvider _services;
-
-            // Need full wrap for generics like IOptions
-            public WrappingServiceProvider(IServiceProvider fallback, IServiceCollection replacedServices) {
-                var services = new ServiceCollection();
-                var manifest = fallback.GetRequiredService<IRuntimeServices>();
-                foreach (var service in manifest.Services) {
-                    services.AddTransient(service, sp => fallback.GetService(service));
-                }
-
-                services.AddSingleton<IRuntimeServices>(sp => new HostingManifest(services));
-                services.Add(replacedServices);
-
-                _services = services.BuildServiceProvider();
-            }
-
-            public object GetService(Type serviceType) {
-                return _services.GetService(serviceType);
-            }
-
-
-            // Manifest exposes the fallback manifest in addition to ITypeActivator, IHostingEnvironment, and ILoggerFactory
-            private class HostingManifest : IRuntimeServices {
-                public HostingManifest(IServiceCollection hostServices) {
-                    Services = hostServices.Select(s => s.ServiceType).Distinct();
-                }
-
-                public IEnumerable<Type> Services { get; private set; }
-            }
+            return serviceCollection.BuildShellServiceProviderWithHost(_serviceProvider);
         }
     }
 }

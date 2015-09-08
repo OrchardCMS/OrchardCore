@@ -5,6 +5,7 @@ using Orchard.Configuration.Environment.Sources;
 using Orchard.FileSystem.AppData;
 using System.Linq;
 using Microsoft.Framework.Logging;
+using Microsoft.Dnx.Compilation.Caching;
 
 namespace Orchard.Configuration.Environment {
     public interface IShellSettingsManager {
@@ -24,56 +25,61 @@ namespace Orchard.Configuration.Environment {
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
         private readonly ILogger _logger;
+        private readonly ICache _cache;
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
+            ICache cache,
             ILoggerFactory loggerFactory) {
             _appDataFolder = appDataFolder;
+            _cache = cache;
             _logger = loggerFactory.CreateLogger<ShellSettingsManager>();
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
-            var tenantPaths = _appDataFolder
-                .ListDirectories("Sites")
-                .Select(path => _appDataFolder.MapPath(path));
+            return _cache.Get<IEnumerable<ShellSettings>>("LoadSettings", (context) => {
+                var tenantPaths = _appDataFolder
+                    .ListDirectories("Sites")
+                    .Select(path => _appDataFolder.MapPath(path));
 
-            var shellSettings = new List<ShellSettings>();
+                var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenantPath in tenantPaths) {
-                _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenantPath);
+                foreach (var tenantPath in tenantPaths) {
+                    _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenantPath);
 
-                var configurationContainer =
-                    new ConfigurationBuilder()
-                        .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "json")),
-                            true)
-                        .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "xml")),
-                            true)
-                        .Add(
-                            new DefaultFileConfigurationSource(
-                                _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false));
+                    var configurationContainer =
+                        new ConfigurationBuilder()
+                            .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "json")),
+                                true)
+                            .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "xml")),
+                                true)
+                            .Add(
+                                new DefaultFileConfigurationSource(
+                                    _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false));
 
-                var config = configurationContainer.Build();
-                
-                var shellSetting = new ShellSettings {
-                    Name = config["Name"],
-                    DataConnectionString = config["DataConnectionString"],
-                    DataProvider = config["DataProvider"],
-                    DataTablePrefix = config["DataTablePrefix"],
-                    RequestUrlHost = config["RequestUrlHost"],
-                    RequestUrlPrefix = config["RequestUrlPrefix"]
-                };
+                    var config = configurationContainer.Build();
 
-                TenantState state;
-                shellSetting.State = Enum.TryParse(config["State"], true, out state)
-                    ? state
-                    : TenantState.Uninitialized;
+                    var shellSetting = new ShellSettings {
+                        Name = config["Name"],
+                        DataConnectionString = config["DataConnectionString"],
+                        DataProvider = config["DataProvider"],
+                        DataTablePrefix = config["DataTablePrefix"],
+                        RequestUrlHost = config["RequestUrlHost"],
+                        RequestUrlPrefix = config["RequestUrlPrefix"]
+                    };
 
-                shellSettings.Add(shellSetting);
+                    TenantState state;
+                    shellSetting.State = Enum.TryParse(config["State"], true, out state)
+                        ? state
+                        : TenantState.Uninitialized;
 
-                _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
-            }
+                    shellSettings.Add(shellSetting);
 
-            return shellSettings;
+                    _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
+                }
+
+                return shellSettings;
+            });
         }
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
