@@ -5,9 +5,8 @@ using System.Linq;
 using Xunit;
 
 namespace Orchard.Tests.Events {
-    public class InternalNotifierTests
+    public class EventTests
     {
-
         [Fact]
         public void EventsAreCorrectlyDispatchedToEventHandlers() {
             var stub1 = new StubEventHandler();
