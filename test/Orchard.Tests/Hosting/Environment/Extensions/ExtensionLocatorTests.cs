@@ -11,37 +11,19 @@ using Xunit;
 namespace Orchard.Tests.Hosting.Environment.Extensions {
     public class ExtensionLocatorTests : IDisposable
     {
-        private const string DataPrefix = "Orchard.Tests.Environment.Extensions.FoldersData.";
         private string _tempFolderName;
 
         public ExtensionLocatorTests() {
             _tempFolderName = Path.GetTempFileName();
             File.Delete(_tempFolderName);
             var assembly = GetType().GetTypeInfo().Assembly;
-            foreach (var name in assembly.GetManifestResourceNames()) {
-                if (name.StartsWith(DataPrefix)) {
-                    var text = "";
-                    using (var stream = assembly.GetManifestResourceStream(name)) {
-                        using (var reader = new StreamReader(stream))
-                            text = reader.ReadToEnd();
-
-                    }
-
-                    var relativePath = name
-                        .Substring(DataPrefix.Length)
-                        .Replace(".txt", ":txt")
-                        .Replace('.', Path.DirectorySeparatorChar)
-                        .Replace(":txt", ".txt");
-
-                    var targetPath = Path.Combine(_tempFolderName, relativePath);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
-                    using (var stream = new FileStream(targetPath, FileMode.Create)) {
-                        using (var writer = new StreamWriter(stream)) {
-                            writer.Write(text);
-                        }
-                    }
-                }
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Hosting\\Environment\\Extensions\\FoldersData");
+            DirectoryInfo di = new DirectoryInfo(path);
+            foreach (var file in di.GetFiles("*.txt",SearchOption.AllDirectories)) {
+                var targetPath = file.FullName.Replace(path, _tempFolderName);
+                
+                Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+                file.CopyTo(targetPath);
             }
         }
         
