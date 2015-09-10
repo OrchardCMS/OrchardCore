@@ -32,6 +32,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
         }
 
         [Fact]
+        [Trait("Category", "ExtensionLocator")]
         public void IdsFromFoldersWithModuleTxtShouldBeListed() {
             var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
             var options = new ExtensionHarvestingOptions();
@@ -48,7 +49,56 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
             Assert.Contains("Sample6", ids); // Sample6
             Assert.Contains("Sample7", ids); // Sample7
         }
-        
+
+        [Fact]
+        public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument() {
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var options = new ExtensionHarvestingOptions();
+            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            var folders = new ExtensionLocator(
+                new FakeOptions(options),
+                harvester);
+
+            var sample1 = folders.AvailableExtensions().Single(d => d.Id == "Sample1");
+            Assert.NotEmpty(sample1.Id);
+            Assert.Equal("Bertrand Le Roy", sample1.Author); // Sample1
+        }
+
+        [Fact]
+        public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven() {
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var options = new ExtensionHarvestingOptions();
+            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            var folders = new ExtensionLocator(
+                new FakeOptions(options),
+                harvester);
+
+            var names = folders.AvailableExtensions().Select(d => d.Name);
+            Assert.Equal(5, names.Count());
+            Assert.Contains("Le plug-in français", names); // Sample1
+            Assert.Contains("This is another test.txt", names); // Sample3
+            Assert.Contains("Sample4", names); // Sample4
+            Assert.Contains("SampleSix", names); // Sample6
+            Assert.Contains("Sample7", names); // Sample7
+        }
+
+        [Fact]
+        public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven() {
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var options = new ExtensionHarvestingOptions();
+            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            var folders = new ExtensionLocator(
+                new FakeOptions(options),
+                harvester);
+
+            var paths = folders.AvailableExtensions().Select(d => d.Path);
+            Assert.Equal(5, paths.Count());
+            Assert.Contains("Sample1", paths); // Sample1 - Id, Name invalid URL segment
+            Assert.Contains("Sample3", paths); // Sample3 - Id, Name invalid URL segment
+            Assert.Contains("ThisIs.Sample4", paths); // Sample4 - Path
+            Assert.Contains("SampleSix", paths); // Sample6 - Name, no Path
+            Assert.Contains("Sample7", paths); // Sample7 - Id, no Name or Path
+        }
         public ModuleLocationExpander ModuleFolder(string path) {
                 return  new ModuleLocationExpander(
                     DefaultExtensionTypes.Module,
