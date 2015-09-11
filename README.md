@@ -160,4 +160,4 @@ Talk Event TWO! Bark!
 
 ###Testing
 
-We currently use XUnit to do unit testing, and Coypu and Chrome to do UI testing.
+We currently use XUnit to do unit testing, with Coypu and Chrome to do UI testing.
