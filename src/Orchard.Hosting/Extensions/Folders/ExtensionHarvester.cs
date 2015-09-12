@@ -5,8 +5,8 @@ using System.IO;
 using Orchard.Abstractions.Localization;
 using Orchard.Hosting.Extensions.Models;
 using Orchard.Utility;
-using Orchard.FileSystem.Client;
 using Microsoft.Framework.Logging;
+using Orchard.FileSystem;
 
 namespace Orchard.Hosting.Extensions.Folders {
     public class ExtensionHarvester : IExtensionHarvester {

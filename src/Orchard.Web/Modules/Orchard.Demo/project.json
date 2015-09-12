@@ -2,8 +2,7 @@
   "dependencies": {
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.Test1": ""
+    "Orchard.Hosting.Web": "2.0.0-*"
   },
   "frameworks": {
     "dnx451": { },

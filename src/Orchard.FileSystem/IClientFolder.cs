@@ -2,11 +2,11 @@
 using System.IO;
 using Orchard.DependencyInjection;
 
-namespace Orchard.FileSystem.Client {
+namespace Orchard.FileSystem {
     /// <summary>
     /// Abstraction over the virtual files/directories of a web site.
     /// </summary>
-    public interface IClientFolder : ISingletonDependency {
+    public interface IClientFolder {
         IEnumerable<string> ListDirectories(string virtualPath);
         IEnumerable<string> ListFiles(string virtualPath, bool recursive);
 

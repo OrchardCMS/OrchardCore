@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.FileSystem.Client;
+using Orchard.FileSystem;
 
 namespace Orchard.Tests.Stubs {
     public class StubWebSiteFolder : IClientFolder {

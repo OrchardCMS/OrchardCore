@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNet.Hosting;
 using Orchard.FileSystem.VirtualPath;
-using Orchard.FileSystem.Client;
 
 namespace Orchard.FileSystem.WebSite {
     /// <summary>

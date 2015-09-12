@@ -2,9 +2,9 @@
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
+using Orchard.Demo.Services;
 using Orchard.Demo.TestEvents;
 using Orchard.Events;
-using Orchard.Test1;
 
 namespace Orchard.Demo.Controllers {
     public class HomeController : Controller {

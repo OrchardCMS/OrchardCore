@@ -1,5 +1,4 @@
 using Microsoft.Framework.DependencyInjection;
-using Orchard.FileSystem.Client;
 using Orchard.FileSystem.VirtualPath;
 using Orchard.FileSystem.WebSite;
 

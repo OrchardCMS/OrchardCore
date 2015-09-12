@@ -10,6 +10,8 @@ namespace Orchard.Data.EntityFramework {
                 .AddInMemoryDatabase()
                 .AddDbContext<DataContext>();
 
+            serviceCollection.AddScoped<IContentStoreDataProvider, SqlServerDataServicesProvider>();
+            serviceCollection.AddScoped<IContentStoreDataProvider, InMemoryDataServicesProvider>();
             serviceCollection.AddScoped<IDataServicesProvider, SqlServerDataServicesProvider>();
             serviceCollection.AddScoped<IDataServicesProvider, InMemoryDataServicesProvider>();
             serviceCollection.AddScoped<IDbContextFactoryHolder, DbContextFactoryHolder>();
