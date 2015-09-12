@@ -38,24 +38,20 @@ namespace Orchard.Configuration.Environment {
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
             return _cache.Get<IEnumerable<ShellSettings>>("LoadSettings", (context) => {
-                var tenantPaths = _appDataFolder
-                    .ListDirectories("Sites")
-                    .Select(path => _appDataFolder.MapPath(path));
-
                 var shellSettings = new List<ShellSettings>();
 
-                foreach (var tenantPath in tenantPaths) {
-                    _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenantPath);
+                foreach (var tenant in _appDataFolder.ListDirectories("Sites")) {
+                    _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
 
                     var configurationContainer =
                         new ConfigurationBuilder()
-                            .AddJsonFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "json")),
+                            .AddJsonFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "json")),
                                 true)
-                            .AddXmlFile(_appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "xml")),
+                            .AddXmlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "xml")),
                                 true)
                             .Add(
                                 new DefaultFileConfigurationSource(
-                                    _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false));
+                                    _appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "txt")), false));
 
                     var config = configurationContainer.Build();
 

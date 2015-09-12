@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNet.FileProviders.Abstractions": "1.0.0-*",
+    "Microsoft.AspNet.FileProviders.Physical": "1.0.0-*",
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",

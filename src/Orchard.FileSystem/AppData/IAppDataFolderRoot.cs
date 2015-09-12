@@ -1,5 +1,4 @@
-﻿using Orchard.Abstractions.Environment;
-using Orchard.DependencyInjection;
+﻿using Orchard.DependencyInjection;
 
 namespace Orchard.FileSystem.AppData {
     /// <summary>
@@ -15,16 +14,5 @@ namespace Orchard.FileSystem.AppData {
         /// Physical path of root (typically: MapPath(RootPath))
         /// </summary>
         string RootFolder { get; }
-    }
-
-    public class AppDataFolderRoot : IAppDataFolderRoot {
-        private readonly IHostEnvironment _hostEnvironment;
-        public AppDataFolderRoot(IHostEnvironment hostEnvironment) {
-            _hostEnvironment = hostEnvironment;
-        }
-
-        public string RootPath => "~/App_Data";
-
-        public string RootFolder => _hostEnvironment.MapPath(RootPath);
     }
 }

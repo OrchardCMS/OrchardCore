@@ -9,11 +9,11 @@ namespace Orchard.FileSystem.WebSite {
     /// <summary>
     /// TODO: Take this out and move it to Orchard.FileSystem.WebHosting
     /// </summary>
-    public class WebSiteClientFolder : IClientFolder {
+    public class WebSiteFolder : IClientFolder {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IVirtualPathProvider _virtualPathProvider;
 
-        public WebSiteClientFolder(IHostingEnvironment hostingEnvironment,
+        public WebSiteFolder(IHostingEnvironment hostingEnvironment,
             IVirtualPathProvider virtualPathProvider) {
             _hostingEnvironment = hostingEnvironment;
             _virtualPathProvider = virtualPathProvider;
