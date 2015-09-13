@@ -161,3 +161,7 @@ Talk Event TWO! Bark!
 ###Testing
 
 We currently use XUnit to do unit testing, with Coypu and Chrome to do UI testing.
+
+###Contributing
+
+We currently follow the [Microsoft Asp.Net engineering guidelines](https://github.com/aspnet/Home/wiki/Engineering-guidelines)
