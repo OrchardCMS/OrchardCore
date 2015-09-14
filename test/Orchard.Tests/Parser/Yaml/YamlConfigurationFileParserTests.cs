@@ -63,6 +63,27 @@ residential.address:
             Assert.Equal("12345", yamlConfigSrc.Get("address:zipcode"));
         }
 
+        [Fact]
+        public void SupportForMultiple() {
+            var yaml = @"---
+name: test #foo
+address:
+    home:
+        street: Some Home Address
+        zipcode: 12345
+    work:
+        street: Some Work Address
+        zipcode: 54321
+...";
+            var yamlConfigSrc = new YamlConfigurationSource(TestStreamHelpers.ArbitraryFilePath);
+
+            yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml));
+            
+            Assert.Equal("Some Home Address", yamlConfigSrc.Get("address:home:street"));
+            Assert.Equal("12345", yamlConfigSrc.Get("address:home:zipcode"));
+            Assert.Equal("Some Work Address", yamlConfigSrc.Get("address:work:street"));
+            Assert.Equal("54321", yamlConfigSrc.Get("address:work:zipcode"));
+        }
         //[Fact]
         //public void ThrowExceptionWhenPassingNullAsFilePath() {
         //    var expectedMsg = new ArgumentException("File not found: ", "path").Message;

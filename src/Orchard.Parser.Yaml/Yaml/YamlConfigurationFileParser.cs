@@ -31,12 +31,22 @@ namespace Orchard.Parser.Yaml {
             }
         }
 
+        private void VisitYamlSequenceNode(YamlSequenceNode yamlNode) {
+            foreach (var entry in yamlNode.Children) {
+                if (entry is YamlMappingNode)
+                    VisitYamlMappingNode((YamlMappingNode)entry);
+            }
+        }
+
         private void VisitYamlNode(KeyValuePair<YamlNode, YamlNode> node) {
             if (node.Value is YamlScalarNode)
                 VisitYamlScalarNode((YamlScalarNode)node.Key, (YamlScalarNode)node.Value);
 
             if (node.Value is YamlMappingNode)
                 VisitYamlMappingNode((YamlScalarNode)node.Key, (YamlMappingNode)node.Value);
+
+            if (node.Value is YamlSequenceNode)
+                VisitYamlSequenceNode((YamlScalarNode)node.Key, (YamlSequenceNode)node.Value);
         }
 
         private void VisitYamlMappingNode(YamlScalarNode yamlNodeKey, YamlMappingNode yamlNodeValue) {
@@ -44,6 +54,12 @@ namespace Orchard.Parser.Yaml {
 
             VisitYamlMappingNode(yamlNodeValue);
 
+            ExitContext();
+        }
+
+        private void VisitYamlSequenceNode(YamlScalarNode yamlNodeKey, YamlSequenceNode yamlNodeValue) {
+            EnterContext(yamlNodeKey.Value);
+            VisitYamlSequenceNode(yamlNodeValue);
             ExitContext();
         }
 
@@ -70,42 +86,4 @@ namespace Orchard.Parser.Yaml {
             _currentPath = string.Join(Constants.KeyDelimiter, _context.Reverse());
         }
     }
-
-                //var mapping =
-                //    (YamlMappingNode)yaml.Documents[0].RootNode;
-
-                //foreach (var entry in mapping.Children) {
-                //    Console.WriteLine(((YamlScalarNode)entry.Key).Value);
-                //}
-
-
-                //    while (reader.Peek() != -1) {
-                //        var rawLine = reader.ReadLine();
-                //        var line = rawLine.Trim();
-
-                //        // Ignore blank lines
-                //        if (string.IsNullOrWhiteSpace(line)) {
-                //            continue;
-                //        }
-                //        // Ignore comments
-                //        if (line[0] == ';' || line[0] == '#' || line[0] == '/') {
-                //            continue;
-                //        }
-
-                //        var separatorIndex = line.IndexOf(Separator);
-                //        if (separatorIndex == -1) {
-                //            continue;
-                //        }
-                //        string key = line.Substring(0, separatorIndex).Trim();
-                //        string value = line.Substring(separatorIndex + 1).Trim();
-
-                //        if (value.Equals(EmptyValue, StringComparison.OrdinalIgnoreCase)) {
-                //            continue;
-                //        }
-
-                //        data[key] = value;
-                //    }
-        //    }
-        //}
-    //}
 }
