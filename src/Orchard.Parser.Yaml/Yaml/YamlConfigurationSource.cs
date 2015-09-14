@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Framework.Configuration;
 
-namespace Orchard.Configuration.Environment.Sources {
-    public class DefaultFileConfigurationSource : ConfigurationSource {
+namespace Orchard.Parser.Yaml {
+    public class YamlConfigurationSource : ConfigurationSource {
         public const char Separator = ':';
         public const string EmptyValue = "null";
         public const char ThemesSeparator = ';';
 
-        public DefaultFileConfigurationSource(string path)
+        public YamlConfigurationSource(string path)
             : this(path, optional: false) {
         }
 
-        public DefaultFileConfigurationSource(string path, bool optional) {
+        public YamlConfigurationSource(string path, bool optional) {
             if (string.IsNullOrEmpty(path)) {
                 throw new ArgumentException("Invalid Filepath", nameof(path));
             }
@@ -48,39 +48,14 @@ namespace Orchard.Configuration.Environment.Sources {
             }
         }
 
-        internal void Load(Stream stream) {
-            var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            using (var reader = new StreamReader(stream)) {
-                while (reader.Peek() != -1) {
-                    var rawLine = reader.ReadLine();
-                    var line = rawLine.Trim();
-
-                    // Ignore blank lines
-                    if (string.IsNullOrWhiteSpace(line)) {
-                        continue;
-                    }
-                    // Ignore comments
-                    if (line[0] == ';' || line[0] == '#' || line[0] == '/') {
-                        continue;
-                    }
-
-                    var separatorIndex = line.IndexOf(Separator);
-                    if (separatorIndex == -1) {
-                        continue;
-                    }
-                    string key = line.Substring(0, separatorIndex).Trim();
-                    string value = line.Substring(separatorIndex + 1).Trim();
-
-                    if (value.Equals(EmptyValue, StringComparison.OrdinalIgnoreCase)) {
-                        continue;
-                    }
-
-                    data[key] = value;
-                }
+        public void Load(Stream stream) {
+            YamlConfigurationFileParser parser = new YamlConfigurationFileParser();
+            try {
+                Data = parser.Parse(stream);
             }
-
-            Data = data;
+            catch (InvalidCastException e) {
+                throw new FormatException("FormatError_YAMLarseError", e);
+            }
         }
 
         public virtual void Commit() {

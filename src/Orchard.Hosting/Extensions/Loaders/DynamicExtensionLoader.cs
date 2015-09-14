@@ -6,11 +6,12 @@ using Orchard.DependencyInjection;
 using Orchard.Hosting.Extensions.Models;
 using Orchard.Abstractions.Environment;
 using Microsoft.Framework.Logging;
+using Orchard.Hosting.Extensions.Folders;
+using Microsoft.Framework.OptionsModel;
 
 namespace Orchard.Hosting.Extensions.Loaders {
     public class DynamicExtensionLoader : IExtensionLoader {
-        // TODO : Remove.
-        public static readonly string[] ExtensionsVirtualPathPrefixes = { "~/Modules", "~/Themes" };
+        private readonly string[] ExtensionsSearchPaths;
 
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IAssemblyLoaderContainer _loaderContainer;
@@ -18,11 +19,13 @@ namespace Orchard.Hosting.Extensions.Loaders {
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
+            [NotNull] IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,
             ILoggerFactory loggerFactory) {
 
+            ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
@@ -44,7 +47,7 @@ namespace Orchard.Hosting.Extensions.Loaders {
         }
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor) {
-            if (!ExtensionsVirtualPathPrefixes.Contains(descriptor.Location)) {
+            if (!ExtensionsSearchPaths.Contains(descriptor.Location)) {
                 return null;
             }
 
@@ -66,7 +69,6 @@ namespace Orchard.Hosting.Extensions.Loaders {
                     _logger.LogError(string.Format("Error trying to load extension {0}", descriptor.Id), ex);
                     throw;
                 }
-
             }
         }
 

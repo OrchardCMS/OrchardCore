@@ -1,17 +1,17 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Orchard.Data": "2.0.0-*"
+    "Microsoft.Framework.Configuration.Abstractions": "1.0.0-*",
+    "Microsoft.Framework.Configuration": "1.0.0-*",
+    "YamlDotNet": "3.7.0"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": {
-    },
-    "dnxcore50": {
-    }
+    "dnx451": { },
+    "dnxcore50": { }
   },
   "repository": {
     "type": "git",

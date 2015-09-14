@@ -41,7 +41,9 @@ namespace Orchard.Hosting.Extensions.Folders {
         }
 
         public Localizer T { get; set; }
+
         public bool DisableMonitoring { get; set; }
+
         public IEnumerable<ExtensionDescriptor> HarvestExtensions(IEnumerable<string> paths, string extensionType, string manifestName, bool manifestIsOptional) {
             return paths
                 .SelectMany(path => HarvestExtensions(path, extensionType, manifestName, manifestIsOptional))
@@ -57,7 +59,7 @@ namespace Orchard.Hosting.Extensions.Folders {
             var subfolderPaths = _clientFolder.ListDirectories(path);
             var localList = new List<ExtensionDescriptor>();
             foreach (var subfolderPath in subfolderPaths) {
-                var extensionId = Path.GetFileName(subfolderPath.TrimEnd('/', '\\'));
+                var extensionId = Path.GetFileName(subfolderPath);
                 var manifestPath = Path.Combine(subfolderPath, manifestName);
                 try {
                     var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);

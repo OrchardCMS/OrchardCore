@@ -18,7 +18,7 @@
     "dnxcore50": {
       "dependencies": {
         "System.ComponentModel.Annotations": "4.0.11-*",
-        "System.Linq.Queryable": "4.0.0-beta-*"
+        "System.Linq.Queryable": "4.0.1-*"
       }
     }
   },

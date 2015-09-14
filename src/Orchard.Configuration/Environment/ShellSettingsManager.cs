@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Framework.Configuration;
-using Orchard.Configuration.Environment.Sources;
 using Orchard.FileSystem.AppData;
-using System.Linq;
 using Microsoft.Framework.Logging;
 using Microsoft.Dnx.Compilation.Caching;
+using Orchard.Parser;
+using Orchard.Parser.Yaml;
 
 namespace Orchard.Configuration.Environment {
     public interface IShellSettingsManager {
@@ -49,9 +49,8 @@ namespace Orchard.Configuration.Environment {
                                 true)
                             .AddXmlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "xml")),
                                 true)
-                            .Add(
-                                new DefaultFileConfigurationSource(
-                                    _appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "txt")), false));
+                            .AddYamlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "txt")), 
+                                false);
 
                     var config = configurationContainer.Build();
 
@@ -90,7 +89,7 @@ namespace Orchard.Configuration.Environment {
 
             var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
-            var configurationSource = new DefaultFileConfigurationSource(
+            var configurationSource = new YamlConfigurationSource(
                 _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
 
             foreach (var key in shellSettings.Keys) {
