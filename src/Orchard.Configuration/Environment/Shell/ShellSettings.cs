@@ -19,9 +19,6 @@ namespace Orchard.Configuration.Environment {
             RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
 
             Name = settings.Name;
-            //DataProvider = settings.DataProvider;
-            //DataConnectionString = settings.DataConnectionString;
-            //DataTablePrefix = settings.DataTablePrefix;
             RequestUrlHost = settings.RequestUrlHost;
             RequestUrlPrefix = settings.RequestUrlPrefix;
             State = settings.State;
@@ -50,33 +47,7 @@ namespace Orchard.Configuration.Environment {
             get { return RootConfiguration["Name"]; }
             set { RootConfiguration["Name"] = value; }
         }
-
-        /// <summary>
-        /// The database provider for the tenant
-        /// </summary>
-        //public DataProvider[] DataProvider {
-        //    get { return RootConfiguration.GetSection("DataProviders"); }
-        //    set { this["DataProvider"] = value; }
-        //}
-
-        ///// <summary>
-        ///// The database connection string
-        ///// </summary>
-        //public string DataConnectionString
-        //{
-        //    get { return this["DataConnectionString"]; }
-        //    set { this["DataConnectionString"] = value; }
-        //}
-
-        ///// <summary>
-        ///// The data table prefix added to table names for this tenant
-        ///// </summary>
-        //public string DataTablePrefix
-        //{
-        //    get { return _configuration["DataTablePrefix"]; }
-        //    set { _configuration["DataTablePrefix"] = value; }
-        //}
-
+        
         /// <summary>
         /// The host name of the tenant
         /// </summary>

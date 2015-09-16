@@ -1,7 +1,6 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Dnx.Runtime": "1.0.0-*",
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"
