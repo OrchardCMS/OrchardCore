@@ -1,4 +1,5 @@
 ﻿using Microsoft.Framework.DependencyInjection;
+using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Events;
 using Orchard.Hosting;
@@ -12,6 +13,7 @@ namespace Orchard.Web {
             serviceCollection.AddNotifierEvents();
             
             serviceCollection.AddOrchardMvc();
+            serviceCollection.AddDataAccess();
 
             serviceCollection.AddScoped<IOrchardShell, OrchardShell>();
         }
