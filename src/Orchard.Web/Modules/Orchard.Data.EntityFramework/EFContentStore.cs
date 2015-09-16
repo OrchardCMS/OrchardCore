@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 
 namespace Orchard.Data.EntityFramework {
+    [OrchardFeature("Orchard.Data.EntityFramework")]
     public class EFContentStore : IContentStore {
         private readonly DataContext _dataContext;
 

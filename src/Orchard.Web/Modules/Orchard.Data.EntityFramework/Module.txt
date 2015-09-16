@@ -4,3 +4,20 @@ Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0.x
+Features:
+	Orchard.Data.EntityFramework:
+        Description: Data Access through Entity Framework
+        Category: Data Access
+        Dependencies: Orchard.Data
+    Orchard.Data.EntityFramework.InMemory:
+        Description: Data Access through Entity Framework InMemory Database
+        Category: Data Access
+        Dependencies: Orchard.Data.EntityFramework
+    Orchard.Data.EntityFramework.SqlServer:
+        Description: Data Access through Entity Framework SqlServer Database
+        Category: Data Access
+        Dependencies: Orchard.Data.EntityFramework
+    Orchard.Data.EntityFramework.Indexing:
+        Description: Indexing against entity framework
+        Category: Data Access
+        Dependencies: Orchard.Data.EntityFramework

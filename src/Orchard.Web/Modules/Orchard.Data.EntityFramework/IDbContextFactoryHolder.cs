@@ -2,23 +2,25 @@
 using Orchard.Configuration.Environment;
 using Orchard.Data.EntityFramework.Providers;
 using Orchard.FileSystem.AppData;
+using System.Collections.Generic;
 
 namespace Orchard.Data.EntityFramework {
     public interface IDbContextFactoryHolder {
         void Configure(DbContextOptionsBuilder optionsBuilder);
     }
 
+    [OrchardFeature("Orchard.Data.EntityFramework")]
     public class DbContextFactoryHolder : IDbContextFactoryHolder {
         private readonly ShellSettings _shellSettings;
-        private readonly IDataServicesProviderFactory _dataServicesProviderFactory;
+        private readonly IEnumerable<IDataServicesProvider> _dataServicesProviders;
         private readonly IAppDataFolder _appDataFolder;
 
         public DbContextFactoryHolder(
             ShellSettings shellSettings,
-            IDataServicesProviderFactory dataServicesProviderFactory,
+            IEnumerable<IDataServicesProvider> dataServicesProviders,
             IAppDataFolder appDataFolder) {
             _shellSettings = shellSettings;
-            _dataServicesProviderFactory = dataServicesProviderFactory;
+            _dataServicesProviders = dataServicesProviders;
             _appDataFolder = appDataFolder;
         }
 
@@ -28,13 +30,9 @@ namespace Orchard.Data.EntityFramework {
 
             var shellFolder = _appDataFolder.MapPath(shellPath);
 
-            _dataServicesProviderFactory.CreateProvider(
-                new DataServiceParameters {
-                    Provider = "InMemory",// _shellSettings.DataProvider,
-                    ConnectionString = string.Empty, //_shellSettings.DataConnectionString,
-                    DataFolder = shellFolder
-                })
-            .ConfigureContextOptions(optionsBuilders, string.Empty);
+            foreach(var provider in _dataServicesProviders) {
+                provider.ConfigureContextOptions(optionsBuilders, string.Empty);
+            }
         }
     }
 }

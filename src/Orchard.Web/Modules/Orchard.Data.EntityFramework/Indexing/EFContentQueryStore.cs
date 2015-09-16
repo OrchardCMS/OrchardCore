@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 
 namespace Orchard.Data.EntityFramework {
+    [OrchardFeature("Orchard.Data.EntityFramework.Indexing")]
     public class EFContentQueryStore : IContentQueryStore {
         private readonly IEnumerable<IContentStore> _contentStores;
         private readonly ILogger _logger;

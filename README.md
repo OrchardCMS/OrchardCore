@@ -87,9 +87,6 @@ i.e. Settings.txt
 ```yaml
 State: Running
 Name: Default
-DataProvider: InMemory
-DataConnectionString:
-DataTablePrefix:
 RequestUrlHost: localhost:5001
 RequestUrlPrefix:
 ```

@@ -11,6 +11,7 @@ namespace Orchard.Data.EntityFramework {
         DataContext Context { get; }
     }
 
+    [OrchardFeature("Orchard.Data.EntityFramework")]
     public class DataContext : DbContext, IDataContext {
         private readonly IDbContextFactoryHolder _dbContextFactoryHolder;
         private readonly IOrchardDataAssemblyProvider _assemblyProvider;

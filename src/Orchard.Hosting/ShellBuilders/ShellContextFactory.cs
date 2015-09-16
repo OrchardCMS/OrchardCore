@@ -70,9 +70,10 @@ namespace Orchard.Hosting.ShellBuilders {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Settings" },
-                    new ShellFeature { Name = "Orchard.Test1" },
                     new ShellFeature { Name = "Orchard.Demo" },
-                    new ShellFeature { Name = "Orchard.Data.EntityFramework" }
+                    new ShellFeature { Name = "Orchard.Data.EntityFramework" },
+                    new ShellFeature { Name = "Orchard.Data.EntityFramework.InMemory" },
+                    new ShellFeature { Name = "Orchard.Data.EntityFramework.Indexing" }
                 },
                 Parameters = Enumerable.Empty<ShellParameter>(),
             };
