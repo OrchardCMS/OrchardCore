@@ -1,18 +1,18 @@
-﻿using Orchard.Hosting.Descriptor.Models;
-using Orchard.Hosting.Extensions;
-using Orchard.Hosting.Extensions.Models;
+﻿using Microsoft.Dnx.Runtime;
+using Microsoft.Framework.Logging;
+using Orchard.Configuration.Environment;
+using Orchard.DependencyInjection;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Hosting.Descriptor.Models;
+using Orchard.Hosting.ShellBuilders.Extensions;
 using Orchard.Hosting.ShellBuilders.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Dnx.Runtime;
-using Orchard.Configuration.Environment;
-using Orchard.DependencyInjection;
-using Microsoft.Framework.Logging;
 
-namespace Orchard.Hosting.ShellBuilders
-{
+namespace Orchard.Hosting.ShellBuilders {
     /// <summary>
     /// Service at the host level to transform the cachable descriptor into the loadable blueprint.
     /// </summary>

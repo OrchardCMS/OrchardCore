@@ -1,5 +1,6 @@
 using Microsoft.Framework.DependencyInjection;
 using Orchard.Abstractions.Environment;
+using Orchard.Environment;
 using Orchard.FileSystem;
 
 namespace Orchard.Hosting {
@@ -10,6 +11,7 @@ namespace Orchard.Hosting {
                 internalServices.AddOptions();
 
                 internalServices.AddHostCore();
+                internalServices.AddExtensionManager();
 
                 internalServices.AddWebFileSystems();
                 

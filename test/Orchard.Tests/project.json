@@ -13,6 +13,7 @@
     "Orchard.FileSystem.Web": "2.0.0-*",
     "Orchard.Events": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
+    "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*"
   },
   "commands": {

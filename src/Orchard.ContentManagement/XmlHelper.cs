@@ -219,7 +219,7 @@ namespace Orchard.ContentManagement {
                 return value.ToString();
             }
 
-            throw new NotSupportedException(String.Format("Could not handle type {0}", type.Name));
+            throw new NotSupportedException(string.Format("Could not handle type {0}", type.Name));
         }
 
         /// <summary>
@@ -244,12 +244,12 @@ namespace Orchard.ContentManagement {
             if ("infinity".Equals(value, StringComparison.Ordinal)) {
                 if (type == typeof(float) || type == typeof(float?)) return (T)(object)float.PositiveInfinity;
                 if (type == typeof(double) || type == typeof(double?)) return (T)(object)double.PositiveInfinity;
-                throw new NotSupportedException(String.Format("Infinity not supported for type {0}", type.Name));
+                throw new NotSupportedException(string.Format("Infinity not supported for type {0}", type.Name));
             }
             if ("-infinity".Equals(value, StringComparison.Ordinal)) {
                 if (type == typeof(float)) return (T)(object)float.NegativeInfinity;
                 if (type == typeof(double)) return (T)(object)double.NegativeInfinity;
-                throw new NotSupportedException(String.Format("Infinity not supported for type {0}", type.Name));
+                throw new NotSupportedException(string.Format("Infinity not supported for type {0}", type.Name));
             }
             if (type == typeof(int) || type == typeof(int?)) {
                 return (T)(object)int.Parse(value, CultureInfo.InvariantCulture);
@@ -277,7 +277,7 @@ namespace Orchard.ContentManagement {
                 return (T)Enum.Parse(type, value);
             }
 
-            throw new NotSupportedException(String.Format("Could not handle type {0}", type.Name));
+            throw new NotSupportedException(string.Format("Could not handle type {0}", type.Name));
         }
 
         /// <summary>

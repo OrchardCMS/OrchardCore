@@ -48,7 +48,7 @@ namespace Orchard.Hosting {
             var shellSettings = _shellSettingsManager.LoadSettings();
 
             if (!shellSettings.Any()) {
-                return new ShellSettings {Name = ShellSettings.DefaultName, State = TenantState.Uninitialized};
+                return ShellHelper.BuildDefaultUninitializedShell;
             }
 
             return shellSettings

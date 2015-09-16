@@ -1,0 +1,23 @@
+﻿{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Microsoft.Dnx.Compilation.CSharp": "1.0.0-*",
+    "Microsoft.Dnx.Compilation.CSharp.Common": "1.0.0-*",
+    "Microsoft.Dnx.Runtime": "1.0.0-*",
+    "Microsoft.Framework.OptionsModel": "1.0.0-*",
+    "Orchard.DependencyInjection": "2.0.0-*",
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
+  },
+  "compilationOptions": {
+    "define": [ "TRACE" ],
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Brochard"
+  }
+}

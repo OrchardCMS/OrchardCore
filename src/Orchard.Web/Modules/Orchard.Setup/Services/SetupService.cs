@@ -7,10 +7,10 @@ using System.Linq;
 using Microsoft.AspNet.Http;
 using Orchard.Abstractions.Localization;
 using Orchard.Configuration.Environment;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Setup.Services {
     public class SetupService : ISetupService {
-        private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContainerFactory _shellContainerFactory;
@@ -19,14 +19,12 @@ namespace Orchard.Setup.Services {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SetupService(
-            ShellSettings shellSettings,
             IOrchardHost orchardHost,
             IShellSettingsManager shellSettingsManager,
             IShellContainerFactory shellContainerFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor) {
-            _shellSettings = shellSettings;
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
             _shellContainerFactory = shellContainerFactory;
@@ -37,10 +35,6 @@ namespace Orchard.Setup.Services {
         }
 
         public Localizer T { get; set; }
-
-        public ShellSettings Prime() {
-            return _shellSettings;
-        }
 
         public string Setup(SetupContext context) {
             string executionId = Guid.NewGuid().ToString();
@@ -57,13 +51,14 @@ namespace Orchard.Setup.Services {
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
-            var shellSettings = new ShellSettings(_shellSettings);
+            var shellSettings = new ShellSettings();
 
-            if (string.IsNullOrEmpty(shellSettings.DataProvider)) {
-                shellSettings.DataProvider = context.DatabaseProvider;
-                shellSettings.DataConnectionString = context.DatabaseConnectionString;
-                shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
-            }
+            //if (shellSettings.DataProviders.Any()) {
+            //    DataProvider provider = new DataProvider();
+                //shellSettings.DataProvider = context.DatabaseProvider;
+                //shellSettings.DataConnectionString = context.DatabaseConnectionString;
+                //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
+            //}
 
             // TODO: Add Encryption Settings in
 
@@ -80,7 +75,7 @@ namespace Orchard.Setup.Services {
 
             // TODO: Remove and mirror Orchard Setup
             shellSettings.RequestUrlHost = _httpContextAccessor.HttpContext.Request.Host.Value;
-            shellSettings.DataProvider = "InMemory";
+            //shellSettings.DataProvider = "InMemory";
 
             _shellSettingsManager.SaveSettings(shellSettings);
 

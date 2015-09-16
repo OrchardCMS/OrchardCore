@@ -1,8 +1,8 @@
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using Orchard.Environment.Extensions.Folders;
 using Orchard.Hosting;
-using Orchard.Hosting.Extensions.Folders;
 using System;
 
 namespace Orchard.Web {

@@ -1,14 +1,14 @@
-﻿using Orchard.Hosting.Extensions.Folders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Orchard.Hosting.Extensions.Models;
-using Orchard.Hosting.Extensions;
-using Orchard.Hosting.Extensions.Loaders;
 using Orchard.Tests.Hosting.Environment.Extensions.ExtensionTypes;
 using System.Reflection;
 using System.Globalization;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.Loaders;
+using Orchard.Environment.Extensions.Folders;
 
 namespace Orchard.Tests.Hosting.Environment.Extensions {
     public class ExtensionManagerTests

@@ -5,11 +5,6 @@ using Orchard.FileSystem;
 using Orchard.DependencyInjection;
 using Orchard.Configuration.Environment;
 using Orchard.Hosting.ShellBuilders;
-using Orchard.Hosting.Extensions;
-using Orchard.Hosting.Extensions.Folders;
-using Microsoft.Framework.DependencyInjection.Extensions;
-using Orchard.Hosting.Extensions.Loaders;
-using Microsoft.Framework.OptionsModel;
 
 namespace Orchard.Hosting {
     public static class HostServiceExtensions {
@@ -39,19 +34,6 @@ namespace Orchard.Hosting {
                     services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                     {
                         services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
-                        services.AddSingleton<IExtensionManager, ExtensionManager>();
-                        {
-                            services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
-
-                            services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
-
-                            services.TryAddEnumerable(
-                                ServiceDescriptor.Transient<IConfigureOptions<ExtensionHarvestingOptions>, ExtensionHarvestingOptionsSetup>());
-                            services.AddSingleton<IExtensionLocator, ExtensionLocator>();
-
-                            services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
-                            services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
-                        }
                     }
 
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();

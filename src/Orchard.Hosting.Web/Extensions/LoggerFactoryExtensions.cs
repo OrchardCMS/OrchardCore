@@ -1,7 +1,8 @@
 ﻿using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Orchard.Abstractions.Logging;
-using Orchard.Hosting.Extensions.Loaders;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Loaders;
 using System;
 using System.Linq;
 

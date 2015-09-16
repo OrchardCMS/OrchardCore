@@ -27,14 +27,14 @@ namespace Orchard.Data.EntityFramework {
             _appDataFolder.CreateDirectory(shellPath);
 
             var shellFolder = _appDataFolder.MapPath(shellPath);
-            
+
             _dataServicesProviderFactory.CreateProvider(
                 new DataServiceParameters {
-                    Provider = _shellSettings.DataProvider,
-                    ConnectionString = _shellSettings.DataConnectionString,
+                    Provider = "InMemory",// _shellSettings.DataProvider,
+                    ConnectionString = string.Empty, //_shellSettings.DataConnectionString,
                     DataFolder = shellFolder
                 })
-            .ConfigureContextOptions(optionsBuilders,_shellSettings.DataConnectionString);
+            .ConfigureContextOptions(optionsBuilders, string.Empty);
         }
     }
 }

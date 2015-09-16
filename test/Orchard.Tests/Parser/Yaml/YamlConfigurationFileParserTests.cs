@@ -1,4 +1,5 @@
-﻿using Orchard.Parser.Yaml;
+﻿using Orchard.Configuration;
+using Orchard.Parser.Yaml;
 using System;
 using System.IO;
 using System.Text;

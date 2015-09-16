@@ -10,7 +10,7 @@ using Microsoft.Framework.Localization;
 namespace Orchard.Utility {
     public static class StringExtensions {
         public static string CamelFriendly(this string camel) {
-            if (String.IsNullOrWhiteSpace(camel))
+            if (string.IsNullOrWhiteSpace(camel))
                 return "";
 
             var sb = new StringBuilder(camel);
@@ -30,7 +30,7 @@ namespace Orchard.Utility {
         }
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false) {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
                 return "";
             
             if (characterCount < 0 || text.Length <= characterCount)
@@ -57,7 +57,7 @@ namespace Orchard.Utility {
         }
 
         public static string HtmlClassify(this string text) {
-            if (String.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
                 return "";
 
             var friendlier = text.CamelFriendly();
@@ -68,12 +68,12 @@ namespace Orchard.Utility {
             var previousIsNotLetter = false;
             for (var i = 0; i < friendlier.Length; i++) {
                 char current = friendlier[i];
-                if (IsLetter(current) || (Char.IsDigit(current) && cursor > 0)) {
+                if (IsLetter(current) || (char.IsDigit(current) && cursor > 0)) {
                     if (previousIsNotLetter && i != 0 && cursor > 0) {
                         result[cursor++] = '-';    
                     }
                     
-                    result[cursor++] = Char.ToLowerInvariant(current);
+                    result[cursor++] = char.ToLowerInvariant(current);
                     previousIsNotLetter = false;
                 }
                 else {

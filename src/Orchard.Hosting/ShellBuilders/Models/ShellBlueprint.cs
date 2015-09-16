@@ -1,8 +1,8 @@
 ﻿using Orchard.Hosting.Descriptor.Models;
-using Orchard.Hosting.Extensions.Models;
 using System;
 using System.Collections.Generic;
 using Orchard.Configuration.Environment;
+using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Hosting.ShellBuilders.Models {
     /// <summary>

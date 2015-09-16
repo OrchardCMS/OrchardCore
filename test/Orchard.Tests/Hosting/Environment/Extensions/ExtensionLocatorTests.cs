@@ -1,6 +1,6 @@
 ﻿using Microsoft.Framework.OptionsModel;
-using Orchard.Hosting.Extensions.Folders;
-using Orchard.Hosting.Extensions.Models;
+using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Extensions.Models;
 using Orchard.Tests.Stubs;
 using System;
 using System.IO;

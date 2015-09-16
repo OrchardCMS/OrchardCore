@@ -16,7 +16,7 @@ namespace Orchard.Parser.Yaml {
 
             var yamlConfig = new YamlStream();
             yamlConfig.Load(new StreamReader(stream));
-
+            
             var mapping =
                 (YamlMappingNode)yamlConfig.Documents[0].RootNode;
 
