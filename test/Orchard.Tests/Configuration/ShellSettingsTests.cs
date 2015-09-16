@@ -18,7 +18,7 @@ namespace Orchard.Tests.Configuration {
             Directory.Delete(_tempFolderName, true);
         }
 
-        [Fact]
+        [Fact(Skip ="Not Complete")]
         public void Foo() {
             var yaml = @"---
 name: Default
