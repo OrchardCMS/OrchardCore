@@ -34,7 +34,7 @@ namespace Orchard.Environment.Extensions.Loaders {
 
         public string Name => GetType().Name;
 
-        public int Order => 20;
+        public int Order => 100;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
         }

@@ -46,7 +46,6 @@ namespace Orchard.Hosting.ShellBuilders {
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            
             try {
                 var shellcontext = new ShellContext {
                     Settings = settings,

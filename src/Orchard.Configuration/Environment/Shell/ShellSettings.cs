@@ -1,6 +1,5 @@
 ﻿using Microsoft.Framework.Configuration;
 using System;
-using System.Collections.Generic;
 
 namespace Orchard.Configuration.Environment {
     /// <summary>
@@ -10,9 +9,18 @@ namespace Orchard.Configuration.Environment {
     /// </summary>
     public class ShellSettings {
         private TenantState _tenantState;
+
         public ShellSettings() {
             RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
             State = TenantState.Invalid;
+        }
+
+        public ShellSettings(
+            string name, TenantState tenantState) {
+            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
+
+            Name = name;
+            State = tenantState;
         }
 
         public ShellSettings(ShellSettings settings) {
@@ -32,7 +40,6 @@ namespace Orchard.Configuration.Environment {
                 ? state
                 : TenantState.Uninitialized;
         }
-             
 
         /// <summary>
         /// Gets all keys held by this shell settings.
