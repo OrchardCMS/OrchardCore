@@ -46,20 +46,22 @@ namespace Orchard.Hosting.ShellBuilders {
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
+            
             try {
-                return new ShellContext {
+                var shellcontext = new ShellContext {
                     Settings = settings,
                     Blueprint = blueprint,
                     LifetimeScope = provider,
                     Shell = provider.GetRequiredService<IOrchardShell>()
                 };
+
+                _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
+
+                return shellcontext;
             }
             catch (Exception ex) {
                 _logger.LogError("Cannot create shell context", ex);
                 throw;
-            }
-            finally {
-                _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
             }
         }
 
