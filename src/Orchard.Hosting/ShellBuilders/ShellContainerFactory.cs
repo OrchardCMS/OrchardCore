@@ -44,7 +44,8 @@ namespace Orchard.Hosting.ShellBuilders {
                 moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
             }
 
-            foreach (var service in moduleServiceCollection.BuildServiceProvider().GetServices<IModule>()) {
+            var moduleServiceProvider = moduleServiceCollection.BuildShellServiceProviderWithHost(_serviceProvider);
+            foreach (var service in moduleServiceProvider.GetServices<IModule>()) {
                 service.Configure(serviceCollection);
             }
             
