@@ -4,7 +4,7 @@ using Orchard.Hosting.Descriptor.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Hosting.ShellBuilders.Extensions {
+namespace Orchard.Hosting.ShellBuilders {
     public static class ExtensionManagerExtensions {
         public static IEnumerable<FeatureDescriptor> EnabledFeatures(
             this IExtensionManager extensionManager, ShellDescriptor descriptor) {

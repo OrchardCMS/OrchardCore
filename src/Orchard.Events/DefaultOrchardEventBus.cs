@@ -52,13 +52,18 @@ namespace Orchard.Events {
             string interfaceName = parameters[0];
             string methodName = parameters[1];
 
-            var eventHandlers = _eventHandlers[interfaceName];
-            foreach (var eventHandler in eventHandlers) {
-                IEnumerable returnValue;
-                if (TryNotifyHandler(eventHandler, messageName, interfaceName, methodName, eventData, out returnValue)) {
-                    if (returnValue != null) {
-                        foreach (var value in returnValue) {
-                            yield return value;
+            if (!_eventHandlers.ContainsKey(interfaceName)) {
+                yield return Enumerable.Empty<object>();
+            }
+            else {
+                var eventHandlers = _eventHandlers[interfaceName];
+                foreach (var eventHandler in eventHandlers) {
+                    IEnumerable returnValue;
+                    if (TryNotifyHandler(eventHandler, messageName, interfaceName, methodName, eventData, out returnValue)) {
+                        if (returnValue != null) {
+                            foreach (var value in returnValue) {
+                                yield return value;
+                            }
                         }
                     }
                 }

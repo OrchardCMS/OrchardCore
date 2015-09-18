@@ -5,7 +5,6 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Hosting.Descriptor.Models;
-using Orchard.Hosting.ShellBuilders.Extensions;
 using Orchard.Hosting.ShellBuilders.Models;
 using System;
 using System.Collections.Generic;

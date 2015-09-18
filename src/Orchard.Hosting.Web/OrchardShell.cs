@@ -6,6 +6,7 @@ using Microsoft.AspNet.Builder.Internal;
 using Orchard.Configuration.Environment;
 using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;
+using Orchard.Events;
 
 namespace Orchard.Hosting {
     public class OrchardShell : IOrchardShell {
@@ -14,18 +15,21 @@ namespace Orchard.Hosting {
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventNotifier _eventNotifier;
 
         public OrchardShell (
             IEnumerable<IRouteProvider> routeProviders,
             IRoutePublisher routePublisher,
             IEnumerable<IMiddlewareProvider> middlewareProviders,
             ShellSettings shellSettings,
-            IServiceProvider serviceProvider) {
+            IServiceProvider serviceProvider,
+            IEventNotifier eventNotifier) {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
             _middlewareProviders = middlewareProviders;
             _shellSettings = shellSettings;
             _serviceProvider = serviceProvider;
+            _eventNotifier = eventNotifier;
         }
 
         public void Activate() {
@@ -49,9 +53,12 @@ namespace Orchard.Hosting {
             allRoutes.AddRange(_routeProviders.SelectMany(provider => provider.GetRoutes()));
 
             _routePublisher.Publish(allRoutes, pipeline);
+
+            _eventNotifier.Notify<IOrchardShellEvents>(x => x.Activated());
         }
 
         public void Terminate() {
+            _eventNotifier.Notify<IOrchardShellEvents>(x => x.Terminating());
         }
     }
 }
