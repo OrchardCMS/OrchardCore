@@ -1,9 +1,11 @@
 ﻿using Microsoft.Framework.Logging;
 using Orchard.Configuration.Environment;
+using Orchard.Hosting.Descriptor;
+using Orchard.Hosting.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting {
-    public class DefaultOrchardHost : IOrchardHost {
+    public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler {
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ILogger _logger;
 
@@ -32,6 +34,13 @@ namespace Orchard.Hosting {
 
             _logger.LogDebug("Creating shell context for tenant {0}", settings.Name);
             return _shellContextFactory.CreateShellContext(settings);
+        }
+
+        /// <summary>
+        /// A feature is enabled/disabled, the tenant needs to be restarted
+        /// </summary>
+        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant) {
+            _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
         }
     }
 }

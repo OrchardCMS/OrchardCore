@@ -3,7 +3,8 @@
   "dependencies": {
     "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
     "Nito.AsyncEx": "3.0.1-*",
-    "Orchard.DependencyInjection": "2.0.0-*" 
+    "Orchard.DependencyInjection": "2.0.0-*" ,
+    "Orchard.Hosting": "2.0.0-*" 
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
