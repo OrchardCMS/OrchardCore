@@ -1,13 +1,9 @@
 ﻿using Microsoft.Dnx.Runtime;
 using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
-#if DNXCORE50
-#endif
 
 namespace Orchard.Hosting {
     public static class ServiceExtensions
