@@ -30,9 +30,7 @@ namespace Orchard.Hosting {
 
         void IOrchardHost.Initialize() {
             _logger.LogInformation("Initialize Host");
-
             BuildCurrent();
-
             _logger.LogInformation("Host Initialized");
         }
 
