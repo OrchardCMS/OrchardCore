@@ -5,7 +5,8 @@
     "Microsoft.Dnx.Compilation.CSharp.Common": "1.0.0-*",
     "Microsoft.Framework.OptionsModel": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

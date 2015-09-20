@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
-using Orchard.Configuration.Environment;
 using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;
 using Orchard.Events;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting {
     public class OrchardShell : IOrchardShell {

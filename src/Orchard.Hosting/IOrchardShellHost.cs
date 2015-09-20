@@ -1,4 +1,4 @@
-﻿using Orchard.Configuration.Environment;
+﻿using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting {
     public interface IOrchardShellHost {

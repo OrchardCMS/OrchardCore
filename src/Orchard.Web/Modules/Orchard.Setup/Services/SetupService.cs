@@ -1,13 +1,13 @@
 using Orchard.Hosting;
-using Orchard.Hosting.Descriptor.Models;
-using Orchard.Hosting.Extensions;
-using Orchard.Hosting.ShellBuilders;
 using System;
 using System.Linq;
 using Microsoft.AspNet.Http;
 using Orchard.Abstractions.Localization;
-using Orchard.Configuration.Environment;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Shell.Builders;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Models;
 
 namespace Orchard.Setup.Services {
     public class SetupService : ISetupService {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Framework.DependencyInjection;
 using Orchard.Data;
 using Orchard.DependencyInjection;
+using Orchard.Environment.Shell;
 using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc;

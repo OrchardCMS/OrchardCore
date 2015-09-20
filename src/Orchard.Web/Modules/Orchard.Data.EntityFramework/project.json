@@ -7,8 +7,7 @@
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
-    "Orchard.FileSystem": "2.0.0-*",
-    "Orchard.Configuration": "2.0.0-*"
+    "Orchard.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

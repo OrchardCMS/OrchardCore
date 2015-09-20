@@ -1,7 +1,6 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Orchard.Hosting": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {

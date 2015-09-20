@@ -3,18 +3,19 @@
     "warningsAsErrors": "true"
   },
   "dependencies": {
-    "Microsoft.Framework.DependencyInjection": "1.0.0-*",
-    "xunit": "2.1.0-*",
-    "xunit.runner.dnx": "2.1.0-*",
     "Microsoft.Dnx.TestHost": "1.0.0-*",
-    "Orchard.Data": "2.0.0-*",
+    "Microsoft.Framework.DependencyInjection": "1.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
+    "Orchard.Data": "2.0.0-*",
+    "Orchard.Environment.Extensions": "2.0.0-*",
+    "Orchard.Environment.Shell": "2.0.0-*",
+    "Orchard.Events": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Environment.Extensions": "2.0.0-*",
-    "Orchard.Parser.Yaml": "2.0.0-*"
+    "Orchard.Parser.Yaml": "2.0.0-*",
+    "xunit": "2.1.0-*",
+    "xunit.runner.dnx": "2.1.0-*"
   },
   "commands": {
     "test": "xunit.runner.dnx"

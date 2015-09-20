@@ -4,7 +4,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.AspNet.Routing.Template;
 using Microsoft.Framework.DependencyInjection;
-using Orchard.Configuration.Environment;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Web.Routing.Routes {
     public class RoutePublisher : IRoutePublisher {

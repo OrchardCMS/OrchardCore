@@ -1,8 +1,6 @@
-﻿using Orchard.Configuration;
+﻿using Orchard.Environment.Shell;
 using Orchard.Parser.Yaml;
 using System;
-using System.IO;
-using System.Text;
 using Xunit;
 
 namespace Orchard.Tests.Parser.Yaml {

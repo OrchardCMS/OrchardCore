@@ -1,4 +1,4 @@
-﻿using Orchard.Configuration.Environment;
+﻿using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting {

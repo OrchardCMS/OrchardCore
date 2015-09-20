@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.Framework.DependencyInjection;
-using Orchard.Configuration.Environment;
 using Microsoft.Framework.Logging;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Web.Routing.Routes {
     public class TenantRoute : IRouter {

@@ -1,5 +1,5 @@
-﻿using Orchard.Configuration.Environment;
-using Orchard.DependencyInjection;
+﻿using Orchard.DependencyInjection;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Demo.Services {
     public interface ITestDependency : IDependency {		

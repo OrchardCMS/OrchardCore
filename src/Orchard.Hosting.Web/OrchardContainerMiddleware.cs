@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using System;
-using Orchard.Configuration.Environment;
 using Microsoft.Framework.Logging;
 using System.Diagnostics;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting {
     public class OrchardContainerMiddleware {

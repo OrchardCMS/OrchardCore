@@ -1,7 +1,9 @@
 ﻿using Microsoft.Framework.Logging;
-using Orchard.Configuration.Environment;
-using Orchard.Hosting.Descriptor;
-using Orchard.Hosting.Descriptor.Models;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders;
+using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Shell.Models;
 using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting {

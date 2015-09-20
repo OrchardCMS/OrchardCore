@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Entity;
-using Orchard.Configuration.Environment;
 using Orchard.Data.EntityFramework.Providers;
+using Orchard.Environment.Shell;
 using Orchard.FileSystem.AppData;
 using System.Collections.Generic;
 

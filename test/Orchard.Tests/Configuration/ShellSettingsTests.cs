@@ -1,5 +1,5 @@
 ﻿using Microsoft.Framework.Configuration;
-using Orchard.Configuration.Environment;
+using Orchard.Environment.Shell;
 using Orchard.Parser.Yaml;
 using System;
 using System.IO;

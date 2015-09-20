@@ -1,11 +1,7 @@
 ﻿using Microsoft.Framework.Logging;
-using Orchard.Configuration.Environment;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Hosting;
+using Orchard.Environment.Shell;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.Data.Migration {
     /// <summary>

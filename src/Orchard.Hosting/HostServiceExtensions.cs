@@ -2,9 +2,9 @@ using System;
 using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Framework.DependencyInjection;
 using Orchard.FileSystem;
-using Orchard.Configuration.Environment;
-using Orchard.Hosting.ShellBuilders;
 using Orchard.DependencyInjection;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders;
 
 namespace Orchard.Hosting {
     public static class HostServiceExtensions {

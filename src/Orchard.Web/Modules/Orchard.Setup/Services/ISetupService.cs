@@ -1,4 +1,3 @@
-using Orchard.Configuration.Environment;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Setup.Services {

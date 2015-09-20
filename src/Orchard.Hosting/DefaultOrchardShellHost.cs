@@ -1,5 +1,5 @@
 ﻿using Microsoft.Framework.Logging;
-using Orchard.Configuration.Environment;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting {
     public class DefaultOrchardShellHost : IOrchardShellHost {
