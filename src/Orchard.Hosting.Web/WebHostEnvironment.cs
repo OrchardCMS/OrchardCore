@@ -1,5 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 
 namespace Orchard.Hosting {
     public class WebHostEnvironment : HostEnvironment {

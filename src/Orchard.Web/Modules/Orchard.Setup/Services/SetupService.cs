@@ -2,7 +2,7 @@ using Orchard.Hosting;
 using System;
 using System.Linq;
 using Microsoft.AspNet.Http;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Builders;

@@ -1,5 +1,5 @@
 using Microsoft.Framework.Logging;
-using Orchard.Abstractions.Logging;
+using Orchard.Logging;
 
 namespace Orchard.Logging {
     public class LoggingInitiator : ILoggingInitiator {

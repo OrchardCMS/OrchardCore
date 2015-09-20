@@ -1,0 +1,49 @@
+using System.Collections.Generic;
+using Orchard.Localization;
+using Orchard.DependencyInjection;
+using Microsoft.Framework.Localization;
+using Orchard.Environment.Recipes.Models;
+using Microsoft.Framework.Logging;
+
+namespace Orchard.Environment.Recipes.Services {
+    public abstract class RecipeExecutionStep : IDependency, IRecipeExecutionStep {
+        private readonly ILogger _logger;
+
+        public RecipeExecutionStep(ILoggerFactory loggerFactory) {
+            _logger = loggerFactory.CreateLogger(GetType().Name);
+            T = NullLocalizer.Instance;
+        }
+
+        public Localizer T { get; set; }
+
+        public abstract string Name { get; }
+
+        public virtual IEnumerable<string> Names {
+            get { yield return Name; }
+        }
+
+        public virtual LocalizedString DisplayName {
+            get { return T(Name); }
+        }
+
+        public virtual LocalizedString Description {
+            get { return DisplayName; }
+        }
+
+        protected virtual string Prefix {
+            get { return GetType().Name; }
+        }
+
+        protected virtual ILogger Logger {
+            get { return _logger; }
+        }
+
+        public virtual void Configure(RecipeExecutionStepConfigurationContext context) {
+        }
+
+        public virtual void UpdateStep(UpdateRecipeExecutionStepContext context) {
+        }
+
+        public abstract void Execute(RecipeExecutionContext context);
+    }
+}

@@ -1,6 +1,6 @@
 using Microsoft.Framework.Localization;
 
-namespace Orchard.Abstractions.Localization {
+namespace Orchard.Localization {
     public static class NullLocalizer {
 
         static NullLocalizer() {

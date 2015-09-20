@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.Framework.Logging;
 using Orchard.FileSystem;

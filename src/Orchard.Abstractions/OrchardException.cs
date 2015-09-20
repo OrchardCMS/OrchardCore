@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Framework.Localization;
 
-namespace Orchard.Abstractions {
+namespace Orchard {
     public class OrchardException : Exception {
         private readonly LocalizedString _localizedMessage;
 

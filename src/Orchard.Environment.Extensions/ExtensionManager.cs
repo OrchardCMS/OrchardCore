@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Orchard.Abstractions;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;

@@ -1,4 +1,4 @@
-﻿namespace Orchard.Abstractions.Environment {
+﻿namespace Orchard.Environment {
     /// <summary>
     /// Abstraction of the running environment
     /// </summary>

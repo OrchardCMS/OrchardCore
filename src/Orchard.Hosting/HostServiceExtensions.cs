@@ -5,6 +5,8 @@ using Orchard.FileSystem;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
+using Orchard.Services;
+using Orchard.Hosting.Services;
 
 namespace Orchard.Hosting {
     public static class HostServiceExtensions {
@@ -25,6 +27,8 @@ namespace Orchard.Hosting {
         }
 
         public static IServiceCollection AddHostCore(this IServiceCollection services) {
+            services.AddSingleton<IClock, Clock>();
+
             services.AddSingleton<IOrchardHost, DefaultOrchardHost>();
             {
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();

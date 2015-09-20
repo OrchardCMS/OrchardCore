@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Framework.Localization;
-using Orchard.Abstractions;
 
 namespace Orchard.Security {
     public class OrchardSecurityException : OrchardCoreException {

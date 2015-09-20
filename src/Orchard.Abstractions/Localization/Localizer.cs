@@ -1,6 +1,6 @@
 using Microsoft.Framework.Localization;
 
-namespace Orchard.Abstractions.Localization {
+namespace Orchard.Localization {
     /// <summary>
     /// Localizes some text based on the current Work Context culture
     /// </summary>

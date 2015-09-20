@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Abstractions.Environment;
+using Orchard.Environment;
 using Microsoft.Framework.Logging;
 
 namespace Orchard.Environment.Extensions.Loaders {

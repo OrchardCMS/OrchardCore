@@ -1,7 +1,6 @@
-﻿using Orchard.Abstractions.Localization;
+﻿using Orchard.Localization;
 
-namespace Orchard.DependencyInjection
-{
+namespace Orchard.DependencyInjection {
     public abstract class Component : IDependency {
         protected Component() {
             T = NullLocalizer.Instance;

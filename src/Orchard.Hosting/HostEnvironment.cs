@@ -1,5 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
-using Orchard.Abstractions.Environment;
+using Orchard.Environment;
 
 namespace Orchard.Hosting {
     public abstract class HostEnvironment : IHostEnvironment {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNet.Mvc;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using Orchard.Environment.Shell;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Abstractions;
-using Orchard.Abstractions.Localization;
 using Microsoft.Framework.Logging;
 using Microsoft.AspNet.FileProviders;
+using Orchard.Localization;
 
 namespace Orchard.FileSystem.AppData {
     public class PhysicalAppDataFolder : IAppDataFolder {

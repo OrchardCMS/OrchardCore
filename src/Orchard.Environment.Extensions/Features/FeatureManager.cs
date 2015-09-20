@@ -1,6 +1,5 @@
 ﻿using Microsoft.Framework.Logging;
-using Orchard.Abstractions;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;

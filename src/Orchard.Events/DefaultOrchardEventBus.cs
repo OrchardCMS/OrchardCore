@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orchard.Abstractions.Localization;
+using Orchard.Localization;
 using System.Reflection;
 using System.Linq;
 using System.Collections;

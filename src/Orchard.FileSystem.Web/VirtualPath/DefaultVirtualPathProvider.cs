@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Orchard.Abstractions.Environment;
+using Orchard.Environment;
 using Microsoft.Framework.Logging;
 
 namespace Orchard.FileSystem.VirtualPath {

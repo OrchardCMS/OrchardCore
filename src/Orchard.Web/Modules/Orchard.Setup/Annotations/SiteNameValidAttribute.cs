@@ -1,4 +1,4 @@
-﻿using Orchard.Abstractions.Localization;
+﻿using Orchard.Localization;
 
 namespace Orchard.Setup.Annotations {
     public class SiteNameValidAttribute : System.ComponentModel.DataAnnotations.RangeAttribute {
