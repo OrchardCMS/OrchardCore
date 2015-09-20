@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNet.Hosting.Abstractions": "1.0.0-*",
+    "Microsoft.Framework.DependencyInjection": "1.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {

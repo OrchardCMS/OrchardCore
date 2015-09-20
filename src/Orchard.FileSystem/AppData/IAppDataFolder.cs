@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Orchard.DependencyInjection;
 using Microsoft.AspNet.FileProviders;
 
 namespace Orchard.FileSystem.AppData {
@@ -9,7 +8,7 @@ namespace Orchard.FileSystem.AppData {
     /// Abstraction of App_Data folder. All virtual paths passed in or returned are relative to "~/App_Data". 
     /// Expected to work on physical filesystem, but decouples core system from web hosting apis
     /// </summary>
-    public interface IAppDataFolder : ISingletonDependency {
+    public interface IAppDataFolder {
         IFileInfo GetFileInfo(string path);
         IFileInfo GetDirectoryInfo(string path);
 

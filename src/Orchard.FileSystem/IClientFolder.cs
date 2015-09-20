@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Orchard.DependencyInjection;
 
 namespace Orchard.FileSystem {
     /// <summary>

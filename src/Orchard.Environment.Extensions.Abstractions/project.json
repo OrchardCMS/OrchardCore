@@ -3,6 +3,7 @@
   "dependencies": {
     "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
+    "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"
   },
   "compilationOptions": {

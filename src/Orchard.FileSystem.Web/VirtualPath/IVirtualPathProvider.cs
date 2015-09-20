@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Orchard.DependencyInjection;
 
 namespace Orchard.FileSystem.VirtualPath {
-    public interface IVirtualPathProvider : ISingletonDependency {
+    public interface IVirtualPathProvider {
         string Combine(params string[] paths);
         string ToAppRelative(string virtualPath);
         string MapPath(string virtualPath);
