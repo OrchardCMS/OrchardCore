@@ -39,6 +39,7 @@ namespace Orchard.Hosting {
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }
             }
+            services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
             return services;
         }
