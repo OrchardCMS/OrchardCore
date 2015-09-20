@@ -17,13 +17,12 @@ namespace Orchard.Hosting {
             _orchardShellHost = orchardShellHost;
         }
 
-        public async Task Invoke(HttpContext httpContext) {
-            var shellSettings = httpContext.RequestServices.GetService<ShellSettings>();
+        public async Task Invoke(HttpContext httpContext, ShellSettings shellSettings) {
             _orchardShellHost.BeginRequest(shellSettings);
 
             httpContext.Response.Headers.Append("X-Generator", "Orchard");
 
-            await Task.Run(() => _next.Invoke(httpContext));
+            await _next.Invoke(httpContext);
 
             _orchardShellHost.EndRequest(shellSettings);
         }
