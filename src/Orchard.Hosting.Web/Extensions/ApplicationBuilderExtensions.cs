@@ -1,9 +1,7 @@
 using Microsoft.AspNet.Builder;
-using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;
-using System;
 
 namespace Orchard.Hosting {
     public static class ApplicationBuilderExtensions {

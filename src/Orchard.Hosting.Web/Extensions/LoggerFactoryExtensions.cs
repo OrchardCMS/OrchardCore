@@ -5,6 +5,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Loaders;
 using System;
 using System.Linq;
+using Orchard.Environment.Shell.Builders;
 
 #if DNXCORE50
 using System.Reflection;
@@ -26,10 +27,13 @@ namespace Orchard.Hosting.Extensions {
                 .ExportedTypes
                 .Where(et => typeof(ILoggingInitiator).IsAssignableFrom(et));
 
+            IServiceCollection loggerCollection = new ServiceCollection();
             foreach (var initiatorType in loggingInitiatorTypes) {
-                var instance = (ILoggingInitiator)ActivatorUtilities
-                    .CreateInstance(serviceProvider, initiatorType);
-                instance.Initialize(loggingFactory);
+                loggerCollection.AddScoped(typeof(ILoggingInitiator), initiatorType);
+            }
+            var moduleServiceProvider = loggerCollection.BuildShellServiceProviderWithHost(serviceProvider);
+            foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
+                service.Initialize(loggingFactory);
             }
 
             return loggingFactory;

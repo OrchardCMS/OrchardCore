@@ -9,7 +9,7 @@ using System;
 namespace Orchard.Environment.Shell.Builders {
     public static class ServiceExtensions
     {
-        internal static IServiceProvider BuildShellServiceProviderWithHost(
+        public static IServiceProvider BuildShellServiceProviderWithHost(
             [NotNull] this IServiceCollection services,
             [NotNull] IServiceProvider hostServices) {
 
