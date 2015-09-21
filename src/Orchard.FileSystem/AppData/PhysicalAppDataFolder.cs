@@ -13,6 +13,10 @@ namespace Orchard.FileSystem.AppData {
 
         public PhysicalAppDataFolder(IAppDataFolderRoot root,
             ILoggerFactory loggerFactory) {
+
+            if (!Directory.Exists(root.RootFolder))
+                Directory.CreateDirectory(root.RootFolder);
+
             _fileProvider = new PhysicalFileProvider(root.RootFolder);
             _logger = loggerFactory.CreateLogger<PhysicalAppDataFolder>();
 

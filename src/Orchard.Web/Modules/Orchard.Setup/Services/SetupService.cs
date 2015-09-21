@@ -2,19 +2,14 @@ using Orchard.Hosting;
 using System;
 using System.Linq;
 using Microsoft.AspNet.Http;
-using Orchard.Localization;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
-using Orchard.Environment.Recipes.Models;
-using System.Collections.Generic;
-using Orchard.Environment.Recipes.Services;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Setup.Services {
-    [OrchardFeature("Orchard.Setup.Services")]
     public class SetupService : Component, ISetupService {
         private readonly IOrchardHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -22,8 +17,6 @@ namespace Orchard.Setup.Services {
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IRecipeHarvester _recipeHarvester;
-        private IEnumerable<Recipe> _recipes;
 
         public SetupService(
             IOrchardHost orchardHost,
@@ -31,24 +24,13 @@ namespace Orchard.Setup.Services {
             IShellContainerFactory shellContainerFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
-            IHttpContextAccessor httpContextAccessor,
-            IRecipeHarvester recipeHarvester) {
+            IHttpContextAccessor httpContextAccessor) {
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
             _shellContainerFactory = shellContainerFactory;
             _compositionStrategy = compositionStrategy;
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
-            _recipeHarvester = recipeHarvester;
-        }
-
-        public IEnumerable<Recipe> Recipes() {
-            if (_recipes == null) {
-                var recipes = new List<Recipe>();
-                recipes.AddRange(_recipeHarvester.HarvestRecipes().Where(recipe => recipe.IsSetupRecipe));
-                _recipes = recipes;
-            }
-            return _recipes;
         }
 
         public string Setup(SetupContext context) {
@@ -67,6 +49,7 @@ namespace Orchard.Setup.Services {
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             var shellSettings = new ShellSettings();
+            shellSettings.Name = context.SiteName;
 
             //if (shellSettings.DataProviders.Any()) {
             //    DataProvider provider = new DataProvider();
@@ -90,6 +73,7 @@ namespace Orchard.Setup.Services {
 
             // TODO: Remove and mirror Orchard Setup
             shellSettings.RequestUrlHost = _httpContextAccessor.HttpContext.Request.Host.Value;
+            shellSettings.RequestUrlPrefix = string.Empty;
             //shellSettings.DataProvider = "InMemory";
 
             _shellSettingsManager.SaveSettings(shellSettings);

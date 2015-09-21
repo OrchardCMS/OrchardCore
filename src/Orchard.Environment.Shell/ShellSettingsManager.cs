@@ -23,7 +23,7 @@ namespace Orchard.Environment.Shell {
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
-            return _cache.Get<IEnumerable<ShellSettings>>("LoadSettings", (context) => {
+            //return _cache.Get<IEnumerable<ShellSettings>>("LoadSettings", (context) => {
                 var shellSettings = new List<ShellSettings>();
 
                 foreach (var tenant in _appDataFolder.ListDirectories("Sites")) {
@@ -47,7 +47,7 @@ namespace Orchard.Environment.Shell {
                 }
 
                 return shellSettings;
-            });
+            //});
         }
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
