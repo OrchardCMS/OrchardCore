@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Orchard.Hosting {
     public static class ServiceExtensions
     {
-        internal static IServiceCollection AddFallback([NotNull] this IServiceCollection services) {
+        internal static IServiceCollection AddFallback(this IServiceCollection services) {
 
             services.AddInstance<IRuntimeServices>(new ServiceManifest(services));
 

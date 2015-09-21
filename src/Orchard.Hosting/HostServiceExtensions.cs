@@ -11,7 +11,7 @@ using Orchard.Hosting.Services;
 namespace Orchard.Hosting {
     public static class HostServiceExtensions {
         public static IServiceCollection AddHost(
-            [NotNull] this IServiceCollection services, Action<IServiceCollection> additionalDependencies) {
+            this IServiceCollection services, Action<IServiceCollection> additionalDependencies) {
 
             services.AddFileSystems();
 

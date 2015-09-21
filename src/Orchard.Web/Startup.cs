@@ -17,10 +17,10 @@ namespace Orchard.Web {
             return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory) {
+        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory, IOrchardHost orchardHost) {
             builder.ConfigureWebHost(loggerFactory);
-            
-            builder.InitializeHost();
+
+            orchardHost.Initialize();
         }
     }
 }

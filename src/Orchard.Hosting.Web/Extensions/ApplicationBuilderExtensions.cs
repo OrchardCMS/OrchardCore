@@ -8,8 +8,8 @@ using System;
 namespace Orchard.Hosting {
     public static class ApplicationBuilderExtensions {
         public static IApplicationBuilder ConfigureWebHost(
-            [NotNull] this IApplicationBuilder builder,
-            [NotNull] ILoggerFactory loggerFactory) {
+            this IApplicationBuilder builder,
+            ILoggerFactory loggerFactory) {
 
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
             
@@ -21,11 +21,6 @@ namespace Orchard.Hosting {
             builder.UseMiddleware<OrchardRouterMiddleware>();
 
             return builder;
-        }
-
-        public static void InitializeHost([NotNull] this IApplicationBuilder builder) {
-            var host = builder.ApplicationServices.GetRequiredService<IOrchardHost>();
-            host.Initialize();
         }
     }
 }
