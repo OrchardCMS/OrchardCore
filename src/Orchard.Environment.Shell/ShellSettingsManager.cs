@@ -23,31 +23,29 @@ namespace Orchard.Environment.Shell {
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
-            //return _cache.Get<IEnumerable<ShellSettings>>("LoadSettings", (context) => {
-                var shellSettings = new List<ShellSettings>();
+            var shellSettings = new List<ShellSettings>();
 
-                foreach (var tenant in _appDataFolder.ListDirectories("Sites")) {
-                    _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
+            foreach (var tenant in _appDataFolder.ListDirectories("Sites")) {
+                _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
 
-                    var configurationContainer =
-                        new ConfigurationBuilder()
-                            .AddJsonFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "json")),
-                                true)
-                            .AddXmlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "xml")),
-                                true)
-                            .AddYamlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "txt")), 
-                                false);
+                var configurationContainer =
+                    new ConfigurationBuilder()
+                        .AddJsonFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "json")),
+                            true)
+                        .AddXmlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "xml")),
+                            true)
+                        .AddYamlFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "txt")),
+                            false);
 
-                    var config = configurationContainer.Build();
+                var config = configurationContainer.Build();
 
-                    var shellSetting = new ShellSettings(config);
-                    shellSettings.Add(shellSetting);
+                var shellSetting = new ShellSettings(config);
+                shellSettings.Add(shellSetting);
 
-                    _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
-                }
+                _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
+            }
 
-                return shellSettings;
-            //});
+            return shellSettings;
         }
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
