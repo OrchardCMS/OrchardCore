@@ -54,7 +54,7 @@ namespace Orchard.ContentManagement.Handlers
                 }
 
                 // build and weld the part
-                var part = new TPart();
+                var part = new TPart { TypePartDefinition = typePartDefinition };
                 _item.Weld(part);
             }
 

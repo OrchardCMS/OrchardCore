@@ -33,5 +33,6 @@ namespace Orchard.Environment.Extensions
         /// Loads the assembly of the specified features and their types.
         /// </summary>
         IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors);
+        bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject);
     }
 }

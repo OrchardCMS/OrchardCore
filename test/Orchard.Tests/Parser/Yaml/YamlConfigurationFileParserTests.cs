@@ -1,4 +1,4 @@
-﻿using Orchard.Environment.Shell;
+﻿using Orchard.Parser;
 using Orchard.Parser.Yaml;
 using System;
 using Xunit;

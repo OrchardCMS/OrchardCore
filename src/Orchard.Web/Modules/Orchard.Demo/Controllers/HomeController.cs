@@ -4,6 +4,8 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.Demo.TestEvents;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.Events;
 using System;
 using System.Threading.Tasks;
@@ -16,18 +18,29 @@ namespace Orchard.Demo.Controllers
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
         private readonly IEventBus _eventBus;
+        private readonly IDisplayManager _displayManager;
+        private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
+		
         public HomeController(
             ITestDependency testDependency,
             IContentManager contentManager,
             IEventBus eventBus,
+            IShapeFactory shapeFactory,
+            IDisplayManager displayManager,
+            IShapeDisplay shapeDisplay,
             ISession session)
         {
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
             _eventBus = eventBus;
+            _displayManager = displayManager;
+            _shapeDisplay = shapeDisplay;
+            Shape = shapeFactory;
         }
+
+        dynamic Shape { get; set; }
 
         public ActionResult Index()
         {
@@ -40,6 +53,8 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
+
+            var shape = Shape.Foo();
 
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
         }
@@ -55,7 +70,7 @@ namespace Orchard.Demo.Controllers
 
             return View(contentItem);
         }
-
+		
         public ActionResult Raw()
         {
             return View();

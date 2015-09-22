@@ -40,8 +40,9 @@ namespace Orchard.Environment.Shell.Builders
             _logger = loggerFactory.CreateLogger<ShellContainerFactory>();
         }
 
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
+        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) 
         {
+            var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
             IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddInstance(settings);
@@ -50,25 +51,6 @@ namespace Orchard.Environment.Shell.Builders
 
             // Sure this is right?
             tenantServiceCollection.AddInstance(_loggerFactory);
-
-            IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
-
-            foreach (var dependency in blueprint.Dependencies
-                .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
-            {
-                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
-            }
-
-            var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
-
-
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
-
-            // Let any module add custom service descriptors to the tenant
-            foreach (var service in moduleServiceProvider.GetServices<IModule>())
-            {
-                service.Configure(tenantServiceCollection);
-            }
 
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
@@ -101,7 +83,7 @@ namespace Orchard.Environment.Shell.Builders
             // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
             tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
-
+            
             // Configuring data access
             var indexes = blueprint
             .Dependencies
@@ -179,6 +161,23 @@ namespace Orchard.Environment.Shell.Builders
                         return proxy;
                     });
                 }
+            }
+
+            IServiceCollection moduleServiceCollection =
+                _serviceProvider.CreateChildContainer(_applicationServices);
+
+            foreach (var dependency in blueprint.Dependencies
+                .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
+            {
+                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
+            }
+
+            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
+
+            // Let any module add custom service descriptors to the tenant
+            foreach (var service in moduleServiceProvider.GetServices<IModule>())
+            {
+                service.Configure(tenantServiceCollection);
             }
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();

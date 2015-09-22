@@ -13,7 +13,9 @@
     "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Events": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*"
+    "Orchard.Hosting": "2.0.0-*",
+    "Orchard.Validation": "2.0.0-*",
+    "Orchard.DisplayManagement": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

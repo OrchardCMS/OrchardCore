@@ -12,11 +12,6 @@ namespace Orchard.ContentManagement
 {
     public class ContentPart : IContent
     {
-        public ContentPart()
-        {
-            Fields = new List<ContentField>();
-        }
-
         [IgnoreDataMember]
         public virtual ContentItem ContentItem { get; set; }
 
@@ -27,12 +22,12 @@ namespace Orchard.ContentManagement
         [IgnoreDataMember]
         public int ContentItemId => ContentItem.ContentItemId;
 
-        public SettingsDictionary Settings { get; set; }
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
+        [IgnoreDataMember]
+        public ContentPartDefinition PartDefinition { get { return TypePartDefinition.PartDefinition; } }
+        public SettingsDictionary Settings { get { return TypePartDefinition.Settings; } }
 
-        public IList<ContentField> Fields
-        {
-            get; set;
-        }
+        public IList<ContentField> Fields { get; set; } = new List<ContentField>();
 
         public bool Has(Type fieldType, string fieldName)
         {
