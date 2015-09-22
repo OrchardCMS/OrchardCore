@@ -1,0 +1,27 @@
+﻿{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
+    "Orchard.Abstractions": "2.0.0-*",
+    "Orchard.ContentManagement": "2.0.0-*",
+    "Orchard.DependencyInjection": "2.0.0-*",
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
+  },
+  "compilationOptions": {
+    "define": [ "TRACE" ],
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Collections.Specialized": "4.0.1-*"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Brochard"
+  }
+}
