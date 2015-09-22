@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Mvc.Actions;
+using Microsoft.AspNet.Mvc.Infrastructure;
 
 namespace Orchard.Hosting.Web.Mvc {
     public class OrchardMvcAssemblyProvider : IAssemblyProvider {

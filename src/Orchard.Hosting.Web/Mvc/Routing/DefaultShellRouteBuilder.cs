@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Mvc.Actions;
 
 namespace Orchard.Hosting.Web.Mvc.Routing {
     public class DefaultShellRouteBuilder : IRouteBuilder {
