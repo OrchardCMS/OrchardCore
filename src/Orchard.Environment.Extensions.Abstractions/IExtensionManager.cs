@@ -9,5 +9,6 @@ namespace Orchard.Environment.Extensions {
         ExtensionDescriptor GetExtension(string id);
 
         IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors);
+        bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject);
     }
 }

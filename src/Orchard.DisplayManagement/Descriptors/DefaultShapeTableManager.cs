@@ -36,7 +36,7 @@ namespace Orchard.DisplayManagement.Descriptors {
                                                            null;
 
                 var builder = new ShapeTableBuilder(strategyDefaultFeature);
-                bindingStrategy.Value.Discover(builder);
+                bindingStrategy.Discover(builder);
                 return builder.BuildAlterations().ToReadOnlyCollection();
             });
 
@@ -67,7 +67,7 @@ namespace Orchard.DisplayManagement.Descriptors {
                 Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
             };
 
-            _shapeTableEventHandlers.Value.Invoke(ctx => ctx.ShapeTableCreated(result), _logger);
+            _shapeTableEventHandlers.Invoke(ctx => ctx.ShapeTableCreated(result), _logger);
 
             _logger.LogInformation("Done building shape table");
             return result;
@@ -78,7 +78,7 @@ namespace Orchard.DisplayManagement.Descriptors {
         }
 
         private static bool AlterationHasDependency(ShapeAlteration item, ShapeAlteration subject) {
-            return ExtensionManager.HasDependency(item.Feature.Descriptor, subject.Feature.Descriptor);
+            return _extensionManager.HasDependency(item.Feature.Descriptor, subject.Feature.Descriptor);
         }
 
         private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeName) {
@@ -97,7 +97,7 @@ namespace Orchard.DisplayManagement.Descriptors {
             if (DefaultExtensionTypes.IsTheme(extensionType)) {
                 // alterations from themes must be from the given theme or a base theme
                 var featureName = alteration.Feature.Descriptor.Id;
-                return String.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);
+                return string.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);
             }
 
             return false;
@@ -110,7 +110,7 @@ namespace Orchard.DisplayManagement.Descriptors {
             var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeName);
             while (themeFeature != null) {
                 var baseTheme = themeFeature.Extension.BaseTheme;
-                if (String.IsNullOrEmpty(baseTheme)) {
+                if (string.IsNullOrEmpty(baseTheme)) {
                     return false;
                 }
                 if (featureName == baseTheme) {
