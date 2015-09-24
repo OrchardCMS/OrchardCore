@@ -15,4 +15,10 @@ namespace Orchard.DisplayManagement.Descriptors {
         void ShapeTableCreated(ShapeTable shapeTable);
     }
 
+    public class Test : IShapeTableProvider {
+        public void Discover(ShapeTableBuilder builder) {
+            builder.Describe("Foo")
+               .OnDisplaying(displaying => displaying.Shape.ChildContent = "<h1>Hi</h1>");
+        }
+    }
 }

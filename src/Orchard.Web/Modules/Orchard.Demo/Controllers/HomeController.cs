@@ -14,14 +14,17 @@ namespace Orchard.Demo.Controllers {
 
         public HomeController(ITestDependency testDependency,
             IContentManager contentManager,
-            IEventNotifier eventNotifier) {
+            IEventNotifier eventNotifier
+            ) {
             _testDependency = testDependency;
             _contentManager = contentManager;
             _eventNotifier = eventNotifier;
+           
             }
 
         public ActionResult Index()
         {
+
             _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
 
             var contentItem = _contentManager.New("Foo");

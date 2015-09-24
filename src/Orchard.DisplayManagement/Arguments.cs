@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement {
         }
 
         public static INamedEnumerable<object> From(object propertyObject) {
-            var properties = propertyObject.GetType().GetProperties();
+            var properties = propertyObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
             var values = properties.Select(x => x.GetGetMethod().Invoke(propertyObject, null));
             return new NamedEnumerable<object>(values, properties.Select(x => x.Name));
         }

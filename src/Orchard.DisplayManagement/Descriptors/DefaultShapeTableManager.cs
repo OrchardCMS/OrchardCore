@@ -5,24 +5,26 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Utility;
 using Microsoft.Framework.Logging;
-using System.Threading.Tasks;
+using System.Reflection;
+using Orchard.Environment.Extensions.Utility;
+using Orchard.Events;
 
 namespace Orchard.DisplayManagement.Descriptors {
 
     public class DefaultShapeTableManager : IShapeTableManager {
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
-        private readonly IEnumerable<IShapeTableEventHandler> _shapeTableEventHandlers;
+        private readonly IEventNotifier _notifier;
         private readonly ILogger _logger;
 
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IExtensionManager extensionManager,
-            IEnumerable<IShapeTableEventHandler> shapeTableEventHandlers,
+            IEventNotifier notifier,
             ILoggerFactory loggerFactory
             ) {
             _extensionManager = extensionManager;
-            _shapeTableEventHandlers = shapeTableEventHandlers;
+            _notifier = notifier;
             _bindingStrategies = bindingStrategies;
             _logger = loggerFactory.CreateLogger<DefaultShapeTableManager>();
         }
@@ -30,15 +32,18 @@ namespace Orchard.DisplayManagement.Descriptors {
         public ShapeTable GetShapeTable(string themeName) {
             _logger.LogInformation("Start building shape table");
 
-            var alterationSets = Parallel.ForEach(_bindingStrategies, bindingStrategy => {
-                Feature strategyDefaultFeature = bindingStrategy.Metadata.ContainsKey("Feature") ?
-                                                           (Feature)bindingStrategy.Metadata["Feature"] :
-                                                           null;
+            IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
+            foreach (var bindingStrategy in _bindingStrategies) {
+                Feature strategyDefaultFeature = null;
+                var featureProperty = bindingStrategy.GetType().GetProperty("Feature");
+                if (featureProperty != null) {
+                    strategyDefaultFeature = (Feature)featureProperty.GetGetMethod().Invoke(featureProperty, null);
+                }
 
                 var builder = new ShapeTableBuilder(strategyDefaultFeature);
                 bindingStrategy.Discover(builder);
-                return builder.BuildAlterations().ToReadOnlyCollection();
-            });
+                alterationSets.Add(builder.BuildAlterations().ToReadOnlyCollection());
+            }
 
             var alterations = alterationSets
             .SelectMany(shapeAlterations => shapeAlterations)
@@ -67,7 +72,7 @@ namespace Orchard.DisplayManagement.Descriptors {
                 Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
             };
 
-            _shapeTableEventHandlers.Invoke(ctx => ctx.ShapeTableCreated(result), _logger);
+            _notifier.Notify<IShapeTableEventHandler>(ctx => ctx.ShapeTableCreated(result));
 
             _logger.LogInformation("Done building shape table");
             return result;
@@ -77,7 +82,7 @@ namespace Orchard.DisplayManagement.Descriptors {
             return shapeAlteration.Feature.Descriptor.Priority;
         }
 
-        private static bool AlterationHasDependency(ShapeAlteration item, ShapeAlteration subject) {
+        private bool AlterationHasDependency(ShapeAlteration item, ShapeAlteration subject) {
             return _extensionManager.HasDependency(item.Feature.Descriptor, subject.Feature.Descriptor);
         }
 

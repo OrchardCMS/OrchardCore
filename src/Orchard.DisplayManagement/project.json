@@ -6,7 +6,8 @@
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.FileSystem.Web": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -16,7 +17,8 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Collections.Specialized": "4.0.1-*"
+        "System.Collections.Specialized": "4.0.1-*",
+        "System.Threading.Tasks.Parallel": "4.0.1-*" 
       }
     }
   },
