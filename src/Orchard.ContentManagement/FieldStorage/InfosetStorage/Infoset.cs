@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace Orchard.ContentManagement.FieldStorage.InfosetStorage {
     public class Infoset {
@@ -7,6 +8,9 @@ namespace Orchard.ContentManagement.FieldStorage.InfosetStorage {
         private void SetElement(XElement value) {
             _element = value;
         }
+
+        [Key]
+        public int Id { get; set; }
 
         public XElement Element {
             get {

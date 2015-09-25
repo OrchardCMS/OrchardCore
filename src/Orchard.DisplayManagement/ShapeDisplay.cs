@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement {
 
         public string Display(object shape) {
             var viewContext = new ViewContext {
-                HttpContext = _httpContextAccessor.HttpContext
+                HttpContext = _httpContextAccessor.HttpContext,
             };
             
             var display = _displayHelperFactory.CreateHelper(viewContext);

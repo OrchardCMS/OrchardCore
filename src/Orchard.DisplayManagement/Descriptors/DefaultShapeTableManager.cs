@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Descriptors {
                 Feature strategyDefaultFeature = null;
                 var featureProperty = bindingStrategy.GetType().GetProperty("Feature");
                 if (featureProperty != null) {
-                    strategyDefaultFeature = (Feature)featureProperty.GetGetMethod().Invoke(featureProperty, null);
+                    strategyDefaultFeature = (Feature)featureProperty.GetGetMethod().Invoke(bindingStrategy, null);
                 }
 
                 var builder = new ShapeTableBuilder(strategyDefaultFeature);
