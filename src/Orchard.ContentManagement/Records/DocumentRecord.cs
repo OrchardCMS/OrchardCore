@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using Orchard.ContentManagement.FieldStorage.InfosetStorage;
 using Orchard.Data;
 using Orchard.Data.Conventions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Orchard.ContentManagement.Records {
     public class DocumentRecord : StorageDocument {
@@ -14,7 +15,9 @@ namespace Orchard.ContentManagement.Records {
 
         [StringLengthMax]
         public override string Data { get { return Infoset.Data; } set { Infoset.Data = value; } }
+        [NotMapped]
         public Infoset Infoset { get; set; }
+        [NotMapped]
         public Infoset VersionInfoset { get; set; }
 
 
