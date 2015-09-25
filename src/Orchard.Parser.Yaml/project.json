@@ -3,6 +3,7 @@
   "dependencies": {
     "Microsoft.Framework.Configuration.Abstractions": "1.0.0-*",
     "Microsoft.Framework.Configuration": "1.0.0-*",
+    "Microsoft.Framework.Configuration.FileExtensions": "1.0.0-*",
     "YamlDotNet": "3.7.0"
   },
   "compilationOptions": {

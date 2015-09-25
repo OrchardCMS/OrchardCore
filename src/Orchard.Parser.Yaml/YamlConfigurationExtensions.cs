@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Framework.Configuration;
-using Microsoft.Framework.Configuration.Helper;
 using Orchard.Parser.Yaml;
 
 namespace Orchard.Parser {
@@ -15,25 +14,25 @@ namespace Orchard.Parser {
         }
 
         public static IConfigurationBuilder AddYamlFile(
-            this IConfigurationBuilder configuration,
+            this IConfigurationBuilder configurationBuilder,
             string path,
             bool optional) {
-            if (configuration == null) {
-                throw new ArgumentNullException(nameof(configuration));
+            if (configurationBuilder == null) {
+                throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
             if (string.IsNullOrEmpty(path)) {
                 throw new ArgumentException("InvalidFilePath", nameof(path));
             }
 
-            var fullPath = ConfigurationHelper.ResolveConfigurationFilePath(configuration, path);
+            var fullPath = Path.Combine(configurationBuilder.GetBasePath(), path);
 
             if (!optional && !File.Exists(fullPath)) {
                 throw new FileNotFoundException("FormatError_FileNotFound(fullPath)", fullPath);
             }
 
-            configuration.Add(new YamlConfigurationSource(fullPath, optional: optional));
-            return configuration;
+            configurationBuilder.Add(new YamlConfigurationSource(fullPath, optional: optional));
+            return configurationBuilder;
         }
     }
 }
