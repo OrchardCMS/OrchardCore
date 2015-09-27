@@ -9,9 +9,6 @@ namespace Orchard.ContentManagement.FieldStorage.InfosetStorage {
             _element = value;
         }
 
-        [Key]
-        public int Id { get; set; }
-
         public XElement Element {
             get {
                 return _element ?? (_element = new XElement("Data"));
