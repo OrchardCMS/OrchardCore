@@ -2,11 +2,11 @@
 using System;
 
 namespace Orchard.Environment.Shell {
-    public static class ConfigurationSourceExtensions {
-        public static string Get(this IConfigurationSource configSource, string key) {
+    public static class ConfigurationProviderExtensions {
+        public static string Get(this IConfigurationProvider configProvider, string key) {
             string value;
 
-            if (!configSource.TryGet(key, out value)) {
+            if (!configProvider.TryGet(key, out value)) {
                 throw new InvalidOperationException("Key not found");
             }
 

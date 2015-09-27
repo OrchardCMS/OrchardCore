@@ -60,14 +60,14 @@ namespace Orchard.Environment.Shell {
 
             var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
-            var configurationSource = new YamlConfigurationSource(
+            var configurationProvider = new YamlConfigurationProvider(
                 _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
 
             foreach (var key in shellSettings.RootConfiguration.GetChildren()) {
-                configurationSource.Set(key.Key, key.Value);
+                configurationProvider.Set(key.Key, key.Value);
             }
-            
-            configurationSource.Commit();
+
+            configurationProvider.Commit();
 
             _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
         }

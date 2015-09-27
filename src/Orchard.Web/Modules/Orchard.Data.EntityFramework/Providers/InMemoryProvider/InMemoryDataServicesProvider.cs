@@ -8,7 +8,7 @@ namespace Orchard.Data.EntityFramework.Providers.SqlProvider {
         }
 
         public void ConfigureContextOptions(DbContextOptionsBuilder optionsBuilders, string connectionString) {
-            optionsBuilders.UseInMemoryDatabase(persist: true);
+            optionsBuilders.UseInMemoryDatabase();
         }
     }
 }

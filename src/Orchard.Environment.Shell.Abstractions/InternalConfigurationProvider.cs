@@ -1,6 +1,6 @@
 ﻿using Microsoft.Framework.Configuration;
 
 namespace Orchard.Environment.Shell {
-    internal class InternalConfigurationSource : ConfigurationSource {
+    internal class InternalConfigurationProvider : ConfigurationProvider {
     }
 }

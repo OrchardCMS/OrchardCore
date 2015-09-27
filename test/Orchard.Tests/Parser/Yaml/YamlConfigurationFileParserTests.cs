@@ -14,20 +14,20 @@ test.last.name: last.name
 residential.address:
     street.name: Something street
     zipcode: 12345";
-            var yamlConfigSrc = new YamlConfigurationSource(TestStreamHelpers.ArbitraryFilePath);
+            var yamlConfigPrd = new YamlConfigurationProvider(TestStreamHelpers.ArbitraryFilePath);
 
-            yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml.TrimStart()));
+            yamlConfigPrd.Load(TestStreamHelpers.StringToStream(yaml.TrimStart()));
 
-            Assert.Equal("test", yamlConfigSrc.Get("firstname"));
-            Assert.Equal("last.name", yamlConfigSrc.Get("test.last.name"));
-            Assert.Equal("Something street", yamlConfigSrc.Get("residential.address:STREET.name"));
-            Assert.Equal("12345", yamlConfigSrc.Get("residential.address:zipcode"));
+            Assert.Equal("test", yamlConfigPrd.Get("firstname"));
+            Assert.Equal("last.name", yamlConfigPrd.Get("test.last.name"));
+            Assert.Equal("Something street", yamlConfigPrd.Get("residential.address:STREET.name"));
+            Assert.Equal("12345", yamlConfigPrd.Get("residential.address:zipcode"));
         }
 
         [Fact]
         public void LoadMethodCanHandleEmptyValue() {
             var yaml = @"name:";
-            var yamlConfigSrc = new YamlConfigurationSource(TestStreamHelpers.ArbitraryFilePath);
+            var yamlConfigSrc = new YamlConfigurationProvider(TestStreamHelpers.ArbitraryFilePath);
 
             yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml));
 
@@ -37,10 +37,10 @@ residential.address:
         [Fact]
         public void NonObjectRootIsInvalid() {
             var yaml = @"test";
-            var yamlConfigSrc = new YamlConfigurationSource("Foo");
+            var yamlConfigPrd = new YamlConfigurationProvider("Foo");
 
             var exception = Assert.Throws<FormatException>(
-                () => yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml)));
+                () => yamlConfigPrd.Load(TestStreamHelpers.StringToStream(yaml)));
 
             Assert.NotNull(exception.Message);
         }
@@ -53,13 +53,13 @@ residential.address:
                 address:
                     street: Something street # Comments
                     zipcode: 12345";
-            var yamlConfigSrc = new YamlConfigurationSource("Foo");
+            var yamlConfigPrd = new YamlConfigurationProvider("Foo");
 
-            yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml));
+            yamlConfigPrd.Load(TestStreamHelpers.StringToStream(yaml));
 
-            Assert.Equal("test", yamlConfigSrc.Get("name"));
-            Assert.Equal("Something street", yamlConfigSrc.Get("address:street"));
-            Assert.Equal("12345", yamlConfigSrc.Get("address:zipcode"));
+            Assert.Equal("test", yamlConfigPrd.Get("name"));
+            Assert.Equal("Something street", yamlConfigPrd.Get("address:street"));
+            Assert.Equal("12345", yamlConfigPrd.Get("address:zipcode"));
         }
 
         [Fact]
@@ -74,14 +74,14 @@ address:
         street: Some Work Address
         zipcode: 54321
 ...";
-            var yamlConfigSrc = new YamlConfigurationSource(TestStreamHelpers.ArbitraryFilePath);
+            var yamlConfigPrd = new YamlConfigurationProvider(TestStreamHelpers.ArbitraryFilePath);
 
-            yamlConfigSrc.Load(TestStreamHelpers.StringToStream(yaml));
+            yamlConfigPrd.Load(TestStreamHelpers.StringToStream(yaml));
             
-            Assert.Equal("Some Home Address", yamlConfigSrc.Get("address:home:street"));
-            Assert.Equal("12345", yamlConfigSrc.Get("address:home:zipcode"));
-            Assert.Equal("Some Work Address", yamlConfigSrc.Get("address:work:street"));
-            Assert.Equal("54321", yamlConfigSrc.Get("address:work:zipcode"));
+            Assert.Equal("Some Home Address", yamlConfigPrd.Get("address:home:street"));
+            Assert.Equal("12345", yamlConfigPrd.Get("address:home:zipcode"));
+            Assert.Equal("Some Work Address", yamlConfigPrd.Get("address:work:street"));
+            Assert.Equal("54321", yamlConfigPrd.Get("address:work:zipcode"));
         }
         //[Fact]
         //public void ThrowExceptionWhenPassingNullAsFilePath() {

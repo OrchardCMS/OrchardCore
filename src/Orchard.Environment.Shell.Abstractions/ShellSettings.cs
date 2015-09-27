@@ -12,20 +12,20 @@ namespace Orchard.Environment.Shell {
         private TenantState _tenantState;
 
         public ShellSettings() {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
+            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
             State = TenantState.Invalid;
         }
 
         public ShellSettings(
             string name, TenantState tenantState) {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
+            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
 
             Name = name;
             State = tenantState;
         }
 
         public ShellSettings(ShellSettings settings) {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationSource() });
+            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;

@@ -4,16 +4,16 @@ using System.IO;
 using Microsoft.Framework.Configuration;
 
 namespace Orchard.Parser.Yaml {
-    public class YamlConfigurationSource : ConfigurationSource {
+    public class YamlConfigurationProvider : ConfigurationProvider {
         public const char Separator = ':';
         public const string EmptyValue = "null";
         public const char ThemesSeparator = ';';
 
-        public YamlConfigurationSource(string path)
+        public YamlConfigurationProvider(string path)
             : this(path, optional: false) {
         }
 
-        public YamlConfigurationSource(string path, bool optional) {
+        public YamlConfigurationProvider(string path, bool optional) {
             if (string.IsNullOrEmpty(path)) {
                 throw new ArgumentException("Invalid Filepath", nameof(path));
             }
@@ -23,12 +23,12 @@ namespace Orchard.Parser.Yaml {
         }
 
         /// <summary>
-        /// Gets a value that determines if this instance of <see cref="DefaultFileConfigurationSource"/> is optional.
+        /// Gets a value that determines if this instance of <see cref="YamlConfigurationProvider"/> is optional.
         /// </summary>
         public bool Optional { get; }
 
         /// <summary>
-        /// The absolute path of the file backing this instance of <see cref="DefaultFileConfigurationSource"/>.
+        /// The absolute path of the file backing this instance of <see cref="YamlConfigurationProvider"/>.
         /// </summary>
         public string Path { get; }
 

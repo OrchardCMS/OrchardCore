@@ -31,7 +31,7 @@ namespace Orchard.Parser {
                 throw new FileNotFoundException("FormatError_FileNotFound(fullPath)", fullPath);
             }
 
-            configurationBuilder.Add(new YamlConfigurationSource(fullPath, optional: optional));
+            configurationBuilder.Add(new YamlConfigurationProvider(fullPath, optional: optional));
             return configurationBuilder;
         }
     }

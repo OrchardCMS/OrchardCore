@@ -30,9 +30,9 @@ dataproviders:
 ...";
             File.WriteAllText(_tempFolderName, yaml);
 
-            var yamlConfigSrc = new YamlConfigurationSource(_tempFolderName);
+            var yamlConfigPrd = new YamlConfigurationProvider(_tempFolderName);
 
-            var root = new ConfigurationBuilder(yamlConfigSrc).Build();
+            var root = new ConfigurationBuilder(yamlConfigPrd).Build();
 
             var settings = new ShellSettings(root);
 
