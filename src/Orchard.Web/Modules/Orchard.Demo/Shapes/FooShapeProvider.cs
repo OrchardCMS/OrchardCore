@@ -14,7 +14,7 @@ namespace Orchard.DisplayManagement.Descriptors {
                         Id = "Orchard.Demo",
                         Extension = new ExtensionDescriptor {
                             Id = "Orchard.Demo",
-                            ExtensionType = "Module"
+                            ExtensionType = DefaultExtensionTypes.Module
                         }
                     },
                 };
