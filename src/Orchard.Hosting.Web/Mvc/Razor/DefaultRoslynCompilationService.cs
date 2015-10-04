@@ -11,7 +11,7 @@ using Microsoft.AspNet.Mvc.Razor.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.CSharp;

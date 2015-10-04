@@ -1,5 +1,5 @@
 ﻿using Orchard.Environment.Recipes.Models;
-using Microsoft.Framework.Localization;
+using Microsoft.Extensions.Localization;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Environment.Recipes.Services {

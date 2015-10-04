@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Framework.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Utility {
     public static class StringExtensions {

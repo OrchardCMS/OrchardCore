@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using Orchard.FileSystem.AppData;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Dnx.Compilation.Caching;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;

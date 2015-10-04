@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using System;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Orchard.Environment.Shell;
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using Orchard.Hosting.Console;
 using System;
 using System.Threading.Tasks;

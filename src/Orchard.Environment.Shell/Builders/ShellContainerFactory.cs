@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Builders.Models;
 
 #if DNXCORE50

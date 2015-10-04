@@ -1,4 +1,4 @@
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Events {
     public static class ServiceCollectionExtensions {

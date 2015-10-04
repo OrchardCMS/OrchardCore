@@ -1,5 +1,5 @@
 using Microsoft.AspNet.Builder;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;
 

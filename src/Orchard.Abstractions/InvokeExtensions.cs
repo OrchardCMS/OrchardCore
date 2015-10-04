@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Orchard.Security;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard {
 

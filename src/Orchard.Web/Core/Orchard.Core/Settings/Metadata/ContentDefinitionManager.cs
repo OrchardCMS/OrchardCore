@@ -8,7 +8,7 @@ using Orchard.ContentManagement.MetaData.Services;
 using Orchard.Core.Settings.Metadata.Records;
 using Orchard.Data;
 using Orchard.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Core.Settings.Metadata {
     public class ContentDefinitionManager : Component, IContentDefinitionManager {

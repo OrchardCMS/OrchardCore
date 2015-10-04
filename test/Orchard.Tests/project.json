@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "Microsoft.Dnx.TestHost": "1.0.0-*",
-    "Microsoft.Framework.DependencyInjection": "1.0.0-*",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",

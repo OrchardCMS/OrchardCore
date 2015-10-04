@@ -1,5 +1,5 @@
-﻿using Microsoft.Framework.Logging;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Hosting.Console.Host;
 using Orchard.Hosting.Console.HostContext;
 using System;

@@ -1,7 +1,7 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Orchard.Hosting.ShellBuilders;
 using Orchard.Environment.Shell.Descriptor.Models;

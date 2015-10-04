@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.FileProviders;
 using Orchard.Localization;
 

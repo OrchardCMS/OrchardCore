@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Hosting.Console.Host;
 using System;
 using System.IO;

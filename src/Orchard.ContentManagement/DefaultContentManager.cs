@@ -8,7 +8,7 @@ using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.Data;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.ContentManagement {
     public class DefaultContentManager : IContentManager {

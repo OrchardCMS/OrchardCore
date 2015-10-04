@@ -1,5 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;

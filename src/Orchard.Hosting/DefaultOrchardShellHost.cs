@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting {

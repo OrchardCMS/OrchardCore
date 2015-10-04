@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.OptionsModel;
+﻿using Microsoft.Extensions.OptionsModel;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Tests.Stubs;

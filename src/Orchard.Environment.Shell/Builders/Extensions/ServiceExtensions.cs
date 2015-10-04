@@ -1,6 +1,6 @@
 ﻿using Microsoft.Dnx.Runtime;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 
 #if DNXCORE50

@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Framework.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard {
     public class OrchardFatalException : Exception {

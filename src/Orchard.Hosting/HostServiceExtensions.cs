@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Dnx.Compilation.Caching;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.FileSystem;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;

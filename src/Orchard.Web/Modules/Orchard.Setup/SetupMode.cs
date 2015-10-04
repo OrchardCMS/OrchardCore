@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.DependencyInjection;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing.Routes;

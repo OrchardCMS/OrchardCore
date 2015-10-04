@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;

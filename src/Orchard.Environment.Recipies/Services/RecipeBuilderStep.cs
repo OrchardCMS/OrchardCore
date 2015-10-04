@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Localization;
+﻿using Microsoft.Extensions.Localization;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Recipes.Models;
 

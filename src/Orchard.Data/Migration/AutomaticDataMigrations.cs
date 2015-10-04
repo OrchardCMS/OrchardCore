@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using System;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Orchard.Environment.Extensions.Models;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace Orchard.Environment.Extensions.Folders {
     public class ExtensionLocator : IExtensionLocator {

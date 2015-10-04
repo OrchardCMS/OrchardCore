@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Data.Entity;
 using System.Linq;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Data.EntityFramework {
     public interface IDataContext {

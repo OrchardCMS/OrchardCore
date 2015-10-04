@@ -2,7 +2,7 @@ using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Routing;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Hosting.Web.Mvc;
 using Orchard.Hosting.Web.Mvc.Razor;
 using Orchard.Hosting.Web.Mvc.Routing;

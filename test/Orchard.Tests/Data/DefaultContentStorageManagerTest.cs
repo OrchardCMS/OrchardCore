@@ -4,7 +4,7 @@
 //using System.Linq;
 //using Xunit;
 //using System.Linq.Expressions;
-//using Microsoft.Framework.DependencyInjection;
+//using Microsoft.Extensions.DependencyInjection;
 //using System.Threading.Tasks;
 //#if DNXCORE50
 //using System.Reflection;

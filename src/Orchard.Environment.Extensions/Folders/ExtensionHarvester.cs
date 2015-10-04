@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using Orchard.Localization;
 using Orchard.Environment.Extensions.Models;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.FileSystem;
 using Orchard.Utility;
 

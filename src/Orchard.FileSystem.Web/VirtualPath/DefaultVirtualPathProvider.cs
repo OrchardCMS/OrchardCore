@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Orchard.Environment;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.FileSystem.VirtualPath {
     public class DefaultVirtualPathProvider : IVirtualPathProvider {

@@ -6,7 +6,7 @@ using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Extensions.Loaders {
     public class CoreExtensionLoader : IExtensionLoader {

@@ -1,9 +1,9 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Framework.Configuration.Abstractions": "1.0.0-*",
-    "Microsoft.Framework.Configuration.Json": "1.0.0-*",
-    "Microsoft.Framework.Configuration.Xml": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
+    "Microsoft.Extensions.Configuration.Xml": "1.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"

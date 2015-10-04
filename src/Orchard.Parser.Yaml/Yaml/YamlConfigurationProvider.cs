@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace Orchard.Parser.Yaml {
     public class YamlConfigurationProvider : ConfigurationProvider {

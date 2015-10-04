@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
 using Microsoft.AspNet.Routing.Template;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Web.Routing.Routes {

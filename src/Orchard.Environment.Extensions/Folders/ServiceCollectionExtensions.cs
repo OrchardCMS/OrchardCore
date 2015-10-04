@@ -1,4 +1,4 @@
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Environment.Extensions.Folders {

@@ -1,5 +1,5 @@
-﻿using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orchard.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Loaders;

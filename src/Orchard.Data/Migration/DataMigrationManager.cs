@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration.Records;
 using Orchard.Environment.Extensions;
 using Orchard.Localization;

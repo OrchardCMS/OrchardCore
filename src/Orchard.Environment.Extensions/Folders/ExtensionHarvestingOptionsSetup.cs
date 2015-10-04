@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.OptionsModel;
+﻿using Microsoft.Extensions.OptionsModel;
 
 namespace Orchard.Environment.Extensions.Folders {
     /// <summary>

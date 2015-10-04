@@ -5,9 +5,9 @@ using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.OptionsModel;
 
 namespace Orchard.Environment.Extensions.Loaders {
     public class DynamicExtensionLoader : IExtensionLoader {

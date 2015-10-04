@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Orchard.Environment.Shell;
 using Orchard.Parser.Yaml;
 using System;

@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.Dnx.Compilation.CSharp": "1.0.0-*",
     "Microsoft.Dnx.Compilation.CSharp.Common": "1.0.0-*",
-    "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {

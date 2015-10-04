@@ -1,4 +1,4 @@
-﻿using Microsoft.Framework.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Localization;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Descriptor;

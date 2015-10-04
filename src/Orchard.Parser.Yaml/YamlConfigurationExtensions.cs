@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Framework.Configuration;
+using Microsoft.Extensions.Configuration;
 using Orchard.Parser.Yaml;
 
 namespace Orchard.Parser {

@@ -7,7 +7,7 @@ using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Utility;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Extensions {

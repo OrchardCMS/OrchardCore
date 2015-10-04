@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Orchard.Localization;
 using Orchard.DependencyInjection;
-using Microsoft.Framework.Localization;
+using Microsoft.Extensions.Localization;
 using Orchard.Environment.Recipes.Models;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Recipes.Services {
     public abstract class RecipeExecutionStep : IDependency, IRecipeExecutionStep {

@@ -1,4 +1,4 @@
-using Microsoft.Framework.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Localization {
     /// <summary>

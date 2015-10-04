@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.Data;
 using Orchard.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor.Settings.Records;
 using Orchard.Environment.Shell.Descriptor.Models;
 
