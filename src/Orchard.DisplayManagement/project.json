@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.Framework.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",

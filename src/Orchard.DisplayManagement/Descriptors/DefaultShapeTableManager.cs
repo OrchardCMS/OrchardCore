@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Utility;
-using Microsoft.Framework.Logging;
-using System.Reflection;
 using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
+using Orchard.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+#if DNXCORE50
+using System.Reflection;
+#endif
 
 namespace Orchard.DisplayManagement.Descriptors {
-
     public class DefaultShapeTableManager : IShapeTableManager {
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;

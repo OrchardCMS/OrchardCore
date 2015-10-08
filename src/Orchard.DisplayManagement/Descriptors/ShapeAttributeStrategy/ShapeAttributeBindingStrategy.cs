@@ -1,4 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNet.Mvc.Routing;
+using Microsoft.AspNet.Mvc.ViewFeatures;
+using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNet.Routing;
+using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.Implementation;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,15 +16,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Microsoft.CSharp.RuntimeBinder;
-using Orchard.DisplayManagement.Implementation;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNet.Mvc.Routing;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
     public class ShapeAttributeBindingStrategy : IShapeTableProvider {

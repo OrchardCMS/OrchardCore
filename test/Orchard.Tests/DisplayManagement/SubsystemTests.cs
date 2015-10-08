@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
@@ -11,7 +11,7 @@ using Orchard.Tests.Stubs;
 using System;
 using Xunit;
 using System.Linq.Expressions;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Html.Abstractions;
 
 namespace Orchard.Tests.DisplayManagement {

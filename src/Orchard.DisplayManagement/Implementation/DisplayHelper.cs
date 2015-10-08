@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Html.Abstractions;
 using System.IO;
-using Microsoft.Framework.WebEncoders;
+using Microsoft.Extensions.WebEncoders;
 
 namespace Orchard.DisplayManagement.Implementation {
 

@@ -10,9 +10,9 @@ using Orchard.DisplayManagement.Shapes;
 using Orchard.Localization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Framework.WebEncoders;
+using Microsoft.Extensions.WebEncoders;
 
 namespace Orchard.DisplayManagement.Implementation {
     public class DefaultDisplayManager : IDisplayManager {

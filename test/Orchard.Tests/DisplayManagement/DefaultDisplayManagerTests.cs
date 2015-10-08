@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
-using Orchard.Tests.Stubs;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
-using Xunit;
-using Microsoft.AspNet.Html.Abstractions;
 using Orchard.Environment.Extensions;
 using Orchard.Events;
+using Orchard.Tests.Stubs;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
-using Microsoft.Framework.Logging;
+using Xunit;
 
 namespace Orchard.Tests.DisplayManagement {
     public class DefaultDisplayManagerTests {
