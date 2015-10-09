@@ -13,6 +13,7 @@ using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Html.Abstractions;
+using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 
 namespace Orchard.Tests.DisplayManagement {
     public class SubsystemTests {
@@ -21,6 +22,7 @@ namespace Orchard.Tests.DisplayManagement {
         public SubsystemTests(){
             IServiceCollection serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
             serviceCollection.AddScoped<IShapeTableLocator, ShapeTableLocator>();
             serviceCollection.AddScoped<IDisplayManager, DefaultDisplayManager>();

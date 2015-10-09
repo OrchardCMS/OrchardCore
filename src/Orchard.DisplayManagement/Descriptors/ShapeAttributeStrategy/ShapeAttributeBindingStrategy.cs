@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Mvc.Routing;
 using Microsoft.AspNet.Mvc.ViewFeatures;
 using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNet.Routing;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
@@ -21,16 +21,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
     public class ShapeAttributeBindingStrategy : IShapeTableProvider {
         private readonly IEnumerable<ShapeAttributeOccurrence> _shapeAttributeOccurrences;
         private readonly IServiceProvider _componentContext;
-        private readonly RouteCollection _routeCollection;
 
         public ShapeAttributeBindingStrategy(
             IEnumerable<ShapeAttributeOccurrence> shapeAttributeOccurrences,
-            IServiceProvider componentContext,
-            RouteCollection routeCollection) {
+            IServiceProvider componentContext) {
             _shapeAttributeOccurrences = shapeAttributeOccurrences;
-            // todo: using a component context won't work when this is singleton
             _componentContext = componentContext;
-            _routeCollection = routeCollection;
         }
 
         public void Discover(ShapeTableBuilder builder) {
@@ -56,7 +52,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
         }
 
         private IHtmlContent PerformInvoke(DisplayContext displayContext, MethodInfo methodInfo, IServiceProvider serviceInstance) {
-            var output = new HtmlStringWriter();
+            var output = new StringCollectionTextWriter(System.Text.Encoding.UTF8);
             var arguments = methodInfo.GetParameters()
                 .Select(parameter => BindParameter(displayContext, parameter, output));
 
@@ -64,7 +60,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
             if (methodInfo.ReturnType != typeof(void)) {
                 output.Write(CoerceHtmlString(returnValue));
             }
-            return output;
+            return output.Content;
         }
 
         private static IHtmlContent CoerceHtmlString(object invoke) {
@@ -90,7 +86,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
             }
 
             if (parameter.Name == "Url" && parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper))) {
-                return new UrlHelper(displayContext.ViewContext.RequestContext, _routeCollection);
+                return _componentContext.GetService<IUrlHelper>();
             }
 
             var getter = _getters.GetOrAdd(parameter.Name, n =>
@@ -120,10 +116,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy {
 
             return Expression.Lambda<Func<object, object>>(
                 Expression.Convert(
-                    Expression.Dynamic(
-                        Microsoft.CSharp.RuntimeBinder.Binder.Convert(CSharpBinderFlags.ConvertExplicit, targetType, null),
-                        targetType,
-                        valueParameter),
+                    Expression.Property(valueParameter, "value"),
                     typeof(object)),
                 valueParameter).Compile();
         }
