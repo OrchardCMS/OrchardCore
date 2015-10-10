@@ -19,7 +19,7 @@ using Orchard.DependencyInjection;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor;
 
-namespace Orchard.Hosting.Web.Mvc.Razor {
+namespace Orchard.Hosting.Mvc.Razor {
     /// <summary>
     /// A type that uses Roslyn to compile C# content.
     /// </summary>

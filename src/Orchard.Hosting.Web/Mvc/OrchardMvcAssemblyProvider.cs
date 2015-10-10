@@ -7,7 +7,7 @@ using System.Reflection;
 using Orchard.DependencyInjection;
 using Microsoft.AspNet.Mvc.Infrastructure;
 
-namespace Orchard.Hosting.Web.Mvc {
+namespace Orchard.Hosting.Mvc {
     public class OrchardMvcAssemblyProvider : IAssemblyProvider {
         /// <summary>
         /// Gets the set of assembly names that are used as root for discovery of

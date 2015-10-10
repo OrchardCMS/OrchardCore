@@ -16,18 +16,13 @@
     "**.vspscc"
   ],
   "dependencies": {
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.AspNet.Server.IIS": "1.0.0-*",
     "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
-    "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
-    "Orchard.Hosting": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*"
   },
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5001;http://localhost:5002",
-    "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5003",
-    "run": "run server.urls=http://localhost:5004"
+    "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001;http://localhost:5002",
+    "run": "run server.urls=http://localhost:5001"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

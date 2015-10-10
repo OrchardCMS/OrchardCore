@@ -1,4 +1,4 @@
-﻿namespace Orchard.Hosting.Console.Host {
+﻿namespace Orchard.Environment.Commands {
     /// <summary>
     /// Different return codes for a command execution.
     /// </summary>

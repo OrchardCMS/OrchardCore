@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Mvc.Razor;
 
-namespace Orchard.Hosting.Web.Mvc.Razor {
+namespace Orchard.Hosting.Mvc.Razor {
     public class ModuleViewLocationExpander : IViewLocationExpander {
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context) {

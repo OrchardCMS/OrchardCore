@@ -1,18 +1,20 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Hosting.Console.Host;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Commands;
+using Orchard.Environment.Shell;
 using System;
-using System.IO;
 using System.Linq;
 
-namespace Orchard.Hosting.Console.HostContext {
+namespace Orchard.Hosting.HostContext {
     public class CommandHostContextProvider : ICommandHostContextProvider {
         private readonly string[] _args;
-        private OrchardConsoleLogger _logger;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly OrchardConsoleLogger _logger;
 
         public CommandHostContextProvider(
             IServiceProvider serviceProvider,
             OrchardConsoleLogger logger,
             string[] args) {
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _args = args;
         }
@@ -31,6 +33,10 @@ namespace Orchard.Hosting.Console.HostContext {
 
         private void Initialize(CommandHostContext context) {
             context.Arguments = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(_args));
+            context.CommandHost = new CommandHostAgent(
+                _serviceProvider.GetService<IOrchardHost>(),
+                _serviceProvider.GetService<IShellSettingsManager>()
+                );
 
             // Perform some argument validation and display usage if something is incorrect
             context.DisplayUsageHelp = context.Arguments.Switches.ContainsKey("?");

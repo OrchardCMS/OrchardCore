@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Hosting.Console {
+namespace Orchard.Hosting {
     public class OrchardParameters {
         public bool Verbose { get; set; }
         public string Tenant { get; set; }

@@ -1,9 +1,9 @@
-﻿using Orchard.Hosting.Console.Parameters;
+﻿using Orchard.Hosting.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Security;
 
-namespace Orchard.Hosting.Console {
+namespace Orchard.Hosting {
     public class OrchardParametersParser : IOrchardParametersParser {
         [SecurityCritical]
         public OrchardParameters Parse(CommandParameters parameters) {

@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orchard.Hosting.Console.Parameters
+namespace Orchard.Hosting.Parameters
 {
     public interface ICommandLineParser {
         IEnumerable<string> Parse(string commandLine);

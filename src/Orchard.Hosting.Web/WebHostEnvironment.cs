@@ -1,6 +1,5 @@
 ﻿using Microsoft.Dnx.Runtime;
 using Orchard.Localization;
-
 namespace Orchard.Hosting {
     public class WebHostEnvironment : HostEnvironment {
         public WebHostEnvironment(

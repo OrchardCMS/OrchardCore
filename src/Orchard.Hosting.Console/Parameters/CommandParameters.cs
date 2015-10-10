@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Orchard.Hosting.Console.Parameters {
+namespace Orchard.Hosting.Parameters {
     public class CommandParameters {
         public IList<string> Arguments { get; set; }
         public IDictionary<string, string> Switches { get; set; }

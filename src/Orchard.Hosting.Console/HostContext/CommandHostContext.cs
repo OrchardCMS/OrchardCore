@@ -1,7 +1,7 @@
-﻿using Orchard.Hosting.Console.Host;
+﻿using Orchard.Environment.Commands;
 using System.IO;
 
-namespace Orchard.Hosting.Console.HostContext {
+namespace Orchard.Hosting.HostContext {
     public class CommandHostContext
     {
         public CommandReturnCodes StartSessionResult { get; set; }
@@ -10,5 +10,6 @@ namespace Orchard.Hosting.Console.HostContext {
         public OrchardParameters Arguments { get; set; }
         public DirectoryInfo OrchardDirectory { get; set; }
         public bool DisplayUsageHelp { get; set; }
+        public CommandHostAgent CommandHost { get; internal set; }
     }
 }

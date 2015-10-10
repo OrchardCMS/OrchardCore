@@ -3,10 +3,9 @@ using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Hosting.Mvc;
 
-namespace Orchard.Web {
+namespace Orchard.Hosting {
     public class ShellModule : IModule {
         public void Configure(IServiceCollection serviceCollection) {
             serviceCollection.AddLogging();

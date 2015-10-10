@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.Hosting.Console.Host;
-using Orchard.Hosting.Console.HostContext;
+﻿using Orchard.Environment.Commands;
+using Orchard.Hosting.HostContext;
+using Orchard.Hosting.Parameters;
 using System;
 using System.IO;
 using System.Linq;
 
-namespace Orchard.Hosting.Console {
+namespace Orchard.Hosting {
     public class OrchardHost {
         private readonly IServiceProvider _serviceProvider;
         private readonly OrchardConsoleLogger _logger;
@@ -70,6 +69,10 @@ namespace Orchard.Hosting.Console {
             return _commandHostContextProvider.CreateContext();
         }
 
+        private CommandReturnCodes ExecuteSingleCommand(CommandHostContext context) {
+            return context.CommandHost.RunCommand(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
+        }
+
         public CommandReturnCodes ExecuteInteractive(CommandHostContext context) {
             _output.WriteLine("Type \"?\" for help, \"exit\" to exit, \"cls\" to clear screen");
             while (true) {
@@ -85,10 +88,10 @@ namespace Orchard.Hosting.Console {
                         DisplayInteractiveHelp();
                         break;
                     case "cls":
-                        //System.Console..Clear();
+                        //System.Console.Clear();
                         break;
                     default:
-                        //context = RunCommand(context, command);
+                        context = RunCommand(context, command);
                         break;
                 }
             }
@@ -98,6 +101,26 @@ namespace Orchard.Hosting.Console {
             _output.WriteLine();
             _output.Write("orchard> ");
             return _input.ReadLine();
+        }
+
+        private CommandHostContext RunCommand(CommandHostContext context, string command) {
+            if (string.IsNullOrWhiteSpace(command))
+                return context;
+
+            CommandReturnCodes result = RunCommandInSession(context, command);
+            if (result == context.RetryResult) {
+                _commandHostContextProvider.Shutdown(context);
+                context = CommandHostContext();
+                result = RunCommandInSession(context, command);
+                if (result != CommandReturnCodes.Ok)
+                    _output.WriteLine("Command returned non-zero result: {0}", result);
+            }
+            return context;
+        }
+
+        private CommandReturnCodes RunCommandInSession(CommandHostContext context, string command) {
+            var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandLineParser().Parse(command)));
+            return context.CommandHost.RunCommand(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
         }
 
         private void DisplayInteractiveHelp() {

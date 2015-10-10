@@ -14,7 +14,7 @@ Run the build.cmd file included in the repository to bootstrap DNX and build sol
 
 Next navigate to 'D:\Brochard\src\Orchard.Web' or where ever your retrospective folder is on the command line in Administrative mode.
 
-run.. 'dnx web' -> Hey you just kicked up the Orchard host.
+run.. 'dnx kestrel' -> Hey you just kicked up the Orchard host.
 
 Then in your browser, call the url... http://localhost:5001/setup/index
 

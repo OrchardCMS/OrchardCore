@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Orchard.Hosting.Console {
+namespace Orchard.Hosting {
     public class OrchardConsoleLogger {
         private readonly TextReader _input;
         private readonly TextWriter _output;

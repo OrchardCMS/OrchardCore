@@ -3,9 +3,8 @@ using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Hosting.Web.Mvc;
-using Orchard.Hosting.Web.Mvc.Razor;
-using Orchard.Hosting.Web.Mvc.Routing;
+using Orchard.Hosting.Mvc.Razor;
+using Orchard.Hosting.Mvc.Routing;
 
 namespace Orchard.Hosting.Mvc {
     public static class ServiceCollectionExtensions {
