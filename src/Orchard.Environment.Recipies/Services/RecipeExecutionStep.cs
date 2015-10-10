@@ -4,6 +4,7 @@ using Orchard.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Recipes.Models;
 using Microsoft.Extensions.Logging;
+using Orchard.ContentManagement;
 
 namespace Orchard.Environment.Recipes.Services {
     public abstract class RecipeExecutionStep : IDependency, IRecipeExecutionStep {
@@ -36,6 +37,14 @@ namespace Orchard.Environment.Recipes.Services {
 
         protected virtual ILogger Logger {
             get { return _logger; }
+        }
+
+        public virtual dynamic BuildEditor(dynamic shapeFactory) {
+            return null;
+        }
+
+        public virtual dynamic UpdateEditor(dynamic shapeFactory, IUpdateModel updater) {
+            return null;
         }
 
         public virtual void Configure(RecipeExecutionStepConfigurationContext context) {

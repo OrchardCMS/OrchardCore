@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
+using Orchard.ContentManagement;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Recipes.Models;
 
@@ -13,6 +14,14 @@ namespace Orchard.Environment.Recipes.Services {
 
         protected virtual string Prefix {
             get { return GetType().Name; }
+        }
+
+        public virtual dynamic BuildEditor(dynamic shapeFactory) {
+            return null;
+        }
+
+        public virtual dynamic UpdateEditor(dynamic shapeFactory, IUpdateModel updater) {
+            return null;
         }
 
         public virtual void Configure(RecipeBuilderStepConfigurationContext context) {
