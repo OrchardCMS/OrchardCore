@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
@@ -7,26 +8,26 @@ using Orchard.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-#if DNXCORE50
 using System.Reflection;
-#endif
 
 namespace Orchard.DisplayManagement.Descriptors {
     public class DefaultShapeTableManager : IShapeTableManager {
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
         private readonly IEventNotifier _notifier;
+        private readonly IFeatureManager _featureManager;
         private readonly ILogger _logger;
 
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IExtensionManager extensionManager,
             IEventNotifier notifier,
-            ILoggerFactory loggerFactory
-            ) {
+            IFeatureManager featureManager,
+            ILoggerFactory loggerFactory) {
+            _bindingStrategies = bindingStrategies;
             _extensionManager = extensionManager;
             _notifier = notifier;
-            _bindingStrategies = bindingStrategies;
+            _featureManager = featureManager;
             _logger = loggerFactory.CreateLogger<DefaultShapeTableManager>();
         }
 
@@ -36,9 +37,13 @@ namespace Orchard.DisplayManagement.Descriptors {
             IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
             foreach (var bindingStrategy in _bindingStrategies) {
                 Feature strategyDefaultFeature = null;
-                var featureProperty = bindingStrategy.GetType().GetProperty("Feature");
-                if (featureProperty != null) {
-                    strategyDefaultFeature = (Feature)featureProperty.GetGetMethod().Invoke(bindingStrategy, null);
+                var featureAttributes = bindingStrategy
+                    .GetType()
+                    .GetTypeInfo()
+                    .GetCustomAttributes(typeof(OrchardFeatureAttribute), false);
+
+                if (featureAttributes != null && featureAttributes.Any()) {
+                    strategyDefaultFeature = _featureManager.GetFeature(((OrchardFeatureAttribute)featureAttributes.First()).FeatureName);
                 }
 
                 var builder = new ShapeTableBuilder(strategyDefaultFeature);
