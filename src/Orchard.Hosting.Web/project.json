@@ -5,7 +5,6 @@
     "Microsoft.AspNet.Http.Abstractions": "1.0.0-*",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Microsoft.AspNet.Routing": "1.0.0-*",
-    "Microsoft.Dnx.Runtime.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
