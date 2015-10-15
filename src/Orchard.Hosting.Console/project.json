@@ -17,8 +17,7 @@
     "dnx451": { },
     "dnxcore50": {
       "dependencies": {
-        "System.Console": "4.0.0-*",
-        "Microsoft.CSharp": "4.0.1-*"
+        "System.Console": "4.0.0-*"
       }
     }
   },
