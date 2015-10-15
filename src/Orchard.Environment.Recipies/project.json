@@ -11,7 +11,12 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Xml": "",
+        "System.Xml.Linq": ""
+      }
+    },
     "dnxcore50": {
       "dependencies": {
         "System.Xml.XDocument": "4.0.11-*"

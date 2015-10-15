@@ -3,8 +3,8 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Nito.AsyncEx": "3.0.1-*",
     "Newtonsoft.Json": "7.0.1",
+    "Nito.AsyncEx": "3.0.1-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
@@ -16,7 +16,9 @@
   "frameworks": {
     "dnx451": {
       "frameworkAssemblies": {
-        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+        "System.ComponentModel.DataAnnotations": "4.0.0.0",
+        "System.Runtime": "4.0.10.0",
+        "System.Threading.Tasks": "4.0.0.0"
       }
     },
     "dnxcore50": {
