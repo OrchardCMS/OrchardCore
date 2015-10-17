@@ -81,7 +81,6 @@ namespace Orchard.Setup.Services {
             _shellSettings.State = TenantState.Initializing;
 
             var shellSettings = new ShellSettings(_shellSettings);
-            shellSettings.Name = context.SiteName;
 
             //if (shellSettings.DataProviders.Any()) {
             //    DataProvider provider = new DataProvider();
@@ -113,7 +112,7 @@ namespace Orchard.Setup.Services {
 
         private string CreateTenantData(SetupContext context, ShellContext shellContext) {
             // must mark state as Running - otherwise standalone enviro is created "for setup"
-            shellContext.Settings.Name = context.SiteName;
+            
 
             return Guid.NewGuid().ToString();
         }

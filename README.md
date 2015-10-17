@@ -16,9 +16,9 @@ Next navigate to 'D:\Brochard\src\Orchard.Web' or where ever your retrospective 
 
 ### Using Kestrel
 
-call 'dnx kestrel'
+call 'dnx web'
 
-Then in your browser, call the url... http://localhost:5001/setup/index
+Then in your browser, call the url... http://localhost:5001
 
 ### Using Console
 
