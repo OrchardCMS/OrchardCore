@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Events;
 
 #if DNXCORE50
 using System.Reflection;
@@ -40,29 +41,35 @@ namespace Orchard.Environment.Shell.Builders {
             }
 
             var moduleServiceProvider = moduleServiceCollection.BuildShellServiceProviderWithHost(_serviceProvider);
-            foreach (var service in moduleServiceProvider.GetServices<IModule>()) {
-                service.Configure(serviceCollection);
-            }
             
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type))) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
-                    .Where(itf => typeof(IDependency).IsAssignableFrom(itf))) {
+                    .Where(itf => typeof(IDependency).IsAssignableFrom(itf)
+                              && !typeof(IEventHandler).IsAssignableFrom(itf))) {
                     _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
-
+                    
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType)) {
+                        serviceCollection.AddSingleton(dependency.Type);
                         serviceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType)) {
+                        serviceCollection.AddScoped(dependency.Type);
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                     else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType)) {
+                        serviceCollection.AddTransient(dependency.Type);
                         serviceCollection.AddTransient(interfaceType, dependency.Type);
                     }
                     else {
+                        serviceCollection.AddScoped(dependency.Type);
                         serviceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                 }
+            }
+
+            foreach (var service in moduleServiceProvider.GetServices<IModule>()) {
+                service.Configure(serviceCollection);
             }
 
             return serviceCollection.BuildShellServiceProviderWithHost(_serviceProvider);

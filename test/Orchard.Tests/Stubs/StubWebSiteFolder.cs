@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Orchard.FileSystem;
+using Microsoft.AspNet.Http;
 
 namespace Orchard.Tests.Stubs {
     public class StubWebSiteFolder : IClientFolder {
