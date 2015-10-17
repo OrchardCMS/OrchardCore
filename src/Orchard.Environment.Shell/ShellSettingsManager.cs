@@ -10,8 +10,9 @@ using Orchard.Parser.Yaml;
 namespace Orchard.Environment.Shell {
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
-        private readonly ILogger _logger;
         private readonly ICache _cache;
+        private readonly ILogger _logger;
+        
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
@@ -68,7 +69,7 @@ namespace Orchard.Environment.Shell {
             }
 
             configurationProvider.Commit();
-
+            
             _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
         }
     }

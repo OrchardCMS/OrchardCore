@@ -22,7 +22,8 @@
   },
   "commands": {
     "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001;http://localhost:5002",
-    "run": "run server.urls=http://localhost:5001"
+    "run": "run server.urls=http://localhost:5001",
+    "web": "Microsoft.AspNet.Server.Kestrel"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
