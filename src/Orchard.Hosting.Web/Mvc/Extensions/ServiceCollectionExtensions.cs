@@ -8,7 +8,7 @@ using Orchard.Hosting.Mvc.Routing;
 
 namespace Orchard.Hosting.Mvc {
     public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddOrchardMvc([NotNull] this IServiceCollection services) {
+        public static IServiceCollection AddOrchardMvc(this IServiceCollection services) {
             services.AddScoped<IRouteBuilder, DefaultShellRouteBuilder>();
 
             services

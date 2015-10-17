@@ -67,7 +67,7 @@ namespace Orchard.Hosting.Mvc.Razor {
         }
 
         /// <inheritdoc />
-        public CompilationResult Compile([NotNull] RelativeFileInfo fileInfo, [NotNull] string compilationContent) {
+        public CompilationResult Compile(RelativeFileInfo fileInfo, string compilationContent) {
             var assemblyName = Path.GetRandomFileName();
             var compilationSettings = _compilerOptionsProvider.GetCompilationSettings(_environment);
             var syntaxTree = SyntaxTreeGenerator.Generate(compilationContent,

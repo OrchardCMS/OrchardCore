@@ -8,7 +8,7 @@ using Orchard.Environment.Extensions.Loaders;
 
 namespace Orchard.Environment {
     public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddExtensionManager([NotNull] this IServiceCollection services) {
+        public static IServiceCollection AddExtensionManager(this IServiceCollection services) {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
                 services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();

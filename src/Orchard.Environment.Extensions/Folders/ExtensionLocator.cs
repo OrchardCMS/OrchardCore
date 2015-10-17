@@ -9,8 +9,8 @@ namespace Orchard.Environment.Extensions.Folders {
         private readonly IExtensionHarvester _extensionHarvester;
 
         public ExtensionLocator(
-            [NotNull] IOptions<ExtensionHarvestingOptions> optionsAccessor,
-            [NotNull] IExtensionHarvester extensionHarvester) {
+            IOptions<ExtensionHarvestingOptions> optionsAccessor,
+            IExtensionHarvester extensionHarvester) {
             _optionsAccessor = optionsAccessor;
             _extensionHarvester = extensionHarvester;
         }

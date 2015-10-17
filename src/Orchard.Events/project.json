@@ -1,8 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*"
+    "Orchard.DependencyInjection": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

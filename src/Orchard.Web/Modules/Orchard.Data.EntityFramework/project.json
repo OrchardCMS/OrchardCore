@@ -5,7 +5,6 @@
     "EntityFramework.SqlServer": "7.0.0-*",
     "EntityFramework.InMemory": "7.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"
   },

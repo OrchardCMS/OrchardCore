@@ -4,8 +4,8 @@ using Orchard.Environment.Extensions.Models;
 namespace Orchard.Environment.Extensions.Folders {
     public static class ServiceCollectionExtensions {
         public static IServiceCollection AddModuleFolder(
-            [NotNull] this IServiceCollection services,
-            [NotNull] string virtualPath) {
+            this IServiceCollection services,
+            string virtualPath) {
             return services.Configure<ExtensionHarvestingOptions>(options => {
                 var expander = new ModuleLocationExpander(
                     DefaultExtensionTypes.Module,

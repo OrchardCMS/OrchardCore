@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.OptionsModel;
@@ -19,7 +18,7 @@ namespace Orchard.Environment.Extensions.Loaders {
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
-            [NotNull] IOptions<ExtensionHarvestingOptions> optionsAccessor,
+            IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,

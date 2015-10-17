@@ -14,7 +14,7 @@ using System.Reflection;
 namespace Orchard.Hosting.Extensions {
     public static class LoggerFactoryExtensions {
         public static ILoggerFactory AddOrchardLogging(
-            [NotNull] this ILoggerFactory loggingFactory, 
+            this ILoggerFactory loggingFactory, 
             IServiceProvider serviceProvider) {
             /* TODO (ngm): Abstract this logger stuff outta here! */
             var loader = serviceProvider.GetRequiredService<IExtensionLoader>();

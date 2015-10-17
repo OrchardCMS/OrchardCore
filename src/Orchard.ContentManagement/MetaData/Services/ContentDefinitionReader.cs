@@ -19,7 +19,7 @@ namespace Orchard.ContentManagement.MetaData.Services {
         /// </summary>
         /// <param name="settingsFormatter">The settings formatter to be used to convert the settings between a dictionary and an XML format.</param>
         public ContentDefinitionReader(ISettingsFormatter settingsFormatter) {
-            Argument.ThrowIfNull(settingsFormatter, "settingsFormatter");
+            Argument.ThrowIfNull(settingsFormatter, nameof(settingsFormatter));
 
             _settingsFormatter = settingsFormatter;
         }
@@ -30,8 +30,8 @@ namespace Orchard.ContentManagement.MetaData.Services {
         /// <param name="element">The XML content type definition.</param>
         /// <param name="contentTypeDefinitionBuilder">The content type definition builder.</param>
         public void Merge(XElement element, ContentTypeDefinitionBuilder contentTypeDefinitionBuilder) {
-            Argument.ThrowIfNull(element, "element");
-            Argument.ThrowIfNull(contentTypeDefinitionBuilder, "contentTypeDefinitionBuilder");
+            Argument.ThrowIfNull(element, nameof(element));
+            Argument.ThrowIfNull(contentTypeDefinitionBuilder, nameof(contentTypeDefinitionBuilder));
 
             // Merge name
             contentTypeDefinitionBuilder.Named(XmlConvert.DecodeName(element.Name.LocalName));
@@ -75,8 +75,8 @@ namespace Orchard.ContentManagement.MetaData.Services {
         /// <param name="element">The XML content type definition.</param>
         /// <param name="contentPartDefinitionBuilder">The content part definition builder.</param>
         public void Merge(XElement element, ContentPartDefinitionBuilder contentPartDefinitionBuilder) {
-            Argument.ThrowIfNull(element, "element");
-            Argument.ThrowIfNull(contentPartDefinitionBuilder, "contentPartDefinitionBuilder");
+            Argument.ThrowIfNull(element, nameof(element));
+            Argument.ThrowIfNull(contentPartDefinitionBuilder, nameof(contentPartDefinitionBuilder));
 
             // Merge name
             contentPartDefinitionBuilder.Named(XmlConvert.DecodeName(element.Name.LocalName));

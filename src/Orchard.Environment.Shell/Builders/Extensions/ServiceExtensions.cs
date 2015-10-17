@@ -10,8 +10,8 @@ namespace Orchard.Environment.Shell.Builders {
     public static class ServiceExtensions
     {
         public static IServiceProvider BuildShellServiceProviderWithHost(
-            [NotNull] this IServiceCollection services,
-            [NotNull] IServiceProvider hostServices) {
+            this IServiceCollection services,
+            IServiceProvider hostServices) {
 
             return new WrappingServiceProvider(hostServices, services);
         }
