@@ -29,10 +29,6 @@ namespace Orchard.Environment.Shell.Builders {
 
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
-
-            if (descriptor.Features.Any(feature => feature.Name == "Orchard.Hosting"))
-                features = BuiltinFeatures().Concat(features);
-
             var excludedTypes = GetExcludedTypes(features);
 
             var modules = BuildBlueprint(features, IsModule, BuildModule, excludedTypes);
@@ -64,30 +60,6 @@ namespace Orchard.Environment.Shell.Builders {
             }
 
             return excludedTypes;
-        }
-
-        private IEnumerable<Feature> BuiltinFeatures() {
-            var additionalLibraries = _libraryManager
-                .GetLibraries()
-                .Where(x => x.Name.StartsWith("Orchard"))
-                .Select(x => Assembly.Load(new AssemblyName(x.Name)));
-
-            foreach (var additonalLib in additionalLibraries) {
-                yield return new Feature {
-                    Descriptor = new FeatureDescriptor {
-                        Id = additonalLib.GetName().Name,
-                        Extension = new ExtensionDescriptor {
-                            Id = additonalLib.GetName().Name
-                        }
-                    },
-                    ExportedTypes =
-                        additonalLib.ExportedTypes
-                            .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
-                            //.Except(new[] { typeof(DefaultOrchardHost) })
-                            .ToArray()
-                };
-            }
-
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
