@@ -13,7 +13,7 @@ namespace Orchard.Environment.Shell {
                 }
 
                 var host = httpRequest.Headers["Host"].ToString();
-                var appRelativeCurrentExecutionFilePath = httpRequest.Path;
+                var appRelativeCurrentExecutionFilePath = "~/";
 
                 return table.Match(host ?? string.Empty, appRelativeCurrentExecutionFilePath);
             }
