@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Orchard.Data {
     public class OrchardDataAssemblyProvider : IOrchardDataAssemblyProvider {

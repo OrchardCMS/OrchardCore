@@ -1,4 +1,4 @@
-﻿using Microsoft.Dnx.Runtime;
+﻿using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Orchard.DependencyInjection {
     public interface IExtensionAssemblyLoader : IAssemblyLoader {

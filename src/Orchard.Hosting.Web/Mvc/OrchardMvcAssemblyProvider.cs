@@ -1,11 +1,11 @@
-﻿using Microsoft.Dnx.Runtime;
+﻿using Microsoft.AspNet.Mvc.Infrastructure;
+using Microsoft.Extensions.PlatformAbstractions;
+using Orchard.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Orchard.DependencyInjection;
-using Microsoft.AspNet.Mvc.Infrastructure;
 
 namespace Orchard.Hosting.Mvc {
     public class OrchardMvcAssemblyProvider : IAssemblyProvider {

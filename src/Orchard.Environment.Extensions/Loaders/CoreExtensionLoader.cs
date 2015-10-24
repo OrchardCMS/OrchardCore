@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Orchard.Environment.Extensions.Loaders {
     public class CoreExtensionLoader : IExtensionLoader {

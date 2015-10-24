@@ -7,6 +7,8 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Loaders;
 using System.IO;
 using System.Collections.Generic;
+using Microsoft.Extensions.PlatformAbstractions;
+using System;
 
 namespace Orchard.Environment.Extensions {
     public class ExtensionAssemblyLoader : IExtensionAssemblyLoader {
@@ -102,6 +104,9 @@ namespace Orchard.Environment.Extensions {
             });
         }
 
+        public IntPtr LoadUnmanagedLibrary(string name) {
+            return IntPtr.Zero;
+        }
 
         public static IList<LibraryDependency> Flatten(LibraryDependency root) {
 

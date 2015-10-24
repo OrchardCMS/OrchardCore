@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Orchard.Environment.Extensions.Loaders {
     public class DynamicExtensionLoader : IExtensionLoader {

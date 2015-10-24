@@ -31,8 +31,8 @@ dataproviders:
             File.WriteAllText(_tempFolderName, yaml);
 
             var yamlConfigPrd = new YamlConfigurationProvider(_tempFolderName);
-
-            var root = new ConfigurationBuilder(yamlConfigPrd).Build();
+            
+            var root = new ConfigurationBuilder().Add(yamlConfigPrd).Build();
 
             var settings = new ShellSettings(root);
 

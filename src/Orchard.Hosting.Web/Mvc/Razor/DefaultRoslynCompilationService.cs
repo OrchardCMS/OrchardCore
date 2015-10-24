@@ -12,12 +12,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.OptionsModel;
-using Microsoft.Dnx.Runtime;
 using Microsoft.Dnx.Compilation;
 using Microsoft.Dnx.Compilation.CSharp;
 using Orchard.DependencyInjection;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Orchard.Hosting.Mvc.Razor {
     /// <summary>

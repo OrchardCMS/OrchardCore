@@ -171,6 +171,7 @@ log.xml
 profiling/
 *.orig
 .vs/
+.vscode/
 
 
 nuget.exe

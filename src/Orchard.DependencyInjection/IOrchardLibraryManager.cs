@@ -1,5 +1,5 @@
 ﻿using Microsoft.Dnx.Compilation;
-using Microsoft.Dnx.Runtime;
+using Microsoft.Extensions.PlatformAbstractions;
 using System.Collections.Generic;
 
 namespace Orchard.DependencyInjection {

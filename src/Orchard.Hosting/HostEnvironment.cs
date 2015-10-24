@@ -1,4 +1,4 @@
-﻿using Microsoft.Dnx.Runtime;
+﻿using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Environment;
 
 namespace Orchard.Hosting {
