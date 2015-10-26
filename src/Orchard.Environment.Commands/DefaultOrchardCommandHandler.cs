@@ -38,8 +38,17 @@ namespace Orchard.Environment.Commands {
             }
 
             // Set the value
-            try {
-                object value = Convert.ChangeType(commandSwitch.Value, propertyInfo.PropertyType);
+            try
+            {
+                object value = null;
+                if (propertyInfo.PropertyType.GetTypeInfo().IsEnum)
+                {
+                    value = Enum.Parse(propertyInfo.PropertyType, commandSwitch.Value);
+                }
+                else
+                {
+                    value = Convert.ChangeType(commandSwitch.Value, propertyInfo.PropertyType);
+                }
                 propertyInfo.SetValue(this, value, null/*index*/);
             }
             catch (Exception ex) {
