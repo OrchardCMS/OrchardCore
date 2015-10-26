@@ -33,8 +33,8 @@ namespace Orchard.Environment.Commands {
             if (propertyInfo == null) {
                 throw new InvalidOperationException(T("Switch \"{0}\" was not found", commandSwitch.Key));
             }
-            if (!propertyInfo.GetCustomAttributes(typeof (OrchardSwitchAttribute), false).Any()) {
-                throw new InvalidOperationException(T("A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof (OrchardSwitchAttribute).Name));
+            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any()) {
+                throw new InvalidOperationException(T("A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name));
             }
 
             // Set the value
@@ -89,7 +89,7 @@ namespace Orchard.Environment.Commands {
                 return null;
             }
 
-            if (methodParameters[methodParameters.Length - 1].ParameterType.IsAssignableFrom(typeof (string[]))) {
+            if (methodParameters[methodParameters.Length - 1].ParameterType.IsAssignableFrom(typeof(string[]))) {
                 methodHasParams = true;
             }
 
@@ -97,7 +97,7 @@ namespace Orchard.Environment.Commands {
             if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
 
             for (int i = 0; i < args.Count; i++) {
-                if (methodParameters[i].ParameterType.IsAssignableFrom(typeof (string[]))) {
+                if (methodParameters[i].ParameterType.IsAssignableFrom(typeof(string[]))) {
                     invokeParameters.Add(args.GetRange(i, args.Count - i).ToArray());
                     break;
                 }
@@ -114,7 +114,7 @@ namespace Orchard.Environment.Commands {
                 return;
 
             var supportedSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (OrchardSwitchesAttribute switchesAttribute in methodInfo.GetCustomAttributes(typeof (OrchardSwitchesAttribute), false)) {
+            foreach (OrchardSwitchesAttribute switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false)) {
                 supportedSwitches.UnionWith(switchesAttribute.Switches);
             }
 
