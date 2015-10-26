@@ -66,7 +66,7 @@ namespace Orchard.Environment.Extensions.Loaders {
                 }
                 catch (System.Exception ex) {
                     _logger.LogError(string.Format("Error trying to load extension {0}", descriptor.Id), ex);
-                    throw;
+                    return null;
                 }
             }
         }
