@@ -39,8 +39,14 @@ namespace Orchard.Environment.Commands {
 
             // Set the value
             try {
-                object value = Convert.ChangeType(commandSwitch.Value, propertyInfo.PropertyType);
-                propertyInfo.SetValue(this, value, null/*index*/);
+                object value = null;
+                if (propertyInfo.PropertyType.GetTypeInfo().IsEnum) {
+                    value = Enum.Parse(propertyInfo.PropertyType, commandSwitch.Value);
+                }
+                else {
+                    value = Convert.ChangeType(commandSwitch.Value, propertyInfo.PropertyType);
+                }
+                propertyInfo.SetValue(this, value, null /*index*/);
             }
             catch (Exception ex) {
                 if (ex.IsFatal()) {
@@ -98,7 +104,7 @@ namespace Orchard.Environment.Commands {
                 invokeParameters.Add(Convert.ChangeType(arguments[i], methodParameters[i].ParameterType));
             }
 
-            if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] { });
+            if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] {});
 
             return invokeParameters.ToArray();
         }
