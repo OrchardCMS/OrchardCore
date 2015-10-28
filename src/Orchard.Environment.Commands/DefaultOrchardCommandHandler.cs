@@ -39,13 +39,7 @@ namespace Orchard.Environment.Commands {
 
             // Set the value
             try {
-                object value = null;
-                if (propertyInfo.PropertyType.GetTypeInfo().IsEnum) {
-                    value = Enum.Parse(propertyInfo.PropertyType, commandSwitch.Value);
-                }
-                else {
-                    value = Convert.ChangeType(commandSwitch.Value, propertyInfo.PropertyType);
-                }
+                object value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
                 propertyInfo.SetValue(this, value, null /*index*/);
             }
             catch (Exception ex) {
@@ -61,6 +55,7 @@ namespace Orchard.Environment.Commands {
                 throw new InvalidOperationException(message, ex);
             }
         }
+
 
         private void Invoke(CommandContext context) {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
@@ -93,15 +88,26 @@ namespace Orchard.Environment.Commands {
                 methodHasParams = true;
             }
 
-            if (!methodHasParams && args.Count != methodParameters.Length) return null;
+            var requiredMethodParameters = methodParameters.Where(x => !x.HasDefaultValue).ToArray();
+
+            if (!methodHasParams && args.Count != requiredMethodParameters.Length) return null;
             if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
 
-            for (int i = 0; i < args.Count; i++) {
+            for (int i = 0; i < methodParameters.Length; i++) {
                 if (methodParameters[i].ParameterType.IsAssignableFrom(typeof(string[]))) {
                     invokeParameters.Add(args.GetRange(i, args.Count - i).ToArray());
                     break;
                 }
-                invokeParameters.Add(Convert.ChangeType(arguments[i], methodParameters[i].ParameterType));
+
+                if (i < arguments.Count) {
+                    var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
+                    if (val == null) return null;
+
+                    invokeParameters.Add(val);
+                }
+                else {
+                    invokeParameters.Add(methodParameters[i].DefaultValue);
+                }
             }
 
             if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] {});
@@ -122,6 +128,20 @@ namespace Orchard.Environment.Commands {
                 if (!supportedSwitches.Contains(commandSwitch)) {
                     throw new InvalidOperationException(T("Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch).ToString());
                 }
+            }
+        }
+
+        private static object ConvertToType(Type type, string value) {
+            if (type.GetTypeInfo().IsEnum) {
+                try {
+                    return Enum.Parse(type, value, true);
+                }
+                catch (ArgumentException) {
+                    return null;
+                }
+            }
+            else {
+                return Convert.ChangeType(value, type);
             }
         }
     }
