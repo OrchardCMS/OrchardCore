@@ -21,7 +21,7 @@ namespace Orchard.Environment.Commands {
 
         private CommandDescriptor BuildMethod(MethodInfo methodInfo) {
             return new CommandDescriptor {
-                Name = GetCommandName(methodInfo),
+                Names = GetCommandNames(methodInfo),
                 MethodInfo = methodInfo,
                 HelpText = GetCommandHelpText(methodInfo)
             };
@@ -35,13 +35,13 @@ namespace Orchard.Environment.Commands {
             return string.Empty;
         }
 
-        private string GetCommandName(MethodInfo methodInfo) {
+        private string[] GetCommandNames(MethodInfo methodInfo) {
             var attributes = methodInfo.GetCustomAttributes(typeof(CommandNameAttribute), false/*inherit*/);
             if (attributes != null && attributes.Any()) {
-                return attributes.Cast<CommandNameAttribute>().Single().Command;
+                return attributes.Cast<CommandNameAttribute>().Single().Commands;
             }
 
-            return methodInfo.Name.Replace('_', ' ');
+            return new []{methodInfo.Name.Replace('_', ' ')};
         }
     }
 }

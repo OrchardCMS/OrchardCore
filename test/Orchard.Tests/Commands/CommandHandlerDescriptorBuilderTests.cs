@@ -11,14 +11,14 @@ namespace Orchard.Tests.Commands {
             var descriptor = builder.Build(typeof(MyCommand));
             Assert.NotNull(descriptor);
             Assert.Equal(4, descriptor.Commands.Count());
-            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Name == "FooBar"));
-            Assert.Equal(typeof(MyCommand).GetMethod("FooBar"), descriptor.Commands.Single(d => d.Name == "FooBar").MethodInfo);
-            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Name == "MyCommand"));
-            Assert.Equal(typeof(MyCommand).GetMethod("FooBar2"), descriptor.Commands.Single(d => d.Name == "MyCommand").MethodInfo);
-            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Name == "Foo Bar"));
-            Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar"), descriptor.Commands.Single(d => d.Name == "Foo Bar").MethodInfo);
-            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Name == "Foo_Bar"));
-            Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar3"), descriptor.Commands.Single(d => d.Name == "Foo_Bar").MethodInfo);
+            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("FooBar")));
+            Assert.Equal(typeof(MyCommand).GetMethod("FooBar"), descriptor.Commands.Single(d => d.Names.Contains("FooBar")).MethodInfo);
+            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("MyCommand")));
+            Assert.Equal(typeof(MyCommand).GetMethod("FooBar2"), descriptor.Commands.Single(d => d.Names.Contains("MyCommand")).MethodInfo);
+            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("Foo Bar")));
+            Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar"), descriptor.Commands.Single(d => d.Names.Contains("Foo Bar")).MethodInfo);
+            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("Foo_Bar")));
+            Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar3"), descriptor.Commands.Single(d => d.Names.Contains("Foo_Bar")).MethodInfo);
         }
 
         public class MyCommand : DefaultOrchardCommandHandler {
@@ -43,7 +43,7 @@ namespace Orchard.Tests.Commands {
             var descriptor = builder.Build(typeof(PublicMethodsOnly));
             Assert.NotNull(descriptor);
             Assert.Equal(1, descriptor.Commands.Count());
-            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Name == "Method"));
+            Assert.NotNull(descriptor.Commands.SingleOrDefault(d => d.Names.Contains("Method")));
         }
 
 #pragma warning disable 660,661

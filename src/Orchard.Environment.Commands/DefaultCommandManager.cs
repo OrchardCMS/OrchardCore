@@ -10,7 +10,7 @@ namespace Orchard.Environment.Commands {
 
         public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers) {
             _commandHandlers = commandHandlers;
-            
+
             T = NullLocalizer.Instance;
         }
 
@@ -25,13 +25,13 @@ namespace Orchard.Environment.Commands {
             }
             else {
                 var commandMatch = string.Join(" ", parameters.Arguments.ToArray());
-                var commandList = string.Join(",", GetCommandDescriptors().Select(d => d.Name).ToArray());
+                var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any()) {
                     throw new OrchardCoreException(T("Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
-                                                             commandMatch, commandList));
+                        commandMatch, commandList));
                 }
                 throw new OrchardCoreException(T("No command found matching arguments \"{0}\". Commands available: {1}.",
-                                                 commandMatch, commandList));
+                    commandMatch, commandList));
             }
         }
 
@@ -43,7 +43,7 @@ namespace Orchard.Environment.Commands {
             // Command names are matched with as many arguments as possible, in decreasing order
             foreach (var argCount in Enumerable.Range(1, parameters.Arguments.Count()).Reverse()) {
                 int count = argCount;
-                var matches = _commandHandlers.SelectMany(h => 
+                var matches = _commandHandlers.SelectMany(h =>
                     MatchCommands(parameters, count, _builder.Build(h.GetType()), h)).ToList();
                 if (matches.Any())
                     return matches;
@@ -54,23 +54,22 @@ namespace Orchard.Environment.Commands {
 
         private static IEnumerable<Match> MatchCommands(CommandParameters parameters, int argCount, CommandHandlerDescriptor descriptor, ICommandHandler handler) {
             foreach (var commandDescriptor in descriptor.Commands) {
-                var names = commandDescriptor.Name.Split(' ');
-                if (!parameters.Arguments.Take(argCount).SequenceEqual(names, StringComparer.OrdinalIgnoreCase)) {
-                    // leading arguments not equal to command name
-                    continue;
+                foreach (var name in commandDescriptor.Names) {
+                    var names = name.Split(' ');
+                    if (parameters.Arguments.Take(argCount).SequenceEqual(names, StringComparer.OrdinalIgnoreCase)) {
+                        yield return new Match {
+                            Context = new CommandContext {
+                                Arguments = parameters.Arguments.Skip(names.Count()),
+                                Command = string.Join(" ", names),
+                                CommandDescriptor = commandDescriptor,
+                                Input = parameters.Input,
+                                Output = parameters.Output,
+                                Switches = parameters.Switches,
+                            },
+                            CommandHandler = handler
+                        };
+                    }
                 }
-
-                yield return new Match {
-                    Context = new CommandContext {
-                        Arguments = parameters.Arguments.Skip(names.Count()),
-                        Command = string.Join(" ", names),
-                        CommandDescriptor = commandDescriptor,
-                        Input = parameters.Input,
-                        Output = parameters.Output,
-                        Switches = parameters.Switches,
-                    },
-                    CommandHandler = handler
-                };
             }
         }
 
