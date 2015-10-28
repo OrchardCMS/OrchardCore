@@ -90,7 +90,7 @@ namespace Orchard.Environment.Commands {
 
             var requiredMethodParameters = methodParameters.Where(x => !x.HasDefaultValue).ToArray();
 
-            if (!methodHasParams && args.Count != requiredMethodParameters.Length) return null;
+            if (!methodHasParams && args.Count < requiredMethodParameters.Length) return null;
             if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
 
             for (int i = 0; i < methodParameters.Length; i++) {
