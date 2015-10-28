@@ -27,7 +27,7 @@ namespace Orchard.Tests.Commands {
 
             var descriptor = builder.Build(typeof(StubCommandHandler));
 
-            var commandDescriptor = descriptor.Commands.Single(d => string.Equals(d.Name, commandName, StringComparison.OrdinalIgnoreCase));
+            var commandDescriptor = descriptor.Commands.Single(d => d.Names.Any(x=> string.Equals(x, commandName, StringComparison.OrdinalIgnoreCase)));
 
             return new CommandContext {
                 Command = commandName,
