@@ -41,7 +41,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, TRet>)method.CreateDelegate(typeof(Func<T, TRet>), method);
+            var func = (Func<T, TRet>)method.CreateDelegate(typeof(Func<T, TRet>));
 #else
             var func = (Func<T, TRet>)Delegate.CreateDelegate(typeof(Func<T, TRet>), method);
 #endif
@@ -51,7 +51,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, TRet>)method.CreateDelegate(typeof(Func<T, T1, TRet>), method);
+            var func = (Func<T, T1, TRet>)method.CreateDelegate(typeof(Func<T, T1, TRet>));
 #else
             var func = (Func<T, T1, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, TRet>), method);
 #endif
@@ -61,7 +61,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, TRet>), method);
+            var func = (Func<T, T1, T2, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, TRet>));
 #else
             var func = (Func<T, T1, T2, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, TRet>), method);
 #endif
@@ -71,7 +71,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, TRet>), method);
+            var func = (Func<T, T1, T2, T3, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, TRet>), method);
 #endif
@@ -81,7 +81,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, TRet>), method);
 #endif
@@ -91,7 +91,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, TRet>), method);
 #endif
@@ -101,7 +101,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, T6, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, T6, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, T6, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, T6, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, TRet>), method);
 #endif
@@ -111,7 +111,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, T6, T7, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, TRet>), method);
 #endif
@@ -121,7 +121,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, TRet>), method);
 #endif
@@ -131,7 +131,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TRet>), method);
 #endif
@@ -141,7 +141,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildFunc<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>), method);
+            var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>)method.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>));
 #else
             var func = (Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>)Delegate.CreateDelegate(typeof(Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TRet>), method);
 #endif
@@ -151,7 +151,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T>)method.CreateDelegate(typeof(Action<T>), method);
+            var func = (Action<T>)method.CreateDelegate(typeof(Action<T>));
 #else
             var func = (Action<T>)Delegate.CreateDelegate(typeof(Action<T>), method);
 #endif
@@ -161,7 +161,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1>)method.CreateDelegate(typeof(Action<T, T1>), method);
+            var func = (Action<T, T1>)method.CreateDelegate(typeof(Action<T, T1>));
 #else
             var func = (Action<T, T1>)Delegate.CreateDelegate(typeof(Action<T, T1>), method);
 #endif
@@ -171,7 +171,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2>)method.CreateDelegate(typeof(Action<T, T1, T2>), method);
+            var func = (Action<T, T1, T2>)method.CreateDelegate(typeof(Action<T, T1, T2>));
 #else
             var func = (Action<T, T1, T2>)Delegate.CreateDelegate(typeof(Action<T, T1, T2>), method);
 #endif
@@ -181,7 +181,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3>)method.CreateDelegate(typeof(Action<T, T1, T2, T3>), method);
+            var func = (Action<T, T1, T2, T3>)method.CreateDelegate(typeof(Action<T, T1, T2, T3>));
 #else
             var func = (Action<T, T1, T2, T3>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3>), method);
 #endif
@@ -191,7 +191,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4>), method);
+            var func = (Action<T, T1, T2, T3, T4>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4>));
 #else
             var func = (Action<T, T1, T2, T3, T4>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4>), method);
 #endif
@@ -201,7 +201,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5>), method);
 #endif
@@ -211,7 +211,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5, T6>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5, T6>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5, T6>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5, T6>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6>), method);
 #endif
@@ -221,7 +221,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5, T6, T7>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5, T6, T7>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7>), method);
 #endif
@@ -231,7 +231,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5, T6, T7, T8>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8>), method);
 #endif
@@ -241,7 +241,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>), method);
 #endif
@@ -251,7 +251,7 @@ namespace Orchard.Events {
 
         static Func<object, object[], object> BuildAction<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(MethodInfo method) {
 #if DNXCORE50
-            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>), method);
+            var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>)method.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>));
 #else
             var func = (Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>)Delegate.CreateDelegate(typeof(Action<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>), method);
 #endif
