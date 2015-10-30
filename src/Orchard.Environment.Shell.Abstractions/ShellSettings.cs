@@ -86,7 +86,7 @@ namespace Orchard.Environment.Shell {
         }
 
         private string StringNullReconfiguration(string value) {
-            if (value.Equals("null", StringComparison.CurrentCultureIgnoreCase)) {
+            if (string.IsNullOrWhiteSpace(value) || value.Equals("null", StringComparison.CurrentCultureIgnoreCase)) {
                 return null;
             }
             return value;
