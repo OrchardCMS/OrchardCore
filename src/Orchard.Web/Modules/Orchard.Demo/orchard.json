@@ -1,0 +1,21 @@
+﻿{
+  "$schema": "Schemas\\orchard-schema.json",
+
+  "minOrchardVersion": "2.0.0",
+  "module": {
+    "antiForgery": false,
+    "path": "OrchardDemo",
+    "features": [
+      {
+        "id": "Orchard.Demo",
+        "name": "Demo",
+        "description": "Demo description",
+        "category": "Demo",
+        "priority": 0,
+        "dependencies": [
+          "Orchard.Demo.Commands"
+        ]
+      }
+    ]
+  }
+}

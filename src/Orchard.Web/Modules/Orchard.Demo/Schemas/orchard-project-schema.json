@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://json.schemastore.org/project-1.0.0-beta8",
   "title": "Orchard extension schema",
   "type": "object",
 
