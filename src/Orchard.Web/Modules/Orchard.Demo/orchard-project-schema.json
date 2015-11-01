@@ -2,132 +2,135 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Orchard extension schema",
   "type": "object",
-  "anyOf": [
-    {
-      "$ref": "http://json.schemastore.org/project-1.0.0-beta8"
-    },
+
+  "allOf": [
+    { "$ref": "http://json.schemastore.org/project-1.0.0-beta8" },
     {
       "properties": {
         "orchard": {
           "description": "Orchard specific extension settings",
           "type": "object",
-          "additionalItems": false,
+          "additionalProperties": false,
           "properties": {
             "minVersion": {
               "description": "The minimum version of Orchard CMS that the module has been tested against.",
               "type": "string"
+            },
+            "module": {
+              "description": "module extension",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "description": "Provides a name that is used to build more readable URLs for routing purposes compared to URLs that are based on module names or ID values.",
+                  "type": "string"
+                },
+                "antiForgery": {
+                  "description": "A value that indicates whether request validation is enabled for a module.",
+                  "type": "boolean",
+                  "default": false
+                },
+                "features": {
+                  "description": "A special repeating section of the manifest which allows a module to define multiple features within a module.",
+                  "type": "array",
+                  "additionalItems": false,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Because the feature is already contained within the module ID module developers need to supply a unique ID for Orchard to use internally as a reference.",
+                        "type": "string",
+                        "uniqueItems": true
+                      },
+                      "name": {
+                        "description": "Provides a human-readable name for the feature.",
+                        "type": "string"
+                      },
+                      "description": {
+                        "description": "A brief summary of what the module does.",
+                        "type": "string"
+                      },
+                      "category": {
+                        "description": "This field groups the module together in the Modules page of the Orchard admin dashboard. Related modules which have the same category are displayed together. The category field can be assigned one category. To aid in discoverability, module developers should review the Modules page of the Orchard admin dashboard and choose a related category from existing categories. If a relevant category doesn't exist modules can freely define a new category within this field.",
+                        "type": "string",
+                        "default": "uncategorized"
+                      },
+                      "priority": {
+                        "description": "A brief summary of what the module does.",
+                        "type": "integer",
+                        "default": 0
+                      },
+                      "dependencies": {
+                        "description": "Each individual feature should only define its own dependencies. If all features are defined in the Features: subsection this main Dependencies field is not required.",
+                        "type": "array",
+                        "additionalItems": false,
+                        "items": {
+                          "type": "string",
+                          "uniqueItems": true
+                        }
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "description",
+                      "category",
+                      "priority"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "antiForgery",
+                "path"
+              ]
+            },
+            "theme": {
+              "description": "theme extension",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "zones": {
+                  "description": "A list of the Orchard zones that are used by a theme. These zones are displayed in the Orchard dashboard and can be used to customize the layout of a site by adding, removing, or arranging widgets.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "uniqueItems": true
+                  }
+                },
+                "baseTheme": {
+                  "description": "The ID of another theme that this theme inherits from. This is an optional field. It is useful in cases where you want to customize an existing theme by copying it and then making some changes in style and appearance.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "zones",
+                "baseTheme"
+              ]
             }
           },
           "oneOf": [
             {
-              "properties": {
-                "module": {
-                  "description": "module extension",
-                  "type": "object",
-                  "properties": {
-                    "path": {
-                      "description": "Provides a name that is used to build more readable URLs for routing purposes compared to URLs that are based on module names or ID values.",
-                      "type": "string"
-                    },
-                    "antiForgery": {
-                      "description": "A value that indicates whether request validation is enabled for a module.",
-                      "type": "boolean",
-                      "default": false
-                    },
-                    "features": {
-                      "description": "A special repeating section of the manifest which allows a module to define multiple features within a module.",
-                      "type": "array",
-                      "additionalItems": false,
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "id": {
-                            "description": "Because the feature is already contained within the module ID module developers need to supply a unique ID for Orchard to use internally as a reference.",
-                            "type": "string",
-                            "uniqueItems": true
-                          },
-                          "name": {
-                            "description": "Provides a human-readable name for the feature.",
-                            "type": "string"
-                          },
-                          "description": {
-                            "description": "A brief summary of what the module does.",
-                            "type": "string"
-                          },
-                          "category": {
-                            "description": "This field groups the module together in the Modules page of the Orchard admin dashboard. Related modules which have the same category are displayed together. The category field can be assigned one category. To aid in discoverability, module developers should review the Modules page of the Orchard admin dashboard and choose a related category from existing categories. If a relevant category doesn't exist modules can freely define a new category within this field.",
-                            "type": "string",
-                            "default": "uncategorized"
-                          },
-                          "priority": {
-                            "description": "A brief summary of what the module does.",
-                            "type": "integer",
-                            "default": 0
-                          },
-                          "dependencies": {
-                            "description": "Each individual feature should only define its own dependencies. If all features are defined in the Features: subsection this main Dependencies field is not required.",
-                            "type": "array",
-                            "additionalItems": false,
-                            "items": {
-                              "type": "string",
-                              "uniqueItems": true
-                            }
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "name",
-                          "description",
-                          "category",
-                          "priority"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "antiForgery",
-                    "path"
-                  ]
-                }
-              }
+              "required": [ "module" ]
             },
             {
-              "properties": {
-                "theme": {
-                  "description": "theme extension",
-                  "type": "object",
-                  "properties": {
-                    "zones": {
-                      "description": "A comma-separated list of the Orchard zones that are used by a theme. These zones are displayed in the Orchard dashboard and can be used to customize the layout of a site by adding, removing, or arranging widgets.",
-                      "type": "string"
-                    },
-                    "baseTheme": {
-                      "description": "The ID of another theme that this theme inherits from. This is an optional field. It is useful in cases where you want to customize an existing theme by copying it and then making some changes in style and appearance.",
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "zones",
-                    "baseTheme"
-                  ]
-                }
-              }
+              "required": [ "theme" ]
             }
           ],
-          "required": ["minVersion"]
+          "required": [ "minVersion" ]
         }
-      },
-      "required": [
-        "version",
-        "title",
-        "description",
-        "authors",
-        "projectUrl",
-        "licenseUrl",
-        "tags",
-        "orchard"
-      ]
+      }
     }
+  ],
+  "required": [
+    "version",
+    "title",
+    "description",
+    "authors",
+    "projectUrl",
+    "licenseUrl",
+    "tags",
+    "orchard"
   ]
 }
