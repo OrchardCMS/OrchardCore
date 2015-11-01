@@ -169,4 +169,4 @@ We currently use XUnit to do unit testing, with Coypu and Chrome to do UI testin
 
 ###Contributing
 
-We currently follow the [Microsoft Asp.Net engineering guidelines](https://github.com/aspnet/Home/wiki/Engineering-guidelines)
+We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/Brochard/wiki/Engineering-Guidelines)
