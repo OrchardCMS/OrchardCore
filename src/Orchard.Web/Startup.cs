@@ -5,19 +5,25 @@ using Orchard.Environment.Extensions.Folders;
 using Orchard.Hosting;
 using System;
 
-namespace Orchard.Web {
-    public class Startup {
-        public IServiceProvider ConfigureServices(IServiceCollection services) {
+namespace Orchard.Web
+{
+    public class Startup
+    {
+        public IServiceProvider ConfigureServices(IServiceCollection services)
+        {
             services
-                .AddWebHost();
-
-            services.AddModuleFolder("~/Core/Orchard.Core");
-            services.AddModuleFolder("~/Modules");
+                .AddWebHost()
+                .AddJsonManifestParser()
+                .AddYamlManifestParser()
+                .AddModuleFolder("~/Core/Orchard.Core", "module.txt")
+                .AddModuleFolder("~/Modules")
+                .AddModuleFolder("~/Modules", "module.txt");
 
             return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory, IOrchardHost orchardHost) {
+        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory, IOrchardHost orchardHost)
+        {
             builder.ConfigureWebHost(loggerFactory);
 
             orchardHost.Initialize();

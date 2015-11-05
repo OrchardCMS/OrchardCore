@@ -1,5 +1,5 @@
 ﻿{
-  "$schema": "Schemas\\orchard-schema.json",
+  "$schema": "orchard-schema.json",
 
   "minOrchardVersion": "2.0.0",
   "module": {

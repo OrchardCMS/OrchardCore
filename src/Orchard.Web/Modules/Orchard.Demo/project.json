@@ -1,5 +1,4 @@
 ﻿{
-  "$schema": "Schemas\\orchard-project-schema.json",
   "version": "2.0.0",
   "title": "Orchard Demo",
   "description": "This is an Orchard Demo extension",
@@ -12,26 +11,6 @@
     "orchard",
     "demo"
   ],
-
-  "orchard": {
-    "minVersion": "2.0.0",
-    "module": {
-      "antiForgery": false,
-      "path": "OrchardDemo",
-      "features": [
-        {
-          "id": "Orchard.Demo",
-          "name": "Demo",
-          "description": "Demo description",
-          "category": "Demo",
-          "priority": 0,
-          "dependencies": [
-            "Orchard.Demo.Commands"
-          ]
-        }
-      ]
-    }
-  },
 
   "dependencies": {
     "Microsoft.AspNet.Mvc": "6.0.0-*",

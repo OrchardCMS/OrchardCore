@@ -9,6 +9,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Extensions.Folders.ManifestParsers;
 
 namespace Orchard.Tests.Hosting.Environment.Extensions {
     public class ExtensionManagerTests
@@ -534,16 +535,18 @@ OrchardVersion: 1{1}{2}",
             public IDictionary<string, string> ThemeManifests { get; set; }
 
             public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
+                var parser = new YamlManifestParser();
+
                 if (_extensionTypes.Contains(DefaultExtensionTypes.Module)) {
                     foreach (var e in Manifests) {
                         string name = e.Key;
-                        yield return ExtensionHarvester.GetDescriptorForExtension("~/", name, DefaultExtensionTypes.Module, Manifests[name]);
+                        yield return parser.GetDescriptorForExtension("~/", name, DefaultExtensionTypes.Module, Manifests[name]);
                     }
                 }
                 if (_extensionTypes.Contains(DefaultExtensionTypes.Theme)) {
                     foreach (var e in ThemeManifests) {
                         string name = e.Key;
-                        yield return ExtensionHarvester.GetDescriptorForExtension("~/", name, DefaultExtensionTypes.Theme, ThemeManifests[name]);
+                        yield return parser.GetDescriptorForExtension("~/", name, DefaultExtensionTypes.Theme, ThemeManifests[name]);
                     }
                 }
             }

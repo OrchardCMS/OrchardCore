@@ -3,9 +3,11 @@ using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Tests.Stubs;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Orchard.Environment.Extensions.Folders.ManifestParsers;
 using Xunit;
 
 namespace Orchard.Tests.Hosting.Environment.Extensions {
@@ -34,7 +36,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
         [Fact]
         [Trait("Category", "ExtensionLocator")]
         public void IdsFromFoldersWithModuleTxtShouldBeListed() {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory(), new List<IManifestParser> {new YamlManifestParser()});
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -52,7 +54,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
 
         [Fact]
         public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument() {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory(), new List<IManifestParser> { new YamlManifestParser() });
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -66,7 +68,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
 
         [Fact]
         public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven() {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory(), new List<IManifestParser> { new YamlManifestParser() });
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -84,7 +86,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
 
         [Fact]
         public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven() {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory(), new List<IManifestParser> { new YamlManifestParser() });
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
