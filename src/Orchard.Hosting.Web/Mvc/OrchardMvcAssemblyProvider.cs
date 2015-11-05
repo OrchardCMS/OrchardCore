@@ -68,12 +68,9 @@ namespace Orchard.Hosting.Mvc {
 
             // GetReferencingLibraries returns the transitive closure of referencing assemblies
             // for a given assembly.
-
-            // TODO: Fix
-            return Enumerable.Empty<Library>();
-            //return ReferenceAssemblies.SelectMany(_libraryManager.GetReferencingLibraries)
-            //                          .Distinct()
-            //                          .Where(IsCandidateLibrary);
+            return ReferenceAssemblies.SelectMany(_libraryManager.GetReferencingLibraries)
+                                      .Distinct()
+                                      .Where(IsCandidateLibrary);
         }
 
         private Assembly Load(AssemblyName assemblyName) {

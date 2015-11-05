@@ -5,19 +5,23 @@ using Orchard.Data;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor.Models;
+using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell.Descriptor.Settings {
     public class ShellDescriptorManager : Component, IShellDescriptorManager {
         private readonly ShellSettings _shellSettings;
         //private readonly IEventNotifier _eventNotifier;
         private readonly ILogger _logger;
+        private readonly ISession _session;
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
             //IEventNotifier eventNotifier,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory,
+            ISession session) {
             _shellSettings = shellSettings;
             //_eventNotifier = eventNotifier;
+            _session = session;
             _logger = loggerFactory.CreateLogger<ShellDescriptorManager>();
         }
 
@@ -36,8 +40,7 @@ namespace Orchard.Environment.Shell.Descriptor.Settings {
 
             if (shellDescriptorRecord == null) {
                 shellDescriptorRecord = new ShellDescriptor { SerialNumber = 1 };
-                // TODO: Store
-                // _contentStorageManager.Store(shellDescriptorRecord);
+                _session.Save(shellDescriptorRecord);
             }
             else {
                 shellDescriptorRecord.SerialNumber++;
