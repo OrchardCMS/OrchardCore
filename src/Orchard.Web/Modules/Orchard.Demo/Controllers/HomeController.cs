@@ -5,6 +5,7 @@ using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.Demo.TestEvents;
 using Orchard.Events;
+using System.Threading.Tasks;
 
 namespace Orchard.Demo.Controllers {
     public class HomeController : Controller {
@@ -20,7 +21,7 @@ namespace Orchard.Demo.Controllers {
             _eventNotifier = eventNotifier;
             }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
 
@@ -28,7 +29,7 @@ namespace Orchard.Demo.Controllers {
             contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
             _contentManager.Create(contentItem);
 
-            var retrieveContentItem = _contentManager.Get(contentItem.Id);
+            var retrieveContentItem = await _contentManager.Get(contentItem.Id);
             var lineToSay = retrieveContentItem.As<TestContentPartA>().Line;
 
             return View("Index", _testDependency.SayHi(lineToSay));

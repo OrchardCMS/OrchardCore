@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 
 namespace Orchard.ContentManagement.Records {
-    public class ContentItemRecord : DocumentRecord {
-        public ContentItemRecord() {
-            // ReSharper disable DoNotCallOverridableMethodsInConstructor
-            Versions = new List<ContentItemVersionRecord>();
-            // ReSharper restore DoNotCallOverridableMethodsInConstructor
+    public class ContentItemRecord {
+        public int Id { get; set; }
+        public ContentItemRecord()
+        {
+            Parts = new List<ContentPart>();
         }
         
-        public virtual ContentTypeRecord ContentType { get; set; }
-        public virtual IList<ContentItemVersionRecord> Versions { get; set; }
+        public string ContentType { get; set; }
+        public IList<ContentPart> Parts { get; set; }
     }
+
 }

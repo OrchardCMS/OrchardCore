@@ -6,23 +6,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.Data.Migration {
     public class DataMigrationManager : IDataMigrationManager {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
-        private readonly IContentStorageManager _contentStorageManager;
+        private readonly ISession _session;
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
 
         private readonly List<string> _processedFeatures;
+        private DataMigrationRecord _dataMigrationRecord;
 
         public DataMigrationManager(
             IEnumerable<IDataMigration> dataMigrations,
-            IContentStorageManager contentStorageManager, 
+            ISession session, 
             IExtensionManager extensionManager,
             ILoggerFactory loggerFactory) {
             _dataMigrations = dataMigrations;
-            _contentStorageManager = contentStorageManager;
+            _session = session;
             _extensionManager = extensionManager;
             _logger = loggerFactory.CreateLogger<DataMigrationManager>();
 
@@ -33,14 +36,24 @@ namespace Orchard.Data.Migration {
 
         public Localizer T { get; set; }
 
-        public IEnumerable<string> GetFeaturesThatNeedUpdate() {
-            var currentVersions = _contentStorageManager
-                .Query<DataMigrationDocument>(x => x != null)
-                .SelectMany(x => x.DataMigrationRecords)
+        public async Task<DataMigrationRecord> GetDataMigrationRecord()
+        {
+            if (_dataMigrationRecord == null)
+            {
+                _dataMigrationRecord = await _session
+                .QueryAsync<DataMigrationRecord>()
+                .FirstOrDefault();
+            }
+
+            return _dataMigrationRecord;
+        }
+
+        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate() {
+            var currentVersions = (await GetDataMigrationRecord()).DataMigrations
                 .ToDictionary(r => r.DataMigrationClass);
 
             var outOfDateMigrations = _dataMigrations.Where(dataMigration => {
-                DataMigrationRecord record;
+                DataMigration record;
                 if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record))
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
 
@@ -57,7 +70,7 @@ namespace Orchard.Data.Migration {
             return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecord(dataMigration) != null);
         }
 
-        public void Uninstall(string feature) {
+        public async Task Uninstall(string feature) {
             _logger.LogInformation("Uninstalling feature: {0}.", feature);
 
             var migrations = GetDataMigrations(feature);
@@ -68,7 +81,7 @@ namespace Orchard.Data.Migration {
                 var tempMigration = migration;
 
                 // get current version for this migration
-                var dataMigrationRecord = GetDataMigrationRecord(tempMigration);
+                var dataMigrationRecord = await GetDataMigrationRecord(tempMigration);
 
                 var uninstallMethod = GetUninstallMethod(migration);
                 if (uninstallMethod != null) {
@@ -79,9 +92,7 @@ namespace Orchard.Data.Migration {
                     continue;
                 }
 
-                var record = _contentStorageManager.Query<DataMigrationDocument>(x => x != null).Single();
-                record.DataMigrationRecords.Remove(dataMigrationRecord);
-                _contentStorageManager.Store(record);
+                (await GetDataMigrationRecord()).DataMigrations.Remove(dataMigrationRecord);
             }
         }
 
@@ -97,10 +108,8 @@ namespace Orchard.Data.Migration {
             _logger.LogWarning("TODO: Update Feature");
         }
 
-        private DataMigrationRecord GetDataMigrationRecord(IDataMigration tempMigration) {
-            return _contentStorageManager
-                .Query<DataMigrationDocument>(x => x != null)
-                .SelectMany(x => x.DataMigrationRecords)
+        private async Task<DataMigration> GetDataMigrationRecord(IDataMigration tempMigration) {
+            return (await GetDataMigrationRecord()).DataMigrations
                 .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
         }
 

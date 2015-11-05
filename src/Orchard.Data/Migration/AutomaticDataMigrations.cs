@@ -2,6 +2,7 @@
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using System;
+using System.Threading.Tasks;
 
 namespace Orchard.Data.Migration {
     /// <summary>
@@ -26,7 +27,7 @@ namespace Orchard.Data.Migration {
         }
 
         public void Activated() {
-            foreach (var feature in _dataMigrationManager.GetFeaturesThatNeedUpdate()) {
+            foreach (var feature in _dataMigrationManager.GetFeaturesThatNeedUpdate().Result) {
                 try {
                     _dataMigrationManager.Update(feature);
                 }

@@ -92,7 +92,7 @@ namespace Orchard.Setup.Services {
             // TODO: Add Encryption Settings in
 
             var shellDescriptor = new ShellDescriptor {
-                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name })
+                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
             };
 
             // creating a standalone environment. 

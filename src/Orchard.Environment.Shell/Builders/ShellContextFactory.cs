@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Orchard.Hosting.ShellBuilders;
 using Orchard.Environment.Shell.Descriptor.Models;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Builders {
     public class ShellContextFactory : IShellContextFactory {
@@ -55,11 +55,8 @@ namespace Orchard.Environment.Shell.Builders {
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Settings" },
                     new ShellFeature { Name = "Orchard.Demo" },
-                    new ShellFeature { Name = "Orchard.Data.EntityFramework" },
-                    new ShellFeature { Name = "Orchard.Data.EntityFramework.InMemory" },
-                    new ShellFeature { Name = "Orchard.Data.EntityFramework.Indexing" }
                 },
-                Parameters = Enumerable.Empty<ShellParameter>(),
+                Parameters = new List<ShellParameter>()
             };
         }
 

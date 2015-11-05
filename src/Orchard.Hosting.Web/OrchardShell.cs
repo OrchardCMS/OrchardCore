@@ -49,8 +49,7 @@ namespace Orchard.Hosting {
 
             var pipeline = appBuilder.Build();
 
-            var allRoutes = new List<RouteDescriptor>();
-            allRoutes.AddRange(_routeProviders.SelectMany(provider => provider.GetRoutes()));
+            var allRoutes = _routeProviders.SelectMany(provider => provider.GetRoutes()).ToArray();
 
             _routePublisher.Publish(allRoutes, pipeline);
 

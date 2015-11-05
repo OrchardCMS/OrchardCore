@@ -1,5 +1,4 @@
-﻿using Orchard.ContentManagement.FieldStorage;
-using Orchard.ContentManagement.MetaData.Models;
+﻿using Orchard.ContentManagement.MetaData.Models;
 
 namespace Orchard.ContentManagement {
     public class ContentField {
@@ -8,7 +7,5 @@ namespace Orchard.ContentManagement {
 
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
         public ContentFieldDefinition FieldDefinition { get { return PartFieldDefinition.FieldDefinition; } }
-
-        public IFieldStorage Storage { get; set; }
     }
 }

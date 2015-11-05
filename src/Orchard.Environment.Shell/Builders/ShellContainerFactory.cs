@@ -4,6 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Builders.Models;
+using YesSql.Core.Indexes;
+using YesSql.Core.Services;
+using System.Data.SqlClient;
+using YesSql.Core.Storage.InMemory;
+using System.Data;
 
 #if DNXCORE50
 using System.Reflection;
@@ -24,7 +29,7 @@ namespace Orchard.Environment.Shell.Builders {
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) {
             IServiceCollection serviceCollection = new ServiceCollection();
-            
+
             serviceCollection.AddInstance(settings);
             serviceCollection.AddInstance(blueprint.Descriptor);
             serviceCollection.AddInstance(blueprint);
@@ -43,7 +48,7 @@ namespace Orchard.Environment.Shell.Builders {
             foreach (var service in moduleServiceProvider.GetServices<IModule>()) {
                 service.Configure(serviceCollection);
             }
-            
+
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type))) {
                 foreach (var interfaceType in dependency.Type.GetInterfaces()
@@ -64,6 +69,34 @@ namespace Orchard.Environment.Shell.Builders {
                     }
                 }
             }
+
+            // Configuring data access
+
+            var indexes = blueprint
+                .Dependencies
+                .Where(x => typeof(IIndexProvider).IsAssignableFrom(x.Type))
+                .Select(x => x.Type).ToArray();
+            
+            serviceCollection.AddSingleton<IStore>(serviceProvider =>
+            {
+                var store = new Store(cfg =>
+                {
+                    cfg.ConnectionFactory = new DbConnectionFactory<SqlConnection>(@"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!");
+                    //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
+                    cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
+                    cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
+                    cfg.RunDefaultMigration();
+                });
+
+                store.RegisterIndexes(indexes);
+                return store;
+
+            });
+
+            serviceCollection.AddScoped<ISession>(serviceProvider => {
+                var store = serviceProvider.GetRequiredService<IStore>();
+                return store.CreateSession();
+            });
 
             return serviceCollection.BuildShellServiceProviderWithHost(_serviceProvider);
         }

@@ -10,13 +10,13 @@ namespace Orchard.Environment.Shell.Descriptor.Models {
     /// </summary>
     public class ShellDescriptor {
         public ShellDescriptor() {
-            Features = Enumerable.Empty<ShellFeature>();
-            Parameters = Enumerable.Empty<ShellParameter>();
+            Features = new List<ShellFeature>();
+            Parameters = new List<ShellParameter>();
         }
 
         public int SerialNumber { get; set; }
-        public IEnumerable<ShellFeature> Features { get; set; }
-        public IEnumerable<ShellParameter> Parameters { get; set; }
+        public IList<ShellFeature> Features { get; set; }
+        public IList<ShellParameter> Parameters { get; set; }
     }
 
     public class ShellFeature {
