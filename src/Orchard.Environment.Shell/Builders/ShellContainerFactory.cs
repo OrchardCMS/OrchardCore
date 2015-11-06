@@ -85,7 +85,7 @@ namespace Orchard.Environment.Shell.Builders {
                     //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
                     cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
                     cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
-                    cfg.RunDefaultMigration();
+                    //cfg.RunDefaultMigration();
                 });
 
                 store.RegisterIndexes(indexes);

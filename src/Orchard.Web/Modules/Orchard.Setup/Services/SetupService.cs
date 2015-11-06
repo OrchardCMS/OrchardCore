@@ -10,6 +10,7 @@ using Orchard.Environment.Shell.Models;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Hosting.ShellBuilders;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services {
     public class SetupService : Component, ISetupService {
@@ -101,8 +102,20 @@ namespace Orchard.Setup.Services {
 
             using (var environment = _orchardHost.CreateShellContext(shellSettings)) {
                 executionId = CreateTenantData(context, environment);
-            }
 
+                var store = (IStore)environment.LifetimeScope.GetService(typeof(IStore));
+                store.ExecuteMigrationAsync(schemaBuilder =>
+                {
+                    schemaBuilder
+                        .CreateTable("Document", table => table
+                            .Column<int>("Id", column => column.PrimaryKey().Identity().NotNull())
+                            .Column<string>("Type", column => column.NotNull())
+                        )
+                        .AlterTable("Document", table => table
+                            .CreateIndex("IX_Type", "Type")
+                        );
+                });
+            }
 
             shellSettings.State = TenantState.Running;
             _shellSettingsManager.SaveSettings(shellSettings);

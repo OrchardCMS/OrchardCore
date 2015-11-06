@@ -29,7 +29,7 @@ namespace Orchard.Data.Migration {
         public void Activated() {
             foreach (var feature in _dataMigrationManager.GetFeaturesThatNeedUpdate().Result) {
                 try {
-                    _dataMigrationManager.Update(feature);
+                    _dataMigrationManager.UpdateAsync(feature);
                 }
                 catch (Exception ex) {
                     if (ex.IsFatal()) {

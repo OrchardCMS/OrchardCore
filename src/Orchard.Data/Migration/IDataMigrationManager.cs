@@ -17,12 +17,12 @@ namespace Orchard.Data.Migration {
         /// <summary>
         /// Updates the database to the latest version for the specified feature
         /// </summary>
-        void Update(string feature);
+        Task UpdateAsync(string feature);
 
         /// <summary>
         /// Updates the database to the latest version for the specified features
         /// </summary>
-        void Update(IEnumerable<string> features);
+        Task UpdateAsync(IEnumerable<string> features);
 
         /// <summary>
         /// Execute a script to delete any information relative to the feature

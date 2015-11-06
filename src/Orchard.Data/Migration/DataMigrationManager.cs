@@ -13,6 +13,7 @@ namespace Orchard.Data.Migration {
     public class DataMigrationManager : IDataMigrationManager {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
         private readonly ISession _session;
+        private readonly IStore _store;
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
 
@@ -22,10 +23,12 @@ namespace Orchard.Data.Migration {
         public DataMigrationManager(
             IEnumerable<IDataMigration> dataMigrations,
             ISession session, 
+            IStore store,
             IExtensionManager extensionManager,
             ILoggerFactory loggerFactory) {
             _dataMigrations = dataMigrations;
             _session = session;
+            _store = store;
             _extensionManager = extensionManager;
             _logger = loggerFactory.CreateLogger<DataMigrationManager>();
 
@@ -67,7 +70,7 @@ namespace Orchard.Data.Migration {
         /// Whether a feature has already been installed, i.e. one of its Data Migration class has already been processed
         /// </summary>
         public bool IsFeatureAlreadyInstalled(string feature) {
-            return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecord(dataMigration) != null);
+            return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecordAsync(dataMigration).Result != null);
         }
 
         public async Task Uninstall(string feature) {
@@ -81,7 +84,7 @@ namespace Orchard.Data.Migration {
                 var tempMigration = migration;
 
                 // get current version for this migration
-                var dataMigrationRecord = await GetDataMigrationRecord(tempMigration);
+                var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var uninstallMethod = GetUninstallMethod(migration);
                 if (uninstallMethod != null) {
@@ -96,19 +99,125 @@ namespace Orchard.Data.Migration {
             }
         }
 
-        public void Update(IEnumerable<string> features) {
+        public async Task UpdateAsync(IEnumerable<string> features) {
             foreach (var feature in features) {
                 if (!_processedFeatures.Contains(feature)) {
-                    Update(feature);
+                    await UpdateAsync(feature);
                 }
             }
         }
 
-        public void Update(string feature) {
-            _logger.LogWarning("TODO: Update Feature");
+        public async Task UpdateAsync(string feature) {
+            
+            if (_processedFeatures.Contains(feature))
+            {
+                return;
+            }
+
+            _processedFeatures.Add(feature);
+
+            _logger.LogInformation("Updating feature: {0}", feature);
+
+            // proceed with dependent features first, whatever the module it's in
+            var dependencies = _extensionManager.AvailableFeatures()
+                .Where(f => String.Equals(f.Id, feature, StringComparison.OrdinalIgnoreCase))
+                .Where(f => f.Dependencies != null)
+                .SelectMany(f => f.Dependencies)
+                .ToList();
+
+            foreach (var dependency in dependencies)
+            {
+                await UpdateAsync(dependency);
+            }
+
+            var migrations = GetDataMigrations(feature);
+
+            // apply update methods to each migration class for the module
+            foreach (var migration in migrations)
+            {
+                // Create a new transaction for this migration
+                await _session.CommitAsync();
+
+                await _store.ExecuteMigrationAsync(async schemaBuilder =>
+                {
+                    migration.SchemaBuilder = schemaBuilder;
+
+                    // copy the object for the Linq query
+                    var tempMigration = migration;
+
+                    // get current version for this migration
+                    var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
+
+                    var current = 0;
+                    if (dataMigrationRecord != null)
+                    {
+                        current = dataMigrationRecord.Version.Value;
+                    }
+
+                    try
+                    {
+                        // do we need to call Create() ?
+                        if (current == 0)
+                        {
+                            // try to resolve a Create method
+
+                            var createMethod = GetCreateMethod(migration);
+                            if (createMethod != null)
+                            {
+                                current = (int)createMethod.Invoke(migration, new object[0]);
+                            }
+                        }
+
+                        var lookupTable = CreateUpgradeLookupTable(migration);
+
+                        while (lookupTable.ContainsKey(current))
+                        {
+                            try
+                            {
+                                _logger.LogInformation("Applying migration for {0} from version {1}.", feature, current);
+                                current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (ex.IsFatal())
+                                {
+                                    throw;
+                                }
+                                _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", feature, current);
+                                throw;
+                            }
+                        }
+
+                        // if current is 0, it means no upgrade/create method was found or succeeded 
+                        if (current == 0)
+                        {
+                            return;
+                        }
+                        if (dataMigrationRecord == null)
+                        {
+                            _dataMigrationRecord.DataMigrations.Add(new DataMigration { Version = current, DataMigrationClass = migration.GetType().FullName });
+                        }
+                        else
+                        {
+                            dataMigrationRecord.Version = current;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.IsFatal())
+                        {
+                            throw;
+                        }
+                        _logger.LogError(0, "Error while running migration version {0} for {1}.", current, feature);
+                        _session.Cancel();
+                        throw new OrchardException(T("Error while running migration version {0} for {1}.", current, feature), ex);
+                    }
+                });
+
+            }
         }
 
-        private async Task<DataMigration> GetDataMigrationRecord(IDataMigration tempMigration) {
+        private async Task<DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration) {
             return (await GetDataMigrationRecord()).DataMigrations
                 .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
         }
