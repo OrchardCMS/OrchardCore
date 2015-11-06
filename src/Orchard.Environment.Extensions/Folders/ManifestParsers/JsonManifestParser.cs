@@ -53,10 +53,10 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
                 Version = project.version,
                 Title = project.title,
                 Description = project.description,
-                Authors = project.authors.ToObject<IEnumerable<string>>(),
+                Authors = project.authors?.ToObject<IEnumerable<string>>(),
                 ProjectUrl = project.projectUrl,
                 LicenseUrl = project.licenceUrl,
-                Tags = project.tags.ToObject<IEnumerable<string>>(),
+                Tags = project.tags?.ToObject<IEnumerable<string>>(),
                 MinOrchardVersion = manifest.minOrchardVersion
             };
 
@@ -64,7 +64,7 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
             {
                 dynamic module = manifest.module;
 
-                var extension = new JsonManifestModule
+                var extension = new JsonExtensionModule
                 {
                     AntiForgery = module.antiForgery,
                     Path = module.path
@@ -72,17 +72,17 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
 
                 if (module.features != null)
                 {
-                    var features = new List<JsonManifestModuleFeature>();
+                    var features = new List<JsonExtensionModuleFeature>();
                     foreach (var feature in module.features)
                     {
-                        features.Add(new JsonManifestModuleFeature
+                        features.Add(new JsonExtensionModuleFeature
                         {
                             Id = feature.id,
                             Name = feature.name,
                             Description = feature.description,
                             Category = feature.category,
                             Priority = feature.priority,
-                            Dependencies = feature.dependencies.ToObject<IEnumerable<string>>()
+                            Dependencies = feature.dependencies?.ToObject<IEnumerable<string>>()
                         });
                     }
                     extension.Features = features;
@@ -94,10 +94,10 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
             {
                 dynamic theme = manifest.theme;
 
-                var extension = new JsonManifestTheme
+                var extension = new JsonExtensionTheme
                 {
                     BaseTheme = theme.baseTheme,
-                    Zones = theme.zones.ToObject<IEnumerable<string>>()
+                    Zones = theme.zones?.ToObject<IEnumerable<string>>()
                 };
 
                 descriptor.Extension = extension;
@@ -127,9 +127,9 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
                 OrchardVersion = jsonDescriptor.MinOrchardVersion
             };
 
-            if (jsonDescriptor.Extension is JsonManifestModule)
+            if (jsonDescriptor.IsModule)
             {
-                var module = jsonDescriptor.Extension as JsonManifestModule;
+                var module = (JsonExtensionModule) jsonDescriptor.Extension;
 
                 descriptor.ExtensionType = DefaultExtensionTypes.Module;
                 descriptor.Path = module.Path;
@@ -145,9 +145,9 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
                     Extension = descriptor
                 }).ToList();
             }
-            else if (jsonDescriptor.Extension is JsonManifestTheme)
+            else if (jsonDescriptor.IsTheme)
             {
-                var theme = jsonDescriptor.Extension as JsonManifestTheme;
+                var theme = (JsonExtensionTheme) jsonDescriptor.Extension;
 
                 descriptor.ExtensionType = DefaultExtensionTypes.Theme;
                 descriptor.BaseTheme = theme.BaseTheme;
@@ -171,19 +171,22 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
         public string LicenseUrl { get; set; }
         public IEnumerable<string> Tags { get; set; }
         public string MinOrchardVersion { get; set; }
-        public IJsonManifestExtension Extension { get; set; }
+        public IJsonExtension Extension { get; set; }
+
+        public bool IsModule => Extension is JsonExtensionModule;
+        public bool IsTheme => Extension is JsonExtensionTheme;
     }
 
-    public interface IJsonManifestExtension {}
+    public interface IJsonExtension {}
 
-    public class JsonManifestModule : IJsonManifestExtension
+    public class JsonExtensionModule : IJsonExtension
     {
         public string Path { get; set; }
         public bool AntiForgery { get; set; }
-        public IEnumerable<JsonManifestModuleFeature> Features { get; set; }
+        public IEnumerable<JsonExtensionModuleFeature> Features { get; set; }
     }
 
-    public class JsonManifestModuleFeature
+    public class JsonExtensionModuleFeature
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -193,7 +196,7 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
         public IEnumerable<string> Dependencies { get; set; }
     }
 
-    public class JsonManifestTheme : IJsonManifestExtension
+    public class JsonExtensionTheme : IJsonExtension
     {
         public string BaseTheme { get; set; }
         public IEnumerable<string> Zones { get; set; }
