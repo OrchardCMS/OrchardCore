@@ -6,13 +6,13 @@ namespace Orchard.ContentManagement.Records {
 
         public ContentItemVersionRecord()
         {
-            Parts = new List<ContentPart>();
+            Parts = new List<ContentVersionPart>();
         }
         public int ContentItemRecordId { get; set; }
         public string ContentType { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }
-        public IList<ContentPart> Parts { get; set; }
+        public IList<ContentVersionPart> Parts { get; set; }
     }
 }

@@ -26,14 +26,20 @@ namespace Orchard.ContentManagement {
         {
             get
             {
-                foreach (var record in Record.Parts)
+                if (Record != null)
                 {
-                    yield return record;
+                    foreach (var record in Record.Parts)
+                    {
+                        yield return record;
+                    }
                 }
 
-                foreach (var record in VersionRecord.Parts)
+                if (VersionRecord != null)
                 {
-                    yield return record;
+                    foreach (var record in VersionRecord.Parts)
+                    {
+                        yield return record;
+                    }
                 }
             }
         }
@@ -47,9 +53,10 @@ namespace Orchard.ContentManagement {
         }
 
         public void Weld(ContentPart part) {
-            if (part is ContentVersionPart)
+            var contentVersionPart = part as ContentVersionPart;
+            if (contentVersionPart != null)
             {
-                VersionRecord.Parts.Add(part);
+                VersionRecord.Parts.Add(contentVersionPart);
             }
             else
             {

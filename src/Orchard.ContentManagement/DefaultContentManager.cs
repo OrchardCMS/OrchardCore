@@ -1,38 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.Records;
-using Orchard.Data;
 using Microsoft.Extensions.Logging;
 using YesSql.Core.Services;
 using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement {
+namespace Orchard.ContentManagement
+{
     public class DefaultContentManager : IContentManager {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManagerSession _contentManagerSession;
+        //private readonly IContentManagerSession _contentManagerSession;
         private readonly ISession _session; 
-        private readonly IEnumerable<IContentHandler> _handlers;
         private readonly ILogger _logger;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
-            IContentManagerSession contentManagerSession,
+            //IContentManagerSession contentManagerSession,
             IEnumerable<IContentHandler> handlers,
             ISession session,
             ILoggerFactory loggerFactory) {
             _contentDefinitionManager = contentDefinitionManager;
-            _contentManagerSession = contentManagerSession;
-            _handlers = handlers;
+            //_contentManagerSession = contentManagerSession;
+            Handlers = handlers;
             _session = session;
             _logger = loggerFactory.CreateLogger<DefaultContentManager>();
         }
 
-        public IEnumerable<IContentHandler> Handlers => _handlers;
+        public IEnumerable<IContentHandler> Handlers { get; private set; }
 
         public IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions() {
             return _contentDefinitionManager.ListTypeDefinitions();
@@ -58,6 +55,9 @@ namespace Orchard.ContentManagement {
                 ContentType = contentType,
                 ContentItem = context.Builder.Build()
             };
+
+            context2.ContentItem.Record = new ContentItemRecord();
+            context2.ContentItem.VersionRecord = new ContentItemVersionRecord();
 
             Handlers.Invoke(handler => handler.Activated(context2), _logger);
 
@@ -85,29 +85,29 @@ namespace Orchard.ContentManagement {
             // obtain the root records based on version options
             if (options.VersionRecordId != 0) {
                 // short-circuit if item held in session
-                if (_contentManagerSession.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
-                    return contentItem;
-                }
+                //if (_contentManagerSession.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
+                //    return contentItem;
+                //}
 
                 versionRecord = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>().Where(x => x.ContentItemRecordId == id && x.Published == options.IsPublished && x.Latest == options.IsLatest).FirstOrDefault();
             }
             else if (options.VersionNumber != 0) {
                 // short-circuit if item held in session
-                if (_contentManagerSession.RecallVersionNumber(id, options.VersionNumber, out contentItem)) {
-                    return contentItem;
-                }
+                //if (_contentManagerSession.RecallVersionNumber(id, options.VersionNumber, out contentItem)) {
+                //    return contentItem;
+                //}
 
                 versionRecord = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>().Where(x => x.ContentItemRecordId == id && x.Number == options.VersionNumber).FirstOrDefault();
             }
-            else if (_contentManagerSession.RecallContentRecordId(id, out contentItem)) {
-                // try to reload a previously loaded published content item
+            //else if (_contentManagerSession.RecallContentRecordId(id, out contentItem)) {
+            //    // try to reload a previously loaded published content item
 
-                if (options.IsPublished) {
-                    return contentItem;
-                }
+            //    if (options.IsPublished) {
+            //        return contentItem;
+            //    }
 
-                versionRecord = contentItem.VersionRecord;
-            }
+            //    versionRecord = contentItem.VersionRecord;
+            //}
 
             // no record means content item is not in db
             if (versionRecord == null) {
@@ -124,19 +124,19 @@ namespace Orchard.ContentManagement {
             }
 
             // return item if obtained earlier in session
-            if (_contentManagerSession.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
-                if (options.IsDraftRequired && versionRecord.Published) {
-                    return await BuildNewVersion(contentItem);
-                }
-                return contentItem;
-            }
+            //if (_contentManagerSession.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
+            //    if (options.IsDraftRequired && versionRecord.Published) {
+            //        return await BuildNewVersionAsync(contentItem);
+            //    }
+            //    return contentItem;
+            //}
 
             // allocate instance and set record property
             contentItem = New(versionRecord.ContentType);
             contentItem.VersionRecord = versionRecord;
 
             // store in session prior to loading to avoid some problems with simple circular dependencies
-            _contentManagerSession.Store(contentItem);
+            //_contentManagerSession.Store(contentItem);
 
             // create a context with a new instance to load            
             var context = new LoadContentContext(contentItem);
@@ -147,7 +147,7 @@ namespace Orchard.ContentManagement {
 
             // when draft is required and latest is published a new version is appended 
             if (options.IsDraftRequired && versionRecord.Published) {
-                contentItem = await BuildNewVersion(context.ContentItem);
+                contentItem = await BuildNewVersionAsync(context.ContentItem);
             }
 
             return contentItem;
@@ -206,7 +206,7 @@ namespace Orchard.ContentManagement {
             Handlers.Invoke(handler => handler.Unpublished(context), _logger);
         }
         
-        protected async Task<ContentItem> BuildNewVersion(ContentItem existingContentItem) {
+        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem) {
             var contentItemRecord = existingContentItem.Record;
 
             // locate the existing and the current latest versions, allocate building version
@@ -229,7 +229,7 @@ namespace Orchard.ContentManagement {
                 buildingItemVersionRecord.Number = biggest.Number + 1;
             }
 
-            //contentItemRecord.Versions.Add(buildingItemVersionRecord);
+            buildingItemVersionRecord.ContentItemRecordId = contentItemRecord.Id;
             _session.Save(buildingItemVersionRecord);
 
             var buildingContentItem = New(existingContentItem.ContentType);
@@ -279,8 +279,6 @@ namespace Orchard.ContentManagement {
                 contentItem.VersionRecord.Published = false;
             }
 
-            _session.Save(contentItem);
-
             // build a context with the initialized instance to create
             var context = new CreateContentContext(contentItem);
 
@@ -298,6 +296,9 @@ namespace Orchard.ContentManagement {
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Invoke(handler => handler.Published(publishContext), _logger);
             }
+
+            _session.Save(contentItem.Record);
+            _session.Save(contentItem.VersionRecord);
         }
     }
 }

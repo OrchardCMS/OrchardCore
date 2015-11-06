@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Records;
 
 namespace Orchard.ContentManagement.Handlers {
     /// <summary>

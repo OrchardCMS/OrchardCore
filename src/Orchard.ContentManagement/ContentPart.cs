@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Orchard.ContentManagement.MetaData.Models;
+using System.Runtime.Serialization;
 #if DNXCORE50
 using System.Reflection;
 #endif
@@ -14,12 +15,14 @@ namespace Orchard.ContentManagement {
             Fields = new List<ContentField>();
         }
 
+        [IgnoreDataMember]
         public virtual ContentItem ContentItem { get; set; }
 
         /// <summary>
         /// The ContentItem's identifier.
         /// </summary>
         [HiddenInput(DisplayValue = false)]
+        [IgnoreDataMember]
         public int Id => ContentItem.Id;
 
         public SettingsDictionary Settings { get; set; }
