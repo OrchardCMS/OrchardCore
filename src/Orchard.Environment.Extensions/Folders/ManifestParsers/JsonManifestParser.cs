@@ -90,7 +90,7 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
 
                 descriptor.Extension = extension;
             }
-            else if (manifest.theme == null)
+            else if (manifest.theme != null)
             {
                 dynamic theme = manifest.theme;
 
