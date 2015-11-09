@@ -26,7 +26,10 @@ namespace Orchard.Core.Settings.Metadata
                 return _contentDefinitionRecord;
             }
 
-            _contentDefinitionRecord = _session.QueryAsync<ContentDefinitionRecord>().FirstOrDefault().Result;
+            _contentDefinitionRecord = _session
+                .QueryAsync<ContentDefinitionRecord>()
+                .FirstOrDefault()
+                .Result;
 
             if (_contentDefinitionRecord == null)
             {
@@ -39,12 +42,16 @@ namespace Orchard.Core.Settings.Metadata
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            return Build(GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == name));
+            return Build(GetContentDefinitionRecord()
+                .ContentTypeDefinitionRecords
+                .FirstOrDefault(x => x.Name == name));
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
-            return Build(GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == name));
+            return Build(GetContentDefinitionRecord()
+                .ContentPartDefinitionRecords
+                .FirstOrDefault(x => x.Name == name));
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
@@ -208,14 +215,14 @@ namespace Orchard.Core.Settings.Metadata
                 source.Name,
                 source.DisplayName,
                 source.ContentTypePartDefinitionRecords.Select(Build),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings));
+                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
         }
 
         ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
         {
             return source == null ? null : new ContentTypePartDefinition(
                 Build(source.ContentPartDefinitionRecord),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings));
+                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
         }
 
         ContentPartDefinition Build(ContentPartDefinitionRecord source)
@@ -223,7 +230,7 @@ namespace Orchard.Core.Settings.Metadata
             return source == null ? null : new ContentPartDefinition(
                 source.Name,
                 source.ContentPartFieldDefinitionRecords.Select(Build),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings));
+                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
         }
 
         ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
@@ -231,7 +238,7 @@ namespace Orchard.Core.Settings.Metadata
             return source == null ? null : new ContentPartFieldDefinition(
                 Build(source.ContentFieldDefinitionRecord),
                 source.Name,
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings)
+                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }")
             );
         }
 

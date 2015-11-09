@@ -31,7 +31,7 @@ namespace Orchard.Hosting.Extensions {
             foreach (var initiatorType in loggingInitiatorTypes) {
                 loggerCollection.AddScoped(typeof(ILoggingInitiator), initiatorType);
             }
-            var moduleServiceProvider = loggerCollection.BuildShellServiceProviderWithHost(serviceProvider);
+            var moduleServiceProvider = new FallbackServiceProvider(serviceProvider, loggerCollection);
             foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
                 service.Initialize(loggingFactory);
             }

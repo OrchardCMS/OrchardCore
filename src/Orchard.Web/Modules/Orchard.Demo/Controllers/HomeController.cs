@@ -11,19 +11,19 @@ namespace Orchard.Demo.Controllers {
     public class HomeController : Controller {
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
-        private readonly IEventNotifier _eventNotifier;
+        private readonly IEventBus _eventBus;
 
         public HomeController(ITestDependency testDependency,
             IContentManager contentManager,
-            IEventNotifier eventNotifier) {
+            IEventBus eventBus) {
             _testDependency = testDependency;
             _contentManager = contentManager;
-            _eventNotifier = eventNotifier;
+            _eventBus = eventBus;
             }
 
         public async Task<ActionResult> Index()
         {
-            _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
+            await _eventBus.NotifyAsync<ITestEvent>(e => e.Talk("Bark!"));
 
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";

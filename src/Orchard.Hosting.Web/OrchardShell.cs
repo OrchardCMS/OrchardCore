@@ -15,7 +15,7 @@ namespace Orchard.Hosting {
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEventNotifier _eventNotifier;
+        private readonly IEventBus _eventBus;
 
         public OrchardShell (
             IEnumerable<IRouteProvider> routeProviders,
@@ -23,13 +23,13 @@ namespace Orchard.Hosting {
             IEnumerable<IMiddlewareProvider> middlewareProviders,
             ShellSettings shellSettings,
             IServiceProvider serviceProvider,
-            IEventNotifier eventNotifier) {
+            IEventBus eventBus) {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
             _middlewareProviders = middlewareProviders;
             _shellSettings = shellSettings;
             _serviceProvider = serviceProvider;
-            _eventNotifier = eventNotifier;
+            _eventBus = eventBus;
         }
 
         public void Activate() {
@@ -53,11 +53,11 @@ namespace Orchard.Hosting {
 
             _routePublisher.Publish(allRoutes, pipeline);
 
-            _eventNotifier.Notify<IOrchardShellEvents>(x => x.Activated());
+            _eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
         }
 
         public void Terminate() {
-            _eventNotifier.Notify<IOrchardShellEvents>(x => x.Terminating());
+            _eventBus.NotifyAsync<IOrchardShellEvents>(x => x.TerminatingAsync()).Wait();
         }
     }
 }

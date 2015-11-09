@@ -6,7 +6,6 @@ namespace Orchard.Data.Migration
 {
     public interface IDataMigration : IDependency
     {
-        Feature Feature { get; }
         SchemaBuilder SchemaBuilder { get; set; }
     }
 }

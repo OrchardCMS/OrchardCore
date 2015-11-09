@@ -16,16 +16,19 @@ namespace Orchard.Data.Migration {
         private readonly IStore _store;
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly List<string> _processedFeatures;
         private DataMigrationRecord _dataMigrationRecord;
 
         public DataMigrationManager(
+            ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
             ISession session, 
             IStore store,
             IExtensionManager extensionManager,
             ILoggerFactory loggerFactory) {
+            _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
             _session = session;
             _store = store;
@@ -46,6 +49,12 @@ namespace Orchard.Data.Migration {
                 _dataMigrationRecord = await _session
                 .QueryAsync<DataMigrationRecord>()
                 .FirstOrDefault();
+
+                if(_dataMigrationRecord == null)
+                {
+                    _dataMigrationRecord = new DataMigrationRecord();
+                    _session.Save(_dataMigrationRecord);
+                }
             }
 
             return _dataMigrationRecord;
@@ -63,7 +72,7 @@ namespace Orchard.Data.Migration {
                 return (GetCreateMethod(dataMigration) != null);
             });
 
-            return outOfDateMigrations.Select(m => m.Feature.Descriptor.Id).ToList();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Descriptor.Id).ToList();
         }
 
         /// <summary>
@@ -136,7 +145,7 @@ namespace Orchard.Data.Migration {
             foreach (var migration in migrations)
             {
                 // Create a new transaction for this migration
-                await _session.CommitAsync();
+                //await _session.CommitAsync();
 
                 await _store.ExecuteMigrationAsync(async schemaBuilder =>
                 {
@@ -227,7 +236,7 @@ namespace Orchard.Data.Migration {
         /// </summary>
         private IEnumerable<IDataMigration> GetDataMigrations(string feature) {
             var migrations = _dataMigrations
-                    .Where(dm => string.Equals(dm.Feature.Descriptor.Id, feature, StringComparison.OrdinalIgnoreCase))
+                    .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Descriptor.Id, feature, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
             //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {

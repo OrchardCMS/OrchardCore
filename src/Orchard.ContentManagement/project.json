@@ -12,7 +12,7 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": {
+    "dnx46": {
       "frameworkAssemblies": {
         "System.Xml": "",
         "System.Xml.Linq": "",

@@ -1,4 +1,5 @@
-﻿using YesSql.Core.Indexes;
+﻿using Orchard.DependencyInjection;
+using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement.Records
 {
@@ -11,7 +12,7 @@ namespace Orchard.ContentManagement.Records
         public string ContentType { get; set; }
     }
 
-    public class ContentItemVersionRecordIndexProvider : IndexProvider<ContentItemVersionRecord>
+    public class ContentItemVersionRecordIndexProvider : IndexProvider<ContentItemVersionRecord>, IDependency
     {
         public override void Describe(DescribeContext<ContentItemVersionRecord> context)
         {
