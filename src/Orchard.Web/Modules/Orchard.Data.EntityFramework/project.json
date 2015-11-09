@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "EntityFramework.Core": "7.0.0-*",
-    "EntityFramework.SqlServer": "7.0.0-*",
+    "EntityFramework.MicrosoftSqlServer": "7.0.0-*",
     "EntityFramework.InMemory": "7.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
