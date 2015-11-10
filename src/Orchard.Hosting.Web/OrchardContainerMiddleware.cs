@@ -56,8 +56,11 @@ namespace Orchard.Hosting
                     }
                 }
 
-                httpContext.RequestServices = shellContext.LifetimeScope;
-                await _next.Invoke(httpContext);
+                using (shellContext.LifetimeScope as IDisposable)
+                {
+                    httpContext.RequestServices = shellContext.LifetimeScope;
+                    await _next.Invoke(httpContext);
+                }
             }
             else {
                 _logger.LogError("Tenant not found");
