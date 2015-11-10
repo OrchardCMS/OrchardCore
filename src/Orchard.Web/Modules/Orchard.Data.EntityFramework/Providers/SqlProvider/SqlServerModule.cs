@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Framework.DependencyInjection;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Data.EntityFramework.Providers.SqlProvider {
