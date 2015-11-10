@@ -114,7 +114,7 @@ namespace Orchard.Environment.Shell.Builders
                 var store = new Store(cfg =>
                 {
                     cfg.ConnectionFactory = new DbConnectionFactory<SqlConnection>(@"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!");
-                    cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Documents"));
+                    cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
                     //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
                     //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
                     cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
