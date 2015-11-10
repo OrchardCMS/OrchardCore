@@ -42,14 +42,14 @@ namespace Orchard.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection serviceCollection = new ServiceCollection();
+            IServiceCollection tenantServiceCollection = new ServiceCollection();
 
-            serviceCollection.AddInstance(settings);
-            serviceCollection.AddInstance(blueprint.Descriptor);
-            serviceCollection.AddInstance(blueprint);
+            tenantServiceCollection.AddInstance(settings);
+            tenantServiceCollection.AddInstance(blueprint.Descriptor);
+            tenantServiceCollection.AddInstance(blueprint);
 
             // Sure this is right?
-            serviceCollection.AddInstance(_loggerFactory);
+            tenantServiceCollection.AddInstance(_loggerFactory);
 
             IServiceCollection moduleServiceCollection = new ServiceCollection();
             foreach (var dependency in blueprint.Dependencies
@@ -61,11 +61,15 @@ namespace Orchard.Environment.Shell.Builders
 
             var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
 
-            var moduleServiceProvider = new FallbackServiceProvider(_serviceProvider, moduleServiceCollection);
+            // Create a temporary IServiceProvider so that modules can use DI too
+            var moduleServiceProvider = new FallbackServiceProvider(
+                _serviceProvider, 
+                moduleServiceCollection);
 
+            // Let any module add custom service descriptors to the tenant
             foreach (var service in moduleServiceProvider.GetServices<IModule>())
             {
-                service.Configure(serviceCollection);
+                service.Configure(tenantServiceCollection);
             }
 
             foreach (var dependency in blueprint.Dependencies
@@ -78,26 +82,26 @@ namespace Orchard.Environment.Shell.Builders
 
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
                     {
-                        serviceCollection.AddSingleton(interfaceType, dependency.Type);
+                        tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType))
                     {
-                        serviceCollection.AddScoped(interfaceType, dependency.Type);
+                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                     else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
                     {
-                        serviceCollection.AddTransient(interfaceType, dependency.Type);
+                        tenantServiceCollection.AddTransient(interfaceType, dependency.Type);
                     }
                     else
                     {
-                        serviceCollection.AddScoped(interfaceType, dependency.Type);
+                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
                     }
                 }
             }
 
             // Configure event handlers
             var eventBus = new DefaultOrchardEventBus();
-            serviceCollection.AddInstance<IEventBus>(eventBus);
+            tenantServiceCollection.AddInstance<IEventBus>(eventBus);
             
             // Configuring data access
             var indexes = blueprint
@@ -105,7 +109,7 @@ namespace Orchard.Environment.Shell.Builders
             .Where(x => typeof(IIndexProvider).IsAssignableFrom(x.Type))
             .Select(x => x.Type).ToArray();
 
-            serviceCollection.AddSingleton<IStore>(serviceProvider =>
+            tenantServiceCollection.AddSingleton<IStore>(serviceProvider =>
             {
                 var store = new Store(cfg =>
                 {
@@ -122,13 +126,13 @@ namespace Orchard.Environment.Shell.Builders
 
             });
 
-            serviceCollection.AddScoped<ISession>(serviceProvider =>
+            tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
             {
                 var store = serviceProvider.GetRequiredService<IStore>();
                 return store.CreateSession();
             });
 
-            serviceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
+            tenantServiceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
             // Register event handlers on the event bus
             var eventHandlers = blueprint
@@ -139,7 +143,7 @@ namespace Orchard.Environment.Shell.Builders
 
             foreach (var handlerClass in eventHandlers)
             {
-                serviceCollection.AddScoped(handlerClass);
+                tenantServiceCollection.AddScoped(handlerClass);
 
                 // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to 
                 // the event bus.
@@ -148,11 +152,11 @@ namespace Orchard.Environment.Shell.Builders
                 {
                     var notifyProxy = DefaultOrchardEventBus.CreateProxy(i);
                     notifyProxy.EventBus = eventBus;
-                    serviceCollection.AddInstance(i, notifyProxy);
+                    tenantServiceCollection.AddInstance(i, notifyProxy);
                 }
             }
 
-            var shellServiceProvider = new FallbackServiceProvider(_serviceProvider, serviceCollection);
+            var shellServiceProvider = new FallbackServiceProvider(_serviceProvider, tenantServiceCollection);
             
             // Register any IEventHandler method in the event bus
             foreach (var handlerClass in eventHandlers)
