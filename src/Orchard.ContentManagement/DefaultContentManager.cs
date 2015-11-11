@@ -15,6 +15,7 @@ namespace Orchard.ContentManagement
         //private readonly IContentManagerSession _contentManagerSession;
         private readonly ISession _session; 
         private readonly ILogger _logger;
+        private readonly DefaultContentManagerSession _contentManagerSession;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
@@ -26,6 +27,7 @@ namespace Orchard.ContentManagement
             //_contentManagerSession = contentManagerSession;
             Handlers = handlers;
             _session = session;
+            _contentManagerSession = new DefaultContentManagerSession();
             _logger = loggerFactory.CreateLogger<DefaultContentManager>();
         }
 
@@ -56,9 +58,6 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.Record = new ContentItemRecord();
-            context2.ContentItem.VersionRecord = new ContentItemVersionRecord();
-
             Handlers.Invoke(handler => handler.Activated(context2), _logger);
 
             var context3 = new InitializingContentContext {
@@ -84,59 +83,89 @@ namespace Orchard.ContentManagement
 
             // obtain the root records based on version options
             if (options.VersionRecordId != 0) {
-                // short-circuit if item held in session
-                //if (_contentManagerSession.RecallVersionRecordId(options.VersionRecordId, out contentItem)) {
-                //    return contentItem;
-                //}
 
-                versionRecord = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>().Where(x => x.ContentItemRecordId == id && x.Published == options.IsPublished && x.Latest == options.IsLatest).FirstOrDefault();
+                if (_contentManagerSession.RecallVersionRecordId(options.VersionRecordId, out contentItem))
+                {
+                    return contentItem;
+                }
+
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x => x.Id == options.VersionRecordId)
+                    .FirstOrDefault();
             }
             else if (options.VersionNumber != 0) {
-                // short-circuit if item held in session
-                //if (_contentManagerSession.RecallVersionNumber(id, options.VersionNumber, out contentItem)) {
-                //    return contentItem;
-                //}
+                if (_contentManagerSession.RecallVersionNumber(id, options.VersionNumber, out contentItem))
+                {
+                    return contentItem;
+                }
 
-                versionRecord = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>().Where(x => x.ContentItemRecordId == id && x.Number == options.VersionNumber).FirstOrDefault();
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x =>
+                        x.ContentItemId == id &&
+                        x.Number == options.VersionNumber
+                    )
+                    .FirstOrDefault();
+
             }
-            //else if (_contentManagerSession.RecallContentRecordId(id, out contentItem)) {
-            //    // try to reload a previously loaded published content item
+            else if (_contentManagerSession.RecallContentRecordId(id, out contentItem))
+            {
+                // try to reload a previously loaded published content item
 
-            //    if (options.IsPublished) {
-            //        return contentItem;
-            //    }
+                if (options.IsPublished)
+                {
+                    return contentItem;
+                }
 
-            //    versionRecord = contentItem.VersionRecord;
-            //}
-
-            // no record means content item is not in db
-            if (versionRecord == null) {
-                // check in memory
-                // TODO: 
-                //var record = _contentItemStore.Get(id, options).VersionRecord;
-                //if (record == null) {
-                //    return null;
-                //}
-                //
-                //versionRecord = record;
-
+                versionRecord = contentItem.VersionRecord;
+            }
+            else if (options.IsLatest)
+            {
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x => x.ContentItemId == id && x.Latest == true)
+                    .FirstOrDefault();
+            }
+            else if (options.IsDraft && !options.IsDraftRequired)
+            {
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x =>
+                        x.ContentItemId == id &&
+                        x.Published == false &&
+                        x.Latest == true)
+                    .FirstOrDefault();
+            }
+            else if (options.IsDraft || options.IsDraftRequired)
+            {
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x => x.ContentItemId == id && x.Latest == true)
+                    .FirstOrDefault();
+            }
+            else if (options.IsPublished)
+            {
+                versionRecord = await _session
+                    .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
+                    .Where(x => x.ContentItemId == id && x.Latest == true)
+                    .FirstOrDefault();
+            }
+                
+            if(versionRecord == null && !options.IsDraftRequired)
+            {
                 return null;
             }
-
-            // return item if obtained earlier in session
-            //if (_contentManagerSession.RecallVersionRecordId(versionRecord.Id, out contentItem)) {
-            //    if (options.IsDraftRequired && versionRecord.Published) {
-            //        return await BuildNewVersionAsync(contentItem);
-            //    }
-            //    return contentItem;
-            //}
+            
+            var record = await _session.GetAsync<ContentItemRecord>(id);
 
             // allocate instance and set record property
             contentItem = New(versionRecord.ContentType);
+            contentItem.Record = record;
             contentItem.VersionRecord = versionRecord;
 
             // store in session prior to loading to avoid some problems with simple circular dependencies
-            //_contentManagerSession.Store(contentItem);
+            _contentManagerSession.Store(contentItem);
 
             // create a context with a new instance to load            
             var context = new LoadContentContext(contentItem);
@@ -158,7 +187,11 @@ namespace Orchard.ContentManagement
                 return;
             }
             // create a context for the item and it's previous published record
-            var previous = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>(x => x.ContentItemRecordId == contentItem.Id && x.Published).FirstOrDefault();
+            var previous = await _session
+                .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>(x => 
+                    x.ContentItemId == contentItem.Id && x.Published)
+                .FirstOrDefault();
+
             var context = new PublishContentContext(contentItem, previous);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
@@ -212,24 +245,30 @@ namespace Orchard.ContentManagement
             // locate the existing and the current latest versions, allocate building version
             var existingItemVersionRecord = existingContentItem.VersionRecord;
             var buildingItemVersionRecord = new ContentItemVersionRecord {
-                ContentItemRecordId = contentItemRecord.Id,
+                ContentItemId = contentItemRecord.Id,
                 Latest = true,
                 Published = false,
             };
 
 
-            var latestVersion = await _session.QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>(x => x.ContentItemRecordId == contentItemRecord.Id && x.Latest).FirstOrDefault();
+            var latestVersion = await _session
+                .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>(x => 
+                    x.ContentItemId == contentItemRecord.Id && x.Latest)
+                .FirstOrDefault();
 
             if (latestVersion != null) {
                 latestVersion.Latest = false;
                 buildingItemVersionRecord.Number = latestVersion.Number + 1;
             }
             else {
-                var biggest = await _session.QueryIndexAsync<ContentItemVersionRecordIndex>(x => x.ContentItemRecordId == contentItemRecord.Id).OrderByDescending(x => x.Number).FirstOrDefault();
+                var biggest = await _session.QueryIndexAsync<ContentItemVersionRecordIndex>(x => 
+                x.ContentItemId == contentItemRecord.Id)
+                .OrderByDescending(x => x.Number)
+                .FirstOrDefault();
                 buildingItemVersionRecord.Number = biggest.Number + 1;
             }
 
-            buildingItemVersionRecord.ContentItemRecordId = contentItemRecord.Id;
+            buildingItemVersionRecord.ContentItemId = contentItemRecord.Id;
             _session.Save(buildingItemVersionRecord);
 
             var buildingContentItem = New(existingContentItem.ContentType);
@@ -244,6 +283,7 @@ namespace Orchard.ContentManagement
                 ExistingItemVersionRecord = existingItemVersionRecord,
                 BuildingItemVersionRecord = buildingItemVersionRecord,
             };
+
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Invoke(handler => handler.Versioned(context), _logger);
 
@@ -258,11 +298,9 @@ namespace Orchard.ContentManagement
             if (contentItem.VersionRecord == null) {
                 // produce root record to determine the model id
                 contentItem.VersionRecord = new ContentItemVersionRecord {
-                    ContentItemRecordId = contentItem.Id,
                     Number = 1,
                     Latest = true,
-                    Published = true,
-                    ContentType = contentItem.ContentType
+                    Published = true
                 };
             }
 
@@ -298,7 +336,10 @@ namespace Orchard.ContentManagement
             }
 
             _session.Save(contentItem.Record);
+            contentItem.VersionRecord.ContentItemId = contentItem.Record.Id;
             _session.Save(contentItem.VersionRecord);
+
+            _contentManagerSession.Store(contentItem);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Orchard.ContentManagement.Records {
         {
             Parts = new List<ContentVersionPart>();
         }
-        public int ContentItemRecordId { get; set; }
+        public int ContentItemId { get; set; }
         public string ContentType { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }

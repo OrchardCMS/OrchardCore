@@ -104,17 +104,7 @@ namespace Orchard.Setup.Services {
                 executionId = CreateTenantData(context, environment);
 
                 var store = (IStore)environment.LifetimeScope.GetService(typeof(IStore));
-                store.ExecuteMigrationAsync(schemaBuilder =>
-                {
-                    schemaBuilder
-                        .CreateTable("Document", table => table
-                            .Column<int>("Id", column => column.PrimaryKey().Identity().NotNull())
-                            .Column<string>("Type", column => column.NotNull())
-                        )
-                        .AlterTable("Document", table => table
-                            .CreateIndex("IX_Type", "Type")
-                        );
-                });
+                store.CreateSchema();
             }
 
             shellSettings.State = TenantState.Running;

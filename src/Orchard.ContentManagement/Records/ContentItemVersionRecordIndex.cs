@@ -5,7 +5,7 @@ namespace Orchard.ContentManagement.Records
 {
     public class ContentItemVersionRecordIndex : MapIndex
     {
-        public int ContentItemRecordId { get; set; }
+        public int ContentItemId { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }
@@ -19,7 +19,7 @@ namespace Orchard.ContentManagement.Records
             context.For<ContentItemVersionRecordIndex>()
                 .Map(civr => new ContentItemVersionRecordIndex
                 {
-                    ContentItemRecordId = civr.ContentItemRecordId,
+                    ContentItemId = civr.ContentItemId,
                     Latest = civr.Latest,
                     Number = civr.Number,
                     Published = civr.Published,

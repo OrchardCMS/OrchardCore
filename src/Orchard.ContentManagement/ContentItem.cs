@@ -56,10 +56,20 @@ namespace Orchard.ContentManagement {
             var contentVersionPart = part as ContentVersionPart;
             if (contentVersionPart != null)
             {
+                if(VersionRecord == null)
+                {
+                    VersionRecord = new ContentItemVersionRecord();
+                }
+
                 VersionRecord.Parts.Add(contentVersionPart);
             }
             else
             {
+                if (Record == null)
+                {
+                    Record = new ContentItemRecord();
+                }
+
                 Record.Parts.Add(part);
             }
 
