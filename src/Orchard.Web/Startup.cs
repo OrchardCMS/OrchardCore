@@ -8,18 +8,19 @@ using System;
 namespace Orchard.Web {
     public class Startup {
         public IServiceProvider ConfigureServices(IServiceCollection services) {
-            services
-                .AddWebHost();
-
+            services.AddWebHost();
             services.AddModuleFolder("~/Core/Orchard.Core");
             services.AddModuleFolder("~/Modules");
+
+            // Save the list of service definitions
+            services.AddSingleton(_ => services);
 
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory, IOrchardHost orchardHost) {
             builder.ConfigureWebHost(loggerFactory);
-
+            
             orchardHost.Initialize();
         }
     }

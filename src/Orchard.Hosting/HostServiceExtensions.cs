@@ -21,7 +21,7 @@ namespace Orchard.Hosting {
 
             additionalDependencies(services);
             
-            services.AddTransient<IOrchardShellHost, DefaultOrchardShellHost>();
+            services.AddSingleton<IOrchardShellHost, DefaultOrchardShellHost>();
 
             return services.AddFallback();
         }

@@ -10,6 +10,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Orchard.Environment.Shell.Models;
 using YesSql.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Hosting
 {
@@ -57,11 +58,15 @@ namespace Orchard.Hosting
                     }
                 }
 
-                httpContext.RequestServices = shellContext.LifetimeScope;
-                await _next.Invoke(httpContext);
+                httpContext.ApplicationServices = shellContext.LifetimeScope;
 
-                // Hack to release the session and the service provider is not disposed
-                (shellContext.LifetimeScope.GetService(typeof(ISession)) as IDisposable).Dispose();
+                var scope = shellContext.LifetimeScope.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+                using (scope)
+                {
+                    httpContext.RequestServices = scope.ServiceProvider;
+                    await _next.Invoke(httpContext);
+                }
             }
             else {
                 _logger.LogError("Tenant not found");

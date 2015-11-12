@@ -28,12 +28,15 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IAppDataFolderRoot _appDataFolderRoot;
+        private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
-            IAppDataFolderRoot appDataFolderRoot)
+            IAppDataFolderRoot appDataFolderRoot,
+            IServiceCollection applicationServices)
         {
+            _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _appDataFolderRoot = appDataFolderRoot;
             _loggerFactory = loggerFactory;
@@ -42,7 +45,7 @@ namespace Orchard.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection tenantServiceCollection = new ServiceCollection();
+            IServiceCollection tenantServiceCollection = CloneServiceCollection(_applicationServices);
 
             tenantServiceCollection.AddInstance(settings);
             tenantServiceCollection.AddInstance(blueprint.Descriptor);
@@ -51,7 +54,8 @@ namespace Orchard.Environment.Shell.Builders
             // Sure this is right?
             tenantServiceCollection.AddInstance(_loggerFactory);
 
-            IServiceCollection moduleServiceCollection = new ServiceCollection();
+            IServiceCollection moduleServiceCollection = CloneServiceCollection(_applicationServices);
+
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
             {
@@ -60,11 +64,9 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
+            
 
-            // Create a temporary IServiceProvider so that modules can use DI too
-            var moduleServiceProvider = new FallbackServiceProvider(
-                _serviceProvider, 
-                moduleServiceCollection);
+            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Let any module add custom service descriptors to the tenant
             foreach (var service in moduleServiceProvider.GetServices<IModule>())
@@ -156,7 +158,7 @@ namespace Orchard.Environment.Shell.Builders
                 }
             }
 
-            var shellServiceProvider = new FallbackServiceProvider(_serviceProvider, tenantServiceCollection);
+            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
             
             // Register any IEventHandler method in the event bus
             foreach (var handlerClass in eventHandlers)
@@ -175,5 +177,38 @@ namespace Orchard.Environment.Shell.Builders
 
             return shellServiceProvider;
         }
+
+        public IServiceCollection CloneServiceCollection(IServiceCollection serviceCollection)
+        {
+            IServiceCollection clonedCollection = new ServiceCollection();
+
+            foreach (var service in serviceCollection)
+            {
+                // Register the singleton instances to all containers
+                if (service.Lifetime == ServiceLifetime.Singleton)
+                {
+                    var serviceTypeInfo = service.ServiceType.GetTypeInfo();
+                    if (serviceTypeInfo.IsGenericType && serviceTypeInfo.GenericTypeArguments.Length == 0)
+                    {
+
+                        // Ignore open generic types for now
+                        // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));
+                        clonedCollection.AddSingleton(service.ServiceType, service.ImplementationType);
+                        //continue;
+                    }
+                    else
+                    {
+                        clonedCollection.AddSingleton(service.ServiceType, _ => _serviceProvider.GetService(service.ServiceType));
+                    }
+                }
+                else
+                {
+                    clonedCollection.Add(service);
+                }
+            }
+
+            return clonedCollection;
+        }
+        
     }
 }
