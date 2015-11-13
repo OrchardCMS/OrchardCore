@@ -114,14 +114,7 @@ namespace Orchard.Hosting {
             _runningShellTable.Add(context.Settings);
         }
 
-        /// <summary>
-        /// Creates a transient shell for the default tenant's setup.
-        /// </summary>
-        private ShellContext CreateSetupContext() {
-            _logger.LogDebug("Creating shell context for root setup.");
-            return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
-        }
-
+        
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
@@ -135,51 +128,15 @@ namespace Orchard.Hosting {
             return _shellContextFactory.CreateShellContext(settings);
         }
 
-        public void ActivateShell(ShellSettings settings) {
-            _logger.LogDebug("Activating shell: {0}", settings.Name);
-
-            // look for the associated shell context
-            ShellContext shellContext = null;
-            _shellContexts.TryGetValue(settings.Name, out shellContext);
-            
-            if (shellContext == null && settings.State == TenantState.Disabled) {
-                return;
-            }
-
-            // is this is a new tenant ? or is it a tenant waiting for setup ?
-            if (shellContext == null || settings.State == TenantState.Uninitialized) {
-                // create the Shell
-                var context = CreateShellContext(settings);
-
-                // activate the Shell
-                ActivateShell(context);
-            }
-            // terminate the shell if the tenant was disabled
-            else if (settings.State == TenantState.Disabled) {
-                shellContext.Shell.Terminate();
-                _runningShellTable.Remove(settings);
-
-                if(_shellContexts.TryRemove(settings.Name, out shellContext))
-                {
-                    shellContext.Dispose();
-                }
-            }
-            // reload the shell as its settings have changed
-            else {
-                // dispose previous context
-                shellContext.Shell.Terminate();
-
-                var context = _shellContextFactory.CreateShellContext(settings);
-
-                if (_shellContexts.TryRemove(settings.Name, out shellContext))
-                {
-                    shellContext.Dispose();
-                    context.Shell.Activate();
-                    _runningShellTable.Update(settings);
-                }                
-            }
+        /// <summary>
+        /// Creates a transient shell for the default tenant's setup.
+        /// </summary>
+        private ShellContext CreateSetupContext()
+        {
+            _logger.LogDebug("Creating shell context for root setup.");
+            return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
         }
-
+        
         /// <summary>
         /// A feature is enabled/disabled, the tenant needs to be restarted
         /// </summary>

@@ -105,7 +105,7 @@ namespace Orchard.Setup.Services {
             using (var environment = _orchardHost.CreateShellContext(shellSettings)) {
                 executionId = CreateTenantData(context, environment);
 
-                using (var store = (IStore)environment.LifetimeScope.GetService(typeof(IStore)))
+                using (var store = (IStore)environment.ServiceProvider.GetService(typeof(IStore)))
                 {
                     store.CreateSchema();
                 }

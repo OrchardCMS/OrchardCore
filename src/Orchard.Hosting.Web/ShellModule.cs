@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
-using Orchard.Events;
 using Orchard.Hosting.Mvc;
 using Orchard.Hosting.Mvc.Routing;
 
@@ -19,7 +18,7 @@ namespace Orchard.Hosting {
             serviceCollection.AddOrchardMvc();
             serviceCollection.AddDataAccess();
 
-            serviceCollection.AddSingleton<IOrchardShell, OrchardShell>();
+            serviceCollection.AddScoped<IOrchardShellEvents, OrchardShell>();
             serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
         }
     }

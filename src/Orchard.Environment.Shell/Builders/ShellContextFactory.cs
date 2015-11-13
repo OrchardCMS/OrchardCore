@@ -33,7 +33,7 @@ namespace Orchard.Environment.Shell.Builders {
                 var shellcontext = new ShellContext {
                     Settings = settings,
                     Blueprint = blueprint,
-                    LifetimeScope = provider,
+                    ServiceProvider = provider,
                     //Shell = provider.GetRequiredService<IOrchardShell>()
                 };
 
@@ -77,7 +77,7 @@ namespace Orchard.Environment.Shell.Builders {
             return new ShellContext {
                 Settings = settings,
                 Blueprint = blueprint,
-                LifetimeScope = provider,
+                ServiceProvider = provider,
                 //Shell = provider.GetService<IOrchardShell>()
             };
         }

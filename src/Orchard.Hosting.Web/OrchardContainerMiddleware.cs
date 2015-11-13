@@ -6,22 +6,19 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Orchard.Environment.Shell.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Events;
 
 namespace Orchard.Hosting
 {
+    /// <summary>
+    /// This middleware replaces the default service provider by the one for the current tenant
+    /// </summary>
     public class OrchardContainerMiddleware {
         private readonly RequestDelegate _next;
         private readonly IOrchardHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ILogger _logger;
-        private readonly HashSet<string> _activatedShells = new HashSet<string>();
-
-        //private readonly IDictionary<string, ShellContext> _shellContexts = new ConcurrentDictionary<string, ShellContext>();
 
         public OrchardContainerMiddleware(
             RequestDelegate next,
@@ -37,7 +34,7 @@ namespace Orchard.Hosting
         public async Task Invoke(HttpContext httpContext) {
             var sw = Stopwatch.StartNew();
 
-            // Ensure all shell contexts are loaded and available.
+            // Ensure all ShellContext are loaded and available.
             _orchardHost.Initialize();
 
             var shellSetting = _runningShellTable.Match(httpContext);
@@ -45,25 +42,21 @@ namespace Orchard.Hosting
             if (shellSetting != null) {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
 
-                httpContext.ApplicationServices = shellContext.LifetimeScope;
+                httpContext.ApplicationServices = shellContext.ServiceProvider;
 
-                var scope = shellContext.LifetimeScope.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                var scope = shellContext.ServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
                 using (scope)
                 {
-                    //(httpContext.RequestServices as IDisposable)?.Dispose();
                     httpContext.RequestServices = scope.ServiceProvider;
 
-                    // We need to activate once the scope is set otherwise Scoped services
-                    // won't be disposed. This is the case with Automatic Data Migrations for
-                    // instance as it requires an ISession
-                    if (shellContext.Shell == null)
+                    if (!shellContext.IsActived)
                     {
-                        shellContext.Shell = httpContext.RequestServices.GetRequiredService<IOrchardShell>();
-                        shellContext.Shell.Activate();
-
                         var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                        await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
                         await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+
+                        shellContext.IsActived = true;
                     }
 
                     await _next.Invoke(httpContext);

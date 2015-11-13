@@ -5,13 +5,12 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
 using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;
-using Orchard.Events;
 using Orchard.Environment.Shell;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Hosting {
-    public class OrchardShell : IOrchardShell {
+namespace Orchard.Hosting
+{
+    public class OrchardShell : IOrchardShellEvents {
         private readonly IEnumerable<IRouteProvider> _routeProviders;
         private readonly IRoutePublisher _routePublisher;
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
@@ -31,7 +30,8 @@ namespace Orchard.Hosting {
             _serviceProvider = serviceProvider;
         }
 
-        public void Activate() {
+        public Task ActivatingAsync()
+        {
             IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
             
             appBuilder.Properties["host.AppName"] = _shellSettings.Name;
@@ -52,12 +52,22 @@ namespace Orchard.Hosting {
 
             _routePublisher.Publish(allRoutes, pipeline);
 
-            IsActivated = true;
+            return Task.CompletedTask;
         }
 
-        public bool IsActivated { get; private set; }
+        public Task ActivatedAsync()
+        {
+            return Task.CompletedTask;
+        }
 
-        public void Terminate() {
+        public Task TerminatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task TerminatedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

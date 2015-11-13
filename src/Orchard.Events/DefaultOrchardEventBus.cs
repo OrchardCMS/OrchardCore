@@ -103,7 +103,7 @@ namespace Orchard.Events
                 return result;
             }
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public static INotifyProxy CreateProxy(Type interfaceType) 

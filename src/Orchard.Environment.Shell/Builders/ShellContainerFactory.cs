@@ -102,7 +102,8 @@ namespace Orchard.Environment.Shell.Builders
                 }
             }
 
-            // Configure event handlers
+            // Configure event handlers, they are not part of the blueprint, so they have
+            // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
             tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
 
@@ -112,28 +113,28 @@ namespace Orchard.Environment.Shell.Builders
             .Where(x => typeof(IIndexProvider).IsAssignableFrom(x.Type))
             .Select(x => x.Type).ToArray();
 
-            tenantServiceCollection.AddSingleton<IStore>(_ => 
+            if (settings.DatabaseProvider != null)
             {
                 var store = new Store(cfg =>
-                {
+                    {
                     // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
 
                     IConnectionFactory connectionFactory = null;
 
-                    switch (settings.DatabaseProvider)
-                    {
-                        case "SqlConnection":
-                            connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
-                            break;
-                        case "SqliteConnection":
-                            connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                            break;
-                        default:
-                            throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
-                    }
+                        switch (settings.DatabaseProvider)
+                        {
+                            case "SqlConnection":
+                                connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
+                                break;
+                            case "SqliteConnection":
+                                connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                                break;
+                            default:
+                                throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
+                        }
 
-                    cfg.ConnectionFactory = connectionFactory;
-                    cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
+                        cfg.ConnectionFactory = connectionFactory;
+                        cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
                     //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
                     //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
                     cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
@@ -142,20 +143,19 @@ namespace Orchard.Environment.Shell.Builders
 
                 store.RegisterIndexes(indexes);
 
-                return store;
-            });
+                tenantServiceCollection.AddInstance<IStore>(store);
 
-            tenantServiceCollection.AddScoped<ISession>(serviceProvider => 
-                serviceProvider.GetRequiredService<IStore>().CreateSession()
-            );
+                tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
+                    store.CreateSession()
+                );
+            }
 
             tenantServiceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
             // Register event handlers on the event bus
-            var eventHandlers = blueprint
-                .Dependencies
-                .Select(t => t.Type)
-                .Where(t => typeof(IEventHandler).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
+            var eventHandlers = tenantServiceCollection
+                .Select(x => x.ImplementationType)
+                .Where(t => t != null && typeof(IEventHandler).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
                 .ToArray();
 
             foreach (var handlerClass in eventHandlers)

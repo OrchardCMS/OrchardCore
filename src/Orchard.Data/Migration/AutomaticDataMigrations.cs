@@ -49,9 +49,19 @@ namespace Orchard.Data.Migration
             }
         }
 
+        public Task ActivatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         public Task TerminatingAsync()
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
+        }
+
+        public Task TerminatedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }
