@@ -31,6 +31,9 @@ namespace Orchard.Environment.Shell {
             RequestUrlHost = settings.RequestUrlHost;
             RequestUrlPrefix = settings.RequestUrlPrefix;
             State = settings.State;
+            DatabaseProvider = settings.DatabaseProvider;
+            ConnectionString = settings.ConnectionString;
+
         }
 
         public ShellSettings(IConfigurationRoot configuration) {
@@ -72,6 +75,18 @@ namespace Orchard.Environment.Shell {
         {
             get { return StringNullReconfiguration(RootConfiguration["RequestUrlPrefix"]); }
             set { RootConfiguration["RequestUrlPrefix"] = value; }
+        }
+
+        public string ConnectionString
+        {
+            get { return StringNullReconfiguration(RootConfiguration["ConnectionString"]); }
+            set { RootConfiguration["ConnectionString"] = value; }
+        }
+
+        public string DatabaseProvider
+        {
+            get { return StringNullReconfiguration(RootConfiguration["DatabaseProvider"]); }
+            set { RootConfiguration["DatabaseProvider"] = value; }
         }
 
         /// <summary>

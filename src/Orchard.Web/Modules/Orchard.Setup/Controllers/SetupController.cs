@@ -37,6 +37,8 @@ namespace Orchard.Setup.Controllers {
 
             var setupContext = new SetupContext {
                 SiteName = model.SiteName,
+                DatabaseProvider = model.DatabaseProvider,
+                DatabaseConnectionString = model.ConnectionString,
                 EnabledFeatures = null, // default list
             };
 

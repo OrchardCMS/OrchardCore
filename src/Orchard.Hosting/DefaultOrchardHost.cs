@@ -6,6 +6,7 @@ using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Hosting.ShellBuilders;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,8 +19,7 @@ namespace Orchard.Hosting {
         private readonly ILogger _logger;
 
         private readonly static object _syncLock = new object();
-        private readonly static object _shellContextsWriteLock = new object();
-        private IEnumerable<ShellContext> _shellContexts;
+        private ConcurrentDictionary<string, ShellContext> _shellContexts;
 
         public DefaultOrchardHost(
             IShellSettingsManager shellSettingsManager, 
@@ -33,24 +33,39 @@ namespace Orchard.Hosting {
         }
 
         void IOrchardHost.Initialize() {
-            _logger.LogInformation("Initialize Host");
             BuildCurrent();
-            _logger.LogInformation("Host Initialized");
         }
 
         /// <summary>
         /// Ensures shells are activated, or re-activated if extensions have changed
         /// </summary>
-        IEnumerable<ShellContext> BuildCurrent() {
+        IDictionary<string, ShellContext> BuildCurrent() {
             if (_shellContexts == null) {
-                lock (_syncLock) {
+                lock (this) {
                     if (_shellContexts == null) {
+                        _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         CreateAndActivateShells();
                     }
                 }
             }
 
             return _shellContexts;
+        }
+
+        public ShellContext GetShellContext(ShellSettings settings)
+        {
+            return _shellContexts[settings.Name];
+        }
+
+        public void UpdateShellSettings(ShellSettings settings)
+        {
+            ShellContext context;
+
+            _shellSettingsManager.SaveSettings(settings);
+            _runningShellTable.Update(settings);
+            _shellContexts.TryRemove(settings.Name, out context);
+            context = CreateShellContext(settings);
+            ActivateShell(context);
         }
 
         void CreateAndActivateShells() {
@@ -86,17 +101,14 @@ namespace Orchard.Hosting {
         }
 
         /// <summary>
-        /// Starts a Shell and registers its settings in RunningShellTable
+        /// Registers the shell settings in RunningShellTable
         /// </summary>
         private void ActivateShell(ShellContext context) {
             _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
-            context.Shell.Activate();
 
-            lock (_shellContextsWriteLock) {
-                _shellContexts = (_shellContexts ?? Enumerable.Empty<ShellContext>())
-                                .Where(c => c.Settings.Name != context.Settings.Name)
-                                .Concat(new[] { context })
-                                .ToArray();
+            lock (_shellContexts)
+            {
+                _shellContexts[context.Settings.Name] = context;
             }
 
             _runningShellTable.Add(context.Settings);
@@ -127,8 +139,9 @@ namespace Orchard.Hosting {
             _logger.LogDebug("Activating shell: {0}", settings.Name);
 
             // look for the associated shell context
-            var shellContext = _shellContexts.FirstOrDefault(c => c.Settings.Name == settings.Name);
-
+            ShellContext shellContext = null;
+            _shellContexts.TryGetValue(settings.Name, out shellContext);
+            
             if (shellContext == null && settings.State == TenantState.Disabled) {
                 return;
             }
@@ -146,10 +159,10 @@ namespace Orchard.Hosting {
                 shellContext.Shell.Terminate();
                 _runningShellTable.Remove(settings);
 
-                // Forcing enumeration with ToArray() so a lazy execution isn't causing issues by accessing the disposed context.
-                _shellContexts = _shellContexts.Where(shell => shell.Settings.Name != settings.Name).ToArray();
-
-                shellContext.Dispose();
+                if(_shellContexts.TryRemove(settings.Name, out shellContext))
+                {
+                    shellContext.Dispose();
+                }
             }
             // reload the shell as its settings have changed
             else {
@@ -158,14 +171,12 @@ namespace Orchard.Hosting {
 
                 var context = _shellContextFactory.CreateShellContext(settings);
 
-                // Activate and register modified context.
-                // Forcing enumeration with ToArray() so a lazy execution isn't causing issues by accessing the disposed shell context.
-                _shellContexts = _shellContexts.Where(shell => shell.Settings.Name != settings.Name).Union(new[] { context }).ToArray();
-
-                shellContext.Dispose();
-                context.Shell.Activate();
-
-                _runningShellTable.Update(settings);
+                if (_shellContexts.TryRemove(settings.Name, out shellContext))
+                {
+                    shellContext.Dispose();
+                    context.Shell.Activate();
+                    _runningShellTable.Update(settings);
+                }                
             }
         }
 

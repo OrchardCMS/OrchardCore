@@ -8,6 +8,9 @@ using Orchard.Hosting.Mvc;
 using Orchard.Hosting.Mvc.Routing;
 
 namespace Orchard.Hosting {
+    /// <summary>
+    /// These services are registered on the tenant service collection
+    /// </summary>
     public class ShellModule : IModule {
         public void Configure(IServiceCollection serviceCollection) {
             serviceCollection.AddLogging();
@@ -16,7 +19,7 @@ namespace Orchard.Hosting {
             serviceCollection.AddOrchardMvc();
             serviceCollection.AddDataAccess();
 
-            serviceCollection.AddScoped<IOrchardShell, OrchardShell>();
+            serviceCollection.AddSingleton<IOrchardShell, OrchardShell>();
             serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
         }
     }

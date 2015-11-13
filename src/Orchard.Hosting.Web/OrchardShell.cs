@@ -7,6 +7,8 @@ using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;
 using Orchard.Events;
 using Orchard.Environment.Shell;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Hosting {
     public class OrchardShell : IOrchardShell {
@@ -15,21 +17,18 @@ namespace Orchard.Hosting {
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IEventBus _eventBus;
 
         public OrchardShell (
             IEnumerable<IRouteProvider> routeProviders,
             IRoutePublisher routePublisher,
             IEnumerable<IMiddlewareProvider> middlewareProviders,
             ShellSettings shellSettings,
-            IServiceProvider serviceProvider,
-            IEventBus eventBus) {
+            IServiceProvider serviceProvider) {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
             _middlewareProviders = middlewareProviders;
             _shellSettings = shellSettings;
             _serviceProvider = serviceProvider;
-            _eventBus = eventBus;
         }
 
         public void Activate() {
@@ -53,11 +52,12 @@ namespace Orchard.Hosting {
 
             _routePublisher.Publish(allRoutes, pipeline);
 
-            _eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
+            IsActivated = true;
         }
 
+        public bool IsActivated { get; private set; }
+
         public void Terminate() {
-            _eventBus.NotifyAsync<IOrchardShellEvents>(x => x.TerminatingAsync()).Wait();
         }
     }
 }

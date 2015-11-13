@@ -34,7 +34,7 @@ namespace Orchard.Environment.Shell.Builders {
                     Settings = settings,
                     Blueprint = blueprint,
                     LifetimeScope = provider,
-                    Shell = provider.GetRequiredService<IOrchardShell>()
+                    //Shell = provider.GetRequiredService<IOrchardShell>()
                 };
 
                 _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
@@ -78,7 +78,7 @@ namespace Orchard.Environment.Shell.Builders {
                 Settings = settings,
                 Blueprint = blueprint,
                 LifetimeScope = provider,
-                Shell = provider.GetService<IOrchardShell>()
+                //Shell = provider.GetService<IOrchardShell>()
             };
         }
     }

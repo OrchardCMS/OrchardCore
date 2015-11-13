@@ -5,26 +5,62 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Linq;
+using Orchard.DependencyInjection;
 
 namespace Orchard.Events
 {
+    /// <summary>
+    /// Registrations are share accross all EventBus instances for a single tenant
+    /// </summary>
+    public interface IEventBusState : ISingletonDependency
+    {
+        ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>> Subscribers { get; }
+
+        void Add(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action);
+    }
+
+    public class EventBusState : IEventBusState
+    {
+        public ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>> Subscribers { get; private set; }
+
+        public EventBusState()
+        {
+             Subscribers = new ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>>();
+        }
+
+        public void Add(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
+        {
+            var messageSubscribers = Subscribers.GetOrAdd(message, m => new ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>());
+            messageSubscribers.Add(action);
+        }
+
+    }
+
     public class DefaultOrchardEventBus : IEventBus
     {
-        private ConcurrentDictionary<string, ConcurrentBag<Func<IDictionary<string, object>, Task>>> _subscribers = new ConcurrentDictionary<string, ConcurrentBag<Func<IDictionary<string, object>, Task>>>();
+        private readonly IEventBusState _state;
+        private readonly IServiceProvider _serviceProvider;
+
+        public DefaultOrchardEventBus(
+            IEventBusState state,
+            IServiceProvider serviceProvider)
+        {
+            _state = state;
+            _serviceProvider = serviceProvider;
+        }
 
         public async Task NotifyAsync(string message, IDictionary<string, object> arguments)
         {
-            var messageSubscribers = _subscribers.GetOrAdd(message, m => new ConcurrentBag<Func<IDictionary<string, object>, Task>>());
+            var messageSubscribers = _state.Subscribers.GetOrAdd(message, m => new ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>());
             foreach (var subscriber in messageSubscribers)
             {
-                await subscriber(arguments);
+                await subscriber(_serviceProvider, arguments);
             }
         }
 
-        public void Subscribe(string message, Func<IDictionary<string, object>, Task> action)
+        public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
         {
-            var messageSubscribers = _subscribers.GetOrAdd(message, m => new ConcurrentBag<Func<IDictionary<string, object>, Task>>());
-            messageSubscribers.Add(action);
+            _state.Add(message, action);
         }
 
         public async Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventHandler) where TEventHandler : IEventHandler
@@ -50,9 +86,9 @@ namespace Orchard.Events
             await NotifyAsync(messageName, data);
         }
 
-        public static Task Invoke(IDictionary<string, object> arguments, IServiceProvider serviceProvider, MethodInfo methodInfo, Type eventHandler)
+        public static Task Invoke(IServiceProvider serviceProvider, IDictionary<string, object> arguments, MethodInfo methodInfo, Type handlerClass)
         {
-            var service = serviceProvider.GetService(eventHandler);
+            var service = serviceProvider.GetService(handlerClass);
             var parameters = new object[arguments.Count];
             var methodParameters = methodInfo.GetParameters();
             for (var i=0; i<methodParameters.Length; i++)
@@ -100,14 +136,9 @@ namespace Orchard.Events
     {
         public NotifyProxy()
         {
-
         }
 
-        public IEventBus EventBus
-        {
-            get; set;
-        }
-
+        public IEventBus EventBus { get; set; }
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {

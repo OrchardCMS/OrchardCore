@@ -21,7 +21,7 @@
     "Orchard.Hosting.Console": "2.0.0-*"
   },
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001;http://localhost:5002",
+    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001",
     "run": "run"
   },
   "compilationOptions": {

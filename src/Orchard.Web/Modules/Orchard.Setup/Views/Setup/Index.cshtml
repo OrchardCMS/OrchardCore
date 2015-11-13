@@ -6,11 +6,21 @@
 </head>
 <body>
 @using (Html.BeginForm()) {
+    Model.DatabaseProvider = "SqlConnection";
+
     <h2>Please answer a few questions to configure your site.</h2>
     <fieldset class="site">
         <div>
             <label for="SiteName">What is the name of your site?</label>
             @Html.TextBoxFor(svm => svm.SiteName, new {autofocus = "autofocus"})
+        </div>
+        <div>
+            <label for="DatabaseProvider">What type of database to use?</label>
+            @Html.TextBoxFor(svm => svm.DatabaseProvider)
+        </div>
+        <div>
+            <label for="ConnectionString">Connection string</label>
+            @Html.TextBoxFor(svm => svm.ConnectionString)
         </div>
     </fieldset>
 

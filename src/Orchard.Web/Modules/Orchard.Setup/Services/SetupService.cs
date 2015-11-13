@@ -82,6 +82,8 @@ namespace Orchard.Setup.Services {
             _shellSettings.State = TenantState.Initializing;
 
             var shellSettings = new ShellSettings(_shellSettings);
+            shellSettings.DatabaseProvider = context.DatabaseProvider;
+            shellSettings.ConnectionString = context.DatabaseConnectionString;
 
             //if (shellSettings.DataProviders.Any()) {
             //    DataProvider provider = new DataProvider();
@@ -103,13 +105,14 @@ namespace Orchard.Setup.Services {
             using (var environment = _orchardHost.CreateShellContext(shellSettings)) {
                 executionId = CreateTenantData(context, environment);
 
-                var store = (IStore)environment.LifetimeScope.GetService(typeof(IStore));
-                store.CreateSchema();
+                using (var store = (IStore)environment.LifetimeScope.GetService(typeof(IStore)))
+                {
+                    store.CreateSchema();
+                }
             }
 
             shellSettings.State = TenantState.Running;
-            _shellSettingsManager.SaveSettings(shellSettings);
-
+            _orchardHost.UpdateShellSettings(shellSettings);
             return executionId;
         }
 

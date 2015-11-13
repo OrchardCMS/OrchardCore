@@ -19,6 +19,7 @@ using Orchard.Environment.Extensions;
 using Orchard.FileSystem.AppData;
 using System.IO;
 using YesSql.Core.Storage.FileSystem;
+using Microsoft.Data.Sqlite;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -45,7 +46,7 @@ namespace Orchard.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection tenantServiceCollection = CloneServiceCollection(_applicationServices);
+            IServiceCollection tenantServiceCollection = CloneServiceCollection(_serviceProvider, _applicationServices);
 
             tenantServiceCollection.AddInstance(settings);
             tenantServiceCollection.AddInstance(blueprint.Descriptor);
@@ -54,7 +55,7 @@ namespace Orchard.Environment.Shell.Builders
             // Sure this is right?
             tenantServiceCollection.AddInstance(_loggerFactory);
 
-            IServiceCollection moduleServiceCollection = CloneServiceCollection(_applicationServices);
+            IServiceCollection moduleServiceCollection = CloneServiceCollection(_serviceProvider, _applicationServices);
 
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
@@ -102,20 +103,36 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             // Configure event handlers
-            var eventBus = new DefaultOrchardEventBus();
-            tenantServiceCollection.AddInstance<IEventBus>(eventBus);
-            
+            tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
+            tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
+
             // Configuring data access
             var indexes = blueprint
             .Dependencies
             .Where(x => typeof(IIndexProvider).IsAssignableFrom(x.Type))
             .Select(x => x.Type).ToArray();
 
-            tenantServiceCollection.AddSingleton<IStore>(serviceProvider =>
+            tenantServiceCollection.AddSingleton<IStore>(_ => 
             {
                 var store = new Store(cfg =>
                 {
-                    cfg.ConnectionFactory = new DbConnectionFactory<SqlConnection>(@"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!");
+                    // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
+
+                    IConnectionFactory connectionFactory = null;
+
+                    switch (settings.DatabaseProvider)
+                    {
+                        case "SqlConnection":
+                            connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
+                            break;
+                        case "SqliteConnection":
+                            connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                            break;
+                        default:
+                            throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
+                    }
+
+                    cfg.ConnectionFactory = connectionFactory;
                     cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
                     //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
                     //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
@@ -124,15 +141,13 @@ namespace Orchard.Environment.Shell.Builders
                 });
 
                 store.RegisterIndexes(indexes);
+
                 return store;
-
             });
 
-            tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
-            {
-                var store = serviceProvider.GetRequiredService<IStore>();
-                return store.CreateSession();
-            });
+            tenantServiceCollection.AddScoped<ISession>(serviceProvider => 
+                serviceProvider.GetRequiredService<IStore>().CreateSession()
+            );
 
             tenantServiceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
@@ -152,14 +167,18 @@ namespace Orchard.Environment.Shell.Builders
 
                 foreach (var i in handlerClass.GetInterfaces().Where(t => typeof(IEventHandler).IsAssignableFrom(t)))
                 {
-                    var notifyProxy = DefaultOrchardEventBus.CreateProxy(i);
-                    notifyProxy.EventBus = eventBus;
-                    tenantServiceCollection.AddInstance(i, notifyProxy);
+                    tenantServiceCollection.AddScoped(i, serviceProvider =>
+                    {
+                        var proxy = DefaultOrchardEventBus.CreateProxy(i);
+                        proxy.EventBus = serviceProvider.GetService<IEventBus>();
+                        return proxy;
+                    });
                 }
             }
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
-            
+            var eventBusState = shellServiceProvider.GetService<IEventBusState>();
+
             // Register any IEventHandler method in the event bus
             foreach (var handlerClass in eventHandlers)
             {
@@ -168,8 +187,8 @@ namespace Orchard.Environment.Shell.Builders
                     foreach (var interfaceMethod in handlerInterface.GetMethods())
                     {
                         //var classMethod = handlerClass.GetMethods().Where(x => x.Name == interfaceMethod.Name && x.GetParameters().Length == interfaceMethod.GetParameters().Length).FirstOrDefault();
-                        Func<IDictionary<string, object>, Task> d = (parameters) => DefaultOrchardEventBus.Invoke(parameters, shellServiceProvider, interfaceMethod, handlerClass);
-                        eventBus.Subscribe(handlerInterface.Name + "." + interfaceMethod.Name, d);
+                        Func<IServiceProvider, IDictionary<string, object>, Task> d = (sp, parameters) => DefaultOrchardEventBus.Invoke(sp, parameters, interfaceMethod, handlerClass);
+                        eventBusState.Add(handlerInterface.Name + "." + interfaceMethod.Name, d);
                     }
                 }
 
@@ -178,7 +197,13 @@ namespace Orchard.Environment.Shell.Builders
             return shellServiceProvider;
         }
 
-        public IServiceCollection CloneServiceCollection(IServiceCollection serviceCollection)
+
+        /// <summary>
+        /// Creates a child container.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider to create a child container for.</param>
+        /// <param name="serviceCollection">The services to clone.</param>
+        public IServiceCollection CloneServiceCollection(IServiceProvider serviceProvider, IServiceCollection serviceCollection)
         {
             IServiceCollection clonedCollection = new ServiceCollection();
 
@@ -188,17 +213,21 @@ namespace Orchard.Environment.Shell.Builders
                 if (service.Lifetime == ServiceLifetime.Singleton)
                 {
                     var serviceTypeInfo = service.ServiceType.GetTypeInfo();
+
+                    // Treat open-generic registrations differently
                     if (serviceTypeInfo.IsGenericType && serviceTypeInfo.GenericTypeArguments.Length == 0)
                     {
-
-                        // Ignore open generic types for now
+                        // There is no Func based way to register an open-generic type, instead of
                         // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));
+                        // Right now, we regsiter them as singleton per cloned scope even though it's wrong
+                        // but in the actual examples it won't matter.
                         clonedCollection.AddSingleton(service.ServiceType, service.ImplementationType);
-                        //continue;
                     }
                     else
                     {
-                        clonedCollection.AddSingleton(service.ServiceType, _ => _serviceProvider.GetService(service.ServiceType));
+                        // When a service from the main container is resolved, just add its instance to the container.
+                        // It will be shared by all tenant service providers.
+                        clonedCollection.AddInstance(service.ServiceType, serviceProvider.GetService(service.ServiceType));
                     }
                 }
                 else
