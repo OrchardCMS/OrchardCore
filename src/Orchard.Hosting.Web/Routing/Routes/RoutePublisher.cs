@@ -35,7 +35,7 @@ namespace Orchard.Hosting.Web.Routing.Routes {
                     route.Route.DataTokens,
                     inlineConstraint);
 
-                _routeBuilder.AddTenantRoute(_shellSettings.RequestUrlHost, router, pipeline);
+                _routeBuilder.AddTenantRoute(_shellSettings, router, pipeline);
             }
         }
     }

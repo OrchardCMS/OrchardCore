@@ -148,7 +148,7 @@ namespace Orchard.ContentManagement
             {
                 versionRecord = await _session
                     .QueryAsync<ContentItemVersionRecord, ContentItemVersionRecordIndex>()
-                    .Where(x => x.ContentItemId == id && x.Latest == true)
+                    .Where(x => x.ContentItemId == id && x.Published == true)
                     .FirstOrDefault();
             }
                 

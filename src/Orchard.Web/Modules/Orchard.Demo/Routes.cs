@@ -23,6 +23,22 @@ namespace Orchard.Demo {
                 },
                 new RouteDescriptor {
                     Route = new Route(
+                        "1",
+                        "Home/Display/{id}",
+                        defaults:  new
+                            {
+                                area = "Orchard.Demo",
+                                controller = "Home",
+                                action = "Display",
+                            },
+                        dataTokens:  new
+                            {
+                                area = "Orchard.Demo"
+                            }
+                        )
+                },
+                new RouteDescriptor {
+                    Route = new Route(
                         "2",
                         "Home/IndexError",
                         defaults:  new

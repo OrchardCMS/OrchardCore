@@ -25,18 +25,31 @@ namespace Orchard.Demo.Controllers {
             _eventBus = eventBus;
             }
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-            await _eventBus.NotifyAsync<ITestEvent>(e => e.Talk("Bark!"));
+            return View();
+        }
 
+        [HttpPost]
+        public ActionResult Index(string text)
+        {
             var contentItem = _contentManager.New("Foo");
-            contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
+            contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
-            
-            var retrieveContentItem = await _contentManager.Get(contentItem.Id);
-            var lineToSay = retrieveContentItem.As<TestContentPartA>().Line;
 
-            return View("Index", _testDependency.SayHi(lineToSay));
+            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", contentItem.Id });
+        }
+
+        public async Task<ActionResult> Display(int id)
+        {
+            var contentItem = await _contentManager.Get(id);
+
+            if(contentItem == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(contentItem);
         }
 
         public ActionResult IndexError() {

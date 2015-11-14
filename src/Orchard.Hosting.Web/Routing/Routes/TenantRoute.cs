@@ -6,31 +6,38 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 
-namespace Orchard.Hosting.Web.Routing.Routes {
-    public class TenantRoute : IRouter {
+namespace Orchard.Hosting.Web.Routing.Routes
+{
+    public class TenantRoute : IRouter
+    {
         private readonly IRouter _target;
-        private readonly string _urlHost;
         private readonly RequestDelegate _pipeline;
+        private readonly ShellSettings _shellSettings;
 
-        public TenantRoute(IRouter target, 
-            string urlHost, 
-            RequestDelegate pipeline) {
+        public TenantRoute(
+            ShellSettings shellSettings,
+            IRouter target,
+            RequestDelegate pipeline)
+        {
             _target = target;
-            _urlHost = urlHost;
+            _shellSettings = shellSettings;
             _pipeline = pipeline;
         }
 
-        public async Task RouteAsync(RouteContext context) {
-            if (IsValidRequest(context)) {
-                context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () => {
-                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
-                    var logger = loggerFactory.CreateLogger<TenantRoute>();
-                    
-                    try {
+        public async Task RouteAsync(RouteContext context)
+        {
+            if (IsValidRequest(context))
+            {
+                context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () =>
+                {
+                    try
+                    {
                         await _target.RouteAsync(context);
                     }
-                    catch (Exception ex) {
-
+                    catch (Exception ex)
+                    {
+                        var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
+                        var logger = loggerFactory.CreateLogger<TenantRoute>();
                         logger.LogError("Error occured serving tenant route", ex);
                         throw;
                     }
@@ -40,27 +47,29 @@ namespace Orchard.Hosting.Web.Routing.Routes {
             }
         }
 
-        private bool IsValidRequest(RouteContext context) {
-            if (context.HttpContext.Request.Host.Value == _urlHost) {
-                return true;
-            }
+        private bool IsValidRequest(RouteContext context)
+        {
+            return true;
 
-            if (!string.IsNullOrWhiteSpace(_urlHost))
-                return false;
+            //if (String.Equals(
+            //    context.HttpContext.Request.Host.Value,
+            //    _shellSettings.RequestUrlHost,
+            //    StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return true;
+            //}
 
-            // TODO: ngm: revise this.
-            // This is normally when requesting the default tenant.
-            var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
+            //if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
+            //{
+            //    return false;
+            //}
 
-            if (shellSettings.RequestUrlHost == _urlHost) {
-                return true;
-            }
-
-            return false;
+            //return false;
         }
 
-        public VirtualPathData GetVirtualPath(VirtualPathContext context) {
-            return null;
+        public VirtualPathData GetVirtualPath(VirtualPathContext context)
+        {
+            return _target.GetVirtualPath(context);
         }
     }
 }
