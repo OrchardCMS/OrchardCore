@@ -34,19 +34,26 @@ namespace Orchard.Hosting
         {
             IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
             
-            appBuilder.Properties["host.AppName"] = _shellSettings.Name;
-
             var orderedMiddlewares = _middlewareProviders
                 .SelectMany(p => p.GetMiddlewares())
-                .OrderBy(obj => obj.Priority);
+                .OrderBy(obj => obj.Priority)
+                .ToArray();
 
-            foreach (var middleware in orderedMiddlewares) {
-                middleware.Configure(appBuilder);
+            RequestDelegate pipeline = null;
+
+            // If there are custom middleware for this tenant, 
+            // build a custom pipeline for its routes
+            if (orderedMiddlewares.Length > 0)
+            {
+                foreach (var middleware in orderedMiddlewares)
+                {
+                    middleware.Configure(appBuilder);
+                }
+
+                appBuilder.UseOrchard();
+
+                pipeline = appBuilder.Build();
             }
-
-            appBuilder.UseOrchard();
-
-            var pipeline = appBuilder.Build();
 
             var allRoutes = _routeProviders.SelectMany(provider => provider.GetRoutes()).ToArray();
 

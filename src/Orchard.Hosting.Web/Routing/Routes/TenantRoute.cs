@@ -28,43 +28,55 @@ namespace Orchard.Hosting.Web.Routing.Routes
         {
             if (IsValidRequest(context))
             {
-                context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () =>
+                try
                 {
-                    try
+                    // Store the requested targetted action so that the OrchardMiddleware
+                    // can continue with it once the tenant pipeline has been executed
+
+                    if (_pipeline != null)
+                    {
+                        context.HttpContext.Items["orchard.Handler.Target"] = _target;
+                        context.HttpContext.Items["orchard.Handler.RouteContext"] = context;
+
+                        await _pipeline.Invoke(context.HttpContext);
+                    }
+                    else
                     {
                         await _target.RouteAsync(context);
                     }
-                    catch (Exception ex)
-                    {
-                        var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
-                        var logger = loggerFactory.CreateLogger<TenantRoute>();
-                        logger.LogError("Error occured serving tenant route", ex);
-                        throw;
-                    }
-                });
-
-                await _pipeline.Invoke(context.HttpContext);
+                }
+                catch (Exception ex)
+                {
+                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger<TenantRoute>();
+                    logger.LogError("Error occured serving tenant route", ex);
+                    throw;
+                }
             }
         }
 
         private bool IsValidRequest(RouteContext context)
         {
-            return true;
+            // For now accept all requests, we'll check the tenant's host later
+            if (String.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
+            {
+                return true;
+            }
 
-            //if (String.Equals(
-            //    context.HttpContext.Request.Host.Value,
-            //    _shellSettings.RequestUrlHost,
-            //    StringComparison.OrdinalIgnoreCase))
-            //{
-            //    return true;
-            //}
+            if (String.Equals(
+                context.HttpContext.Request.Host.Value,
+                _shellSettings.RequestUrlHost,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
 
-            //if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
-            //{
-            //    return false;
-            //}
+            if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
+            {
+                return false;
+            }
 
-            //return false;
+            return false;
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
