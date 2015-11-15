@@ -21,21 +21,24 @@ namespace Orchard.Hosting.Extensions {
             var manager = serviceProvider.GetRequiredService<IExtensionManager>();
 
             var descriptor = manager.GetExtension("Orchard.Logging.Console");
-            var entry = loader.Load(descriptor);
-            var loggingInitiatorTypes = entry
-                .Assembly
-                .ExportedTypes
-                .Where(et => typeof(ILoggingInitiator).IsAssignableFrom(et));
+            if (descriptor != null) {
+                var entry = loader.Load(descriptor);
+                if (entry != null) {
+                    var loggingInitiatorTypes = entry
+                        .Assembly
+                        .ExportedTypes
+                        .Where(et => typeof (ILoggingInitiator).IsAssignableFrom(et));
 
-            IServiceCollection loggerCollection = new ServiceCollection();
-            foreach (var initiatorType in loggingInitiatorTypes) {
-                loggerCollection.AddScoped(typeof(ILoggingInitiator), initiatorType);
+                    IServiceCollection loggerCollection = new ServiceCollection();
+                    foreach (var initiatorType in loggingInitiatorTypes) {
+                        loggerCollection.AddScoped(typeof (ILoggingInitiator), initiatorType);
+                    }
+                    var moduleServiceProvider = loggerCollection.BuildShellServiceProviderWithHost(serviceProvider);
+                    foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
+                        service.Initialize(loggingFactory);
+                    }
+                }
             }
-            var moduleServiceProvider = loggerCollection.BuildShellServiceProviderWithHost(serviceProvider);
-            foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
-                service.Initialize(loggingFactory);
-            }
-
             return loggingFactory;
         }
     }
