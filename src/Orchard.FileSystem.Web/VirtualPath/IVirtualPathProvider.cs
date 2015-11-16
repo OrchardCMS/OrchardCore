@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem.VirtualPath {
     public interface IVirtualPathProvider {
@@ -11,6 +12,7 @@ namespace Orchard.FileSystem.VirtualPath {
         bool FileExists(string virtualPath);
         bool TryFileExists(string virtualPath);
         Stream OpenFile(string virtualPath);
+        string ReadFile(string virtualPath);
         StreamWriter CreateText(string virtualPath);
         Stream CreateFile(string virtualPath);
         DateTime GetFileLastWriteTimeUtc(string virtualPath);
