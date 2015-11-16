@@ -3,6 +3,7 @@
   "dependencies": {
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*",
     "Microsoft.Dnx.Compilation.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*"
   },

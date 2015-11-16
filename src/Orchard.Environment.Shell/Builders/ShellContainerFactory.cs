@@ -7,21 +7,17 @@ using Orchard.Environment.Shell.Builders.Models;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using System.Data.SqlClient;
-using YesSql.Core.Storage.InMemory;
 using System.Data;
 using Orchard.Events;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reflection;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions;
 using Orchard.FileSystem.AppData;
 using System.IO;
 using YesSql.Core.Storage.FileSystem;
 
-namespace Orchard.Environment.Shell.Builders
-{
+namespace Orchard.Environment.Shell.Builders {
     public class ShellContainerFactory : IShellContainerFactory
     {
         private readonly IServiceProvider _serviceProvider;
@@ -45,7 +41,7 @@ namespace Orchard.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            IServiceCollection tenantServiceCollection = CloneServiceCollection(_serviceProvider, _applicationServices);
+            IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddInstance(settings);
             tenantServiceCollection.AddInstance(blueprint.Descriptor);
@@ -54,7 +50,7 @@ namespace Orchard.Environment.Shell.Builders
             // Sure this is right?
             tenantServiceCollection.AddInstance(_loggerFactory);
 
-            IServiceCollection moduleServiceCollection = CloneServiceCollection(_serviceProvider, _applicationServices);
+            IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
@@ -200,48 +196,5 @@ namespace Orchard.Environment.Shell.Builders
 
             return shellServiceProvider;
         }
-
-
-        /// <summary>
-        /// Creates a child container.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider to create a child container for.</param>
-        /// <param name="serviceCollection">The services to clone.</param>
-        public IServiceCollection CloneServiceCollection(IServiceProvider serviceProvider, IServiceCollection serviceCollection)
-        {
-            IServiceCollection clonedCollection = new ServiceCollection();
-
-            foreach (var service in serviceCollection)
-            {
-                // Register the singleton instances to all containers
-                if (service.Lifetime == ServiceLifetime.Singleton)
-                {
-                    var serviceTypeInfo = service.ServiceType.GetTypeInfo();
-
-                    // Treat open-generic registrations differently
-                    if (serviceTypeInfo.IsGenericType && serviceTypeInfo.GenericTypeArguments.Length == 0)
-                    {
-                        // There is no Func based way to register an open-generic type, instead of
-                        // tenantServiceCollection.AddSingleton(typeof(IEnumerable<>), typeof(List<>));
-                        // Right now, we regsiter them as singleton per cloned scope even though it's wrong
-                        // but in the actual examples it won't matter.
-                        clonedCollection.AddSingleton(service.ServiceType, service.ImplementationType);
-                    }
-                    else
-                    {
-                        // When a service from the main container is resolved, just add its instance to the container.
-                        // It will be shared by all tenant service providers.
-                        clonedCollection.AddInstance(service.ServiceType, serviceProvider.GetService(service.ServiceType));
-                    }
-                }
-                else
-                {
-                    clonedCollection.Add(service);
-                }
-            }
-
-            return clonedCollection;
-        }
-        
     }
 }
