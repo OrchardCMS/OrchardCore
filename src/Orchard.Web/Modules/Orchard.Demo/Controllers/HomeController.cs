@@ -44,12 +44,17 @@ namespace Orchard.Demo.Controllers {
         {
             var contentItem = await _contentManager.Get(id);
 
-            if(contentItem == null)
+            if (contentItem == null)
             {
                 return HttpNotFound();
             }
 
             return View(contentItem);
+        }
+
+        public ActionResult Raw()
+        {
+            return View();
         }
 
         public ActionResult IndexError() {

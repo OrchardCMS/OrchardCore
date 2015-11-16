@@ -22,7 +22,8 @@ namespace Orchard.Hosting
             IRoutePublisher routePublisher,
             IEnumerable<IMiddlewareProvider> middlewareProviders,
             ShellSettings shellSettings,
-            IServiceProvider serviceProvider) {
+            IServiceProvider serviceProvider
+            ) {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
             _middlewareProviders = middlewareProviders;
@@ -55,9 +56,10 @@ namespace Orchard.Hosting
                 pipeline = appBuilder.Build();
             }
 
-            var allRoutes = _routeProviders.SelectMany(provider => provider.GetRoutes()).ToArray();
-
-            _routePublisher.Publish(allRoutes, pipeline);
+            _routePublisher.Publish(
+                _routeProviders.SelectMany(provider => provider.GetRoutes()), 
+                pipeline
+            );
 
             return Task.CompletedTask;
         }

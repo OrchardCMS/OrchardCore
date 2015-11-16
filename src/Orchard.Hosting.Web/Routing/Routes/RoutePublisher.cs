@@ -5,37 +5,55 @@ using Microsoft.AspNet.Routing;
 using Microsoft.AspNet.Routing.Template;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
+using System;
 
-namespace Orchard.Hosting.Web.Routing.Routes {
-    public class RoutePublisher : IRoutePublisher {
+namespace Orchard.Hosting.Web.Routing.Routes
+{
+    public class RoutePublisher : IRoutePublisher
+    {
         private readonly IRouteBuilder _routeBuilder;
         private readonly ShellSettings _shellSettings;
 
         public RoutePublisher(
             IRouteBuilder routeBuilder,
-            ShellSettings shellSettings) {
+            ShellSettings shellSettings)
+        {
             _routeBuilder = routeBuilder;
             _shellSettings = shellSettings;
         }
 
-        public void Publish(IEnumerable<RouteDescriptor> routes, RequestDelegate pipeline) {
-            var routesArray = routes
+        public void Publish(IEnumerable<RouteDescriptor> routes, RequestDelegate pipeline)
+        {
+            var orderedRoutes = routes
                 .OrderByDescending(r => r.Priority)
-                .ToArray();
+                .ToList();
+
+            string routePrefix = "";
+            if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
+            {
+                routePrefix = _shellSettings.RequestUrlPrefix + "/";
+            }
+
+            orderedRoutes.Insert(0, new RouteDescriptor
+            {
+                Route = new Route("Default", "{area}/{controller}/{action}/{id?}")
+            });
+
 
             var inlineConstraint = _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>();
 
-            foreach (var route in routesArray) {
+            foreach (var route in orderedRoutes)
+            {
                 IRouter router = new TemplateRoute(
                     _routeBuilder.DefaultHandler,
                     route.Route.RouteName,
-                    route.Route.RouteTemplate,
+                    routePrefix + route.Route.RouteTemplate,
                     route.Route.Defaults,
                     route.Route.Constraints,
                     route.Route.DataTokens,
                     inlineConstraint);
 
-                _routeBuilder.AddTenantRoute(_shellSettings, router, pipeline);
+                _routeBuilder.Routes.Add(new TenantRoute(_shellSettings, router, pipeline));
             }
         }
     }

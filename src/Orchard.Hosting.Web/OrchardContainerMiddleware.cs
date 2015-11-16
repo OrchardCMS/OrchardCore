@@ -41,7 +41,7 @@ namespace Orchard.Hosting
 
             if (shellSetting != null) {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
-
+                httpContext.Items["ShellSettings"] = shellSetting;
                 httpContext.ApplicationServices = shellContext.ServiceProvider;
 
                 var scope = shellContext.ServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();

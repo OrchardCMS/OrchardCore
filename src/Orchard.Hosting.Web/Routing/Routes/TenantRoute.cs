@@ -5,6 +5,7 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
+using Microsoft.AspNet.Http;
 
 namespace Orchard.Hosting.Web.Routing.Routes
 {
@@ -26,7 +27,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
 
         public async Task RouteAsync(RouteContext context)
         {
-            if (IsValidRequest(context))
+            if (IsValidRequest(context.HttpContext))
             {
                 try
                 {
@@ -55,33 +56,19 @@ namespace Orchard.Hosting.Web.Routing.Routes
             }
         }
 
-        private bool IsValidRequest(RouteContext context)
+        private bool IsValidRequest(HttpContext httpContext)
         {
-            // For now accept all requests, we'll check the tenant's host later
-            if (String.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
-            {
-                return true;
-            }
-
-            if (String.Equals(
-                context.HttpContext.Request.Host.Value,
-                _shellSettings.RequestUrlHost,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlHost))
-            {
-                return false;
-            }
-
-            return false;
+            return httpContext.Items["ShellSettings"] == _shellSettings;
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            return _target.GetVirtualPath(context);
+            if (IsValidRequest(context.Context))
+            {
+                return _target.GetVirtualPath(context);
+            }
+
+            return null;
         }
     }
 }

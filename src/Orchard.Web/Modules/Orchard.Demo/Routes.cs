@@ -5,7 +5,7 @@ namespace Orchard.Demo {
     public class Routes : IRouteProvider {
         public IEnumerable<RouteDescriptor> GetRoutes() {
             return new[] {
-                new RouteDescriptor {
+            new RouteDescriptor {
                     Route = new Route(
                         "1",
                         "Home/Index",
