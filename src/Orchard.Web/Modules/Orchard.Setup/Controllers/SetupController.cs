@@ -3,6 +3,7 @@ using Orchard.Localization;
 using Orchard.Environment.Shell;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
+using System;
 
 namespace Orchard.Setup.Controllers {
     public class SetupController : Controller {
@@ -37,13 +38,23 @@ namespace Orchard.Setup.Controllers {
 
             var setupContext = new SetupContext {
                 SiteName = model.SiteName,
+                DatabaseProvider = model.DatabaseProvider,
+                DatabaseConnectionString = model.ConnectionString,
+                DatabaseTablePrefix = model.TablePrefix,
                 EnabledFeatures = null, // default list
             };
 
             var executionId = _setupService.Setup(setupContext);
 
-            // redirect to the welcome page.
-            return Redirect("~/" + _shellSettings.RequestUrlPrefix + "home/index");
+            var urlPrefix = "";
+            if(!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
+            {
+                urlPrefix = _shellSettings.RequestUrlPrefix + "/";
+            }
+            
+            // Redirect to the welcome page.
+            // TODO: Redirect on the home page once we don't rely on Orchard.Demo
+            return Redirect("~/" + urlPrefix + "home/index");
         }
     }
 }

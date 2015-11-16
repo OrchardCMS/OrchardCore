@@ -9,7 +9,7 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": {
+    "dnx46": {
     },
     "dnxcore50": { }
   },

@@ -10,7 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Orchard.Environment.Shell.Builders {
+namespace Orchard.Environment.Shell.Builders
+{
     public class CompositionStrategy : ICompositionStrategy {
         private readonly IExtensionManager _extensionManager;
         private readonly ILibraryManager _libraryManager;
@@ -116,9 +117,10 @@ namespace Orchard.Environment.Shell.Builders {
                 Parameters = Enumerable.Empty<ShellParameter>()
             };
         }
-        
-        private static bool IsDependency(Type type) {
-            return typeof (IDependency).IsAssignableFrom(type);
+
+        private static bool IsDependency(Type type)
+        {
+            return typeof(IDependency).IsAssignableFrom(type);
         }
 
         private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor) {

@@ -10,6 +10,7 @@ using Orchard.Environment.Shell.Models;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Hosting.ShellBuilders;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services {
     public class SetupService : Component, ISetupService {
@@ -81,18 +82,21 @@ namespace Orchard.Setup.Services {
             _shellSettings.State = TenantState.Initializing;
 
             var shellSettings = new ShellSettings(_shellSettings);
+            shellSettings.DatabaseProvider = context.DatabaseProvider;
+            shellSettings.ConnectionString = context.DatabaseConnectionString;
+            shellSettings.TablePrefix = context.DatabaseTablePrefix;
 
             //if (shellSettings.DataProviders.Any()) {
             //    DataProvider provider = new DataProvider();
-                //shellSettings.DataProvider = context.DatabaseProvider;
-                //shellSettings.DataConnectionString = context.DatabaseConnectionString;
-                //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
+            //shellSettings.DataProvider = context.DatabaseProvider;
+            //shellSettings.DataConnectionString = context.DatabaseConnectionString;
+            //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
             //}
 
             // TODO: Add Encryption Settings in
 
             var shellDescriptor = new ShellDescriptor {
-                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name })
+                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
             };
 
             // creating a standalone environment. 
@@ -101,12 +105,15 @@ namespace Orchard.Setup.Services {
 
             using (var environment = _orchardHost.CreateShellContext(shellSettings)) {
                 executionId = CreateTenantData(context, environment);
+
+                using (var store = (IStore)environment.ServiceProvider.GetService(typeof(IStore)))
+                {
+                    store.CreateSchema();
+                }
             }
 
-
             shellSettings.State = TenantState.Running;
-            _shellSettingsManager.SaveSettings(shellSettings);
-
+            _orchardHost.UpdateShellSettings(shellSettings);
             return executionId;
         }
 

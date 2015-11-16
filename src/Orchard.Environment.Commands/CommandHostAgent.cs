@@ -35,7 +35,7 @@ namespace Orchard.Environment.Commands {
                 tenant = tenant ?? ShellHelper.DefaultShellName;
 
                 using (var env = CreateStandaloneEnvironment(tenant)) {
-                    var commandManager = env.LifetimeScope.GetService<ICommandManager>();
+                    var commandManager = env.ServiceProvider.GetService<ICommandManager>();
 
                     var parameters = new CommandParameters {
                         Arguments = args,

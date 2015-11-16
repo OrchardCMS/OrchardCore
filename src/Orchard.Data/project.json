@@ -5,6 +5,7 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Newtonsoft.Json": "7.0.1",
     "Nito.AsyncEx": "3.0.1-*",
+    "YesSql.Core": "2.0.0-alpha-10",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
@@ -14,17 +15,18 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": {
+    "dnx46": {
       "frameworkAssemblies": {
-        "System.ComponentModel.DataAnnotations": "4.0.0.0",
-        "System.Runtime": "4.0.10.0",
-        "System.Threading.Tasks": "4.0.0.0"
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Runtime": "",
+        "System.Threading.Tasks": ""
       }
     },
     "dnxcore50": {
       "dependencies": {
         "System.ComponentModel.Annotations": "4.0.11-*",
-        "System.Linq.Queryable": "4.0.1-*"
+        "System.Linq.Queryable": "4.0.1-*",
+        "System.Data.SqlClient": "4.0.0-*"
       }
     }
   },

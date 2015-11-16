@@ -5,61 +5,69 @@ using Microsoft.AspNet.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
+using Microsoft.AspNet.Http;
 
-namespace Orchard.Hosting.Web.Routing.Routes {
-    public class TenantRoute : IRouter {
+namespace Orchard.Hosting.Web.Routing.Routes
+{
+    public class TenantRoute : IRouter
+    {
         private readonly IRouter _target;
-        private readonly string _urlHost;
         private readonly RequestDelegate _pipeline;
+        private readonly ShellSettings _shellSettings;
 
-        public TenantRoute(IRouter target, 
-            string urlHost, 
-            RequestDelegate pipeline) {
+        public TenantRoute(
+            ShellSettings shellSettings,
+            IRouter target,
+            RequestDelegate pipeline)
+        {
             _target = target;
-            _urlHost = urlHost;
+            _shellSettings = shellSettings;
             _pipeline = pipeline;
         }
 
-        public async Task RouteAsync(RouteContext context) {
-            if (IsValidRequest(context)) {
-                context.HttpContext.Items["orchard.Handler"] = new Func<Task>(async () => {
-                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
-                    var logger = loggerFactory.CreateLogger<TenantRoute>();
-                    
-                    try {
+        public async Task RouteAsync(RouteContext context)
+        {
+            if (IsValidRequest(context.HttpContext))
+            {
+                try
+                {
+                    // Store the requested targetted action so that the OrchardMiddleware
+                    // can continue with it once the tenant pipeline has been executed
+
+                    if (_pipeline != null)
+                    {
+                        context.HttpContext.Items["orchard.Handler.Target"] = _target;
+                        context.HttpContext.Items["orchard.Handler.RouteContext"] = context;
+
+                        await _pipeline.Invoke(context.HttpContext);
+                    }
+                    else
+                    {
                         await _target.RouteAsync(context);
                     }
-                    catch (Exception ex) {
-
-                        logger.LogError("Error occured serving tenant route", ex);
-                        throw;
-                    }
-                });
-
-                await _pipeline.Invoke(context.HttpContext);
+                }
+                catch (Exception ex)
+                {
+                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger<TenantRoute>();
+                    logger.LogError("Error occured serving tenant route", ex);
+                    throw;
+                }
             }
         }
 
-        private bool IsValidRequest(RouteContext context) {
-            if (context.HttpContext.Request.Host.Value == _urlHost) {
-                return true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(_urlHost))
-                return false;
-
-            // TODO: ngm: revise this.
-            // This is normally when requesting the default tenant.
-            var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
-
-            if (shellSettings.RequestUrlHost == _urlHost) {
-                return true;
-            }
-
-            return false;
+        private bool IsValidRequest(HttpContext httpContext)
+        {
+            return httpContext.Items["ShellSettings"] == _shellSettings;
         }
 
-        public VirtualPathData GetVirtualPath(VirtualPathContext context) {
+        public VirtualPathData GetVirtualPath(VirtualPathContext context)
+        {
+            if (IsValidRequest(context.Context))
+            {
+                return _target.GetVirtualPath(context);
+            }
+
             return null;
         }
     }

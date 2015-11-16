@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Records;
 
 namespace Orchard.ContentManagement.Handlers {
     /// <summary>
@@ -18,8 +19,7 @@ namespace Orchard.ContentManagement.Handlers {
 
             // TODO: could / should be done on the build method ?
             _item = new ContentItem {
-                ContentType = definition.Name,
-                TypeDefinition = definition
+                ContentType = definition.Name
             };
         }
 
@@ -48,7 +48,7 @@ namespace Orchard.ContentManagement.Handlers {
                 }
 
                 // build and weld the part
-                var part = new TPart { TypePartDefinition = typePartDefinition };
+                var part = new TPart();
                 _item.Weld(part);
             }
 
