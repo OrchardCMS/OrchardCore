@@ -6,5 +6,6 @@ namespace Orchard.Setup.ViewModels {
         public string SiteName { get; set; }
         public string DatabaseProvider { get; set; }
         public string ConnectionString { get; set; }
+        public string TablePrefix { get; set; }
     }
 }

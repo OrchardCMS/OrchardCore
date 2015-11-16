@@ -8,7 +8,7 @@ namespace Orchard.Setup {
                 new RouteDescriptor {
                     Route = new Route(
                         "Setup",
-                        "{controller}/{action}",
+                        "",
                         defaults: new {
                             area = "Orchard.Setup",
                             controller = "Setup",

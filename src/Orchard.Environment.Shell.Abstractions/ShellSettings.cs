@@ -33,7 +33,7 @@ namespace Orchard.Environment.Shell {
             State = settings.State;
             DatabaseProvider = settings.DatabaseProvider;
             ConnectionString = settings.ConnectionString;
-
+            TablePrefix = settings.TablePrefix;
         }
 
         public ShellSettings(IConfigurationRoot configuration) {
@@ -81,6 +81,12 @@ namespace Orchard.Environment.Shell {
         {
             get { return StringNullReconfiguration(RootConfiguration["ConnectionString"]); }
             set { RootConfiguration["ConnectionString"] = value; }
+        }
+
+        public string TablePrefix
+        {
+            get { return StringNullReconfiguration(RootConfiguration["TablePrefix"]); }
+            set { RootConfiguration["TablePrefix"] = value; }
         }
 
         public string DatabaseProvider

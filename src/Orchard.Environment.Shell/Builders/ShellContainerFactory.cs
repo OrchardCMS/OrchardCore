@@ -19,7 +19,6 @@ using Orchard.Environment.Extensions;
 using Orchard.FileSystem.AppData;
 using System.IO;
 using YesSql.Core.Storage.FileSystem;
-using Microsoft.Data.Sqlite;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -117,29 +116,34 @@ namespace Orchard.Environment.Shell.Builders
             {
                 var store = new Store(cfg =>
                     {
-                    // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
+                        // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
 
-                    IConnectionFactory connectionFactory = null;
+                        IConnectionFactory connectionFactory = null;
 
                         switch (settings.DatabaseProvider)
                         {
                             case "SqlConnection":
                                 connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
                                 break;
-                            case "SqliteConnection":
-                                connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                                break;
+                            //case "SqliteConnection":
+                            //    connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                            //    break;
                             default:
                                 throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
                         }
 
                         cfg.ConnectionFactory = connectionFactory;
                         cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
-                    //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
-                    //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
-                    cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
-                    //cfg.RunDefaultMigration();
-                });
+                        //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
+                        //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
+                        cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
+                        if(!String.IsNullOrWhiteSpace(settings.TablePrefix))
+                        {
+                            cfg.TablePrefix = settings.TablePrefix + "_";
+                        }
+                        //cfg.RunDefaultMigration();
+                    }
+                );
 
                 store.RegisterIndexes(indexes);
 

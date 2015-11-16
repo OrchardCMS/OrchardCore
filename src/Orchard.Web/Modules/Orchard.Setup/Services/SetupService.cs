@@ -84,12 +84,13 @@ namespace Orchard.Setup.Services {
             var shellSettings = new ShellSettings(_shellSettings);
             shellSettings.DatabaseProvider = context.DatabaseProvider;
             shellSettings.ConnectionString = context.DatabaseConnectionString;
+            shellSettings.TablePrefix = context.DatabaseTablePrefix;
 
             //if (shellSettings.DataProviders.Any()) {
             //    DataProvider provider = new DataProvider();
-                //shellSettings.DataProvider = context.DatabaseProvider;
-                //shellSettings.DataConnectionString = context.DatabaseConnectionString;
-                //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
+            //shellSettings.DataProvider = context.DatabaseProvider;
+            //shellSettings.DataConnectionString = context.DatabaseConnectionString;
+            //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
             //}
 
             // TODO: Add Encryption Settings in
