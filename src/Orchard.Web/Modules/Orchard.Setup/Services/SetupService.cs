@@ -108,7 +108,7 @@ namespace Orchard.Setup.Services {
 
                 using (var store = (IStore)environment.ServiceProvider.GetService(typeof(IStore)))
                 {
-                    store.CreateSchema();
+                    store.InitializeAsync();
                 }
             }
 

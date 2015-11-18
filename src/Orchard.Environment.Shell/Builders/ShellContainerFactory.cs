@@ -15,7 +15,7 @@ using System.Reflection;
 using Orchard.Environment.Extensions;
 using Orchard.FileSystem.AppData;
 using System.IO;
-using YesSql.Core.Storage.FileSystem;
+using YesSql.Storage.Sql;
 
 namespace Orchard.Environment.Shell.Builders {
     public class ShellContainerFactory : IShellContainerFactory
@@ -128,14 +128,15 @@ namespace Orchard.Environment.Shell.Builders {
                                 throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
                         }
 
+                        var sqlFactory = new SqlDocumentStorageFactory(connectionFactory); ;
+
                         cfg.ConnectionFactory = connectionFactory;
-                        cfg.DocumentStorageFactory = new FileSystemDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
-                        //cfg.ConnectionFactory = new DbConnectionFactory<SqliteConnection>(@"Data Source=" + dbFileName + ";Cache=Shared");
-                        //cfg.DocumentStorageFactory = new InMemoryDocumentStorageFactory();
-                        cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
+                        cfg.DocumentStorageFactory = sqlFactory;
+                        cfg.IsolationLevel = sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
+                    
                         if(!String.IsNullOrWhiteSpace(settings.TablePrefix))
                         {
-                            cfg.TablePrefix = settings.TablePrefix + "_";
+                            cfg.TablePrefix = sqlFactory.TablePrefix = settings.TablePrefix + "_";
                         }
                         //cfg.RunDefaultMigration();
                     }

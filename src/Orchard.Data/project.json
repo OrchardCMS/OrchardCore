@@ -6,6 +6,7 @@
     "Newtonsoft.Json": "7.0.1",
     "Nito.AsyncEx": "3.0.1-*",
     "YesSql.Core": "2.0.0-alpha-10",
+    "YesSql.Storage.Sql": "1.0.0-alpha-1",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
