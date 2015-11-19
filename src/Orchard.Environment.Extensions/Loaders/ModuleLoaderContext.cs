@@ -7,6 +7,8 @@ namespace Orchard.Environment.Extensions.Loaders {
             string projectDirectory, 
             FrameworkName targetFramework) {
 
+            Project.DefaultCompiler = Project.DefaultRuntimeCompiler;
+
             var applicationHostContext = new ApplicationHostContext {
                 ProjectDirectory = projectDirectory,
                 TargetFramework = targetFramework
