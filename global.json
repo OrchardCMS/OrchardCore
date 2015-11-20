@@ -2,9 +2,5 @@
   "projects": [
     "src",
     "test"
-  ],
-  "packages": "packages",
-  "sdk": {
-    "version": "1.0.0-rc1-16100"
-  }
+  ]
 }
