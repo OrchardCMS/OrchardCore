@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc.ModelBinding;
 
 namespace Orchard.ContentManagement.MetaData.Models {
     public class SettingsDictionary : Dictionary<string, string> {
@@ -8,20 +7,11 @@ namespace Orchard.ContentManagement.MetaData.Models {
         public SettingsDictionary(IDictionary<string, string> dictionary) : base(dictionary) { }
 
         public T TryGetModel<T>(string key) where T : class {
-            throw new NotImplementedException("TODO: GetAsync this working!");
-            //var binder = new DefaultModelBinder();
-            //var controllerContext = new ControllerContext();
-            //var context = new ModelBindingContext {
-            //    ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, typeof(T)),
-            //    ModelName = key,
-            //    ValueProvider = new DictionaryValueProvider<string>(this, null)
-            //};
-            //return (T)binder.BindModel(controllerContext, context);
-
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this[key]));
         }
 
         public T TryGetModel<T>() where T : class {
-            return TryGetModel<T>(typeof(T).Name);
+            return TryGetModel<T>(typeof (T).Name);
         }
 
         public T GetModel<T>() where T : class, new() {

@@ -1,8 +1,13 @@
 ﻿using Orchard.Events;
+using System.Threading.Tasks;
 
-namespace Orchard.Environment.Shell {
-    public interface IOrchardShellEvents : IEventHandler {
-        void Activated();
-        void Terminating();
+namespace Orchard.Environment.Shell
+{
+    public interface IOrchardShellEvents : IEventHandler
+    {
+        Task ActivatingAsync();
+        Task ActivatedAsync();
+        Task TerminatingAsync();
+        Task TerminatedAsync();
     }
 }

@@ -12,15 +12,17 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": {
+    "dnx46": {
       "frameworkAssemblies": {
         "System.Xml": "",
-        "System.Xml.Linq": ""
+        "System.Xml.Linq": "",
+        "System.Runtime.Serialization": ""
       }
     },
     "dnxcore50": {
       "dependencies": {
-        "System.Xml.XDocument": "4.0.11-*"
+        "System.Xml.XDocument": "4.0.11-*",
+        "System.Runtime.Serialization.Primitives": "4.0.11-beta-23409"
       }
     }
   },

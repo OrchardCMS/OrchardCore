@@ -6,10 +6,8 @@ using Orchard.Environment.Extensions.Loaders;
 using System;
 using System.Linq;
 using Orchard.Environment.Shell.Builders;
-
-#if DNXCORE50
 using System.Reflection;
-#endif
+using Orchard.DependencyInjection;
 
 namespace Orchard.Hosting.Extensions {
     public static class LoggerFactoryExtensions {
@@ -31,7 +29,7 @@ namespace Orchard.Hosting.Extensions {
             foreach (var initiatorType in loggingInitiatorTypes) {
                 loggerCollection.AddScoped(typeof(ILoggingInitiator), initiatorType);
             }
-            var moduleServiceProvider = loggerCollection.BuildShellServiceProviderWithHost(serviceProvider);
+            var moduleServiceProvider = serviceProvider.CreateChildContainer(loggerCollection).BuildServiceProvider();
             foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
                 service.Initialize(loggingFactory);
             }

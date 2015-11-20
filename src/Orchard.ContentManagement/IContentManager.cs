@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement {
     /// <summary>
@@ -36,17 +37,17 @@ namespace Orchard.ContentManagement {
         /// Gets the content item with the specified id
         /// </summary>
         /// <param name="id">Numeric id of the content item</param>
-        ContentItem Get(int id);
+        Task<ContentItem> Get(int id);
 
         /// <summary>
         /// Gets the content item with the specified id and version
         /// </summary>
         /// <param name="id">Numeric id of the content item</param>
         /// <param name="options">The version option</param>
-        ContentItem Get(int id, VersionOptions options);
+        Task<ContentItem> Get(int id, VersionOptions options);
 
-        void Publish(ContentItem contentItem);
-        void Unpublish(ContentItem contentItem);
+        Task Publish(ContentItem contentItem);
+        Task Unpublish(ContentItem contentItem);
     }
     
     public class VersionOptions {

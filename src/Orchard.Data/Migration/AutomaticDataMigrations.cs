@@ -2,12 +2,15 @@
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using System;
+using System.Threading.Tasks;
 
-namespace Orchard.Data.Migration {
+namespace Orchard.Data.Migration
+{
     /// <summary>
     /// Registers to OrchardShell.Activated in order to run migrations automatically 
     /// </summary>
-    public class AutomaticDataMigrations : IOrchardShellEvents {
+    public class AutomaticDataMigrations : IOrchardShellEvents
+    {
         private readonly IDataMigrationManager _dataMigrationManager;
         private readonly IFeatureManager _featureManager;
         private readonly ShellSettings _shellSettings;
@@ -17,7 +20,8 @@ namespace Orchard.Data.Migration {
             IDataMigrationManager dataMigrationManager,
             IFeatureManager featureManager,
             ShellSettings shellSettings,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
 
             _dataMigrationManager = dataMigrationManager;
             _featureManager = featureManager;
@@ -25,21 +29,39 @@ namespace Orchard.Data.Migration {
             _logger = loggerFactory.CreateLogger<AutomaticDataMigrations>();
         }
 
-        public void Activated() {
-            foreach (var feature in _dataMigrationManager.GetFeaturesThatNeedUpdate()) {
-                try {
-                    _dataMigrationManager.Update(feature);
+        public async Task ActivatedAsync()
+        {
+            foreach (var feature in await _dataMigrationManager.GetFeaturesThatNeedUpdate())
+            {
+                try
+                {
+                    await _dataMigrationManager.UpdateAsync(feature);
                 }
-                catch (Exception ex) {
-                    if (ex.IsFatal()) {
+                catch (Exception ex)
+                {
+                    if (ex.IsFatal())
+                    {
                         throw;
                     }
+
                     _logger.LogError("Could not run migrations automatically on " + feature, ex);
                 }
             }
         }
 
-        public void Terminating() {
+        public Task ActivatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task TerminatingAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task TerminatedAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

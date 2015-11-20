@@ -10,16 +10,16 @@ using Orchard.Parser.Yaml;
 namespace Orchard.Environment.Shell {
     public class ShellSettingsManager : IShellSettingsManager {
         private readonly IAppDataFolder _appDataFolder;
-        private readonly ICache _cache;
+        //private readonly ICache _cache;
         private readonly ILogger _logger;
         
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
-            ICache cache,
+            //ICache cache,
             ILoggerFactory loggerFactory) {
             _appDataFolder = appDataFolder;
-            _cache = cache;
+            //_cache = cache;
             _logger = loggerFactory.CreateLogger<ShellSettingsManager>();
         }
 

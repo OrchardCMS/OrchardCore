@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.Utility;
 
 namespace Orchard.ContentManagement.MetaData.Models {
     public class ContentPartDefinition {
         public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, SettingsDictionary settings) {
             Name = name;
-            Fields = fields.ToReadOnlyCollection();
+            Fields = fields.ToList();
             Settings = settings;
         }
 

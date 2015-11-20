@@ -1,40 +1,35 @@
 [![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)
 
-# Brochard
+# Orchard 2
 
-Brochard is the implementation of Orchard CMS in Asp.Net VNext (also known as DNX)
+Orchard 2 is the implementation of Orchard CMS in ASP.NET vNext (also known as DNX).
 
 ## Getting Started
 
-First off, follow the instructions here https://github.com/aspnet/home in order to install DNVM. Next install Visual Studio 2015, or what ever you flavour of editor is.
-
-Next you want to clone the Repo. 'git clone https://github.com/OrchardCMS/Brochard.git' and checkout the master branch.
-
-Run the build.cmd file included in the repository to bootstrap DNX and build solution.
-
-Next navigate to 'D:\Brochard\src\Orchard.Web' or where ever your retrospective folder is on the command line in Administrative mode.
+- First off, [follow the instructions here](https://github.com/aspnet/home) in order to install DNVM, then install Visual Studio 2015, or what ever you flavour of editor is.
+- Next you want to clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch.
+- Run the `build.cmd` file included in the repository to bootstrap DNX and build the solution.
+- Next navigate to "D:\Orchard2\src\Orchard.Web" or where ever your retrospective folder is on the command line in Administrator mode.
 
 ### Using Kestrel
 
-call 'dnx web'
-
-Then in your browser, call the url... http://localhost:5001
+- Call `dnx web`.
+- Then open the `http://localhost:5001` URL in your browser.
 
 ### Using Console
 
-call 'dnx run'
+- Call `dnx run`.
+- From here you can now execute commands in a similar fashion as before.
 
-From here you can now execute commands in a similar fashion as before
-
-## Using Brochard
+## Using Orchard 2
 
 ### Creating a host
 
-When running Brochard, you need a client. The default implementation is to have a client talk to a host.
+When running Orchard 2, you need a client. The default implementation is to have a client talk to a host.
 
-The client is any project that creates the host.
+The client can be any project that creates the host.
 
-To create the host in a web project you would do
+To create the host in a web project you would do:
 
 ```c#
 public class Startup {
@@ -47,8 +42,7 @@ public class Startup {
 }
 ```
 
-The Host has a small wrapper
-
+The host has a small wrapper:
 
 ```c#
 public static IServiceCollection AddHostSample([NotNull] this IServiceCollection services) {
@@ -62,7 +56,7 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
 
 ### Additional module locations
 
-Additional locations for module discovery can be added in your host setup.
+Additional locations for module discovery can be added in your host setup:
 
 ```c#
 public static IServiceCollection AddHostSample([NotNull] this IServiceCollection services) {
@@ -89,9 +83,8 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
 
 ### Tenant Configuration
 
-All tenant configuration lives in .\App_Data\Sites\Default within settings files.
+All tenant configuration lives in `src\Orchard.Web\App_Data\Sites\Default` within settings files, e.g. `Settings.txt`:
 
-i.e. Settings.txt
 ```yaml
 State: Running
 Name: Default
@@ -99,15 +92,12 @@ RequestUrlHost: localhost:5001
 RequestUrlPrefix:
 ```
 
-However, you may override these values within a json or xml file. The hierarchy is:
-
-Settings.txt
-  -> Settings.xml
-     -> Settings.json
+However, you can override these values within a .json or .xml file. The order of precendence is:
+Settings.txt -> Settings.xml -> Settings.json
 
 ### Event Bus
 
-The event bus must be set up in your host (Anyone using the default host will have it)
+The event bus must be set up in your host (anyone using the default host will have it):
 
 ```c#
 public class ShellModule : IModule {
@@ -157,7 +147,8 @@ public void Call() {
 }
 ```
 
-The output will be
+The output will be:
+
 ```
 Talk Event ONE! Bark!
 Talk Event TWO! Bark!
@@ -169,4 +160,4 @@ We currently use XUnit to do unit testing, with Coypu and Chrome to do UI testin
 
 ###Contributing
 
-We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/Brochard/wiki/Engineering-Guidelines)
+We currently follow the these [engineering guidelines](https://github.com/OrchardCMS/Orchard2/wiki/Engineering-Guidelines).

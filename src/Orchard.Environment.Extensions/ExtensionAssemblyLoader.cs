@@ -13,7 +13,7 @@ using System;
 namespace Orchard.Environment.Extensions {
     public class ExtensionAssemblyLoader : IExtensionAssemblyLoader {
         private readonly IApplicationEnvironment _applicationEnvironment;
-        private readonly ICache _cache;
+        //private readonly ICache _cache;
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
         private readonly IRuntimeEnvironment _runtimeEnvironment;
         private readonly IOrchardLibraryManager _libraryManager;
@@ -21,12 +21,12 @@ namespace Orchard.Environment.Extensions {
 
         public ExtensionAssemblyLoader(
             IApplicationEnvironment applicationEnvironment,
-            ICache cache,
+            //ICache cache,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IRuntimeEnvironment runtimeEnvironment,
             IOrchardLibraryManager libraryManager) {
             _applicationEnvironment = applicationEnvironment;
-            _cache = cache;
+            //_cache = cache;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
             _runtimeEnvironment = runtimeEnvironment;
             _libraryManager = libraryManager;
@@ -38,7 +38,6 @@ namespace Orchard.Environment.Extensions {
         }
 
         public Assembly Load(AssemblyName assemblyName) {
-            return _cache.Get<Assembly>(assemblyName.Name, cacheContext => {
                 var reference = _libraryManager.GetMetadataReference(assemblyName.Name);
 
                 if (reference != null && reference is MetadataFileReference) {
@@ -101,7 +100,6 @@ namespace Orchard.Environment.Extensions {
                 }
 
                 return loadedProjectAssembly;
-            });
         }
 
         public IntPtr LoadUnmanagedLibrary(string name) {

@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
@@ -16,7 +16,11 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx451": { },
+    "dnx46": {
+      "dependencies": {
+        "Microsoft.Data.Sqlite": "1.0.0-rc1-15825"
+      }
+    },
     "dnxcore50": { }
   },
   "repository": {

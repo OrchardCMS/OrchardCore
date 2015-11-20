@@ -12,7 +12,6 @@ namespace Orchard.Hosting {
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
             
             builder.UseMiddleware<OrchardContainerMiddleware>();
-            builder.UseMiddleware<OrchardShellHostMiddleware>();
 
             // Think this needs to be inserted in a different part of the pipeline, possibly
             // when DI is created for the shell

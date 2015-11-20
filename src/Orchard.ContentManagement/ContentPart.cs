@@ -3,60 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Orchard.ContentManagement.MetaData.Models;
+using System.Runtime.Serialization;
 #if DNXCORE50
 using System.Reflection;
 #endif
 
 namespace Orchard.ContentManagement {
     public class ContentPart : IContent {
-        private readonly IList<ContentField> _fields;
 
         public ContentPart() {
-            _fields = new List<ContentField>();
+            Fields = new List<ContentField>();
         }
 
+        [IgnoreDataMember]
         public virtual ContentItem ContentItem { get; set; }
 
         /// <summary>
         /// The ContentItem's identifier.
         /// </summary>
         [HiddenInput(DisplayValue = false)]
+        [IgnoreDataMember]
         public int Id => ContentItem.Id;
 
-        public ContentTypeDefinition TypeDefinition => ContentItem.TypeDefinition;
-        public ContentTypePartDefinition TypePartDefinition { get; set; }
-        public ContentPartDefinition PartDefinition => TypePartDefinition.PartDefinition;
-        public SettingsDictionary Settings => TypePartDefinition.Settings;
+        public SettingsDictionary Settings { get; set; }
 
-        public IEnumerable<ContentField> Fields => _fields;
-
-
+        public IList<ContentField> Fields
+        {
+            get; set;
+        }
+        
         public bool Has(Type fieldType, string fieldName) {
-            return _fields.Any(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
+            return Fields.Any(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
         }
 
         public ContentField Get(Type fieldType, string fieldName) {
-            return _fields.FirstOrDefault(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
+            return Fields.FirstOrDefault(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
         }
 
         public void Weld(ContentField field) {
-            _fields.Add(field);
+            Fields.Add(field);
         }
+    }
 
-        public T Retrieve<T>(string fieldName) {
-            return InfosetHelper.Retrieve<T>(this, fieldName);
-        }
+    /// <summary>
+    /// Represents a <see cref="ContentPart"/> that is associated to a <see cref="ContentItemVersionRecord"/>
+    /// </summary>
+    public class ContentVersionPart : ContentPart
+    {
 
-        public T RetrieveVersioned<T>(string fieldName) {
-            return this.Retrieve<T>(fieldName, true);
-        }
-
-        public virtual void Store<T>(string fieldName, T value) {
-            InfosetHelper.Store(this, fieldName, value);
-        }
-
-        public virtual void StoreVersioned<T>(string fieldName, T value) {
-            this.Store(fieldName, value, true);
-        }
     }
 }

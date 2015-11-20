@@ -19,14 +19,15 @@ namespace Orchard.Web
                 .AddModuleFolder("~/Modules")
                 .AddModuleFolder("~/Modules", "module.txt");
 
+            // Save the list of service definitions
+            services.AddSingleton(_ => services);
+
             return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory, IOrchardHost orchardHost)
+        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory) {
         {
             builder.ConfigureWebHost(loggerFactory);
-
-            orchardHost.Initialize();
         }
     }
 }

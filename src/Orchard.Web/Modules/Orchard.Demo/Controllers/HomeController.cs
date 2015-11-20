@@ -5,33 +5,56 @@ using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.Demo.TestEvents;
 using Orchard.Events;
+using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers {
     public class HomeController : Controller {
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
-        private readonly IEventNotifier _eventNotifier;
-
-        public HomeController(ITestDependency testDependency,
+        private readonly IEventBus _eventBus;
+        private readonly ISession _session;
+        public HomeController(
+            ITestDependency testDependency,
             IContentManager contentManager,
-            IEventNotifier eventNotifier) {
+            IEventBus eventBus,
+            ISession session) {
+            _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
-            _eventNotifier = eventNotifier;
+            _eventBus = eventBus;
             }
 
         public ActionResult Index()
         {
-            _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
+            return View();
+        }
 
+        [HttpPost]
+        public ActionResult Index(string text)
+        {
             var contentItem = _contentManager.New("Foo");
-            contentItem.As<TestContentPartA>().Line = "Orchard VNext Rocks";
+            contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
 
-            var retrieveContentItem = _contentManager.Get(contentItem.Id);
-            var lineToSay = retrieveContentItem.As<TestContentPartA>().Line;
+            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", contentItem.Id });
+        }
 
-            return View("Index", _testDependency.SayHi(lineToSay));
+        public async Task<ActionResult> Display(int id)
+        {
+            var contentItem = await _contentManager.Get(id);
+
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(contentItem);
+        }
+
+        public ActionResult Raw()
+        {
+            return View();
         }
 
         public ActionResult IndexError() {

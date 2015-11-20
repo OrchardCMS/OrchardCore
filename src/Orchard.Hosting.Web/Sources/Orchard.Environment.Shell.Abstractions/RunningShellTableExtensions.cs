@@ -13,9 +13,8 @@ namespace Orchard.Environment.Shell {
                 }
 
                 var host = httpRequest.Headers["Host"].ToString();
-                var appRelativeCurrentExecutionFilePath = "~/";
 
-                return table.Match(host ?? string.Empty, appRelativeCurrentExecutionFilePath);
+                return table.Match(host ?? string.Empty, httpRequest.Path);
             }
             catch (Exception) {
                 // can happen on cloud service for an unknown reason
