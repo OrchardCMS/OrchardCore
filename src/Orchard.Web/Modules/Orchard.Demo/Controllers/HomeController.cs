@@ -5,6 +5,7 @@ using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.Demo.TestEvents;
 using Orchard.Events;
+using System;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
@@ -55,6 +56,12 @@ namespace Orchard.Demo.Controllers {
         public ActionResult Raw()
         {
             return View();
+        }
+
+        public string GCCollect()
+        {
+            GC.Collect();
+            return "OK";
         }
 
         public ActionResult IndexError() {
