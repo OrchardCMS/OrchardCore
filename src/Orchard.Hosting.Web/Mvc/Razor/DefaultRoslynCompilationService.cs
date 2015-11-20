@@ -13,7 +13,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.Dnx.Compilation;
+using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Dnx.Compilation.CSharp;
+using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor;
@@ -28,9 +30,9 @@ namespace Orchard.Hosting.Mvc.Razor {
         private readonly ConcurrentDictionary<string, AssemblyMetadata> _metadataFileCache =
             new ConcurrentDictionary<string, AssemblyMetadata>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly ILibraryExporter _libraryExporter;
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IApplicationEnvironment _environment;
+        private readonly IRuntimeEnvironment _runtimeEnvironment;
         private readonly IAssemblyLoadContext _loader;
         private readonly ICompilerOptionsProvider _compilerOptionsProvider;
         private readonly IFileProvider _fileProvider;
@@ -41,24 +43,24 @@ namespace Orchard.Hosting.Mvc.Razor {
         /// Initalizes a new instance of the <see cref="RoslynCompilationService"/> class.
         /// </summary>
         /// <param name="environment">The environment for the executing application.</param>
+        /// <param name="runtimeEnvironment">Provides access to the runtime environment.</param>
         /// <param name="loaderAccessor">
         /// The accessor for the <see cref="IAssemblyLoadContext"/> used to load compiled assemblies.
         /// </param>
-        /// <param name="libraryExporter">The library manager that provides export and reference information.</param>
         /// <param name="compilerOptionsProvider">
         /// The <see cref="ICompilerOptionsProvider"/> that provides Roslyn compilation settings.
         /// </param>
         /// <param name="host">The <see cref="IMvcRazorHost"/> that was used to generate the code.</param>
         public DefaultRoslynCompilationService(IApplicationEnvironment environment,
+                                        IRuntimeEnvironment runtimeEnvironment,
                                         IAssemblyLoadContextAccessor loaderAccessor,
-                                        ILibraryExporter libraryExporter,
                                         IOrchardLibraryManager libraryManager,
                                         ICompilerOptionsProvider compilerOptionsProvider,
                                         IMvcRazorHost host,
                                         IOptions<RazorViewEngineOptions> optionsAccessor) {
             _environment = environment;
+            _runtimeEnvironment = runtimeEnvironment;
             _loader = loaderAccessor.GetLoadContext(typeof(DefaultRoslynCompilationService).GetTypeInfo().Assembly);
-            _libraryExporter = libraryExporter;
             _libraryManager = libraryManager;
             _applicationReferences = new Lazy<List<MetadataReference>>(GetApplicationReferences);
             _compilerOptionsProvider = compilerOptionsProvider;
@@ -163,10 +165,24 @@ namespace Orchard.Hosting.Mvc.Razor {
         private List<MetadataReference> GetApplicationReferences() {
             var references = new List<MetadataReference>();
 
+            Project project;
+            if (!Project.TryGetProject(_environment.ApplicationBasePath, out project))
+                return references;
+
+            var engine = new CompilationEngine(
+                new CompilationEngineContext(
+                    _environment,
+                    _runtimeEnvironment,
+                    _loader,
+                    new CompilationCache()));
+
+            var libraryExporter = engine.CreateProjectExporter(
+                project, _environment.RuntimeFramework, _environment.Configuration);
+
             // Get the MetadataReference for the executing application. If it's a Roslyn reference,
             // we can copy the references created when compiling the application to the Razor page being compiled.
             // This avoids performing expensive calls to MetadataReference.CreateFromImage.
-            var libraryExport = _libraryExporter.GetExport(_environment.ApplicationName);
+            var libraryExport = libraryExporter.GetExport(_environment.ApplicationName);
             if (libraryExport?.MetadataReferences != null && libraryExport.MetadataReferences.Count > 0) {
                 Debug.Assert(libraryExport.MetadataReferences.Count == 1,
                              "Expected 1 MetadataReferences, found " + libraryExport.MetadataReferences.Count);
@@ -185,7 +201,7 @@ namespace Orchard.Hosting.Mvc.Razor {
                 }
             }
 
-            var export = _libraryExporter.GetAllExports(_environment.ApplicationName);
+            var export = libraryExporter.GetAllExports(_environment.ApplicationName);
             foreach (var metadataReference in export.MetadataReferences) {
                 // Taken from https://github.com/aspnet/KRuntime/blob/757ba9bfdf80bd6277e715d6375969a7f44370ee/src/...
                 // Microsoft.Framework.Runtime.Roslyn/RoslynCompiler.cs#L164
