@@ -10,18 +10,23 @@ using Orchard.Utility;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Utility;
 
-namespace Orchard.Environment.Extensions {
-    public class ExtensionManager : IExtensionManager {
+namespace Orchard.Environment.Extensions
+{
+    public class ExtensionManager : IExtensionManager
+    {
         private readonly IExtensionLocator _extensionLocator;
         private readonly IEnumerable<IExtensionLoader> _loaders;
         private readonly ILogger _logger;
+        private List<ExtensionDescriptor> _availableExtensions;
+        private List<FeatureDescriptor> _availableFeatures;
 
         public Localizer T { get; set; }
 
         public ExtensionManager(
             IExtensionLocator extensionLocator,
             IEnumerable<IExtensionLoader> loaders,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
 
             _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
@@ -31,22 +36,38 @@ namespace Orchard.Environment.Extensions {
 
         // This method does not load extension types, simply parses extension manifests from 
         // the filesystem. 
-        public ExtensionDescriptor GetExtension(string id) {
+        public ExtensionDescriptor GetExtension(string id)
+        {
             return AvailableExtensions().FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
-            return _extensionLocator.AvailableExtensions().ToList();
+        public IEnumerable<ExtensionDescriptor> AvailableExtensions()
+        {
+            // Memoize the list of extensions to prevent module discovery on every call
+            if (_availableExtensions == null)
+            {
+                _availableExtensions = _extensionLocator.AvailableExtensions().ToList();
+            }
+
+            return _availableExtensions;
         }
 
-        public IEnumerable<FeatureDescriptor> AvailableFeatures() {
-            return AvailableExtensions()
+        public IEnumerable<FeatureDescriptor> AvailableFeatures()
+        {
+            // Memoize the list of features to prevent re-ordering on every call
+            if (_availableFeatures == null)
+            {
+                _availableFeatures = AvailableExtensions()
                     .SelectMany(ext => ext.Features)
                     .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
-                    .ToReadOnlyCollection();
+                    .ToList();
+            }
+
+            return _availableFeatures;
         }
 
-        internal static int GetPriority(FeatureDescriptor featureDescriptor) {
+        internal static int GetPriority(FeatureDescriptor featureDescriptor)
+        {
             return featureDescriptor.Priority;
         }
 
@@ -56,14 +77,18 @@ namespace Orchard.Environment.Extensions {
         /// <param name="item"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        internal static bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject) {
-            if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType)) {
-                if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType)) {
+        internal static bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
+        {
+            if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType))
+            {
+                if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType))
+                {
                     // Themes implicitly depend on modules to ensure build and override ordering
                     return true;
                 }
 
-                if (DefaultExtensionTypes.IsTheme(subject.Extension.ExtensionType)) {
+                if (DefaultExtensionTypes.IsTheme(subject.Extension.ExtensionType))
+                {
                     // Theme depends on another if it is its base theme
                     return item.Extension.BaseTheme == subject.Id;
                 }
@@ -74,7 +99,8 @@ namespace Orchard.Environment.Extensions {
                    item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
         }
 
-        public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors) {
+        public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
+        {
             _logger.LogInformation("Loading features");
 
             var result = featureDescriptors
@@ -85,24 +111,29 @@ namespace Orchard.Environment.Extensions {
             return result;
         }
 
-        private Feature LoadFeature(FeatureDescriptor featureDescriptor) {
+        private Feature LoadFeature(FeatureDescriptor featureDescriptor)
+        {
             var extensionDescriptor = featureDescriptor.Extension;
             var featureId = featureDescriptor.Id;
             var extensionId = extensionDescriptor.Id;
 
             ExtensionEntry extensionEntry;
-            try {
+            try
+            {
                 extensionEntry = BuildEntry(extensionDescriptor);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(string.Format("Error loading extension '{0}'", extensionId), ex);
                 throw new OrchardException(T("Error while loading extension '{0}'.", extensionId), ex);
             }
 
-            if (extensionEntry == null) {
+            if (extensionEntry == null)
+            {
                 // If the feature could not be compiled for some reason,
                 // return a "null" feature, i.e. a feature with no exported types.
-                return new Feature {
+                return new Feature
+                {
                     Descriptor = featureDescriptor,
                     ExportedTypes = Enumerable.Empty<Type>()
                 };
@@ -111,28 +142,35 @@ namespace Orchard.Environment.Extensions {
             var extensionTypes = extensionEntry.ExportedTypes.Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
             var featureTypes = new List<Type>();
 
-            foreach (var type in extensionTypes) {
+            foreach (var type in extensionTypes)
+            {
                 string sourceFeature = GetSourceFeatureNameForType(type, extensionId);
-                if (String.Equals(sourceFeature, featureId, StringComparison.OrdinalIgnoreCase)) {
+                if (String.Equals(sourceFeature, featureId, StringComparison.OrdinalIgnoreCase))
+                {
                     featureTypes.Add(type);
                 }
             }
 
-            return new Feature {
+            return new Feature
+            {
                 Descriptor = featureDescriptor,
                 ExportedTypes = featureTypes
             };
         }
 
-        private static string GetSourceFeatureNameForType(Type type, string extensionId) {
-            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false)) {
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
+        {
+            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false))
+            {
                 return featureAttribute.FeatureName;
             }
             return extensionId;
         }
 
-        private ExtensionEntry BuildEntry(ExtensionDescriptor descriptor) {
-            foreach (var loader in _loaders) {
+        private ExtensionEntry BuildEntry(ExtensionDescriptor descriptor)
+        {
+            foreach (var loader in _loaders)
+            {
                 ExtensionEntry entry = loader.Load(descriptor);
                 if (entry != null)
                     return entry;
