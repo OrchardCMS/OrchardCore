@@ -15,13 +15,6 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx46": {
-      "frameworkAssemblies": {
-        "System.ComponentModel.DataAnnotations": "",
-        "System.Runtime": "",
-        "System.Threading.Tasks": ""
-      }
-    },
     "dnxcore50": {
       "dependencies": {
         "System.ComponentModel.Annotations": "4.0.11-*",

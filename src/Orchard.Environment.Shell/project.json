@@ -16,11 +16,6 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx46": {
-      "dependencies": {
-        "Microsoft.Data.Sqlite": "1.0.0-rc1-15825"
-      }
-    },
     "dnxcore50": { }
   },
   "repository": {

@@ -13,7 +13,6 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx46": { },
     "dnxcore50": { }
   },
   "repository": {

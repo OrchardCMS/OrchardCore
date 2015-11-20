@@ -9,7 +9,6 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx46": { },
     "dnxcore50": {
       "dependencies": {
         "System.Globalization.Extensions": "4.0.1-*",

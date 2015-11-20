@@ -9,18 +9,6 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnx46": {
-      "frameworkAssemblies": {
-        "System.Runtime": "",
-        "System.Collections": "",
-        "System.Linq": "",
-        "System.Reflection": "",
-        "System.Reflection.Extensions": "",
-        "System.Reflection.Primitives": "",
-        "System.Resources.ResourceManager": "",
-        "System.Threading": ""
-      }
-    },
     "dnxcore50": { }
   },
   "repository": {
