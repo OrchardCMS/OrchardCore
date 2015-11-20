@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Dnx.Runtime;
 using Newtonsoft.Json.Linq;
+using NuGet;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
 using Orchard.Localization;
@@ -11,10 +13,14 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
     public class JsonManifestParser : IManifestParser
     {
         private readonly IClientFolder _clientFolder;
+        private readonly IHostEnvironment _hostEnvironment;
 
-        public JsonManifestParser(IClientFolder clientFolder)
+        public JsonManifestParser(
+            IClientFolder clientFolder,
+            IHostEnvironment hostEnvironment)
         {
             _clientFolder = clientFolder;
+            _hostEnvironment = hostEnvironment;
             T = NullLocalizer.Instance;
         }
 
@@ -24,39 +30,55 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
 
         public ExtensionDescriptor GetDescriptorForExtension(string path, string extensionId, string extensionType, string manifestText)
         {
-            dynamic project = ReadJsonFile(path, extensionId, "project.json");
-            dynamic manifest = ReadJsonFile(path, extensionId, "orchard.json");
+            var project = ReadProjectFile(path, extensionId);
+            if (project == null)
+            {
+                return null;
+            }
+
+            dynamic manifest = ReadOrchardFile(path, extensionId);
 
             JsonExtensionDescriptor jsonDescriptor = MapToJsonExtensionDescriptor(project, manifest, path, extensionId);
 
             return MapJsonToExtensionDescriptor(jsonDescriptor);
         }
 
-        private dynamic ReadJsonFile(string folderPath, string extensionId, string fileName)
+        private Project ReadProjectFile(string folderPath, string extensionId)
         {
-            var file = _clientFolder.ReadFile(Path.Combine(folderPath, extensionId, fileName));
+            var path = _hostEnvironment.MapPath(Path.Combine(folderPath, extensionId));
+
+            Project project;
+            var success = Project.TryGetProject(path, out project);
+
+            return !success ? null : project;
+        }
+
+        private dynamic ReadOrchardFile(string folderPath, string extensionId)
+        {
+            var file = _clientFolder.ReadFile(Path.Combine(folderPath, extensionId, "orchard.json"));
 
             if (file == null)
             {
-                throw new OrchardException(T($"{fileName} is null"));
+                throw new OrchardException(T("orchard manifest is null"));
             }
 
             return JObject.Parse(file);
         }
 
-        private JsonExtensionDescriptor MapToJsonExtensionDescriptor(dynamic project, dynamic manifest, string path, string extensionId)
+
+        private JsonExtensionDescriptor MapToJsonExtensionDescriptor(Project project, dynamic manifest, string path, string extensionId)
         {
             var descriptor = new JsonExtensionDescriptor
             {
                 Location = path,
                 Id = extensionId,
-                Version = project.version,
-                Title = project.title,
-                Description = project.description,
-                Authors = project.authors?.ToObject<IEnumerable<string>>(),
-                ProjectUrl = project.projectUrl,
-                LicenseUrl = project.licenceUrl,
-                Tags = project.tags?.ToObject<IEnumerable<string>>(),
+                Version = project.Version,
+                Title = project.Title,
+                Description = project.Description,
+                Authors = project.Authors,
+                ProjectUrl = project.ProjectUrl,
+                LicenseUrl = project.LicenseUrl,
+                Tags = project.Tags,
                 MinOrchardVersion = manifest.minOrchardVersion
             };
 
@@ -116,20 +138,20 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
             {
                 Location = jsonDescriptor.Location,
                 Id = jsonDescriptor.Id,
-                Version = jsonDescriptor.Version,
+                Version = jsonDescriptor.Version.ToString(),
                 Name = jsonDescriptor.Title,
                 Description = jsonDescriptor.Description,
-                Author = string.Join(",", jsonDescriptor.Authors), // todo make this a list
+                Author = string.Join(",", jsonDescriptor.Authors), // todo make this a list?
                 WebSite = jsonDescriptor.ProjectUrl,
-                //LicenceUrl = jsonDescriptor.LicenseUrl, // todo add
-                Tags = string.Join(",", jsonDescriptor.Tags), // todo make this a list
+                //LicenseUrl = jsonDescriptor.LicenseUrl, // todo add?
+                Tags = string.Join(",", jsonDescriptor.Tags), // todo make this a list?
 
                 OrchardVersion = jsonDescriptor.MinOrchardVersion
             };
 
             if (jsonDescriptor.IsModule)
             {
-                var module = (JsonExtensionModule) jsonDescriptor.Extension;
+                var module = (JsonExtensionModule)jsonDescriptor.Extension;
 
                 descriptor.ExtensionType = DefaultExtensionTypes.Module;
                 descriptor.Path = module.Path;
@@ -147,11 +169,11 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
             }
             else if (jsonDescriptor.IsTheme)
             {
-                var theme = (JsonExtensionTheme) jsonDescriptor.Extension;
+                var theme = (JsonExtensionTheme)jsonDescriptor.Extension;
 
                 descriptor.ExtensionType = DefaultExtensionTypes.Theme;
                 descriptor.BaseTheme = theme.BaseTheme;
-                descriptor.Zones = string.Join(",", theme.Zones); // todo make this a list
+                descriptor.Zones = string.Join(",", theme.Zones); // todo make this a list?
             }
 
             return descriptor;
@@ -163,7 +185,7 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
         public string Location { get; set; }
         public string Id { get; set; }
 
-        public string Version { get; set; }
+        public SemanticVersion Version { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public IEnumerable<string> Authors { get; set; }
@@ -177,7 +199,9 @@ namespace Orchard.Environment.Extensions.Folders.ManifestParsers
         public bool IsTheme => Extension is JsonExtensionTheme;
     }
 
-    public interface IJsonExtension {}
+    public interface IJsonExtension
+    {
+    }
 
     public class JsonExtensionModule : IJsonExtension
     {
