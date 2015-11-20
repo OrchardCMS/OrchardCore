@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Orchard extension schema",
+  "type": "object",
+
+  "properties": {
+    "minOrchardVersion": {
+      "description": "The minimum version of Orchard CMS that the module has been tested against.",
+      "type": "string",
+      "pattern": "^([0-9]+[.])([0-9]+[.])([0-9]+|[*])$"
+    },
+    "module": {
+      "description": "module extension",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "description": "Provides a name that is used to build more readable URLs for routing purposes compared to URLs that are based on module names or ID values.",
+          "type": "string"
+        },
+        "antiForgery": {
+          "description": "A value that indicates whether request validation is enabled for a module.",
+          "type": "boolean",
+          "default": false
+        },
+        "features": {
+          "description": "A special repeating section of the manifest which allows a module to define multiple features within a module.",
+          "type": "array",
+          "additionalItems": false,
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "description": "Unique ID for Orchard to use internally as a reference.",
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "description": "Provides a human-readable name for the feature.",
+                "type": "string"
+              },
+              "description": {
+                "description": "A brief summary of what the module does.",
+                "type": "string"
+              },
+              "category": {
+                "description": "This field groups the module together in the Modules page of the Orchard admin dashboard.",
+                "type": "string",
+                "default": "uncategorized"
+              },
+              "priority": {
+                "description": "A brief summary of what the module does.",
+                "type": "number",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "dependencies": {
+                "description": "Each individual feature should only define its own dependencies.",
+                "type": "array",
+                "additionalItems": false,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "description",
+              "category",
+              "priority"
+            ]
+          }
+        }
+      },
+      "required": [
+        "antiForgery",
+        "path"
+      ]
+    },
+    "theme": {
+      "description": "theme extension",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "zones": {
+          "description": "A list of the Orchard zones that are used by a theme.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "baseTheme": {
+          "description": "The ID of another theme that this theme inherits from.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "zones",
+        "baseTheme"
+      ]
+    }
+  },
+  "required": [ "minOrchardVersion" ],
+  "oneOf": [
+    {
+      "required": [ "module" ]
+    },
+    {
+      "required": [ "theme" ]
+    }
+  ]
+}

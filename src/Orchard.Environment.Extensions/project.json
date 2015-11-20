@@ -6,7 +6,8 @@
     "Microsoft.Extensions.OptionsModel": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
+    "Newtonsoft.Json": "7.0.1"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

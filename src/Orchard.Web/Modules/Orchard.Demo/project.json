@@ -1,4 +1,17 @@
 ﻿{
+  "version": "2.0.0",
+  "title": "Orchard Demo",
+  "description": "This is an Orchard Demo extension",
+  "authors": [
+    "The Orchard Team"
+  ],
+  "projectUrl": "http://orchardproject.net",
+  "licenseUrl": "",
+  "tags": [
+    "orchard",
+    "demo"
+  ],
+
   "dependencies": {
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
