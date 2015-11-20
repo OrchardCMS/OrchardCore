@@ -20,6 +20,7 @@ using Orchard.DependencyInjection;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.AspNet.Hosting;
 
 namespace Orchard.Hosting.Mvc.Razor {
     /// <summary>
@@ -30,6 +31,8 @@ namespace Orchard.Hosting.Mvc.Razor {
         private readonly ConcurrentDictionary<string, AssemblyMetadata> _metadataFileCache =
             new ConcurrentDictionary<string, AssemblyMetadata>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly ILibraryExporter _libraryExporter;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IApplicationEnvironment _environment;
         private readonly IRuntimeEnvironment _runtimeEnvironment;
@@ -57,7 +60,9 @@ namespace Orchard.Hosting.Mvc.Razor {
                                         IOrchardLibraryManager libraryManager,
                                         ICompilerOptionsProvider compilerOptionsProvider,
                                         IMvcRazorHost host,
-                                        IOptions<RazorViewEngineOptions> optionsAccessor) {
+                                        IOptions<RazorViewEngineOptions> optionsAccessor,
+                                        ILibraryExporter libraryExporter,
+                                        IHostingEnvironment hostingEnvrionment) {
             _environment = environment;
             _runtimeEnvironment = runtimeEnvironment;
             _loader = loaderAccessor.GetLoadContext(typeof(DefaultRoslynCompilationService).GetTypeInfo().Assembly);
@@ -66,6 +71,8 @@ namespace Orchard.Hosting.Mvc.Razor {
             _compilerOptionsProvider = compilerOptionsProvider;
             _fileProvider = optionsAccessor.Value.FileProvider;
             _classPrefix = host.MainClassNamePrefix;
+            _libraryExporter = libraryExporter;
+            _hostingEnvironment = hostingEnvrionment;
         }
 
         /// <inheritdoc />
@@ -165,19 +172,26 @@ namespace Orchard.Hosting.Mvc.Razor {
         private List<MetadataReference> GetApplicationReferences() {
             var references = new List<MetadataReference>();
 
-            Project project;
-            if (!Project.TryGetProject(_environment.ApplicationBasePath, out project))
-                return references;
+            ILibraryExporter libraryExporter;
+            if (_hostingEnvironment.IsDevelopment())
+            {
+                Project project;
+                if (!Project.TryGetProject(_environment.ApplicationBasePath, out project))
+                    return references;
 
-            var engine = new CompilationEngine(
-                new CompilationEngineContext(
-                    _environment,
-                    _runtimeEnvironment,
-                    _loader,
-                    new CompilationCache()));
-
-            var libraryExporter = engine.CreateProjectExporter(
-                project, _environment.RuntimeFramework, _environment.Configuration);
+                var engine = new CompilationEngine(
+                    new CompilationEngineContext(
+                        _environment,
+                        _runtimeEnvironment,
+                        _loader,
+                        new CompilationCache()));
+                libraryExporter = engine.CreateProjectExporter(
+                    project, _environment.RuntimeFramework, _environment.Configuration);
+            }
+            else
+            {
+                libraryExporter = _libraryExporter;
+            }
 
             // Get the MetadataReference for the executing application. If it's a Roslyn reference,
             // we can copy the references created when compiling the application to the Razor page being compiled.
