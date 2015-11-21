@@ -6,7 +6,7 @@ namespace Orchard.ContentManagement.Records
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(ContentItemVersionRecordIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
                 .Column<int>("ContentItemId")
                 .Column<int>("Latest")
                 .Column<int>("Number")

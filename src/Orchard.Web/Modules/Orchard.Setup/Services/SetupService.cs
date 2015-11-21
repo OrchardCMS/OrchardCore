@@ -12,8 +12,10 @@ using Microsoft.Extensions.Logging;
 using Orchard.Hosting.ShellBuilders;
 using YesSql.Core.Services;
 
-namespace Orchard.Setup.Services {
-    public class SetupService : Component, ISetupService {
+namespace Orchard.Setup.Services
+{
+    public class SetupService : Component, ISetupService
+    {
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -33,7 +35,8 @@ namespace Orchard.Setup.Services {
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
 
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
@@ -46,22 +49,27 @@ namespace Orchard.Setup.Services {
             _logger = loggerFactory.CreateLogger<SetupService>();
         }
 
-        public ShellSettings Prime() {
+        public ShellSettings Prime()
+        {
             return _shellSettings;
         }
 
-        public string Setup(SetupContext context) {
+        public string Setup(SetupContext context)
+        {
             var initialState = _shellSettings.State;
-            try {
+            try
+            {
                 return SetupInternal(context);
             }
-            catch {
+            catch
+            {
                 _shellSettings.State = initialState;
                 throw;
             }
         }
 
-        public string SetupInternal(SetupContext context) {
+        public string SetupInternal(SetupContext context)
+        {
             string executionId;
 
             _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
@@ -77,7 +85,7 @@ namespace Orchard.Setup.Services {
                 };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
-            
+
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             _shellSettings.State = TenantState.Initializing;
 
@@ -95,7 +103,8 @@ namespace Orchard.Setup.Services {
 
             // TODO: Add Encryption Settings in
 
-            var shellDescriptor = new ShellDescriptor {
+            var shellDescriptor = new ShellDescriptor
+            {
                 Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
             };
 
@@ -103,7 +112,8 @@ namespace Orchard.Setup.Services {
             // in theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
 
-            using (var environment = _orchardHost.CreateShellContext(shellSettings)) {
+            using (var environment = _orchardHost.CreateShellContext(shellSettings))
+            {
                 executionId = CreateTenantData(context, environment);
 
                 using (var store = (IStore)environment.ServiceProvider.GetService(typeof(IStore)))
@@ -117,9 +127,10 @@ namespace Orchard.Setup.Services {
             return executionId;
         }
 
-        private string CreateTenantData(SetupContext context, ShellContext shellContext) {
+        private string CreateTenantData(SetupContext context, ShellContext shellContext)
+        {
             // must mark state as Running - otherwise standalone enviro is created "for setup"
-            
+
 
             return Guid.NewGuid().ToString();
         }

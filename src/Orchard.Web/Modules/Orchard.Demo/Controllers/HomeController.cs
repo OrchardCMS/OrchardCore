@@ -38,7 +38,7 @@ namespace Orchard.Demo.Controllers {
             contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
 
-            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", contentItem.Id });
+            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
         }
 
         public async Task<ActionResult> Display(int id)

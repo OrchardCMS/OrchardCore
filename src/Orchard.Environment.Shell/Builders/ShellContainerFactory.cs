@@ -138,13 +138,17 @@ namespace Orchard.Environment.Shell.Builders {
                         {
                             cfg.TablePrefix = sqlFactory.TablePrefix = settings.TablePrefix + "_";
                         }
+
                         //cfg.RunDefaultMigration();
                     }
                 );
 
+                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, "contentitem", store.Configuration.TablePrefix);
+
                 store.RegisterIndexes(indexes);
 
                 tenantServiceCollection.AddInstance<IStore>(store);
+                tenantServiceCollection.AddInstance<LinearBlockIdGenerator>(idGenerator);
 
                 tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
                     store.CreateSession()

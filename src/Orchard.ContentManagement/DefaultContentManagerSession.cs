@@ -1,38 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Orchard.ContentManagement {
-    public class DefaultContentManagerSession : IContentManagerSession {
-        private readonly IDictionary<int, ContentItem> _itemByVersionRecordId = new Dictionary<int, ContentItem>();
-        private readonly IDictionary<Tuple<int, int>, ContentItem> _itemByVersionNumber = new Dictionary<Tuple<int, int>, ContentItem>();
-        private readonly IDictionary<int, ContentItem> _publishedItemsByContentRecordId = new Dictionary<int, ContentItem>();
+namespace Orchard.ContentManagement
+{
+    public class DefaultContentManagerSession : IContentManagerSession
+    {
+        private readonly IDictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
+        private readonly IDictionary<Tuple<int, int>, ContentItem> _itemByContentItemId = new Dictionary<Tuple<int, int>, ContentItem>();
+        private readonly IDictionary<int, ContentItem> _publishedItemsById = new Dictionary<int, ContentItem>();
 
-        public void Store(ContentItem item) {
-            _itemByVersionRecordId.Add(item.VersionRecord.Id, item);
-            _itemByVersionNumber.Add(Tuple.Create(item.Id, item.Version), item);
+        public void Store(ContentItem item)
+        {
+            _itemByVersionId.Add(item.Id, item);
+            _itemByContentItemId.Add(Tuple.Create(item.ContentItemId, item.Number), item);
 
             // is it the Published version ?
-            if (item.VersionRecord.Latest && item.VersionRecord.Published) {
-                _publishedItemsByContentRecordId[item.Id] = item;
+            if (item.Latest && item.Published)
+            {
+                _publishedItemsById[item.ContentItemId] = item;
             }
         }
 
-        public bool RecallVersionRecordId(int id, out ContentItem item) {
-            return _itemByVersionRecordId.TryGetValue(id, out item);
+        public bool RecallVersionId(int id, out ContentItem item)
+        {
+            return _itemByVersionId.TryGetValue(id, out item);
         }
 
-        public bool RecallVersionNumber(int id, int version, out ContentItem item) {
-            return _itemByVersionNumber.TryGetValue(Tuple.Create(id, version), out item);
+        public bool RecallContentItemId(int contentItemId, int versionNumber, out ContentItem item)
+        {
+            return _itemByContentItemId.TryGetValue(Tuple.Create(contentItemId, versionNumber), out item);
         }
 
-        public bool RecallContentRecordId(int id, out ContentItem item) {
-            return _publishedItemsByContentRecordId.TryGetValue(id, out item);
+        public bool RecallPublishedItemId(int id, out ContentItem item)
+        {
+            return _publishedItemsById.TryGetValue(id, out item);
         }
 
-        public void Clear() {
-            _itemByVersionRecordId.Clear();
-            _itemByVersionNumber.Clear();
-            _publishedItemsByContentRecordId.Clear();
+        public void Clear()
+        {
+            _itemByVersionId.Clear();
+            _itemByContentItemId.Clear();
+            _publishedItemsById.Clear();
         }
     }
 }

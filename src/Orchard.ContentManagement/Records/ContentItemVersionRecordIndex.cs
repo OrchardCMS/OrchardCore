@@ -3,7 +3,7 @@ using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement.Records
 {
-    public class ContentItemVersionRecordIndex : MapIndex
+    public class ContentItemIndex : MapIndex
     {
         public int ContentItemId { get; set; }
         public int Number { get; set; }
@@ -12,18 +12,18 @@ namespace Orchard.ContentManagement.Records
         public string ContentType { get; set; }
     }
 
-    public class ContentItemVersionRecordIndexProvider : IndexProvider<ContentItemVersionRecord>, IDependency
+    public class ContentItemIndexProvider : IndexProvider<ContentItem>, IDependency
     {
-        public override void Describe(DescribeContext<ContentItemVersionRecord> context)
+        public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<ContentItemVersionRecordIndex>()
-                .Map(civr => new ContentItemVersionRecordIndex
+            context.For<ContentItemIndex>()
+                .Map(contentItem => new ContentItemIndex
                 {
-                    ContentItemId = civr.ContentItemId,
-                    Latest = civr.Latest,
-                    Number = civr.Number,
-                    Published = civr.Published,
-                    ContentType = civr.ContentType
+                    Latest = contentItem.Latest,
+                    Number = contentItem.Number,
+                    Published = contentItem.Published,
+                    ContentType = contentItem.ContentType,
+                    ContentItemId = contentItem.ContentItemId
                 });
         }
     }

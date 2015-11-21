@@ -1,14 +1,15 @@
-using Orchard.ContentManagement.Records;
-
-namespace Orchard.ContentManagement.Handlers {
-    public class PublishContentContext : ContentContextBase {
-        public PublishContentContext(ContentItem contentItem, ContentItemVersionRecord previousItemVersionRecord) : base(contentItem) {
-            PublishingItemVersionRecord = contentItem.VersionRecord;
-            PreviousItemVersionRecord = previousItemVersionRecord;
+namespace Orchard.ContentManagement.Handlers
+{
+    public class PublishContentContext : ContentContextBase
+    {
+        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem) : base(contentItem)
+        {
+            PublishingItem = contentItem;
+            PreviousItem = previousContentItem;
         }
 
-        public ContentItemVersionRecord PublishingItemVersionRecord { get; set; }
-        public ContentItemVersionRecord PreviousItemVersionRecord { get; set; }
+        public ContentItem PublishingItem { get; set; }
+        public ContentItem PreviousItem { get; set; }
 
         public bool Cancel { get; set; }
     }

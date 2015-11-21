@@ -5,6 +5,6 @@ namespace Orchard.ContentManagement {
         /// <summary>
         /// The ContentItem's identifier.
         /// </summary>
-        int Id { get; }
+        int ContentItemId { get; }
     }
 }

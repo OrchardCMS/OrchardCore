@@ -1,11 +1,12 @@
-using Orchard.ContentManagement.Records;
-
-namespace Orchard.ContentManagement.Handlers {
-    public class UpdateContentContext : ContentContextBase {
-        public UpdateContentContext(ContentItem contentItem) : base(contentItem) {
-            UpdatingItemVersionRecord = contentItem.VersionRecord;
+namespace Orchard.ContentManagement.Handlers
+{
+    public class UpdateContentContext : ContentContextBase
+    {
+        public UpdateContentContext(ContentItem contentItem) : base(contentItem)
+        {
+            UpdatingItem = contentItem;
         }
 
-        public ContentItemVersionRecord UpdatingItemVersionRecord { get; set; }
+        public ContentItem UpdatingItem { get; set; }
     }
 }

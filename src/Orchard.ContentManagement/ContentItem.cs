@@ -1,80 +1,78 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
-using Orchard.ContentManagement.Records;
-#if DNXCORE50
-using System.Reflection;
-#endif
 
-namespace Orchard.ContentManagement {
-    public class ContentItem : IContent {
+namespace Orchard.ContentManagement
+{
+    /// <summary>
+    /// Represents a content item version.
+    /// </summary>
+    public class ContentItem : IContent
+    {
         public ContentItem()
         {
+            Parts = new Dictionary<string, ContentPart>();
         }
+
+        /// <summary>
+        /// The unique identifier of the current version.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// The content item id of this version.
+        /// </summary>
+        public int ContentItemId { get; set; }
+
+        /// <summary>
+        /// The content type of the content item.
+        /// </summary>
+        public string ContentType { get; set; }
+
+        /// <summary>
+        /// The number of the version.
+        /// </summary>
+        public int Number { get; set; }
+
+        /// <summary>
+        /// Whether the version is published or not.
+        /// </summary>
+        public bool Published { get; set; }
+
+        /// <summary>
+        /// Whether the version is the latest version of the content item.
+        /// </summary>
+        public bool Latest { get; set; }
+
+        /// <summary>
+        /// The list of parts for this version.
+        /// </summary>
+        public Dictionary<string, ContentPart> Parts { get; set; }
 
         ContentItem IContent.ContentItem => this;
 
-        public int Id { get { return Record.Id; } }
-        public int Version { get { return VersionRecord?.Number ?? 0; } }
-        public string ContentType { get; set; }
-
-        public ContentItemRecord Record { get; set; }
-        public ContentItemVersionRecord VersionRecord { get; set; }
-        
-        public IEnumerable<ContentPart> Parts
+        public bool Has(Type partType)
         {
-            get
-            {
-                if (Record != null)
-                {
-                    foreach (var record in Record.Parts)
-                    {
-                        yield return record;
-                    }
-                }
-
-                if (VersionRecord != null)
-                {
-                    foreach (var record in VersionRecord.Parts)
-                    {
-                        yield return record;
-                    }
-                }
-            }
+            return Has(partType.Name);
         }
 
-        public bool Has(Type partType) {
-            return Parts.Any(partType.IsInstanceOfType);
+        public bool Has(string partName)
+        {
+            return Parts.ContainsKey(partName);
         }
 
-        public IContent Get(Type partType) {
-            return Parts.FirstOrDefault(partType.IsInstanceOfType);
+        public IContent Get(Type partType)
+        {
+            return Get(partType.Name);
         }
 
-        public void Weld(ContentPart part) {
-            var contentVersionPart = part as ContentVersionPart;
-            if (contentVersionPart != null)
-            {
-                if(VersionRecord == null)
-                {
-                    VersionRecord = new ContentItemVersionRecord();
-                }
+        public IContent Get(string partName)
+        {
+            return Parts[partName];
+        }
 
-                VersionRecord.Parts.Add(contentVersionPart);
-            }
-            else
-            {
-                if (Record == null)
-                {
-                    Record = new ContentItemRecord();
-                }
-
-                Record.Parts.Add(part);
-            }
-
-            part.ContentItem = this;
-
+        public void Weld(ContentPart part)
+        {
+            Parts.Add(part.GetType().Name, part);
         }
     }
 }

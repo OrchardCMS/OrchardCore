@@ -23,7 +23,7 @@ namespace Orchard.ContentManagement {
         /// </summary>
         [HiddenInput(DisplayValue = false)]
         [IgnoreDataMember]
-        public int Id => ContentItem.Id;
+        public int ContentItemId => ContentItem.ContentItemId;
 
         public SettingsDictionary Settings { get; set; }
 
