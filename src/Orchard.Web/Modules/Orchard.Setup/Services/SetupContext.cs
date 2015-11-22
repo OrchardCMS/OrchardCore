@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Setup.Services {
-    public class SetupContext {
+namespace Orchard.Setup.Services
+{
+    public class SetupContext
+    {
         public string SiteName { get; set; }
         public string AdminUsername { get; set; }
         public string AdminPassword { get; set; }

@@ -7,8 +7,10 @@ using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace Orchard.Environment.Extensions.Loaders {
-    public class CoreExtensionLoader : IExtensionLoader {
+namespace Orchard.Environment.Extensions.Loaders
+{
+    public class CoreExtensionLoader : IExtensionLoader
+    {
         private const string CoreAssemblyName = "Orchard.Core";
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IAssemblyLoaderContainer _loaderContainer;
@@ -19,8 +21,8 @@ namespace Orchard.Environment.Extensions.Loaders {
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,
-            ILoggerFactory loggerFactory) {
-
+            ILoggerFactory loggerFactory)
+        {
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
@@ -31,30 +33,36 @@ namespace Orchard.Environment.Extensions.Loaders {
 
         public int Order => 10;
 
-        public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
+        public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
+        {
         }
 
-        public void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension) {
+        public void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
+        {
         }
 
-        public bool IsCompatibleWithModuleReferences(ExtensionDescriptor extension, IEnumerable<ExtensionProbeEntry> references) {
+        public bool IsCompatibleWithModuleReferences(ExtensionDescriptor extension, IEnumerable<ExtensionProbeEntry> references)
+        {
             return true;
         }
 
-        public ExtensionEntry Load(ExtensionDescriptor descriptor) {
-
-            if (!descriptor.Location.StartsWith("~/Core/")) {
+        public ExtensionEntry Load(ExtensionDescriptor descriptor)
+        {
+            if (!descriptor.Location.StartsWith("~/Core/"))
+            {
                 return null;
             }
 
-            var plocation = _hostEnvironment.MapPath("~/Core"); 
+            var plocation = _hostEnvironment.MapPath("~/Core");
 
-            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation))) {
+            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation)))
+            {
                 var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
                 _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
 
-                return new ExtensionEntry {
+                return new ExtensionEntry
+                {
                     Descriptor = descriptor,
                     Assembly = assembly,
                     ExportedTypes = assembly.ExportedTypes.Where(x => IsTypeFromModule(x, descriptor))
@@ -62,16 +70,20 @@ namespace Orchard.Environment.Extensions.Loaders {
             }
         }
 
-        public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor) {
+        public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
+        {
             return null;
         }
 
-        public void ReferenceActivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry) {
+        public void ReferenceActivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
+        {
         }
 
-        public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry) {
+        public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
+        {
         }
-        private static bool IsTypeFromModule(Type type, ExtensionDescriptor descriptor) {
+        private static bool IsTypeFromModule(Type type, ExtensionDescriptor descriptor)
+        {
             return (type.Namespace + ".").StartsWith(CoreAssemblyName + "." + descriptor.Id + ".");
         }
     }

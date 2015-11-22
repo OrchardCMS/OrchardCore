@@ -11,8 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Orchard.Hosting {
-    public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler {
+namespace Orchard.Hosting
+{
+    public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler
+    {
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
@@ -22,27 +24,33 @@ namespace Orchard.Hosting {
         private ConcurrentDictionary<string, ShellContext> _shellContexts;
 
         public DefaultOrchardHost(
-            IShellSettingsManager shellSettingsManager, 
+            IShellSettingsManager shellSettingsManager,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
             _logger = loggerFactory.CreateLogger<DefaultOrchardHost>();
         }
 
-        void IOrchardHost.Initialize() {
+        void IOrchardHost.Initialize()
+        {
             BuildCurrent();
         }
 
         /// <summary>
         /// Ensures shells are activated, or re-activated if extensions have changed
         /// </summary>
-        IDictionary<string, ShellContext> BuildCurrent() {
-            if (_shellContexts == null) {
-                lock (this) {
-                    if (_shellContexts == null) {
+        IDictionary<string, ShellContext> BuildCurrent()
+        {
+            if (_shellContexts == null)
+            {
+                lock (this)
+                {
+                    if (_shellContexts == null)
+                    {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
                         CreateAndActivateShells();
                     }
@@ -68,7 +76,8 @@ namespace Orchard.Hosting {
             ActivateShell(context);
         }
 
-        void CreateAndActivateShells() {
+        void CreateAndActivateShells()
+        {
             _logger.LogInformation("Start creation of shells");
 
             // Is there any tenant right now?
@@ -77,14 +86,19 @@ namespace Orchard.Hosting {
                 .ToArray();
 
             // Load all tenants, and activate their shell.
-            if (allSettings.Any()) {
-                Parallel.ForEach(allSettings, settings => {
-                    try {
+            if (allSettings.Any())
+            {
+                Parallel.ForEach(allSettings, settings =>
+                {
+                    try
+                    {
                         var context = CreateShellContext(settings);
                         ActivateShell(context);
                     }
-                    catch (Exception ex) {
-                        if (ex.IsFatal()) {
+                    catch (Exception ex)
+                    {
+                        if (ex.IsFatal())
+                        {
                             throw;
                         }
                         _logger.LogError(string.Format("A tenant could not be started: {0}", settings.Name), ex);
@@ -92,7 +106,8 @@ namespace Orchard.Hosting {
                 });
             }
             // No settings, run the Setup.
-            else {
+            else
+            {
                 var setupContext = CreateSetupContext();
                 ActivateShell(setupContext);
             }
@@ -103,7 +118,8 @@ namespace Orchard.Hosting {
         /// <summary>
         /// Registers the shell settings in RunningShellTable
         /// </summary>
-        private void ActivateShell(ShellContext context) {
+        private void ActivateShell(ShellContext context)
+        {
             _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
 
             lock (_shellContexts)
@@ -114,12 +130,14 @@ namespace Orchard.Hosting {
             _runningShellTable.Add(context.Settings);
         }
 
-        
+
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
-        public ShellContext CreateShellContext(ShellSettings settings) {
-            if (settings.State == TenantState.Uninitialized) {
+        public ShellContext CreateShellContext(ShellSettings settings)
+        {
+            if (settings.State == TenantState.Uninitialized)
+            {
                 _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
                 return _shellContextFactory.CreateSetupContext(settings);
             }
@@ -136,11 +154,12 @@ namespace Orchard.Hosting {
             _logger.LogDebug("Creating shell context for root setup.");
             return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
         }
-        
+
         /// <summary>
         /// A feature is enabled/disabled, the tenant needs to be restarted
         /// </summary>
-        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant) {
+        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        {
             _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
         }
     }

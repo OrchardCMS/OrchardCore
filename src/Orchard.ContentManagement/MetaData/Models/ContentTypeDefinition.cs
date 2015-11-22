@@ -2,16 +2,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Orchard.ContentManagement.MetaData.Models {
-    public class ContentTypeDefinition {
-        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, SettingsDictionary settings) {
+namespace Orchard.ContentManagement.MetaData.Models
+{
+    public class ContentTypeDefinition
+    {
+        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, SettingsDictionary settings)
+        {
             Name = name;
             DisplayName = displayName;
             Parts = parts.ToList();
             Settings = settings;
         }
 
-        public ContentTypeDefinition(string name, string displayName) {
+        public ContentTypeDefinition(string name, string displayName)
+        {
             Name = name;
             DisplayName = displayName;
             Parts = Enumerable.Empty<ContentTypePartDefinition>();

@@ -1,7 +1,8 @@
 ﻿using Orchard.Environment.Commands;
 using System.IO;
 
-namespace Orchard.Hosting.HostContext {
+namespace Orchard.Hosting.HostContext
+{
     public class CommandHostContext
     {
         public CommandReturnCodes StartSessionResult { get; set; }

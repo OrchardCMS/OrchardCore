@@ -9,11 +9,14 @@ using Orchard.Environment.Shell.Builders;
 using System.Reflection;
 using Orchard.DependencyInjection;
 
-namespace Orchard.Hosting.Extensions {
-    public static class LoggerFactoryExtensions {
+namespace Orchard.Hosting.Extensions
+{
+    public static class LoggerFactoryExtensions
+    {
         public static ILoggerFactory AddOrchardLogging(
-            this ILoggerFactory loggingFactory, 
-            IServiceProvider serviceProvider) {
+            this ILoggerFactory loggingFactory,
+            IServiceProvider serviceProvider)
+        {
             /* TODO (ngm): Abstract this logger stuff outta here! */
             var loader = serviceProvider.GetRequiredService<IExtensionLoader>();
             var manager = serviceProvider.GetRequiredService<IExtensionManager>();
@@ -26,11 +29,13 @@ namespace Orchard.Hosting.Extensions {
                 .Where(et => typeof(ILoggingInitiator).IsAssignableFrom(et));
 
             IServiceCollection loggerCollection = new ServiceCollection();
-            foreach (var initiatorType in loggingInitiatorTypes) {
+            foreach (var initiatorType in loggingInitiatorTypes)
+            {
                 loggerCollection.AddScoped(typeof(ILoggingInitiator), initiatorType);
             }
             var moduleServiceProvider = serviceProvider.CreateChildContainer(loggerCollection).BuildServiceProvider();
-            foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>()) {
+            foreach (var service in moduleServiceProvider.GetServices<ILoggingInitiator>())
+            {
                 service.Initialize(loggingFactory);
             }
 

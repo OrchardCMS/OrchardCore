@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Environment.Extensions.Models {
-    public class ExtensionDescriptor {
+namespace Orchard.Environment.Extensions.Models
+{
+    public class ExtensionDescriptor
+    {
         /// <summary>
         /// Virtual path base, "~/Themes", "~/Modules", or "~/Core"
         /// </summary>
@@ -16,7 +18,7 @@ namespace Orchard.Environment.Extensions.Models {
         /// The extension type.
         /// </summary>
         public string ExtensionType { get; set; }
-        
+
         // extension metadata
         public string Name { get; set; }
         public string Path { get; set; }

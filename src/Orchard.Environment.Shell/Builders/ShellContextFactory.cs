@@ -6,8 +6,10 @@ using Orchard.Hosting.ShellBuilders;
 using Orchard.Environment.Shell.Descriptor.Models;
 using System.Collections.Generic;
 
-namespace Orchard.Environment.Shell.Builders {
-    public class ShellContextFactory : IShellContextFactory {
+namespace Orchard.Environment.Shell.Builders
+{
+    public class ShellContextFactory : IShellContextFactory
+    {
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly ILogger _logger;
@@ -15,22 +17,26 @@ namespace Orchard.Environment.Shell.Builders {
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
             _logger = loggerFactory.CreateLogger<ShellContextFactory>();
         }
 
         ShellContext IShellContextFactory.CreateShellContext(
-            ShellSettings settings) {
+            ShellSettings settings)
+        {
             var sw = Stopwatch.StartNew();
             _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
 
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            try {
-                var shellcontext = new ShellContext {
+            try
+            {
+                var shellcontext = new ShellContext
+                {
                     Settings = settings,
                     Blueprint = blueprint,
                     ServiceProvider = provider,
@@ -41,14 +47,17 @@ namespace Orchard.Environment.Shell.Builders {
 
                 return shellcontext;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError("Cannot create shell context", ex);
                 throw;
             }
         }
 
-        private static ShellDescriptor MinimumShellDescriptor() {
-            return new ShellDescriptor {
+        private static ShellDescriptor MinimumShellDescriptor()
+        {
+            return new ShellDescriptor
+            {
                 SerialNumber = -1,
                 Features = new[] {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
@@ -60,10 +69,12 @@ namespace Orchard.Environment.Shell.Builders {
             };
         }
 
-        ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings) {
+        ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
+        {
             _logger.LogDebug("No shell settings available. Creating shell context for setup");
 
-            var descriptor = new ShellDescriptor {
+            var descriptor = new ShellDescriptor
+            {
                 SerialNumber = -1,
                 Features = new[] {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
@@ -74,7 +85,8 @@ namespace Orchard.Environment.Shell.Builders {
             var blueprint = _compositionStrategy.Compose(settings, descriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            return new ShellContext {
+            return new ShellContext
+            {
                 Settings = settings,
                 Blueprint = blueprint,
                 ServiceProvider = provider,

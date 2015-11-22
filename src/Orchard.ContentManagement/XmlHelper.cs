@@ -7,15 +7,18 @@ using System.Xml.Linq;
 using System.Reflection;
 using Orchard.ContentManagement.Utility;
 
-namespace Orchard.ContentManagement {
-    public static class XmlHelper {
+namespace Orchard.ContentManagement
+{
+    public static class XmlHelper
+    {
         /// <summary>
         /// Like Add, but chainable.
         /// </summary>
         /// <param name="el">The parent element.</param>
         /// <param name="children">The elements to add.</param>
         /// <returns>Itself</returns>
-        public static XElement AddEl(this XElement el, params XElement[] children) {
+        public static XElement AddEl(this XElement el, params XElement[] children)
+        {
             el.Add(children.Cast<object>());
             return el;
         }
@@ -26,7 +29,8 @@ namespace Orchard.ContentManagement {
         /// <param name="el">The element.</param>
         /// <param name="name">The name of the attribute.</param>
         /// <returns>The string value of the attribute if it exists, null otherwise.</returns>
-        public static string Attr(this XElement el, string name) {
+        public static string Attr(this XElement el, string name)
+        {
             var attr = el.Attribute(name);
             return attr == null ? null : attr.Value;
         }
@@ -38,8 +42,8 @@ namespace Orchard.ContentManagement {
         /// <param name="el">The element.</param>
         /// <param name="name">The name of the attribute.</param>
         /// <returns>The attribute value</returns>
-        public static T Attr<T>(this XElement el, string name) {
-
+        public static T Attr<T>(this XElement el, string name)
+        {
             var attr = el.Attribute(name);
             return attr == null ? default(T) : Parse<T>(attr.Value);
         }
@@ -52,7 +56,8 @@ namespace Orchard.ContentManagement {
         /// <param name="name">The attribute name.</param>
         /// <param name="value">The value to set.</param>
         /// <returns>Itself</returns>
-        public static XElement Attr<T>(this XElement el, string name, T value) {
+        public static XElement Attr<T>(this XElement el, string name, T value)
+        {
             el.SetAttributeValue(name, ToString(value));
             return el;
         }
@@ -63,7 +68,8 @@ namespace Orchard.ContentManagement {
         /// <param name="el">The parent element.</param>
         /// <param name="name">The name of the child element.</param>
         /// <returns>The text for the child element, and null if it doesn't exist.</returns>
-        public static string El(this XElement el, string name) {
+        public static string El(this XElement el, string name)
+        {
             var childElement = el.Element(name);
             return childElement == null ? null : childElement.Value;
         }
@@ -76,7 +82,8 @@ namespace Orchard.ContentManagement {
         /// <param name="name">The name of the child element.</param>
         /// <param name="value">The value to set.</param>
         /// <returns>Itself</returns>
-        public static XElement El<T>(this XElement el, string name, T value) {
+        public static XElement El<T>(this XElement el, string name, T value)
+        {
             el.SetElementValue(name, value);
             return el;
         }
@@ -91,8 +98,8 @@ namespace Orchard.ContentManagement {
         /// <param name="targetExpression">The property expression.</param>
         /// <returns>Itself</returns>
         public static XElement FromAttr<TTarget, TProperty>(this XElement el, TTarget target,
-            Expression<Func<TTarget, TProperty>> targetExpression) {
-
+            Expression<Func<TTarget, TProperty>> targetExpression)
+        {
             if (target == null) return el;
             var propertyInfo = ReflectionHelper<TTarget>.GetPropertyInfo(targetExpression);
             var name = propertyInfo.Name;
@@ -113,8 +120,8 @@ namespace Orchard.ContentManagement {
         /// <param name="targetExpression">The property expression.</param>
         /// <returns>Itself</returns>
         public static XElement ToAttr<TTarget, TProperty>(this XElement el, TTarget target,
-            Expression<Func<TTarget, TProperty>> targetExpression) {
-
+            Expression<Func<TTarget, TProperty>> targetExpression)
+        {
             if (target == null) return el;
             var propertyInfo = ReflectionHelper<TTarget>.GetPropertyInfo(targetExpression);
             var name = propertyInfo.Name;
@@ -130,7 +137,8 @@ namespace Orchard.ContentManagement {
         /// <typeparam name="TValue">The type to parse the element as.</typeparam>
         /// <param name="el">The element.</param>
         /// <returns>The value of the element as type TValue.</returns>
-        public static TValue Val<TValue>(this XElement el) {
+        public static TValue Val<TValue>(this XElement el)
+        {
             return Parse<TValue>(el.Value);
         }
 
@@ -141,7 +149,8 @@ namespace Orchard.ContentManagement {
         /// <param name="el">The element.</param>
         /// <param name="value">The value.</param>
         /// <returns>The element.</returns>
-        public static XElement Val<TValue>(this XElement el, TValue value) {
+        public static XElement Val<TValue>(this XElement el, TValue value)
+        {
             el.SetValue(ToString(value));
             return el;
         }
@@ -152,70 +161,79 @@ namespace Orchard.ContentManagement {
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns>The string representation of the value.</returns>
-        public static string ToString<T>(T value) {
+        public static string ToString<T>(T value)
+        {
             var type = typeof(T);
-            if (type == typeof(string)) {
+            if (type == typeof(string))
+            {
                 return Convert.ToString(value);
             }
             if ((!type.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(type) != null) &&
-                value == null && 
-                type != typeof(string)) {
-
+                value == null &&
+                type != typeof(string))
+            {
                 return "null";
             }
 
-            if (type == typeof(DateTime) || type == typeof(DateTime?)) {
+            if (type == typeof(DateTime) || type == typeof(DateTime?))
+            {
                 return XmlConvert.ToString(Convert.ToDateTime(value),
                     XmlDateTimeSerializationMode.Utc);
             }
 
             if (type == typeof(bool) ||
-                type == typeof(bool?)) {
+                type == typeof(bool?))
+            {
                 return Convert.ToBoolean(value) ? "true" : "false";
             }
 
             if (type == typeof(int) ||
                 type == typeof(int?) ||
                 type == typeof(long) ||
-                type == typeof(long?)) {
-
+                type == typeof(long?))
+            {
                 return Convert.ToInt64(value).ToString(CultureInfo.InvariantCulture);
             }
 
             if (type == typeof(double) ||
-                type == typeof(double?)) {
-
+                type == typeof(double?))
+            {
                 var doubleValue = (double)(object)value;
-                if (double.IsPositiveInfinity(doubleValue)) {
+                if (double.IsPositiveInfinity(doubleValue))
+                {
                     return "infinity";
                 }
-                if (double.IsNegativeInfinity(doubleValue)) {
+                if (double.IsNegativeInfinity(doubleValue))
+                {
                     return "-infinity";
                 }
                 return doubleValue.ToString(CultureInfo.InvariantCulture);
             }
 
             if (type == typeof(float) ||
-                type == typeof(float?)) {
-
+                type == typeof(float?))
+            {
                 var floatValue = (float)(object)value;
-                if (float.IsPositiveInfinity(floatValue)) {
+                if (float.IsPositiveInfinity(floatValue))
+                {
                     return "infinity";
                 }
-                if (float.IsNegativeInfinity(floatValue)) {
+                if (float.IsNegativeInfinity(floatValue))
+                {
                     return "-infinity";
                 }
                 return floatValue.ToString(CultureInfo.InvariantCulture);
             }
 
             if (type == typeof(decimal) ||
-                type == typeof(decimal?)) {
-
+                type == typeof(decimal?))
+            {
                 var decimalValue = Convert.ToDecimal(value);
                 return decimalValue.ToString(CultureInfo.InvariantCulture);
             }
 
-            if (type.GetTypeInfo().IsEnum) {
+            if (type.GetTypeInfo().IsEnum)
+            {
                 return value.ToString();
             }
 
@@ -228,52 +246,64 @@ namespace Orchard.ContentManagement {
         /// <typeparam name="T">The destination type</typeparam>
         /// <param name="value">The string representation of the value to parse.</param>
         /// <returns>The parsed value with type T.</returns>
-        public static T Parse<T>(string value) {
+        public static T Parse<T>(string value)
+        {
             var type = typeof(T);
 
-            if (type == typeof(string)) {
+            if (type == typeof(string))
+            {
                 return (T)(object)value;
             }
             if (value == null ||
                 "null".Equals(value, StringComparison.Ordinal) &&
-                ((!type.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(type) != null))) {
-
+                ((!type.GetTypeInfo().IsValueType || Nullable.GetUnderlyingType(type) != null)))
+            {
                 return default(T);
             }
 
-            if ("infinity".Equals(value, StringComparison.Ordinal)) {
+            if ("infinity".Equals(value, StringComparison.Ordinal))
+            {
                 if (type == typeof(float) || type == typeof(float?)) return (T)(object)float.PositiveInfinity;
                 if (type == typeof(double) || type == typeof(double?)) return (T)(object)double.PositiveInfinity;
                 throw new NotSupportedException(string.Format("Infinity not supported for type {0}", type.Name));
             }
-            if ("-infinity".Equals(value, StringComparison.Ordinal)) {
+            if ("-infinity".Equals(value, StringComparison.Ordinal))
+            {
                 if (type == typeof(float)) return (T)(object)float.NegativeInfinity;
                 if (type == typeof(double)) return (T)(object)double.NegativeInfinity;
                 throw new NotSupportedException(string.Format("Infinity not supported for type {0}", type.Name));
             }
-            if (type == typeof(int) || type == typeof(int?)) {
+            if (type == typeof(int) || type == typeof(int?))
+            {
                 return (T)(object)int.Parse(value, CultureInfo.InvariantCulture);
             }
-            if (type == typeof(long) || type == typeof(long?)) {
+            if (type == typeof(long) || type == typeof(long?))
+            {
                 return (T)(object)long.Parse(value, CultureInfo.InvariantCulture);
             }
-            if (type == typeof(bool) || type == typeof(bool?)) {
+            if (type == typeof(bool) || type == typeof(bool?))
+            {
                 return (T)(object)value.Equals("true", StringComparison.Ordinal);
             }
-            if (type == typeof(DateTime) || type == typeof(DateTime?)) {
+            if (type == typeof(DateTime) || type == typeof(DateTime?))
+            {
                 return (T)(object)XmlConvert.ToDateTime(value, XmlDateTimeSerializationMode.Utc);
             }
-            if (type == typeof(double) || type == typeof(double?)) {
+            if (type == typeof(double) || type == typeof(double?))
+            {
                 return (T)(object)double.Parse(value, CultureInfo.InvariantCulture);
             }
-            if (type == typeof(float) || type == typeof(float?)) {
+            if (type == typeof(float) || type == typeof(float?))
+            {
                 return (T)(object)float.Parse(value, CultureInfo.InvariantCulture);
             }
-            if (type == typeof(decimal) || type == typeof(decimal?)) {
+            if (type == typeof(decimal) || type == typeof(decimal?))
+            {
                 return (T)(object)decimal.Parse(value, CultureInfo.InvariantCulture);
             }
 
-            if (type.GetTypeInfo().IsEnum) {
+            if (type.GetTypeInfo().IsEnum)
+            {
                 return (T)Enum.Parse(type, value);
             }
 
@@ -287,7 +317,8 @@ namespace Orchard.ContentManagement {
         /// <param name="el">The element.</param>
         /// <param name="context">The context.</param>
         /// <returns>The element with context.</returns>
-        public static XElementWithContext<TContext> With<TContext>(this XElement el, TContext context) {
+        public static XElementWithContext<TContext> With<TContext>(this XElement el, TContext context)
+        {
             return new XElementWithContext<TContext>(el, context);
         }
 
@@ -296,8 +327,10 @@ namespace Orchard.ContentManagement {
         /// of an XElement.
         /// </summary>
         /// <typeparam name="TContext">The type of the context.</typeparam>
-        public class XElementWithContext<TContext> {
-            public XElementWithContext(XElement element, TContext context) {
+        public class XElementWithContext<TContext>
+        {
+            public XElementWithContext(XElement element, TContext context)
+            {
                 Element = element;
                 Context = context;
             }
@@ -305,7 +338,8 @@ namespace Orchard.ContentManagement {
             public XElement Element { get; private set; }
             public TContext Context { get; private set; }
 
-            public static implicit operator XElement(XElementWithContext<TContext> elementWithContext) {
+            public static implicit operator XElement(XElementWithContext<TContext> elementWithContext)
+            {
                 return elementWithContext.Element;
             }
 
@@ -315,7 +349,8 @@ namespace Orchard.ContentManagement {
             /// <typeparam name="TNewContext">The type of the new context.</typeparam>
             /// <param name="context">The new context.</param>
             /// <returns>A new XElementWithContext, that has the new context.</returns>
-            public XElementWithContext<TNewContext> With<TNewContext>(TNewContext context) {
+            public XElementWithContext<TNewContext> With<TNewContext>(TNewContext context)
+            {
                 return new XElementWithContext<TNewContext>(Element, context);
             }
 
@@ -326,7 +361,8 @@ namespace Orchard.ContentManagement {
             /// <param name="targetExpression">The property expression.</param>
             /// <returns>Itself</returns>
             public XElementWithContext<TContext> ToAttr<TProperty>(
-                Expression<Func<TContext, TProperty>> targetExpression) {
+                Expression<Func<TContext, TProperty>> targetExpression)
+            {
                 Element.ToAttr(Context, targetExpression);
                 return this;
             }
@@ -338,7 +374,8 @@ namespace Orchard.ContentManagement {
             /// <param name="targetExpression">The property expression.</param>
             /// <returns>Itself</returns>
             public XElementWithContext<TContext> FromAttr<TProperty>(
-                Expression<Func<TContext, TProperty>> targetExpression) {
+                Expression<Func<TContext, TProperty>> targetExpression)
+            {
                 Element.FromAttr(Context, targetExpression);
                 return this;
             }
@@ -350,7 +387,8 @@ namespace Orchard.ContentManagement {
             /// <typeparam name="TProperty">The type of the property.</typeparam>
             /// <param name="expression">The property expression.</param>
             /// <returns>The attribute, ready to be cast.</returns>
-            public TProperty Attr<TProperty>(Expression<Func<TContext, TProperty>> expression) {
+            public TProperty Attr<TProperty>(Expression<Func<TContext, TProperty>> expression)
+            {
                 var propertyInfo = ReflectionHelper<TContext>.GetPropertyInfo(expression);
                 var name = propertyInfo.Name;
                 return Element.Attr<TProperty>(name);

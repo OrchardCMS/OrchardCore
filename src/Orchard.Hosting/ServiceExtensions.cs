@@ -5,19 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Orchard.Hosting {
+namespace Orchard.Hosting
+{
     public static class ServiceExtensions
     {
-        internal static IServiceCollection AddFallback(this IServiceCollection services) {
-
+        internal static IServiceCollection AddFallback(this IServiceCollection services)
+        {
             services.AddInstance<IRuntimeServices>(new ServiceManifest(services));
 
             return services;
         }
-        
-        private class ServiceManifest : IRuntimeServices {
-            public ServiceManifest(IServiceCollection fallback) {
 
+        private class ServiceManifest : IRuntimeServices
+        {
+            public ServiceManifest(IServiceCollection fallback)
+            {
                 var manifestTypes = fallback.Where(t => t.ServiceType.GetTypeInfo().GenericTypeParameters.Length == 0
                         && t.ServiceType != typeof(IRuntimeServices)
                         && t.ServiceType != typeof(IServiceProvider))

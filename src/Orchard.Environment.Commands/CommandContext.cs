@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Orchard.Environment.Commands {
-    public class CommandContext {
+namespace Orchard.Environment.Commands
+{
+    public class CommandContext
+    {
         public TextReader Input { get; set; }
         public TextWriter Output { get; set; }
 

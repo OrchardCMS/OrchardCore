@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Orchard.Data.Migration
 {
     /// <summary>
-    /// Registers to OrchardShell.Activated in order to run migrations automatically 
+    /// Registers to OrchardShell.Activated in order to run migrations automatically
     /// </summary>
     public class AutomaticDataMigrations : IOrchardShellEvents
     {
@@ -22,7 +22,6 @@ namespace Orchard.Data.Migration
             ShellSettings shellSettings,
             ILoggerFactory loggerFactory)
         {
-
             _dataMigrationManager = dataMigrationManager;
             _featureManager = featureManager;
             _shellSettings = shellSettings;

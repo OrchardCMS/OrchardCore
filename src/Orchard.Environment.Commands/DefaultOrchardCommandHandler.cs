@@ -5,45 +5,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Orchard.Environment.Commands {
-    public abstract class DefaultOrchardCommandHandler : ICommandHandler {
-        protected DefaultOrchardCommandHandler() {
+namespace Orchard.Environment.Commands
+{
+    public abstract class DefaultOrchardCommandHandler : ICommandHandler
+    {
+        protected DefaultOrchardCommandHandler()
+        {
             T = NullLocalizer.Instance;
         }
 
         public Localizer T { get; set; }
         public CommandContext Context { get; set; }
 
-        public void Execute(CommandContext context) {
+        public void Execute(CommandContext context)
+        {
             SetSwitchValues(context);
             Invoke(context);
         }
 
-        private void SetSwitchValues(CommandContext context) {
-            if (context.Switches != null && context.Switches.Any()) {
-                foreach (var commandSwitch in context.Switches) {
+        private void SetSwitchValues(CommandContext context)
+        {
+            if (context.Switches != null && context.Switches.Any())
+            {
+                foreach (var commandSwitch in context.Switches)
+                {
                     SetSwitchValue(commandSwitch);
                 }
             }
         }
 
-        private void SetSwitchValue(KeyValuePair<string, string> commandSwitch) {
+        private void SetSwitchValue(KeyValuePair<string, string> commandSwitch)
+        {
             // Find the property
             PropertyInfo propertyInfo = GetType().GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
-            if (propertyInfo == null) {
+            if (propertyInfo == null)
+            {
                 throw new InvalidOperationException(T("Switch \"{0}\" was not found", commandSwitch.Key));
             }
-            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any()) {
+            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
+            {
                 throw new InvalidOperationException(T("A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name));
             }
 
             // Set the value
-            try {
+            try
+            {
                 object value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
                 propertyInfo.SetValue(this, value, null /*index*/);
             }
-            catch (Exception ex) {
-                if (ex.IsFatal()) {
+            catch (Exception ex)
+            {
+                if (ex.IsFatal())
+                {
                     throw;
                 }
 
@@ -57,12 +70,14 @@ namespace Orchard.Environment.Commands {
         }
 
 
-        private void Invoke(CommandContext context) {
+        private void Invoke(CommandContext context)
+        {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
             var arguments = (context.Arguments ?? Enumerable.Empty<string>()).ToArray();
             object[] invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments);
-            if (invokeParameters == null) {
+            if (invokeParameters == null)
+            {
                 throw new InvalidOperationException(T("Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)).ToString());
             }
 
@@ -72,19 +87,22 @@ namespace Orchard.Environment.Commands {
                 context.Output.Write(result);
         }
 
-        private static object[] GetInvokeParametersForMethod(MethodInfo methodInfo, IList<string> arguments) {
+        private static object[] GetInvokeParametersForMethod(MethodInfo methodInfo, IList<string> arguments)
+        {
             var invokeParameters = new List<object>();
             var args = new List<string>(arguments);
             var methodParameters = methodInfo.GetParameters();
             bool methodHasParams = false;
 
-            if (methodParameters.Length == 0) {
+            if (methodParameters.Length == 0)
+            {
                 if (args.Count == 0)
                     return invokeParameters.ToArray();
                 return null;
             }
 
-            if (methodParameters[methodParameters.Length - 1].ParameterType.IsAssignableFrom(typeof(string[]))) {
+            if (methodParameters[methodParameters.Length - 1].ParameterType.IsAssignableFrom(typeof(string[])))
+            {
                 methodHasParams = true;
             }
 
@@ -93,54 +111,67 @@ namespace Orchard.Environment.Commands {
             if (!methodHasParams && args.Count < requiredMethodParameters.Length) return null;
             if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
 
-            for (int i = 0; i < methodParameters.Length; i++) {
-                if (methodParameters[i].ParameterType.IsAssignableFrom(typeof(string[]))) {
+            for (int i = 0; i < methodParameters.Length; i++)
+            {
+                if (methodParameters[i].ParameterType.IsAssignableFrom(typeof(string[])))
+                {
                     invokeParameters.Add(args.GetRange(i, args.Count - i).ToArray());
                     break;
                 }
 
-                if (i < arguments.Count) {
+                if (i < arguments.Count)
+                {
                     var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
                     if (val == null) return null;
 
                     invokeParameters.Add(val);
                 }
-                else {
+                else
+                {
                     invokeParameters.Add(methodParameters[i].DefaultValue);
                 }
             }
 
-            if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] {});
+            if (methodHasParams && (methodParameters.Length - args.Count == 1)) invokeParameters.Add(new string[] { });
 
             return invokeParameters.ToArray();
         }
 
-        private void CheckMethodForSwitches(MethodInfo methodInfo, IDictionary<string, string> switches) {
+        private void CheckMethodForSwitches(MethodInfo methodInfo, IDictionary<string, string> switches)
+        {
             if (switches == null || switches.Count == 0)
                 return;
 
             var supportedSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (OrchardSwitchesAttribute switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false)) {
+            foreach (OrchardSwitchesAttribute switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false))
+            {
                 supportedSwitches.UnionWith(switchesAttribute.Switches);
             }
 
-            foreach (var commandSwitch in switches.Keys) {
-                if (!supportedSwitches.Contains(commandSwitch)) {
+            foreach (var commandSwitch in switches.Keys)
+            {
+                if (!supportedSwitches.Contains(commandSwitch))
+                {
                     throw new InvalidOperationException(T("Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch).ToString());
                 }
             }
         }
 
-        private static object ConvertToType(Type type, string value) {
-            if (type.GetTypeInfo().IsEnum) {
-                try {
+        private static object ConvertToType(Type type, string value)
+        {
+            if (type.GetTypeInfo().IsEnum)
+            {
+                try
+                {
                     return Enum.Parse(type, value, true);
                 }
-                catch (ArgumentException) {
+                catch (ArgumentException)
+                {
                     return null;
                 }
             }
-            else {
+            else
+            {
                 return Convert.ChangeType(value, type);
             }
         }

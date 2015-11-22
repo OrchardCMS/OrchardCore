@@ -12,20 +12,23 @@ using System.Reflection;
 
 namespace Orchard.Environment.Shell.Builders
 {
-    public class CompositionStrategy : ICompositionStrategy {
+    public class CompositionStrategy : ICompositionStrategy
+    {
         private readonly IExtensionManager _extensionManager;
         private readonly ILibraryManager _libraryManager;
         private readonly ILogger _logger;
 
         public CompositionStrategy(IExtensionManager extensionManager,
             ILibraryManager libraryManager,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _extensionManager = extensionManager;
             _libraryManager = libraryManager;
             _logger = loggerFactory.CreateLogger<CompositionStrategy>();
         }
 
-        public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor) {
+        public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor)
+        {
             _logger.LogDebug("Composing blueprint");
 
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
@@ -40,7 +43,8 @@ namespace Orchard.Environment.Shell.Builders
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor),
                 excludedTypes);
 
-            var result = new ShellBlueprint {
+            var result = new ShellBlueprint
+            {
                 Settings = settings,
                 Descriptor = descriptor,
                 Dependencies = dependencies.Concat(modules).ToArray()
@@ -50,15 +54,19 @@ namespace Orchard.Environment.Shell.Builders
             return result;
         }
 
-        private static IEnumerable<string> GetExcludedTypes(IEnumerable<Feature> features) {
+        private static IEnumerable<string> GetExcludedTypes(IEnumerable<Feature> features)
+        {
             var excludedTypes = new HashSet<string>();
 
             // Identify replaced types
-            foreach (Feature feature in features) {
-                foreach (Type type in feature.ExportedTypes) {
+            foreach (Feature feature in features)
+            {
+                foreach (Type type in feature.ExportedTypes)
+                {
                     foreach (
                         OrchardSuppressDependencyAttribute replacedType in
-                            type.GetTypeInfo().GetCustomAttributes(typeof (OrchardSuppressDependencyAttribute), false)) {
+                            type.GetTypeInfo().GetCustomAttributes(typeof(OrchardSuppressDependencyAttribute), false))
+                    {
                         excludedTypes.Add(replacedType.FullName);
                     }
                 }
@@ -67,17 +75,22 @@ namespace Orchard.Environment.Shell.Builders
             return excludedTypes;
         }
 
-        private IEnumerable<Feature> BuiltinFeatures() {
+        private IEnumerable<Feature> BuiltinFeatures()
+        {
             var additionalLibraries = _libraryManager
                 .GetLibraries()
                 .Where(x => x.Name.StartsWith("Orchard"))
                 .Select(x => Assembly.Load(new AssemblyName(x.Name)));
 
-            foreach (var additonalLib in additionalLibraries) {
-                yield return new Feature {
-                    Descriptor = new FeatureDescriptor {
+            foreach (var additonalLib in additionalLibraries)
+            {
+                yield return new Feature
+                {
+                    Descriptor = new FeatureDescriptor
+                    {
                         Id = additonalLib.GetName().Name,
-                        Extension = new ExtensionDescriptor {
+                        Extension = new ExtensionDescriptor
+                        {
                             Id = additonalLib.GetName().Name
                         }
                     },
@@ -88,15 +101,14 @@ namespace Orchard.Environment.Shell.Builders
                             .ToArray()
                 };
             }
-
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
             IEnumerable<Feature> features,
             Func<Type, bool> predicate,
             Func<Type, Feature, T> selector,
-            IEnumerable<string> excludedTypes) {
-
+            IEnumerable<string> excludedTypes)
+        {
             // Load types excluding the replaced types
             return features.SelectMany(
                 feature => feature.ExportedTypes
@@ -105,13 +117,16 @@ namespace Orchard.Environment.Shell.Builders
                     .Select(type => selector(type, feature)))
                 .ToArray();
         }
-        
-        private static bool IsModule(Type type) {
-            return typeof (IModule).IsAssignableFrom(type);
+
+        private static bool IsModule(Type type)
+        {
+            return typeof(IModule).IsAssignableFrom(type);
         }
 
-        private static DependencyBlueprint BuildModule(Type type, Feature feature) {
-            return new DependencyBlueprint {
+        private static DependencyBlueprint BuildModule(Type type, Feature feature)
+        {
+            return new DependencyBlueprint
+            {
                 Type = type,
                 Feature = feature,
                 Parameters = Enumerable.Empty<ShellParameter>()
@@ -123,8 +138,10 @@ namespace Orchard.Environment.Shell.Builders
             return typeof(IDependency).IsAssignableFrom(type);
         }
 
-        private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor) {
-            return new DependencyBlueprint {
+        private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor)
+        {
+            return new DependencyBlueprint
+            {
                 Type = type,
                 Feature = feature,
                 Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()

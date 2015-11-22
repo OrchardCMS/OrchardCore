@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using Orchard.Hosting.Web.Routing.Routes;
 
-namespace Orchard.Demo {
-    public class Routes : IRouteProvider {
-        public IEnumerable<RouteDescriptor> GetRoutes() {
+namespace Orchard.Demo
+{
+    public class Routes : IRouteProvider
+    {
+        public IEnumerable<RouteDescriptor> GetRoutes()
+        {
             return new[] {
             new RouteDescriptor {
                     Route = new Route(

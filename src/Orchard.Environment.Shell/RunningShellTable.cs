@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Orchard.Environment.Shell {
-    public class RunningShellTable : IRunningShellTable {
+namespace Orchard.Environment.Shell
+{
+    public class RunningShellTable : IRunningShellTable
+    {
         private IEnumerable<ShellSettings> _shells = Enumerable.Empty<ShellSettings>();
         private IDictionary<string, IEnumerable<ShellSettings>> _shellsByHost;
         private readonly ConcurrentDictionary<string, ShellSettings> _shellsByHostAndPrefix = new ConcurrentDictionary<string, ShellSettings>(StringComparer.OrdinalIgnoreCase);
@@ -14,9 +16,11 @@ namespace Orchard.Environment.Shell {
         private ShellSettings _fallback;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
-        public void Add(ShellSettings settings) {
+        public void Add(ShellSettings settings)
+        {
             _lock.EnterWriteLock();
-            try {
+            try
+            {
                 _shells = _shells
                     .Where(s => s.Name != settings.Name)
                     .Concat(new[] { settings })
@@ -24,28 +28,34 @@ namespace Orchard.Environment.Shell {
 
                 Organize();
             }
-            finally {
+            finally
+            {
                 _lock.ExitWriteLock();
             }
         }
 
-        public void Remove(ShellSettings settings) {
+        public void Remove(ShellSettings settings)
+        {
             _lock.EnterWriteLock();
-            try {
+            try
+            {
                 _shells = _shells
                     .Where(s => s.Name != settings.Name)
                     .ToArray();
 
                 Organize();
             }
-            finally {
+            finally
+            {
                 _lock.ExitWriteLock();
             }
         }
 
-        public void Update(ShellSettings settings) {
+        public void Update(ShellSettings settings)
+        {
             _lock.EnterWriteLock();
-            try {
+            try
+            {
                 _shells = _shells
                     .Where(s => s.Name != settings.Name)
                     .ToArray();
@@ -56,12 +66,14 @@ namespace Orchard.Environment.Shell {
 
                 Organize();
             }
-            finally {
+            finally
+            {
                 _lock.ExitWriteLock();
             }
         }
 
-        private void Organize() {
+        private void Organize()
+        {
             var qualified =
                 _shells.Where(x => !string.IsNullOrEmpty(x.RequestUrlHost) || !string.IsNullOrEmpty(x.RequestUrlPrefix));
 
@@ -77,17 +89,20 @@ namespace Orchard.Environment.Shell {
                 .OrderByDescending(g => g.Key.Length)
                 .ToDictionary(x => x.Key, x => x.AsEnumerable(), StringComparer.OrdinalIgnoreCase);
 
-            if (unqualified.Count() == 1) {
+            if (unqualified.Count() == 1)
+            {
                 // only one shell had no request url criteria
                 _fallback = unqualified.Single();
             }
-            else if (unqualified.Any()) {
-                // two or more shells had no request criteria. 
+            else if (unqualified.Any())
+            {
+                // two or more shells had no request criteria.
                 // this is technically a misconfiguration - so fallback to the default shell
                 // if it's one which will catch all requests
                 _fallback = unqualified.SingleOrDefault(x => x.Name == ShellHelper.DefaultShellName);
             }
-            else {
+            else
+            {
                 // no shells are unqualified - a request that does not match a shell's spec
                 // will not be mapped to routes coming from orchard
                 _fallback = null;
@@ -96,40 +111,47 @@ namespace Orchard.Environment.Shell {
             _shellsByHostAndPrefix.Clear();
         }
 
-        public ShellSettings Match(string host, string appRelativePath) {
+        public ShellSettings Match(string host, string appRelativePath)
+        {
             _lock.EnterReadLock();
-            try {
-                if (_shellsByHost == null) {
+            try
+            {
+                if (_shellsByHost == null)
+                {
                     return null;
                 }
 
                 // optimized path when only one tenant (Default), configured with no custom host
-                if (!_shellsByHost.Any() && _fallback != null) {
+                if (!_shellsByHost.Any() && _fallback != null)
+                {
                     return _fallback;
                 }
 
                 // removing the port from the host
                 var hostLength = host.IndexOf(':');
-                if (hostLength != -1) {
+                if (hostLength != -1)
+                {
                     host = host.Substring(0, hostLength);
                 }
 
                 string hostAndPrefix = host + "/" + appRelativePath.Split('/')[1];
 
-                return _shellsByHostAndPrefix.GetOrAdd(hostAndPrefix, key => {
-
+                return _shellsByHostAndPrefix.GetOrAdd(hostAndPrefix, key =>
+                {
                     // filtering shells by host
                     IEnumerable<ShellSettings> shells;
 
-                    if (!_shellsByHost.TryGetValue(host, out shells)) {
-                        if (!_shellsByHost.TryGetValue("", out shells)) {
-
+                    if (!_shellsByHost.TryGetValue(host, out shells))
+                    {
+                        if (!_shellsByHost.TryGetValue("", out shells))
+                        {
                             // no specific match, then look for star mapping
                             var subHostKey = _shellsByHost.Keys.FirstOrDefault(x =>
                                 x.StartsWith("*.") && host.EndsWith(x.Substring(2))
                                 );
 
-                            if (subHostKey == null) {
+                            if (subHostKey == null)
+                            {
                                 return _fallback;
                             }
 
@@ -138,12 +160,15 @@ namespace Orchard.Environment.Shell {
                     }
 
                     // looking for a request url prefix match
-                    var mostQualifiedMatch = shells.FirstOrDefault(settings => {
-                        if (settings.State == TenantState.Disabled) {
+                    var mostQualifiedMatch = shells.FirstOrDefault(settings =>
+                    {
+                        if (settings.State == TenantState.Disabled)
+                        {
                             return false;
                         }
 
-                        if (String.IsNullOrWhiteSpace(settings.RequestUrlPrefix)) {
+                        if (String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
+                        {
                             return true;
                         }
 
@@ -152,9 +177,9 @@ namespace Orchard.Environment.Shell {
 
                     return mostQualifiedMatch ?? _fallback;
                 });
-
             }
-            finally {
+            finally
+            {
                 _lock.ExitReadLock();
             }
         }

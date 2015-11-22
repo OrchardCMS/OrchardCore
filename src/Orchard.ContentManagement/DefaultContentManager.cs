@@ -116,7 +116,6 @@ namespace Orchard.ContentManagement
                         x.Number == options.VersionNumber
                     )
                     .FirstOrDefault();
-
             }
             else if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
             {
@@ -146,8 +145,8 @@ namespace Orchard.ContentManagement
             {
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x => 
-                        x.ContentItemId == contentItemId && 
+                    .Where(x =>
+                        x.ContentItemId == contentItemId &&
                         x.Latest == true)
                     .FirstOrDefault();
             }
@@ -170,14 +169,14 @@ namespace Orchard.ContentManagement
             // store in session prior to loading to avoid some problems with simple circular dependencies
             _contentManagerSession.Store(contentItem);
 
-            // create a context with a new instance to load            
+            // create a context with a new instance to load
             var context = new LoadContentContext(contentItem);
 
             // invoke handlers to acquire state, or at least establish lazy loading callbacks
             Handlers.Invoke(handler => handler.Loading(context), _logger);
             Handlers.Invoke(handler => handler.Loaded(context), _logger);
 
-            // when draft is required and latest is published a new version is appended 
+            // when draft is required and latest is published a new version is appended
             if (options.IsDraftRequired && contentItem.Published)
             {
                 contentItem = await BuildNewVersionAsync(context.ContentItem);
@@ -257,10 +256,10 @@ namespace Orchard.ContentManagement
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
             var buildingContentItem = New(existingContentItem.ContentType);
-                        
+
             var latestVersion = await _session
                 .QueryAsync<ContentItem, ContentItemIndex>(x =>
-                    x.ContentItemId == existingContentItem.ContentItemId && 
+                    x.ContentItemId == existingContentItem.ContentItemId &&
                     x.Latest)
                 .FirstOrDefault();
 

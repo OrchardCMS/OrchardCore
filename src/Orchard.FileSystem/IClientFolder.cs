@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Orchard.FileSystem {
+namespace Orchard.FileSystem
+{
     /// <summary>
     /// Abstraction over the virtual files/directories of a web site.
     /// </summary>
-    public interface IClientFolder {
+    public interface IClientFolder
+    {
         IEnumerable<string> ListDirectories(string virtualPath);
         IEnumerable<string> ListFiles(string virtualPath, bool recursive);
 

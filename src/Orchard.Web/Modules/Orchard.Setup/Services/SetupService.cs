@@ -37,7 +37,6 @@ namespace Orchard.Setup.Services
             IRunningShellTable runningShellTable,
             ILoggerFactory loggerFactory)
         {
-
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
@@ -108,7 +107,7 @@ namespace Orchard.Setup.Services
                 Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
             };
 
-            // creating a standalone environment. 
+            // creating a standalone environment.
             // in theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
 

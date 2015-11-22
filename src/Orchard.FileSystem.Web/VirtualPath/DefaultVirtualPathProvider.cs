@@ -72,7 +72,7 @@ namespace Orchard.FileSystem.VirtualPath
         /// <summary>
         /// We want to reject path that contains ".." going outside of the application root.
         /// ToAppRelative does that already, but we want to do the same while avoiding exceptions.
-        /// 
+        ///
         /// Note: This method doesn't detect all cases of malformed paths, it merely checks
         ///       for *some* cases of malformed paths, so this is not a replacement for full virtual path
         ///       verification through VirtualPathUtilty methods.

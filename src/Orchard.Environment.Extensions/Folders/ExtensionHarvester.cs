@@ -8,8 +8,10 @@ using Microsoft.Extensions.Logging;
 using Orchard.FileSystem;
 using Orchard.Utility;
 
-namespace Orchard.Environment.Extensions.Folders {
-    public class ExtensionHarvester : IExtensionHarvester {
+namespace Orchard.Environment.Extensions.Folders
+{
+    public class ExtensionHarvester : IExtensionHarvester
+    {
         private const string NameSection = "name";
         private const string PathSection = "path";
         private const string DescriptionSection = "description";
@@ -33,7 +35,8 @@ namespace Orchard.Environment.Extensions.Folders {
         private readonly ILogger _logger;
 
         public ExtensionHarvester(IClientFolder clientFolder,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _clientFolder = clientFolder;
             _logger = loggerFactory.CreateLogger<ExtensionHarvester>();
 
@@ -42,37 +45,44 @@ namespace Orchard.Environment.Extensions.Folders {
 
         public Localizer T { get; set; }
 
-        public IEnumerable<ExtensionDescriptor> HarvestExtensions(IEnumerable<string> paths, string extensionType, string manifestName, bool manifestIsOptional) {
+        public IEnumerable<ExtensionDescriptor> HarvestExtensions(IEnumerable<string> paths, string extensionType, string manifestName, bool manifestIsOptional)
+        {
             return paths
                 .SelectMany(path => HarvestExtensions(path, extensionType, manifestName, manifestIsOptional))
                 .ToList();
         }
 
-        private IEnumerable<ExtensionDescriptor> HarvestExtensions(string path, string extensionType, string manifestName, bool manifestIsOptional) {
+        private IEnumerable<ExtensionDescriptor> HarvestExtensions(string path, string extensionType, string manifestName, bool manifestIsOptional)
+        {
             return AvailableExtensionsInFolder(path, extensionType, manifestName, manifestIsOptional).ToReadOnlyCollection();
         }
 
-        private List<ExtensionDescriptor> AvailableExtensionsInFolder(string path, string extensionType, string manifestName, bool manifestIsOptional) {
+        private List<ExtensionDescriptor> AvailableExtensionsInFolder(string path, string extensionType, string manifestName, bool manifestIsOptional)
+        {
             _logger.LogInformation("Start looking for extensions in '{0}'...", path);
             var subfolderPaths = _clientFolder.ListDirectories(path);
             var localList = new List<ExtensionDescriptor>();
-            foreach (var subfolderPath in subfolderPaths) {
+            foreach (var subfolderPath in subfolderPaths)
+            {
                 var extensionId = Path.GetFileName(subfolderPath);
                 var manifestPath = Path.Combine(subfolderPath, manifestName);
-                try {
+                try
+                {
                     var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);
 
                     if (descriptor == null)
                         continue;
 
-                    if (descriptor.Path != null && !descriptor.Path.IsValidUrlSegment()) {
+                    if (descriptor.Path != null && !descriptor.Path.IsValidUrlSegment())
+                    {
                         _logger.LogError("The module '{0}' could not be loaded because it has an invalid Path ({1}). It was ignored. The Path if specified must be a valid URL segment. The best bet is to stick with letters and numbers with no spaces.",
                                      extensionId,
                                      descriptor.Path);
                         continue;
                     }
 
-                    if (descriptor.Path == null) {
+                    if (descriptor.Path == null)
+                    {
                         descriptor.Path = descriptor.Name.IsValidUrlSegment()
                                               ? descriptor.Name
                                               : descriptor.Id;
@@ -80,7 +90,8 @@ namespace Orchard.Environment.Extensions.Folders {
 
                     localList.Add(descriptor);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     // Ignore invalid module manifests
                     _logger.LogError(string.Format("The module '{0}' could not be loaded. It was ignored.", extensionId), ex);
                 }
@@ -89,9 +100,11 @@ namespace Orchard.Environment.Extensions.Folders {
             return localList;
         }
 
-        public static ExtensionDescriptor GetDescriptorForExtension(string locationPath, string extensionId, string extensionType, string manifestText) {
+        public static ExtensionDescriptor GetDescriptorForExtension(string locationPath, string extensionId, string extensionType, string manifestText)
+        {
             Dictionary<string, string> manifest = ParseManifest(manifestText);
-            var extensionDescriptor = new ExtensionDescriptor {
+            var extensionDescriptor = new ExtensionDescriptor
+            {
                 Location = locationPath,
                 Id = extensionId,
                 ExtensionType = extensionType,
@@ -114,13 +127,17 @@ namespace Orchard.Environment.Extensions.Folders {
         }
 
 
-        private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional) {
+        private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional)
+        {
             var manifestText = _clientFolder.ReadFile(manifestPath);
-            if (manifestText == null) {
-                if (manifestIsOptional) {
+            if (manifestText == null)
+            {
+                if (manifestIsOptional)
+                {
                     manifestText = string.Format("Id: {0}", extensionId);
                 }
-                else {
+                else
+                {
                     return null;
                 }
             }
@@ -128,20 +145,25 @@ namespace Orchard.Environment.Extensions.Folders {
             return GetDescriptorForExtension(locationPath, extensionId, extensionType, manifestText);
         }
 
-        private static Dictionary<string, string> ParseManifest(string manifestText) {
+        private static Dictionary<string, string> ParseManifest(string manifestText)
+        {
             var manifest = new Dictionary<string, string>();
 
-            using (StringReader reader = new StringReader(manifestText)) {
+            using (StringReader reader = new StringReader(manifestText))
+            {
                 string line;
-                while ((line = reader.ReadLine()) != null) {
+                while ((line = reader.ReadLine()) != null)
+                {
                     string[] field = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
                     int fieldLength = field.Length;
                     if (fieldLength != 2)
                         continue;
-                    for (int i = 0; i < fieldLength; i++) {
+                    for (int i = 0; i < fieldLength; i++)
+                    {
                         field[i] = field[i].Trim();
                     }
-                    switch (field[0].ToLowerInvariant()) {
+                    switch (field[0].ToLowerInvariant())
+                    {
                         case NameSection:
                             manifest.Add(NameSection, field[1]);
                             break;
@@ -203,11 +225,13 @@ namespace Orchard.Environment.Extensions.Folders {
             return manifest;
         }
 
-        private static IEnumerable<FeatureDescriptor> GetFeaturesForExtension(IDictionary<string, string> manifest, ExtensionDescriptor extensionDescriptor) {
+        private static IEnumerable<FeatureDescriptor> GetFeaturesForExtension(IDictionary<string, string> manifest, ExtensionDescriptor extensionDescriptor)
+        {
             var featureDescriptors = new List<FeatureDescriptor>();
 
             // Default feature
-            FeatureDescriptor defaultFeature = new FeatureDescriptor {
+            FeatureDescriptor defaultFeature = new FeatureDescriptor
+            {
                 Id = extensionDescriptor.Id,
                 Name = GetValue(manifest, FeatureNameSection) ?? extensionDescriptor.Name,
                 Priority = GetValue(manifest, PrioritySection) != null ? int.Parse(GetValue(manifest, PrioritySection)) : 0,
@@ -221,14 +245,20 @@ namespace Orchard.Environment.Extensions.Folders {
 
             // Remaining features
             string featuresText = GetValue(manifest, FeaturesSection);
-            if (featuresText != null) {
+            if (featuresText != null)
+            {
                 FeatureDescriptor featureDescriptor = null;
-                using (StringReader reader = new StringReader(featuresText)) {
+                using (StringReader reader = new StringReader(featuresText))
+                {
                     string line;
-                    while ((line = reader.ReadLine()) != null) {
-                        if (IsFeatureDeclaration(line)) {
-                            if (featureDescriptor != null) {
-                                if (!featureDescriptor.Equals(defaultFeature)) {
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (IsFeatureDeclaration(line))
+                        {
+                            if (featureDescriptor != null)
+                            {
+                                if (!featureDescriptor.Equals(defaultFeature))
+                                {
                                     featureDescriptors.Add(featureDescriptor);
                                 }
 
@@ -237,28 +267,35 @@ namespace Orchard.Environment.Extensions.Folders {
 
                             string[] featureDeclaration = line.Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
                             string featureDescriptorId = featureDeclaration[0].Trim();
-                            if (string.Equals(featureDescriptorId, extensionDescriptor.Id, StringComparison.OrdinalIgnoreCase)) {
+                            if (string.Equals(featureDescriptorId, extensionDescriptor.Id, StringComparison.OrdinalIgnoreCase))
+                            {
                                 featureDescriptor = defaultFeature;
                                 featureDescriptor.Name = extensionDescriptor.Name;
                             }
-                            else {
-                                featureDescriptor = new FeatureDescriptor {
+                            else
+                            {
+                                featureDescriptor = new FeatureDescriptor
+                                {
                                     Id = featureDescriptorId,
                                     Extension = extensionDescriptor
                                 };
                             }
                         }
-                        else if (IsFeatureFieldDeclaration(line)) {
-                            if (featureDescriptor != null) {
+                        else if (IsFeatureFieldDeclaration(line))
+                        {
+                            if (featureDescriptor != null)
+                            {
                                 string[] featureField = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
                                 int featureFieldLength = featureField.Length;
                                 if (featureFieldLength != 2)
                                     continue;
-                                for (int i = 0; i < featureFieldLength; i++) {
+                                for (int i = 0; i < featureFieldLength; i++)
+                                {
                                     featureField[i] = featureField[i].Trim();
                                 }
 
-                                switch (featureField[0].ToLowerInvariant()) {
+                                switch (featureField[0].ToLowerInvariant())
+                                {
                                     case NameSection:
                                         featureDescriptor.Name = featureField[1];
                                         break;
@@ -276,12 +313,14 @@ namespace Orchard.Environment.Extensions.Folders {
                                         break;
                                 }
                             }
-                            else {
+                            else
+                            {
                                 string message = string.Format("The line {0} in manifest for extension {1} was ignored", line, extensionDescriptor.Id);
                                 throw new ArgumentException(message);
                             }
                         }
-                        else {
+                        else
+                        {
                             string message = string.Format("The line {0} in manifest for extension {1} was ignored", line, extensionDescriptor.Id);
                             throw new ArgumentException(message);
                         }
@@ -295,7 +334,8 @@ namespace Orchard.Environment.Extensions.Folders {
             return featureDescriptors;
         }
 
-        private static bool IsFeatureFieldDeclaration(string line) {
+        private static bool IsFeatureFieldDeclaration(string line)
+        {
             if (line.StartsWith("\t\t") ||
                 line.StartsWith("\t    ") ||
                 line.StartsWith("    ") ||
@@ -305,9 +345,11 @@ namespace Orchard.Environment.Extensions.Folders {
             return false;
         }
 
-        private static bool IsFeatureDeclaration(string line) {
+        private static bool IsFeatureDeclaration(string line)
+        {
             int lineLength = line.Length;
-            if (line.StartsWith("\t") && lineLength >= 2) {
+            if (line.StartsWith("\t") && lineLength >= 2)
+            {
                 return !Char.IsWhiteSpace(line[1]);
             }
             if (line.StartsWith("    ") && lineLength >= 5)
@@ -316,18 +358,21 @@ namespace Orchard.Environment.Extensions.Folders {
             return false;
         }
 
-        private static IEnumerable<string> ParseFeatureDependenciesEntry(string dependenciesEntry) {
+        private static IEnumerable<string> ParseFeatureDependenciesEntry(string dependenciesEntry)
+        {
             if (string.IsNullOrEmpty(dependenciesEntry))
                 return Enumerable.Empty<string>();
 
             var dependencies = new List<string>();
-            foreach (var s in dependenciesEntry.Split(',')) {
+            foreach (var s in dependenciesEntry.Split(','))
+            {
                 dependencies.Add(s.Trim());
             }
             return dependencies;
         }
 
-        private static string GetValue(IDictionary<string, string> fields, string key) {
+        private static string GetValue(IDictionary<string, string> fields, string key)
+        {
             string value;
             return fields.TryGetValue(key, out value) ? value : null;
         }

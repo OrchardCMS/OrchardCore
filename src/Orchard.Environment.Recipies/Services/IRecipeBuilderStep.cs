@@ -3,8 +3,10 @@ using Microsoft.Extensions.Localization;
 using Orchard.DependencyInjection;
 using Orchard.ContentManagement;
 
-namespace Orchard.Environment.Recipes.Services {
-    public interface IRecipeBuilderStep : IDependency {
+namespace Orchard.Environment.Recipes.Services
+{
+    public interface IRecipeBuilderStep : IDependency
+    {
         string Name { get; }
         LocalizedString DisplayName { get; }
         LocalizedString Description { get; }

@@ -1,8 +1,10 @@
-﻿namespace Orchard.Environment {
+﻿namespace Orchard.Environment
+{
     /// <summary>
     /// Abstraction of the running environment
     /// </summary>
-    public interface IHostEnvironment {
+    public interface IHostEnvironment
+    {
         string MapPath(string virtualPath);
     }
 }

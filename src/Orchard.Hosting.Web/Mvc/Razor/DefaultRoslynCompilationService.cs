@@ -22,11 +22,13 @@ using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.AspNet.Hosting;
 
-namespace Orchard.Hosting.Mvc.Razor {
+namespace Orchard.Hosting.Mvc.Razor
+{
     /// <summary>
     /// A type that uses Roslyn to compile C# content.
     /// </summary>
-    public class DefaultRoslynCompilationService : ICompilationService {
+    public class DefaultRoslynCompilationService : ICompilationService
+    {
         private readonly Lazy<bool> _supportsPdbGeneration = new Lazy<bool>(SymbolsUtility.SupportsSymbolsGeneration);
         private readonly ConcurrentDictionary<string, AssemblyMetadata> _metadataFileCache =
             new ConcurrentDictionary<string, AssemblyMetadata>(StringComparer.OrdinalIgnoreCase);
@@ -62,7 +64,8 @@ namespace Orchard.Hosting.Mvc.Razor {
                                         IMvcRazorHost host,
                                         IOptions<RazorViewEngineOptions> optionsAccessor,
                                         ILibraryExporter libraryExporter,
-                                        IHostingEnvironment hostingEnvrionment) {
+                                        IHostingEnvironment hostingEnvrionment)
+        {
             _environment = environment;
             _runtimeEnvironment = runtimeEnvironment;
             _loader = loaderAccessor.GetLoadContext(typeof(DefaultRoslynCompilationService).GetTypeInfo().Assembly);
@@ -76,7 +79,8 @@ namespace Orchard.Hosting.Mvc.Razor {
         }
 
         /// <inheritdoc />
-        public CompilationResult Compile(RelativeFileInfo fileInfo, string compilationContent) {
+        public CompilationResult Compile(RelativeFileInfo fileInfo, string compilationContent)
+        {
             var assemblyName = Path.GetRandomFileName();
             var compilationSettings = _compilerOptionsProvider.GetCompilationSettings(_environment);
             var syntaxTree = SyntaxTreeGenerator.Generate(compilationContent,
@@ -92,18 +96,23 @@ namespace Orchard.Hosting.Mvc.Razor {
                         syntaxTrees: new[] { syntaxTree },
                         references: references);
 
-            using (var ms = new MemoryStream()) {
-                using (var pdb = new MemoryStream()) {
+            using (var ms = new MemoryStream())
+            {
+                using (var pdb = new MemoryStream())
+                {
                     EmitResult result;
 
-                    if (_supportsPdbGeneration.Value) {
+                    if (_supportsPdbGeneration.Value)
+                    {
                         result = compilation.Emit(ms, pdbStream: pdb);
                     }
-                    else {
+                    else
+                    {
                         result = compilation.Emit(ms);
                     }
 
-                    if (!result.Success) {
+                    if (!result.Success)
+                    {
                         return GetCompilationFailedResult(
                             fileInfo.RelativePath,
                             compilationContent,
@@ -114,11 +123,13 @@ namespace Orchard.Hosting.Mvc.Razor {
                     Assembly assembly;
                     ms.Seek(0, SeekOrigin.Begin);
 
-                    if (_supportsPdbGeneration.Value) {
+                    if (_supportsPdbGeneration.Value)
+                    {
                         pdb.Seek(0, SeekOrigin.Begin);
                         assembly = _loader.LoadStream(ms, pdb);
                     }
-                    else {
+                    else
+                    {
                         assembly = _loader.LoadStream(ms, assemblySymbols: null);
                     }
 
@@ -135,21 +146,25 @@ namespace Orchard.Hosting.Mvc.Razor {
             string relativePath,
             string compilationContent,
             string assemblyName,
-            IEnumerable<Diagnostic> diagnostics) {
+            IEnumerable<Diagnostic> diagnostics)
+        {
             var diagnosticGroups = diagnostics
                 .Where(IsError)
                 .GroupBy(diagnostic => GetFilePath(relativePath, diagnostic), StringComparer.Ordinal);
 
             var failures = new List<CompilationFailure>();
-            foreach (var group in diagnosticGroups) {
+            foreach (var group in diagnosticGroups)
+            {
                 var sourceFilePath = group.Key;
                 string sourceFileContent;
-                if (string.Equals(assemblyName, sourceFilePath, StringComparison.Ordinal)) {
+                if (string.Equals(assemblyName, sourceFilePath, StringComparison.Ordinal))
+                {
                     // The error is in the generated code and does not have a mapping line pragma
                     sourceFileContent = compilationContent;
                     sourceFilePath = "Generated Code";
                 }
-                else {
+                else
+                {
                     sourceFileContent = ReadFileContentsSafely(_fileProvider, sourceFilePath);
                 }
 
@@ -161,15 +176,18 @@ namespace Orchard.Hosting.Mvc.Razor {
             return CompilationResult.Failed(failures);
         }
 
-        private static string GetFilePath(string relativePath, Diagnostic diagnostic) {
-            if (diagnostic.Location == Location.None) {
+        private static string GetFilePath(string relativePath, Diagnostic diagnostic)
+        {
+            if (diagnostic.Location == Location.None)
+            {
                 return relativePath;
             }
 
             return diagnostic.Location.GetMappedLineSpan().Path;
         }
 
-        private List<MetadataReference> GetApplicationReferences() {
+        private List<MetadataReference> GetApplicationReferences()
+        {
             var references = new List<MetadataReference>();
 
             ILibraryExporter libraryExporter;
@@ -197,12 +215,14 @@ namespace Orchard.Hosting.Mvc.Razor {
             // we can copy the references created when compiling the application to the Razor page being compiled.
             // This avoids performing expensive calls to MetadataReference.CreateFromImage.
             var libraryExport = libraryExporter.GetExport(_environment.ApplicationName);
-            if (libraryExport?.MetadataReferences != null && libraryExport.MetadataReferences.Count > 0) {
+            if (libraryExport?.MetadataReferences != null && libraryExport.MetadataReferences.Count > 0)
+            {
                 Debug.Assert(libraryExport.MetadataReferences.Count == 1,
                              "Expected 1 MetadataReferences, found " + libraryExport.MetadataReferences.Count);
                 var roslynReference = libraryExport.MetadataReferences[0] as IRoslynMetadataReference;
                 var compilationReference = roslynReference?.MetadataReference as CompilationReference;
-                if (compilationReference != null) {
+                if (compilationReference != null)
+                {
                     references.AddRange(compilationReference.Compilation.References);
                     references.Add(roslynReference.MetadataReference);
 
@@ -216,7 +236,8 @@ namespace Orchard.Hosting.Mvc.Razor {
             }
 
             var export = libraryExporter.GetAllExports(_environment.ApplicationName);
-            foreach (var metadataReference in export.MetadataReferences) {
+            foreach (var metadataReference in export.MetadataReferences)
+            {
                 // Taken from https://github.com/aspnet/KRuntime/blob/757ba9bfdf80bd6277e715d6375969a7f44370ee/src/...
                 // Microsoft.Framework.Runtime.Roslyn/RoslynCompiler.cs#L164
                 // We don't want to take a dependency on the Roslyn bit directly since it pulls in more dependencies
@@ -227,28 +248,34 @@ namespace Orchard.Hosting.Mvc.Razor {
             return references;
         }
 
-        private MetadataReference ConvertMetadataReference(IMetadataReference metadataReference) {
+        private MetadataReference ConvertMetadataReference(IMetadataReference metadataReference)
+        {
             var roslynReference = metadataReference as IRoslynMetadataReference;
 
-            if (roslynReference != null) {
+            if (roslynReference != null)
+            {
                 return roslynReference.MetadataReference;
             }
 
             var embeddedReference = metadataReference as IMetadataEmbeddedReference;
 
-            if (embeddedReference != null) {
+            if (embeddedReference != null)
+            {
                 return MetadataReference.CreateFromImage(embeddedReference.Contents);
             }
 
             var fileMetadataReference = metadataReference as IMetadataFileReference;
 
-            if (fileMetadataReference != null) {
+            if (fileMetadataReference != null)
+            {
                 return CreateMetadataFileReference(fileMetadataReference.Path);
             }
 
             var projectReference = metadataReference as IMetadataProjectReference;
-            if (projectReference != null) {
-                using (var ms = new MemoryStream()) {
+            if (projectReference != null)
+            {
+                using (var ms = new MemoryStream())
+                {
                     projectReference.EmitReferenceAssembly(ms);
 
                     return MetadataReference.CreateFromImage(ms.ToArray());
@@ -258,9 +285,12 @@ namespace Orchard.Hosting.Mvc.Razor {
             throw new NotSupportedException();
         }
 
-        private MetadataReference CreateMetadataFileReference(string path) {
-            var metadata = _metadataFileCache.GetOrAdd(path, _ => {
-                using (var stream = File.OpenRead(path)) {
+        private MetadataReference CreateMetadataFileReference(string path)
+        {
+            var metadata = _metadataFileCache.GetOrAdd(path, _ =>
+            {
+                using (var stream = File.OpenRead(path))
+                {
                     var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
                     return AssemblyMetadata.Create(moduleMetadata);
                 }
@@ -269,19 +299,25 @@ namespace Orchard.Hosting.Mvc.Razor {
             return metadata.GetReference();
         }
 
-        private static bool IsError(Diagnostic diagnostic) {
+        private static bool IsError(Diagnostic diagnostic)
+        {
             return diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error;
         }
 
-        private static string ReadFileContentsSafely(IFileProvider fileProvider, string filePath) {
+        private static string ReadFileContentsSafely(IFileProvider fileProvider, string filePath)
+        {
             var fileInfo = fileProvider.GetFileInfo(filePath);
-            if (fileInfo.Exists) {
-                try {
-                    using (var reader = new StreamReader(fileInfo.CreateReadStream())) {
+            if (fileInfo.Exists)
+            {
+                try
+                {
+                    using (var reader = new StreamReader(fileInfo.CreateReadStream()))
+                    {
                         return reader.ReadToEnd();
                     }
                 }
-                catch {
+                catch
+                {
                     // Ignore any failures
                 }
             }

@@ -3,35 +3,44 @@ using System;
 using System.Collections.Generic;
 using System.Security;
 
-namespace Orchard.Hosting {
-    public class OrchardParametersParser : IOrchardParametersParser {
+namespace Orchard.Hosting
+{
+    public class OrchardParametersParser : IOrchardParametersParser
+    {
         [SecurityCritical]
-        public OrchardParameters Parse(CommandParameters parameters) {
-
-            var result = new OrchardParameters {
+        public OrchardParameters Parse(CommandParameters parameters)
+        {
+            var result = new OrchardParameters
+            {
                 Arguments = new List<string>(),
                 ResponseFiles = new List<string>(),
                 Switches = new Dictionary<string, string>()
             };
 
-            foreach (var arg in parameters.Arguments) {
+            foreach (var arg in parameters.Arguments)
+            {
                 // @response-file
-                if (arg[0] == '@') {
+                if (arg[0] == '@')
+                {
                     var filename = arg.Substring(1);
-                    if (string.IsNullOrEmpty(filename)) {
+                    if (string.IsNullOrEmpty(filename))
+                    {
                         throw new ArgumentException("Incorrect syntax: response file name can not be empty");
                     }
                     result.ResponseFiles.Add(filename);
                 }
                 // regular argument
-                else {
+                else
+                {
                     result.Arguments.Add(arg);
                 }
             }
 
-            foreach (var sw in parameters.Switches) {
+            foreach (var sw in parameters.Switches)
+            {
                 // Built-in switches
-                switch (sw.Key.ToLowerInvariant()) {
+                switch (sw.Key.ToLowerInvariant())
+                {
                     case "v":
                     case "verbose":
                         bool verbose;

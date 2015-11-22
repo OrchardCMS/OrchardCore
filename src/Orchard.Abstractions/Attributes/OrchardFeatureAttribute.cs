@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace Orchard {
+namespace Orchard
+{
     [AttributeUsage(AttributeTargets.Class)]
-    public class OrchardFeatureAttribute : Attribute {
-        public OrchardFeatureAttribute(string text) {
+    public class OrchardFeatureAttribute : Attribute
+    {
+        public OrchardFeatureAttribute(string text)
+        {
             FeatureName = text;
         }
 

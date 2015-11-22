@@ -9,8 +9,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
-namespace Orchard.Data.Migration {
-    public class DataMigrationManager : IDataMigrationManager {
+namespace Orchard.Data.Migration
+{
+    public class DataMigrationManager : IDataMigrationManager
+    {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
         private readonly ISession _session;
         private readonly IStore _store;
@@ -24,10 +26,11 @@ namespace Orchard.Data.Migration {
         public DataMigrationManager(
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
-            ISession session, 
+            ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
             _session = session;
@@ -50,7 +53,7 @@ namespace Orchard.Data.Migration {
                 .QueryAsync<DataMigrationRecord>()
                 .FirstOrDefault();
 
-                if(_dataMigrationRecord == null)
+                if (_dataMigrationRecord == null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
                     _session.Save(_dataMigrationRecord);
@@ -60,11 +63,13 @@ namespace Orchard.Data.Migration {
             return _dataMigrationRecord;
         }
 
-        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate() {
+        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate()
+        {
             var currentVersions = (await GetDataMigrationRecord()).DataMigrations
                 .ToDictionary(r => r.DataMigrationClass);
 
-            var outOfDateMigrations = _dataMigrations.Where(dataMigration => {
+            var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
+            {
                 DataMigration record;
                 if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record))
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
@@ -78,17 +83,20 @@ namespace Orchard.Data.Migration {
         /// <summary>
         /// Whether a feature has already been installed, i.e. one of its Data Migration class has already been processed
         /// </summary>
-        public bool IsFeatureAlreadyInstalled(string feature) {
+        public bool IsFeatureAlreadyInstalled(string feature)
+        {
             return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecordAsync(dataMigration).Result != null);
         }
 
-        public async Task Uninstall(string feature) {
+        public async Task Uninstall(string feature)
+        {
             _logger.LogInformation("Uninstalling feature: {0}.", feature);
 
             var migrations = GetDataMigrations(feature);
 
             // apply update methods to each migration class for the module
-            foreach (var migration in migrations) {
+            foreach (var migration in migrations)
+            {
                 // copy the object for the Linq query
                 var tempMigration = migration;
 
@@ -96,11 +104,13 @@ namespace Orchard.Data.Migration {
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var uninstallMethod = GetUninstallMethod(migration);
-                if (uninstallMethod != null) {
+                if (uninstallMethod != null)
+                {
                     uninstallMethod.Invoke(migration, new object[0]);
                 }
 
-                if (dataMigrationRecord == null) {
+                if (dataMigrationRecord == null)
+                {
                     continue;
                 }
 
@@ -108,16 +118,19 @@ namespace Orchard.Data.Migration {
             }
         }
 
-        public async Task UpdateAsync(IEnumerable<string> features) {
-            foreach (var feature in features) {
-                if (!_processedFeatures.Contains(feature)) {
+        public async Task UpdateAsync(IEnumerable<string> features)
+        {
+            foreach (var feature in features)
+            {
+                if (!_processedFeatures.Contains(feature))
+                {
                     await UpdateAsync(feature);
                 }
             }
         }
 
-        public async Task UpdateAsync(string feature) {
-            
+        public async Task UpdateAsync(string feature)
+        {
             if (_processedFeatures.Contains(feature))
             {
                 return;
@@ -197,7 +210,7 @@ namespace Orchard.Data.Migration {
                             }
                         }
 
-                        // if current is 0, it means no upgrade/create method was found or succeeded 
+                        // if current is 0, it means no upgrade/create method was found or succeeded
                         if (current == 0)
                         {
                             return;
@@ -222,11 +235,11 @@ namespace Orchard.Data.Migration {
                         throw new OrchardException(T("Error while running migration version {0} for {1}.", current, feature), ex);
                     }
                 });
-
             }
         }
 
-        private async Task<DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration) {
+        private async Task<DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
+        {
             return (await GetDataMigrationRecord()).DataMigrations
                 .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
         }
@@ -234,7 +247,8 @@ namespace Orchard.Data.Migration {
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
         /// </summary>
-        private IEnumerable<IDataMigration> GetDataMigrations(string feature) {
+        private IEnumerable<IDataMigration> GetDataMigrations(string feature)
+        {
             var migrations = _dataMigrations
                     .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Descriptor.Id, feature, StringComparison.OrdinalIgnoreCase))
                     .ToList();
@@ -246,11 +260,12 @@ namespace Orchard.Data.Migration {
 
             return migrations;
         }
-        
+
         /// <summary>
         /// Create a list of all available Update methods from a data migration class, indexed by the version number
         /// </summary>
-        private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration) {
+        private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
+        {
             return dataMigration
                 .GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
@@ -259,13 +274,16 @@ namespace Orchard.Data.Migration {
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
-        private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo mi) {
+        private static Tuple<int, MethodInfo> GetUpdateMethod(MethodInfo mi)
+        {
             const string updatefromPrefix = "UpdateFrom";
 
-            if (mi.Name.StartsWith(updatefromPrefix)) {
+            if (mi.Name.StartsWith(updatefromPrefix))
+            {
                 var version = mi.Name.Substring(updatefromPrefix.Length);
                 int versionValue;
-                if (int.TryParse(version, out versionValue)) {
+                if (int.TryParse(version, out versionValue))
+                {
                     return new Tuple<int, MethodInfo>(versionValue, mi);
                 }
             }
@@ -276,9 +294,11 @@ namespace Orchard.Data.Migration {
         /// <summary>
         /// Returns the Create method from a data migration class if it's found
         /// </summary>
-        private static MethodInfo GetCreateMethod(IDataMigration dataMigration) {
+        private static MethodInfo GetCreateMethod(IDataMigration dataMigration)
+        {
             var methodInfo = dataMigration.GetType().GetMethod("Create", BindingFlags.Public | BindingFlags.Instance);
-            if (methodInfo != null && methodInfo.ReturnType == typeof(int)) {
+            if (methodInfo != null && methodInfo.ReturnType == typeof(int))
+            {
                 return methodInfo;
             }
 
@@ -288,9 +308,11 @@ namespace Orchard.Data.Migration {
         /// <summary>
         /// Returns the Uninstall method from a data migration class if it's found
         /// </summary>
-        private static MethodInfo GetUninstallMethod(IDataMigration dataMigration) {
+        private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
+        {
             var methodInfo = dataMigration.GetType().GetMethod("Uninstall", BindingFlags.Public | BindingFlags.Instance);
-            if (methodInfo != null && methodInfo.ReturnType == typeof(void)) {
+            if (methodInfo != null && methodInfo.ReturnType == typeof(void))
+            {
                 return methodInfo;
             }
 

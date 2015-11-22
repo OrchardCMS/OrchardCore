@@ -1,5 +1,7 @@
-namespace Orchard.ContentManagement.Handlers {
-    public interface IContentStorageFilter : IContentFilter {
+namespace Orchard.ContentManagement.Handlers
+{
+    public interface IContentStorageFilter : IContentFilter
+    {
         void Activated(ActivatedContentContext context);
         void Initializing(InitializingContentContext context);
         void Initialized(InitializingContentContext context);

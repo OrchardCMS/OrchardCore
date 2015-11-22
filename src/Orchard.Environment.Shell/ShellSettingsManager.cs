@@ -7,26 +7,31 @@ using Microsoft.Dnx.Compilation.Caching;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
 
-namespace Orchard.Environment.Shell {
-    public class ShellSettingsManager : IShellSettingsManager {
+namespace Orchard.Environment.Shell
+{
+    public class ShellSettingsManager : IShellSettingsManager
+    {
         private readonly IAppDataFolder _appDataFolder;
         //private readonly ICache _cache;
         private readonly ILogger _logger;
-        
+
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
             //ICache cache,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _appDataFolder = appDataFolder;
             //_cache = cache;
             _logger = loggerFactory.CreateLogger<ShellSettingsManager>();
         }
 
-        IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings() {
+        IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings()
+        {
             var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenant in _appDataFolder.ListDirectories("Sites")) {
+            foreach (var tenant in _appDataFolder.ListDirectories("Sites"))
+            {
                 _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
 
                 var configurationContainer =
@@ -49,7 +54,8 @@ namespace Orchard.Environment.Shell {
             return shellSettings;
         }
 
-        void IShellSettingsManager.SaveSettings(ShellSettings shellSettings) {
+        void IShellSettingsManager.SaveSettings(ShellSettings shellSettings)
+        {
             if (shellSettings == null)
                 throw new ArgumentNullException(nameof(shellSettings));
             if (string.IsNullOrWhiteSpace(shellSettings.Name))
@@ -64,12 +70,13 @@ namespace Orchard.Environment.Shell {
             var configurationProvider = new YamlConfigurationProvider(
                 _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
 
-            foreach (var key in shellSettings.RootConfiguration.GetChildren()) {
+            foreach (var key in shellSettings.RootConfiguration.GetChildren())
+            {
                 configurationProvider.Set(key.Key, key.Value);
             }
 
             configurationProvider.Commit();
-            
+
             _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
         }
     }

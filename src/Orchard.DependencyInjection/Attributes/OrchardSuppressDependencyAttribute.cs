@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace Orchard.DependencyInjection {
+namespace Orchard.DependencyInjection
+{
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public class OrchardSuppressDependencyAttribute : Attribute {
-        public OrchardSuppressDependencyAttribute(string fullName) {
+    public class OrchardSuppressDependencyAttribute : Attribute
+    {
+        public OrchardSuppressDependencyAttribute(string fullName)
+        {
             FullName = fullName;
         }
 

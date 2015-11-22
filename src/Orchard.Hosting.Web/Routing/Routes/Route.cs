@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Routing;
 
-namespace Orchard.Hosting.Web.Routing.Routes {
-    public class Route {
+namespace Orchard.Hosting.Web.Routing.Routes
+{
+    public class Route
+    {
         public Route(
             string routeName,
             string routeTemplate,
             object defaults = null,
             object constraints = null,
-            object dataTokens = null) {
-
+            object dataTokens = null)
+        {
             RouteName = routeName;
             RouteTemplate = routeTemplate;
             Defaults = ObjectToDictionary(defaults);
@@ -23,9 +25,11 @@ namespace Orchard.Hosting.Web.Routing.Routes {
         public IDictionary<string, object> Constraints { get; private set; }
         public IDictionary<string, object> DataTokens { get; private set; }
 
-        private static IDictionary<string, object> ObjectToDictionary(object value) {
+        private static IDictionary<string, object> ObjectToDictionary(object value)
+        {
             var dictionary = value as IDictionary<string, object>;
-            if (dictionary != null) {
+            if (dictionary != null)
+            {
                 return dictionary;
             }
 

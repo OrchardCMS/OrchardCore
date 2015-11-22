@@ -6,8 +6,10 @@ using System.Reflection;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace Orchard.Data {
-    public class OrchardDataAssemblyProvider : IOrchardDataAssemblyProvider {
+namespace Orchard.Data
+{
+    public class OrchardDataAssemblyProvider : IOrchardDataAssemblyProvider
+    {
         private readonly IOrchardLibraryManager _libraryManager;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
@@ -20,21 +22,26 @@ namespace Orchard.Data {
 
         public OrchardDataAssemblyProvider(IOrchardLibraryManager libraryManager,
             IAssemblyLoaderContainer assemblyLoaderContainer,
-            IExtensionAssemblyLoader extensionAssemblyLoader) {
+            IExtensionAssemblyLoader extensionAssemblyLoader)
+        {
             _libraryManager = libraryManager;
             _loaderContainer = assemblyLoaderContainer;
             _extensionAssemblyLoader = extensionAssemblyLoader;
         }
 
-        public IEnumerable<Assembly> CandidateAssemblies {
-            get {
+        public IEnumerable<Assembly> CandidateAssemblies
+        {
+            get
+            {
                 return GetCandidateLibraries().SelectMany(l => l.Assemblies)
                                               .Select(Load);
             }
         }
 
-        protected virtual IEnumerable<Library> GetCandidateLibraries() {
-            if (ReferenceAssemblies == null) {
+        protected virtual IEnumerable<Library> GetCandidateLibraries()
+        {
+            if (ReferenceAssemblies == null)
+            {
                 return Enumerable.Empty<Library>();
             }
 
@@ -45,17 +52,20 @@ namespace Orchard.Data {
                                       .Where(IsCandidateLibrary);
         }
 
-        private Assembly Load(AssemblyName assemblyName) {
+        private Assembly Load(AssemblyName assemblyName)
+        {
             var assembly = Assembly.Load(assemblyName);
             if (assembly != null)
                 return assembly;
 
-            using (_loaderContainer.AddLoader(_extensionAssemblyLoader)) {
+            using (_loaderContainer.AddLoader(_extensionAssemblyLoader))
+            {
                 return Assembly.Load(assemblyName);
             }
         }
 
-        private bool IsCandidateLibrary(Library library) {
+        private bool IsCandidateLibrary(Library library)
+        {
             Debug.Assert(ReferenceAssemblies != null);
             return !ReferenceAssemblies.Contains(library.Name);
         }

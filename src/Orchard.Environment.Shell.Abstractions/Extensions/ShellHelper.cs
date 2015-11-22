@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Shell.Models;
 
-namespace Orchard.Environment.Shell {
+namespace Orchard.Environment.Shell
+{
     public static class ShellHelper
     {
         public const string DefaultShellName = "Default";

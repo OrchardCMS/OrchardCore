@@ -6,9 +6,12 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
 
-namespace Orchard.Environment {
-    public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddExtensionManager(this IServiceCollection services) {
+namespace Orchard.Environment
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddExtensionManager(this IServiceCollection services)
+        {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
                 services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();

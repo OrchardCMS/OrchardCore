@@ -3,10 +3,14 @@ using Orchard.Environment;
 using Orchard.Environment.Commands;
 using Orchard.FileSystem;
 
-namespace Orchard.Hosting {
-    public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddWebHost(this IServiceCollection services) {
-            return services.AddHost(internalServices => {
+namespace Orchard.Hosting
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddWebHost(this IServiceCollection services)
+        {
+            return services.AddHost(internalServices =>
+            {
                 internalServices.AddLogging();
                 internalServices.AddOptions();
 
@@ -15,7 +19,7 @@ namespace Orchard.Hosting {
                 internalServices.AddCommands();
 
                 internalServices.AddWebFileSystems();
-                
+
                 internalServices.AddSingleton<IHostEnvironment, WebHostEnvironment>();
             });
         }

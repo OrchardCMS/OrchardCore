@@ -7,23 +7,28 @@ using System.Threading.Tasks;
 
 namespace Orchard.Hosting.Parameters
 {
-    public interface ICommandLineParser {
+    public interface ICommandLineParser
+    {
         IEnumerable<string> Parse(string commandLine);
     }
 
-    public class CommandLineParser : ICommandLineParser {
+    public class CommandLineParser : ICommandLineParser
+    {
         [SecurityCritical]
-        public IEnumerable<string> Parse(string commandLine) {
+        public IEnumerable<string> Parse(string commandLine)
+        {
             return SplitArgs(commandLine);
         }
 
-        public class State {
+        public class State
+        {
             private readonly string _commandLine;
             private readonly StringBuilder _stringBuilder;
             private readonly List<string> _arguments;
             private int _index;
 
-            public State(string commandLine) {
+            public State(string commandLine)
+            {
                 _commandLine = commandLine;
                 _stringBuilder = new StringBuilder();
                 _arguments = new List<string>();
@@ -34,20 +39,24 @@ namespace Orchard.Hosting.Parameters
             public char Current { get { return _commandLine[_index]; } }
             public IEnumerable<string> Arguments { get { return _arguments; } }
 
-            public void AddArgument() {
+            public void AddArgument()
+            {
                 _arguments.Add(StringBuilder.ToString());
                 StringBuilder.Clear();
             }
 
-            public void AppendCurrent() {
+            public void AppendCurrent()
+            {
                 StringBuilder.Append(Current);
             }
 
-            public void Append(char ch) {
+            public void Append(char ch)
+            {
                 StringBuilder.Append(ch);
             }
 
-            public void MoveNext() {
+            public void MoveNext()
+            {
                 if (!EOF)
                     _index++;
             }
@@ -56,7 +65,7 @@ namespace Orchard.Hosting.Parameters
         /// <summary>
         /// Implement the same logic as found at
         /// http://msdn.microsoft.com/en-us/library/17w5ykft.aspx
-        /// The 3 special characters are quote, backslash and whitespaces, in order 
+        /// The 3 special characters are quote, backslash and whitespaces, in order
         /// of priority.
         /// The semantics of a quote is: whatever the state of the lexer, copy
         /// all characters verbatim until the next quote or EOF.
@@ -64,10 +73,13 @@ namespace Orchard.Hosting.Parameters
         /// copy the next character. Otherwise, copy the backslash and the next character.
         /// The semantics of whitespace is: end the current argument and move on to the next one.
         /// </summary>
-        private IEnumerable<string> SplitArgs(string commandLine) {
+        private IEnumerable<string> SplitArgs(string commandLine)
+        {
             var state = new State(commandLine);
-            while (!state.EOF) {
-                switch (state.Current) {
+            while (!state.EOF)
+            {
+                switch (state.Current)
+                {
                     case '"':
                         ProcessQuote(state);
                         break;
@@ -94,10 +106,13 @@ namespace Orchard.Hosting.Parameters
             return state.Arguments;
         }
 
-        private void ProcessQuote(State state) {
+        private void ProcessQuote(State state)
+        {
             state.MoveNext();
-            while (!state.EOF) {
-                if (state.Current == '"') {
+            while (!state.EOF)
+            {
+                if (state.Current == '"')
+                {
                     state.MoveNext();
                     break;
                 }
@@ -108,18 +123,22 @@ namespace Orchard.Hosting.Parameters
             state.AddArgument();
         }
 
-        private void ProcessBackslash(State state) {
+        private void ProcessBackslash(State state)
+        {
             state.MoveNext();
-            if (state.EOF) {
+            if (state.EOF)
+            {
                 state.Append('\\');
                 return;
             }
 
-            if (state.Current == '"') {
+            if (state.Current == '"')
+            {
                 state.Append('"');
                 state.MoveNext();
             }
-            else {
+            else
+            {
                 state.Append('\\');
                 state.AppendCurrent();
                 state.MoveNext();

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 
-namespace Orchard.FileSystem.Validation {
+namespace Orchard.FileSystem.Validation
+{
     /// <summary>
     /// Provides methods to validate paths.
     /// </summary>
-    public static class PathValidation {
+    public static class PathValidation
+    {
         /// <summary>
         /// Determines if a path lies within the base path boundaries.
         /// If not, an exception is thrown.
@@ -14,18 +16,23 @@ namespace Orchard.FileSystem.Validation {
         /// <param name="mappedPath">The path to determine.</param>
         /// <rereturns>The mapped path if valid.</rereturns>
         /// <exception cref="ArgumentException">If the path is invalid.</exception>
-        public static string ValidatePath(string basePath, string mappedPath) {
+        public static string ValidatePath(string basePath, string mappedPath)
+        {
             bool valid = false;
 
-            try {
+            try
+            {
                 // Check that we are indeed within the storage directory boundaries
                 valid = Path.GetFullPath(mappedPath).StartsWith(Path.GetFullPath(basePath), StringComparison.OrdinalIgnoreCase);
-            } catch {
+            }
+            catch
+            {
                 // Make sure that if invalid for medium trust we give a proper exception
                 valid = false;
             }
 
-            if (!valid) {
+            if (!valid)
+            {
                 throw new ArgumentException("Invalid path");
             }
 

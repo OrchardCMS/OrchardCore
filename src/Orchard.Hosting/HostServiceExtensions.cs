@@ -8,11 +8,13 @@ using Orchard.Environment.Shell.Builders;
 using Orchard.Services;
 using Orchard.Hosting.Services;
 
-namespace Orchard.Hosting {
-    public static class HostServiceExtensions {
+namespace Orchard.Hosting
+{
+    public static class HostServiceExtensions
+    {
         public static IServiceCollection AddHost(
-            this IServiceCollection services, Action<IServiceCollection> additionalDependencies) {
-
+            this IServiceCollection services, Action<IServiceCollection> additionalDependencies)
+        {
             services.AddFileSystems();
 
             // Caching - Move out
@@ -20,11 +22,12 @@ namespace Orchard.Hosting {
             //services.AddSingleton<ICache, Cache>();
 
             additionalDependencies(services);
-            
+
             return services.AddFallback();
         }
 
-        public static IServiceCollection AddHostCore(this IServiceCollection services) {
+        public static IServiceCollection AddHostCore(this IServiceCollection services)
+        {
             services.AddSingleton<IClock, Clock>();
 
             services.AddSingleton<IOrchardHost, DefaultOrchardHost>();

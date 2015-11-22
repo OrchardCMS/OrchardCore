@@ -11,13 +11,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Orchard.Environment.Commands {
-    public class CommandHostAgent {
+namespace Orchard.Environment.Commands
+{
+    public class CommandHostAgent
+    {
         private readonly IOrchardHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
 
         public CommandHostAgent(IOrchardHost orchardHost,
-            IShellSettingsManager shellSettingsManager) {
+            IShellSettingsManager shellSettingsManager)
+        {
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
 
@@ -26,40 +29,49 @@ namespace Orchard.Environment.Commands {
 
         public Localizer T { get; set; }
 
-        public CommandReturnCodes RunSingleCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches) {
+        public CommandReturnCodes RunSingleCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
+        {
             return RunCommand(input, output, tenant, args, switches);
         }
-        
-        public CommandReturnCodes RunCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches) {
-            try {
+
+        public CommandReturnCodes RunCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
+        {
+            try
+            {
                 tenant = tenant ?? ShellHelper.DefaultShellName;
 
-                using (var env = CreateStandaloneEnvironment(tenant)) {
+                using (var env = CreateStandaloneEnvironment(tenant))
+                {
                     var commandManager = env.ServiceProvider.GetService<ICommandManager>();
 
-                    var parameters = new CommandParameters {
+                    var parameters = new CommandParameters
+                    {
                         Arguments = args,
                         Switches = switches,
                         Input = input,
                         Output = output
                     };
-                    
+
                     commandManager.Execute(parameters);
                 }
 
                 return CommandReturnCodes.Ok;
             }
-            catch (OrchardCommandHostRetryException ex) {
+            catch (OrchardCommandHostRetryException ex)
+            {
                 // Special "Retry" return code for our host
                 output.WriteLine(T("{0} (Retrying...)", ex.Message));
                 return CommandReturnCodes.Retry;
             }
-            catch (Exception ex) {
-                if (ex.IsFatal()) {
+            catch (Exception ex)
+            {
+                if (ex.IsFatal())
+                {
                     throw;
                 }
                 if (ex is TargetInvocationException &&
-                    ex.InnerException != null) {
+                    ex.InnerException != null)
+                {
                     // If this is an exception coming from reflection and there is an innerexception which is the actual one, redirect
                     ex = ex.InnerException;
                 }
@@ -68,14 +80,16 @@ namespace Orchard.Environment.Commands {
             }
         }
 
-        private void OutputException(TextWriter output, LocalizedString title, Exception exception) {
+        private void OutputException(TextWriter output, LocalizedString title, Exception exception)
+        {
             // Display header
             output.WriteLine();
             output.WriteLine(T("{0}", title));
 
             // Push exceptions in a stack so we display from inner most to outer most
             var errors = new Stack<Exception>();
-            for (var scan = exception; scan != null; scan = scan.InnerException) {
+            for (var scan = exception; scan != null; scan = scan.InnerException)
+            {
                 errors.Push(scan);
             }
 
@@ -88,15 +102,16 @@ namespace Orchard.Environment.Commands {
 
             if (!((exception is OrchardException ||
                 exception is OrchardCoreException) &&
-                exception.InnerException == null)) {
-
+                exception.InnerException == null))
+            {
                 output.WriteLine(T("Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message));
                 output.WriteLine();
                 output.WriteLine(T("Stack Trace:"));
                 output.WriteLine();
 
                 // Display exceptions from inner most to outer most
-                foreach (var error in errors) {
+                foreach (var error in errors)
+                {
                     output.WriteLine(T("[{0}: {1}]", error.GetType().Name, error.Message));
                     output.WriteLine(T("{0}", error.StackTrace));
                     output.WriteLine();
@@ -108,18 +123,22 @@ namespace Orchard.Environment.Commands {
             output.WriteLine();
         }
 
-        private ShellContext CreateStandaloneEnvironment(string tenant) {
+        private ShellContext CreateStandaloneEnvironment(string tenant)
+        {
             // Retrieve settings for speficified tenant.
             var settingsList = _shellSettingsManager.LoadSettings();
-            if (settingsList.Any()) {
+            if (settingsList.Any())
+            {
                 var settings = settingsList.SingleOrDefault(s => string.Equals(s.Name, tenant, StringComparison.OrdinalIgnoreCase));
-                if (settings == null) {
+                if (settings == null)
+                {
                     throw new OrchardCoreException(T("Tenant {0} does not exist", tenant));
                 }
 
                 return _orchardHost.CreateShellContext(settings);
             }
-            else {
+            else
+            {
                 // In case of an uninitialized site (no default settings yet), we create a default settings instance.
                 var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, State = TenantState.Uninitialized };
                 return _orchardHost.CreateShellContext(settings);

@@ -1,12 +1,15 @@
-﻿namespace Orchard.ContentManagement.MetaData.Models {
-    public class ContentTypePartDefinition {
-    
-        public ContentTypePartDefinition(ContentPartDefinition contentPartDefinition, SettingsDictionary settings) {
+﻿namespace Orchard.ContentManagement.MetaData.Models
+{
+    public class ContentTypePartDefinition
+    {
+        public ContentTypePartDefinition(ContentPartDefinition contentPartDefinition, SettingsDictionary settings)
+        {
             PartDefinition = contentPartDefinition;
             Settings = settings;
         }
 
-        public ContentTypePartDefinition() {
+        public ContentTypePartDefinition()
+        {
             Settings = new SettingsDictionary();
         }
 

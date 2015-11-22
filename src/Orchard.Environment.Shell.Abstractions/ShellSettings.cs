@@ -2,29 +2,34 @@
 using Orchard.Environment.Shell.Models;
 using System;
 
-namespace Orchard.Environment.Shell {
+namespace Orchard.Environment.Shell
+{
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This 
+    /// Represents the minimalistic set of fields stored for each tenant. This
     /// model is obtained from the IShellSettingsManager, which by default reads this
     /// from the App_Data settings.txt files.
     /// </summary>
-    public class ShellSettings {
+    public class ShellSettings
+    {
         private TenantState _tenantState;
 
-        public ShellSettings() {
+        public ShellSettings()
+        {
             RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
             State = TenantState.Invalid;
         }
 
         public ShellSettings(
-            string name, TenantState tenantState) {
+            string name, TenantState tenantState)
+        {
             RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
 
             Name = name;
             State = tenantState;
         }
 
-        public ShellSettings(ShellSettings settings) {
+        public ShellSettings(ShellSettings settings)
+        {
             RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
 
             Name = settings.Name;
@@ -36,7 +41,8 @@ namespace Orchard.Environment.Shell {
             TablePrefix = settings.TablePrefix;
         }
 
-        public ShellSettings(IConfigurationRoot configuration) {
+        public ShellSettings(IConfigurationRoot configuration)
+        {
             RootConfiguration = configuration;
 
             TenantState state;
@@ -58,7 +64,7 @@ namespace Orchard.Environment.Shell {
             get { return RootConfiguration["Name"]; }
             set { RootConfiguration["Name"] = value; }
         }
-        
+
         /// <summary>
         /// The host name of the tenant
         /// </summary>
@@ -98,16 +104,20 @@ namespace Orchard.Environment.Shell {
         /// <summary>
         /// The state is which the tenant is
         /// </summary>
-        public TenantState State {
+        public TenantState State
+        {
             get { return _tenantState; }
-            set {
+            set
+            {
                 _tenantState = value;
                 RootConfiguration["State"] = value.ToString();
             }
         }
 
-        private string StringNullReconfiguration(string value) {
-            if (string.IsNullOrWhiteSpace(value) || value.Equals("null", StringComparison.CurrentCultureIgnoreCase)) {
+        private string StringNullReconfiguration(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value.Equals("null", StringComparison.CurrentCultureIgnoreCase))
+            {
                 return null;
             }
             return value;

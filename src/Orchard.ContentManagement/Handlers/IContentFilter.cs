@@ -1,4 +1,6 @@
-namespace Orchard.ContentManagement.Handlers {
-    public interface IContentFilter {
+namespace Orchard.ContentManagement.Handlers
+{
+    public interface IContentFilter
+    {
     }
 }

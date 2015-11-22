@@ -17,7 +17,8 @@ using Orchard.FileSystem.AppData;
 using System.IO;
 using YesSql.Storage.Sql;
 
-namespace Orchard.Environment.Shell.Builders {
+namespace Orchard.Environment.Shell.Builders
+{
     public class ShellContainerFactory : IShellContainerFactory
     {
         private readonly IServiceProvider _serviceProvider;
@@ -55,12 +56,11 @@ namespace Orchard.Environment.Shell.Builders {
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
             {
-
                 moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
             }
 
             var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
-            
+
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
@@ -133,8 +133,8 @@ namespace Orchard.Environment.Shell.Builders {
                         cfg.ConnectionFactory = connectionFactory;
                         cfg.DocumentStorageFactory = sqlFactory;
                         cfg.IsolationLevel = sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
-                    
-                        if(!String.IsNullOrWhiteSpace(settings.TablePrefix))
+
+                        if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
                         {
                             cfg.TablePrefix = sqlFactory.TablePrefix = settings.TablePrefix + "_";
                         }
@@ -167,7 +167,7 @@ namespace Orchard.Environment.Shell.Builders {
             {
                 tenantServiceCollection.AddScoped(handlerClass);
 
-                // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to 
+                // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to
                 // the event bus.
 
                 foreach (var i in handlerClass.GetInterfaces().Where(t => typeof(IEventHandler).IsAssignableFrom(t)))
@@ -196,7 +196,6 @@ namespace Orchard.Environment.Shell.Builders {
                         eventBusState.Add(handlerInterface.Name + "." + interfaceMethod.Name, d);
                     }
                 }
-
             }
 
             return shellServiceProvider;

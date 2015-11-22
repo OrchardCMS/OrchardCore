@@ -6,11 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Mvc.Routing;
 
-namespace Orchard.Hosting.Mvc {
-    public static class ServiceCollectionExtensions {
-        public static IServiceCollection AddOrchardMvc(this IServiceCollection services) {
-            
-
+namespace Orchard.Hosting.Mvc
+{
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddOrchardMvc(this IServiceCollection services)
+        {
             services
                 .AddMvcCore()
                 .AddViews()
@@ -19,8 +20,9 @@ namespace Orchard.Hosting.Mvc {
             services.AddScoped<IAssemblyProvider, OrchardMvcAssemblyProvider>();
 
             services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
-            
-            services.Configure<RazorViewEngineOptions>(options => {
+
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
             });

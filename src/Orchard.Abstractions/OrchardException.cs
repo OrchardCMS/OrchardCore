@@ -1,17 +1,21 @@
 ﻿using System;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard {
-    public class OrchardException : Exception {
+namespace Orchard
+{
+    public class OrchardException : Exception
+    {
         private readonly LocalizedString _localizedMessage;
 
         public OrchardException(LocalizedString message)
-            : base(message) {
+            : base(message)
+        {
             _localizedMessage = message;
         }
 
         public OrchardException(LocalizedString message, Exception innerException)
-            : base(message, innerException) {
+            : base(message, innerException)
+        {
             _localizedMessage = message;
         }
 

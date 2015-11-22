@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Models {
-    public class FeatureDescriptor {
-        public FeatureDescriptor() {
+namespace Orchard.Environment.Extensions.Models
+{
+    public class FeatureDescriptor
+    {
+        public FeatureDescriptor()
+        {
             Dependencies = Enumerable.Empty<string>();
         }
 

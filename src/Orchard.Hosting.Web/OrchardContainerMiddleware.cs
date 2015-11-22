@@ -14,7 +14,8 @@ namespace Orchard.Hosting
     /// <summary>
     /// This middleware replaces the default service provider by the one for the current tenant
     /// </summary>
-    public class OrchardContainerMiddleware {
+    public class OrchardContainerMiddleware
+    {
         private readonly RequestDelegate _next;
         private readonly IOrchardHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
@@ -24,14 +25,16 @@ namespace Orchard.Hosting
             RequestDelegate next,
             IOrchardHost orchardHost,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory) {
+            ILoggerFactory loggerFactory)
+        {
             _next = next;
             _orchardHost = orchardHost;
             _runningShellTable = runningShellTable;
             _logger = loggerFactory.CreateLogger<OrchardContainerMiddleware>();
         }
 
-        public async Task Invoke(HttpContext httpContext) {
+        public async Task Invoke(HttpContext httpContext)
+        {
             var sw = Stopwatch.StartNew();
 
             // Ensure all ShellContext are loaded and available.
@@ -39,7 +42,8 @@ namespace Orchard.Hosting
 
             var shellSetting = _runningShellTable.Match(httpContext);
 
-            if (shellSetting != null) {
+            if (shellSetting != null)
+            {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
                 httpContext.Items["ShellSettings"] = shellSetting;
                 httpContext.ApplicationServices = shellContext.ServiceProvider;
@@ -62,7 +66,8 @@ namespace Orchard.Hosting
                     await _next.Invoke(httpContext);
                 }
             }
-            else {
+            else
+            {
                 _logger.LogError("Tenant not found");
                 throw new Exception("Tenant not found");
             }

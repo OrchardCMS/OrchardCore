@@ -2,11 +2,13 @@
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DependencyInjection;
 
-namespace Orchard.ContentManagement.MetaData.Services {
+namespace Orchard.ContentManagement.MetaData.Services
+{
     /// <summary>
     /// Abstraction to manage settings metadata on a content.
     /// </summary>
-    public interface ISettingsFormatter : IDependency {
+    public interface ISettingsFormatter : IDependency
+    {
         /// <summary>
         /// Maps an XML element to a settings dictionary.
         /// </summary>

@@ -5,18 +5,21 @@ using System.IO;
 using System.Linq;
 using YamlDotNet.RepresentationModel;
 
-namespace Orchard.Parser.Yaml {
-    public class YamlConfigurationFileParser {
+namespace Orchard.Parser.Yaml
+{
+    public class YamlConfigurationFileParser
+    {
         private readonly IDictionary<string, string> _data = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Stack<string> _context = new Stack<string>();
         private string _currentPath;
 
-        public IDictionary<string, string> Parse(Stream stream) {
+        public IDictionary<string, string> Parse(Stream stream)
+        {
             var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             var yamlConfig = new YamlStream();
             yamlConfig.Load(new StreamReader(stream));
-            
+
             var mapping =
                 (YamlMappingNode)yamlConfig.Documents[0].RootNode;
 
@@ -25,20 +28,25 @@ namespace Orchard.Parser.Yaml {
             return _data;
         }
 
-        private void VisitYamlMappingNode(YamlMappingNode yamlNode) {
-            foreach (var entry in yamlNode.Children) {
+        private void VisitYamlMappingNode(YamlMappingNode yamlNode)
+        {
+            foreach (var entry in yamlNode.Children)
+            {
                 VisitYamlNode(entry);
             }
         }
 
-        private void VisitYamlSequenceNode(YamlSequenceNode yamlNode) {
-            foreach (var entry in yamlNode.Children) {
+        private void VisitYamlSequenceNode(YamlSequenceNode yamlNode)
+        {
+            foreach (var entry in yamlNode.Children)
+            {
                 if (entry is YamlMappingNode)
                     VisitYamlMappingNode((YamlMappingNode)entry);
             }
         }
 
-        private void VisitYamlNode(KeyValuePair<YamlNode, YamlNode> node) {
+        private void VisitYamlNode(KeyValuePair<YamlNode, YamlNode> node)
+        {
             if (node.Value is YamlScalarNode)
                 VisitYamlScalarNode((YamlScalarNode)node.Key, (YamlScalarNode)node.Value);
 
@@ -49,7 +57,8 @@ namespace Orchard.Parser.Yaml {
                 VisitYamlSequenceNode((YamlScalarNode)node.Key, (YamlSequenceNode)node.Value);
         }
 
-        private void VisitYamlMappingNode(YamlScalarNode yamlNodeKey, YamlMappingNode yamlNodeValue) {
+        private void VisitYamlMappingNode(YamlScalarNode yamlNodeKey, YamlMappingNode yamlNodeValue)
+        {
             EnterContext(yamlNodeKey.Value);
 
             VisitYamlMappingNode(yamlNodeValue);
@@ -57,17 +66,20 @@ namespace Orchard.Parser.Yaml {
             ExitContext();
         }
 
-        private void VisitYamlSequenceNode(YamlScalarNode yamlNodeKey, YamlSequenceNode yamlNodeValue) {
+        private void VisitYamlSequenceNode(YamlScalarNode yamlNodeKey, YamlSequenceNode yamlNodeValue)
+        {
             EnterContext(yamlNodeKey.Value);
             VisitYamlSequenceNode(yamlNodeValue);
             ExitContext();
         }
 
-        private void VisitYamlScalarNode(YamlScalarNode yamlNodeKey, YamlScalarNode yamlNodeValue) {
+        private void VisitYamlScalarNode(YamlScalarNode yamlNodeKey, YamlScalarNode yamlNodeValue)
+        {
             EnterContext(yamlNodeKey.Value);
             var key = _currentPath;
 
-            if (_data.ContainsKey(key)) {
+            if (_data.ContainsKey(key))
+            {
                 throw new FormatException(string.Format("FormatError_KeyIsDuplicated({0})", key));
             }
             _data[key] = yamlNodeValue.Value;
@@ -76,12 +88,14 @@ namespace Orchard.Parser.Yaml {
 
 
 
-        private void EnterContext(string context) {
+        private void EnterContext(string context)
+        {
             _context.Push(context);
             _currentPath = string.Join(Constants.KeyDelimiter, _context.Reverse());
         }
 
-        private void ExitContext() {
+        private void ExitContext()
+        {
             _context.Pop();
             _currentPath = string.Join(Constants.KeyDelimiter, _context.Reverse());
         }

@@ -4,9 +4,12 @@ using System.Collections.Generic;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Models;
 
-namespace Orchard.Environment.Extensions {
-    public class ExtensionLoadingContext {
-        public ExtensionLoadingContext() {
+namespace Orchard.Environment.Extensions
+{
+    public class ExtensionLoadingContext
+    {
+        public ExtensionLoadingContext()
+        {
             ProcessedExtensions = new Dictionary<string, ExtensionProbeEntry>(StringComparer.OrdinalIgnoreCase);
             ProcessedReferences = new Dictionary<string, ExtensionReferenceProbeEntry>(StringComparer.OrdinalIgnoreCase);
             DeleteActions = new List<Action>();

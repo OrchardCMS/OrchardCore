@@ -3,10 +3,14 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Orchard.Parser.Yaml;
 
-namespace Orchard.Parser {
-    public static class IniConfigurationExtensions {
-        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder configuration, string path) {
-            if (configuration == null) {
+namespace Orchard.Parser
+{
+    public static class IniConfigurationExtensions
+    {
+        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder configuration, string path)
+        {
+            if (configuration == null)
+            {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
@@ -16,18 +20,22 @@ namespace Orchard.Parser {
         public static IConfigurationBuilder AddYamlFile(
             this IConfigurationBuilder configurationBuilder,
             string path,
-            bool optional) {
-            if (configurationBuilder == null) {
+            bool optional)
+        {
+            if (configurationBuilder == null)
+            {
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            if (string.IsNullOrEmpty(path)) {
+            if (string.IsNullOrEmpty(path))
+            {
                 throw new ArgumentException("InvalidFilePath", nameof(path));
             }
 
             var fullPath = Path.Combine(configurationBuilder.GetBasePath(), path);
 
-            if (!optional && !File.Exists(fullPath)) {
+            if (!optional && !File.Exists(fullPath))
+            {
                 throw new FileNotFoundException("FormatError_FileNotFound(fullPath)", fullPath);
             }
 

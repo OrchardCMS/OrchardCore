@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Commands {
-    public class DefaultCommandManager : ICommandManager {
+namespace Orchard.Environment.Commands
+{
+    public class DefaultCommandManager : ICommandManager
+    {
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
 
-        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers) {
+        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers)
+        {
             _commandHandlers = commandHandlers;
 
             T = NullLocalizer.Instance;
@@ -16,17 +19,21 @@ namespace Orchard.Environment.Commands {
 
         public Localizer T { get; set; }
 
-        public void Execute(CommandParameters parameters) {
+        public void Execute(CommandParameters parameters)
+        {
             var matches = MatchCommands(parameters);
 
-            if (matches.Count() == 1) {
+            if (matches.Count() == 1)
+            {
                 var match = matches.Single();
                 match.CommandHandler.Execute(match.Context);
             }
-            else {
+            else
+            {
                 var commandMatch = string.Join(" ", parameters.Arguments.ToArray());
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
-                if (matches.Any()) {
+                if (matches.Any())
+                {
                     throw new OrchardCoreException(T("Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
                         commandMatch, commandList));
                 }
@@ -35,13 +42,16 @@ namespace Orchard.Environment.Commands {
             }
         }
 
-        public IEnumerable<CommandDescriptor> GetCommandDescriptors() {
+        public IEnumerable<CommandDescriptor> GetCommandDescriptors()
+        {
             return _commandHandlers.SelectMany(x => _builder.Build(x.GetType()).Commands);
         }
 
-        private IEnumerable<Match> MatchCommands(CommandParameters parameters) {
+        private IEnumerable<Match> MatchCommands(CommandParameters parameters)
+        {
             // Command names are matched with as many arguments as possible, in decreasing order
-            foreach (var argCount in Enumerable.Range(1, parameters.Arguments.Count()).Reverse()) {
+            foreach (var argCount in Enumerable.Range(1, parameters.Arguments.Count()).Reverse())
+            {
                 int count = argCount;
                 var matches = _commandHandlers.SelectMany(h =>
                     MatchCommands(parameters, count, _builder.Build(h.GetType()), h)).ToList();
@@ -52,13 +62,19 @@ namespace Orchard.Environment.Commands {
             return Enumerable.Empty<Match>();
         }
 
-        private static IEnumerable<Match> MatchCommands(CommandParameters parameters, int argCount, CommandHandlerDescriptor descriptor, ICommandHandler handler) {
-            foreach (var commandDescriptor in descriptor.Commands) {
-                foreach (var name in commandDescriptor.Names) {
+        private static IEnumerable<Match> MatchCommands(CommandParameters parameters, int argCount, CommandHandlerDescriptor descriptor, ICommandHandler handler)
+        {
+            foreach (var commandDescriptor in descriptor.Commands)
+            {
+                foreach (var name in commandDescriptor.Names)
+                {
                     var names = name.Split(' ');
-                    if (parameters.Arguments.Take(argCount).SequenceEqual(names, StringComparer.OrdinalIgnoreCase)) {
-                        yield return new Match {
-                            Context = new CommandContext {
+                    if (parameters.Arguments.Take(argCount).SequenceEqual(names, StringComparer.OrdinalIgnoreCase))
+                    {
+                        yield return new Match
+                        {
+                            Context = new CommandContext
+                            {
                                 Arguments = parameters.Arguments.Skip(names.Count()),
                                 Command = string.Join(" ", names),
                                 CommandDescriptor = commandDescriptor,
@@ -73,7 +89,8 @@ namespace Orchard.Environment.Commands {
             }
         }
 
-        private class Match {
+        private class Match
+        {
             public CommandContext Context { get; set; }
             public ICommandHandler CommandHandler { get; set; }
         }

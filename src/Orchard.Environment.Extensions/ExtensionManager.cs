@@ -27,15 +27,14 @@ namespace Orchard.Environment.Extensions
             IEnumerable<IExtensionLoader> loaders,
             ILoggerFactory loggerFactory)
         {
-
             _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
             _logger = loggerFactory.CreateLogger<ExtensionManager>();
             T = NullLocalizer.Instance;
         }
 
-        // This method does not load extension types, simply parses extension manifests from 
-        // the filesystem. 
+        // This method does not load extension types, simply parses extension manifests from
+        // the filesystem.
         public ExtensionDescriptor GetExtension(string id)
         {
             return AvailableExtensions().FirstOrDefault(x => x.Id == id);

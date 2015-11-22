@@ -37,8 +37,8 @@ namespace Orchard.ContentManagement
 
         public static bool HasDraft(this IContent content)
         {
-            return content.ContentItem != null && 
-                   content.ContentItem.Published == false || 
+            return content.ContentItem != null &&
+                   content.ContentItem.Published == false ||
                    (content.ContentItem.Published && content.ContentItem.Latest == false);
         }
     }

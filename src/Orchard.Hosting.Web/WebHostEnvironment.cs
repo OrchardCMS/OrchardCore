@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Localization;
-namespace Orchard.Hosting {
-    public class WebHostEnvironment : HostEnvironment {
+namespace Orchard.Hosting
+{
+    public class WebHostEnvironment : HostEnvironment
+    {
         public WebHostEnvironment(
-            IApplicationEnvironment applicationEnvironment) : base(applicationEnvironment) {
+            IApplicationEnvironment applicationEnvironment) : base(applicationEnvironment)
+        {
             T = NullLocalizer.Instance;
         }
 

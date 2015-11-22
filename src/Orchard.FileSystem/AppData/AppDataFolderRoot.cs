@@ -1,9 +1,12 @@
 ﻿using Orchard.Environment;
 
-namespace Orchard.FileSystem.AppData {
-    public class AppDataFolderRoot : IAppDataFolderRoot {
+namespace Orchard.FileSystem.AppData
+{
+    public class AppDataFolderRoot : IAppDataFolderRoot
+    {
         private readonly IHostEnvironment _hostEnvironment;
-        public AppDataFolderRoot(IHostEnvironment hostEnvironment) {
+        public AppDataFolderRoot(IHostEnvironment hostEnvironment)
+        {
             _hostEnvironment = hostEnvironment;
         }
 

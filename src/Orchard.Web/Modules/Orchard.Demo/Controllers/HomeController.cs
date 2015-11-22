@@ -9,8 +9,10 @@ using System;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
-namespace Orchard.Demo.Controllers {
-    public class HomeController : Controller {
+namespace Orchard.Demo.Controllers
+{
+    public class HomeController : Controller
+    {
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
         private readonly IEventBus _eventBus;
@@ -19,12 +21,13 @@ namespace Orchard.Demo.Controllers {
             ITestDependency testDependency,
             IContentManager contentManager,
             IEventBus eventBus,
-            ISession session) {
+            ISession session)
+        {
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
             _eventBus = eventBus;
-            }
+        }
 
         public ActionResult Index()
         {
@@ -64,13 +67,16 @@ namespace Orchard.Demo.Controllers {
             return "OK";
         }
 
-        public ActionResult IndexError() {
+        public ActionResult IndexError()
+        {
             throw new System.Exception("ERROR!!!!");
         }
     }
 
-    public class TestContentPartAHandler : ContentHandlerBase {
-        public override void Activating(ActivatingContentContext context) {
+    public class TestContentPartAHandler : ContentHandlerBase
+    {
+        public override void Activating(ActivatingContentContext context)
+        {
             context.Builder.Weld<TestContentPartA>();
         }
     }

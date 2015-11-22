@@ -25,7 +25,7 @@ namespace Orchard.Events
 
         public EventBusState()
         {
-             Subscribers = new ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>>();
+            Subscribers = new ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>>();
         }
 
         public void Add(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
@@ -33,7 +33,6 @@ namespace Orchard.Events
             var messageSubscribers = Subscribers.GetOrAdd(message, m => new ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>());
             messageSubscribers.Add(action);
         }
-
     }
 
     public class DefaultOrchardEventBus : IEventBus
@@ -67,7 +66,7 @@ namespace Orchard.Events
         {
             var expression = eventHandler.Body as MethodCallExpression;
 
-            if(expression == null)
+            if (expression == null)
             {
                 throw new ArgumentException("Only method calls are allowed in NotifyAsync");
             }
@@ -78,9 +77,11 @@ namespace Orchard.Events
 
             var data = expression.Method
                 .GetParameters()
-                .Select((parameter, index) => new {
+                .Select((parameter, index) => new
+                {
                     parameter.Name,
-                    Value = GetValue(parameter, expression.Arguments[index]) })
+                    Value = GetValue(parameter, expression.Arguments[index])
+                })
                 .ToDictionary(kv => kv.Name, kv => kv.Value);
 
             await NotifyAsync(messageName, data);
@@ -91,14 +92,14 @@ namespace Orchard.Events
             var service = serviceProvider.GetService(handlerClass);
             var parameters = new object[arguments.Count];
             var methodParameters = methodInfo.GetParameters();
-            for (var i=0; i<methodParameters.Length; i++)
+            for (var i = 0; i < methodParameters.Length; i++)
             {
                 var parameterName = methodParameters[i].Name;
                 parameters[i] = arguments[parameterName];
             }
 
             var result = methodInfo.Invoke(service, parameters) as Task;
-            if(result != null)
+            if (result != null)
             {
                 return result;
             }
@@ -106,7 +107,7 @@ namespace Orchard.Events
             return Task.CompletedTask;
         }
 
-        public static INotifyProxy CreateProxy(Type interfaceType) 
+        public static INotifyProxy CreateProxy(Type interfaceType)
         {
             var genericNotifyProxyType = typeof(NotifyProxy<>).MakeGenericType(interfaceType);
             var genericDispatchProxyCreateMethod = typeof(DispatchProxy).GetMethod("Create").MakeGenericMethod(interfaceType, genericNotifyProxyType);

@@ -4,8 +4,10 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Recipes.Models;
 using Orchard.ContentManagement;
 
-namespace Orchard.Environment.Recipes.Services {
-    public interface IRecipeExecutionStep : IDependency {
+namespace Orchard.Environment.Recipes.Services
+{
+    public interface IRecipeExecutionStep : IDependency
+    {
         string Name { get; }
         IEnumerable<string> Names { get; }
         LocalizedString DisplayName { get; }

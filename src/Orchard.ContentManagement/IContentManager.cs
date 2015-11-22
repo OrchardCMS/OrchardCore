@@ -3,11 +3,13 @@ using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DependencyInjection;
 using System.Threading.Tasks;
 
-namespace Orchard.ContentManagement {
+namespace Orchard.ContentManagement
+{
     /// <summary>
     /// Content management functionality to deal with Orchard content items and their parts
     /// </summary>
-    public interface IContentManager : IDependency {
+    public interface IContentManager : IDependency
+    {
         IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions();
 
         /// <summary>
@@ -49,8 +51,9 @@ namespace Orchard.ContentManagement {
         Task Publish(ContentItem contentItem);
         Task Unpublish(ContentItem contentItem);
     }
-    
-    public class VersionOptions {
+
+    public class VersionOptions
+    {
         /// <summary>
         /// Gets the latest version.
         /// </summary>
@@ -89,7 +92,7 @@ namespace Orchard.ContentManagement {
         /// <summary>
         /// Creates a new version based on the specified version number.
         /// </summary>
-        public static VersionOptions Restore(int version, bool publish = false) { return new VersionOptions { VersionNumber = version, IsPublished = publish}; }
+        public static VersionOptions Restore(int version, bool publish = false) { return new VersionOptions { VersionNumber = version, IsPublished = publish }; }
 
         public bool IsLatest { get; private set; }
         public bool IsPublished { get; private set; }

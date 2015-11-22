@@ -4,8 +4,10 @@ using Orchard.Environment.Shell;
 using System;
 using System.Linq;
 
-namespace Orchard.Hosting.HostContext {
-    public class CommandHostContextProvider : ICommandHostContextProvider {
+namespace Orchard.Hosting.HostContext
+{
+    public class CommandHostContextProvider : ICommandHostContextProvider
+    {
         private readonly string[] _args;
         private readonly IServiceProvider _serviceProvider;
         private readonly OrchardConsoleLogger _logger;
@@ -13,13 +15,15 @@ namespace Orchard.Hosting.HostContext {
         public CommandHostContextProvider(
             IServiceProvider serviceProvider,
             OrchardConsoleLogger logger,
-            string[] args) {
+            string[] args)
+        {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _args = args;
         }
 
-        public CommandHostContext CreateContext() {
+        public CommandHostContext CreateContext()
+        {
             var context = new CommandHostContext { RetryResult = CommandReturnCodes.Retry };
 
             _logger.LogInfo("Initializing Orchard session.");
@@ -27,11 +31,13 @@ namespace Orchard.Hosting.HostContext {
             return context;
         }
 
-        public void Shutdown(CommandHostContext context) {
+        public void Shutdown(CommandHostContext context)
+        {
             _logger.LogInfo("Shutting down Orchard session");
         }
 
-        private void Initialize(CommandHostContext context) {
+        private void Initialize(CommandHostContext context)
+        {
             context.Arguments = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(_args));
             context.CommandHost = new CommandHostAgent(
                 _serviceProvider.GetService<IOrchardHost>(),
@@ -44,7 +50,8 @@ namespace Orchard.Hosting.HostContext {
                 return;
 
             context.DisplayUsageHelp = (context.Arguments.Arguments.Any() && context.Arguments.ResponseFiles.Any());
-            if (context.DisplayUsageHelp) {
+            if (context.DisplayUsageHelp)
+            {
                 _logger.LogError("Incorrect syntax: Response files cannot be used in conjunction with commands");
                 return;
             }

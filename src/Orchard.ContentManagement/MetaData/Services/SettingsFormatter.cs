@@ -3,18 +3,22 @@ using System.Xml;
 using System.Xml.Linq;
 using Orchard.ContentManagement.MetaData.Models;
 
-namespace Orchard.ContentManagement.MetaData.Services {
+namespace Orchard.ContentManagement.MetaData.Services
+{
     /// <summary>
     /// Abstraction to manage settings metadata on a content.
     /// </summary>
-    public class SettingsFormatter : ISettingsFormatter {
+    public class SettingsFormatter : ISettingsFormatter
+    {
         /// <summary>
         /// Maps an XML element to a settings dictionary.
         /// </summary>
         /// <param name="element">The XML element to be mapped.</param>
         /// <returns>The settings dictionary.</returns>
-        public SettingsDictionary Map(XElement element) {
-            if (element == null) {
+        public SettingsDictionary Map(XElement element)
+        {
+            if (element == null)
+            {
                 return new SettingsDictionary();
             }
 
@@ -28,13 +32,15 @@ namespace Orchard.ContentManagement.MetaData.Services {
         /// </summary>
         /// <param name="settingsDictionary">The settings dictionary.</param>
         /// <returns>The XML element.</returns>
-        public XElement Map(SettingsDictionary settingsDictionary) {
-            if (settingsDictionary == null) {
+        public XElement Map(SettingsDictionary settingsDictionary)
+        {
+            if (settingsDictionary == null)
+            {
                 return new XElement("settings");
             }
 
             return new XElement(
-                "settings", 
+                "settings",
                 settingsDictionary
                     .Where(kv => kv.Value != null)
                     .Select(kv => new XAttribute(XmlConvert.EncodeLocalName(kv.Key), kv.Value)));

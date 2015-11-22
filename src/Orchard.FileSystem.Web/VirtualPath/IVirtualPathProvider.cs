@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Orchard.FileSystem.VirtualPath {
-    public interface IVirtualPathProvider {
+namespace Orchard.FileSystem.VirtualPath
+{
+    public interface IVirtualPathProvider
+    {
         string Combine(params string[] paths);
         string ToAppRelative(string virtualPath);
         string MapPath(string virtualPath);

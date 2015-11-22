@@ -8,10 +8,12 @@ using System.Runtime.Serialization;
 using System.Reflection;
 #endif
 
-namespace Orchard.ContentManagement {
-    public class ContentPart : IContent {
-
-        public ContentPart() {
+namespace Orchard.ContentManagement
+{
+    public class ContentPart : IContent
+    {
+        public ContentPart()
+        {
             Fields = new List<ContentField>();
         }
 
@@ -31,16 +33,19 @@ namespace Orchard.ContentManagement {
         {
             get; set;
         }
-        
-        public bool Has(Type fieldType, string fieldName) {
+
+        public bool Has(Type fieldType, string fieldName)
+        {
             return Fields.Any(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
         }
 
-        public ContentField Get(Type fieldType, string fieldName) {
+        public ContentField Get(Type fieldType, string fieldName)
+        {
             return Fields.FirstOrDefault(field => field.Name == fieldName && fieldType.IsInstanceOfType(field));
         }
 
-        public void Weld(ContentField field) {
+        public void Weld(ContentField field)
+        {
             Fields.Add(field);
         }
     }
@@ -50,6 +55,5 @@ namespace Orchard.ContentManagement {
     /// </summary>
     public class ContentVersionPart : ContentPart
     {
-
     }
 }

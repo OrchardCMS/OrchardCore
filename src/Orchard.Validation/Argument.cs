@@ -1,46 +1,60 @@
 ﻿using System;
 
-namespace Orchard.Validation {
-    public class Argument {
+namespace Orchard.Validation
+{
+    public class Argument
+    {
         [ContractAnnotation("halt <= condition: true")]
-        public static void Validate(bool condition, string name) {
-            if (!condition) {
+        public static void Validate(bool condition, string name)
+        {
+            if (!condition)
+            {
                 throw new ArgumentException("Invalid argument", name);
             }
         }
 
         [ContractAnnotation("halt <= condition: true")]
-        public static void Validate(bool condition, string name, string message) {
-            if (!condition) {
+        public static void Validate(bool condition, string name, string message)
+        {
+            if (!condition)
+            {
                 throw new ArgumentException(message, name);
             }
         }
-        
+
 
         [ContractAnnotation("value:null => fail")]
-        public static void ThrowIfNull<T>(T value, string name) where T : class {
-            if (value == null) {
+        public static void ThrowIfNull<T>(T value, string name) where T : class
+        {
+            if (value == null)
+            {
                 throw new ArgumentNullException(name);
             }
         }
 
         [ContractAnnotation("value:null => fail")]
-        public static void ThrowIfNull<T>(T value, string name, string message) where T : class {
-            if (value == null) {
+        public static void ThrowIfNull<T>(T value, string name, string message) where T : class
+        {
+            if (value == null)
+            {
                 throw new ArgumentNullException(name, message);
             }
         }
 
         [ContractAnnotation("value:null => fail")]
-        public static void ThrowIfNullOrEmpty(string value, string name) {
-            if (string.IsNullOrEmpty(value)) {
+        public static void ThrowIfNullOrEmpty(string value, string name)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
                 throw new ArgumentException("Argument must be a non empty string", name);
             }
         }
 
         [ContractAnnotation("value:null => fail")]
-        public static void ThrowIfNullOrEmpty(string value, string name, string message) {
-            if (string.IsNullOrEmpty(value)) {
+        public static void ThrowIfNullOrEmpty(string value, string name, string message)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
                 throw new ArgumentException(message, name);
             }
         }
@@ -80,7 +94,7 @@ namespace Orchard.Validation {
         /// <item><code>
         /// // A method that returns null if the parameter is null, and not null if the parameter is not null
         /// [ContractAnnotation("null => null; notnull => notnull")]
-        /// public object Transform(object data) 
+        /// public object Transform(object data)
         /// </code></item>
         /// <item><code>
         /// [ContractAnnotation("s:null=>false; =>true,result:notnull; =>false, result:null")]
@@ -88,11 +102,14 @@ namespace Orchard.Validation {
         /// </code></item>
         /// </list></examples>
         [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-        public sealed class ContractAnnotationAttribute : Attribute {
+        public sealed class ContractAnnotationAttribute : Attribute
+        {
             public ContractAnnotationAttribute(string contract)
-              : this(contract, false) { }
+              : this(contract, false)
+            { }
 
-            public ContractAnnotationAttribute(string contract, bool forceFullStates) {
+            public ContractAnnotationAttribute(string contract, bool forceFullStates)
+            {
                 Contract = contract;
                 ForceFullStates = forceFullStates;
             }

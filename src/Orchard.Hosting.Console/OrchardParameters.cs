@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Hosting {
-    public class OrchardParameters {
+namespace Orchard.Hosting
+{
+    public class OrchardParameters
+    {
         public bool Verbose { get; set; }
         public string Tenant { get; set; }
         public IList<string> Arguments { get; set; }

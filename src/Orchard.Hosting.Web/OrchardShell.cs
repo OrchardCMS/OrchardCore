@@ -10,20 +10,22 @@ using System.Threading.Tasks;
 
 namespace Orchard.Hosting
 {
-    public class OrchardShell : IOrchardShellEvents {
+    public class OrchardShell : IOrchardShellEvents
+    {
         private readonly IEnumerable<IRouteProvider> _routeProviders;
         private readonly IRoutePublisher _routePublisher;
         private readonly IEnumerable<IMiddlewareProvider> _middlewareProviders;
         private readonly ShellSettings _shellSettings;
         private readonly IServiceProvider _serviceProvider;
 
-        public OrchardShell (
+        public OrchardShell(
             IEnumerable<IRouteProvider> routeProviders,
             IRoutePublisher routePublisher,
             IEnumerable<IMiddlewareProvider> middlewareProviders,
             ShellSettings shellSettings,
             IServiceProvider serviceProvider
-            ) {
+            )
+        {
             _routeProviders = routeProviders;
             _routePublisher = routePublisher;
             _middlewareProviders = middlewareProviders;
@@ -34,7 +36,7 @@ namespace Orchard.Hosting
         public Task ActivatingAsync()
         {
             IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
-            
+
             var orderedMiddlewares = _middlewareProviders
                 .SelectMany(p => p.GetMiddlewares())
                 .OrderBy(obj => obj.Priority)
@@ -42,7 +44,7 @@ namespace Orchard.Hosting
 
             RequestDelegate pipeline = null;
 
-            // If there are custom middleware for this tenant, 
+            // If there are custom middleware for this tenant,
             // build a custom pipeline for its routes
             if (orderedMiddlewares.Length > 0)
             {
@@ -57,7 +59,7 @@ namespace Orchard.Hosting
             }
 
             _routePublisher.Publish(
-                _routeProviders.SelectMany(provider => provider.GetRoutes()), 
+                _routeProviders.SelectMany(provider => provider.GetRoutes()),
                 pipeline
             );
 

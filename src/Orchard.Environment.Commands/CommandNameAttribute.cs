@@ -1,9 +1,12 @@
 ﻿using System;
 
-namespace Orchard.Environment.Commands {
+namespace Orchard.Environment.Commands
+{
     [AttributeUsage(AttributeTargets.Method)]
-    public class CommandNameAttribute : Attribute {
-        public CommandNameAttribute(params string[] commandsAlias) {
+    public class CommandNameAttribute : Attribute
+    {
+        public CommandNameAttribute(params string[] commandsAlias)
+        {
             Commands = commandsAlias;
         }
 
@@ -11,8 +14,10 @@ namespace Orchard.Environment.Commands {
     }
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class CommandHelpAttribute : Attribute {
-        public CommandHelpAttribute(string helpText) {
+    public class CommandHelpAttribute : Attribute
+    {
+        public CommandHelpAttribute(string helpText)
+        {
             HelpText = helpText;
         }
 

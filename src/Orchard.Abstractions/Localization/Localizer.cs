@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Localization {
+namespace Orchard.Localization
+{
     /// <summary>
     /// Localizes some text based on the current Work Context culture
     /// </summary>
