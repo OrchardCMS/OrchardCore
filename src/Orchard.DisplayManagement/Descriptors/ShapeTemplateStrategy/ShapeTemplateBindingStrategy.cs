@@ -7,6 +7,7 @@ using Microsoft.AspNet.Mvc.ViewFeatures;
 using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
@@ -27,7 +28,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
         private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
-        private readonly IViewEngine _viewEngine;
+        private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly ILogger _logger;
 
@@ -37,7 +38,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             IExtensionManager extensionManager,
             IVirtualPathProvider virtualPathProvider,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
-            IViewEngine viewEngine,
+            IOptions<MvcViewOptions> options,
             IActionContextAccessor actionContextAccessor,
             ILoggerFactory loggerFactory) {
 
@@ -46,7 +47,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             _extensionManager = extensionManager;
             _virtualPathProvider = virtualPathProvider;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
-            _viewEngine = viewEngine;
+            _viewEngine = options;
             _actionContextAccessor = actionContextAccessor;
             _logger = loggerFactory.CreateLogger<DefaultShapeTableManager>();
         }
@@ -154,7 +155,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
         }
 
         private IHtmlContent RenderRazorViewToString(string path, DisplayContext context) {
-            var viewEngineResult = _viewEngine.FindPartialView(_actionContextAccessor.ActionContext, path);
+            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
             if (viewEngineResult.Success) {
                 using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding)) {
                     // Forcing synchronous behavior so users don't have to await templates.

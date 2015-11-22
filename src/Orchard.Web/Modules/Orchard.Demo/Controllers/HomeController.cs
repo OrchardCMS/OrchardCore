@@ -53,9 +53,7 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
-
-            var shape = Shape.Foo();
-
+            
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
         }
 
@@ -68,7 +66,11 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
-            return View(contentItem);
+            var shape = Shape
+                .Foo()
+                .Line(contentItem.As<TestContentPartA>().Line);
+
+            return View(shape);
         }
 		
         public ActionResult Raw()

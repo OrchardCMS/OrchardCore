@@ -139,6 +139,23 @@ namespace Orchard.Environment.Shell.Builders
 
             tenantServiceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
+            IServiceCollection moduleServiceCollection =
+                _serviceProvider.CreateChildContainer(_applicationServices);
+
+            foreach (var dependency in blueprint.Dependencies
+                .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
+            {
+                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
+            }
+
+            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
+
+            // Let any module add custom service descriptors to the tenant
+            foreach (var service in moduleServiceProvider.GetServices<IModule>())
+            {
+                service.Configure(tenantServiceCollection);
+            }
+
             // Register event handlers on the event bus
             var eventHandlers = tenantServiceCollection
                 .Select(x => x.ImplementationType)
@@ -161,23 +178,6 @@ namespace Orchard.Environment.Shell.Builders
                         return proxy;
                     });
                 }
-            }
-
-            IServiceCollection moduleServiceCollection =
-                _serviceProvider.CreateChildContainer(_applicationServices);
-
-            foreach (var dependency in blueprint.Dependencies
-                .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
-            {
-                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
-            }
-
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
-
-            // Let any module add custom service descriptors to the tenant
-            foreach (var service in moduleServiceProvider.GetServices<IModule>())
-            {
-                service.Configure(tenantServiceCollection);
             }
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();

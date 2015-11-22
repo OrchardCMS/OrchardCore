@@ -32,8 +32,12 @@ namespace Orchard.DisplayManagement {
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names) {
                 Argument.ThrowIfNull(arguments, nameof(arguments));
                 Argument.ThrowIfNull(names, nameof(names));
-                Argument.Validate(!(arguments.Count() < names.Count()), "arguments.Count() <= names.Count()");
 
+                if (arguments.Count() < names.Count())
+                {
+                    throw new ArgumentException("arguments.Count() < names.Count()");
+                }
+                
                 _arguments = arguments;
                 _names = names;
             }

@@ -1,12 +1,10 @@
-﻿@model ContentItem
-@using Orchard.ContentManagement
-@using Orchard.Demo.Models
+﻿@model dynamic
 
 <html>
     <head>
         <title>Display</title>
     </head>
     <body>
-        @(Model.As<TestContentPartA>().Line)
+        @Model
 </body>
 </html>

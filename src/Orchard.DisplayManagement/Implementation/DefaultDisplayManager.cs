@@ -188,7 +188,7 @@ namespace Orchard.DisplayManagement.Implementation {
             if (result != null)
                 return result;
 
-            return new HtmlString(new HtmlEncoder().HtmlEncode(value.ToString()));
+            return new HtmlString(HtmlEncoder.Default.HtmlEncode(value.ToString()));
         }
 
         static IHtmlContent Process(ShapeBinding shapeBinding, IShape shape, DisplayContext context) {
