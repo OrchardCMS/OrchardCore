@@ -44,7 +44,11 @@ namespace Orchard.DisplayManagement.Descriptors {
 
                 var builder = new ShapeTableBuilder(strategyDefaultFeature);
                 bindingStrategy.Discover(builder);
-                alterationSets.Add(builder.BuildAlterations().ToReadOnlyCollection());
+                var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
+                if (builtAlterations.Any())
+                {
+                    alterationSets.Add(builtAlterations);
+                }
             }
 
             var alterations = alterationSets

@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
 using Orchard.Demo.Services;
-using Orchard.Demo.TestEvents;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Implementation;
+using Orchard.DisplayManagement.Shapes;
 using Orchard.Events;
 using System;
 using System.Threading.Tasks;
@@ -18,7 +19,6 @@ namespace Orchard.Demo.Controllers
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
         private readonly IEventBus _eventBus;
-        private readonly IDisplayManager _displayManager;
         private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
 		
@@ -27,7 +27,6 @@ namespace Orchard.Demo.Controllers
             IContentManager contentManager,
             IEventBus eventBus,
             IShapeFactory shapeFactory,
-            IDisplayManager displayManager,
             IShapeDisplay shapeDisplay,
             ISession session)
         {
@@ -35,7 +34,6 @@ namespace Orchard.Demo.Controllers
             _testDependency = testDependency;
             _contentManager = contentManager;
             _eventBus = eventBus;
-            _displayManager = displayManager;
             _shapeDisplay = shapeDisplay;
             Shape = shapeFactory;
         }
@@ -70,7 +68,9 @@ namespace Orchard.Demo.Controllers
                 .Foo()
                 .Line(contentItem.As<TestContentPartA>().Line);
 
-            return View(shape);
+            var content = _shapeDisplay.Display(shape));
+
+            return View(content);
         }
 		
         public ActionResult Raw()
@@ -87,6 +87,15 @@ namespace Orchard.Demo.Controllers
         public ActionResult IndexError()
         {
             throw new System.Exception("ERROR!!!!");
+        }
+
+        private DisplayContext CreateDisplayContext(Shape shape)
+        {
+            return new DisplayContext
+            {
+                Value = shape,
+                ViewContext = new ViewContext()
+            };
         }
     }
 

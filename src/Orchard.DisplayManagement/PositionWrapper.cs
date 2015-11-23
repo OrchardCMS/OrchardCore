@@ -14,7 +14,7 @@ namespace Orchard.DisplayManagement {
         }
 
         public PositionWrapper(string value, string position) {
-            _value = new HtmlEncoder().HtmlEncode(value);
+            _value = HtmlEncoder.Default.HtmlEncode(value);
             Position = position;
         }
 
