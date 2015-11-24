@@ -25,5 +25,15 @@
             each view. It return an IHtmlString
         *@
         @Display(Model)
+
+        @*
+            We can still call the DisplHelper with methods
+        *@
+        @Display.Bar()
+
+        @*
+            Or attribute shapes
+        *@
+        @Display.Baz(text: "Foo")
 </body>
 </html>
