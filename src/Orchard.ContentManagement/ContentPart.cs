@@ -12,11 +12,6 @@ namespace Orchard.ContentManagement
 {
     public class ContentPart : IContent
     {
-        public ContentPart()
-        {
-            Fields = new List<ContentField>();
-        }
-
         [IgnoreDataMember]
         public virtual ContentItem ContentItem { get; set; }
 
@@ -27,12 +22,11 @@ namespace Orchard.ContentManagement
         [IgnoreDataMember]
         public int ContentItemId => ContentItem.ContentItemId;
 
-        public SettingsDictionary Settings { get; set; }
+        [IgnoreDataMember]
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
+        public SettingsDictionary Settings { get; }
 
-        public IList<ContentField> Fields
-        {
-            get; set;
-        }
+        public IList<ContentField> Fields { get; set; } = new List<ContentField>();
 
         public bool Has(Type fieldType, string fieldName)
         {
@@ -48,12 +42,5 @@ namespace Orchard.ContentManagement
         {
             Fields.Add(field);
         }
-    }
-
-    /// <summary>
-    /// Represents a <see cref="ContentPart"/> that is associated to a <see cref="ContentItemVersionRecord"/>
-    /// </summary>
-    public class ContentVersionPart : ContentPart
-    {
     }
 }

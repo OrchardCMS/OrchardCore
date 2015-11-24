@@ -5,7 +5,7 @@ using Orchard.Parser.Yaml;
 
 namespace Orchard.Parser
 {
-    public static class IniConfigurationExtensions
+    public static class YamlConfigurationExtensions
     {
         public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder configuration, string path)
         {
@@ -41,6 +41,16 @@ namespace Orchard.Parser
 
             configurationBuilder.Add(new YamlConfigurationProvider(fullPath, optional: optional));
             return configurationBuilder;
+        }
+
+        public static string Get(this IConfigurationProvider provider, string key) {
+            string value;
+
+            if (!provider.TryGet(key, out value)) {
+                throw new InvalidOperationException("Key not found");
+            }
+
+            return value;
         }
     }
 }

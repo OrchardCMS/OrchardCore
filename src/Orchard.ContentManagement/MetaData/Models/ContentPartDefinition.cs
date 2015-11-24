@@ -21,6 +21,6 @@ namespace Orchard.ContentManagement.MetaData.Models
 
         public string Name { get; private set; }
         public IEnumerable<ContentPartFieldDefinition> Fields { get; private set; }
-        public SettingsDictionary Settings { get; private set; }
+        public SettingsDictionary Settings { get; set; }
     }
 }

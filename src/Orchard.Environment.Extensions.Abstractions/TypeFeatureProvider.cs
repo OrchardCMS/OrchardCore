@@ -19,7 +19,11 @@ namespace Orchard.Environment.Extensions
 
         public Feature GetFeatureForDependency(Type dependency)
         {
-            return _features[dependency];
+            if (_features.ContainsKey(dependency)) 
+            {
+                return _features[dependency];
+            }
+            return null;
         }
     }
 }
