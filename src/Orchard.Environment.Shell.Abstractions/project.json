@@ -4,8 +4,8 @@
     "Microsoft.Extensions.Configuration": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*",
-    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.Events": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Orchard.Environment;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Orchard.FileSystem.VirtualPath
 {
@@ -26,12 +27,17 @@ namespace Orchard.FileSystem.VirtualPath
 
         public virtual IEnumerable<string> ListFiles(string path)
         {
-            return Directory.GetFiles(MapPath(path));
+            var adjustedPath = MapPath(path);
+            if (Directory.Exists(adjustedPath))
+            {
+                return Directory.EnumerateFiles(adjustedPath);
+            }
+            return Enumerable.Empty<string>();
         }
 
         public virtual IEnumerable<string> ListDirectories(string path)
         {
-            return Directory.GetDirectories(MapPath(path));
+            return Directory.EnumerateDirectories(MapPath(path));
         }
 
         public virtual string Combine(params string[] paths)

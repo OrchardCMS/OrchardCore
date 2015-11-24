@@ -97,7 +97,7 @@ namespace Orchard.Environment.Extensions
                 .Project
                 .Dependencies
                 .SelectMany(x => Flatten(x))
-                .Where(x => x.Library.Type == "Package")
+                .Where(x => x.Library.Type == LibraryTypes.Package)
                 .Distinct()
                 .ToList();
 
