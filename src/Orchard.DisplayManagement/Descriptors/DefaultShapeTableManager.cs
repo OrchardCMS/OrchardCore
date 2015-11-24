@@ -6,11 +6,16 @@ using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
 using Orchard.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Orchard.DisplayManagement.Descriptors {
+    /// <summary>
+    /// This class needs to be a singleton per tenant as it can contain different shapes
+    /// for each tenant, even if they share the same theme.
+    /// </summary>
     public class DefaultShapeTableManager : IShapeTableManager {
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
@@ -18,6 +23,8 @@ namespace Orchard.DisplayManagement.Descriptors {
         private readonly IEventBus _eventBus;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
+
+        private readonly ConcurrentDictionary<string, Lazy<ShapeTable>> _shapeTables = new ConcurrentDictionary<string, Lazy<ShapeTable>>();
 
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
@@ -35,53 +42,63 @@ namespace Orchard.DisplayManagement.Descriptors {
         }
 
         public ShapeTable GetShapeTable(string themeName) {
-            _logger.LogInformation("Start building shape table");
+            // Use a lazy initialized factory to prevent multiple threads from building 
+            // the same table in parallel as it is costly
+            return _shapeTables.GetOrAdd(themeName ?? "", new Lazy<ShapeTable>( () =>
+            {
+                _logger.LogInformation("Start building shape table");
 
-            IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
-            foreach (var bindingStrategy in _bindingStrategies) {
-                Feature strategyDefaultFeature = 
-                    _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
-
-                var builder = new ShapeTableBuilder(strategyDefaultFeature);
-                bindingStrategy.Discover(builder);
-                var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
-                if (builtAlterations.Any())
+                IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
+                foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    alterationSets.Add(builtAlterations);
+                    Feature strategyDefaultFeature =
+                        _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+
+                    var builder = new ShapeTableBuilder(strategyDefaultFeature);
+                    bindingStrategy.Discover(builder);
+                    var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
+                    if (builtAlterations.Any())
+                    {
+                        alterationSets.Add(builtAlterations);
+                    }
                 }
-            }
 
-            var alterations = alterationSets
-            .SelectMany(shapeAlterations => shapeAlterations)
-            .Where(alteration => IsModuleOrRequestedTheme(alteration, themeName))
-            .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
-            .ToList();
+                var alterations = alterationSets
+                .SelectMany(shapeAlterations => shapeAlterations)
+                .Where(alteration => IsModuleOrRequestedTheme(alteration, themeName))
+                .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
+                .ToList();
 
-            var descriptors = alterations.GroupBy(alteration => alteration.ShapeType, StringComparer.OrdinalIgnoreCase)
-                .Select(group => group.Aggregate(
-                    new ShapeDescriptor { ShapeType = group.Key },
-                    (descriptor, alteration) => {
-                        alteration.Alter(descriptor);
-                        return descriptor;
-                    })).ToList();
+                var descriptors = alterations.GroupBy(alteration => alteration.ShapeType, StringComparer.OrdinalIgnoreCase)
+                    .Select(group => group.Aggregate(
+                        new ShapeDescriptor { ShapeType = group.Key },
+                        (descriptor, alteration) =>
+                        {
+                            alteration.Alter(descriptor);
+                            return descriptor;
+                        })).ToList();
 
-            foreach (var descriptor in descriptors) {
-                foreach (var alteration in alterations.Where(a => a.ShapeType == descriptor.ShapeType).ToList()) {
-                    var local = new ShapeDescriptor { ShapeType = descriptor.ShapeType };
-                    alteration.Alter(local);
-                    descriptor.BindingSources.Add(local.BindingSource);
+                foreach (var descriptor in descriptors)
+                {
+                    foreach (var alteration in alterations.Where(a => a.ShapeType == descriptor.ShapeType).ToList())
+                    {
+                        var local = new ShapeDescriptor { ShapeType = descriptor.ShapeType };
+                        alteration.Alter(local);
+                        descriptor.BindingSources.Add(local.BindingSource);
+                    }
                 }
-            }
 
-            var result = new ShapeTable {
-                Descriptors = descriptors.ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
-                Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
-            };
-            
-            //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
+                var result = new ShapeTable
+                {
+                    Descriptors = descriptors.ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
+                    Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
+                };
 
-            _logger.LogInformation("Done building shape table");
-            return result;
+                //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
+
+                _logger.LogInformation("Done building shape table");
+                return result;
+            })).Value;
         }
 
         private static int GetPriority(ShapeAlteration shapeAlteration) {

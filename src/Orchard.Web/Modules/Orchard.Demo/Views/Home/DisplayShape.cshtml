@@ -1,0 +1,29 @@
+﻿@model dynamic
+@inject Orchard.DisplayManagement.IShapeDisplay ShapeDisplay
+@inject Orchard.DisplayManagement.IDisplayHelperFactory DisplayHelperFactory
+
+@{ 
+    var Display = DisplayHelperFactory.CreateHelper(ViewContext);
+}
+
+<html>
+    <head>
+        <title>Display</title>
+    </head>
+    <body>
+
+        @Model.Line
+
+        @*
+            The most simple way to render a shape is to call IShapeDisplay.Display.
+            It uses a DisplayHelper internally and returns the html as a string
+        *@
+        @ShapeDisplay.Display(Model)
+
+        @*
+            The way it is done from a View is to use a DisplayHelper which is created for 
+            each view. It return an IHtmlString
+        *@
+        @Display(Model)
+</body>
+</html>

@@ -9,14 +9,14 @@ namespace Orchard.DisplayManagement.Implementation {
 
     public class DefaultShapeFactory : Composite, IShapeFactory {
         private readonly IEnumerable<IShapeFactoryEvents> _events;
-        private readonly IShapeTableLocator _shapeTableLocator;
+        private readonly IShapeTableManager _shapeTableManager;
 
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
-            IShapeTableLocator shapeTableLocator)
+            IShapeTableManager shapeTableManager)
         {
             _events = events;
-            _shapeTableLocator = shapeTableLocator;
+            _shapeTableManager = shapeTableManager;
         }
 
         public override bool TryInvokeMember(System.Dynamic.InvokeMemberBinder binder, object[] args, out object result) {
@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.Implementation {
         }
 
         public IShape Create(string shapeType, INamedEnumerable<object> parameters, Func<dynamic> createShape) {
-            var defaultShapeTable = _shapeTableLocator.Lookup(null);
+            var defaultShapeTable = _shapeTableManager.GetShapeTable(null);
             ShapeDescriptor shapeDescriptor;
             defaultShapeTable.Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 

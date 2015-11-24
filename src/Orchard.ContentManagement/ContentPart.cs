@@ -22,10 +22,9 @@ namespace Orchard.ContentManagement
         [IgnoreDataMember]
         public int ContentItemId => ContentItem.ContentItemId;
 
-        public ContentTypePartDefinition TypePartDefinition { get; set; }
         [IgnoreDataMember]
-        public ContentPartDefinition PartDefinition { get { return TypePartDefinition.PartDefinition; } }
-        public SettingsDictionary Settings { get { return TypePartDefinition.Settings; } }
+        public ContentTypePartDefinition TypePartDefinition { get; set; }
+        public SettingsDictionary Settings { get; }
 
         public IList<ContentField> Fields { get; set; } = new List<ContentField>();
 
@@ -43,12 +42,5 @@ namespace Orchard.ContentManagement
         {
             Fields.Add(field);
         }
-    }
-
-    /// <summary>
-    /// Represents a <see cref="ContentPart"/> that is associated to a <see cref="ContentItemVersionRecord"/>
-    /// </summary>
-    public class ContentVersionPart : ContentPart
-    {
     }
 }

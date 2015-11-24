@@ -46,7 +46,6 @@ namespace Orchard.Tests.DisplayManagement {
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IDisplayManager, DefaultDisplayManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
-            serviceCollection.AddScoped<IShapeTableLocator, ShapeTableLocator>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();

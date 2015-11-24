@@ -16,7 +16,7 @@ using Microsoft.Extensions.WebEncoders;
 
 namespace Orchard.DisplayManagement.Implementation {
     public class DefaultDisplayManager : IDisplayManager {
-        private readonly IShapeTableLocator _shapeTableLocator;
+        private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
@@ -34,9 +34,9 @@ namespace Orchard.DisplayManagement.Implementation {
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IHttpContextAccessor httpContextAccessor,
-            IShapeTableLocator shapeTableLocator,
+            IShapeTableManager shapeTableManager,
             ILoggerFactory loggerFactory) {
-            _shapeTableLocator = shapeTableLocator;
+            _shapeTableManager = shapeTableManager;
             _shapeDisplayEvents = shapeDisplayEvents;
             _httpContextAccessor = httpContextAccessor;
             _shapeBindingResolvers = shapeBindingResolvers;
@@ -61,7 +61,7 @@ namespace Orchard.DisplayManagement.Implementation {
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
                 return CoerceHtmlString(context.Value);
             
-            var shapeTable = _shapeTableLocator.Lookup(null);
+            var shapeTable = _shapeTableManager.GetShapeTable(null);
 
             var displayingContext = new ShapeDisplayingContext {
                 Shape = shape,

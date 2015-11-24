@@ -19,7 +19,6 @@ namespace Orchard.Tests.DisplayManagement {
 
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-            serviceCollection.AddScoped<IShapeTableLocator, ShapeTableLocator>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 

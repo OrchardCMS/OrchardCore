@@ -64,15 +64,25 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
+            return View(contentItem);
+        }
+
+        public async Task<ActionResult> DisplayShape(int id)
+        {
+            var contentItem = await _contentManager.Get(id);
+
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
+
             var shape = Shape
                 .Foo()
                 .Line(contentItem.As<TestContentPartA>().Line);
 
-            var content = _shapeDisplay.Display(shape));
-
-            return View(content);
+            return View(shape);
         }
-		
+
         public ActionResult Raw()
         {
             return View();
