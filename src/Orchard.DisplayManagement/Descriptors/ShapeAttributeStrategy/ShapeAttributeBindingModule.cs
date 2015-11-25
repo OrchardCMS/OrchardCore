@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
+using Microsoft.AspNet.Mvc.Razor;
+using Orchard.DisplayManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -13,6 +15,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         /// </summary>
         public void Configure(IServiceCollection serviceCollection)
         {
+            // Register custom tag helper descriptor
+            serviceCollection.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
+
             // Copy the collection as we are about to change it
             ServiceDescriptor[] serviceDescriptors = new ServiceDescriptor[serviceCollection.Count];
             serviceCollection.CopyTo(serviceDescriptors, 0);

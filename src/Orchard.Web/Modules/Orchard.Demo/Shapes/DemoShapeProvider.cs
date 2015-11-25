@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Html.Abstractions;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;
+using System.Text;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -15,9 +16,15 @@ namespace Orchard.DisplayManagement.Descriptors
         }
 
         [Shape]
-        public IHtmlContent Baz(string text)
+        public IHtmlContent Baz(string text, int count)
         {
-            return new HtmlString($"<em>{text}</em>");
+            var sb = new StringBuilder();
+            for(int i=0; i< count; i++)
+            {
+                sb.Append(text);
+            }
+
+            return new HtmlString(sb.ToString());
         }
     }
 }
