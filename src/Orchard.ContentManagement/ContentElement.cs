@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Orchard.ContentManagement
 {
@@ -8,22 +7,39 @@ namespace Orchard.ContentManagement
     /// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
     /// and <see cref="ContentField"/>
     /// </summary>
-    public abstract class ContentElement
+    public abstract class ContentElement : IContent
     {
-        [JsonIgnore]
-        public dynamic Content { get { return Data; } }
-        internal abstract JObject Data { get; set; }
-
-        public bool Has(string propertyName)
+        public ContentElement()
         {
-            JToken value;
-            return Data.TryGetValue(propertyName, out value);
+            Data = new JObject();
         }
 
-        public T Get<T>(string propertyName) where T : IContent
+        [JsonIgnore]
+        public dynamic Content { get { return Data; } }
+
+        [JsonIgnore]
+        internal abstract JObject Data { get; set; }
+
+        [JsonIgnore]
+        public virtual ContentItem ContentItem { get; set; }
+
+        /// <summary>
+        /// Whether the content has a named property or not.
+        /// </summary>
+        /// <param name="name">The name of the property to look for.</param>
+        public bool Has(string name)
         {
             JToken value;
-            if (Data.TryGetValue(propertyName, out value))
+            return Data.TryGetValue(name, out value);
+        }
+
+        /// <summary>
+        /// Projects the content to a custom type.
+        /// </summary>
+        public T Get<T>(string name)
+        {
+            JToken value;
+            if (Data.TryGetValue(name, out value))
             {
                 var obj = value as JObject;
                 if (value == null)
@@ -41,36 +57,12 @@ namespace Orchard.ContentManagement
             return default(T);
         }
 
-        public void Apply<T>(T property) where T : IContent
-        {
-            var obj = Data[typeof(T).Name] as JObject;
-
-            // If the field is new for the content item, add it.
-            // Otherwise merge the properties into the current obj.
-            if (obj == null)
-            {
-                Weld(property);
-            }
-            else
-            {
-                obj.Merge(JObject.FromObject(property));
-            }
-        }
-
         /// <summary>
-        /// Adds or replaces an existing part.
+        /// Adds or replaces a projection by its name.
         /// </summary>
-        public void Weld(object property)
+        public void Weld(string name, object obj)
         {
-            Weld(property.GetType().Name, property);
-        }
-
-        /// <summary>
-        /// Adds or replaces an existing part by its name.
-        /// </summary>
-        public void Weld(string name, object field)
-        {
-            Data[name] = JObject.FromObject(field);
+            Data[name] = JObject.FromObject(obj);
         }
     }
 }

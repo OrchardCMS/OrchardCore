@@ -1,4 +1,3 @@
-using System;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
@@ -11,13 +10,16 @@ namespace Orchard.ContentManagement
     {
         public ContentItem() : base()
         {
-            Data = new JObject();
         }
 
         [JsonProperty("Content")]
         private JObject _data;
         
-        internal override JObject Data { get { return _data; } set { _data = value; } }
+        internal override JObject Data
+        {
+            get { return _data; }
+            set { _data = value; }
+        }
 
         /// <summary>
         /// The unique identifier of the current version.
@@ -50,6 +52,5 @@ namespace Orchard.ContentManagement
         /// Whether the version is the latest version of the content item.
         /// </summary>
         public bool Latest { get; set; }
-        
     }
 }

@@ -51,15 +51,15 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
 
             // Dynamic syntax
-            //contentItem.Content.TestContentPartA.Line = text;
+            contentItem.Content.TestContentPartA.Line = text;
 
             // Explicit syntax
-            //var testPart = contentItem.As<TestContentPartA>();
-            //testPart.Line = text;
-            //contentItem.Apply(testPart);
+            var testPart = contentItem.As<TestContentPartA>();
+            testPart.Line = text;
+            contentItem.Weld(testPart);
 
-            // "With" syntax
-            contentItem.With<TestContentPartA>(x => x.Line = text);
+            // "Alter" syntax
+            contentItem.Alter<TestContentPartA>(x => x.Line = text);
              
             _contentManager.Create(contentItem);
             
