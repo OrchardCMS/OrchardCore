@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Orchard.ContentManagement.MetaData.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.ContentManagement.Handlers
 {
@@ -50,7 +51,7 @@ namespace Orchard.ContentManagement.Handlers
                     // If the content item's type definition does not define the part; use an empty type definition.
                     typePartDefinition = new ContentTypePartDefinition(
                         new ContentPartDefinition(partName),
-                        new SettingsDictionary());
+                        new JObject());
                 }
 
                 // build and weld the part

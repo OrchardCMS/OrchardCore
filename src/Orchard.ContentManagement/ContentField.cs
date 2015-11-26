@@ -1,16 +1,15 @@
-﻿using Orchard.ContentManagement.MetaData.Models;
-using System.Runtime.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.MetaData.Models;
 
 namespace Orchard.ContentManagement
 {
-    public class ContentField
+    public class ContentField : ContentElement
     {
-        public string Name { get { return PartFieldDefinition.Name; } }
-        public string DisplayName { get { return PartFieldDefinition.DisplayName; } }
-
-        [IgnoreDataMember]
+        [JsonIgnore]
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
-        [IgnoreDataMember]
-        public ContentFieldDefinition FieldDefinition { get { return PartFieldDefinition.FieldDefinition; } }
+
+        [JsonIgnore()]
+        internal override JObject Data { get; set; }
     }
 }

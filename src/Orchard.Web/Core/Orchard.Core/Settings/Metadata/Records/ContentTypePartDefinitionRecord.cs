@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using Orchard.Data.Conventions;
 
 namespace Orchard.Core.Settings.Metadata.Records
@@ -6,7 +7,6 @@ namespace Orchard.Core.Settings.Metadata.Records
     {
         public virtual int Id { get; set; }
         public virtual ContentPartDefinitionRecord ContentPartDefinitionRecord { get; set; }
-        [StringLengthMax]
-        public virtual string Settings { get; set; }
+        public virtual JObject Settings { get; set; }
     }
 }

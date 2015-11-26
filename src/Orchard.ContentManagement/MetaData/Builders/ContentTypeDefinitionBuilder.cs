@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Orchard.ContentManagement.MetaData.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.ContentManagement.MetaData.Builders
 {
@@ -10,7 +11,7 @@ namespace Orchard.ContentManagement.MetaData.Builders
         private string _name;
         private string _displayName;
         private readonly IList<ContentTypePartDefinition> _parts;
-        private readonly SettingsDictionary _settings;
+        private readonly JObject _settings;
 
         public ContentTypeDefinition Current { get; private set; }
 
@@ -26,14 +27,14 @@ namespace Orchard.ContentManagement.MetaData.Builders
             if (existing == null)
             {
                 _parts = new List<ContentTypePartDefinition>();
-                _settings = new SettingsDictionary();
+                _settings = new JObject();
             }
             else
             {
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
                 _parts = existing.Parts.ToList();
-                _settings = new SettingsDictionary(existing.Settings.ToDictionary(kv => kv.Key, kv => kv.Value));
+                _settings = new JObject(existing.Settings);
             }
         }
 
@@ -89,7 +90,7 @@ namespace Orchard.ContentManagement.MetaData.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(partDefinition, new SettingsDictionary());
+                existingPart = new ContentTypePartDefinition(partDefinition, new JObject());
             }
             var configurer = new PartConfigurerImpl(existingPart);
             configuration(configurer);

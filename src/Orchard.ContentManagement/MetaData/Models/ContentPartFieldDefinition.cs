@@ -1,37 +1,30 @@
-﻿using Orchard.Utility;
+﻿using Newtonsoft.Json.Linq;
+using Orchard.Utility;
 
 namespace Orchard.ContentManagement.MetaData.Models
 {
     public class ContentPartFieldDefinition
     {
-        public const string DisplayNameKey = "DisplayName";
-
         public ContentPartFieldDefinition(string name)
         {
             Name = name;
+            DisplayName = Name.CamelFriendly();
             FieldDefinition = new ContentFieldDefinition(null);
-            Settings = new SettingsDictionary();
+            Settings = new JObject();
         }
-        public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, SettingsDictionary settings)
+        public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, JObject settings)
         {
             Name = name;
+            DisplayName = Name.CamelFriendly();
             FieldDefinition = contentFieldDefinition;
             Settings = settings;
         }
 
         public string Name { get; private set; }
 
-        public string DisplayName
-        {
-            get
-            {
-                // if none is defined, generate one from the technical name
-                return Settings.ContainsKey(DisplayNameKey) ? Settings[DisplayNameKey] : Name.CamelFriendly();
-            }
-            set { Settings[DisplayNameKey] = value; }
-        }
+        public string DisplayName { get; set; }
 
         public ContentFieldDefinition FieldDefinition { get; private set; }
-        public SettingsDictionary Settings { get; private set; }
+        public JObject Settings { get; private set; }
     }
 }
