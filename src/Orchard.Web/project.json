@@ -22,6 +22,7 @@
   },
   "commands": {
     "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001",
+    "webdev": "Microsoft.AspNet.Hosting --aspnet_env development --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001",
     "run": "run"
   },
   "compilationOptions": {
