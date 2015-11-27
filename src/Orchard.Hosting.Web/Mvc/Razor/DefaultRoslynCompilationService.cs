@@ -56,6 +56,8 @@ namespace Orchard.Hosting.Mvc.Razor
         /// The <see cref="ICompilerOptionsProvider"/> that provides Roslyn compilation settings.
         /// </param>
         /// <param name="host">The <see cref="IMvcRazorHost"/> that was used to generate the code.</param>
+        /// <param name="libraryExporter">The library manager that provides export and reference information.</param>
+        /// <param name="hostingEnvironment">The web hosting environment the application is running in.</param>
         public DefaultRoslynCompilationService(IApplicationEnvironment environment,
                                         IRuntimeEnvironment runtimeEnvironment,
                                         IAssemblyLoadContextAccessor loaderAccessor,
@@ -64,7 +66,7 @@ namespace Orchard.Hosting.Mvc.Razor
                                         IMvcRazorHost host,
                                         IOptions<RazorViewEngineOptions> optionsAccessor,
                                         ILibraryExporter libraryExporter,
-                                        IHostingEnvironment hostingEnvrionment)
+                                        IHostingEnvironment hostingEnvironment)
         {
             _environment = environment;
             _runtimeEnvironment = runtimeEnvironment;
@@ -75,7 +77,7 @@ namespace Orchard.Hosting.Mvc.Razor
             _fileProvider = optionsAccessor.Value.FileProvider;
             _classPrefix = host.MainClassNamePrefix;
             _libraryExporter = libraryExporter;
-            _hostingEnvironment = hostingEnvrionment;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         /// <inheritdoc />
@@ -203,6 +205,7 @@ namespace Orchard.Hosting.Mvc.Razor
                         _runtimeEnvironment,
                         _loader,
                         new CompilationCache()));
+
                 libraryExporter = engine.CreateProjectExporter(
                     project, _environment.RuntimeFramework, _environment.Configuration);
             }
