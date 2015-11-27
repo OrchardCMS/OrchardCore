@@ -4,6 +4,8 @@
 
 Orchard 2 is the implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET vNext](http://www.asp.net/vnext) (also known as DNX). You can check out the [Orchard 2 presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
 
+[![Join the chat at https://gitter.im/OrchardCMS/Orchard2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## Orchard CMS
 
 Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), community-focused Content Management System built on the ASP.NET MVC platform.
