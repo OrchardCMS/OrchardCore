@@ -307,7 +307,7 @@
 //                    });
 //                }
 
-//                // create 
+//                // create
 //                _indexCollection.Add(new InternalIndexCollection {
 //                    Id = _indexCollection.Max(x => x.Id) + 1,
 //                    IndexName = indexName,

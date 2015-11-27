@@ -20,9 +20,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
-
-    public class ShapeTemplateBindingStrategy : IShapeTableProvider {
+namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
+{
+    public class ShapeTemplateBindingStrategy : IShapeTableProvider
+    {
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IExtensionManager _extensionManager;
         private readonly IVirtualPathProvider _virtualPathProvider;
@@ -40,8 +41,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IActionContextAccessor actionContextAccessor,
-            ILoggerFactory loggerFactory) {
-
+            ILoggerFactory loggerFactory)
+        {
             _harvesters = harvesters;
             _shellDescriptor = shellDescriptor;
             _extensionManager = extensionManager;
@@ -54,12 +55,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
 
         public bool DisableMonitoring { get; set; }
 
-        private static IEnumerable<ExtensionDescriptor> Once(IEnumerable<FeatureDescriptor> featureDescriptors) {
+        private static IEnumerable<ExtensionDescriptor> Once(IEnumerable<FeatureDescriptor> featureDescriptors)
+        {
             var once = new ConcurrentDictionary<string, object>();
             return featureDescriptors.Select(fd => fd.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
         }
 
-        public void Discover(ShapeTableBuilder builder) {
+        public void Discover(ShapeTableBuilder builder)
+        {
             _logger.LogInformation("Start discovering shapes");
 
             var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() });
@@ -68,16 +71,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             var activeFeatures = availableFeatures.Where(FeatureIsEnabled);
             var activeExtensions = Once(activeFeatures);
 
-            var hits = activeExtensions.Select(extensionDescriptor => {
+            var hits = activeExtensions.Select(extensionDescriptor =>
+            {
                 _logger.LogInformation("Start discovering candidate views filenames");
-                var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath => {
+                var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
+                {
                     var basePath = Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id).Replace(Path.DirectorySeparatorChar, '/');
                     var virtualPath = Path.Combine(basePath, subPath).Replace(Path.DirectorySeparatorChar, '/');
                     IReadOnlyList<string> fileNames;
 
                     if (!_virtualPathProvider.DirectoryExists(virtualPath))
                         fileNames = new List<string>();
-                    else {
+                    else
+                    {
                         fileNames = _virtualPathProvider.ListFiles(virtualPath).Select(Path.GetFileName).ToReadOnlyCollection();
                     }
 
@@ -85,18 +91,22 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
                 })).ToList();
                 _logger.LogInformation("Done discovering candidate views filenames");
 
-                var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve => {
+                var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
+                {
                     var fileNames = ve.DetectTemplateFileNames(pathContext.fileNames);
                     return fileNames.Select(
-                        fileName => new {
+                        fileName => new
+                        {
                             fileName = Path.GetFileNameWithoutExtension(fileName),
                             fileVirtualPath = Path.Combine(pathContext.virtualPath, fileName).Replace(Path.DirectorySeparatorChar, '/'),
                             pathContext
                         });
                 }));
 
-                var shapeContexts = fileContexts.SelectMany(fileContext => {
-                    var harvestShapeInfo = new HarvestShapeInfo {
+                var shapeContexts = fileContexts.SelectMany(fileContext =>
+                {
+                    var harvestShapeInfo = new HarvestShapeInfo
+                    {
                         SubPath = fileContext.pathContext.subPath,
                         FileName = fileContext.fileName,
                         TemplateVirtualPath = fileContext.fileVirtualPath
@@ -109,11 +119,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             }).SelectMany(hits2 => hits2);
 
 
-            foreach (var iter in hits) {
+            foreach (var iter in hits)
+            {
                 // templates are always associated with the namesake feature of module or theme
                 var hit = iter;
                 var featureDescriptors = iter.extensionDescriptor.Features.Where(fd => fd.Id == hit.extensionDescriptor.Id);
-                foreach (var featureDescriptor in featureDescriptors) {
+                foreach (var featureDescriptor in featureDescriptors)
+                {
                     _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
                         hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
                         iter.shapeContext.harvestShapeHit.ShapeType,
@@ -130,20 +142,24 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             _logger.LogInformation("Done discovering shapes");
         }
 
-        private bool FeatureIsEnabled(FeatureDescriptor fd) {
+        private bool FeatureIsEnabled(FeatureDescriptor fd)
+        {
             return (DefaultExtensionTypes.IsTheme(fd.Extension.ExtensionType) && (fd.Id == "TheAdmin" || fd.Id == "SafeMode")) ||
                 _shellDescriptor.Features.Any(sf => sf.Name == fd.Id);
         }
 
-        private IHtmlContent Render(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit) {
+        private IHtmlContent Render(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)
+        {
             _logger.LogInformation("Rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
             IHtmlContent result;
 
-            if (displayContext.ViewContext.View != null) {
+            if (displayContext.ViewContext.View != null)
+            {
                 var htmlHelper = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
                 result = htmlHelper.Partial(harvestShapeInfo.TemplateVirtualPath, displayContext.Value);
             }
-            else {
+            else
+            {
                 // If the View is null, it means that the shape is being executed from a non-view origin / where no ViewContext was established by the view engine, but manually.
                 // Manually creating a ViewContext works when working with Shape methods, but not when the shape is implemented as a Razor view template.
                 // Horrible, but it will have to do for now.
@@ -154,13 +170,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             return result;
         }
 
-        private IHtmlContent RenderRazorViewToString(string path, DisplayContext context) {
+        private IHtmlContent RenderRazorViewToString(string path, DisplayContext context)
+        {
             var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
-            if (viewEngineResult.Success) {
-                using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding)) {
+            if (viewEngineResult.Success)
+            {
+                using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding))
+                {
                     // Forcing synchronous behavior so users don't have to await templates.
                     var view = viewEngineResult.View;
-                    using (view as IDisposable) {
+                    using (view as IDisposable)
+                    {
                         var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
                         var renderTask = viewEngineResult.View.RenderAsync(viewContext);
                         renderTask.GetAwaiter().GetResult();
@@ -172,11 +192,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy {
             return null;
         }
 
-        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData) {
+        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
+        {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
             var contextable = newHelper as ICanHasViewContext;
-            if (contextable != null) {
+            if (contextable != null)
+            {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
                 contextable.Contextualize(newViewContext);
             }

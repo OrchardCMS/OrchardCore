@@ -3,10 +3,13 @@ using System.Linq;
 using Xunit;
 using System.Reflection;
 
-namespace Orchard.Tests.Commands {
-    public class CommandHandlerDescriptorBuilderTests {
+namespace Orchard.Tests.Commands
+{
+    public class CommandHandlerDescriptorBuilderTests
+    {
         [Fact]
-        public void BuilderShouldCreateDescriptor() {
+        public void BuilderShouldCreateDescriptor()
+        {
             var builder = new CommandHandlerDescriptorBuilder();
             var descriptor = builder.Build(typeof(MyCommand));
             Assert.NotNull(descriptor);
@@ -21,24 +24,30 @@ namespace Orchard.Tests.Commands {
             Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar3"), descriptor.Commands.Single(d => d.Names.Contains("Foo_Bar")).MethodInfo);
         }
 
-        public class MyCommand : DefaultOrchardCommandHandler {
-            public void FooBar() {
+        public class MyCommand : DefaultOrchardCommandHandler
+        {
+            public void FooBar()
+            {
             }
 
             [CommandName("MyCommand")]
-            public void FooBar2() {
+            public void FooBar2()
+            {
             }
 
-            public void Foo_Bar() {
+            public void Foo_Bar()
+            {
             }
 
             [CommandName("Foo_Bar")]
-            public void Foo_Bar3() {
+            public void Foo_Bar3()
+            {
             }
         }
 
         [Fact]
-        public void BuilderShouldReturnPublicMethodsOnly() {
+        public void BuilderShouldReturnPublicMethodsOnly()
+        {
             var builder = new CommandHandlerDescriptorBuilder();
             var descriptor = builder.Build(typeof(PublicMethodsOnly));
             Assert.NotNull(descriptor);
@@ -47,31 +56,36 @@ namespace Orchard.Tests.Commands {
         }
 
 #pragma warning disable 660,661
-        public class PublicMethodsOnly {
+        public class PublicMethodsOnly
+        {
 #pragma warning restore 660,661
             public bool Bar { get; set; }   // no accessors
             public bool Field = true;       // no field
 
             // no private method
-            private void Blah() {
+            private void Blah()
+            {
             }
 
             // no private method
-            public static void Foo() {
+            public static void Foo()
+            {
             }
 
             // no operator
-            public static bool operator ==(PublicMethodsOnly a, PublicMethodsOnly b) {
+            public static bool operator ==(PublicMethodsOnly a, PublicMethodsOnly b)
+            {
                 return false;
             }
 
-            public static bool operator !=(PublicMethodsOnly a, PublicMethodsOnly b) {
+            public static bool operator !=(PublicMethodsOnly a, PublicMethodsOnly b)
+            {
                 return false;
             }
 
-            public void Method() {
+            public void Method()
+            {
             }
         }
-
     }
 }

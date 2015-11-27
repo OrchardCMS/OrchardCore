@@ -101,13 +101,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return displayContext.Display;
             }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && 
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType == typeof(TextWriter))
             {
                 return output;
             }
 
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) && 
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType == typeof(Action<object>))
             {
                 return new Action<object>(output.Write);
@@ -118,7 +118,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
             }
 
-            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && 
+            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
             {
                 return _componentContext.GetService<IUrlHelper>();

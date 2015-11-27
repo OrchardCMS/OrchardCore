@@ -36,7 +36,7 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             descriptors = descriptors
                 .Where(x => !allShapeTags.Contains(x.TagName.ToLowerInvariant()));
-            
+
             return descriptors.Concat(shapeTagDescriptors);
         }
 
@@ -46,7 +46,7 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             var attributeDescriptors = new List<TagHelperAttributeDescriptor>();
 
-            foreach(var shape in _shapteTableManager.GetShapeTable(null).Descriptors)
+            foreach (var shape in _shapteTableManager.GetShapeTable(null).Descriptors)
             {
                 resolvedDescriptors.Add(
                     new TagHelperDescriptor

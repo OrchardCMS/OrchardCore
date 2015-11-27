@@ -1,18 +1,21 @@
 ﻿using Orchard.DisplayManagement.Shapes;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class CompositeTests {
-
+namespace Orchard.Tests.DisplayManagement
+{
+    public class CompositeTests
+    {
         [Fact]
-        public void CompositesShouldNotOverrideExistingMembers() {
+        public void CompositesShouldNotOverrideExistingMembers()
+        {
             var composite = new Animal { Color = "Pink" };
 
             Assert.Equal("Pink", composite.Color);
         }
 
         [Fact]
-        public void CompositesShouldNotOverrideExistingMembersWhenUsedAsDynamic() {
+        public void CompositesShouldNotOverrideExistingMembersWhenUsedAsDynamic()
+        {
             dynamic composite = new Animal();
 
             composite.Color = "Pink";
@@ -20,7 +23,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CompositesShouldAccessUnknownProperties() {
+        public void CompositesShouldAccessUnknownProperties()
+        {
             dynamic composite = new Animal();
 
             composite.Fake = 42;
@@ -28,7 +32,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CompositesShouldAccessUnknownPropertiesByIndex() {
+        public void CompositesShouldAccessUnknownPropertiesByIndex()
+        {
             dynamic composite = new Animal();
 
             composite["Fake"] = 42;
@@ -36,7 +41,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CompositesShouldAccessKnownPropertiesByIndex() {
+        public void CompositesShouldAccessKnownPropertiesByIndex()
+        {
             dynamic composite = new Animal();
 
             composite["Pink"] = "Pink";
@@ -44,7 +50,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void ChainProperties() {
+        public void ChainProperties()
+        {
             dynamic foo = new Animal();
             foo.Bar("bar");
 
@@ -53,12 +60,14 @@ namespace Orchard.Tests.DisplayManagement {
         }
     }
 
-    public class Animal : Composite {
+    public class Animal : Composite
+    {
         public string Kind { get; set; }
         public string Color { get; set; }
     }
 
-    public interface ISized {
+    public interface ISized
+    {
         int Size { get; set; }
     }
 }

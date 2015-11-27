@@ -10,11 +10,14 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class ShapeFactoryTests {
+namespace Orchard.Tests.DisplayManagement
+{
+    public class ShapeFactoryTests
+    {
         IServiceProvider _serviceProvider;
 
-        public ShapeFactoryTests() {
+        public ShapeFactoryTests()
+        {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
@@ -22,7 +25,8 @@ namespace Orchard.Tests.DisplayManagement {
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            var defaultShapeTable = new ShapeTable {
+            var defaultShapeTable = new ShapeTable
+            {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
@@ -32,7 +36,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void ShapeHasAttributesType() {
+        public void ShapeHasAttributesType()
+        {
             var factory = _serviceProvider.GetService<IShapeFactory>();
             dynamic foo = factory.Create("Foo", ArgsUtility.Empty());
             ShapeMetadata metadata = foo.Metadata;
@@ -40,7 +45,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CreateShapeWithNamedArguments() {
+        public void CreateShapeWithNamedArguments()
+        {
             var factory = _serviceProvider.GetService<IShapeFactory>();
             dynamic foo = factory.Create("Foo", ArgsUtility.Named(new { one = 1, two = "dos" }));
             Assert.Equal(1, foo.one);
@@ -48,7 +54,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CallSyntax() {
+        public void CallSyntax()
+        {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
             var foo = factory.Foo();
             ShapeMetadata metadata = foo.Metadata;
@@ -56,7 +63,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CallInitializer() {
+        public void CallInitializer()
+        {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
             var bar = new { One = 1, Two = "two" };
             var foo = factory.Foo(bar);
@@ -66,7 +74,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CallInitializerWithBaseType() {
+        public void CallInitializerWithBaseType()
+        {
             dynamic factory = _serviceProvider.GetService<IShapeFactory>();
             var bar = new { One = 1, Two = "two" };
             var foo = factory.Foo(typeof(MyShape), bar);
@@ -76,7 +85,8 @@ namespace Orchard.Tests.DisplayManagement {
             Assert.Equal("two", foo.Two);
         }
 
-        public class MyShape : Shape {
+        public class MyShape : Shape
+        {
             public string Kind { get; set; }
         }
     }

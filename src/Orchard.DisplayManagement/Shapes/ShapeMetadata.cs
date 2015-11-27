@@ -4,9 +4,12 @@ using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNet.Html.Abstractions;
 
-namespace Orchard.DisplayManagement.Shapes {
-    public class ShapeMetadata {
-        public ShapeMetadata() {
+namespace Orchard.DisplayManagement.Shapes
+{
+    public class ShapeMetadata
+    {
+        public ShapeMetadata()
+        {
             Wrappers = new List<string>();
             Alternates = new List<string>();
             BindingSources = new List<string>();
@@ -31,12 +34,14 @@ namespace Orchard.DisplayManagement.Shapes {
 
         public IList<string> BindingSources { get; set; }
 
-        public void OnDisplaying(Action<ShapeDisplayingContext> action) {
+        public void OnDisplaying(Action<ShapeDisplayingContext> action)
+        {
             var existing = Displaying ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
             Displaying = existing.Concat(new[] { action });
         }
 
-        public void OnDisplayed(Action<ShapeDisplayedContext> action) {
+        public void OnDisplayed(Action<ShapeDisplayedContext> action)
+        {
             var existing = Displayed ?? Enumerable.Empty<Action<ShapeDisplayedContext>>();
             Displayed = existing.Concat(new[] { action });
         }

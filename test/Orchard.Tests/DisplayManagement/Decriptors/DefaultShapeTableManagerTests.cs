@@ -15,24 +15,31 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement.Decriptors {
-    public class DefaultShapeTableManagerTests {
+namespace Orchard.Tests.DisplayManagement.Decriptors
+{
+    public class DefaultShapeTableManagerTests
+    {
         IServiceProvider _serviceProvider;
 
-        public class StubEventBus : IEventBus {
-            public Task NotifyAsync(string message, IDictionary<string, object> arguments) {
+        public class StubEventBus : IEventBus
+        {
+            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
+            {
                 return null;
             }
 
-            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler {
+            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler
+            {
                 return null;
             }
 
-            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action) {
+            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
+            {
             }
         }
 
-        public DefaultShapeTableManagerTests() {
+        public DefaultShapeTableManagerTests()
+        {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
@@ -80,18 +87,24 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        static Feature Feature(FeatureDescriptor descriptor) {
-            return new Feature {
+        static Feature Feature(FeatureDescriptor descriptor)
+        {
+            return new Feature
+            {
                 Descriptor = descriptor
             };
         }
 
-        static Feature TestFeature() {
-            return new Feature {
-                Descriptor = new FeatureDescriptor {
+        static Feature TestFeature()
+        {
+            return new Feature
+            {
+                Descriptor = new FeatureDescriptor
+                {
                     Id = "Testing",
                     Dependencies = Enumerable.Empty<string>(),
-                    Extension = new ExtensionDescriptor {
+                    Extension = new ExtensionDescriptor
+                    {
                         Id = "Testing",
                         ExtensionType = DefaultExtensionTypes.Module,
                     }
@@ -99,42 +112,53 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
             };
         }
 
-        public class TestExtensionManager : IExtensionManager {
+        public class TestExtensionManager : IExtensionManager
+        {
             private readonly IEnumerable<FeatureDescriptor> _availableFeautures;
 
-            public TestExtensionManager(IEnumerable<FeatureDescriptor> availableFeautures) {
+            public TestExtensionManager(IEnumerable<FeatureDescriptor> availableFeautures)
+            {
                 _availableFeautures = availableFeautures;
             }
 
-            public ExtensionDescriptor GetExtension(string name) {
+            public ExtensionDescriptor GetExtension(string name)
+            {
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
+            public IEnumerable<ExtensionDescriptor> AvailableExtensions()
+            {
                 throw new NotSupportedException();
             }
 
-            public IEnumerable<FeatureDescriptor> AvailableFeatures() {
+            public IEnumerable<FeatureDescriptor> AvailableFeatures()
+            {
                 return _availableFeautures;
             }
 
-            public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors) {
+            public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
+            {
                 throw new NotSupportedException();
             }
 
-            public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject) {
+            public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
+            {
                 return _availableFeautures.Any(x => x.Id == item.Id);
             }
         }
 
-        public class TestShapeProvider : IShapeTableProvider {
+        public class TestShapeProvider : IShapeTableProvider
+        {
             public static IDictionary<Feature, IEnumerable<string>> FeatureShapes;
 
             public Action<ShapeTableBuilder> Discover = x => { };
 
-            void IShapeTableProvider.Discover(ShapeTableBuilder builder) {
-                foreach (var pair in FeatureShapes) {
-                    foreach (var shape in pair.Value) {
+            void IShapeTableProvider.Discover(ShapeTableBuilder builder)
+            {
+                foreach (var pair in FeatureShapes)
+                {
+                    foreach (var shape in pair.Value)
+                    {
                         builder.Describe(shape).From(pair.Key).BoundAs(pair.Key.Descriptor.Id, null);
                     }
                 }
@@ -143,13 +167,15 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void ManagerCanBeResolved() {
+        public void ManagerCanBeResolved()
+        {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             Assert.NotNull(manager);
         }
 
         [Fact]
-        public void DefaultShapeTableIsReturnedForNullOrEmpty() {
+        public void DefaultShapeTableIsReturnedForNullOrEmpty()
+        {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var shapeTable1 = manager.GetShapeTable(null);
             var shapeTable2 = manager.GetShapeTable(string.Empty);
@@ -158,7 +184,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void CallbackAlterationsContributeToDescriptor() {
+        public void CallbackAlterationsContributeToDescriptor()
+        {
             Action<ShapeCreatingContext> cb1 = x => { };
             Action<ShapeCreatedContext> cb2 = x => { };
             Action<ShapeDisplayingContext> cb3 = x => { };
@@ -181,7 +208,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
             Assert.Same(cb4, foo.Displayed.Single());
         }
         [Fact]
-        public void DefaultPlacementIsReturnedByDefault() {
+        public void DefaultPlacementIsReturnedByDefault()
+        {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
             var hello = manager.GetShapeTable(null).Descriptors["Hello"];
@@ -191,8 +219,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void DescribedPlacementIsReturnedIfNotNull() {
-
+        public void DescribedPlacementIsReturnedIfNotNull()
+        {
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
@@ -217,8 +245,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void TwoArgumentVariationDoesSameThing() {
-
+        public void TwoArgumentVariationDoesSameThing()
+        {
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
@@ -243,8 +271,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact(Skip = "Path not supported yet")]
-        public void PathConstraintShouldMatch() {
-
+        public void PathConstraintShouldMatch()
+        {
             // all path have a trailing / as per the current implementation
             // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
 
@@ -260,7 +288,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
                 Tuple.Create("~/my-blog*", "~/my-blog123/", true)
             };
 
-            foreach (var rule in rules) {
+            foreach (var rule in rules)
+            {
                 var path = rule.Item1;
                 var context = rule.Item2;
                 var match = rule.Item3;
@@ -273,17 +302,20 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
                 var hello = manager.GetShapeTable(null).Descriptors["Hello"];
                 var result = hello.Placement(new ShapePlacementContext { Path = context });
 
-                if (match) {
+                if (match)
+                {
                     Assert.Equal("Match", result.Location);
                 }
-                else {
+                else
+                {
                     Assert.Null(result.Location);
                 }
             }
         }
 
         [Fact]
-        public void OnlyShapesFromTheGivenThemeAreProvided() {
+        public void OnlyShapesFromTheGivenThemeAreProvided()
+        {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("Theme1");
@@ -293,7 +325,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void ShapesFromTheBaseThemeAreProvided() {
+        public void ShapesFromTheBaseThemeAreProvided()
+        {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
@@ -303,14 +336,13 @@ namespace Orchard.Tests.DisplayManagement.Decriptors {
         }
 
         [Fact]
-        public void DerivedThemesCanOverrideBaseThemeShapeBindings() {
+        public void DerivedThemesCanOverrideBaseThemeShapeBindings()
+        {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
             Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
             Assert.StrictEqual("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
-
-
     }
 }

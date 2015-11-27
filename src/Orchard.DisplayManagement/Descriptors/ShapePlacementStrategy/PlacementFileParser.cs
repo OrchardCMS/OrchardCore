@@ -4,44 +4,52 @@ using System.Xml.Linq;
 using Orchard.FileSystem;
 using Orchard.DependencyInjection;
 
-namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy {
-
+namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
+{
     /// <summary>
     /// Parses and caches the Placement.info file contents for a given IWebSiteFolder vdir
     /// </summary>
-    public interface IPlacementFileParser : IDependency {
+    public interface IPlacementFileParser : IDependency
+    {
         PlacementFile Parse(string virtualPath);
         PlacementFile ParseText(string placementText);
     }
 
 
-    public class PlacementFileParser : IPlacementFileParser {
+    public class PlacementFileParser : IPlacementFileParser
+    {
         private readonly IClientFolder _webSiteFolder;
 
-        public PlacementFileParser(IClientFolder webSiteFolder) {
+        public PlacementFileParser(IClientFolder webSiteFolder)
+        {
             _webSiteFolder = webSiteFolder;
         }
-        
+
         public bool DisableMonitoring { get; set; }
 
-        public PlacementFile Parse(string virtualPath) {
+        public PlacementFile Parse(string virtualPath)
+        {
             var placementText = _webSiteFolder.ReadFile(virtualPath);
             return ParseText(placementText);
         }
 
-        public PlacementFile ParseText(string placementText) {
+        public PlacementFile ParseText(string placementText)
+        {
             if (placementText == null)
                 return null;
 
 
             var element = XElement.Parse(placementText);
-            return new PlacementFile {
+            return new PlacementFile
+            {
                 Nodes = Accept(element).ToList()
             };
         }
 
-        private IEnumerable<PlacementNode> Accept(XElement element) {
-            switch (element.Name.LocalName) {
+        private IEnumerable<PlacementNode> Accept(XElement element)
+        {
+            switch (element.Name.LocalName)
+            {
                 case "Placement":
                     return AcceptMatch(element);
                 case "Match":
@@ -53,8 +61,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy {
         }
 
 
-        private IEnumerable<PlacementNode> AcceptMatch(XElement element) {
-            if (element.HasAttributes == false) {
+        private IEnumerable<PlacementNode> AcceptMatch(XElement element)
+        {
+            if (element.HasAttributes == false)
+            {
                 // Match with no attributes will collapse child results upward
                 // rather than return an unconditional node
                 return element.Elements().SelectMany(Accept);
@@ -68,14 +78,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy {
             }};
         }
 
-        private IEnumerable<PlacementShapeLocation> AcceptPlace(XElement element) {
+        private IEnumerable<PlacementShapeLocation> AcceptPlace(XElement element)
+        {
             // return attributes as part locations
-            return element.Attributes().Select(attr => new PlacementShapeLocation {
+            return element.Attributes().Select(attr => new PlacementShapeLocation
+            {
                 ShapeType = attr.Name.LocalName,
                 Location = attr.Value
             });
         }
-
     }
 }
-

@@ -4,21 +4,27 @@ using System.Collections.Generic;
 using Orchard.Environment.Extensions.Models;
 using System.Linq;
 
-namespace Orchard.Tests.Stubs {
-    public class StubExtensionManager : IExtensionManager {
-        public IEnumerable<ExtensionDescriptor> AvailableExtensions() {
+namespace Orchard.Tests.Stubs
+{
+    public class StubExtensionManager : IExtensionManager
+    {
+        public IEnumerable<ExtensionDescriptor> AvailableExtensions()
+        {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FeatureDescriptor> AvailableFeatures() {
+        public IEnumerable<FeatureDescriptor> AvailableFeatures()
+        {
             throw new NotImplementedException();
         }
 
-        public ExtensionDescriptor GetExtension(string id) {
+        public ExtensionDescriptor GetExtension(string id)
+        {
             throw new NotImplementedException();
         }
 
-        public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject) {
+        public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
+        {
             if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType))
             {
                 if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType))
@@ -39,7 +45,8 @@ namespace Orchard.Tests.Stubs {
                    item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
         }
 
-        public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors) {
+        public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
+        {
             throw new NotImplementedException();
         }
     }

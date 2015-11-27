@@ -21,7 +21,7 @@ namespace Orchard.Demo.Controllers
         private readonly IEventBus _eventBus;
         private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
-		
+
         public HomeController(
             ITestDependency testDependency,
             IContentManager contentManager,
@@ -51,7 +51,7 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
             contentItem.As<TestContentPartA>().Line = text;
             _contentManager.Create(contentItem);
-            
+
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
         }
 

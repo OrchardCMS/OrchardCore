@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Descriptors
         public IHtmlContent Baz(string text, int count)
         {
             var sb = new StringBuilder();
-            for(int i=0; i< count; i++)
+            for (int i = 0; i < count; i++)
             {
                 sb.Append(text);
             }

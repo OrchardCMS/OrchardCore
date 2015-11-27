@@ -21,24 +21,31 @@ using Orchard.Environment.Extensions.Models;
 using System.IO;
 using Microsoft.Extensions.WebEncoders;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class SubsystemTests {
+namespace Orchard.Tests.DisplayManagement
+{
+    public class SubsystemTests
+    {
         IServiceProvider _serviceProvider;
 
-        public class StubEventBus : IEventBus {
-            public Task NotifyAsync(string message, IDictionary<string, object> arguments) {
+        public class StubEventBus : IEventBus
+        {
+            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
+            {
                 return null;
             }
 
-            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler {
+            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler
+            {
                 return null;
             }
 
-            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action) {
+            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
+            {
             }
         }
 
-        public SubsystemTests(){
+        public SubsystemTests()
+        {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             var testFeature = new Feature
@@ -77,20 +84,24 @@ namespace Orchard.Tests.DisplayManagement {
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        public class SimpleShapes {
+        public class SimpleShapes
+        {
             [Shape]
-            public IHtmlContent Something() {
+            public IHtmlContent Something()
+            {
                 return new HtmlString("<br/>");
             }
 
             [Shape]
-            public IHtmlContent Pager() {
+            public IHtmlContent Pager()
+            {
                 return new HtmlString("<div>hello</div>");
             }
         }
 
         [Fact]
-        public void RenderingSomething() {
+        public void RenderingSomething()
+        {
             dynamic displayHelperFactory = _serviceProvider.GetService<IDisplayHelperFactory>().CreateHelper(new ViewContext());
             dynamic shapeHelperFactory = _serviceProvider.GetService<IShapeFactory>();
 
@@ -99,7 +110,7 @@ namespace Orchard.Tests.DisplayManagement {
             var result3 = ((DisplayHelper)displayHelperFactory).ShapeExecute((Shape)shapeHelperFactory.Pager());
 
             displayHelperFactory(shapeHelperFactory.Pager());
-            
+
             Assert.Equal("<br/>", HtmlContentUtilities.HtmlContentToString((IHtmlContent)result1));
             Assert.Equal("<div>hello</div>", HtmlContentUtilities.HtmlContentToString((IHtmlContent)result2));
             Assert.Equal("<div>hello</div>", HtmlContentUtilities.HtmlContentToString(result3));

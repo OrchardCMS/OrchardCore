@@ -43,10 +43,12 @@ namespace Orchard.Parser
             return configurationBuilder;
         }
 
-        public static string Get(this IConfigurationProvider provider, string key) {
+        public static string Get(this IConfigurationProvider provider, string key)
+        {
             string value;
 
-            if (!provider.TryGet(key, out value)) {
+            if (!provider.TryGet(key, out value))
+            {
                 throw new InvalidOperationException("Key not found");
             }
 

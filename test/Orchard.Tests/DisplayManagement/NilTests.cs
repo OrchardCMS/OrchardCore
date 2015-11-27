@@ -1,11 +1,13 @@
 ﻿using Orchard.DisplayManagement.Shapes;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class NilTests {
-
+namespace Orchard.Tests.DisplayManagement
+{
+    public class NilTests
+    {
         [Fact]
-        public void NilShouldEqualToNull() {
+        public void NilShouldEqualToNull()
+        {
             var nil = Nil.Instance;
 
             Assert.True(nil == null);
@@ -16,7 +18,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void NilShouldBeRecursive() {
+        public void NilShouldBeRecursive()
+        {
             dynamic nil = Nil.Instance;
 
             Assert.True(nil == null);
@@ -26,19 +29,22 @@ namespace Orchard.Tests.DisplayManagement {
 
 
         [Fact]
-        public void CallingToStringOnNilShouldReturnEmpty() {
+        public void CallingToStringOnNilShouldReturnEmpty()
+        {
             var nil = Nil.Instance;
             Assert.Equal("", nil.ToString());
         }
 
         [Fact]
-        public void CallingToStringOnDynamicNilShouldReturnEmpty() {
+        public void CallingToStringOnDynamicNilShouldReturnEmpty()
+        {
             dynamic nil = Nil.Instance;
             Assert.Equal("", nil.Foo.Bar.ToString());
         }
 
         [Fact]
-        public void ConvertingToStringShouldReturnNullString() {
+        public void ConvertingToStringShouldReturnNullString()
+        {
             dynamic nil = Nil.Instance;
             Assert.True((string)nil == null);
         }

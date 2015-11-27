@@ -9,7 +9,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 {
     public class LocationParserTests
     {
-
         [Fact]
         public void ZoneShouldBeParsed()
         {

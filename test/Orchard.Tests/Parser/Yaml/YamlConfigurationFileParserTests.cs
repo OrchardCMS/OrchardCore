@@ -3,11 +3,13 @@ using Orchard.Parser.Yaml;
 using System;
 using Xunit;
 
-namespace Orchard.Tests.Parser.Yaml {
-    public class YamlConfigurationFileParserTests {
-
+namespace Orchard.Tests.Parser.Yaml
+{
+    public class YamlConfigurationFileParserTests
+    {
         [Fact]
-        public void LoadKeyValuePairsFromValidYaml() {
+        public void LoadKeyValuePairsFromValidYaml()
+        {
             var yaml = @"
 firstname: test
 test.last.name: last.name
@@ -25,7 +27,8 @@ residential.address:
         }
 
         [Fact]
-        public void LoadMethodCanHandleEmptyValue() {
+        public void LoadMethodCanHandleEmptyValue()
+        {
             var yaml = @"name:";
             var yamlConfigSrc = new YamlConfigurationProvider(TestStreamHelpers.ArbitraryFilePath);
 
@@ -35,7 +38,8 @@ residential.address:
         }
 
         [Fact]
-        public void NonObjectRootIsInvalid() {
+        public void NonObjectRootIsInvalid()
+        {
             var yaml = @"test";
             var yamlConfigPrd = new YamlConfigurationProvider("Foo");
 
@@ -46,7 +50,8 @@ residential.address:
         }
 
         [Fact]
-        public void SupportAndIgnoreComments() {
+        public void SupportAndIgnoreComments()
+        {
             var yaml = @"# Comments
                 # Comments
                 name: test #foo
@@ -63,7 +68,8 @@ residential.address:
         }
 
         [Fact]
-        public void SupportForMultiple() {
+        public void SupportForMultiple()
+        {
             var yaml = @"---
 name: test #foo
 address:
@@ -77,7 +83,7 @@ address:
             var yamlConfigPrd = new YamlConfigurationProvider(TestStreamHelpers.ArbitraryFilePath);
 
             yamlConfigPrd.Load(TestStreamHelpers.StringToStream(yaml));
-            
+
             Assert.Equal("Some Home Address", yamlConfigPrd.Get("address:home:street"));
             Assert.Equal("12345", yamlConfigPrd.Get("address:home:zipcode"));
             Assert.Equal("Some Work Address", yamlConfigPrd.Get("address:work:street"));

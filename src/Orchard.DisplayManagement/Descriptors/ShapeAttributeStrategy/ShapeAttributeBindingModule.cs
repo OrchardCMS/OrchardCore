@@ -39,7 +39,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                     {
                         hasShapes = true;
                         // PERF: Analyze the impact of an important number of instances
-                        // in the service collection 
+                        // in the service collection
                         serviceCollection.AddInstance(
                             new ShapeAttributeOccurrence(customAttribute,
                             method,
@@ -47,7 +47,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                     }
                 }
 
-                // If the type was registered using IDependency, we need to 
+                // If the type was registered using IDependency, we need to
                 // register it itself or the invocation won't be able
                 // to be done on the correct instance as the default ASP.NET DI
                 // won't resolve a type explicitely

@@ -6,7 +6,7 @@ using Microsoft.AspNet.FileProviders;
 namespace Orchard.FileSystem.AppData
 {
     /// <summary>
-    /// Abstraction of App_Data folder. All virtual paths passed in or returned are relative to "~/App_Data". 
+    /// Abstraction of App_Data folder. All virtual paths passed in or returned are relative to "~/App_Data".
     /// Expected to work on physical filesystem, but decouples core system from web hosting apis
     /// </summary>
     public interface IAppDataFolder

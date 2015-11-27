@@ -8,32 +8,37 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Orchard.Tests.Hosting.Environment.Extensions {
+namespace Orchard.Tests.Hosting.Environment.Extensions
+{
     public class ExtensionLocatorTests : IDisposable
     {
         private string _tempFolderName;
 
-        public ExtensionLocatorTests() {
+        public ExtensionLocatorTests()
+        {
             _tempFolderName = Path.GetTempFileName();
             File.Delete(_tempFolderName);
             var assembly = GetType().GetTypeInfo().Assembly;
             var path = Path.Combine(Directory.GetCurrentDirectory(), "Hosting\\Environment\\Extensions\\FoldersData");
             DirectoryInfo di = new DirectoryInfo(path);
-            foreach (var file in di.GetFiles("*.txt",SearchOption.AllDirectories)) {
+            foreach (var file in di.GetFiles("*.txt", SearchOption.AllDirectories))
+            {
                 var targetPath = file.FullName.Replace(path, _tempFolderName);
-                
+
                 Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
                 file.CopyTo(targetPath);
             }
         }
-        
-        public void Dispose() {
+
+        public void Dispose()
+        {
             Directory.Delete(_tempFolderName, true);
         }
 
         [Fact]
         [Trait("Category", "ExtensionLocator")]
-        public void IdsFromFoldersWithModuleTxtShouldBeListed() {
+        public void IdsFromFoldersWithModuleTxtShouldBeListed()
+        {
             var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -51,7 +56,8 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
         }
 
         [Fact]
-        public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument() {
+        public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument()
+        {
             var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -65,7 +71,8 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
         }
 
         [Fact]
-        public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven() {
+        public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven()
+        {
             var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -83,7 +90,8 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
         }
 
         [Fact]
-        public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven() {
+        public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven()
+        {
             var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -99,19 +107,23 @@ namespace Orchard.Tests.Hosting.Environment.Extensions {
             Assert.Contains("SampleSix", paths); // Sample6 - Name, no Path
             Assert.Contains("Sample7", paths); // Sample7 - Id, no Name or Path
         }
-        public ModuleLocationExpander ModuleFolder(string path) {
-                return  new ModuleLocationExpander(
-                    DefaultExtensionTypes.Module,
-                    new[] { path },
-                    "Module.txt"
-                    );
+        public ModuleLocationExpander ModuleFolder(string path)
+        {
+            return new ModuleLocationExpander(
+                DefaultExtensionTypes.Module,
+                new[] { path },
+                "Module.txt"
+                );
         }
 
-        public class FakeOptions : IOptions<ExtensionHarvestingOptions> {
-            public FakeOptions(ExtensionHarvestingOptions options) {
+        public class FakeOptions : IOptions<ExtensionHarvestingOptions>
+        {
+            public FakeOptions(ExtensionHarvestingOptions options)
+            {
                 Value = options;
             }
-            public ExtensionHarvestingOptions Value {
+            public ExtensionHarvestingOptions Value
+            {
                 get;
                 private set;
             }

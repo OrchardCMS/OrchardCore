@@ -10,11 +10,14 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class ShapeHelperTests {
+namespace Orchard.Tests.DisplayManagement
+{
+    public class ShapeHelperTests
+    {
         IServiceProvider _serviceProvider;
 
-        public ShapeHelperTests() {
+        public ShapeHelperTests()
+        {
             IServiceCollection serviceCollection = new ServiceCollection();
 
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
@@ -25,7 +28,8 @@ namespace Orchard.Tests.DisplayManagement {
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
 
-            var defaultShapeTable = new ShapeTable {
+            var defaultShapeTable = new ShapeTable
+            {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
@@ -35,7 +39,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CreatingNewShapeTypeByName() {
+        public void CreatingNewShapeTypeByName()
+        {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
             var alpha = shape.Alpha();
@@ -44,7 +49,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void CreatingShapeWithAdditionalNamedParameters() {
+        public void CreatingShapeWithAdditionalNamedParameters()
+        {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
             var alpha = shape.Alpha(one: 1, two: "dos");
@@ -55,7 +61,8 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void WithPropertyBearingObjectInsteadOfNamedParameters() {
+        public void WithPropertyBearingObjectInsteadOfNamedParameters()
+        {
             dynamic shape = _serviceProvider.GetService<IShapeFactory>();
 
             var alpha = shape.Alpha(new { one = 1, two = "dos" });

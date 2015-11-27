@@ -5,10 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Orchard.Tests.Hosting.Console {
-    public class CommandLineParseTests {
+namespace Orchard.Tests.Hosting.Console
+{
+    public class CommandLineParseTests
+    {
         [Fact]
-        public void ParserUnderstandsSimpleArguments() {
+        public void ParserUnderstandsSimpleArguments()
+        {
             // a b cdef
             // => a
             // => b
@@ -22,8 +25,9 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserIgnoresExtraSpaces() {
-            //  a    b    cdef   
+        public void ParserIgnoresExtraSpaces()
+        {
+            //  a    b    cdef
             // => a
             // => b
             // => cdef
@@ -36,7 +40,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserGroupsQuotedArguments() {
+        public void ParserGroupsQuotedArguments()
+        {
             // feature enable "a b cdef"
             // => feature
             // => enable
@@ -50,7 +55,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsQuotesInsideArgument() {
+        public void ParserUnderstandsQuotesInsideArgument()
+        {
             // feature enable /foo:"a b cdef"
             // => feature
             // => enable
@@ -64,7 +70,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserBackslashEscapesQuote() {
+        public void ParserBackslashEscapesQuote()
+        {
             // feature enable \"a b cdef\"
             // => feature
             // => enable
@@ -82,7 +89,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserBackslashDoesnotEscapeBackslash() {
+        public void ParserBackslashDoesnotEscapeBackslash()
+        {
             // feature enable \\a
             // => feature
             // => enable
@@ -96,7 +104,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserBackslashDoesnotEscapeOtherCharacters() {
+        public void ParserBackslashDoesnotEscapeOtherCharacters()
+        {
             // feature enable \a
             // => feature
             // => enable
@@ -110,7 +119,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsTrailingBackslash() {
+        public void ParserUnderstandsTrailingBackslash()
+        {
             // feature enable \
             // => feature
             // => enable
@@ -124,7 +134,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsTrailingBackslash2() {
+        public void ParserUnderstandsTrailingBackslash2()
+        {
             // feature enable b\
             // => feature
             // => enable
@@ -138,7 +149,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsEmptyArgument() {
+        public void ParserUnderstandsEmptyArgument()
+        {
             // feature enable ""
             // => feature
             // => enable
@@ -152,7 +164,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsTrailingQuote() {
+        public void ParserUnderstandsTrailingQuote()
+        {
             // feature enable "
             // => feature
             // => enable
@@ -166,7 +179,8 @@ namespace Orchard.Tests.Hosting.Console {
         }
 
         [Fact]
-        public void ParserUnderstandsEmptyArgument2() {
+        public void ParserUnderstandsEmptyArgument2()
+        {
             // "
             // => <empty arg>
             var result = new CommandLineParser().Parse("\"").ToList();
@@ -175,7 +189,8 @@ namespace Orchard.Tests.Hosting.Console {
             Assert.Equal("", result[0]);
         }
         [Fact]
-        public void ParserUnderstandsEmptyArgument3() {
+        public void ParserUnderstandsEmptyArgument3()
+        {
             // ""
             // => <empty arg>
             var result = new CommandLineParser().Parse("\"\"").ToList();

@@ -15,27 +15,35 @@ using System.Linq.Expressions;
 using Xunit;
 using System.Threading.Tasks;
 
-namespace Orchard.Tests.DisplayManagement {
-    public class DefaultDisplayManagerTests {
+namespace Orchard.Tests.DisplayManagement
+{
+    public class DefaultDisplayManagerTests
+    {
         ShapeTable _defaultShapeTable;
         IServiceProvider _serviceProvider;
 
-        public class StubEventBus : IEventBus {
-            public Task NotifyAsync(string message, IDictionary<string, object> arguments) {
+        public class StubEventBus : IEventBus
+        {
+            public Task NotifyAsync(string message, IDictionary<string, object> arguments)
+            {
                 return null;
             }
 
-            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler {
+            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler
+            {
                 return null;
             }
 
-            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action) {
+            public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)
+            {
             }
         }
 
 
-        public DefaultDisplayManagerTests() {
-            _defaultShapeTable = new ShapeTable {
+        public DefaultDisplayManagerTests()
+        {
+            _defaultShapeTable = new ShapeTable
+            {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
@@ -55,7 +63,8 @@ namespace Orchard.Tests.DisplayManagement {
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        class TestDisplayEvents : IShapeDisplayEvents {
+        class TestDisplayEvents : IShapeDisplayEvents
+        {
             public Action<ShapeDisplayingContext> Displaying = ctx => { };
             public Action<ShapeDisplayedContext> Displayed = ctx => { };
 
@@ -66,36 +75,45 @@ namespace Orchard.Tests.DisplayManagement {
 
 
 
-        
-        void AddShapeDescriptor(ShapeDescriptor shapeDescriptor) {
+
+        void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
+        {
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
-            foreach (var binding in shapeDescriptor.Bindings) {
+            foreach (var binding in shapeDescriptor.Bindings)
+            {
                 binding.Value.ShapeDescriptor = shapeDescriptor;
                 _defaultShapeTable.Bindings[binding.Key] = binding.Value;
             }
         }
 
-        static DisplayContext CreateDisplayContext(Shape shape) {
-            return new DisplayContext {
+        static DisplayContext CreateDisplayContext(Shape shape)
+        {
+            return new DisplayContext
+            {
                 Value = shape,
                 ViewContext = new ViewContext()
             };
         }
 
         [Fact]
-        public void RenderSimpleShape() {
+        public void RenderSimpleShape()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo"
                 }
             };
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
-            descriptor.Bindings["Foo"] = new ShapeBinding {
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
                 BindingName = "Foo",
                 Binding = ctx => new HtmlString("Hi there!"),
             };
@@ -106,24 +124,30 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void RenderPreCalculatedShape() {
+        public void RenderPreCalculatedShape()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo"
                 }
             };
 
             shape.Metadata.OnDisplaying(
-                context => {
+                context =>
+                {
                     context.ChildContent = new HtmlString("Bar");
                 });
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
-            descriptor.Bindings["Foo"] = new ShapeBinding {
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
                 BindingName = "Foo",
                 Binding = ctx => new HtmlString("Hi there!"),
             };
@@ -135,19 +159,24 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void RenderFallbackShape() {
+        public void RenderFallbackShape()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo__2"
                 }
             };
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
-            descriptor.Bindings["Foo"] = new ShapeBinding {
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
                 BindingName = "Foo",
                 Binding = ctx => new HtmlString("Hi there!"),
             };
@@ -158,23 +187,29 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void RenderAlternateShapeExplicitly() {
+        public void RenderAlternateShapeExplicitly()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo__2"
                 }
             };
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
-            descriptor.Bindings["Foo"] = new ShapeBinding {
+            descriptor.Bindings["Foo"] = new ShapeBinding
+            {
                 BindingName = "Foo",
                 Binding = ctx => new HtmlString("Hi there!"),
             };
-            descriptor.Bindings["Foo__2"] = new ShapeBinding {
+            descriptor.Bindings["Foo__2"] = new ShapeBinding
+            {
                 BindingName = "Foo__2",
                 Binding = ctx => new HtmlString("Hello again!"),
             };
@@ -185,11 +220,14 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void RenderAlternateShapeByMostRecentlyAddedMatchingAlternate() {
+        public void RenderAlternateShapeByMostRecentlyAddedMatchingAlternate()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo"
                 }
             };
@@ -197,7 +235,8 @@ namespace Orchard.Tests.DisplayManagement {
             shape.Metadata.Alternates.Add("Foo__2");
             shape.Metadata.Alternates.Add("Foo__3");
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
             AddBinding(descriptor, "Foo", ctx => new HtmlString("Hi there!"));
@@ -209,8 +248,10 @@ namespace Orchard.Tests.DisplayManagement {
             Assert.Equal("Hello (2)!", result.ToString());
         }
 
-        private static void AddBinding(ShapeDescriptor descriptor, string bindingName, Func<DisplayContext, IHtmlContent> binding) {
-            descriptor.Bindings[bindingName] = new ShapeBinding {
+        private static void AddBinding(ShapeDescriptor descriptor, string bindingName, Func<DisplayContext, IHtmlContent> binding)
+        {
+            descriptor.Bindings[bindingName] = new ShapeBinding
+            {
                 BindingName = bindingName,
                 Binding = binding,
             };
@@ -247,16 +288,20 @@ namespace Orchard.Tests.DisplayManagement {
 
 
         [Fact]
-        public void ShapeDescriptorDisplayingAndDisplayedAreCalled() {
+        public void ShapeDescriptorDisplayingAndDisplayedAreCalled()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shape = new Shape {
-                Metadata = new ShapeMetadata {
+            var shape = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo"
                 }
             };
 
-            var descriptor = new ShapeDescriptor {
+            var descriptor = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
             AddBinding(descriptor, "Foo", ctx => new HtmlString("yarg"));
@@ -275,21 +320,26 @@ namespace Orchard.Tests.DisplayManagement {
         }
 
         [Fact]
-        public void DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames() {
+        public void DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shapeFoo = new Shape {
-                Metadata = new ShapeMetadata {
+            var shapeFoo = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "Foo"
                 }
             };
-            var descriptorFoo = new ShapeDescriptor {
+            var descriptorFoo = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
             AddBinding(descriptorFoo, "Foo", ctx => new HtmlString("alpha"));
             AddShapeDescriptor(descriptorFoo);
 
-            var descriptorBar = new ShapeDescriptor {
+            var descriptorBar = new ShapeDescriptor
+            {
                 ShapeType = "Bar",
             };
             AddBinding(descriptorBar, "Bar", ctx => new HtmlString("beta"));
@@ -306,15 +356,19 @@ namespace Orchard.Tests.DisplayManagement {
 
 
         [Fact]
-        public void ShapeTypeAndBindingNamesAreNotCaseSensitive() {
+        public void ShapeTypeAndBindingNamesAreNotCaseSensitive()
+        {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
-            var shapeFoo = new Shape {
-                Metadata = new ShapeMetadata {
+            var shapeFoo = new Shape
+            {
+                Metadata = new ShapeMetadata
+                {
                     Type = "foo"
                 }
             };
-            var descriptorFoo = new ShapeDescriptor {
+            var descriptorFoo = new ShapeDescriptor
+            {
                 ShapeType = "Foo",
             };
             AddBinding(descriptorFoo, "Foo", ctx => new HtmlString("alpha"));

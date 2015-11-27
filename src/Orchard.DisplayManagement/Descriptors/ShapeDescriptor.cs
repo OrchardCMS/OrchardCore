@@ -4,9 +4,12 @@ using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNet.Html.Abstractions;
 
-namespace Orchard.DisplayManagement.Descriptors {
-    public class ShapeDescriptor {
-        public ShapeDescriptor() {
+namespace Orchard.DisplayManagement.Descriptors
+{
+    public class ShapeDescriptor
+    {
+        public ShapeDescriptor()
+        {
             Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
             Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
@@ -14,24 +17,28 @@ namespace Orchard.DisplayManagement.Descriptors {
             Wrappers = new List<string>();
             BindingSources = new List<string>();
             Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
-            Placement = ctx => new PlacementInfo {Location = DefaultPlacement};
+            Placement = ctx => new PlacementInfo { Location = DefaultPlacement };
         }
 
         public string ShapeType { get; set; }
 
         /// <summary>
-        /// The BindingSource is informational text about the source of the Binding delegate. Not used except for 
+        /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
         /// troubleshooting.
         /// </summary>
-        public string BindingSource {
-            get {
+        public string BindingSource
+        {
+            get
+            {
                 ShapeBinding binding;
                 return Bindings.TryGetValue(ShapeType, out binding) ? binding.BindingSource : null;
             }
         }
 
-        public Func<DisplayContext, IHtmlContent> Binding {
-            get {
+        public Func<DisplayContext, IHtmlContent> Binding
+        {
+            get
+            {
                 return Bindings[ShapeType].Binding;
             }
         }
@@ -51,7 +58,8 @@ namespace Orchard.DisplayManagement.Descriptors {
         public IList<string> BindingSources { get; set; }
     }
 
-    public class ShapeBinding {
+    public class ShapeBinding
+    {
         public ShapeDescriptor ShapeDescriptor { get; set; }
         public string BindingName { get; set; }
         public string BindingSource { get; set; }

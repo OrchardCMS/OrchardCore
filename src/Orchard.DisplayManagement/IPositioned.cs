@@ -1,5 +1,7 @@
-﻿namespace Orchard.DisplayManagement {
-    public interface IPositioned {
+﻿namespace Orchard.DisplayManagement
+{
+    public interface IPositioned
+    {
         string Position { get; }
     }
 }

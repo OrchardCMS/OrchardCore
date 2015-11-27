@@ -4,22 +4,27 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Orchard.Tests.FileSystem {
-    public class PhysicalAppDataFolderTests : IDisposable {
+namespace Orchard.Tests.FileSystem
+{
+    public class PhysicalAppDataFolderTests : IDisposable
+    {
         private string _tempFolder;
         private IAppDataFolder _appDataFolder;
 
-        public class StubAppDataFolderRoot : IAppDataFolderRoot {
+        public class StubAppDataFolderRoot : IAppDataFolderRoot
+        {
             public string RootPath { get; set; }
             public string RootFolder { get; set; }
         }
 
-        public static IAppDataFolder CreateAppDataFolder(string tempFolder) {
+        public static IAppDataFolder CreateAppDataFolder(string tempFolder)
+        {
             var folderRoot = new StubAppDataFolderRoot { RootPath = "~/App_Data", RootFolder = tempFolder };
             return new PhysicalAppDataFolder(folderRoot, new StubLoggerFactory());
         }
 
-        public PhysicalAppDataFolderTests() {
+        public PhysicalAppDataFolderTests()
+        {
             _tempFolder = Path.GetTempFileName();
             File.Delete(_tempFolder);
             Directory.CreateDirectory(Path.Combine(_tempFolder, "alpha"));
@@ -30,12 +35,14 @@ namespace Orchard.Tests.FileSystem {
             _appDataFolder = CreateAppDataFolder(_tempFolder);
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             Directory.Delete(_tempFolder, true);
         }
 
         [Fact]
-        public void ListFilesShouldContainFileInfo() {
+        public void ListFilesShouldContainFileInfo()
+        {
             var files = _appDataFolder.ListFiles("alpha").Select(x => x.Name).ToList();
             Assert.Equal(2, files.Count());
             Assert.Contains("beta.txt", files);
@@ -43,39 +50,45 @@ namespace Orchard.Tests.FileSystem {
         }
 
         [Fact]
-        public void NonExistantFolderShouldListAsEmptyCollection() {
+        public void NonExistantFolderShouldListAsEmptyCollection()
+        {
             var files = _appDataFolder.ListFiles("delta");
             Assert.Equal(0, files.Count());
         }
 
         [Fact]
-        public void PhysicalPathAddsToBasePathAndDoesNotNeedToExist() {
+        public void PhysicalPathAddsToBasePathAndDoesNotNeedToExist()
+        {
             var physicalPath = _appDataFolder.MapPath("delta\\epsilon.txt");
             Assert.Equal(Path.Combine(_tempFolder, "delta\\epsilon.txt"), physicalPath);
         }
 
         [Fact]
-        public void ListSubdirectoriesShouldContainFullSubpath() {
+        public void ListSubdirectoriesShouldContainFullSubpath()
+        {
             var files = _appDataFolder.ListDirectories("alpha").Select(x => x.Name);
             Assert.Equal(1, files.Count());
             Assert.Contains("omega", files);
         }
 
         [Fact]
-        public void ListSubdirectoriesShouldWorkInRoot() {
+        public void ListSubdirectoriesShouldWorkInRoot()
+        {
             var files = _appDataFolder.ListDirectories("").Select(x => x.Name);
             Assert.Equal(1, files.Count());
             Assert.Contains("alpha", files);
         }
-        
+
         [Fact]
-        public void NonExistantFolderShouldListDirectoriesAsEmptyCollection() {
+        public void NonExistantFolderShouldListDirectoriesAsEmptyCollection()
+        {
             var files = _appDataFolder.ListDirectories("delta");
             Assert.Equal(0, files.Count());
         }
 
         [Fact]
-        public void CreateFileWillCauseDirectoryToBeCreated() {
+        public void CreateFileWillCauseDirectoryToBeCreated()
+        {
             Assert.False(Directory.Exists(Path.Combine(_tempFolder, "alpha\\omega\\foo")));
             _appDataFolder.CreateFile("alpha\\omega\\foo\\bar.txt", "quux");
             Assert.True(Directory.Exists(Path.Combine(_tempFolder, "alpha\\omega\\foo")));
@@ -83,7 +96,8 @@ namespace Orchard.Tests.FileSystem {
 
 
         [Fact]
-        public void FilesCanBeReadBack() {
+        public void FilesCanBeReadBack()
+        {
             _appDataFolder.CreateFile("alpha\\gamma\\foo\\bar.txt", @"
 this is
 a
@@ -96,12 +110,14 @@ test", text);
         }
 
         [Fact]
-        public void FileExistsReturnsFalseForNonExistingFile() {
+        public void FileExistsReturnsFalseForNonExistingFile()
+        {
             Assert.False(_appDataFolder.GetFileInfo("notexisting").Exists);
         }
 
         [Fact]
-        public void FileExistsReturnsTrueForExistingFile() {
+        public void FileExistsReturnsTrueForExistingFile()
+        {
             _appDataFolder.CreateFile("alpha\\foo\\bar.txt", "");
             Assert.True(_appDataFolder.GetFileInfo("alpha\\foo\\bar.txt").Exists);
         }

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using Orchard.Environment.Extensions.Models;
 
-namespace Orchard.DisplayManagement.Descriptors {
-    public class ShapeAlteration {
+namespace Orchard.DisplayManagement.Descriptors
+{
+    public class ShapeAlteration
+    {
         private readonly IList<Action<ShapeDescriptor>> _configurations;
 
-        public ShapeAlteration(string shapeType, Feature feature, IList<Action<ShapeDescriptor>> configurations) {
+        public ShapeAlteration(string shapeType, Feature feature, IList<Action<ShapeDescriptor>> configurations)
+        {
             _configurations = configurations;
             ShapeType = shapeType;
             Feature = feature;
@@ -14,8 +17,10 @@ namespace Orchard.DisplayManagement.Descriptors {
 
         public string ShapeType { get; private set; }
         public Feature Feature { get; private set; }
-        public void Alter(ShapeDescriptor descriptor) {
-            foreach (var configuration in _configurations) {
+        public void Alter(ShapeDescriptor descriptor)
+        {
+            foreach (var configuration in _configurations)
+            {
                 configuration(descriptor);
             }
         }
