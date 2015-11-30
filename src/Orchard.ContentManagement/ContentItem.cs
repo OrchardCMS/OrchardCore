@@ -6,6 +6,7 @@ namespace Orchard.ContentManagement
     /// <summary>
     /// Represents a content item version.
     /// </summary>
+    [JsonConverter(typeof(ContentItemConverter))]
     public class ContentItem : ContentElement, IContent
     {
         public ContentItem() : base()

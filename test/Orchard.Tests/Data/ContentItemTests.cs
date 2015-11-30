@@ -83,7 +83,7 @@ namespace Orchard.Tests.Data
 
             var json = JsonConvert.SerializeObject(contentItem);
 
-            Assert.Contains(@"""Content"":{""MyPart"":{""Text"":""test""}}", json);
+            Assert.Contains(@"""MyPart"":{""Text"":""test""}", json);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace Orchard.Tests.Data
 
             var json = JsonConvert.SerializeObject(contentItem);
 
-            Assert.Contains(@"""Content"":{""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}}", json);
+            Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
         }
     }
 
