@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace Orchard.ContentManagement.MetaData.Models
 {
     public class ContentTypeDefinition
     {
-        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, SettingsDictionary settings)
+        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JObject settings)
         {
             Name = name;
             DisplayName = displayName;
@@ -19,7 +20,7 @@ namespace Orchard.ContentManagement.MetaData.Models
             Name = name;
             DisplayName = displayName;
             Parts = Enumerable.Empty<ContentTypePartDefinition>();
-            Settings = new SettingsDictionary();
+            Settings = new JObject();
         }
 
         [StringLength(128)]
@@ -27,6 +28,6 @@ namespace Orchard.ContentManagement.MetaData.Models
         [Required, StringLength(1024)]
         public string DisplayName { get; private set; }
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
-        public SettingsDictionary Settings { get; private set; }
+        public JObject Settings { get; private set; }
     }
 }

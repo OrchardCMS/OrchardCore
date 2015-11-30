@@ -1,16 +1,25 @@
-using System;
-using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Orchard.ContentManagement
 {
     /// <summary>
     /// Represents a content item version.
     /// </summary>
-    public class ContentItem : IContent
+    [JsonConverter(typeof(ContentItemConverter))]
+    public class ContentItem : ContentElement, IContent
     {
-        public ContentItem()
+        public ContentItem() : base()
         {
-            Parts = new Dictionary<string, ContentPart>();
+        }
+
+        [JsonProperty("Content")]
+        private JObject _data;
+        
+        internal override JObject Data
+        {
+            get { return _data; }
+            set { _data = value; }
         }
 
         /// <summary>
@@ -21,6 +30,8 @@ namespace Orchard.ContentManagement
         /// <summary>
         /// The content item id of this version.
         /// </summary>
+        ContentItem IContent.ContentItem => this;
+
         public int ContentItemId { get; set; }
 
         /// <summary>
@@ -42,37 +53,5 @@ namespace Orchard.ContentManagement
         /// Whether the version is the latest version of the content item.
         /// </summary>
         public bool Latest { get; set; }
-
-        /// <summary>
-        /// The list of parts for this version.
-        /// </summary>
-        public Dictionary<string, ContentPart> Parts { get; set; }
-
-        ContentItem IContent.ContentItem => this;
-
-        public bool Has(Type partType)
-        {
-            return Has(partType.Name);
-        }
-
-        public bool Has(string partName)
-        {
-            return Parts.ContainsKey(partName);
-        }
-
-        public IContent Get(Type partType)
-        {
-            return Get(partType.Name);
-        }
-
-        public IContent Get(string partName)
-        {
-            return Parts[partName];
-        }
-
-        public void Weld(ContentPart part)
-        {
-            Parts.Add(part.GetType().Name, part);
-        }
     }
 }

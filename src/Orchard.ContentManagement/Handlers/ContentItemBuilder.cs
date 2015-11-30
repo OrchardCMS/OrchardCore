@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
+﻿using Orchard.ContentManagement.MetaData.Models;
 
 namespace Orchard.ContentManagement.Handlers
 {
@@ -8,7 +7,6 @@ namespace Orchard.ContentManagement.Handlers
     /// </summary>
     public class ContentItemBuilder
     {
-        private readonly ContentTypeDefinition _definition;
         private readonly ContentItem _item;
 
         /// <summary>
@@ -17,8 +15,6 @@ namespace Orchard.ContentManagement.Handlers
         /// <param name="definition">The definition for the content item to be built.</param>
         public ContentItemBuilder(ContentTypeDefinition definition)
         {
-            _definition = definition;
-
             // TODO: could / should be done on the build method ?
             _item = new ContentItem
             {
@@ -43,18 +39,8 @@ namespace Orchard.ContentManagement.Handlers
             {
                 var partName = typeof(TPart).Name;
 
-                // obtain the type definition for the part
-                var typePartDefinition = _definition.Parts.FirstOrDefault(p => p.PartDefinition.Name == partName);
-                if (typePartDefinition == null)
-                {
-                    // If the content item's type definition does not define the part; use an empty type definition.
-                    typePartDefinition = new ContentTypePartDefinition(
-                        new ContentPartDefinition(partName),
-                        new SettingsDictionary());
-                }
-
                 // build and weld the part
-                var part = new TPart { TypePartDefinition = typePartDefinition };
+                var part = new TPart();
                 _item.Weld(part);
             }
 

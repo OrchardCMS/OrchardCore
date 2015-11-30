@@ -145,7 +145,7 @@ namespace Orchard.Core.Settings.Metadata
         private void Apply(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
         {
             record.DisplayName = model.DisplayName;
-            record.Settings = JsonConvert.SerializeObject(model.Settings);
+            record.Settings = model.Settings;
 
             var toRemove = record.ContentTypePartDefinitionRecords
                 .Where(partDefinitionRecord => !model.Parts.Any(part => partDefinitionRecord.ContentPartDefinitionRecord.Name == part.PartDefinition.Name))
@@ -171,12 +171,12 @@ namespace Orchard.Core.Settings.Metadata
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
         {
-            record.Settings = JsonConvert.SerializeObject(model.Settings);
+            record.Settings = model.Settings;
         }
 
         private void Apply(ContentPartDefinition model, ContentPartDefinitionRecord record)
         {
-            record.Settings = JsonConvert.SerializeObject(model.Settings);
+            record.Settings = model.Settings;
 
             var toRemove = record.ContentPartFieldDefinitionRecords
                 .Where(partFieldDefinitionRecord => !model.Fields.Any(partField => partFieldDefinitionRecord.Name == partField.Name))
@@ -206,7 +206,7 @@ namespace Orchard.Core.Settings.Metadata
 
         private void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record)
         {
-            record.Settings = JsonConvert.SerializeObject(model.Settings);
+            record.Settings = model.Settings;
         }
 
         ContentTypeDefinition Build(ContentTypeDefinitionRecord source)
@@ -215,14 +215,14 @@ namespace Orchard.Core.Settings.Metadata
                 source.Name,
                 source.DisplayName,
                 source.ContentTypePartDefinitionRecords.Select(Build),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
+                source.Settings);
         }
 
         ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
         {
             return source == null ? null : new ContentTypePartDefinition(
                 Build(source.ContentPartDefinitionRecord),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
+                source.Settings);
         }
 
         ContentPartDefinition Build(ContentPartDefinitionRecord source)
@@ -230,7 +230,7 @@ namespace Orchard.Core.Settings.Metadata
             return source == null ? null : new ContentPartDefinition(
                 source.Name,
                 source.ContentPartFieldDefinitionRecords.Select(Build),
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }"));
+                source.Settings);
         }
 
         ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
@@ -238,7 +238,7 @@ namespace Orchard.Core.Settings.Metadata
             return source == null ? null : new ContentPartFieldDefinition(
                 Build(source.ContentFieldDefinitionRecord),
                 source.Name,
-                JsonConvert.DeserializeObject<SettingsDictionary>(source.Settings ?? "{ }")
+                source.Settings
             );
         }
 

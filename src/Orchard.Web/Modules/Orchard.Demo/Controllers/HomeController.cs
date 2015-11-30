@@ -49,7 +49,18 @@ namespace Orchard.Demo.Controllers
         public ActionResult Index(string text)
         {
             var contentItem = _contentManager.New("Foo");
-            contentItem.As<TestContentPartA>().Line = text;
+
+            // Dynamic syntax
+            contentItem.Content.TestContentPartA.Line = text;
+
+            // Explicit syntax
+            var testPart = contentItem.As<TestContentPartA>();
+            testPart.Line = text;
+            contentItem.Weld(testPart);
+
+            // "Alter" syntax
+            contentItem.Alter<TestContentPartA>(x => x.Line = text);
+             
             _contentManager.Create(contentItem);
 
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });

@@ -151,7 +151,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 case "ContentPart":
                     return ctx => ctx.Content != null
-                        && ctx.Content.ContentItem.Parts.Any(part => part.Key == expression)
+                        && ctx.Content.ContentItem.Has(expression)
                         && predicate(ctx);
                 case "ContentType":
                     if (expression.EndsWith("*"))
@@ -168,7 +168,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
                     }
                     return ctx => (ctx.DisplayType == expression) && predicate(ctx);
                 case "Path":
-                    throw new Exception("PAth Not currently Supported");
+                    throw new Exception("Path Not currently Supported");
                     //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
                     //                         ? VirtualPathUtility.ToAppRelative(expression)
                     //                         : VirtualPathUtility.Combine("~/", expression);
