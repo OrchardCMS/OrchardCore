@@ -53,7 +53,8 @@ namespace Orchard.ContentManagement
             var context = new ActivatingContentContext
             {
                 ContentType = contentTypeDefinition.Name,
-                Definition = contentTypeDefinition
+                Definition = contentTypeDefinition,
+                Builder = new ContentItemBuilder(contentTypeDefinition)
             };
 
             // invoke handlers to weld aspects onto kernel
