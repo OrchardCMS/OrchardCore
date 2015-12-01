@@ -4,6 +4,7 @@ using System.Linq;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Shapes;
 using System.Reflection;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -11,13 +12,16 @@ namespace Orchard.DisplayManagement.Implementation
     {
         private readonly IEnumerable<IShapeFactoryEvents> _events;
         private readonly IShapeTableManager _shapeTableManager;
+        private readonly IThemeManager _themeManager;
 
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
-            IShapeTableManager shapeTableManager)
+            IShapeTableManager shapeTableManager,
+            IThemeManager themeManager)
         {
             _events = events;
             _shapeTableManager = shapeTableManager;
+            _themeManager = themeManager;
         }
 
         public override bool TryInvokeMember(System.Dynamic.InvokeMemberBinder binder, object[] args, out object result)
@@ -38,7 +42,9 @@ namespace Orchard.DisplayManagement.Implementation
 
         public IShape Create(string shapeType, INamedEnumerable<object> parameters, Func<dynamic> createShape)
         {
-            var defaultShapeTable = _shapeTableManager.GetShapeTable(null);
+            var theme = _themeManager.GetTheme();
+
+            var defaultShapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
             ShapeDescriptor shapeDescriptor;
             defaultShapeTable.Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 

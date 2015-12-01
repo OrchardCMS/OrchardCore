@@ -49,7 +49,7 @@ namespace Orchard.DisplayManagement.Shapes
             if (args.Count() == 1)
             {
                 result = this;
-                return TrySetMemberImpl(binder.Name, args.Single());
+                return TrySetMemberImpl(binder.Name, args.First());
             }
 
             if (!base.TryInvokeMember(binder, args, out result))
@@ -73,7 +73,7 @@ namespace Orchard.DisplayManagement.Shapes
                 return base.TryGetIndex(binder, indexes, out result);
             }
 
-            var index = indexes.Single();
+            var index = indexes.First();
 
             if (_props.Contains(index))
             {
@@ -99,7 +99,7 @@ namespace Orchard.DisplayManagement.Shapes
                 return base.TrySetIndex(binder, indexes, value);
             }
 
-            var index = indexes.Single();
+            var index = indexes.First();
 
             // try to access an existing member
             var strinIndex = index as string;
@@ -109,7 +109,7 @@ namespace Orchard.DisplayManagement.Shapes
                 return true;
             }
 
-            _props[indexes.Single()] = value;
+            _props[indexes.First()] = value;
             return true;
         }
 

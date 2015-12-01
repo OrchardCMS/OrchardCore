@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Mvc.Razor.Directives;
 using Microsoft.AspNet.Razor.Runtime.TagHelpers;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
@@ -9,12 +10,14 @@ namespace Orchard.DisplayManagement.TagHelpers
     {
         public TagHelperMvcRazorHost(
             IChunkTreeCache chunkTreeCache,
-            IShapeTableManager shapeTableManager)
+            IShapeTableManager shapeTableManager,
+            IThemeManager themeManager)
             : base(chunkTreeCache)
         {
             TagHelperDescriptorResolver = new ViewComponentTagHelperDescriptorResolver(
                 new TagHelperTypeResolver(),
-                shapeTableManager);
+                shapeTableManager,
+                themeManager);
         }
     }
 }

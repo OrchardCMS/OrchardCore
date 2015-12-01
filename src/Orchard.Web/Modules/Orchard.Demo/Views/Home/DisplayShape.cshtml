@@ -1,44 +1,31 @@
 ﻿@model dynamic
 @inject Orchard.DisplayManagement.IShapeDisplay ShapeDisplay
-@inject Orchard.DisplayManagement.IDisplayHelperFactory DisplayHelperFactory
 @addTagHelper "*, Orchard.DisplayManagement"
 @addTagHelper "*, Orchard.Demo"
 
-@{
-    var Display = DisplayHelperFactory.CreateHelper(ViewContext);
-}
+@Model.Line
 
-<html>
-    <head>
-        <title>Display</title>
-    </head>
-    <body>
+@*
+    The most simple way to render a shape is to call IShapeDisplay.Display.
+    It uses a DisplayHelper internally and returns the html as a string
+*@
+@ShapeDisplay.Display(Model)
 
-        @Model.Line
+@*
+    The way it is done from a View is to use a DisplayHelper which is created for
+    each view. It return an IHtmlString
+*@
+@Display(Model)
 
-        @*
-            The most simple way to render a shape is to call IShapeDisplay.Display.
-            It uses a DisplayHelper internally and returns the html as a string
-        *@
-        @ShapeDisplay.Display(Model)
+@*
+    We can still call the DisplHelper with methods
+*@
+@Display.Bar()
 
-        @*
-            The way it is done from a View is to use a DisplayHelper which is created for
-            each view. It return an IHtmlString
-        *@
-        @Display(Model)
+@*
+    Or attribute shapes
+*@
+@Display.Baz(text: "Foo")
 
-        @*
-            We can still call the DisplHelper with methods
-        *@
-        @Display.Bar()
-
-        @*
-            Or attribute shapes
-        *@
-        @Display.Baz(text: "Foo")
-
-        <shape type="Baz" text="Hello" count="3"/>
-        <baz text="Bertrand" count="4"/>
-</body>
-</html>
+<shape type="Baz" text="Hello" count="3"/>
+<baz text="Bertrand" count="4"/>

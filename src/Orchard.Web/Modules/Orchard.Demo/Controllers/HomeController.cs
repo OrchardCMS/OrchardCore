@@ -77,7 +77,7 @@ namespace Orchard.Demo.Controllers
 
             return View(contentItem);
         }
-
+        
         public async Task<ActionResult> DisplayShape(int id)
         {
             var contentItem = await _contentManager.Get(id);
@@ -90,7 +90,7 @@ namespace Orchard.Demo.Controllers
             var shape = Shape
                 .Foo()
                 .Line(contentItem.As<TestContentPartA>().Line);
-
+            
             return View(shape);
         }
 

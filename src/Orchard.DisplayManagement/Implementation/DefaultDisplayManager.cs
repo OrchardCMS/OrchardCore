@@ -13,6 +13,7 @@ using Microsoft.AspNet.Html.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -31,18 +32,21 @@ namespace Orchard.DisplayManagement.Implementation
                     CSharpBinderFlags.ConvertExplicit,
                     typeof(Shape),
                     null/*typeof(DefaultDisplayManager)*/)));
+        private readonly IThemeManager _themeManager;
 
         public DefaultDisplayManager(
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
             _shapeDisplayEvents = shapeDisplayEvents;
             _httpContextAccessor = httpContextAccessor;
             _shapeBindingResolvers = shapeBindingResolvers;
+            _themeManager = themeManager;
 
             _logger = loggerFactory.CreateLogger<DefaultDisplayManager>();
 
@@ -64,7 +68,8 @@ namespace Orchard.DisplayManagement.Implementation
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
                 return CoerceHtmlString(context.Value);
 
-            var shapeTable = _shapeTableManager.GetShapeTable(null);
+            var theme = _themeManager.GetTheme();
+            var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
             var displayingContext = new ShapeDisplayingContext
             {

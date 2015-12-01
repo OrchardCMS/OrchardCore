@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
+    "Microsoft.AspNet.Tooling.Razor": "1.0.0-*",
+    "Orchard.ContentManagement": "2.0.0-*",
+    "Orchard.Hosting.Web": "2.0.0-*"
+  },
+  "frameworks": {
+    "dnxcore50": { }
+  }
+}

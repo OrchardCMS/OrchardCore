@@ -7,6 +7,7 @@ using Microsoft.AspNet.Razor.TagHelpers;
 using Microsoft.AspNet.Razor.Compilation.TagHelpers;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DependencyInjection;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
@@ -14,13 +15,16 @@ namespace Orchard.DisplayManagement.TagHelpers
     {
         private static readonly Type ShapeTagHelperType = typeof(ShapeTagHelper);
         private readonly IShapeTableManager _shapteTableManager;
-
+        private readonly IThemeManager _themeManager;
+         
         public ViewComponentTagHelperDescriptorResolver(
             TagHelperTypeResolver typeResolver,
-            IShapeTableManager shapeTableManager)
+            IShapeTableManager shapeTableManager,
+            IThemeManager themeManager)
             : base(typeResolver, designTime: false)
         {
             _shapteTableManager = shapeTableManager;
+            _themeManager = themeManager;
         }
 
         IEnumerable<TagHelperDescriptor> ITagHelperDescriptorResolver.Resolve(TagHelperDescriptorResolutionContext resolutionContext)
@@ -46,7 +50,9 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             var attributeDescriptors = new List<TagHelperAttributeDescriptor>();
 
-            foreach (var shape in _shapteTableManager.GetShapeTable(null).Descriptors)
+            var theme = _themeManager.GetTheme();
+
+            foreach (var shape in _shapteTableManager.GetShapeTable(theme?.Id).Descriptors)
             {
                 resolvedDescriptors.Add(
                     new TagHelperDescriptor

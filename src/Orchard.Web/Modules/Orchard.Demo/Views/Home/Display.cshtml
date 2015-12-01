@@ -2,11 +2,11 @@
 @using Orchard.ContentManagement;
 @using Orchard.Demo.Models;
 
-<html>
-    <head>
-        <title>Display</title>
-    </head>
-    <body>
-        @(Model.As<TestContentPartA>().Line)
-</body>
-</html>
+
+@(Model.As<TestContentPartA>().Line)
+
+@{ 
+    ThemeLayout.Footer.Add("In the footer", "2.0");
+    ThemeLayout.Footer.Add("Before", "before");
+    ThemeLayout.Footer.Add("After", "after");
+}

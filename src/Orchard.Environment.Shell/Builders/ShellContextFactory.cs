@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using Orchard.Hosting.ShellBuilders;
@@ -24,8 +23,7 @@ namespace Orchard.Environment.Shell.Builders
             _logger = loggerFactory.CreateLogger<ShellContextFactory>();
         }
 
-        ShellContext IShellContextFactory.CreateShellContext(
-            ShellSettings settings)
+        ShellContext IShellContextFactory.CreateShellContext(ShellSettings settings)
         {
             var sw = Stopwatch.StartNew();
             _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
@@ -39,8 +37,7 @@ namespace Orchard.Environment.Shell.Builders
                 {
                     Settings = settings,
                     Blueprint = blueprint,
-                    ServiceProvider = provider,
-                    //Shell = provider.GetRequiredService<IOrchardShell>()
+                    ServiceProvider = provider
                 };
 
                 _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
@@ -53,22 +50,7 @@ namespace Orchard.Environment.Shell.Builders
                 throw;
             }
         }
-
-        private static ShellDescriptor MinimumShellDescriptor()
-        {
-            return new ShellDescriptor
-            {
-                SerialNumber = -1,
-                Features = new[] {
-                    new ShellFeature { Name = "Orchard.Logging.Console" },
-                    new ShellFeature { Name = "Orchard.Hosting" },
-                    new ShellFeature { Name = "Settings" },
-                    new ShellFeature { Name = "Orchard.Demo" },
-                },
-                Parameters = new List<ShellParameter>()
-            };
-        }
-
+        
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
         {
             _logger.LogDebug("No shell settings available. Creating shell context for setup");
@@ -89,9 +71,26 @@ namespace Orchard.Environment.Shell.Builders
             {
                 Settings = settings,
                 Blueprint = blueprint,
-                ServiceProvider = provider,
-                //Shell = provider.GetService<IOrchardShell>()
+                ServiceProvider = provider
             };
         }
+
+        private static ShellDescriptor MinimumShellDescriptor()
+        {
+            return new ShellDescriptor
+            {
+                SerialNumber = -1,
+                Features = new[] {
+                    new ShellFeature { Name = "Orchard.Logging.Console" },
+                    new ShellFeature { Name = "Orchard.Hosting" },
+                    new ShellFeature { Name = "Settings" },
+                    new ShellFeature { Name = "Orchard.Themes" },
+                    new ShellFeature { Name = "Orchard.Demo" },
+                    new ShellFeature { Name = "TheTheme" },
+                },
+                Parameters = new List<ShellParameter>()
+            };
+        }
+
     }
 }

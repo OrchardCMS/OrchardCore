@@ -9,7 +9,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -126,6 +125,13 @@ namespace Orchard.DisplayManagement.Descriptors
             }
 
             var extensionType = alteration.Feature.Descriptor.Extension.ExtensionType;
+
+            if(String.IsNullOrEmpty(extensionType))
+            {
+                // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
+                return true;
+            }
+
             if (DefaultExtensionTypes.IsModule(extensionType))
             {
                 return true;

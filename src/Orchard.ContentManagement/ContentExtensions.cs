@@ -75,7 +75,7 @@ namespace Orchard.ContentManagement
                 }
                 else
                 {
-                    throw new ArgumentException("Content doesn't have property named \"{0}\"", propertyName);
+                    throw new ArgumentException($"Content doesn't have property named \"{propertyName}\"");
                 }
 
                 action(slice);

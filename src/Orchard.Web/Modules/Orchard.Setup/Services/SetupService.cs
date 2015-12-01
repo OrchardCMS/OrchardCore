@@ -73,14 +73,12 @@ namespace Orchard.Setup.Services
 
             _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
 
-            // The vanilla Orchard distibution has the following features enabled.
+            // Features to enable for Setup
             string[] hardcoded = {
                 // Framework
                 "Orchard.Hosting",
                 // Core
-                "Settings",
-                // Test Modules
-                "Orchard.Demo", "Orchard.Test1"
+                "Settings"
                 };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
@@ -93,13 +91,6 @@ namespace Orchard.Setup.Services
             shellSettings.ConnectionString = context.DatabaseConnectionString;
             shellSettings.TablePrefix = context.DatabaseTablePrefix;
 
-            //if (shellSettings.DataProviders.Any()) {
-            //    DataProvider provider = new DataProvider();
-            //shellSettings.DataProvider = context.DatabaseProvider;
-            //shellSettings.DataConnectionString = context.DatabaseConnectionString;
-            //shellSettings.DataTablePrefix = context.DatabaseTablePrefix;
-            //}
-
             // TODO: Add Encryption Settings in
 
             var shellDescriptor = new ShellDescriptor
@@ -107,8 +98,8 @@ namespace Orchard.Setup.Services
                 Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
             };
 
-            // creating a standalone environment.
-            // in theory this environment can be used to resolve any normal components by interface, and those
+            // Creating a standalone environment.
+            // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
 
             using (var environment = _orchardHost.CreateShellContext(shellSettings))
@@ -128,9 +119,7 @@ namespace Orchard.Setup.Services
 
         private string CreateTenantData(SetupContext context, ShellContext shellContext)
         {
-            // must mark state as Running - otherwise standalone enviro is created "for setup"
-
-
+            // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return Guid.NewGuid().ToString();
         }
     }

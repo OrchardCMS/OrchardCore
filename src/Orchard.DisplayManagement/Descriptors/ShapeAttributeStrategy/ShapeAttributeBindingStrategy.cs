@@ -124,7 +124,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return _componentContext.GetService<IUrlHelper>();
             }
 
-            var getter = _getters.GetOrAdd(parameter.Name.ToLowerInvariant(), n =>
+            var getter = _getters.GetOrAdd(parameter.Name, n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(
                 Binder.GetMember(
                 CSharpBinderFlags.None, n, null, new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));

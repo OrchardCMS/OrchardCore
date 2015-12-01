@@ -20,5 +20,21 @@ namespace Orchard.Environment.Extensions.Folders
                 options.ModuleLocationExpanders.Add(expander);
             });
         }
+
+        public static IServiceCollection AddThemeFolder(
+            this IServiceCollection services,
+            string virtualPath)
+        {
+            return services.Configure<ExtensionHarvestingOptions>(options =>
+            {
+                var expander = new ModuleLocationExpander(
+                    DefaultExtensionTypes.Theme,
+                    new[] { virtualPath },
+                    "Theme.txt"
+                    );
+
+                options.ModuleLocationExpanders.Add(expander);
+            });
+        }
     }
 }

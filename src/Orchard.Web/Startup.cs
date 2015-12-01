@@ -14,6 +14,7 @@ namespace Orchard.Web
             services.AddWebHost();
             services.AddModuleFolder("~/Core/Orchard.Core");
             services.AddModuleFolder("~/Modules");
+            services.AddThemeFolder("~/Themes");
 
             // Save the list of service definitions
             services.AddSingleton(_ => services);
