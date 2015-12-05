@@ -13,15 +13,6 @@ namespace Orchard.ContentManagement
         {
         }
 
-        [JsonProperty("Content")]
-        private JObject _data;
-        
-        internal override JObject Data
-        {
-            get { return _data; }
-            set { _data = value; }
-        }
-
         /// <summary>
         /// The unique identifier of the current version.
         /// </summary>

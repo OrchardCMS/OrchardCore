@@ -9,16 +9,20 @@ namespace Orchard.ContentManagement
     /// </summary>
     public abstract class ContentElement : IContent
     {
-        public ContentElement()
+        public ContentElement() : this(new JObject())
         {
-            Data = new JObject();
+        }
+
+        public ContentElement(JObject data)
+        {
+            Data = data;
         }
 
         [JsonIgnore]
         public dynamic Content { get { return Data; } }
 
         [JsonIgnore]
-        internal abstract JObject Data { get; set; }
+        internal JObject Data { get; set; }
 
         [JsonIgnore]
         public virtual ContentItem ContentItem { get; set; }

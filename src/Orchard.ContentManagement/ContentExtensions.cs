@@ -51,17 +51,17 @@ namespace Orchard.ContentManagement
 
         public static ContentItem Alter<T>(this ContentItem contentItem, Action<T> action) where T : ContentPart, new()
         {
-            Alter<T>(contentItem, typeof(T).Name, action);
+            AlterContentElement<T>(contentItem, typeof(T).Name, action);
             return contentItem;
         }
 
         public static ContentPart Alter<T>(this ContentPart contentPart, string fieldName, Action<T> action) where T : ContentField
         {
-            Alter<T>(contentPart, fieldName, action);
+            AlterContentElement<T>(contentPart, fieldName, action);
             return contentPart;
         }
 
-        private static ContentElement Alter<T>(this ContentElement contentElement, string propertyName, Action<T> action) where T : ContentElement
+        private static ContentElement AlterContentElement<T>(this ContentElement contentElement, string propertyName, Action<T> action) where T : ContentElement
         {
             if (action != null)
             {
