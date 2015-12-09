@@ -54,6 +54,7 @@ namespace Orchard.ContentManagement
                 var result = obj.ToObject<T>();
                 var contentElement = result as ContentElement;
                 contentElement.Data = obj;
+                contentElement.ContentItem = ((IContent)this).ContentItem;
 
                 return result;
             }
