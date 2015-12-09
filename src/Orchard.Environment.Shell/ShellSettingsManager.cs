@@ -32,8 +32,10 @@ namespace Orchard.Environment.Shell
 
             foreach (var tenant in _appDataFolder.ListDirectories("Sites"))
             {
-                _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
-
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("ShellSettings found in '{0}', attempting to load.", tenant.Name);
+                }
                 var configurationContainer =
                     new ConfigurationBuilder()
                         .AddJsonFile(_appDataFolder.Combine(tenant.PhysicalPath, string.Format(SettingsFileNameFormat, "json")),
@@ -48,7 +50,10 @@ namespace Orchard.Environment.Shell
                 var shellSetting = new ShellSettings(config);
                 shellSettings.Add(shellSetting);
 
-                _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Loaded ShellSettings for tenant '{0}'", shellSetting.Name);
+                }
             }
 
             return shellSettings;
@@ -63,8 +68,10 @@ namespace Orchard.Environment.Shell
                     "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.",
                     nameof(shellSettings.Name));
 
-            _logger.LogInformation("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
+            }
             var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
 
             var configurationProvider = new YamlConfigurationProvider(
@@ -77,7 +84,10 @@ namespace Orchard.Environment.Shell
 
             configurationProvider.Commit();
 
-            _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Saved ShellSettings for tenant '{0}'", shellSettings.Name);
+            }
         }
     }
 }

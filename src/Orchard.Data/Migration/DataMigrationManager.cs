@@ -90,8 +90,10 @@ namespace Orchard.Data.Migration
 
         public async Task Uninstall(string feature)
         {
-            _logger.LogInformation("Uninstalling feature: {0}.", feature);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Uninstalling feature: {0}.", feature);
+            }
             var migrations = GetDataMigrations(feature);
 
             // apply update methods to each migration class for the module
@@ -138,7 +140,10 @@ namespace Orchard.Data.Migration
 
             _processedFeatures.Add(feature);
 
-            _logger.LogInformation("Updating feature: {0}", feature);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Updating feature: {0}", feature);
+            }
 
             // proceed with dependent features first, whatever the module it's in
             var dependencies = _extensionManager.AvailableFeatures()
@@ -196,7 +201,10 @@ namespace Orchard.Data.Migration
                         {
                             try
                             {
-                                _logger.LogInformation("Applying migration for {0} from version {1}.", feature, current);
+                                if (_logger.IsEnabled(LogLevel.Information))
+                                {
+                                    _logger.LogInformation("Applying migration for {0} from version {1}.", feature, current);
+                                }
                                 current = (int)lookupTable[current].Invoke(migration, new object[0]);
                             }
                             catch (Exception ex)

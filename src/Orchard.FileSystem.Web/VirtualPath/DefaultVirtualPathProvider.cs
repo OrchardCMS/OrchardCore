@@ -62,7 +62,10 @@ namespace Orchard.FileSystem.VirtualPath
                 //   Result         : /Blah/Blah2  <= that is not an app relative path!
                 if (!result.StartsWith("~/"))
                 {
-                    _logger.LogInformation("Path '{0}' cannot be made app relative: Path returned ('{1}') is not app relative.", virtualPath, result);
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Path '{0}' cannot be made app relative: Path returned ('{1}') is not app relative.", virtualPath, result);
+                    }
                     return null;
                 }
                 return result;
@@ -103,7 +106,10 @@ namespace Orchard.FileSystem.VirtualPath
                         {
                             if (depth == 0)
                             {
-                                _logger.LogInformation("Path '{0}' cannot be made app relative: Too many '..'", virtualPath);
+                                if (_logger.IsEnabled(LogLevel.Information))
+                                {
+                                    _logger.LogInformation("Path '{0}' cannot be made app relative: Too many '..'", virtualPath);
+                                }
                                 return true;
                             }
                             depth--;

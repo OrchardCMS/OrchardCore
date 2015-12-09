@@ -45,7 +45,10 @@ namespace Orchard.FileSystem.AppData
 
             if (directory.IsDirectory && GetDirectoryInfo(destinationFileName).Exists)
             {
-                _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
+                }
                 return;
             }
             // If destination doesn't exist, we are good
@@ -128,7 +131,10 @@ namespace Orchard.FileSystem.AppData
 
         public void StoreFile(string sourceFileName, string destinationPath)
         {
-            _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
+            }
 
             var destinationFileName = GetFileInfo(destinationPath).PhysicalPath;
             MakeDestinationFileNameAvailable(destinationFileName);
@@ -137,7 +143,11 @@ namespace Orchard.FileSystem.AppData
 
         public void DeleteFile(string path)
         {
-            _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
+            }
+
             MakeDestinationFileNameAvailable(GetFileInfo(path).PhysicalPath);
         }
 

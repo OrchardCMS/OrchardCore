@@ -59,8 +59,10 @@ namespace Orchard.Environment.Extensions.Loaders
             {
                 var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
-                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
-
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                }
                 return new ExtensionEntry
                 {
                     Descriptor = descriptor,

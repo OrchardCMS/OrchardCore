@@ -78,7 +78,10 @@ namespace Orchard.Hosting
 
         void CreateAndActivateShells()
         {
-            _logger.LogInformation("Start creation of shells");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Start creation of shells");
+            }
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings()
@@ -101,6 +104,7 @@ namespace Orchard.Hosting
                         {
                             throw;
                         }
+
                         _logger.LogError(string.Format("A tenant could not be started: {0}", settings.Name), ex);
                     }
                 });
@@ -112,7 +116,10 @@ namespace Orchard.Hosting
                 ActivateShell(setupContext);
             }
 
-            _logger.LogInformation("Done creating shells");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done creating shells");
+            }
         }
 
         /// <summary>
@@ -120,8 +127,10 @@ namespace Orchard.Hosting
         /// </summary>
         private void ActivateShell(ShellContext context)
         {
-            _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
-
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
+            }
             lock (_shellContexts)
             {
                 _shellContexts[context.Settings.Name] = context;
@@ -138,7 +147,10 @@ namespace Orchard.Hosting
         {
             if (settings.State == TenantState.Uninitialized)
             {
-                _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
+                }
                 return _shellContextFactory.CreateSetupContext(settings);
             }
 
@@ -151,7 +163,10 @@ namespace Orchard.Hosting
         /// </summary>
         private ShellContext CreateSetupContext()
         {
-            _logger.LogDebug("Creating shell context for root setup.");
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Creating shell context for root setup.");
+            }
             return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
         }
 
@@ -160,7 +175,10 @@ namespace Orchard.Hosting
         /// </summary>
         void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
-            _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
+            }
         }
     }
 }

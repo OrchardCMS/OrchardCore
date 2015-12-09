@@ -41,8 +41,10 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             if (priorSerialNumber != serialNumber)
                 throw new InvalidOperationException(T("Invalid serial number for shell descriptor").ToString());
 
-            _logger.LogInformation("Updating shell descriptor for shell '{0}'...", _shellSettings.Name);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Updating shell descriptor for shell '{0}'...", _shellSettings.Name);
+            }
             if (shellDescriptorRecord == null)
             {
                 shellDescriptorRecord = new ShellDescriptor { SerialNumber = 1 };
@@ -58,8 +60,10 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             {
                 shellDescriptorRecord.Features.Add(new ShellFeature { Name = feature.Name });
             }
-            _logger.LogDebug("Enabled features for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", enabledFeatures.Select(feature => feature.Name)));
-
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Enabled features for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", enabledFeatures.Select(feature => feature.Name)));
+            }
 
             shellDescriptorRecord.Parameters.Clear();
             foreach (var parameter in parameters)
@@ -71,10 +75,15 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
                     Value = parameter.Value
                 });
             }
-            _logger.LogDebug("Parameters for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", parameters.Select(parameter => parameter.Name + "-" + parameter.Value)));
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Parameters for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", parameters.Select(parameter => parameter.Name + "-" + parameter.Value)));
+            }
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
 
-            _logger.LogInformation("Shell descriptor updated for shell '{0}'.", _shellSettings.Name);
-
+                _logger.LogInformation("Shell descriptor updated for shell '{0}'.", _shellSettings.Name);
+            }
             //_eventNotifier.Notify<IShellDescriptorManagerEventHandler>(
             //    e => e.Changed(GetShellDescriptorFromRecord(shellDescriptorRecord), _shellSettings.Name));
         }

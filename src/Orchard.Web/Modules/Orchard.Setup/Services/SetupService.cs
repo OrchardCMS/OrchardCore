@@ -71,7 +71,10 @@ namespace Orchard.Setup.Services
         {
             string executionId;
 
-            _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
+            }
 
             // Features to enable for Setup
             string[] hardcoded = {

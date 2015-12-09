@@ -16,7 +16,10 @@ namespace Orchard.Demo.Commands
         [CommandHelp("demo helloworld says hi!")]
         public void HelloWorld()
         {
-            _logger.LogInformation("Hi there from Hello World!");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Hi there from Hello World!");
+            }
         }
     }
 }

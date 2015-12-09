@@ -71,7 +71,10 @@ namespace Orchard.Hosting
                 _logger.LogError("Tenant not found");
                 throw new Exception("Tenant not found");
             }
-            _logger.LogVerbose("Request took {0}ms", sw.ElapsedMilliseconds);
+            if (_logger.IsEnabled(LogLevel.Verbose))
+            {
+                _logger.LogVerbose("Request took {0}ms", sw.ElapsedMilliseconds);
+            }
         }
     }
 }

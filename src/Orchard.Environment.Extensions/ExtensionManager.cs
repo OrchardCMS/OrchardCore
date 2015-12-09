@@ -100,19 +100,28 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
         {
-            _logger.LogInformation("Loading features");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loading features");
+            }
 
             var result = featureDescriptors
                 .Select(descriptor => LoadFeature(descriptor))
                 .ToArray();
 
-            _logger.LogInformation("Done loading features");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done loading features");
+            }
             return result;
         }
 
         private Feature LoadFeature(FeatureDescriptor featureDescriptor)
         {
-            _logger.LogInformation("Loading feature {0}", featureDescriptor.Name);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loading feature {0}", featureDescriptor.Name);
+            }
 
             var extensionDescriptor = featureDescriptor.Extension;
             var featureId = featureDescriptor.Id;
@@ -177,7 +186,10 @@ namespace Orchard.Environment.Extensions
                     return entry;
             }
 
-            _logger.LogWarning("No suitable loader found for extension \"{0}\"", descriptor.Id);
+            if (_logger.IsEnabled(LogLevel.Warning))
+            {
+                _logger.LogWarning("No suitable loader found for extension \"{0}\"", descriptor.Id);
+            }
             return null;
         }
     }

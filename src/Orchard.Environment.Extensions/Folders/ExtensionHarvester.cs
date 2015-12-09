@@ -59,7 +59,10 @@ namespace Orchard.Environment.Extensions.Folders
 
         private List<ExtensionDescriptor> AvailableExtensionsInFolder(string path, string extensionType, string manifestName, bool manifestIsOptional)
         {
-            _logger.LogInformation("Start looking for extensions in '{0}'...", path);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Start looking for extensions in '{0}'...", path);
+            }
             var subfolderPaths = _clientFolder.ListDirectories(path);
             var localList = new List<ExtensionDescriptor>();
             foreach (var subfolderPath in subfolderPaths)
@@ -96,7 +99,10 @@ namespace Orchard.Environment.Extensions.Folders
                     _logger.LogError(string.Format("The module '{0}' could not be loaded. It was ignored.", extensionId), ex);
                 }
             }
-            _logger.LogInformation("Done looking for extensions in '{0}': {1}", path, string.Join(", ", localList.Select(d => d.Id)));
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done looking for extensions in '{0}': {1}", path, string.Join(", ", localList.Select(d => d.Id)));
+            }
             return localList;
         }
 

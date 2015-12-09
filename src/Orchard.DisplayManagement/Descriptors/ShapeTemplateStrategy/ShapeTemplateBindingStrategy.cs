@@ -63,8 +63,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            _logger.LogInformation("Start discovering shapes");
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Start discovering shapes");
+            }
             var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() });
 
             var availableFeatures = _extensionManager.AvailableFeatures();
@@ -73,7 +75,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             var hits = activeExtensions.Select(extensionDescriptor =>
             {
-                _logger.LogInformation("Start discovering candidate views filenames");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Start discovering candidate views filenames");
+                }
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
                     var basePath = Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id).Replace(Path.DirectorySeparatorChar, '/');
@@ -89,8 +94,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                     return new { harvesterInfo.harvester, basePath, subPath, virtualPath, fileNames };
                 })).ToList();
-                _logger.LogInformation("Done discovering candidate views filenames");
-
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Done discovering candidate views filenames");
+                }
                 var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
                 {
                     var fileNames = ve.DetectTemplateFileNames(pathContext.fileNames);
@@ -126,11 +133,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 var featureDescriptors = iter.extensionDescriptor.Features.Where(fd => fd.Id == hit.extensionDescriptor.Id);
                 foreach (var featureDescriptor in featureDescriptors)
                 {
-                    _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
                         hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
                         iter.shapeContext.harvestShapeHit.ShapeType,
                         featureDescriptor.Id);
-
+                    }
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(new Feature { Descriptor = featureDescriptor })
                         .BoundAs(
@@ -139,7 +148,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 }
             }
 
-            _logger.LogInformation("Done discovering shapes");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done discovering shapes");
+            }
         }
 
         private bool FeatureIsEnabled(FeatureDescriptor fd)
@@ -150,7 +162,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         private IHtmlContent Render(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)
         {
-            _logger.LogInformation("Rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
+            }
             IHtmlContent result;
 
             if (displayContext.ViewContext.View != null)
@@ -166,7 +181,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 result = RenderRazorViewToString(harvestShapeInfo.TemplateVirtualPath, displayContext);
             }
 
-            _logger.LogInformation("Done rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
+            }
             return result;
         }
 

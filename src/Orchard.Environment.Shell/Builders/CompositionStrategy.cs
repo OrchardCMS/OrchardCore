@@ -29,7 +29,10 @@ namespace Orchard.Environment.Shell.Builders
 
         public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor)
         {
-            _logger.LogDebug("Composing blueprint");
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Composing blueprint");
+            }
 
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
@@ -50,7 +53,10 @@ namespace Orchard.Environment.Shell.Builders
                 Dependencies = dependencies.Concat(modules).ToArray()
             };
 
-            _logger.LogDebug("Done composing blueprint");
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Done composing blueprint");
+            }
             return result;
         }
 

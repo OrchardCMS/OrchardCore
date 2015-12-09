@@ -26,8 +26,10 @@ namespace Orchard.Environment.Shell.Builders
         ShellContext IShellContextFactory.CreateShellContext(ShellSettings settings)
         {
             var sw = Stopwatch.StartNew();
-            _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
+            }
             var blueprint = _compositionStrategy.Compose(settings, MinimumShellDescriptor());
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
@@ -40,8 +42,10 @@ namespace Orchard.Environment.Shell.Builders
                     ServiceProvider = provider
                 };
 
-                _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
-
+                if (_logger.IsEnabled(LogLevel.Verbose))
+                {
+                    _logger.LogVerbose("Created shell context for tenant {0} in {1}ms", settings.Name, sw.ElapsedMilliseconds);
+                }
                 return shellcontext;
             }
             catch (Exception ex)
@@ -53,8 +57,10 @@ namespace Orchard.Environment.Shell.Builders
         
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
         {
-            _logger.LogDebug("No shell settings available. Creating shell context for setup");
-
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("No shell settings available. Creating shell context for setup");
+            }
             var descriptor = new ShellDescriptor
             {
                 SerialNumber = -1,

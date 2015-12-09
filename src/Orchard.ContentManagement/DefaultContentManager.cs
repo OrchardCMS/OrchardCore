@@ -26,7 +26,6 @@ namespace Orchard.ContentManagement
             LinearBlockIdGenerator idGenerator)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            //_contentManagerSession = contentManagerSession;
             Handlers = handlers;
             _session = session;
             _contentManagerSession = new DefaultContentManagerSession();

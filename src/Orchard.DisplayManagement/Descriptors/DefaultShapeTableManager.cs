@@ -49,8 +49,10 @@ namespace Orchard.DisplayManagement.Descriptors
             // the same table in parallel as it is costly
             return _shapeTables.GetOrAdd(themeName ?? "", new Lazy<ShapeTable>(() =>
            {
-               _logger.LogInformation("Start building shape table");
-
+               if (_logger.IsEnabled(LogLevel.Information))
+               {
+                   _logger.LogInformation("Start building shape table");
+               }
                IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
                foreach (var bindingStrategy in _bindingStrategies)
                {
@@ -97,9 +99,12 @@ namespace Orchard.DisplayManagement.Descriptors
                    Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
                };
 
-                //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
+               //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
 
-                _logger.LogInformation("Done building shape table");
+               if (_logger.IsEnabled(LogLevel.Information))
+               {
+                   _logger.LogInformation("Done building shape table");
+               }
                return result;
            })).Value;
         }

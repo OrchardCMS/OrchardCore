@@ -19,7 +19,10 @@ namespace Orchard.Demo.TestEvents
 
         public void Talk(string value)
         {
-            _logger.LogInformation("Talk Event ONE! " + value);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Talk Event ONE! " + value);
+            }
         }
     }
 
@@ -34,7 +37,10 @@ namespace Orchard.Demo.TestEvents
 
         public void Talk(string value)
         {
-            _logger.LogInformation("Talk Event TWO! " + value);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Talk Event TWO! " + value);
+            }
         }
     }
 }

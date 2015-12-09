@@ -1,4 +1,5 @@
-﻿using Orchard.Environment.Commands;
+﻿using Microsoft.Extensions.Logging;
+using Orchard.Environment.Commands;
 using Orchard.Hosting.HostContext;
 using Orchard.Hosting.Parameters;
 using System;

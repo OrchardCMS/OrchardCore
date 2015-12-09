@@ -22,8 +22,10 @@ namespace Orchard.Hosting.Web.Routing
 
         public async Task Invoke(HttpContext httpContext)
         {
-            _logger.LogInformation("Begin Routing Request");
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Begin Routing Request");
+            }
             var router = httpContext.RequestServices.GetService<IRouteBuilder>().Build();
 
             var context = new RouteContext(httpContext);
@@ -33,11 +35,18 @@ namespace Orchard.Hosting.Web.Routing
 
             if (!context.IsHandled)
             {
-                _logger.LogInformation("Request did not match any routes.");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Request did not match any routes.");
+                }
+
                 await _next.Invoke(httpContext);
             }
 
-            _logger.LogInformation("End Routing Request");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("End Routing Request");
+            }
         }
     }
 }
