@@ -89,7 +89,11 @@ namespace Orchard.Hosting.Mvc.Razor
                                                           assemblyName,
                                                           compilationSettings);
             var references = _applicationReferences.Value;
-            references.AddRange(GetModuleReferences(fileInfo.FileInfo.PhysicalPath));
+
+            references.AddRange(_libraryManager
+                            .GetAllMetadataReferences()
+                            .OfType<IRoslynMetadataReference>()
+                            .Select(x => x.MetadataReference));
 
             var compilationOptions = compilationSettings.CompilationOptions
                                                         .WithOutputKind(OutputKind.DynamicallyLinkedLibrary);
@@ -187,47 +191,6 @@ namespace Orchard.Hosting.Mvc.Razor
             }
 
             return diagnostic.Location.GetMappedLineSpan().Path;
-        }
-
-        private List<MetadataReference> GetModuleReferences(string filePath)
-        {
-            List<MetadataReference> references = new List<MetadataReference>();
-            var directoryInfo = Directory.GetParent(filePath);
-            Project project;
-
-            while (directoryInfo != null)
-            {
-                if (Project.TryGetProject(directoryInfo.FullName, out project))
-                {
-                    ILibraryExporter libraryExporter;
-                    if (_hostingEnvironment.IsDevelopment())
-                    {
-                        var engine = new CompilationEngine(
-                            new CompilationEngineContext(
-                                _environment,
-                                _runtimeEnvironment,
-                                _loader,
-                                new CompilationCache()));
-
-                        libraryExporter = engine.CreateProjectExporter(
-                            project, _environment.RuntimeFramework, _environment.Configuration);
-                    }
-                    else
-                    {
-                        libraryExporter = _libraryExporter;
-                    }
-
-                    var export = libraryExporter.GetAllExports(project.Name);
-                    foreach (var metadataReference in export.MetadataReferences)
-                    {
-                        references.Add(ConvertMetadataReference(metadataReference));
-                    }
-                }
-                directoryInfo = directoryInfo.Parent;
-            }
-            
-            
-            return references;
         }
 
         private List<MetadataReference> GetApplicationReferences()
