@@ -107,7 +107,7 @@ namespace Orchard.Demo.Controllers
 
         public ActionResult IndexError()
         {
-            throw new System.Exception("ERROR!!!!");
+            throw new Exception("ERROR!!!!");
         }
 
         private DisplayContext CreateDisplayContext(Shape shape)

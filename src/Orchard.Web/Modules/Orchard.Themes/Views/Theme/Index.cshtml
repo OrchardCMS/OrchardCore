@@ -1,0 +1,8 @@
+﻿@model string
+@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+
+@using (Html.BeginForm())
+{
+    <input name="themeName" value="@Model"/>
+    <button type="submit">Submit</button>
+}
