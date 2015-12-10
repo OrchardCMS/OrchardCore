@@ -4,9 +4,15 @@ using System.Threading.Tasks;
 
 namespace Orchard.Themes.Services
 {
+    /// <summary>
+    /// Provides the theme defined in the site configuration for the current scope (request).
+    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times 
+    /// during the same scope.
+    /// </summary>
     public class SiteThemeSelector : IThemeSelector
     {
         private readonly ISiteThemeService _siteThemeService;
+        private ThemeSelectorResult cachedSelectorResult;
 
         public SiteThemeSelector(ISiteThemeService siteThemeService)
         {
@@ -15,13 +21,22 @@ namespace Orchard.Themes.Services
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            string currentThemeName = await _siteThemeService.GetCurrentThemeNameAsync();
-            if (String.IsNullOrEmpty(currentThemeName))
+            if (cachedSelectorResult == null)
             {
-                return null;
+                string currentThemeName = await _siteThemeService.GetCurrentThemeNameAsync();
+                if (String.IsNullOrEmpty(currentThemeName))
+                {
+                    return null;
+                }
+
+                cachedSelectorResult = new ThemeSelectorResult
+                {
+                    Priority = -5,
+                    ThemeName = currentThemeName
+                };
             }
 
-            return new ThemeSelectorResult { Priority = -5, ThemeName = currentThemeName };
+            return cachedSelectorResult;            
         }
     }
 }

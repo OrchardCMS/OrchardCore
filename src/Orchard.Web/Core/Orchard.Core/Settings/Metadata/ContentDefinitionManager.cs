@@ -4,7 +4,6 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using YesSql.Core.Services;
 using Orchard.Core.Settings.Metadata.Records;
-using Newtonsoft.Json;
 
 namespace Orchard.Core.Settings.Metadata
 {
@@ -167,6 +166,9 @@ namespace Orchard.Core.Settings.Metadata
                 }
                 Apply(part, typePartRecord);
             }
+
+            // Persist changes
+            _session.Save(_contentDefinitionRecord);
         }
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
