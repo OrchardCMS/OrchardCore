@@ -1,4 +1,9 @@
-﻿@using (Html.BeginForm())
+﻿<div class="jumbotron">
+    <p>This page lets you create a new content item. Type any text, you will be redirected to a view displaying the newly created content item.</p>
+</div>
+
+
+@using (Html.BeginForm())
 {
     @Html.TextBox("text")
 
