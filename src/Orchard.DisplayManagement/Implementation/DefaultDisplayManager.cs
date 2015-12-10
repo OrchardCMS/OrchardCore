@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using Microsoft.CSharp.RuntimeBinder;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Shapes;
 using Orchard.Localization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Html.Abstractions;
@@ -25,13 +19,6 @@ namespace Orchard.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
         private readonly ILogger _logger;
 
-        // this need to be Shape instead of IShape - cast to interface throws error on clr types like HtmlString
-        private static readonly CallSite<Func<CallSite, object, Shape>> _convertAsShapeCallsite = CallSite<Func<CallSite, object, Shape>>.Create(
-                new ForgivingConvertBinder(
-                    (ConvertBinder)Binder.Convert(
-                    CSharpBinderFlags.ConvertExplicit,
-                    typeof(Shape),
-                    null/*typeof(DefaultDisplayManager)*/)));
         private readonly IThemeManager _themeManager;
 
         public DefaultDisplayManager(
@@ -57,7 +44,7 @@ namespace Orchard.DisplayManagement.Implementation
 
         public IHtmlContent Execute(DisplayContext context)
         {
-            var shape = _convertAsShapeCallsite.Target(_convertAsShapeCallsite, context.Value);
+            var shape = context.Value as IShape;
 
             // non-shape arguments are returned as a no-op
             if (shape == null)
@@ -227,39 +214,9 @@ namespace Orchard.DisplayManagement.Implementation
             if (shapeBinding == null || shapeBinding.Binding == null)
             {
                 // todo: create result from all child shapes
-                return shape.Metadata.ChildContent ?? new HtmlString("");
+                return shape.Metadata.ChildContent ?? HtmlString.Empty;
             }
             return CoerceHtmlString(shapeBinding.Binding(context));
-        }
-
-        class ForgivingConvertBinder : ConvertBinder
-        {
-            private readonly ConvertBinder _innerBinder;
-
-            public ForgivingConvertBinder(ConvertBinder innerBinder)
-                : base(innerBinder.ReturnType, innerBinder.Explicit)
-            {
-                _innerBinder = innerBinder;
-            }
-
-            public override DynamicMetaObject FallbackConvert(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
-            {
-                // adjust the normal csharp convert binder to allow failure to become null.
-                // this causes the same net effect as the "as" keyword, but may be applied to dynamic objects
-                var result = _innerBinder.FallbackConvert(
-                    target,
-                    errorSuggestion ?? new DynamicMetaObject(Expression.Default(_innerBinder.ReturnType), GetTypeRestriction(target)));
-                return result;
-            }
-
-            static BindingRestrictions GetTypeRestriction(DynamicMetaObject obj)
-            {
-                if ((obj.Value == null) && obj.HasValue)
-                {
-                    return BindingRestrictions.GetInstanceRestriction(obj.Expression, null);
-                }
-                return BindingRestrictions.GetTypeRestriction(obj.Expression, obj.LimitType);
-            }
         }
     }
 }
