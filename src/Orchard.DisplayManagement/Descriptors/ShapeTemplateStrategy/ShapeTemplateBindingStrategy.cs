@@ -41,7 +41,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IActionContextAccessor actionContextAccessor,
-            ILoggerFactory loggerFactory)
+            ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
             _shellDescriptor = shellDescriptor;
@@ -50,7 +50,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _actionContextAccessor = actionContextAccessor;
-            _logger = loggerFactory.CreateLogger<DefaultShapeTableManager>();
+            _logger = logger;
         }
 
         public bool DisableMonitoring { get; set; }

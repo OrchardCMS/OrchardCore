@@ -35,7 +35,7 @@ namespace Orchard.Setup.Services
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory)
+            ILogger<SetupService> logger)
         {
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
@@ -45,7 +45,7 @@ namespace Orchard.Setup.Services
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
             _runningShellTable = runningShellTable;
-            _logger = loggerFactory.CreateLogger<SetupService>();
+            _logger = logger;
         }
 
         public ShellSettings Prime()

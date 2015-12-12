@@ -33,14 +33,14 @@ namespace Orchard.DisplayManagement.Descriptors
             IFeatureManager featureManager,
             IEventBus eventBus,
             ITypeFeatureProvider typeFeatureProvider,
-            ILoggerFactory loggerFactory)
+            ILogger<DefaultShapeTableManager> logger)
         {
             _bindingStrategies = bindingStrategies;
             _extensionManager = extensionManager;
             _featureManager = featureManager;
             _eventBus = eventBus;
             _typeFeatureProvider = typeFeatureProvider;
-            _logger = loggerFactory.CreateLogger<DefaultShapeTableManager>();
+            _logger = logger;
         }
 
         public ShapeTable GetShapeTable(string themeName)

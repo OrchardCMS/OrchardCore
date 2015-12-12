@@ -14,13 +14,13 @@ namespace Orchard.FileSystem.AppData
         private readonly ILogger _logger;
 
         public PhysicalAppDataFolder(IAppDataFolderRoot root,
-            ILoggerFactory loggerFactory)
+            ILogger<PhysicalAppDataFolder> logger)
         {
             if (!Directory.Exists(root.RootFolder))
                 Directory.CreateDirectory(root.RootFolder);
 
             _fileProvider = new PhysicalFileProvider(root.RootFolder);
-            _logger = loggerFactory.CreateLogger<PhysicalAppDataFolder>();
+            _logger = logger;
 
             T = NullLocalizer.Instance;
         }

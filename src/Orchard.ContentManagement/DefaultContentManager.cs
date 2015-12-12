@@ -22,7 +22,7 @@ namespace Orchard.ContentManagement
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> handlers,
             ISession session,
-            ILoggerFactory loggerFactory,
+            ILogger<DefaultContentManager> logger,
             LinearBlockIdGenerator idGenerator)
         {
             _contentDefinitionManager = contentDefinitionManager;
@@ -30,7 +30,7 @@ namespace Orchard.ContentManagement
             _session = session;
             _contentManagerSession = new DefaultContentManagerSession();
             _idGenerator = idGenerator;
-            _logger = loggerFactory.CreateLogger<DefaultContentManager>();
+            _logger = logger;
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }

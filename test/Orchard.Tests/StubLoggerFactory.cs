@@ -50,4 +50,8 @@ namespace Orchard.Tests
         {
         }
     }
+
+    public class NullLogger<T> : NullLogger, ILogger<T>
+    {
+    }
 }

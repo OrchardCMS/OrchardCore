@@ -24,13 +24,13 @@ namespace Orchard.Environment.Extensions.Loaders
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,
-            ILoggerFactory loggerFactory)
+            ILogger<DynamicExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
-            _logger = loggerFactory.CreateLogger<DynamicExtensionLoader>();
+            _logger = logger;
         }
 
         public string Name => GetType().Name;

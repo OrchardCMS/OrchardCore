@@ -25,12 +25,12 @@ namespace Orchard.Hosting
             RequestDelegate next,
             IOrchardHost orchardHost,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory)
+            ILogger<OrchardContainerMiddleware> logger)
         {
             _next = next;
             _orchardHost = orchardHost;
             _runningShellTable = runningShellTable;
-            _logger = loggerFactory.CreateLogger<OrchardContainerMiddleware>();
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)

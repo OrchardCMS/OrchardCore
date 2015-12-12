@@ -21,12 +21,12 @@ namespace Orchard.Environment.Extensions.Loaders
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,
-            ILoggerFactory loggerFactory)
+            ILogger<CoreExtensionLoader> logger)
         {
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
-            _logger = loggerFactory.CreateLogger<CoreExtensionLoader>();
+            _logger = logger;
         }
 
         public string Name => GetType().Name;

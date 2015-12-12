@@ -19,11 +19,11 @@ namespace Orchard.Environment.Shell
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
             //ICache cache,
-            ILoggerFactory loggerFactory)
+            ILogger<ShellSettingsManager> logger)
         {
             _appDataFolder = appDataFolder;
             //_cache = cache;
-            _logger = loggerFactory.CreateLogger<ShellSettingsManager>();
+            _logger = logger;
         }
 
         IEnumerable<ShellSettings> IShellSettingsManager.LoadSettings()

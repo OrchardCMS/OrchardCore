@@ -30,6 +30,7 @@ namespace Orchard.Environment.Shell.Builders
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
+            ILogger<ShellContainerFactory> logger,
             IAppDataFolderRoot appDataFolderRoot,
             IServiceCollection applicationServices)
         {
@@ -37,7 +38,7 @@ namespace Orchard.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
             _appDataFolderRoot = appDataFolderRoot;
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory.CreateLogger<ShellContainerFactory>();
+            _logger = logger;
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)

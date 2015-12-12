@@ -12,9 +12,9 @@ namespace Orchard.Demo.TestEvents
     {
         private readonly ILogger _logger;
 
-        public TestEvent1(ILoggerFactory loggerFactory)
+        public TestEvent1(ILogger<TestEvent1> logger)
         {
-            _logger = loggerFactory.CreateLogger<TestEvent1>();
+            _logger = logger;
         }
 
         public void Talk(string value)
@@ -30,9 +30,9 @@ namespace Orchard.Demo.TestEvents
     {
         private readonly ILogger _logger;
 
-        public TestEvent2(ILoggerFactory loggerFactory)
+        public TestEvent2(ILogger<TestEvent2> logger)
         {
-            _logger = loggerFactory.CreateLogger<TestEvent2>();
+            _logger = logger;
         }
 
         public void Talk(string value)

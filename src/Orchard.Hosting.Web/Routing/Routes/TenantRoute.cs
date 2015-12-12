@@ -48,8 +48,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
                 }
                 catch (Exception ex)
                 {
-                    var loggerFactory = context.HttpContext.ApplicationServices.GetService<ILoggerFactory>();
-                    var logger = loggerFactory.CreateLogger<TenantRoute>();
+                    var logger = context.HttpContext.ApplicationServices.GetService<ILogger<TenantRoute>>();
                     logger.LogError("Error occured serving tenant route", ex);
                     throw;
                 }

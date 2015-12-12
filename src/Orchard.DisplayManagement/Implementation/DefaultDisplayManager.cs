@@ -26,7 +26,7 @@ namespace Orchard.DisplayManagement.Implementation
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
-            ILoggerFactory loggerFactory,
+            ILogger<DefaultDisplayManager> logger,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
@@ -35,7 +35,7 @@ namespace Orchard.DisplayManagement.Implementation
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
 
-            _logger = loggerFactory.CreateLogger<DefaultDisplayManager>();
+            _logger = logger;
 
             T = NullLocalizer.Instance;
         }

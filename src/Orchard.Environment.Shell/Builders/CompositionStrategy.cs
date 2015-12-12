@@ -20,11 +20,11 @@ namespace Orchard.Environment.Shell.Builders
 
         public CompositionStrategy(IExtensionManager extensionManager,
             ILibraryManager libraryManager,
-            ILoggerFactory loggerFactory)
+            ILogger<CompositionStrategy> logger)
         {
             _extensionManager = extensionManager;
             _libraryManager = libraryManager;
-            _logger = loggerFactory.CreateLogger<CompositionStrategy>();
+            _logger = logger;
         }
 
         public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor)

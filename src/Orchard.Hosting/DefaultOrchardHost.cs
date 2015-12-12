@@ -27,12 +27,12 @@ namespace Orchard.Hosting
             IShellSettingsManager shellSettingsManager,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
-            ILoggerFactory loggerFactory)
+            ILogger<DefaultOrchardHost> logger)
         {
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
-            _logger = loggerFactory.CreateLogger<DefaultOrchardHost>();
+            _logger = logger;
         }
 
         void IOrchardHost.Initialize()

@@ -14,10 +14,10 @@ namespace Orchard.FileSystem.VirtualPath
 
         public DefaultVirtualPathProvider(
             IHostEnvironment hostEnvironment,
-            ILoggerFactory loggerFactory)
+            ILogger<DefaultVirtualPathProvider> logger)
         {
             _hostEnvironment = hostEnvironment;
-            _logger = loggerFactory.CreateLogger<DefaultVirtualPathProvider>();
+            _logger = logger;
         }
 
         public virtual string GetDirectoryName(string virtualPath)

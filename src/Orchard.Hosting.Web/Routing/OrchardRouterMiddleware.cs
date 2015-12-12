@@ -14,10 +14,10 @@ namespace Orchard.Hosting.Web.Routing
 
         public OrchardRouterMiddleware(
             RequestDelegate next,
-            ILoggerFactory loggerFactory)
+            ILogger<OrchardRouterMiddleware> logger)
         {
             _next = next;
-            _logger = loggerFactory.CreateLogger<OrchardRouterMiddleware>();
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)

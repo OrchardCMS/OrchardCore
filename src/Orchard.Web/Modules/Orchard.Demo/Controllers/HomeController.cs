@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
@@ -21,6 +22,7 @@ namespace Orchard.Demo.Controllers
         private readonly IEventBus _eventBus;
         private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
+        private readonly ILogger _logger;
 
         public HomeController(
             ITestDependency testDependency,
@@ -28,7 +30,8 @@ namespace Orchard.Demo.Controllers
             IEventBus eventBus,
             IShapeFactory shapeFactory,
             IShapeDisplay shapeDisplay,
-            ISession session)
+            ISession session,
+            ILogger<HomeController> logger)
         {
             _session = session;
             _testDependency = testDependency;
@@ -36,6 +39,7 @@ namespace Orchard.Demo.Controllers
             _eventBus = eventBus;
             _shapeDisplay = shapeDisplay;
             Shape = shapeFactory;
+            _logger = logger;
         }
 
         dynamic Shape { get; set; }
@@ -62,6 +66,8 @@ namespace Orchard.Demo.Controllers
             contentItem.Alter<TestContentPartA>(x => x.Line = text);
              
             _contentManager.Create(contentItem);
+
+            _logger.LogInformation("This is some log");
 
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
         }

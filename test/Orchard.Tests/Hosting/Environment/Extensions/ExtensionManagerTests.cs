@@ -23,7 +23,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
             folders.Manifests.Add("frap", "Name: Frap");
             folders.Manifests.Add("quad", "Name: Quad");
 
-            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new StubLoggerFactory());
+            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new NullLogger<ExtensionManager>());
 
             var available = manager.AvailableExtensions();
 
@@ -42,7 +42,7 @@ SESSIONSTATE: disabled
 version: 2.x
 DESCRIPTION: HELLO
 ");
-            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new StubLoggerFactory());
+            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new NullLogger<ExtensionManager>());
 
             var descriptor = manager.AvailableExtensions().Single();
             Assert.Equal("Sample", descriptor.Id);
@@ -62,7 +62,7 @@ Name: Sample Extension
 Version: 2.x
 ");
 
-            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new StubLoggerFactory());
+            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new NullLogger<ExtensionManager>());
 
             var descriptor = manager.AvailableExtensions().Single();
             Assert.Equal("Sample", descriptor.Id);
@@ -83,7 +83,7 @@ Features:
     SuperWiki:
         Description: My super wiki module for Orchard.
 ");
-            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new StubLoggerFactory());
+            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new NullLogger<ExtensionManager>());
 
             var descriptor = manager.AvailableExtensions().Single();
             Assert.Equal("SuperWiki", descriptor.Id);
@@ -125,7 +125,7 @@ Features:
         Dependencies: AnotherWiki, reCaptcha
         Category: Spam
 ");
-            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new StubLoggerFactory());
+            var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new NullLogger<ExtensionManager>());
 
             var descriptor = manager.AvailableExtensions().Single();
             Assert.Equal("MyCompany.AnotherWiki", descriptor.Id);
@@ -244,7 +244,7 @@ Features:
         public void ExtensionManagerShouldReturnEmptyFeatureIfFeatureDoesNotExist()
         {
             var featureDescriptor = new FeatureDescriptor { Id = "NoSuchFeature", Extension = new ExtensionDescriptor { Id = "NoSuchFeature" } };
-            var manager = new ExtensionManager(new StubExtensionLocator(), new StubLoaders[] { }, new StubLoggerFactory());
+            var manager = new ExtensionManager(new StubExtensionLocator(), new StubLoaders[] { }, new NullLogger<ExtensionManager>());
 
             Feature feature = manager.LoadFeatures(new[] { featureDescriptor }).First();
             Assert.Equal(featureDescriptor, feature.Descriptor);
@@ -546,7 +546,7 @@ OrchardVersion: 1{1}{2}",
 
         private static ExtensionManager CreateExtensionManager(StubExtensionLocator locator, IEnumerable<StubLoaders> extensionLoader)
         {
-            return new ExtensionManager(locator, extensionLoader, new StubLoggerFactory());
+            return new ExtensionManager(locator, extensionLoader, new NullLogger<ExtensionManager>());
         }
 
         public class StubExtensionLocator : IExtensionLocator

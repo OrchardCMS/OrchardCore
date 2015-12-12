@@ -23,11 +23,11 @@ namespace Orchard.Environment.Extensions.Features
         public FeatureManager(
             IExtensionManager extensionManager,
             IShellDescriptorManager shellDescriptorManager,
-            ILoggerFactory loggerFactory)
+            ILogger<FeatureManager> logger)
         {
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
-            _logger = loggerFactory.CreateLogger<FeatureManager>();
+            _logger = logger;
 
             T = NullLocalizer.Instance;
         }

@@ -35,10 +35,10 @@ namespace Orchard.Environment.Extensions.Folders
         private readonly ILogger _logger;
 
         public ExtensionHarvester(IClientFolder clientFolder,
-            ILoggerFactory loggerFactory)
+            ILogger<ExtensionHarvester> logger)
         {
             _clientFolder = clientFolder;
-            _logger = loggerFactory.CreateLogger<ExtensionHarvester>();
+            _logger = logger;
 
             T = NullLocalizer.Instance;
         }

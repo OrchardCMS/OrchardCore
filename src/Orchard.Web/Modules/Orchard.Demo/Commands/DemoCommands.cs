@@ -7,9 +7,9 @@ namespace Orchard.Demo.Commands
     {
         private readonly ILogger _logger;
 
-        public DemoCommands(ILoggerFactory loggerFactory)
+        public DemoCommands(ILogger<DemoCommands> logger)
         {
-            _logger = loggerFactory.CreateLogger<DemoCommands>();
+            _logger = logger;
         }
 
         [CommandName("demo helloworld")]

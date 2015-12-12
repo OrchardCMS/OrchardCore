@@ -20,12 +20,12 @@ namespace Orchard.Data.Migration
             IDataMigrationManager dataMigrationManager,
             IFeatureManager featureManager,
             ShellSettings shellSettings,
-            ILoggerFactory loggerFactory)
+            ILogger<AutomaticDataMigrations> logger)
         {
             _dataMigrationManager = dataMigrationManager;
             _featureManager = featureManager;
             _shellSettings = shellSettings;
-            _logger = loggerFactory.CreateLogger<AutomaticDataMigrations>();
+            _logger = logger;
         }
 
         public async Task ActivatedAsync()

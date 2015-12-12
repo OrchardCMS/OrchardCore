@@ -19,13 +19,13 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
         public ShellDescriptorManager(
             ShellSettings shellSettings,
             //IEventNotifier eventNotifier,
-            ILoggerFactory loggerFactory,
+            ILogger<ShellDescriptorManager> logger,
             ISession session)
         {
             _shellSettings = shellSettings;
             //_eventNotifier = eventNotifier;
             _session = session;
-            _logger = loggerFactory.CreateLogger<ShellDescriptorManager>();
+            _logger = logger;
         }
 
         public ShellDescriptor GetShellDescriptor()

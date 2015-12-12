@@ -20,7 +20,7 @@ namespace Orchard.Tests.FileSystem
         public static IAppDataFolder CreateAppDataFolder(string tempFolder)
         {
             var folderRoot = new StubAppDataFolderRoot { RootPath = "~/App_Data", RootFolder = tempFolder };
-            return new PhysicalAppDataFolder(folderRoot, new StubLoggerFactory());
+            return new PhysicalAppDataFolder(folderRoot, new NullLogger<PhysicalAppDataFolder>());
         }
 
         public PhysicalAppDataFolderTests()

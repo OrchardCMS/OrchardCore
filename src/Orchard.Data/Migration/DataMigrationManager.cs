@@ -29,14 +29,14 @@ namespace Orchard.Data.Migration
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILoggerFactory loggerFactory)
+            ILogger<DataMigrationManager> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
             _session = session;
             _store = store;
             _extensionManager = extensionManager;
-            _logger = loggerFactory.CreateLogger<DataMigrationManager>();
+            _logger = logger;
 
             _processedFeatures = new List<string>();
 

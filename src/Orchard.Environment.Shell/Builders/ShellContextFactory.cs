@@ -16,11 +16,11 @@ namespace Orchard.Environment.Shell.Builders
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
-            ILoggerFactory loggerFactory)
+            ILogger<ShellContextFactory> logger)
         {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
-            _logger = loggerFactory.CreateLogger<ShellContextFactory>();
+            _logger = logger;
         }
 
         ShellContext IShellContextFactory.CreateShellContext(ShellSettings settings)

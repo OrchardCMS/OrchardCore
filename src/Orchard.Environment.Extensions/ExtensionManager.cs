@@ -25,11 +25,11 @@ namespace Orchard.Environment.Extensions
         public ExtensionManager(
             IExtensionLocator extensionLocator,
             IEnumerable<IExtensionLoader> loaders,
-            ILoggerFactory loggerFactory)
+            ILogger<ExtensionManager> logger)
         {
             _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
-            _logger = loggerFactory.CreateLogger<ExtensionManager>();
+            _logger = logger;
             T = NullLocalizer.Instance;
         }
 

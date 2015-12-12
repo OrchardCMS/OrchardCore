@@ -6,7 +6,7 @@ namespace Orchard.Logging
     {
         public void Initialize(ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Error);
+            loggerFactory.AddConsole(LogLevel.Debug);
         }
     }
 }

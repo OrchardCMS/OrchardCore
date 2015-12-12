@@ -39,7 +39,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Trait("Category", "ExtensionLocator")]
         public void IdsFromFoldersWithModuleTxtShouldBeListed()
         {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -58,7 +58,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument()
         {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -73,7 +73,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven()
         {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
@@ -92,7 +92,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven()
         {
-            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new StubLoggerFactory());
+            var harvester = new ExtensionHarvester(new StubWebSiteFolder(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
