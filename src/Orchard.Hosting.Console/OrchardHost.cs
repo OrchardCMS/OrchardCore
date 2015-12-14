@@ -251,7 +251,6 @@ namespace Orchard.Hosting
             _output.WriteLine("   /t:tenant-name");
             _output.WriteLine("       Specifies which tenant to run the command into. \"Default\" tenant by default.");
             _output.WriteLine("");
-            return;
         }
     }
 }
