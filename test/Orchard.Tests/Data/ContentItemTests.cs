@@ -40,8 +40,8 @@ namespace Orchard.Tests.Data
 
             var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
-            Assert.NotNull(contentItem.Content.MyPart);
-            Assert.Equal("test", (string)contentItem.Content.MyPart.Text);
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
         }
 
         [Fact]
@@ -55,8 +55,8 @@ namespace Orchard.Tests.Data
 
             var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
-            Assert.NotNull(contentItem.Content.MyPart);
-            Assert.Equal("test", (string)contentItem.Content.MyPart.Text);
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
         }
 
         [Fact]
@@ -70,8 +70,8 @@ namespace Orchard.Tests.Data
 
             var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
-            Assert.NotNull(contentItem.Content.MyPart);
-            Assert.Equal("test", (string)contentItem.Content.MyPart.Text);
+            Assert.NotNull(contentItem2.Content.MyPart);
+            Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
         }
 
         [Fact]
