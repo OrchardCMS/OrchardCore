@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.TagHelpers;
-using Orchard.Core.Settings.Services;
+﻿using Orchard.Core.Settings.Services;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using System;
@@ -41,6 +40,17 @@ namespace Orchard.Themes.Services
             return _extensionManager.GetExtension(currentThemeName);
         }
 
+        public async Task<ExtensionDescriptor> GetAdminThemeAsync()
+        {
+            string currentThemeName = await GetCurrentThemeNameAsync();
+            if (String.IsNullOrEmpty(currentThemeName))
+            {
+                return null;
+            }
+
+            return _extensionManager.GetExtension(currentThemeName);
+        }
+
         public async Task SetSiteThemeAsync(string themeName)
         {
             var site = await _siteService.GetSiteSettingsAsync();
@@ -48,10 +58,23 @@ namespace Orchard.Themes.Services
             _session.Save(site.ContentItem);
         }
 
+        public async Task SetAdminThemeAsync(string themeName)
+        {
+            var site = await _siteService.GetSiteSettingsAsync();
+            site.ContentItem.Content.CurrentAdminThemeName = themeName;
+            _session.Save(site.ContentItem);
+        }
+
         public async Task<string> GetCurrentThemeNameAsync()
         {
             var site = await _siteService.GetSiteSettingsAsync();
             return (string)site.ContentItem.Content.CurrentThemeName;
+        }
+
+        public async Task<string> GetAdminThemeNameAsync()
+        {
+            var site = await _siteService.GetSiteSettingsAsync();
+            return (string)site.ContentItem.Content.CurrentAdminThemeName;
         }
     }
 }

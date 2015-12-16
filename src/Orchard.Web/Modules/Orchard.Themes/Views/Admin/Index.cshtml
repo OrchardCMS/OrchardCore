@@ -1,0 +1,19 @@
+﻿@model Orchard.Themes.Models.SelectThemesViewModel
+@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
+
+<div class="jumbotron">
+    <p>This page lets you change the site's themes. Try <code>SafeMode</code> and <code>TheTheme</code> or <code>TheAdmin</code> for the admin</p>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    <div>
+        <input name="SiteThemeName" value="@Model.SiteThemeName" />
+    </div>
+    <div>
+        <input name="AdminThemeName" value="@Model.AdminThemeName" />
+    </div>
+
+    <button type="submit">Submit</button>
+}

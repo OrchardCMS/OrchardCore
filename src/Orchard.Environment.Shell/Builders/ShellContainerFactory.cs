@@ -14,8 +14,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using Orchard.Environment.Extensions;
 using Orchard.FileSystem.AppData;
-using System.IO;
 using YesSql.Storage.Sql;
+using Microsoft.AspNet.Mvc.Filters;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -63,22 +63,18 @@ namespace Orchard.Environment.Shell.Builders
                     {
                         _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
                     }
-                    if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);
-                    }
-                    else if (typeof(IUnitOfWorkDependency).IsAssignableFrom(interfaceType))
+                    if (typeof(IDependency).IsAssignableFrom(interfaceType))
                     {
                         tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
+                    }
+                    else if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
+                    {
+                        tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
                     {
                         tenantServiceCollection.AddTransient(interfaceType, dependency.Type);
-                    }
-                    else
-                    {
-                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
-                    }
+                    }                    
                 }
             }
 
@@ -86,6 +82,40 @@ namespace Orchard.Environment.Shell.Builders
             // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
             tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
+
+            // Registering filters that are not attributes
+            var filters = blueprint
+            .Dependencies
+            .Where(x => 
+                !typeof(Attribute).IsAssignableFrom(x.Type) && 
+                typeof(IFilterMetadata).IsAssignableFrom(x.Type))
+            .Select(x => x.Type)
+            .ToArray();
+
+            // For each filter type
+            foreach(var filter in filters)
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Filter: {0}", filter);
+                }
+                // For each filter interface
+                foreach (var interfaceType in filter.GetInterfaces().Where(x => typeof(IFilterMetadata).IsAssignableFrom(x)))
+                {                    
+                    if (typeof(IDependency).IsAssignableFrom(interfaceType))
+                    {
+                        tenantServiceCollection.AddScoped(interfaceType, filter);
+                    }
+                    else if (typeof(ISingletonDependency).IsAssignableFrom(filter))
+                    {
+                        tenantServiceCollection.AddSingleton(interfaceType, filter);
+                    }
+                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
+                    {
+                        tenantServiceCollection.AddTransient(interfaceType, filter);
+                    }
+                }
+            }            
 
             // Configuring data access
             var indexes = blueprint

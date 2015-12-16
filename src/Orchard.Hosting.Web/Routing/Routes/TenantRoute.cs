@@ -57,7 +57,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
 
         private bool IsValidRequest(HttpContext httpContext)
         {
-            return httpContext.Items["ShellSettings"] == _shellSettings;
+            return httpContext.RequestServices.GetService<ShellSettings>() == _shellSettings;
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
