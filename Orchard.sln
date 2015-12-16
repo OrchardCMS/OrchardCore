@@ -8,7 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30F6375E-2B17-4D1F-8F49-E5F4294F6DB7}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		gulpfile.js = gulpfile.js
 		NuGet.config = NuGet.config
+		Package.json = Package.json
 		README.md = README.md
 	EndProjectSection
 	ProjectSection(FolderGlobals) = preProject
