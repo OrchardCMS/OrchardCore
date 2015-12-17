@@ -1,20 +1,6 @@
 {
-  "webroot": ".",
+  "webroot": "wwwroot",
   "version": "2.0.0-*",
-  "exclude": [
-    "wwwroot",
-    "App_Data",
-    "Core",
-    "Modules",
-    "Themes"
-  ],
-  "packExclude": [
-    "node_modules",
-    "bower_components",
-    "**.kproj",
-    "**.user",
-    "**.vspscc"
-  ],
   "dependencies": {
     "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
@@ -31,8 +17,27 @@
   "frameworks": {
     "dnxcore50": { }
   },
+  "exclude": [
+    "wwwroot",
+    "node_modules",
+    "App_Data",
+    "Core",
+    "Modules",
+    "Themes"
+  ],
+  "packExclude": [
+    "node_modules",
+    "bower_components",
+    "**.kproj",
+    "**.user",
+    "**.vspscc"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
+  },
+  "scripts": {
+    "prepublish": [ "gulp publish" ],
+    "postrestore": [ "gulp publish" ]
   }
 }

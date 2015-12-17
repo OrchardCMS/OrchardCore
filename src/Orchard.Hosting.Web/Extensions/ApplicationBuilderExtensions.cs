@@ -19,6 +19,9 @@ namespace Orchard.Hosting
             // when DI is created for the shell
             builder.UseMiddleware<OrchardRouterMiddleware>();
 
+            // Add static files to the request pipeline.
+            builder.UseStaticFiles();
+
             return builder;
         }
     }

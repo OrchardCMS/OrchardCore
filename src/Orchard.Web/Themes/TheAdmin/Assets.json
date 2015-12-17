@@ -1,0 +1,13 @@
+﻿[
+  {
+    "inputs": [
+      "../../Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss",
+      "Assets/scss/TheAdmin.scss"
+    ],
+    "output": "Styles/TheAdmin.css"
+  },
+  {
+    "inputs": [ "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/*.js" ],
+    "output": "Scripts/TheAdmin.js"
+  }
+]

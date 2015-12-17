@@ -15,6 +15,7 @@ var glob = require("glob"),
     rename = require("gulp-rename"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
+    debug = require("gulp-debug"),
     fs = require("fs");
 
 /*
@@ -39,6 +40,14 @@ gulp.task("rebuild", function () {
     return merge(assetGroupTasks);
 });
 
+gulp.task("publish", function () {
+    var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
+        console.log(assetGroup.outputDir);
+        console.log(assetGroup.webroot);
+        return gulp.src(path.join(assetGroup.outputDir, "**")).pipe(gulp.dest(assetGroup.webroot));
+    });
+    return assetGroupTasks;
+});
 
 // Set "Watchers" as sub-processes in order to restart the task when Assets.json changes.
 gulp.task("watch", function () {
@@ -68,7 +77,7 @@ gulp.task("watch", function () {
     }
     var p;
     if (p) { p.exit(); }
-    p = gulp.watch("src/Orchard.Web/{Core,Modules,Themes}/*/Assets.json", function (event) {
+    p = gulp.watch("./src/Orchard.Web/{Core,Modules,Themes}/*/Assets.json", function (event) {
         console.log("Asset file '" + event.path + "' was " + event.type + ", resetting asset watchers.");
         restart();
     });
@@ -80,7 +89,7 @@ gulp.task("watch", function () {
 ** ASSET GROUPS
 */
 function getAssetGroups() {
-    var assetManifestPaths = glob.sync("src/Orchard.Web/{Core,Modules,Themes}/*/Assets.json", {});
+    var assetManifestPaths = glob.sync("./src/Orchard.Web/{Core,Modules,Themes}/*/Assets.json", {});
     var assetGroups = [];
     assetManifestPaths.forEach(function (assetManifestPath) {
         var file = './' + assetManifestPath;
@@ -108,6 +117,7 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output));
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
+    assetGroup.webroot = path.join("./src/Orchard.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
 }
 
 function createAssetGroupTask(assetGroup, doRebuild) {
@@ -155,11 +165,15 @@ function buildCssPipeline(assetGroup, doRebuild) {
         //    "*/\n\n"))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.webroot))
         .pipe(minify())
         .pipe(rename({
             suffix: ".min"
         }))
-        .pipe(gulp.dest(assetGroup.outputDir));
+        .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.webroot))
+        ;
+    ;
 }
 
 function buildJsPipeline(assetGroup, doRebuild) {
@@ -196,9 +210,11 @@ function buildJsPipeline(assetGroup, doRebuild) {
         //    "*/\n\n"))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(assetGroup.outputDir))
+        .pipe(gulp.dest(assetGroup.webroot))
 	.pipe(uglify())
 	.pipe(rename({
 	    suffix: ".min"
 	}))
-	.pipe(gulp.dest(assetGroup.outputDir));
+	.pipe(gulp.dest(assetGroup.outputDir))
+    .pipe(gulp.dest(assetGroup.webroot));
 }

@@ -18,6 +18,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-concat": "^2.5.2",
     "gulp-header": "^1.2.2",
+    "gulp-debug": "^2.1.2",
     "fs": "^0.0.2"
   },
   "dependencies": { }
