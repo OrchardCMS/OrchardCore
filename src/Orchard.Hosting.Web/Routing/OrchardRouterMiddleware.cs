@@ -4,6 +4,8 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Web.Routing
 {
@@ -11,7 +13,8 @@ namespace Orchard.Hosting.Web.Routing
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-
+        private readonly ConcurrentDictionary<string, IRouter> _routers = new ConcurrentDictionary<string, IRouter>();
+        
         public OrchardRouterMiddleware(
             RequestDelegate next,
             ILogger<OrchardRouterMiddleware> logger)
@@ -26,7 +29,13 @@ namespace Orchard.Hosting.Web.Routing
             {
                 _logger.LogInformation("Begin Routing Request");
             }
-            var router = httpContext.RequestServices.GetService<IRouteBuilder>().Build();
+
+            var shellSettings = httpContext.RequestServices.GetService<ShellSettings>();
+
+            var router = _routers.GetOrAdd(
+                shellSettings.Name, 
+                name => httpContext.RequestServices.GetService<IRouteBuilder>().Build()
+            );
 
             var context = new RouteContext(httpContext);
             context.RouteData.Routers.Add(router);
