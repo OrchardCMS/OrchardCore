@@ -53,8 +53,6 @@ namespace Orchard.Hosting
                     middleware.Configure(appBuilder);
                 }
 
-                appBuilder.UseOrchard();
-
                 pipeline = appBuilder.Build();
             }
 

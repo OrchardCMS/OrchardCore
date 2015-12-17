@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-using System;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,13 +33,12 @@ namespace Orchard.Hosting
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var sw = Stopwatch.StartNew();
-
             // Ensure all ShellContext are loaded and available.
             _orchardHost.Initialize();
 
             var shellSetting = _runningShellTable.Match(httpContext);
 
+            // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
             {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
@@ -55,24 +52,21 @@ namespace Orchard.Hosting
 
                     if (!shellContext.IsActived)
                     {
-                        var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                        await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
-                        await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+                        IEventBus eventBus = null;
+                        lock (shellSetting)
+                        {
+                            // The tenant gets activated here
+                            if (!shellContext.IsActived)
+                                eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync()).Wait();
+                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
 
-                        shellContext.IsActived = true;
+                            shellContext.IsActived = true;
+                        }
                     }
 
                     await _next.Invoke(httpContext);
                 }
-            }
-            else
-            {
-                _logger.LogError("Tenant not found");
-                throw new Exception("Tenant not found");
-            }
-            if (_logger.IsEnabled(LogLevel.Verbose))
-            {
-                _logger.LogVerbose("Request took {0}ms", sw.ElapsedMilliseconds);
             }
         }
     }

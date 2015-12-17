@@ -13,14 +13,15 @@ namespace Orchard.Hosting
         {
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
 
-            builder.UseMiddleware<OrchardContainerMiddleware>();
-
-            // Think this needs to be inserted in a different part of the pipeline, possibly
-            // when DI is created for the shell
-            builder.UseMiddleware<OrchardRouterMiddleware>();
-
             // Add static files to the request pipeline.
             builder.UseStaticFiles();
+
+            // Ensure the shell tenants are loaded when a request comes in
+            // and replaces the current service provider for the tenant's one.
+            builder.UseMiddleware<OrchardContainerMiddleware>();
+
+            // Route the request to the correct Orchard pipeline
+            builder.UseMiddleware<OrchardRouterMiddleware>();
 
             return builder;
         }
