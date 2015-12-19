@@ -1,33 +1,39 @@
-﻿using Orchard.DisplayManagement.Layout;
-using System;
+﻿using Microsoft.AspNet.Html.Abstractions;
 using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Html.Abstractions;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc.Rendering;
+using Orchard.DisplayManagement.Layout;
+using Orchard.DisplayManagement.Shapes;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Razor
 {
     public abstract class RazorPage<TModel> : Microsoft.AspNet.Mvc.Razor.RazorPage<TModel>
     {
-        private dynamic _display;
-        public dynamic Display
+        private dynamic _displayHelper;
+        private void EnsureDisplayHelper()
+        {
+            if (_displayHelper == null)
+            {
+                IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService(typeof(IDisplayHelperFactory)) as IDisplayHelperFactory;
+                _displayHelper = _factory.CreateHelper(ViewContext);
+            }
+        }
+
+        public dynamic New
         {
             get
             {
-                if (_display == null)
-                {
-                    IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService(typeof(IDisplayHelperFactory)) as IDisplayHelperFactory;
-                    _display = _factory.CreateHelper(ViewContext); 
-                }
-
-                return _display;
+                EnsureDisplayHelper();
+                return _displayHelper;
             }
+        }
 
-            set
-            {
-                _display = value;
-            }
+        public IHtmlContent Display(dynamic shape)
+        {
+            EnsureDisplayHelper();
+            return (IHtmlContent)_displayHelper(shape);
         }
 
         private dynamic _themeLayout;
@@ -60,6 +66,16 @@ namespace Orchard.DisplayManagement.Razor
         {
             var result = base.RenderBody();
             return result;
+        }
+
+        protected TagBuilder Tag(dynamic shape)
+        {
+            return Shape.GetTagBuilder(shape);
+        }
+
+        protected TagBuilder Tag(dynamic shape, string tag)
+        {
+            return Shape.GetTagBuilder(shape, tag);
         }
 
         protected override HelperResult RenderBody()

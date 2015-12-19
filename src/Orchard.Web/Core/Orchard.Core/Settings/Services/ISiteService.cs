@@ -6,5 +6,6 @@ namespace Orchard.Core.Settings.Services
     public interface ISiteService : IDependency
     {
         Task<ISite> GetSiteSettingsAsync();
+        Task UpdateSiteSettingsAsync(ISite site);
     }
 }

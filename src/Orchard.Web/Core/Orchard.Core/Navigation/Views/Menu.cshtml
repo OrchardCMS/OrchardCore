@@ -1,0 +1,13 @@
+﻿@{
+    TagBuilder tag = Tag(Model, "ul");
+
+
+    foreach (var item in Model.Items)
+    {
+        tag.InnerHtml.Append(Display(item));
+    }
+}
+
+<nav>
+    @tag
+</nav>

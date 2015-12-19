@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNet.Http;
-using Orchard.DisplayManagement.Admin;
 using Orchard.DisplayManagement.Theming;
 using System;
 using System.Threading.Tasks;
@@ -14,11 +13,11 @@ namespace Orchard.Themes.Services
     public class SiteThemeSelector : IThemeSelector
     {
         private readonly ISiteThemeService _siteThemeService;
-        private ThemeSelectorResult cachedSiteSelectorResult;
-        private ThemeSelectorResult cachedAdminSelectorResult;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SiteThemeSelector(ISiteThemeService siteThemeService, IHttpContextAccessor httpContextAccessor)
+        public SiteThemeSelector(
+            ISiteThemeService siteThemeService, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _siteThemeService = siteThemeService;
             _httpContextAccessor = httpContextAccessor;
@@ -26,44 +25,17 @@ namespace Orchard.Themes.Services
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            string currentThemeName = await _siteThemeService.GetCurrentThemeNameAsync();
+            if (String.IsNullOrEmpty(currentThemeName))
             {
-                if (cachedAdminSelectorResult == null)
-                {
-                    string adminThemeName = await _siteThemeService.GetAdminThemeNameAsync();
-                    if (String.IsNullOrEmpty(adminThemeName))
-                    {
-                        return null;
-                    }
-
-                    cachedAdminSelectorResult = new ThemeSelectorResult
-                    {
-                        Priority = -5,
-                        ThemeName = adminThemeName
-                    };
-
-                    return cachedAdminSelectorResult;
-                }
+                return null;
             }
 
-            if (cachedSiteSelectorResult == null)
+            return new ThemeSelectorResult
             {
-                string currentThemeName = await _siteThemeService.GetCurrentThemeNameAsync();
-                if (String.IsNullOrEmpty(currentThemeName))
-                {
-                    return null;
-                }
-
-                cachedSiteSelectorResult = new ThemeSelectorResult
-                {
-                    Priority = -5,
-                    ThemeName = currentThemeName
-                };
-
-                return cachedSiteSelectorResult;
-            }
-
-            return null;
+                Priority = 0,
+                ThemeName = currentThemeName
+            };
         }
     }
 }

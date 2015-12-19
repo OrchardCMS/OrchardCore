@@ -13,7 +13,7 @@ namespace Orchard.Hosting
             {
                 internalServices.AddLogging();
                 internalServices.AddOptions();
-
+                internalServices.AddLocalization();
                 internalServices.AddHostCore();
                 internalServices.AddExtensionManager();
                 internalServices.AddCommands();

@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNet.Html.Abstractions;
 using System.Reflection;
+using Microsoft.AspNet.Mvc.Rendering;
+using Orchard.UI;
 
 namespace Orchard.DisplayManagement.Shapes
 {
@@ -14,9 +16,10 @@ namespace Orchard.DisplayManagement.Shapes
     {
         private const string DefaultPosition = "5";
 
-        private readonly IList<object> _items = new List<object>();
+        private readonly ISet<IPositioned> _items = new SortedSet<IPositioned>(_positionComparer);
         private readonly IList<string> _classes = new List<string>();
         private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
+        private static FlatPositionComparer _positionComparer = new FlatPositionComparer();
 
         public ShapeMetadata Metadata { get; set; }
 
@@ -40,40 +43,43 @@ namespace Orchard.DisplayManagement.Shapes
 
         public virtual Shape Add(object item, string position = null)
         {
-            // pszmyd: Ignoring null shapes
             if (item == null)
             {
                 return this;
             }
 
-            try
+            if (item is IHtmlContent)
             {
-                if (position != null && item is IHtmlContent)
-                {
-                    item = new PositionWrapper((IHtmlContent)item, position);
-                }
-                else if (position != null && item is string)
-                {
-                    item = new PositionWrapper((string)item, position);
-                }
-                else if (item is IShape)
-                {
-                    ((IShape)item).Metadata.Position = position;
-                }
+                _items.Add(new PositionWrapper((IHtmlContent)item, position));
             }
-            catch
+            else if (item is string)
             {
-                // need to implement positioned wrapper for non-shape objects
+                _items.Add(new PositionWrapper((string)item, position));
+            }
+            else
+            {
+                var shape = item as Shape;
+                if (shape != null)
+                {
+                    if (position != null)
+                    {
+                        shape.Metadata.Position = position;
+                    }
+
+                    _items.Add(shape);
+                }
             }
 
-            _items.Add(item); // not messing with position at the moment
             return this;
         }
 
         public virtual Shape AddRange(IEnumerable<object> items, string position = DefaultPosition)
         {
             foreach (var item in items)
+            {
                 Add(item, position);
+            }
+
             return this;
         }
 
@@ -91,8 +97,8 @@ namespace Orchard.DisplayManagement.Shapes
         {
             result = Items;
 
-            if (binder.ReturnType == typeof(IEnumerable<object>)
-                || binder.ReturnType == typeof(IEnumerable<dynamic>))
+            if (binder.ReturnType == typeof(IEnumerable<object>) || 
+                binder.ReturnType == typeof(IEnumerable<dynamic>))
             {
                 return true;
             }
@@ -100,7 +106,6 @@ namespace Orchard.DisplayManagement.Shapes
             return base.TryConvert(binder, out result);
         }
 
-        //public class ShapeBehavior : ClayBehavior {
         public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
             if (indexes.Count() == 1)
@@ -166,6 +171,33 @@ namespace Orchard.DisplayManagement.Shapes
             }
 
             return base.TryInvokeMember(binder, args, out result);
+        }
+
+        public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
+        {
+            string tagName = shape.Tag ?? defaultTag;
+            string id = shape.Id;
+            IEnumerable<string> classes = shape.Classes;
+            IDictionary<string, string> attributes = shape.Attributes;
+
+            return GetTagBuilder(tagName, id, classes, attributes);
+        }
+
+        public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
+        {
+            var tagBuilder = new TagBuilder(tagName);
+            tagBuilder.MergeAttributes(attributes, false);
+
+            foreach (var cssClass in classes ?? Enumerable.Empty<string>())
+            {
+                tagBuilder.AddCssClass(cssClass);
+            }
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                tagBuilder.Attributes["id"] = id;
+            }
+            return tagBuilder;
         }
 
         private static void MergeAttributes(INamedEnumerable<object> args, IDictionary<string, string> attributes)

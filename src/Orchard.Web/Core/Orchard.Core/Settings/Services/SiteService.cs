@@ -58,5 +58,12 @@ namespace Orchard.Core.Settings.Services
 
             return site.As<SiteSettingsPart>();
         }
+
+        public Task UpdateSiteSettingsAsync(ISite site)
+        {
+            _session.Save(site.ContentItem);
+            _memoryCache.Set(SiteCacheKey, site.ContentItem);
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,0 +1,16 @@
+﻿@{
+    TagBuilder tag = Tag(Model, "li");
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "MenuItemLink";
+
+    // Render sub-items (MenuItem)
+    foreach (var item in Model.Items)
+    {
+        tag.InnerHtml.Append(Display(Model));
+        tag.InnerHtml.Append(Display(item));
+    }
+}
+
+@tag

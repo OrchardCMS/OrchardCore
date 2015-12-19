@@ -1,15 +1,20 @@
-﻿using System;
+﻿using Orchard.DisplayManagement;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.UI
 {
-    public class FlatPositionComparer : IComparer<string>
+    public class FlatPositionComparer : IComparer<IPositioned>
     {
-        public int Compare(string x, string y)
+        public int Compare(IPositioned a, IPositioned b)
         {
+            var x = a.Position;
+            var y = b.Position;
+
             if (x == y)
+            {
                 return 0;
+            }
 
             // null == "before; "" == "0"
             x = x == null
@@ -21,13 +26,15 @@ namespace Orchard.UI
 
             var xParts = x.Split(new[] { '.', ':' });
             var yParts = y.Split(new[] { '.', ':' });
-            for (var i = 0; i < xParts.Count(); i++)
+            for (var i = 0; i < xParts.Length; i++)
             {
-                if (yParts.Length < i + 1) // x is further defined meaning it comes after y (e.g. x == 1.2.3 and y == 1.2)
+                // x is further defined meaning it comes after y (e.g. x == 1.2.3 and y == 1.2)
+                if (yParts.Length < i + 1)
+                {
                     return 1;
+                }
 
-                int xPos;
-                int yPos;
+                int xPos, yPos;
                 var xPart = string.IsNullOrWhiteSpace(xParts[i]) ? "before" : xParts[i];
                 var yPart = string.IsNullOrWhiteSpace(yParts[i]) ? "before" : yParts[i];
 
@@ -38,15 +45,27 @@ namespace Orchard.UI
                 var yIsInt = int.TryParse(yPart, out yPos);
 
                 if (!xIsInt && !yIsInt)
-                    return string.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
-                if (!xIsInt || (yIsInt && xPos > yPos)) // non-int after int or greater x pos than y pos (which is an int)
+                {
+                    return String.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
+                }
+
+                // Non-int after int or greater x pos than y pos (which is an int)
+                if (!xIsInt || (yIsInt && xPos > yPos)) 
+                {
                     return 1;
+                }
+
                 if (!yIsInt || xPos < yPos)
+                {
                     return -1;
+                }
             }
 
-            if (xParts.Length < yParts.Length) // all things being equal y might be further defined than x (e.g. x == 1.2 and y == 1.2.3)
+            // All things being equal y might be further defined than x (e.g. x == 1.2 and y == 1.2.3)
+            if (xParts.Length < yParts.Length)
+            {
                 return -1;
+            }
 
             return 0;
         }

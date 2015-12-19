@@ -13,7 +13,16 @@
 </head>
 <body>
     <div class="container-fluid">
-        @RenderBody()
+    <div class="row">
+        <div class="hidden-sm-down col-md-2">
+            @await RenderSectionAsync("Navigation", required: false)
+        </div>
+
+        <div class="col-sm-12 col-md-10">
+            @RenderBody()
+        </div>
+    </div>
+        
     </div><!-- /.container -->
 
     @await RenderSectionAsync("Footer", required: false)

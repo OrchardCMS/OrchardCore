@@ -5,18 +5,17 @@ using Orchard.Environment.Extensions.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Themes.Services
+namespace Orchard.Core.Dashboard
 {
-    public class SiteThemeService : ISiteThemeService
+    public class AdminThemeService : IAdminThemeService
     {
-        private const string CacheKey = "CurrentThemeName";
+        private const string CacheKey = "AdminThemeName";
 
         private readonly IExtensionManager _extensionManager;
         private readonly ISiteService _siteService;
-
         private readonly IMemoryCache _memoryCache;
 
-        public SiteThemeService(
+        public AdminThemeService(
             ISiteService siteService,
             IExtensionManager extensionManager,
             IMemoryCache memoryCache
@@ -26,10 +25,10 @@ namespace Orchard.Themes.Services
             _extensionManager = extensionManager;
             _memoryCache = memoryCache;
         }
-
-        public async Task<ExtensionDescriptor> GetSiteThemeAsync()
+        
+        public async Task<ExtensionDescriptor> GetAdminThemeAsync()
         {
-            string currentThemeName = await GetCurrentThemeNameAsync();
+            string currentThemeName = await GetAdminThemeNameAsync();
             if (String.IsNullOrEmpty(currentThemeName))
             {
                 return null;
@@ -38,25 +37,26 @@ namespace Orchard.Themes.Services
             return _extensionManager.GetExtension(currentThemeName);
         }
 
-        public async Task SetSiteThemeAsync(string themeName)
+        public async Task SetAdminThemeAsync(string themeName)
         {
             var site = await _siteService.GetSiteSettingsAsync();
-            site.ContentItem.Content.CurrentThemeName = themeName;
+            site.ContentItem.Content.CurrentAdminThemeName = themeName;
             _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
-
-        public async Task<string> GetCurrentThemeNameAsync()
+        
+        public async Task<string> GetAdminThemeNameAsync()
         {
             string themeName;
-            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
+            if(!_memoryCache.TryGetValue(CacheKey, out themeName))
             {
                 var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)site.ContentItem.Content.CurrentThemeName;
+                themeName = (string)site.ContentItem.Content.CurrentAdminThemeName;
                 _memoryCache.Set(CacheKey, themeName);
             }
 
             return themeName;
+            
         }
     }
 }

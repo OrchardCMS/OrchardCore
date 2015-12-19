@@ -83,39 +83,36 @@ namespace Orchard.Environment.Shell.Builders
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
             tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
 
-            // Registering filters that are not attributes
-            var filters = blueprint
-            .Dependencies
-            .Where(x => 
-                !typeof(Attribute).IsAssignableFrom(x.Type) && 
-                typeof(IFilterMetadata).IsAssignableFrom(x.Type))
-            .Select(x => x.Type)
-            .ToArray();
+            //// Apply custom options for the tenant
+            //var options = blueprint
+            //.Dependencies
+            //.Where(x => typeof(IConfigure).IsAssignableFrom(x.Type))
+            //.Select(x => x.Type).ToArray();
 
-            // For each filter type
-            foreach(var filter in filters)
-            {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Filter: {0}", filter);
-                }
-                // For each filter interface
-                foreach (var interfaceType in filter.GetInterfaces().Where(x => typeof(IFilterMetadata).IsAssignableFrom(x)))
-                {                    
-                    if (typeof(IDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddScoped(interfaceType, filter);
-                    }
-                    else if (typeof(ISingletonDependency).IsAssignableFrom(filter))
-                    {
-                        tenantServiceCollection.AddSingleton(interfaceType, filter);
-                    }
-                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddTransient(interfaceType, filter);
-                    }
-                }
-            }            
+            //// TODO: Group all options by type and reuse the same configuration object
+            //// such that multiple feature can update the same configuration object.
+
+            //foreach (var type in options)
+            //{
+            //    var optionType = type
+            //        .GetInterfaces()
+            //        .Where(x => typeof(IConfigure).IsAssignableFrom(x))
+            //        .FirstOrDefault()
+            //        .GetGenericArguments()
+            //        .FirstOrDefault();
+
+            //    if(optionType == null)
+            //    {
+            //        // Ignore non-generic implementation
+            //        continue;
+            //    }
+
+            //    var optionObject = Activator.CreateInstance(optionType);
+            //    var configureMethod = type.GetMethod("Configure");
+            //    var optionHost = Activator.CreateInstance(type);
+            //    configureMethod.Invoke(optionHost, new[] { optionObject });
+            //    tenantServiceCollection.ConfigureOptions(optionObject);
+            //}
 
             // Configuring data access
             var indexes = blueprint

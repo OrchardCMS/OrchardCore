@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Mvc;
+using Orchard.Core.Dashboard;
 using Orchard.DisplayManagement.Admin;
 using Orchard.Themes.Models;
 using Orchard.Themes.Services;
@@ -10,10 +11,14 @@ namespace Orchard.Demo.Controllers
     public class AdminController : Controller
     {
         private readonly ISiteThemeService _siteThemeService;
+        private readonly IAdminThemeService _adminThemeService;
 
-        public AdminController(ISiteThemeService siteThemeService)
+        public AdminController(
+            ISiteThemeService siteThemeService,
+            IAdminThemeService adminThemeService)
         {
             _siteThemeService = siteThemeService;
+            _adminThemeService = adminThemeService;
         }
 
         public async Task<ActionResult> Index()
@@ -21,7 +26,7 @@ namespace Orchard.Demo.Controllers
             var model = new SelectThemesViewModel
             {
                 SiteThemeName = await _siteThemeService.GetCurrentThemeNameAsync(),
-                AdminThemeName = await _siteThemeService.GetAdminThemeNameAsync()
+                AdminThemeName = await _adminThemeService.GetAdminThemeNameAsync()
             };
 
             return View(model);
@@ -31,7 +36,7 @@ namespace Orchard.Demo.Controllers
         public async Task<ActionResult> Index(SelectThemesViewModel model)
         {
             await _siteThemeService.SetSiteThemeAsync(model.SiteThemeName);
-            await _siteThemeService.SetAdminThemeAsync(model.AdminThemeName);
+            await _adminThemeService.SetAdminThemeAsync(model.AdminThemeName);
 
             return RedirectToAction("Index");
         }
