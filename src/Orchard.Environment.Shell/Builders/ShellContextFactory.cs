@@ -95,6 +95,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "Orchard.Demo" },
                     new ShellFeature { Name = "TheTheme" },
+                    new ShellFeature { Name = "Orchard.CodeGeneration" }
                 },
                 Parameters = new List<ShellParameter>()
             };
