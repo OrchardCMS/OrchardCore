@@ -1,0 +1,17 @@
+﻿<Placement>
+  <!-- Customize where the shapes are rendered -->
+
+  <!-- 
+  <Place Parts_Blogs_BlogArchives="Content:before"/>
+  <Place Parts_Blogs_RecentBlogPosts="Content:after"/>
+  <Match ContentType="Blog">
+    <Match DisplayType="Summary">
+      <Place Parts_Blogs_Blog_Description="Content:before"
+             Parts_Blogs_Blog_BlogPostCount="Meta:3"/>
+    </Match>
+  </Match>
+  <Match Path="/About">
+    <Place Parts_Common_Metadata="-"/>
+  </Match>
+-->
+</Placement>

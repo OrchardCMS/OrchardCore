@@ -1,0 +1,8 @@
+﻿Name: $$ModuleName$$
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: Description for the module
+FeatureDescription: Description for feature $$ModuleName$$.
