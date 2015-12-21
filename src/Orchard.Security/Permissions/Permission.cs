@@ -5,7 +5,7 @@ namespace Orchard.Security.Permissions
 {
     public class Permission
     {
-        private const string ClaimType = "Permission";
+        public const string ClaimType = "Permission";
 
         public Permission(string name)
         {

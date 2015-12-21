@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Localization;
 using Orchard.Security.Permissions;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.Environment.Navigation
 {
@@ -39,9 +38,9 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public NavigationItemBuilder IdHint(string idHint)
+        public NavigationItemBuilder Id(string idHint)
         {
-            _item.IdHint = idHint;
+            _item.Id = idHint;
             return this;
         }
 
@@ -65,9 +64,27 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
+        public NavigationItemBuilder Local()
+        {
+            _item.Local = true;
+            return this;
+        }
+
+        public NavigationItemBuilder Local(bool value)
+        {
+            _item.Local = value;
+            return this;
+        }
+
         public NavigationItemBuilder Permission(Permission permission)
         {
-            _item.Permissions = _item.Permissions.Concat(new[] { permission });
+            _item.Permissions.Add(permission);
+            return this;
+        }
+
+        public NavigationItemBuilder PersmissionContext(object obj)
+        {
+            _item.PersmissionContext = obj;
             return this;
         }
 

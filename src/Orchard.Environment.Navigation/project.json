@@ -4,6 +4,7 @@
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Security": "2.0.0-*",
     "Microsoft.AspNet.Routing": "1.0.0-rc1-final",
+    "Orchard.Environment.Shell": "2.0.0-*",
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

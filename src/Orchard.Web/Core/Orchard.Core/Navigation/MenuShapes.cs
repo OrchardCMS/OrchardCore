@@ -17,7 +17,7 @@ namespace Orchard.Core.Navigation
             builder.Describe("Menu")
                 .OnDisplaying(displaying => {
                     var menu = displaying.Shape;
-                    string menuName = menu.Name;
+                    string menuName = menu.MenuName;
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
                     menu.Classes.Add("menu");
                     menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
@@ -27,7 +27,7 @@ namespace Orchard.Core.Navigation
                 .OnDisplaying(displaying => {
                     var menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
-                    var menuName = menu.Name;
+                    var menuName = menu.MenuName;
                     int level = menuItem.Level;
 
                     menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
@@ -38,7 +38,7 @@ namespace Orchard.Core.Navigation
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying => {
                     var menuItem = displaying.Shape;
-                    string menuName = menuItem.Menu.Name;
+                    string menuName = menuItem.Menu.MenuName;
                     string contentType = null;
                     int level = menuItem.Level;
 

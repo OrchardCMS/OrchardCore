@@ -14,8 +14,6 @@ namespace Orchard.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private const string DefaultPosition = "5";
-
         private readonly ISet<IPositioned> _items = new SortedSet<IPositioned>(_positionComparer);
         private readonly IList<string> _classes = new List<string>();
         private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
@@ -23,18 +21,13 @@ namespace Orchard.DisplayManagement.Shapes
 
         public ShapeMetadata Metadata { get; set; }
 
-        public virtual string Id { get; set; }
-        public virtual IList<string> Classes { get { return _classes; } }
-        public virtual IDictionary<string, string> Attributes { get { return _attributes; } }
-        public virtual IEnumerable<dynamic> Items { get { return _items; } }
+        public string Id { get; set; }
+        public IList<string> Classes => _classes;
+        public IDictionary<string, string> Attributes => _attributes;
+        public IEnumerable<dynamic> Items => _items;
+        public bool HasItems => _items.Count > 0;
 
-        public string Position
-        {
-            get
-            {
-                return Metadata.Position;
-            }
-        }
+        public string Position => Metadata.Position;
 
         public Shape()
         {
@@ -73,7 +66,7 @@ namespace Orchard.DisplayManagement.Shapes
             return this;
         }
 
-        public virtual Shape AddRange(IEnumerable<object> items, string position = DefaultPosition)
+        public Shape AddRange(IEnumerable<object> items, string position = null)
         {
             foreach (var item in items)
             {
@@ -88,7 +81,7 @@ namespace Orchard.DisplayManagement.Shapes
             return _items.GetEnumerator();
         }
 
-        public virtual IEnumerator GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             return _items.GetEnumerator();
         }

@@ -21,8 +21,15 @@ namespace Orchard.Themes
             }
 
             builder
-                .Add(T["Themes"], "10", menu => menu.Action("Index", "Admin", new { area = "Orchard.Themes" }).Permission(Permissions.ApplyTheme)
-                    .Add(T["Installed"], "0", item => item.Action("Index", "Admin", new { area = "Orchard.Themes" }).Permission(Permissions.ApplyTheme)));
+                .Add(T["Themes"], "10", themes => themes
+                    .Action("Index", "Admin", new { area = "Orchard.Themes" })
+                    .Permission(Permissions.ApplyTheme)
+                    .Add(T["Installed"], "0", installed => installed
+                        .Action("Index", "Admin", new { area = "Orchard.Themes" })
+                        .Permission(Permissions.ApplyTheme)
+                        .Local()
+                    )
+                );
         }
     }
 }

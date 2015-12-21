@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Routing;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Orchard.Environment.Navigation
@@ -39,20 +42,49 @@ namespace Orchard.Environment.Navigation
         {
             var menuItemShape = shapeFactory.MenuItem()
                 .Text(menuItem.Text)
-                .IdHint(menuItem.IdHint)
+                .Id(menuItem.Id)
                 .Href(menuItem.Href)
                 .LinkToFirstChild(menuItem.LinkToFirstChild)
-                .Selected(menuItem.Selected)
+                .Selected(parentShape.Selected != null && ((bool)parentShape.Selected || IsSelected(menuItem, null)))
                 .RouteValues(menuItem.RouteValues)
                 .Item(menuItem)
                 .Menu(menu)
                 .Parent(parentShape)
-                .Level(menuItem.Level);
+                .Level(parentShape.Selected == null ? 1 : (int)parentShape.Level + 1)
+                .Local(menuItem.Local);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);
 
             return menuItemShape;
+        }
+
+        public static bool IsSelected(MenuItem menuItem, HttpContext httpContext)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if a menu item corresponds to a given route.
+        /// </summary>
+        /// <param name="itemValues">The menu item.</param>
+        /// <param name="requestValues">The route data.</param>
+        /// <returns>True if the menu item's action corresponds to the route data; false otherwise.</returns>
+        public static bool RouteMatches(RouteValueDictionary itemValues, RouteValueDictionary requestValues)
+        {
+            if (itemValues == null && requestValues == null)
+            {
+                return true;
+            }
+            if (itemValues == null || requestValues == null)
+            {
+                return false;
+            }
+            if (itemValues.Keys.Any(key => requestValues.ContainsKey(key) == false))
+            {
+                return false;
+            }
+            return itemValues.Keys.All(key => string.Equals(Convert.ToString(itemValues[key]), Convert.ToString(requestValues[key]), StringComparison.OrdinalIgnoreCase));
         }
     }
 }

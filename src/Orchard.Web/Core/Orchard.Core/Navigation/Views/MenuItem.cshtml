@@ -5,11 +5,17 @@
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "MenuItemLink";
 
+    tag.InnerHtml.Append(Display(Model));
+
     // Render sub-items (MenuItem)
-    foreach (var item in Model.Items)
+    if (Model.HasItems)
     {
-        tag.InnerHtml.Append(Display(Model));
-        tag.InnerHtml.Append(Display(item));
+        tag.InnerHtml.AppendHtml("<ul>");
+        foreach (var item in Model.Items)
+        {
+            tag.InnerHtml.Append(Display(item));
+        }
+        tag.InnerHtml.AppendHtml("</ul>");
     }
 }
 

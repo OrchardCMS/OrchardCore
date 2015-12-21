@@ -72,7 +72,7 @@ namespace Orchard.Core.Dashboard
             // TODO: Flag Selected menu item
 
             // Populate main nav
-            dynamic menuShape = _shapeFactory.Create("Menu", Arguments.From(new { Name = "admin" }));
+            dynamic menuShape = _shapeFactory.Create("Menu", Arguments.From(new { MenuName = "admin" }));
             NavigationHelper.PopulateMenu(_shapeFactory, menuShape, menuShape, menuItems);
 
 
