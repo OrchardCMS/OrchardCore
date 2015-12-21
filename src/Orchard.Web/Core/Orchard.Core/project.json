@@ -4,6 +4,7 @@
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",  
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*"
   },

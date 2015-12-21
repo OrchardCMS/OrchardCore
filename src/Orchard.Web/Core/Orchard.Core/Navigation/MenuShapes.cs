@@ -1,21 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Routing;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.UI;
+using Orchard.Environment.Navigation;
 using Orchard.Utility;
-using Microsoft.AspNet.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace Orchard.Core.Navigation
 {
     public class MenuShapes : IShapeTableProvider
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public MenuShapes(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public void Discover(ShapeTableBuilder builder)
         {
-
             builder.Describe("Menu")
-                .OnDisplaying(displaying => {
+                .OnCreated(created =>
+                {
+                    // Menu population is executed when creating the shape so that its value
+                    // can be cached.
+
+                    var menuShape = created.Shape;
+                    string menuName = menuShape.MenuName;
+
+                    if ((bool)menuShape.HasItems)
+                    {
+                        return;
+                    }
+
+                    var httpContext = _httpContextAccessor.HttpContext;
+                    var navigationManager = httpContext.RequestServices.GetService<INavigationManager>();
+                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName);
+
+                    // adding query string parameters
+                    RouteData route = created.Shape.RouteData;
+                    var routeData = new RouteValueDictionary(route.Values);
+                    var query = httpContext.Request.Query;
+
+                    if (query != null)
+                    {
+                        foreach (var pair in query)
+                        {
+                            if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                            {
+                                routeData[pair.Key] = pair.Value;
+                            }
+                        }
+                    }
+
+                    // TODO: Flag Selected menu item
+
+                    NavigationHelper.PopulateMenu(created.ShapeFactory, created.Shape, created.Shape, menuItems);
+                })
+                .OnDisplaying(displaying => 
+                {
                     var menu = displaying.Shape;
                     string menuName = menu.MenuName;
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
@@ -24,7 +67,8 @@ namespace Orchard.Core.Navigation
                 });
 
             builder.Describe("MenuItem")
-                .OnDisplaying(displaying => {
+                .OnDisplaying(displaying => 
+                {
                     var menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
                     var menuName = menu.MenuName;
@@ -36,7 +80,8 @@ namespace Orchard.Core.Navigation
                 });
 
             builder.Describe("MenuItemLink")
-                .OnDisplaying(displaying => {
+                .OnDisplaying(displaying => 
+                {
                     var menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
                     string contentType = null;

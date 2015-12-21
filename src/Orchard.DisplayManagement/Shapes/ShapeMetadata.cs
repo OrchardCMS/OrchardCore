@@ -29,7 +29,14 @@ namespace Orchard.DisplayManagement.Shapes
         public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
 
+        /// <summary>
+        /// Event use for a specific shape instance.
+        /// </summary>
         public IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; private set; }
+
+        /// <summary>
+        /// Event use for a specific shape instance.
+        /// </summary>
         public IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; private set; }
 
         public IList<string> BindingSources { get; set; }

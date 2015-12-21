@@ -91,7 +91,8 @@ namespace Orchard.DisplayManagement.Implementation
             {
                 New = creatingContext.New,
                 ShapeType = creatingContext.ShapeType,
-                Shape = creatingContext.Create()
+                Shape = creatingContext.Create(),
+                ShapeFactory = this
             };
 
             if (!(createdContext.Shape is IShape))
@@ -102,8 +103,27 @@ namespace Orchard.DisplayManagement.Implementation
             ShapeMetadata shapeMetadata = createdContext.Shape.Metadata;
             createdContext.Shape.Metadata.Type = shapeType;
 
-            if (shapeDescriptor != null)
+            // Concatenate wrappers if there are any
+            if (shapeDescriptor != null && 
+                shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
+            {
                 shapeMetadata.Wrappers = shapeMetadata.Wrappers.Concat(shapeDescriptor.Wrappers).ToList();
+            }
+
+            // only one non-Type, non-named argument is allowed
+            var initializer = positional.SingleOrDefault();
+            if (initializer != null)
+            {
+                foreach (var prop in initializer.GetType().GetProperties())
+                {
+                    createdContext.Shape[prop.Name] = prop.GetValue(initializer, null);
+                }
+            }
+
+            foreach (var kv in parameters.Named)
+            {
+                createdContext.Shape[kv.Key] = kv.Value;
+            }
 
             // "created" events provides default values and new object initialization
             foreach (var ev in _events)
@@ -120,24 +140,6 @@ namespace Orchard.DisplayManagement.Implementation
             foreach (var ev in creatingContext.OnCreated)
             {
                 ev(createdContext);
-            }
-
-
-            // other properties passed with call overlay any defaults, so are after the created events
-
-            // only one non-Type, non-named argument is allowed
-            var initializer = positional.SingleOrDefault();
-            if (initializer != null)
-            {
-                foreach (var prop in initializer.GetType().GetProperties())
-                {
-                    createdContext.Shape[prop.Name] = prop.GetValue(initializer, null);
-                }
-            }
-
-            foreach (var kv in parameters.Named)
-            {
-                createdContext.Shape[kv.Key] = kv.Value;
             }
 
             return createdContext.Shape;

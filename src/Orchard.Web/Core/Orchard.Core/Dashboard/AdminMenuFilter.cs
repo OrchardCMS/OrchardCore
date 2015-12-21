@@ -52,30 +52,14 @@ namespace Orchard.Core.Dashboard
                 return;
             }
 
-            IEnumerable<MenuItem> menuItems = _navigationManager.BuildMenu("admin");
-
-            // adding query string parameters
-            var routeData = new RouteValueDictionary(filterContext.RouteData.Values);
-            var query = filterContext.HttpContext.Request.Query;
-
-            if (query != null)
-            {
-                foreach (var pair in query)
-                {
-                    if (pair.Key != null && !routeData.ContainsKey(pair.Key))
-                    {
-                        routeData[pair.Key] = pair.Value;
-                    }
-                }
-            }
-
-            // TODO: Flag Selected menu item
-
             // Populate main nav
-            dynamic menuShape = _shapeFactory.Create("Menu", Arguments.From(new { MenuName = "admin" }));
-            NavigationHelper.PopulateMenu(_shapeFactory, menuShape, menuShape, menuItems);
-
-
+            dynamic menuShape = _shapeFactory.Create("Menu", 
+                Arguments.From(new
+                {
+                    MenuName = "admin",
+                    RouteData = filterContext.RouteData,
+                }));
+            
             _layoutAccessor.GetLayout().Navigation.Add(menuShape);
             
         }
