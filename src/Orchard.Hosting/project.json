@@ -9,7 +9,8 @@
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*"
+    "Orchard.Events": "2.0.0-*",
+    "Orchard.Environment.Cache": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

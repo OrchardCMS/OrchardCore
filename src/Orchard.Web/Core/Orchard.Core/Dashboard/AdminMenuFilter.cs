@@ -53,13 +53,18 @@ namespace Orchard.Core.Dashboard
             }
 
             // Populate main nav
-            dynamic menuShape = _shapeFactory.Create("Menu", 
+            IShape menuShape = _shapeFactory.Create("Menu", 
                 Arguments.From(new
                 {
                     MenuName = "admin",
                     RouteData = filterContext.RouteData,
                 }));
-            
+
+            // Enable shape caching
+            menuShape.Metadata.CacheContext.CacheId = "menu-admin";
+            menuShape.Metadata.CacheContext.Contexts.Add("roles");
+            menuShape.Metadata.CacheContext.Contexts.Add("features");
+
             _layoutAccessor.GetLayout().Navigation.Add(menuShape);
             
         }

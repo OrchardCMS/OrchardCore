@@ -97,6 +97,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Security", "src\Orc
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "SafeMode", "src\Orchard.Web\Themes\SafeMode\SafeMode.xproj", "{F89A018C-440B-4F5B-A159-727AFBE553CC}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.DynamicCache", "src\Orchard.Web\Modules\Orchard.DynamicCache\Orchard.DynamicCache.xproj", "{4DA8DFF9-74A5-4111-8043-9D901B525347}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Environment.Cache.Abstractions", "src\Orchard.Environment.Cache.Abstractions\Orchard.Environment.Cache.Abstractions.xproj", "{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -239,6 +243,14 @@ Global
 		{F89A018C-440B-4F5B-A159-727AFBE553CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F89A018C-440B-4F5B-A159-727AFBE553CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F89A018C-440B-4F5B-A159-727AFBE553CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA8DFF9-74A5-4111-8043-9D901B525347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA8DFF9-74A5-4111-8043-9D901B525347}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA8DFF9-74A5-4111-8043-9D901B525347}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA8DFF9-74A5-4111-8043-9D901B525347}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -283,5 +295,7 @@ Global
 		{411FC23E-088E-4633-9F65-9C0E1BCF01C0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{07901ACD-A339-4123-8863-BE5BDAFF96EF} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{F89A018C-440B-4F5B-A159-727AFBE553CC} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
+		{4DA8DFF9-74A5-4111-8043-9D901B525347} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{1B7E5B70-FFB8-4B7A-8F57-67F1AB7CA814} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 EndGlobal

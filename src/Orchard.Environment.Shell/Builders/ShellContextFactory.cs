@@ -94,6 +94,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Navigation" },
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "Orchard.Demo" },
+                    new ShellFeature { Name = "Orchard.DynamicCache" },
                     new ShellFeature { Name = "TheTheme" },
                 },
                 Parameters = new List<ShellParameter>()

@@ -25,6 +25,7 @@ namespace Orchard.DisplayManagement.Shapes
         public string Prefix { get; set; }
         public IList<string> Wrappers { get; set; }
         public IList<string> Alternates { get; set; }
+        public ShapeMetadataCacheContext CacheContext => new ShapeMetadataCacheContext();
 
         public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
@@ -52,5 +53,15 @@ namespace Orchard.DisplayManagement.Shapes
             var existing = Displayed ?? Enumerable.Empty<Action<ShapeDisplayedContext>>();
             Displayed = existing.Concat(new[] { action });
         }
+
+        public class ShapeMetadataCacheContext
+        {
+            public string CacheId { get; set; }
+            public HashSet<string> Contexts => new HashSet<string>();
+            public HashSet<string> Tags => new HashSet<string>();
+            public int Duration => int.MaxValue;
+        }
     }
+
+    
 }
