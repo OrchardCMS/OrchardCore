@@ -56,7 +56,7 @@ namespace Orchard.DisplayManagement.Implementation
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
                 return CoerceHtmlString(context.Value);
 
-            var theme = _themeManager.GetTheme();
+            var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
             var displayingContext = new ShapeDisplayingContext

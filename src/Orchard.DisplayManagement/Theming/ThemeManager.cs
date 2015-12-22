@@ -2,6 +2,7 @@
 using System.Linq;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Theming
 {
@@ -20,13 +21,15 @@ namespace Orchard.DisplayManagement.Theming
             _extensionManager = extensionManager;
         }
 
-        public ExtensionDescriptor GetTheme()
+        public async Task<ExtensionDescriptor> GetThemeAsync()
         {
-            // For performance reason, processes the current theme only once per scope (request)
+            // For performance reason, processes the current theme only once per scope (request).
+            // This can't be cached as each request gets a different value.
             if (_theme == null)
             {
-                var requestTheme = _themeSelectors
-                    .Select(x => x.GetThemeAsync().Result)
+                var allThemeResults = await Task.WhenAll(_themeSelectors.Select(async x => await x.GetThemeAsync().ConfigureAwait(false))).ConfigureAwait(false);
+
+                var requestTheme = allThemeResults
                     .Where(x => x != null)
                     .OrderByDescending(x => x.Priority)
                     .ToList();

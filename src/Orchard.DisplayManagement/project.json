@@ -9,7 +9,8 @@
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
     "System.Reflection.Extensions": "4.0.1-beta-23516",
-    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final"
+    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

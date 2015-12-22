@@ -10,9 +10,13 @@ namespace Orchard.Environment.Cache
     {
         public void Configure(IServiceCollection serviceCollection)
         {
-            // NB: There seems to be an already registered IMemoryCache as removing this line 
-            // will still resolve one. IDistributedCache is definitely not registered withou it.
-            serviceCollection.Add(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+            // MVC is already registering IMemoryCache. Any module that would add another implementation
+            // would take over the default one as the last registered service will be resolved.
+            // serviceCollection.Add(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+
+
+            // LocalCache is registered as Transient as its implementation resolves IMemoryCache, thus
+            // there is no state to keep in its instance.
             serviceCollection.Add(ServiceDescriptor.Transient<IDistributedCache, LocalCache>());
         }
     }

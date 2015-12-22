@@ -3,7 +3,9 @@
   "dependencies": {
     "Orchard.DependencyInjection": "2.0.0-*",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final"
+    "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final",
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
+    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

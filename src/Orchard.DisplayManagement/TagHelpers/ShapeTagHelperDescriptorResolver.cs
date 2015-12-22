@@ -50,7 +50,7 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             var attributeDescriptors = new List<TagHelperAttributeDescriptor>();
 
-            var theme = _themeManager.GetTheme();
+            var theme = _themeManager.GetThemeAsync().Result;
 
             foreach (var shape in _shapteTableManager.GetShapeTable(theme?.Id).Descriptors)
             {

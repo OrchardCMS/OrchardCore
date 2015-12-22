@@ -105,6 +105,11 @@ namespace Orchard.Demo.Controllers
             return View();
         }
 
+        public ActionResult Cache()
+        {
+            return View();
+        }
+
         public string GCCollect()
         {
             GC.Collect();

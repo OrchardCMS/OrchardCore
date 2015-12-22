@@ -1,0 +1,37 @@
+﻿@using Orchard.DisplayManagement.Shapes;
+
+@{
+    var shape = New.OuterDoll();
+    ShapeMetadata metadata = shape.Metadata;
+    metadata.CacheContext.Cache("outerdoll").During(new TimeSpan(0, 0, 5));
+}
+
+View: @DateTime.Now.ToString("hh:MM:ss")
+<br/>
+
+@Display(shape)
+
+<br/>
+@Display(shape)
+
+
+<div class="row">
+
+    <div class="col-md-3">
+        @{
+            var widget1 = New.Widget(Title: "Widget1");
+            ShapeMetadata widget1Metadata = widget1.Metadata;
+            widget1Metadata.CacheContext.Cache("Widget1");
+        }
+        @Display(widget1)
+    </div>
+
+    <div class="col-md-3 pull-md-right">
+        @{
+            var widget2 = New.Widget(Title: "Widget2");
+            ShapeMetadata widget2Metadata = widget2.Metadata;
+            widget2Metadata.CacheContext.Cache("Widget2").AddContext("query");
+        }
+        @Display(widget2)
+    </div>
+</div>

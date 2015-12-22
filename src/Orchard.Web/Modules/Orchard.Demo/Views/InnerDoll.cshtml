@@ -1,0 +1,13 @@
+﻿@using Orchard.DisplayManagement.Shapes;
+
+@{
+    var shape = New.LowerDoll();
+    ShapeMetadata metadata = shape.Metadata;
+    metadata.CacheContext.Cache("lowerdoll").During(new TimeSpan(0, 0, 15));
+}
+
+Inner Doll at: @DateTime.Now.ToString("hh:mm:ss")
+
+<br/>
+@Display(shape)
+

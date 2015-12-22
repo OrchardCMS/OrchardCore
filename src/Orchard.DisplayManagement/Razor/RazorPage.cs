@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNet.Html.Abstractions;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Layout;
@@ -12,12 +13,22 @@ namespace Orchard.DisplayManagement.Razor
     public abstract class RazorPage<TModel> : Microsoft.AspNet.Mvc.Razor.RazorPage<TModel>
     {
         private dynamic _displayHelper;
+        private IShapeFactory _shapeFactory;
+
         private void EnsureDisplayHelper()
         {
             if (_displayHelper == null)
             {
-                IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService(typeof(IDisplayHelperFactory)) as IDisplayHelperFactory;
+                IDisplayHelperFactory _factory = ViewContext.HttpContext.RequestServices.GetService<IDisplayHelperFactory>();
                 _displayHelper = _factory.CreateHelper(ViewContext);
+            }
+        }
+
+        private void EnsureShapeFactory()
+        {
+            if (_shapeFactory == null)
+            {
+                _shapeFactory = ViewContext.HttpContext.RequestServices.GetService<IShapeFactory>();
             }
         }
 
@@ -25,8 +36,17 @@ namespace Orchard.DisplayManagement.Razor
         {
             get
             {
-                EnsureDisplayHelper();
-                return _displayHelper;
+                EnsureShapeFactory();
+                return _shapeFactory;
+            }
+        }
+
+        public IShapeFactory Factory
+        {
+            get
+            {
+                EnsureShapeFactory();
+                return _shapeFactory;
             }
         }
 

@@ -61,9 +61,10 @@ namespace Orchard.Core.Dashboard
                 }));
 
             // Enable shape caching
-            menuShape.Metadata.CacheContext.CacheId = "menu-admin";
-            menuShape.Metadata.CacheContext.Contexts.Add("roles");
-            menuShape.Metadata.CacheContext.Contexts.Add("features");
+            menuShape.Metadata.CacheContext
+                .Cache("menu-admin")
+                .AddContext("roles", "features")
+                ;
 
             _layoutAccessor.GetLayout().Navigation.Add(menuShape);
             

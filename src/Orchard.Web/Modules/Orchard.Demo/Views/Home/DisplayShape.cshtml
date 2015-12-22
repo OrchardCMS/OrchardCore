@@ -6,10 +6,10 @@
 @Model.Line
 
 @*
-    The most simple way to render a shape is to call IShapeDisplay.Display.
+    The most simple way to render a shape is to call IShapeDisplay.DisplayAsync.
     It uses a DisplayHelper internally and returns the html as a string
 *@
-@ShapeDisplay.Display(Model)
+@await ShapeDisplay.DisplayAsync(Model)
 
 @*
     The way it is done from a View is to use a DisplayHelper which is created for

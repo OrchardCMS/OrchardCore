@@ -42,7 +42,7 @@ namespace Orchard.DisplayManagement.Implementation
 
         public IShape Create(string shapeType, INamedEnumerable<object> parameters, Func<dynamic> createShape)
         {
-            var theme = _themeManager.GetTheme();
+            var theme = _themeManager.GetThemeAsync().Result;
 
             var defaultShapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
             ShapeDescriptor shapeDescriptor;
