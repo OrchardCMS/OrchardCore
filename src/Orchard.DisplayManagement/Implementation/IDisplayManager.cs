@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Html.Abstractions;
 using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -10,6 +11,6 @@ namespace Orchard.DisplayManagement.Implementation
     /// </summary>
     public interface IDisplayManager : IDependency
     {
-        IHtmlContent Execute(DisplayContext context);
+        Task<IHtmlContent> ExecuteAsync(DisplayContext context);
     }
 }

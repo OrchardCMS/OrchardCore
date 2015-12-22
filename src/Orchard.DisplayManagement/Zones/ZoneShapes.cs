@@ -6,6 +6,8 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Utility;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Shapes;
+using Microsoft.AspNet.Html.Abstractions;
+using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.Zones
 {
@@ -31,7 +33,7 @@ namespace Orchard.DisplayManagement.Zones
         }
 
         [Shape]
-        public void Zone(dynamic Display, dynamic Shape, TextWriter Output)
+        public IHtmlContent Zone(dynamic Display, dynamic Shape)
         {
             TagBuilder zoneWrapper = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
             foreach (var item in Shape)
@@ -39,12 +41,14 @@ namespace Orchard.DisplayManagement.Zones
                 zoneWrapper.InnerHtml.Append(Display(item));
             }
 
-            Output.Write(zoneWrapper);
+            return zoneWrapper;
         }
 
         [Shape]
-        public void ContentZone(dynamic Display, dynamic Shape, TextWriter Output)
+        public IHtmlContent ContentZone(dynamic Display, dynamic Shape)
         {
+            var htmlContents = new List<IHtmlContent>();
+
             var unordered = ((IEnumerable<dynamic>)Shape).ToArray();
             var tabbed = unordered.GroupBy(x => (string)x.Metadata.Tab);
 
@@ -60,16 +64,21 @@ namespace Orchard.DisplayManagement.Zones
                     {
                         tabBuilder.InnerHtml.Append(Display(item));
                     }
-                    Output.Write(tabBuilder);
+                    htmlContents.Add(tabBuilder);
                 }
             }
             else
             {
                 foreach (var item in unordered)
                 {
-                    Output.Write(Display(item));
+                    htmlContents.Add(Display(item));
                 }
             }
+
+            // TODO: Replace by HtmlContentBuilder when available
+            var combined = new DisplayHelper.Combined(htmlContents);
+
+            return combined;
         }
 
         [Shape]

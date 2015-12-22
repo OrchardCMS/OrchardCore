@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DependencyInjection;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Html.Abstractions;
 
 namespace Orchard.DisplayManagement
 {
     public interface IShapeDisplay : IDependency
     {
-        string Display(Shape shape);
-        string Display(object shape);
-        IEnumerable<string> Display(IEnumerable<object> shapes);
+        Task<IHtmlContent> DisplayAsync(Shape shape);
+        Task<IHtmlContent> DisplayAsync(object shape);
+        Task<IHtmlContent> DisplayAsync(IEnumerable<object> shapes);
     }
 }

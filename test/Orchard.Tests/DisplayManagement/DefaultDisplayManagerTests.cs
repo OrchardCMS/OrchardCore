@@ -96,7 +96,7 @@ namespace Orchard.Tests.DisplayManagement
         }
 
         [Fact]
-        public void RenderSimpleShape()
+        public async Task RenderSimpleShape()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -115,16 +115,16 @@ namespace Orchard.Tests.DisplayManagement
             descriptor.Bindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                Binding = ctx => new HtmlString("Hi there!"),
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
             };
             AddShapeDescriptor(descriptor);
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Hi there!", result.ToString());
         }
 
         [Fact]
-        public void RenderPreCalculatedShape()
+        public async Task RenderPreCalculatedShape()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -149,17 +149,17 @@ namespace Orchard.Tests.DisplayManagement
             descriptor.Bindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                Binding = ctx => new HtmlString("Hi there!"),
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
             };
 
             AddShapeDescriptor(descriptor);
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Bar", result.ToString());
         }
 
         [Fact]
-        public void RenderFallbackShape()
+        public async Task RenderFallbackShape()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -178,16 +178,16 @@ namespace Orchard.Tests.DisplayManagement
             descriptor.Bindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                Binding = ctx => new HtmlString("Hi there!"),
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
             };
             AddShapeDescriptor(descriptor);
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Hi there!", result.ToString());
         }
 
         [Fact]
-        public void RenderAlternateShapeExplicitly()
+        public async Task RenderAlternateShapeExplicitly()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -206,21 +206,21 @@ namespace Orchard.Tests.DisplayManagement
             descriptor.Bindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                Binding = ctx => new HtmlString("Hi there!"),
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
             };
             descriptor.Bindings["Foo__2"] = new ShapeBinding
             {
                 BindingName = "Foo__2",
-                Binding = ctx => new HtmlString("Hello again!"),
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello again!")),
             };
             AddShapeDescriptor(descriptor);
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Hello again!", result.ToString());
         }
 
         [Fact]
-        public void RenderAlternateShapeByMostRecentlyAddedMatchingAlternate()
+        public async Task RenderAlternateShapeByMostRecentlyAddedMatchingAlternate()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -239,21 +239,21 @@ namespace Orchard.Tests.DisplayManagement
             {
                 ShapeType = "Foo",
             };
-            AddBinding(descriptor, "Foo", ctx => new HtmlString("Hi there!"));
-            AddBinding(descriptor, "Foo__1", ctx => new HtmlString("Hello (1)!"));
-            AddBinding(descriptor, "Foo__2", ctx => new HtmlString("Hello (2)!"));
+            AddBinding(descriptor, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")));
+            AddBinding(descriptor, "Foo__1", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello (1)!")));
+            AddBinding(descriptor, "Foo__2", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello (2)!")));
             AddShapeDescriptor(descriptor);
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
             Assert.Equal("Hello (2)!", result.ToString());
         }
 
-        private static void AddBinding(ShapeDescriptor descriptor, string bindingName, Func<DisplayContext, IHtmlContent> binding)
+        private static void AddBinding(ShapeDescriptor descriptor, string bindingName, Func<DisplayContext, Task<IHtmlContent>> binding)
         {
             descriptor.Bindings[bindingName] = new ShapeBinding
             {
                 BindingName = bindingName,
-                Binding = binding,
+                BindingAsync = binding,
             };
         }
 
@@ -288,7 +288,7 @@ namespace Orchard.Tests.DisplayManagement
 
 
         [Fact]
-        public void ShapeDescriptorDisplayingAndDisplayedAreCalled()
+        public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -304,7 +304,7 @@ namespace Orchard.Tests.DisplayManagement
             {
                 ShapeType = "Foo",
             };
-            AddBinding(descriptor, "Foo", ctx => new HtmlString("yarg"));
+            AddBinding(descriptor, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("yarg")));
             AddShapeDescriptor(descriptor);
 
             var displayingEventCount = 0;
@@ -312,7 +312,7 @@ namespace Orchard.Tests.DisplayManagement
             descriptor.Displaying = new Action<ShapeDisplayingContext>[] { ctx => { ++displayingEventCount; } };
             descriptor.Displayed = new Action<ShapeDisplayedContext>[] { ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToString() + "]"); } };
 
-            var result = displayManager.Execute(CreateDisplayContext(shape));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
             Assert.Equal(1, displayingEventCount);
             Assert.Equal(1, displayedEventCount);
@@ -320,7 +320,7 @@ namespace Orchard.Tests.DisplayManagement
         }
 
         [Fact]
-        public void DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
+        public async Task DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -335,20 +335,20 @@ namespace Orchard.Tests.DisplayManagement
             {
                 ShapeType = "Foo",
             };
-            AddBinding(descriptorFoo, "Foo", ctx => new HtmlString("alpha"));
+            AddBinding(descriptorFoo, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("alpha")));
             AddShapeDescriptor(descriptorFoo);
 
             var descriptorBar = new ShapeDescriptor
             {
                 ShapeType = "Bar",
             };
-            AddBinding(descriptorBar, "Bar", ctx => new HtmlString("beta"));
+            AddBinding(descriptorBar, "Bar", ctx => Task.FromResult<IHtmlContent>(new HtmlString("beta")));
             AddShapeDescriptor(descriptorBar);
 
 
-            var resultNormally = displayManager.Execute(CreateDisplayContext(shapeFoo));
+            var resultNormally = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
             descriptorFoo.Displaying = new Action<ShapeDisplayingContext>[] { ctx => ctx.ShapeMetadata.Alternates.Add("Bar") };
-            var resultWithOverride = displayManager.Execute(CreateDisplayContext(shapeFoo));
+            var resultWithOverride = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());
             Assert.Equal("beta", resultWithOverride.ToString());
@@ -356,7 +356,7 @@ namespace Orchard.Tests.DisplayManagement
 
 
         [Fact]
-        public void ShapeTypeAndBindingNamesAreNotCaseSensitive()
+        public async Task ShapeTypeAndBindingNamesAreNotCaseSensitive()
         {
             var displayManager = _serviceProvider.GetService<IDisplayManager>();
 
@@ -371,10 +371,10 @@ namespace Orchard.Tests.DisplayManagement
             {
                 ShapeType = "Foo",
             };
-            AddBinding(descriptorFoo, "Foo", ctx => new HtmlString("alpha"));
+            AddBinding(descriptorFoo, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("alpha")));
             AddShapeDescriptor(descriptorFoo);
 
-            var result = displayManager.Execute(CreateDisplayContext(shapeFoo));
+            var result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", result.ToString());
         }

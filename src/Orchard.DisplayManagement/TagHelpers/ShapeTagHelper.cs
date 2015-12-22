@@ -3,6 +3,7 @@ using Microsoft.AspNet.Mvc.ViewFeatures;
 using Microsoft.AspNet.Razor.TagHelpers;
 using Orchard.DisplayManagement.Implementation;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
@@ -25,6 +26,11 @@ namespace Orchard.DisplayManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            ProcessAsync(context, output).Wait();
+        }
+
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        {
             var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
 
             // Extract all attributes from the tag helper to
@@ -34,7 +40,7 @@ namespace Orchard.DisplayManagement.TagHelpers
                 ;
 
             var shape = _shapeFactory.Create(Type ?? output.TagName, Arguments.From(properties));
-            output.Content.SetContent(display.ShapeExecute(shape));
+            output.Content.SetContent(await display.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;

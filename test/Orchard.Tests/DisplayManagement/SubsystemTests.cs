@@ -100,14 +100,14 @@ namespace Orchard.Tests.DisplayManagement
         }
 
         [Fact]
-        public void RenderingSomething()
+        public async Task RenderingSomething()
         {
             dynamic displayHelperFactory = _serviceProvider.GetService<IDisplayHelperFactory>().CreateHelper(new ViewContext());
             dynamic shapeHelperFactory = _serviceProvider.GetService<IShapeFactory>();
 
             var result1 = displayHelperFactory.Something();
-            var result2 = ((DisplayHelper)displayHelperFactory).ShapeExecute(shapeHelperFactory.Pager());
-            var result3 = ((DisplayHelper)displayHelperFactory).ShapeExecute((Shape)shapeHelperFactory.Pager());
+            var result2 = await ((DisplayHelper)displayHelperFactory).ShapeExecuteAsync(shapeHelperFactory.Pager());
+            var result3 = await ((DisplayHelper)displayHelperFactory).ShapeExecuteAsync((Shape)shapeHelperFactory.Pager());
 
             displayHelperFactory(shapeHelperFactory.Pager());
 

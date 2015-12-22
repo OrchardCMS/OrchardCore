@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Html.Abstractions;
 
 namespace Orchard.DisplayManagement
 {
@@ -20,12 +21,12 @@ namespace Orchard.DisplayManagement
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string Display(Shape shape)
+        public Task<IHtmlContent> DisplayAsync(Shape shape)
         {
-            return Display((object)shape);
+            return DisplayAsync((object)shape);
         }
 
-        public string Display(object shape)
+        public async Task<IHtmlContent> DisplayAsync(object shape)
         {
             var viewContext = new ViewContext
             {
@@ -34,12 +35,18 @@ namespace Orchard.DisplayManagement
 
             var display = _displayHelperFactory.CreateHelper(viewContext);
 
-            return ((DisplayHelper)display).ShapeExecute(shape).ToString();
+            return (await ((DisplayHelper)display).ShapeExecuteAsync(shape));
         }
 
-        public IEnumerable<string> Display(IEnumerable<object> shapes)
+        public async Task<IHtmlContent> DisplayAsync(IEnumerable<object> shapes)
         {
-            return shapes.Select(Display).ToArray();
+            var result = new List<IHtmlContent>();
+            foreach (var shape in shapes)
+            {
+                result.Add(await DisplayAsync(shape));
+            }
+
+            return new DisplayHelper.Combined(result);
         }
     }
 }

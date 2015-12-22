@@ -6,6 +6,7 @@ using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Html.Abstractions;
 using System.IO;
 using Microsoft.Extensions.WebEncoders;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -28,37 +29,38 @@ namespace Orchard.DisplayManagement.Implementation
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            result = Invoke(null, Arguments.From(args, binder.CallInfo.ArgumentNames));
+            result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
             return true;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            result = Invoke(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames));
+            result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
             return true;
         }
 
-        public object Invoke(string name, INamedEnumerable<object> parameters)
+        public async Task<object> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
             if (!string.IsNullOrEmpty(name))
             {
-                return ShapeTypeExecute(name, parameters);
+                return await ShapeTypeExecuteAsync(name, parameters);
             }
 
             if (parameters.Positional.Count() == 1)
             {
-                return ShapeExecute(parameters.Positional.Single());
+                return await ShapeExecuteAsync(parameters.Positional.First());
             }
 
             if (parameters.Positional.Any())
             {
-                return new Combined(ShapeExecute(parameters.Positional));
+                return new Combined(await ShapeExecuteAsync(parameters.Positional));
             }
 
             // zero args - no display to execute
             return null;
         }
 
+        // TODO: Replace with HtmlContentBuilder once available in MVC 6 rc2
         public class Combined : IHtmlContent
         {
             private readonly IEnumerable<IHtmlContent> _fragments;
@@ -77,19 +79,19 @@ namespace Orchard.DisplayManagement.Implementation
             }
         }
 
-        private IHtmlContent ShapeTypeExecute(string name, INamedEnumerable<object> parameters)
+        private Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
         {
             var shape = _shapeFactory.Create(name, parameters);
-            return ShapeExecute(shape);
+            return ShapeExecuteAsync(shape);
         }
 
-        public IHtmlContent ShapeExecute(Shape shape)
+        public Task<IHtmlContent> ShapeExecuteAsync(Shape shape)
         {
             // disambiguates the call to ShapeExecute(object) as Shape also implements IEnumerable
-            return ShapeExecute((object)shape);
+            return ShapeExecuteAsync((object)shape);
         }
 
-        public IHtmlContent ShapeExecute(object shape)
+        public async Task<IHtmlContent> ShapeExecuteAsync(object shape)
         {
             if (shape == null)
             {
@@ -97,12 +99,18 @@ namespace Orchard.DisplayManagement.Implementation
             }
 
             var context = new DisplayContext { Display = this, Value = shape, ViewContext = ViewContext };
-            return _displayManager.Execute(context);
+            return await _displayManager.ExecuteAsync(context);
         }
 
-        public IEnumerable<IHtmlContent> ShapeExecute(IEnumerable<object> shapes)
+        public async Task<IEnumerable<IHtmlContent>> ShapeExecuteAsync(IEnumerable<object> shapes)
         {
-            return shapes.Select(ShapeExecute).ToArray();
+            var result = new List<IHtmlContent>();
+            foreach (var shape in shapes)
+            {
+                result.Add(await ShapeExecuteAsync(shape));
+            }
+
+            return result;
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Orchard.DisplayManagement.Descriptors;
+﻿using Orchard.DisplayManagement.Descriptors;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Shapes
 {

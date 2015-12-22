@@ -5,6 +5,7 @@ using Orchard.ContentManagement;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.AspNet.Html.Abstractions;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -43,19 +44,19 @@ namespace Orchard.DisplayManagement.Descriptors
             return this;
         }
 
-        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext, IHtmlContent>> binder)
+        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext,Task<IHtmlContent>>> binder)
         {
             // schedule the configuration
             return Configure(descriptor =>
             {
-                Func<DisplayContext, IHtmlContent> target = null;
+                Func<DisplayContext, Task<IHtmlContent>> target = null;
 
                 var binding = new ShapeBinding
                 {
                     ShapeDescriptor = descriptor,
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
-                    Binding = displayContext =>
+                    BindingAsync = displayContext =>
                     {
                         // when used, first realize the actual target once
                         if (target == null)
@@ -95,6 +96,15 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var existing = descriptor.Displaying ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
                 descriptor.Displaying = existing.Concat(new[] { action });
+            });
+        }
+
+        public ShapeAlterationBuilder OnProcessing(Action<ShapeDisplayingContext> action)
+        {
+            return Configure(descriptor =>
+            {
+                var existing = descriptor.Processing ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
+                descriptor.Processing = existing.Concat(new[] { action });
             });
         }
 

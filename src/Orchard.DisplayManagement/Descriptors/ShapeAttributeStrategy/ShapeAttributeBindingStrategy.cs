@@ -17,6 +17,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -51,7 +52,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         }
 
         [DebuggerStepThrough]
-        private Func<DisplayContext, IHtmlContent> CreateDelegate(
+        private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(
             ShapeAttributeOccurrence attributeOccurrence,
             ShapeDescriptor descriptor)
         {
@@ -63,33 +64,37 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             };
         }
 
-        private IHtmlContent PerformInvoke(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
+        private Task<IHtmlContent> PerformInvoke(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
         {
-            using (var output = new StringCollectionTextWriter(System.Text.Encoding.UTF8))
+            var arguments = methodInfo
+                .GetParameters()
+                .Select(parameter => BindParameter(displayContext, parameter));
+
+            // Resolve the service the method is declared on
+            var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
+
+            // If the shape returns a value, write it to the stream
+            if (methodInfo.ReturnType != typeof(void))
             {
-                var arguments = methodInfo
-                    .GetParameters()
-                    .Select(parameter => BindParameter(displayContext, parameter, output));
-
-                // Resolve the service the method is declared on
-                var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
-
-                // If the shape returns a value, write it to the stream
-                if (methodInfo.ReturnType != typeof(void))
-                {
-                    output.Write(CoerceHtmlString(returnValue));
-                }
-
-                return output.Content;
+                return Task.FromResult(CoerceHtmlContent(returnValue));
             }
+
+            return Task.FromResult<IHtmlContent>(null);
         }
 
-        private static IHtmlContent CoerceHtmlString(object invoke)
+        private static IHtmlContent CoerceHtmlContent(object invoke)
         {
-            return invoke as IHtmlContent ?? (invoke != null ? new HtmlString(invoke.ToString()) : null);
+            var htmlContent = invoke as IHtmlContent;
+
+            if(htmlContent != null)
+            {
+                return htmlContent;
+            }
+
+            return invoke != null ? new HtmlString(invoke.ToString()) : null;
         }
 
-        private object BindParameter(DisplayContext displayContext, ParameterInfo parameter, TextWriter output)
+        private object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
         {
             if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {
@@ -100,19 +105,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 return displayContext.Display;
             }
-
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(TextWriter))
-            {
-                return output;
-            }
-
-            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
-                parameter.ParameterType == typeof(Action<object>))
-            {
-                return new Action<object>(output.Write);
-            }
-
+            
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
                 return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
@@ -123,6 +116,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 return _componentContext.GetService<IUrlHelper>();
             }
+
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
+                parameter.ParameterType == typeof(TextWriter))
+            {
+                throw new InvalidOperationException("Output is no more a valid Shape method parameter");
+            }
+
+            if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
+                parameter.ParameterType == typeof(Action<object>))
+            {
+                throw new InvalidOperationException("Output is no more a valid Shape method parameter");
+            }
+
 
             var getter = _getters.GetOrAdd(parameter.Name, n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(

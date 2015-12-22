@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNet.Html.Abstractions;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -13,6 +14,7 @@ namespace Orchard.DisplayManagement.Descriptors
             Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
             Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
+            Processing = Enumerable.Empty<Action<ShapeDisplayingContext>>();
             Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
             Wrappers = new List<string>();
             BindingSources = new List<string>();
@@ -35,11 +37,11 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        public Func<DisplayContext, IHtmlContent> Binding
+        public Func<DisplayContext, Task<IHtmlContent>> Binding
         {
             get
             {
-                return Bindings[ShapeType].Binding;
+                return Bindings[ShapeType].BindingAsync;
             }
         }
 
@@ -47,8 +49,8 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public IEnumerable<Action<ShapeCreatingContext>> Creating { get; set; }
         public IEnumerable<Action<ShapeCreatedContext>> Created { get; set; }
-
         public IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; set; }
+        public IEnumerable<Action<ShapeDisplayingContext>> Processing { get; set; }
         public IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; set; }
 
         public Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
@@ -63,6 +65,6 @@ namespace Orchard.DisplayManagement.Descriptors
         public ShapeDescriptor ShapeDescriptor { get; set; }
         public string BindingName { get; set; }
         public string BindingSource { get; set; }
-        public Func<DisplayContext, IHtmlContent> Binding { get; set; }
+        public Func<DisplayContext, Task<IHtmlContent>> BindingAsync { get; set; }
     }
 }

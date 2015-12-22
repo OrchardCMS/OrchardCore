@@ -5,6 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
 using Orchard.Utility;
 using System.Collections.Generic;
+using Orchard.DisplayManagement;
 
 namespace Orchard.Core.Navigation
 {
@@ -20,25 +21,37 @@ namespace Orchard.Core.Navigation
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
-                .OnCreated(created =>
+                .OnDisplaying(displaying => 
                 {
-                    // Menu population is executed when creating the shape so that its value
-                    // can be cached.
+                    var menu = displaying.Shape;
+                    string menuName = menu.MenuName;
 
-                    var menuShape = created.Shape;
-                    string menuName = menuShape.MenuName;
+                    menu.Classes.Add("menu-" + menuName.HtmlClassify());
+                    menu.Classes.Add("menu");
+                    menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
+                })
+                .OnProcessing(processing => 
+                {
+                    dynamic menu = processing.Shape;
+                    string menuName = menu.MenuName;
 
-                    if ((bool)menuShape.HasItems)
+                    // Menu population is executed when processing the shape so that its value
+                    // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
+                    // events and thus this code can be cached.
+
+                    if ((bool)menu.HasItems)
                     {
                         return;
                     }
 
                     var httpContext = _httpContextAccessor.HttpContext;
                     var navigationManager = httpContext.RequestServices.GetService<INavigationManager>();
+                    var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
+
                     IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName);
 
                     // adding query string parameters
-                    RouteData route = created.Shape.RouteData;
+                    RouteData route = menu.RouteData;
                     var routeData = new RouteValueDictionary(route.Values);
                     var query = httpContext.Request.Query;
 
@@ -55,15 +68,8 @@ namespace Orchard.Core.Navigation
 
                     // TODO: Flag Selected menu item
 
-                    NavigationHelper.PopulateMenu(created.ShapeFactory, created.Shape, created.Shape, menuItems);
-                })
-                .OnDisplaying(displaying => 
-                {
-                    var menu = displaying.Shape;
-                    string menuName = menu.MenuName;
-                    menu.Classes.Add("menu-" + menuName.HtmlClassify());
-                    menu.Classes.Add("menu");
-                    menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
+                    NavigationHelper.PopulateMenu(shapeFactory, menu, menu, menuItems);
+
                 });
 
             builder.Describe("MenuItem")

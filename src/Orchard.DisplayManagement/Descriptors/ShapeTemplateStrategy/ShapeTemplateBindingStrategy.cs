@@ -19,6 +19,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -144,7 +145,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         .From(new Feature { Descriptor = featureDescriptor })
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
-                            shapeDescriptor => displayContext => Render(shapeDescriptor, displayContext, hit.shapeContext.harvestShapeInfo, hit.shapeContext.harvestShapeHit));
+                            shapeDescriptor => displayContext => RenderAsync(shapeDescriptor, displayContext, hit.shapeContext.harvestShapeInfo, hit.shapeContext.harvestShapeHit));
                 }
             }
 
@@ -160,7 +161,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 _shellDescriptor.Features.Any(sf => sf.Name == fd.Id);
         }
 
-        private IHtmlContent Render(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)
+        private async Task<IHtmlContent> RenderAsync(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -178,7 +179,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 // If the View is null, it means that the shape is being executed from a non-view origin / where no ViewContext was established by the view engine, but manually.
                 // Manually creating a ViewContext works when working with Shape methods, but not when the shape is implemented as a Razor view template.
                 // Horrible, but it will have to do for now.
-                result = RenderRazorViewToString(harvestShapeInfo.TemplateVirtualPath, displayContext);
+                result = await RenderRazorViewAsync(harvestShapeInfo.TemplateVirtualPath, displayContext);
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -188,7 +189,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             return result;
         }
 
-        private IHtmlContent RenderRazorViewToString(string path, DisplayContext context)
+        private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
         {
             var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
             if (viewEngineResult.Success)
@@ -200,8 +201,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     using (view as IDisposable)
                     {
                         var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
-                        var renderTask = viewEngineResult.View.RenderAsync(viewContext);
-                        renderTask.GetAwaiter().GetResult();
+                        await viewEngineResult.View.RenderAsync(viewContext);
                         return writer.Content;
                     }
                 }

@@ -78,6 +78,7 @@ namespace Orchard.DisplayManagement.Implementation
             {
                 ev.Creating(creatingContext);
             }
+
             if (shapeDescriptor != null)
             {
                 foreach (var ev in shapeDescriptor.Creating)
@@ -90,9 +91,9 @@ namespace Orchard.DisplayManagement.Implementation
             var createdContext = new ShapeCreatedContext
             {
                 New = creatingContext.New,
+                ShapeFactory = creatingContext.ShapeFactory,
                 ShapeType = creatingContext.ShapeType,
-                Shape = creatingContext.Create(),
-                ShapeFactory = this
+                Shape = creatingContext.Create()
             };
 
             if (!(createdContext.Shape is IShape))
@@ -130,6 +131,7 @@ namespace Orchard.DisplayManagement.Implementation
             {
                 ev.Created(createdContext);
             }
+
             if (shapeDescriptor != null)
             {
                 foreach (var ev in shapeDescriptor.Created)
@@ -137,6 +139,7 @@ namespace Orchard.DisplayManagement.Implementation
                     ev(createdContext);
                 }
             }
+
             foreach (var ev in creatingContext.OnCreated)
             {
                 ev(createdContext);
