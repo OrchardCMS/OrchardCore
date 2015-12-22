@@ -60,15 +60,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var serviceInstance = _componentContext.GetService(attributeOccurrence.ServiceType);
                 // oversimplification for the sake of evolving
-                return PerformInvoke(context, attributeOccurrence.MethodInfo, serviceInstance);
+                return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
             };
         }
 
-        private Task<IHtmlContent> PerformInvoke(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
+        private Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
         {
-            var arguments = methodInfo
-                .GetParameters()
-                .Select(parameter => BindParameter(displayContext, parameter));
+            var parameters = _parameters.GetOrAdd(methodInfo, m => m.GetParameters());
+            var arguments = parameters.Select(parameter => BindParameter(displayContext, parameter));
 
             // Resolve the service the method is declared on
             var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
@@ -140,16 +139,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             if (result == null)
                 return null;
 
-            //var converter = _converters.GetOrAdd(parameter.ParameterType, CompileConverter);
-            //var argument = converter.Invoke(result);
-            //return argument;
-
             return Convert.ChangeType(result, parameter.ParameterType);
         }
 
 
         static readonly ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>> _getters =
             new ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>>();
+
+        static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
+            new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
 
         static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
             new ConcurrentDictionary<Type, Func<dynamic, object>>();
