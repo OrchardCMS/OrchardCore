@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Orchard.DisplayManagement.System.Reflection.Emit
+namespace Orchard.DisplayManagement.Emit
 {
     /// <summary>Delegate for calling a method that is not known at runtime.</summary>
     /// <param name="target">the object to be called or null if the call is to a static method.</param>

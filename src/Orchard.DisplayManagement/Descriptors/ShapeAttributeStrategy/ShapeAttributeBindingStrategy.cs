@@ -18,7 +18,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.System.Reflection.Emit;
+using Orchard.DisplayManagement.Emit;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
