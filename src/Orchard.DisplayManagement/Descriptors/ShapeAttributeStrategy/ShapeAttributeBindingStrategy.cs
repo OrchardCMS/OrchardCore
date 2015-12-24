@@ -18,6 +18,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.System.Reflection.Emit;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -70,7 +71,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             var arguments = parameters.Select(parameter => BindParameter(displayContext, parameter));
 
             // Resolve the service the method is declared on
-            var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
+            var returnValue = methodInfo.DynamicMethod().Invoke(serviceInstance, arguments.ToArray());
 
             // If the shape returns a value, write it to the stream
             if (methodInfo.ReturnType != typeof(void))
