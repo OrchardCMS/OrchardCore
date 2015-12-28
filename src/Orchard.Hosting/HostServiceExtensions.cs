@@ -1,12 +1,11 @@
-using System;
-using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.FileSystem;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
-using Orchard.Services;
+using Orchard.FileSystem;
 using Orchard.Hosting.Services;
+using Orchard.Services;
+using System;
 
 namespace Orchard.Hosting
 {

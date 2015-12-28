@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Orchard.DependencyInjection;
+using Orchard.Environment.Shell.Descriptor.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.Data;
-using Orchard.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.Descriptor.Models;
 using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell.Descriptor.Settings

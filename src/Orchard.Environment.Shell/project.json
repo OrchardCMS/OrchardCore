@@ -6,10 +6,11 @@
     "Microsoft.Extensions.Configuration.Xml": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "Orchard.Parser.Yaml": "2.0.0-*"
+    "Orchard.Parser.Yaml": "2.0.0-*",
+    "YesSql.Core": "2.0.0-alpha-9010",
+    "YesSql.Storage.Sql": "1.0.0-alpha-1003"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
