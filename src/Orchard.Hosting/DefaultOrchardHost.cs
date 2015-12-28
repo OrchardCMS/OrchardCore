@@ -35,7 +35,7 @@ namespace Orchard.Hosting
             _logger = logger;
         }
 
-        void IOrchardHost.Initialize()
+        public void Initialize()
         {
             BuildCurrent();
         }
@@ -85,7 +85,10 @@ namespace Orchard.Hosting
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings()
-                .Where(settings => settings.State == TenantState.Running || settings.State == TenantState.Uninitialized || settings.State == TenantState.Initializing)
+                .Where(settings => 
+                    settings.State == TenantState.Running || 
+                    settings.State == TenantState.Uninitialized || 
+                    settings.State == TenantState.Initializing)
                 .ToArray();
 
             // Load all tenants, and activate their shell.
@@ -131,12 +134,10 @@ namespace Orchard.Hosting
             {
                 _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
             }
-            lock (_shellContexts)
+            if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _shellContexts[context.Settings.Name] = context;
+                _runningShellTable.Add(context.Settings);
             }
-
-            _runningShellTable.Add(context.Settings);
         }
 
 
