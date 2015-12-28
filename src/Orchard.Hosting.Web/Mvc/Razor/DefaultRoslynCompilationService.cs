@@ -90,11 +90,6 @@ namespace Orchard.Hosting.Mvc.Razor
                                                           compilationSettings);
             var references = _applicationReferences.Value;
 
-            references.AddRange(_libraryManager
-                            .GetAllMetadataReferences()
-                            .OfType<IRoslynMetadataReference>()
-                            .Select(x => x.MetadataReference));
-
             var compilationOptions = compilationSettings.CompilationOptions
                                                         .WithOutputKind(OutputKind.DynamicallyLinkedLibrary);
 
@@ -197,32 +192,15 @@ namespace Orchard.Hosting.Mvc.Razor
         {
             var references = new List<MetadataReference>();
 
-            ILibraryExporter libraryExporter;
-            if (_hostingEnvironment.IsDevelopment())
-            {
-                Project project;
-                if (!Project.TryGetProject(_environment.ApplicationBasePath, out project))
-                    return references;
-
-                var engine = new CompilationEngine(
-                    new CompilationEngineContext(
-                        _environment,
-                        _runtimeEnvironment,
-                        _loader,
-                        new CompilationCache()));
-
-                libraryExporter = engine.CreateProjectExporter(
-                    project, _environment.RuntimeFramework, _environment.Configuration);
-            }
-            else
-            {
-                libraryExporter = _libraryExporter;
-            }
+            references.AddRange(_libraryManager
+                    .GetAllMetadataReferences()
+                    .OfType<IRoslynMetadataReference>()
+                    .Select(x => x.MetadataReference));
 
             // Get the MetadataReference for the executing application. If it's a Roslyn reference,
             // we can copy the references created when compiling the application to the Razor page being compiled.
             // This avoids performing expensive calls to MetadataReference.CreateFromImage.
-            var libraryExport = libraryExporter.GetExport(_environment.ApplicationName);
+            var libraryExport = _libraryExporter.GetExport(_environment.ApplicationName);
             if (libraryExport?.MetadataReferences != null && libraryExport.MetadataReferences.Count > 0)
             {
                 Debug.Assert(libraryExport.MetadataReferences.Count == 1,
@@ -234,16 +212,11 @@ namespace Orchard.Hosting.Mvc.Razor
                     references.AddRange(compilationReference.Compilation.References);
                     references.Add(roslynReference.MetadataReference);
 
-                    references.AddRange(_libraryManager
-                            .GetAllMetadataReferences()
-                            .OfType<IRoslynMetadataReference>()
-                            .Select(x => x.MetadataReference));
-
                     return references;
                 }
             }
 
-            var export = libraryExporter.GetAllExports(_environment.ApplicationName);
+            var export = _libraryExporter.GetAllExports(_environment.ApplicationName);
             foreach (var metadataReference in export.MetadataReferences)
             {
                 // Taken from https://github.com/aspnet/KRuntime/blob/757ba9bfdf80bd6277e715d6375969a7f44370ee/src/...

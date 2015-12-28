@@ -10,6 +10,8 @@ SET skipdnvm=%1
 call dnu clear-http-cache
 cd src/orchard.web/modules
 call dnu restore
+cd../themes
+call dnu restore
 cd../core
 call dnu restore
 cd../../..
