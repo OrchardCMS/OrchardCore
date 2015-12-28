@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Shell.Models;
+﻿using Orchard.Environment.Shell.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell
 {
@@ -11,26 +11,18 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _tenantState;
+        private TenantState _tenantState = TenantState.Invalid;
+        private readonly IDictionary<string, string> _values;
 
         public ShellSettings()
         {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
+            _values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             State = TenantState.Invalid;
-        }
-
-        public ShellSettings(
-            string name, TenantState tenantState)
-        {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
-
-            Name = name;
-            State = tenantState;
         }
 
         public ShellSettings(ShellSettings settings)
         {
-            RootConfiguration = new ConfigurationRoot(new[] { new InternalConfigurationProvider() });
+            _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
 
             Name = settings.Name;
             RequestUrlHost = settings.RequestUrlHost;
@@ -39,30 +31,31 @@ namespace Orchard.Environment.Shell
             DatabaseProvider = settings.DatabaseProvider;
             ConnectionString = settings.ConnectionString;
             TablePrefix = settings.TablePrefix;
+            State = settings.State;
         }
 
-        public ShellSettings(IConfigurationRoot configuration)
+        public string this[string key]
         {
-            RootConfiguration = configuration;
-
-            TenantState state;
-            State = Enum.TryParse(configuration["State"], true, out state)
-                ? state
-                : TenantState.Uninitialized;
+            get
+            {
+                string retVal;
+                return _values.TryGetValue(key, out retVal) ? retVal : null;
+            }
+            set { _values[key] = value; }
         }
 
         /// <summary>
         /// Gets all keys held by this shell settings.
         /// </summary>
-        public IConfigurationRoot RootConfiguration { get; private set; }
+        public IEnumerable<string> Keys { get { return _values.Keys; } }
 
         /// <summary>
         /// The name of the tenant
         /// </summary>
         public string Name
         {
-            get { return RootConfiguration["Name"]; }
-            set { RootConfiguration["Name"] = value; }
+            get { return this["Name"] ?? ""; }
+            set { this["Name"] = value; }
         }
 
         /// <summary>
@@ -70,8 +63,8 @@ namespace Orchard.Environment.Shell
         /// </summary>
         public string RequestUrlHost
         {
-            get { return StringNullReconfiguration(RootConfiguration["RequestUrlHost"]); }
-            set { RootConfiguration["RequestUrlHost"] = value; }
+            get { return this["RequestUrlHost"]; }
+            set { this["RequestUrlHost"] = value; }
         }
 
         /// <summary>
@@ -79,26 +72,26 @@ namespace Orchard.Environment.Shell
         /// </summary>
         public string RequestUrlPrefix
         {
-            get { return StringNullReconfiguration(RootConfiguration["RequestUrlPrefix"]); }
-            set { RootConfiguration["RequestUrlPrefix"] = value; }
+            get { return this["RequestUrlPrefix"]; }
+            set { _values["RequestUrlPrefix"] = value; }
         }
 
         public string ConnectionString
         {
-            get { return StringNullReconfiguration(RootConfiguration["ConnectionString"]); }
-            set { RootConfiguration["ConnectionString"] = value; }
+            get { return this["ConnectionString"]; }
+            set { _values["ConnectionString"] = value; }
         }
 
         public string TablePrefix
         {
-            get { return StringNullReconfiguration(RootConfiguration["TablePrefix"]); }
-            set { RootConfiguration["TablePrefix"] = value; }
+            get { return this["TablePrefix"]; }
+            set { _values["TablePrefix"] = value; }
         }
 
         public string DatabaseProvider
         {
-            get { return StringNullReconfiguration(RootConfiguration["DatabaseProvider"]); }
-            set { RootConfiguration["DatabaseProvider"] = value; }
+            get { return this["DatabaseProvider"]; }
+            set { _values["DatabaseProvider"] = value; }
         }
 
         /// <summary>
@@ -110,17 +103,8 @@ namespace Orchard.Environment.Shell
             set
             {
                 _tenantState = value;
-                RootConfiguration["State"] = value.ToString();
+                this["State"] = value.ToString();
             }
-        }
-
-        private string StringNullReconfiguration(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value) || value.Equals("null", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return null;
-            }
-            return value;
         }
     }
 }

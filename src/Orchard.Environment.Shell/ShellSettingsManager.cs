@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Dnx.Compilation.Caching;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
+using System.Reflection;
 
 namespace Orchard.Environment.Shell
 {
@@ -47,7 +48,15 @@ namespace Orchard.Environment.Shell
 
                 var config = configurationContainer.Build();
 
-                var shellSetting = new ShellSettings(config);
+                var shellSetting = new ShellSettings();
+                foreach (var property in typeof(ShellSettings).GetTypeInfo().DeclaredProperties) {
+                    var configurationValue = config[property.Name];
+                    if (!string.IsNullOrEmpty(configurationValue))
+                    {
+                        shellSetting[property.Name] = configurationValue;
+                    }
+                }
+
                 shellSettings.Add(shellSetting);
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -77,9 +86,9 @@ namespace Orchard.Environment.Shell
             var configurationProvider = new YamlConfigurationProvider(
                 _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
 
-            foreach (var key in shellSettings.RootConfiguration.GetChildren())
+            foreach (var key in shellSettings.Keys)
             {
-                configurationProvider.Set(key.Key, key.Value);
+                configurationProvider.Set(key, shellSettings[key]);
             }
 
             configurationProvider.Commit();
