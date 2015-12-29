@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
-using Orchard.FileSystem.AppData;
 using Microsoft.Extensions.Logging;
-using Microsoft.Dnx.Compilation.Caching;
+using Orchard.FileSystem.AppData;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
+using Orchard.Validation;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace Orchard.Environment.Shell
@@ -47,16 +46,7 @@ namespace Orchard.Environment.Shell
                             false);
 
                 var config = configurationContainer.Build();
-
-                var shellSetting = new ShellSettings();
-                foreach (var property in typeof(ShellSettings).GetTypeInfo().DeclaredProperties) {
-                    var configurationValue = config[property.Name];
-                    if (!string.IsNullOrEmpty(configurationValue))
-                    {
-                        shellSetting[property.Name] = configurationValue;
-                    }
-                }
-
+                var shellSetting = ShellSettingsSerializer.ParseSettings(config);
                 shellSettings.Add(shellSetting);
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -70,25 +60,30 @@ namespace Orchard.Environment.Shell
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings)
         {
-            if (shellSettings == null)
-                throw new ArgumentNullException(nameof(shellSettings));
-            if (string.IsNullOrWhiteSpace(shellSettings.Name))
-                throw new ArgumentException(
-                    "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.",
-                    nameof(shellSettings.Name));
+            Argument.ThrowIfNull(shellSettings, nameof(shellSettings));
+            Argument.ThrowIfNullOrWhiteSpace(shellSettings.Name,
+                nameof(shellSettings.Name),
+                "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.");
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
             }
-            var tenantPath = _appDataFolder.MapPath(_appDataFolder.Combine("Sites", shellSettings.Name));
+            var tenantPath = _appDataFolder.MapPath(
+                _appDataFolder.Combine(
+                    "Sites", 
+                    shellSettings.Name, 
+                    string.Format(SettingsFileNameFormat, "txt")));
 
-            var configurationProvider = new YamlConfigurationProvider(
-                _appDataFolder.Combine(tenantPath, string.Format(SettingsFileNameFormat, "txt")), false);
+            var configurationProvider = 
+                new YamlConfigurationProvider(tenantPath, false);
 
             foreach (var key in shellSettings.Keys)
             {
-                configurationProvider.Set(key, shellSettings[key]);
+                if (!string.IsNullOrEmpty(shellSettings[key]))
+                {
+                    configurationProvider.Set(key, shellSettings[key]);
+                }
             }
 
             configurationProvider.Commit();

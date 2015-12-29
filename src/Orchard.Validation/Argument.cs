@@ -59,6 +59,24 @@ namespace Orchard.Validation
             }
         }
 
+        [ContractAnnotation("value:null => fail")]
+        public static void ThrowIfNullOrWhiteSpace(string value, string name)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException("Argument must be a non empty or not just whitespace string", name);
+            }
+        }
+
+        [ContractAnnotation("value:null => fail")]
+        public static void ThrowIfNullOrWhiteSpace(string value, string name, string message)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException(message, name);
+            }
+        }
+
         /// <summary>
         /// Describes dependency between method input and output
         /// </summary>
