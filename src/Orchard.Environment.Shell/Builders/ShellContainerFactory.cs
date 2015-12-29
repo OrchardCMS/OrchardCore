@@ -1,21 +1,20 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orchard.DependencyInjection;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Events;
+using Orchard.FileSystem.AppData;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
-using System.Data.SqlClient;
-using System.Data;
-using Orchard.Events;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
-using Orchard.Environment.Extensions;
-using Orchard.FileSystem.AppData;
 using YesSql.Storage.Sql;
-using Microsoft.AspNet.Mvc.Filters;
 
 namespace Orchard.Environment.Shell.Builders
 {

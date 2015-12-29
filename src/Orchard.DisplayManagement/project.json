@@ -1,16 +1,16 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
-    "System.Reflection.Extensions": "4.0.1-beta-23516",
-    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
-    "Orchard.Environment.Cache.Abstractions": "2.0.0-*"
+    "System.Reflection.Extensions": "4.0.1-beta-23516"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

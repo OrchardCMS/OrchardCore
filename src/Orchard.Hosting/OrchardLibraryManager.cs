@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Dnx.Compilation;
-using Orchard.DependencyInjection;
+﻿using Microsoft.Dnx.Compilation;
 using Microsoft.Extensions.PlatformAbstractions;
+using Orchard.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.Hosting
 {

@@ -39,7 +39,7 @@ dataproviders:
 
             var root = new ConfigurationBuilder().Add(yamlConfigPrd).Build();
 
-            var settings = new ShellSettings(root);
+            //var settings = new ShellSettings(root);
 
             //Assert.Equal(, settings.DataProviders.First())
         }

@@ -50,18 +50,19 @@ namespace Orchard.Hosting
                 {
                     httpContext.RequestServices = scope.ServiceProvider;
 
-                    if (!shellContext.IsActived)
+                    if (!shellContext.IsActivated)
                     {
-                        IEventBus eventBus = null;
                         lock (shellSetting)
                         {
                             // The tenant gets activated here
-                            if (!shellContext.IsActived)
-                                eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                            if (!shellContext.IsActivated)
+                            {
+                                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
                                 eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync()).Wait();
                                 eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
 
-                            shellContext.IsActived = true;
+                                shellContext.IsActivated = true;
+                            }
                         }
                     }
 

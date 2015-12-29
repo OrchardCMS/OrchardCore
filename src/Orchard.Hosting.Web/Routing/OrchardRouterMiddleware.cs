@@ -13,7 +13,6 @@ namespace Orchard.Hosting.Web.Routing
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, IRouter> _routers = new ConcurrentDictionary<string, IRouter>();
         
         public OrchardRouterMiddleware(
             RequestDelegate next,
@@ -31,8 +30,9 @@ namespace Orchard.Hosting.Web.Routing
             }
 
             var shellSettings = httpContext.RequestServices.GetService<ShellSettings>();
+            var routerTable = httpContext.ApplicationServices.GetService<IRunningShellRouterTable>();
 
-            var router = _routers.GetOrAdd(
+            var router = routerTable.GetOrAdd(
                 shellSettings.Name, 
                 name => httpContext.RequestServices.GetService<IRouteBuilder>().Build()
             );
