@@ -1,11 +1,11 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Dnx.Compilation": "1.0.0-*",
-    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.Dnx.Compilation": "1.0.0-rc1-final",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*",
