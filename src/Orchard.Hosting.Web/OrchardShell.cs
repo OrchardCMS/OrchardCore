@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNet.Builder;
+﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Builder.Internal;
+using Orchard.Environment.Shell;
 using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;
-using Orchard.Environment.Shell;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Orchard.Hosting

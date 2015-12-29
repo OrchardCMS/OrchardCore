@@ -16,7 +16,7 @@ namespace Orchard.Hosting.ShellBuilders
         public ShellBlueprint Blueprint { get; set; }
         public IServiceProvider ServiceProvider { get; set; }
 
-        public bool IsActived { get; set; }
+        public bool IsActivated { get; set; }
 
         public void Dispose()
         {
@@ -37,6 +37,7 @@ namespace Orchard.Hosting.ShellBuilders
 
                 // Disposes all the services registered for this shell
                 (ServiceProvider as IDisposable).Dispose();
+                IsActivated = false;
 
                 _disposed = true;
             }
