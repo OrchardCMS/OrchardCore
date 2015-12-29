@@ -43,7 +43,7 @@ namespace Orchard.Tests
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)

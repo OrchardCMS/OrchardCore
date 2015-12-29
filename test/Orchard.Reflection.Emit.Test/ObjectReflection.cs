@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Orchard.DisplayManagement.Emit
+namespace Orchard.DisplayManagement.Test
 {
     /// <summary>Delegate for calling a method that is not known at runtime.</summary>
     /// <param name="target">the object to be called or null if the call is to a static method.</param>
@@ -26,22 +26,9 @@ namespace Orchard.DisplayManagement.Emit
     public delegate void FastPropertySetHandler(object target, object parameter);
 
     /// <summary>Class with helper methods for dynamic invocation generating IL on the fly.</summary>
-    public static class DynamicCalls
+    public static class ObjectReflection
     {
-        public static void EvaluateMethod(string testName, Action method, long times)
-        {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-
-            for (long i = 0; i < times; i++)
-            {
-                method();
-            }
-
-            watch.Stop();
-
-            Console.WriteLine(testName + ": " + watch.ElapsedMilliseconds + "ms");
-        }
+       
         public static FastInvokeHandler DynamicMethod(this MethodInfo methodInfo)
         {
             // generates a dynamic method to generate a FastInvokeHandler delegate
@@ -134,7 +121,7 @@ namespace Orchard.DisplayManagement.Emit
         public static FastCreateInstanceHandler GetInstanceCreator(Type type)
         {
             // generates a dynamic method to generate a FastCreateInstanceHandler delegate
-            DynamicMethod dynamicMethod = new DynamicMethod(string.Empty, type, new Type[0], typeof(DynamicCalls));
+            DynamicMethod dynamicMethod = new DynamicMethod(string.Empty, type, new Type[0], typeof(ObjectReflection));
 
             ILGenerator ilGenerator = dynamicMethod.GetILGenerator();
 

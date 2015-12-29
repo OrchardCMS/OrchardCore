@@ -2,7 +2,7 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*"
   },

@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
-    "Microsoft.AspNet.Tooling.Razor": "1.0.0-*",
+    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Core": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
