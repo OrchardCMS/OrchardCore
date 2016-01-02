@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.OptionsModel;
-using Orchard.Environment.Shell.Descriptor.Settings;
 using Orchard.FileSystem.AppData;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
@@ -14,14 +13,14 @@ namespace Orchard.Environment.Shell
     {
         private readonly IAppDataFolder _appDataFolder;
         //private readonly ICache _cache;
-        private readonly IOptions<ShellDescriptorOptions> _optionsAccessor;
+        private readonly IOptions<ShellOptions> _optionsAccessor;
         private readonly ILogger _logger;
 
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(IAppDataFolder appDataFolder,
             //ICache cache,
-            IOptions<ShellDescriptorOptions> optionsAccessor,
+            IOptions<ShellOptions> optionsAccessor,
             ILogger<ShellSettingsManager> logger)
         {
             _appDataFolder = appDataFolder;
@@ -34,7 +33,7 @@ namespace Orchard.Environment.Shell
         {
             var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenant in _appDataFolder.ListDirectories(_optionsAccessor.Value.ShellLocation))
+            foreach (var tenant in _appDataFolder.ListDirectories(_optionsAccessor.Value.Location))
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -75,7 +74,7 @@ namespace Orchard.Environment.Shell
             }
             var tenantPath = _appDataFolder.MapPath(
                 _appDataFolder.Combine(
-                    _optionsAccessor.Value.ShellLocation, 
+                    _optionsAccessor.Value.Location, 
                     shellSettings.Name, 
                     string.Format(SettingsFileNameFormat, "txt")));
 

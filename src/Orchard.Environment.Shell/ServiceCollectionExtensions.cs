@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell.Descriptor.Settings;
 
 namespace Orchard.Environment.Shell
 {
@@ -9,9 +8,9 @@ namespace Orchard.Environment.Shell
             this IServiceCollection services,
             string shellLocation)
         {
-            return services.Configure<ShellDescriptorOptions>(options =>
+            return services.Configure<ShellOptions>(options =>
             {
-                options.ShellLocation = shellLocation;
+                options.Location = shellLocation;
             });
         }
     }

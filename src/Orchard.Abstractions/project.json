@@ -2,7 +2,8 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Orchard.Validation": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
