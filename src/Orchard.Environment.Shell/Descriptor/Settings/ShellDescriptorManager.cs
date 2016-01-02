@@ -12,14 +12,14 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
     {
         private readonly ShellSettings _shellSettings;
         //private readonly IEventNotifier _eventNotifier;
-        private readonly ILogger _logger;
         private readonly ISession _session;
+        private readonly ILogger _logger;
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
             //IEventNotifier eventNotifier,
-            ILogger<ShellDescriptorManager> logger,
-            ISession session)
+            ISession session,
+            ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
             //_eventNotifier = eventNotifier;

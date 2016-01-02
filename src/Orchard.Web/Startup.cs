@@ -1,8 +1,8 @@
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Shell;
 using Orchard.Hosting;
 using System;
 
@@ -13,6 +13,9 @@ namespace Orchard.Web
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddWebHost();
+
+            services.ConfigureShell("Sites");
+
             services.AddModuleFolder("~/Core/Orchard.Core");
             services.AddModuleFolder("~/Modules");
             services.AddThemeFolder("~/Themes");
