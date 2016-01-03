@@ -51,7 +51,7 @@ public class Startup {
 The host has a small wrapper:
 
 ```c#
-public static IServiceCollection AddHostSample([NotNull] this IServiceCollection services) {
+public static IServiceCollection AddHostSample(this IServiceCollection services) {
     // This will setup all your core services for a host
     return services.AddHost(internalServices => {
         // The core of the host
@@ -62,19 +62,21 @@ public static IServiceCollection AddHostSample([NotNull] this IServiceCollection
 
 ### Additional module locations
 
-Additional locations for module discovery can be added in your host setup:
+Additional locations for module discovery can be added in your client setup:
 
 ```c#
-public static IServiceCollection AddHostSample([NotNull] this IServiceCollection services) {
-    return services.AddHost(internalServices => {
-        internalServices.AddHostCore();
+public class Startup {
+    public IServiceProvider ConfigureServices(IServiceCollection services) 
+    {
+        services.AddWebHost();
 
         // Add folders the easy way
-        internalServices.AddModuleFolder("~/Core/Orchard.Core");
-        internalServices.AddModuleFolder("~/Modules");
+        services.AddModuleFolder("~/Core/Orchard.Core");
+        services.AddModuleFolder("~/Modules");
+        services.AddThemeFolder("~/Themes");
 
-        // Add folders the move configurable way
-        internalServices.Configure<ExtensionHarvestingOptions>(options => {
+        // Add folders the more configurable way
+        services.Configure<ExtensionHarvestingOptions>(options => {
             var expander = new ModuleLocationExpander(
                 DefaultExtensionTypes.Module,
                 new[] { "~/Core/Orchard.Core", "~/Modules" },
@@ -101,68 +103,23 @@ RequestUrlPrefix:
 However, you can override these values within a .json or .xml file. The order of precendence is:
 Settings.txt -> Settings.xml -> Settings.json
 
-### Event Bus
-
-The event bus must be set up in your host (anyone using the default host will have it):
+You can also override the 'Sites' folder in your client setup
 
 ```c#
-public class ShellModule : IModule {
-    public void Configure(IServiceCollection serviceCollection) {
-        // More registration
-        serviceCollection.AddNotifierEvents(); // The important line
-        // More registration
-    }
+public class Startup {
+    public IServiceProvider ConfigureServices(IServiceCollection services) 
+    {
+        services.AddWebHost();
+
+        // Change the folder name here
+        services.ConfigureShell("Sites");
+    });
 }
-```
-
-This will allow you to register types of IEventHandler, and in turn execute the eventing modal.
-
-Lets take the example of a Dog, you want to tell it to bark..
-
-```c#
-public interface ITestEvent : IEventHandler {
-    void Talk(string value);
-}
-
-public class TestEvent1 : ITestEvent {
-    public void Talk(string value) {
-        Console.WriteLine("Talk Event ONE! " + value);
-    }
-}
-
-public class TestEvent2 : ITestEvent {
-    public void Talk(string value) {
-        Console.WriteLine("Talk Event TWO! " + value);
-    }
-}
-```
-
-Next we want to call all Talk on ITestEvent... You need to inject in IEventNotifier,
-then call notify on the type of interface you want to call passing the method
-with the properties to it.
-
-```c#
-private readonly IEventNotifier _eventNotifier;
-
-public Class1(IEventNotifier eventNotifier) {
-    _eventNotifier = eventNotifier;
-}
-
-public void Call() {
-    _eventNotifier.Notify<ITestEvent>(e => e.Talk("Bark!"));
-}
-```
-
-The output will be:
-
-```
-Talk Event ONE! Bark!
-Talk Event TWO! Bark!
 ```
 
 ###Testing
 
-We currently use XUnit to do unit testing, with Coypu and Chrome to do UI testing.
+We currently use XUnit to do unit testing.
 
 ###Contributing
 
