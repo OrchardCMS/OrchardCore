@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Shell.Descriptor.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell.Descriptor.Settings
 {
-    public class ShellDescriptorManager : Component, IShellDescriptorManager
+    public class ShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettings _shellSettings;
         //private readonly IEventNotifier _eventNotifier;
@@ -38,7 +37,9 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             var shellDescriptorRecord = GetShellDescriptor();
             var serialNumber = shellDescriptorRecord == null ? 0 : shellDescriptorRecord.SerialNumber;
             if (priorSerialNumber != serialNumber)
-                throw new InvalidOperationException(T("Invalid serial number for shell descriptor").ToString());
+            {
+                throw new InvalidOperationException("Invalid serial number for shell descriptor");
+            }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
