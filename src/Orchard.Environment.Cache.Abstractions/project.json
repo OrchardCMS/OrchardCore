@@ -1,6 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.Extensions.Primitives": "1.0.0-rc1-final",
     "Orchard.DependencyInjection": "2.0.0-*"
   },
   "compilationOptions": {

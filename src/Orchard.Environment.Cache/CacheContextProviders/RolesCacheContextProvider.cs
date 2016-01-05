@@ -15,8 +15,15 @@ namespace Orchard.Environment.Cache.CacheContextProviders
 
         public void PopulateContextEntries(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "roles", StringComparison.OrdinalIgnoreCase)))
+            // User is a more generic dependency
+            if (contexts.Any(ctx => String.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
             {
+                return;
+            }
+
+            if (contexts.Any(ctx => String.Equals(ctx, "user.roles", StringComparison.OrdinalIgnoreCase)))
+            {
+                // TODO: Add actual roles
                 entries.Add(new CacheContextEntry("administrator", "0"));
             }
         }

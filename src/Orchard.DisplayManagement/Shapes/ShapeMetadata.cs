@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNet.Html.Abstractions;
-using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.DisplayManagement.Shapes
 {
@@ -18,8 +17,6 @@ namespace Orchard.DisplayManagement.Shapes
             BindingSources = new List<string>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
             Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
-
-            _cacheContext = new ShapeMetadataCacheContext();
         }
 
         public string Type { get; set; }
@@ -30,8 +27,7 @@ namespace Orchard.DisplayManagement.Shapes
         public string Prefix { get; set; }
         public IList<string> Wrappers { get; set; }
         public IList<string> Alternates { get; set; }
-        public ShapeMetadataCacheContext CacheContext => _cacheContext;
-
+        public bool IsCached => _cacheContext != null;
         public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
 
@@ -59,27 +55,50 @@ namespace Orchard.DisplayManagement.Shapes
             Displayed = existing.Concat(new[] { action });
         }
 
+        /// <summary>
+        /// Marks this shape to be cached
+        /// </summary>
+        public ShapeMetadataCacheContext Cache(string cacheId)
+        {
+            _cacheContext = new ShapeMetadataCacheContext(cacheId);
+            return _cacheContext;
+        }
+
+        /// <summary>
+        /// Returns the <see cref="ShapeMetadataCacheContext"/> instance if the shape is cached.
+        /// </summary>
+        public ShapeMetadataCacheContext Cache()
+        {
+            return _cacheContext;
+        }
+
     }
 
     public class ShapeMetadataCacheContext
     {
         private HashSet<string> _contexts;
-        private List<CacheContextEntry> _dependencies;
         private string _cacheId;
         private TimeSpan? _duration;
 
-        public ShapeMetadataCacheContext Cache(string cacheId)
+        public ShapeMetadataCacheContext(string cacheId)
         {
             _cacheId = cacheId;
-            return this;
         }
 
+        /// <summary>
+        /// Defines the absolute time the shape should be cached for.
+        /// If not called a sliding value will be used.
+        /// </summary>
         public ShapeMetadataCacheContext During(TimeSpan duration)
         {
             _duration = duration;
             return this;
         }
         
+        /// <summary>
+        /// Defines a dimension to cache the shape for. For instance by using <code>"user"</code>
+        /// each user will get a different value.
+        /// </summary>
         public ShapeMetadataCacheContext AddContext(params string[] contexts)
         {
             if(_contexts == null)
@@ -95,6 +114,9 @@ namespace Orchard.DisplayManagement.Shapes
             return this;
         }
 
+        /// <summary>
+        /// Removes a specific context.
+        /// </summary>
         public ShapeMetadataCacheContext RemoveContext(string context)
         {
             if(_contexts != null)
@@ -105,41 +127,26 @@ namespace Orchard.DisplayManagement.Shapes
             return this; 
         }
 
-        public ShapeMetadataCacheContext AddDependency(string context, string value)
+        /// <summary>
+        /// Defines a dimension that will invalidate the cache entry when it changes.
+        /// For instance by using <code>"features"</code> every time the list of features
+        /// will change the value of the cache will be invalidated.
+        /// </summary>
+        public ShapeMetadataCacheContext AddDependency(params string[] context)
         {
-            if (_dependencies == null)
-            {
-                _dependencies = new List<CacheContextEntry>();
-            }
-
-            _dependencies.Add(new CacheContextEntry(context, value));
-
-            return this;
+            return AddContext(context);
         }
 
-        public ShapeMetadataCacheContext RemoveDependency(string context, string value)
-        {
-            if (_dependencies != null)
-            {
-                _dependencies.RemoveAll(x => x.Key == context && x.Value == value);
-            }
-
-            return this;
-        }
-
+        /// <summary>
+        /// Removes a specific dependency.
+        /// </summary>
         public ShapeMetadataCacheContext RemoveDependency(string context)
         {
-            if (_dependencies != null)
-            {
-                _dependencies.RemoveAll(x => x.Key == context);
-            }
-
-            return this;
+            return RemoveContext(context);
         }
 
         public string CacheId => _cacheId;
         public IEnumerable<string> Contexts => _contexts ?? Enumerable.Empty<string>();
-        public IEnumerable<CacheContextEntry> Dependencies => _dependencies ?? Enumerable.Empty<CacheContextEntry>();
         public TimeSpan? Duration => _duration;
 
     }

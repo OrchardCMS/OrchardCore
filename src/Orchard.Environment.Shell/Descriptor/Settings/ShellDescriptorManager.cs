@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,18 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
     public class ShellDescriptorManager : IShellDescriptorManager
     {
         private readonly ShellSettings _shellSettings;
-        //private readonly IEventNotifier _eventNotifier;
+        private readonly IEventBus _eventBus;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
-            //IEventNotifier eventNotifier,
+            IEventBus eventBus,
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
             _shellSettings = shellSettings;
-            //_eventNotifier = eventNotifier;
+            _eventBus = eventBus;
             _session = session;
             _logger = logger;
         }
@@ -84,8 +85,8 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
 
                 _logger.LogInformation("Shell descriptor updated for shell '{0}'.", _shellSettings.Name);
             }
-            //_eventNotifier.Notify<IShellDescriptorManagerEventHandler>(
-            //    e => e.Changed(GetShellDescriptorFromRecord(shellDescriptorRecord), _shellSettings.Name));
+
+            _eventBus.NotifyAsync<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptorRecord, _shellSettings.Name));
         }
     }
 }

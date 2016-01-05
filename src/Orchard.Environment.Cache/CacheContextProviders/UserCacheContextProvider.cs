@@ -17,7 +17,6 @@ namespace Orchard.Environment.Cache.CacheContextProviders
 
         public void PopulateContextEntries(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            // TODO: Add the serial number or update time to the value
             if (contexts.Any(ctx => String.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;

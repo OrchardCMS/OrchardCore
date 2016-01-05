@@ -1,10 +1,12 @@
-﻿{
+{
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Dnx.Compilation": "1.0.0-*",
     "Microsoft.Dnx.Runtime": "1.0.0-*",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.OptionsModel": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
   },

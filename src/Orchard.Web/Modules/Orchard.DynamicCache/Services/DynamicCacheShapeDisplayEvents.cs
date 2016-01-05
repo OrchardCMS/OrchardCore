@@ -35,11 +35,10 @@ namespace Orchard.DynamicCache.Services
 
         public void Displaying(ShapeDisplayingContext context)
         {
-            var cacheContext = context.ShapeMetadata.CacheContext;
-
-            if (!String.IsNullOrEmpty(cacheContext.CacheId) && context.ChildContent == null)
+            if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
-                var cacheEntries = GetCacheEntries(context.ShapeMetadata.CacheContext).ToList();
+                var cacheContext = context.ShapeMetadata.Cache();
+                var cacheEntries = GetCacheEntries(cacheContext).ToList();
                 string cacheKey = GetCacheKey(cacheContext.CacheId, cacheEntries);
 
                 var content = GetDistributedCache(cacheKey);
@@ -59,10 +58,10 @@ namespace Orchard.DynamicCache.Services
         {
             // TODO: Configure duration of sliding expiration
 
-            var cacheContext = context.ShapeMetadata.CacheContext;
+            var cacheContext = context.ShapeMetadata.Cache();
 
             // If the shape is not cached, evaluate the ESIs
-            if(String.IsNullOrEmpty(cacheContext.CacheId))
+            if(cacheContext == null)
             {
                 string content;
                 using (var sw = new StringWriter())
@@ -76,7 +75,7 @@ namespace Orchard.DynamicCache.Services
             }
             else if (!_cached.Contains(cacheContext) && context.ChildContent != null)
             {
-                var cacheEntries = GetCacheEntries(context.ShapeMetadata.CacheContext).ToList();
+                var cacheEntries = GetCacheEntries(cacheContext).ToList();
                 string cacheKey = GetCacheKey(cacheContext.CacheId, cacheEntries);
 
                 using (var sw = new StringWriter())
@@ -86,7 +85,7 @@ namespace Orchard.DynamicCache.Services
 
                     _cached.Add(cacheContext);
                     _cache[cacheKey] = content;
-                    var contexts = String.Join(";", cacheContext.Contexts.ToArray());
+                    var contexts = String.Join(ContextSeparator.ToString(), cacheContext.Contexts.ToArray());
                     context.ChildContent = new HtmlString($"[[cache id='{cacheContext.CacheId}' contexts='{contexts}']]");
 
                     var bytes = Encoding.UTF8.GetBytes(content);
@@ -122,12 +121,6 @@ namespace Orchard.DynamicCache.Services
         {
             // All contexts' entries
             foreach(var entry in GetCacheEntries(cacheContext.Contexts))
-            {
-                yield return entry;
-            }
-
-            // All dependencies
-            foreach(var entry in cacheContext.Dependencies)
             {
                 yield return entry;
             }
