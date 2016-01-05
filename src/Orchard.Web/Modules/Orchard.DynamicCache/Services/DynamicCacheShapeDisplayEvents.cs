@@ -20,16 +20,16 @@ namespace Orchard.DynamicCache.Services
     {
         private static char ContextSeparator = ';';
 
-        private readonly IDistributedCache _distributedMemoryCache;
         private readonly ICacheContextManager _cacheContextManager;
         private readonly HashSet<ShapeMetadataCacheContext> _cached = new HashSet<ShapeMetadataCacheContext>();
         private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
+        private readonly IDynamicCache _dynamicCache;
 
         public DynamicCacheShapeDisplayEvents(
-            IDistributedCache distributedMemoryCache,
+            IDynamicCache dynamicCache,
             ICacheContextManager cacheContextManager)
         {
-            _distributedMemoryCache = distributedMemoryCache;
+            _dynamicCache = dynamicCache;
             _cacheContextManager = cacheContextManager;
         }
 
@@ -105,7 +105,7 @@ namespace Orchard.DynamicCache.Services
                         };
                     }
 
-                    _distributedMemoryCache.Set(cacheKey, bytes, options);
+                    _dynamicCache.SetAsync(cacheKey, bytes, options).Wait();
                 }
             }
 
@@ -184,7 +184,7 @@ namespace Orchard.DynamicCache.Services
                 return content;
             }
 
-            var bytes = _distributedMemoryCache.Get(cacheKey);
+            var bytes = _dynamicCache.GetAsync(cacheKey).Result;
             if (bytes == null)
             {
                 return null;
