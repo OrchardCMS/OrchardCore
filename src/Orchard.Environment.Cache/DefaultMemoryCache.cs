@@ -10,12 +10,12 @@ namespace Orchard.Environment.Cache
     {
         public void Configure(IServiceCollection serviceCollection)
         {
-            // MVC is already registering IMemoryCache. Any module that would add another implementation
-            // would take over the default one as the last registered service will be resolved.
-            // serviceCollection.Add(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
+            // MVC is already registering IMemoryCache as host singleton. We are registering it again
+            // in this module so that there is one instance for each tenant.
+            serviceCollection.Add(ServiceDescriptor.Singleton<IMemoryCache, MemoryCache>());
 
 
-            // LocalCache is registered as Transient as its implementation resolves IMemoryCache, thus
+            // LocalCache is registered as transient as its implementation resolves IMemoryCache, thus
             // there is no state to keep in its instance.
             serviceCollection.Add(ServiceDescriptor.Transient<IDistributedCache, LocalCache>());
         }
