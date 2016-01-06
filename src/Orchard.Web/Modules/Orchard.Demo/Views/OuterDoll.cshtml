@@ -1,13 +1,7 @@
 ﻿@using Orchard.DisplayManagement.Shapes;
 
-@{
-    var shape = New.InnerDoll();
-    ShapeMetadata metadata = shape.Metadata;
-    metadata.Cache("innerdoll").AddContext("query").During(new TimeSpan(0, 0, 10));
-}
-
 Outer Doll: @(Guid.NewGuid().ToString())
 <br/>
 
-@Display(shape)
+<innerdoll cache="innerdoll" context="query" duration="00:00:10" />
 

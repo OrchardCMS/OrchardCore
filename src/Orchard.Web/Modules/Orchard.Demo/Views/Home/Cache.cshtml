@@ -1,37 +1,17 @@
-﻿@using Orchard.DisplayManagement.Shapes;
-
-@{
-    var shape = New.OuterDoll();
-    ShapeMetadata metadata = shape.Metadata;
-    metadata.Cache("outerdoll").During(new TimeSpan(0, 0, 5));
-}
-
+﻿
 View: @DateTime.Now.ToString("hh:MM:ss")
 <br/>
 
-@Display(shape)
-
-<br/>
-@Display(shape)
-
+<outerdoll cache="outerdoll" duration="00:00:5" />
+<outerdoll cache="outerdoll" />
 
 <div class="row">
 
     <div class="col-md-3">
-        @{
-            var widget1 = New.Widget(Title: "Widget1");
-            ShapeMetadata widget1Metadata = widget1.Metadata;
-            widget1Metadata.Cache("Widget1").AddContext("user").AddTag("widget");
-        }
-        @Display(widget1)
+        <widget Title="Widget1" cache="widget1" context="user" tag="widget" />
     </div>
 
     <div class="col-md-3 pull-md-right">
-        @{
-            var widget2 = New.Widget(Title: "Widget2");
-            ShapeMetadata widget2Metadata = widget2.Metadata;
-            widget2Metadata.Cache("Widget2").AddContext("query:foo").AddTag("widget", "widget2");
-        }
-        @Display(widget2)
+        <widget Title="Widget2" cache="widget2" context="query:foo" tag="widget widget2" />
     </div>
 </div>
