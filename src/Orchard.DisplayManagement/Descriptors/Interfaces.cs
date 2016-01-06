@@ -3,7 +3,7 @@ using Orchard.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
-    public interface IShapeTableManager : ISingletonDependency
+    public interface IShapeTableManager : ITransientDependency
     {
         ShapeTable GetShapeTable(string themeName);
     }

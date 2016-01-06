@@ -15,9 +15,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         /// </summary>
         public void Configure(IServiceCollection serviceCollection)
         {
-            // Register custom tag helper descriptor
-            serviceCollection.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
-
             // Copy the collection as we are about to change it
             ServiceDescriptor[] serviceDescriptors = new ServiceDescriptor[serviceCollection.Count];
             serviceCollection.CopyTo(serviceDescriptors, 0);

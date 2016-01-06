@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell;
 using Orchard.Hosting;
+using Orchard.Hosting.Mvc;
 using System;
 
 namespace Orchard.Web
@@ -19,6 +20,8 @@ namespace Orchard.Web
             services.AddModuleFolder("~/Core/Orchard.Core");
             services.AddModuleFolder("~/Modules");
             services.AddThemeFolder("~/Themes");
+
+            services.AddOrchardMvc();
 
             // Save the list of service definitions
             services.AddSingleton(_ => services);

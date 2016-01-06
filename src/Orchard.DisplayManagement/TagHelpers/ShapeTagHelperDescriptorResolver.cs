@@ -3,61 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Razor.Runtime.TagHelpers;
-using Microsoft.AspNet.Razor.TagHelpers;
 using Microsoft.AspNet.Razor.Compilation.TagHelpers;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DependencyInjection;
-using Orchard.DisplayManagement.Theming;
+using Microsoft.AspNet.Http;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
     public class ViewComponentTagHelperDescriptorResolver : TagHelperDescriptorResolver, ITagHelperDescriptorResolver, ISingletonDependency
     {
         private static readonly Type ShapeTagHelperType = typeof(ShapeTagHelper);
-        private readonly IShapeTableManager _shapteTableManager;
-        private readonly IThemeManager _themeManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
          
         public ViewComponentTagHelperDescriptorResolver(
             TagHelperTypeResolver typeResolver,
-            IShapeTableManager shapeTableManager,
-            IThemeManager themeManager)
+            IHttpContextAccessor httpContextAccessor
+            )
             : base(typeResolver, designTime: false)
         {
-            _shapteTableManager = shapeTableManager;
-            _themeManager = themeManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         IEnumerable<TagHelperDescriptor> ITagHelperDescriptorResolver.Resolve(TagHelperDescriptorResolutionContext resolutionContext)
         {
+            // This method is called for every compiled view that contains @tagHelpers. We are caching the shape
+            // ones are they are the same for all the views. Furthermore the shapes are discovered using a null
+            // theme as we need to grab all the potential shapes
+
+            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+            var shapeTableManager = (IShapeTableManager)serviceProvider.GetService(typeof(IShapeTableManager));
+
             var descriptors = base.Resolve(resolutionContext);
+            var prefix = descriptors.FirstOrDefault()?.Prefix ?? string.Empty;
 
-            var shapeTagDescriptors = ResolveViewComponentTagHelperDescriptors(descriptors.FirstOrDefault()?.Prefix ?? string.Empty);
-
-            // Remove the descriptors that were hravested from tooling classes
-            var allShapeTags = shapeTagDescriptors
-                .Select(x => x.TagName.ToLowerInvariant())
-                .ToArray();
-
-            descriptors = descriptors
-                .Where(x => !allShapeTags.Contains(x.TagName.ToLowerInvariant()));
-
-            return descriptors.Concat(shapeTagDescriptors);
-        }
-
-        private IEnumerable<TagHelperDescriptor> ResolveViewComponentTagHelperDescriptors(string prefix)
-        {
-            var resolvedDescriptors = new List<TagHelperDescriptor>();
-
-            var attributeDescriptors = new List<TagHelperAttributeDescriptor>();
-
-            var theme = _themeManager.GetThemeAsync().Result;
-
-            foreach (var shape in _shapteTableManager.GetShapeTable(theme?.Id).Descriptors)
+            var shapeTagDescriptors = new List<TagHelperDescriptor>();
+            foreach (var shape in shapeTableManager.GetShapeTable(null).Descriptors)
             {
-                resolvedDescriptors.Add(
+                // Don't add the shape tag if another provider already described it
+                if(descriptors.Any(x => String.Equals(x.TagName, shape.Key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                shapeTagDescriptors.Add(
                     new TagHelperDescriptor
                     {
-                        Prefix = "",
+                        Prefix = prefix, // The prefix might be different for each call, even if the same shape is rendered
                         TagName = shape.Key,
                         TypeName = ShapeTagHelperType.FullName,
                         AssemblyName = ShapeTagHelperType.GetTypeInfo().Assembly.GetName().Name,
@@ -65,8 +56,8 @@ namespace Orchard.DisplayManagement.TagHelpers
                         RequiredAttributes = Enumerable.Empty<string>(),
                     });
             }
-
-            return resolvedDescriptors;
+            
+            return descriptors.Concat(shapeTagDescriptors);
         }
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Hosting.Mvc.Razor;
 
 namespace Orchard.Hosting.Mvc
@@ -14,6 +15,8 @@ namespace Orchard.Hosting.Mvc
                 .AddMvcCore()
                 .AddViews()
                 .AddRazorViewEngine();
+
+            services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
 
             services.AddScoped<IAssemblyProvider, OrchardMvcAssemblyProvider>();
 
