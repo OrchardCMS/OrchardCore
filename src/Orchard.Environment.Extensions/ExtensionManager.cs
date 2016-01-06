@@ -175,11 +175,14 @@ namespace Orchard.Environment.Extensions
                     }
                 }
 
-                return new Feature
+                var feature = new Feature
                 {
                     Descriptor = featureDescriptor,
                     ExportedTypes = featureTypes
                 };
+
+                _features.Add(featureDescriptor.Id, feature);
+                return feature;
             }
         }
 
