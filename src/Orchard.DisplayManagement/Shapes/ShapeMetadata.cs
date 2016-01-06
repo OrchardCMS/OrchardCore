@@ -77,6 +77,7 @@ namespace Orchard.DisplayManagement.Shapes
     public class ShapeMetadataCacheContext
     {
         private HashSet<string> _contexts;
+        private HashSet<string> _tags;
         private string _cacheId;
         private TimeSpan? _duration;
 
@@ -145,8 +146,34 @@ namespace Orchard.DisplayManagement.Shapes
             return RemoveContext(context);
         }
 
+        public ShapeMetadataCacheContext AddTag(params string[] tags)
+        {
+            if (_tags == null)
+            {
+                _tags = new HashSet<string>();
+            }
+
+            foreach (var tag in tags)
+            {
+                _tags.Add(tag);
+            }
+
+            return this;
+        }
+
+        public ShapeMetadataCacheContext RemoveTag(string tag)
+        {
+            if (_tags != null)
+            {
+                _tags.Remove(tag);
+            }
+
+            return this;
+        }
+
         public string CacheId => _cacheId;
         public IEnumerable<string> Contexts => _contexts ?? Enumerable.Empty<string>();
+        public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
         public TimeSpan? Duration => _duration;
 
     }

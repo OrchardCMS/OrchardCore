@@ -8,6 +8,7 @@ using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.Environment.Cache.Abstractions;
 using Orchard.Events;
 using System;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Orchard.Demo.Controllers
         private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
         private readonly ILogger _logger;
+        private readonly ITagCache _tagCache;
 
         public HomeController(
             ITestDependency testDependency,
@@ -31,7 +33,8 @@ namespace Orchard.Demo.Controllers
             IShapeFactory shapeFactory,
             IShapeDisplay shapeDisplay,
             ISession session,
-            ILogger<HomeController> logger)
+            ILogger<HomeController> logger,
+            ITagCache tagCache)
         {
             _session = session;
             _testDependency = testDependency;
@@ -40,6 +43,7 @@ namespace Orchard.Demo.Controllers
             _shapeDisplay = shapeDisplay;
             Shape = shapeFactory;
             _logger = logger;
+            _tagCache = tagCache;
         }
 
         dynamic Shape { get; set; }
@@ -70,6 +74,18 @@ namespace Orchard.Demo.Controllers
             _logger.LogInformation("This is some log");
 
             return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
+        }
+
+        public ActionResult Tag()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Tag(string tag)
+        {
+            _tagCache.RemoveTag(tag);
+            return RedirectToAction("Tag", "Home", new { area = "Orchard.Demo" });
         }
 
         public async Task<ActionResult> Display(int id)

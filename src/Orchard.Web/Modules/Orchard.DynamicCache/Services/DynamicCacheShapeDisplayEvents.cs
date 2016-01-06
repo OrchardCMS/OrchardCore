@@ -16,7 +16,7 @@ namespace Orchard.DynamicCache.Services
     /// Caches shapes in the default <see cref="IDistributedCache"/> implementation.
     /// It uses the shape's metadata cache context to define the cache parameters.
     /// </summary>
-    public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
+    public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents, ITagRemovedEventHandler
     {
         private static char ContextSeparator = ';';
 
@@ -24,12 +24,15 @@ namespace Orchard.DynamicCache.Services
         private readonly HashSet<ShapeMetadataCacheContext> _cached = new HashSet<ShapeMetadataCacheContext>();
         private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
         private readonly IDynamicCache _dynamicCache;
+        private readonly ITagCache _tagCache;
 
         public DynamicCacheShapeDisplayEvents(
             IDynamicCache dynamicCache,
+            ITagCache tagCache,
             ICacheContextManager cacheContextManager)
         {
             _dynamicCache = dynamicCache;
+            _tagCache = tagCache;
             _cacheContextManager = cacheContextManager;
         }
 
@@ -106,6 +109,7 @@ namespace Orchard.DynamicCache.Services
                     }
 
                     _dynamicCache.SetAsync(cacheKey, bytes, options).Wait();
+                    _tagCache.Tag(cacheKey, cacheContext.Tags.ToArray());
                 }
             }
 
@@ -191,6 +195,14 @@ namespace Orchard.DynamicCache.Services
             }
 
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        public void TagRemoved(string tag, IEnumerable<string> keys)
+        {
+            foreach (var key in keys)
+            {
+                _dynamicCache.RemoveAsync(key);
+            }
         }
     }
 }

@@ -21,7 +21,7 @@ View: @DateTime.Now.ToString("hh:MM:ss")
         @{
             var widget1 = New.Widget(Title: "Widget1");
             ShapeMetadata widget1Metadata = widget1.Metadata;
-            widget1Metadata.Cache("Widget1").AddContext("user");
+            widget1Metadata.Cache("Widget1").AddContext("user").AddTag("widget");
         }
         @Display(widget1)
     </div>
@@ -30,7 +30,7 @@ View: @DateTime.Now.ToString("hh:MM:ss")
         @{
             var widget2 = New.Widget(Title: "Widget2");
             ShapeMetadata widget2Metadata = widget2.Metadata;
-            widget2Metadata.Cache("Widget2").AddContext("query:foo");
+            widget2Metadata.Cache("Widget2").AddContext("query:foo").AddTag("widget", "widget2");
         }
         @Display(widget2)
     </div>

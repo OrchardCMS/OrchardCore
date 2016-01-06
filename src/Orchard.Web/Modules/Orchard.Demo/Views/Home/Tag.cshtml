@@ -1,0 +1,11 @@
+﻿<div class="jumbotron">
+    <p>This page lets you invalidate specific tags. Type any text.</p>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    @Html.TextBox("tag")
+
+    <button type="submit">GO!!!</button>
+}
