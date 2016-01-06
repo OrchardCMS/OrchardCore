@@ -152,15 +152,19 @@ namespace Orchard.Environment.Extensions
                     throw new OrchardException(T("Error while loading extension '{0}'.", extensionId), ex);
                 }
 
+                Feature feature;
                 if (extensionEntry == null)
                 {
                     // If the feature could not be compiled for some reason,
                     // return a "null" feature, i.e. a feature with no exported types.
-                    return new Feature
+                    feature = new Feature
                     {
                         Descriptor = featureDescriptor,
                         ExportedTypes = Enumerable.Empty<Type>()
                     };
+
+                    _features.Add(featureDescriptor.Id, feature);
+                    return feature;
                 }
 
                 var extensionTypes = extensionEntry.ExportedTypes.Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
@@ -175,7 +179,7 @@ namespace Orchard.Environment.Extensions
                     }
                 }
 
-                var feature = new Feature
+                feature = new Feature
                 {
                     Descriptor = featureDescriptor,
                     ExportedTypes = featureTypes
