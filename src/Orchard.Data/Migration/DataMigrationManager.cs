@@ -165,7 +165,7 @@ namespace Orchard.Data.Migration
                 // Create a new transaction for this migration
                 //await _session.CommitAsync();
 
-                await _store.ExecuteMigrationAsync(async schemaBuilder =>
+                _store.ExecuteMigration(async schemaBuilder =>
                 {
                     migration.SchemaBuilder = schemaBuilder;
 
