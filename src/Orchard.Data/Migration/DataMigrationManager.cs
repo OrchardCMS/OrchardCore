@@ -242,6 +242,11 @@ namespace Orchard.Data.Migration
                         _session.Cancel();
                         throw new OrchardException(T("Error while running migration version {0} for {1}.", current, feature), ex);
                     }
+                    finally
+                    {
+                        // Persist data migrations
+                        _session.Save(_dataMigrationRecord);
+                    }
                 });
             }
         }
