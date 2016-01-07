@@ -4,6 +4,7 @@ using Microsoft.AspNet.Razor.TagHelpers;
 using Orchard.DisplayManagement.Implementation;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.TagHelpers
@@ -11,7 +12,7 @@ namespace Orchard.DisplayManagement.TagHelpers
     [HtmlTargetElement("shape", Attributes = nameof(Type))]
     public class ShapeTagHelper : TagHelper
     {
-        private static string[] InternalProperties = new[] { "type", "cache", "context", "dependency", "tag", "duration" };
+        private static string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
 
         private readonly IShapeFactory _shapeFactory;
         private readonly IDisplayHelperFactory _displayHelperFactory;
@@ -44,7 +45,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             // Extract all attributes from the tag helper to
             var properties = output.Attributes
                 .Where(x => !InternalProperties.Contains(x.Name))
-                .ToDictionary(x => x.Name, x => (object)x.Value.ToString())
+                .ToDictionary(x => LowerKebabToPascalCase(x.Name), x => (object)x.Value.ToString())
                 ;
 
             if (String.IsNullOrWhiteSpace(Type))
@@ -52,30 +53,30 @@ namespace Orchard.DisplayManagement.TagHelpers
                 Type = output.TagName;
             }
 
-            if (String.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache"))
+            if (String.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
-                Cache = Convert.ToString(output.Attributes["cache"].Value);
+                Cache = Convert.ToString(output.Attributes["cache-id"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("context"))
+            if (String.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
             {
-                Context = Convert.ToString(output.Attributes["context"].Value);
+                Context = Convert.ToString(output.Attributes["cache-context"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("dependency"))
+            if (String.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("cache-dependency"))
             {
-                Dependency = Convert.ToString(output.Attributes["dependency"].Value);
+                Dependency = Convert.ToString(output.Attributes["cache-dependency"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("tag"))
+            if (String.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
             {
-                Tag = Convert.ToString(output.Attributes["tag"].Value);
+                Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
 
-            if (!Duration.HasValue && output.Attributes.ContainsName("duration"))
+            if (!Duration.HasValue && output.Attributes.ContainsName("cache-duration"))
             {
                 TimeSpan timespan;
-                if(TimeSpan.TryParse(Convert.ToString(output.Attributes["duration"].Value), out timespan))
+                if(TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-duration"].Value), out timespan))
                 {
                     Duration = timespan;
                 }
@@ -116,6 +117,38 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;
+        }
+
+        /// <summary>
+        /// Converts foo-bar to FooBar
+        /// </summary>
+        private static string LowerKebabToPascalCase(string attribute)
+        {
+            attribute = attribute.Trim();
+            bool nextIsUpper = true;
+            var result = new StringBuilder();
+            for(int i=0; i<attribute.Length; i++)
+            {
+                var c = attribute[i];
+                if(c == '-')
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if(nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return "";
         }
     }
 }
