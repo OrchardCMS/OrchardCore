@@ -30,11 +30,17 @@ namespace Orchard.DisplayManagement.TagHelpers
             // ones are they are the same for all the views. Furthermore the shapes are discovered using a null
             // theme as we need to grab all the potential shapes
 
+            var descriptors = base.Resolve(resolutionContext);
+            var prefix = descriptors.FirstOrDefault()?.Prefix ?? string.Empty;
+
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var shapeTableManager = (IShapeTableManager)serviceProvider.GetService(typeof(IShapeTableManager));
 
-            var descriptors = base.Resolve(resolutionContext);
-            var prefix = descriptors.FirstOrDefault()?.Prefix ?? string.Empty;
+            // During Setup, shapeTableManager is null
+            if(shapeTableManager == null)
+            {
+                return descriptors;
+            }
 
             var shapeTagDescriptors = new List<TagHelperDescriptor>();
             foreach (var shape in shapeTableManager.GetShapeTable(null).Descriptors)
