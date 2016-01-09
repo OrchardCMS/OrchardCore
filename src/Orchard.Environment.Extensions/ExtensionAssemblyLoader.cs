@@ -16,6 +16,7 @@ namespace Orchard.Environment.Extensions
     {
         private readonly IApplicationEnvironment _applicationEnvironment;
         //private readonly ICache _cache;
+        private readonly CompilationCache _compilationCache = new CompilationCache();
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
         private readonly IRuntimeEnvironment _runtimeEnvironment;
         private readonly IOrchardLibraryManager _libraryManager;
@@ -75,7 +76,7 @@ namespace Orchard.Environment.Extensions
                 _applicationEnvironment,
                 _runtimeEnvironment,
                 _assemblyLoadContextAccessor.Default,
-                new CompilationCache()));
+                _compilationCache));
 
             var exporter = engine.CreateProjectExporter(
                 moduleContext.Project, moduleContext.TargetFramework, _applicationEnvironment.Configuration);
