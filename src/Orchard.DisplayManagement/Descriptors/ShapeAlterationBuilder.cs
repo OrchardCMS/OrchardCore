@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.AspNet.Html.Abstractions;
@@ -143,12 +142,12 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public class ShapePlacementContext
     {
-        public IContent Content { get; set; }
-        public string ContentType { get; set; }
-        public string Stereotype { get; set; }
-        public string DisplayType { get; set; }
-        public string Differentiator { get; set; }
-        public string Path { get; set; }
+        public dynamic Shape { get; set; }
+
+        /// <summary>
+        /// Debug information explaining where the final placement is coming from.
+        /// Used by tooling.
+        /// </summary>
         public string Source { get; set; }
     }
 }

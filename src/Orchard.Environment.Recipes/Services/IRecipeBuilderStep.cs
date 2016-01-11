@@ -1,7 +1,6 @@
 ﻿using Orchard.Environment.Recipes.Models;
 using Microsoft.Extensions.Localization;
 using Orchard.DependencyInjection;
-using Orchard.ContentManagement;
 
 namespace Orchard.Environment.Recipes.Services
 {
@@ -23,7 +22,7 @@ namespace Orchard.Environment.Recipes.Services
         bool IsVisible { get; }
 
         dynamic BuildEditor(dynamic shapeFactory);
-        dynamic UpdateEditor(dynamic shapeFactory, IUpdateModel updater);
+        dynamic UpdateEditor(dynamic shapeFactory);
         void Configure(RecipeBuilderStepConfigurationContext configurationElement);
         void ConfigureDefault();
         void Build(BuildContext context);

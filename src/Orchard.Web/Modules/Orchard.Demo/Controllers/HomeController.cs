@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
+using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
 using Orchard.Demo.Services;
@@ -25,6 +26,7 @@ namespace Orchard.Demo.Controllers
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
+        private readonly IContentDisplay _contentDisplay;
 
         public HomeController(
             ITestDependency testDependency,
@@ -34,7 +36,8 @@ namespace Orchard.Demo.Controllers
             IShapeDisplay shapeDisplay,
             ISession session,
             ILogger<HomeController> logger,
-            ITagCache tagCache)
+            ITagCache tagCache,
+            IContentDisplay contentDisplay)
         {
             _session = session;
             _testDependency = testDependency;
@@ -44,6 +47,7 @@ namespace Orchard.Demo.Controllers
             Shape = shapeFactory;
             _logger = logger;
             _tagCache = tagCache;
+            _contentDisplay = contentDisplay;
         }
 
         dynamic Shape { get; set; }
@@ -99,7 +103,20 @@ namespace Orchard.Demo.Controllers
 
             return View(contentItem);
         }
-        
+
+        public async Task<ActionResult> DisplayContent(int id)
+        {
+            var contentItem = await _contentManager.Get(id);
+
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
+
+            var shape = await _contentDisplay.BuildDisplayAsync(contentItem);
+            return View(shape);
+        }
+
         public async Task<ActionResult> DisplayShape(int id)
         {
             var contentItem = await _contentManager.Get(id);

@@ -1,5 +1,6 @@
 ﻿using Orchard.Events;
 using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {

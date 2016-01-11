@@ -6,6 +6,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Utility;
 using System.Collections.Generic;
 using Orchard.DisplayManagement;
+using System.Threading.Tasks;
 
 namespace Orchard.Core.Navigation
 {
@@ -116,7 +117,6 @@ namespace Orchard.Core.Navigation
                         menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType) + "__level__" + level);
                     }
                 });
-
         }
 
         /// <summary>

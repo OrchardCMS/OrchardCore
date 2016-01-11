@@ -1,7 +1,8 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*"
+    "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
+    "Newtonsoft.Json": "8.0.1-beta2"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {

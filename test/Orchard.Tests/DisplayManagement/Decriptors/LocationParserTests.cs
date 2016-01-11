@@ -12,12 +12,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         [Fact]
         public void ZoneShouldBeParsed()
         {
-            Assert.Equal("Content", new PlacementInfo { Location = "/Content" }.GetZone());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content" }.GetZone());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5" }.GetZone());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5#Tab1" }.GetZone());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1" }.GetZone());
-            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetZone());
+            Assert.Equal("Content", new PlacementInfo { Location = "/Content" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = "Content" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = "Content:5" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = "Content:5#Tab1" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1" }.GetZones().FirstOrDefault());
+            Assert.Equal("Content", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetZones().FirstOrDefault());
         }
 
         [Fact]

@@ -11,7 +11,7 @@ using Microsoft.Extensions.OptionsModel;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Extensions.Features;
 using Orchard.FileSystem.VirtualPath;
 using Orchard.Utility;
 using System;
@@ -25,19 +25,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly IExtensionManager _extensionManager;
         private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly ILogger _logger;
+        private readonly IFeatureManager _featureManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
-            ShellDescriptor shellDescriptor,
-            IExtensionManager extensionManager,
+            IFeatureManager featureManager,
             IVirtualPathProvider virtualPathProvider,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
@@ -45,8 +43,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
-            _shellDescriptor = shellDescriptor;
-            _extensionManager = extensionManager;
+            _featureManager = featureManager;
             _virtualPathProvider = virtualPathProvider;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
@@ -70,8 +67,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
             var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() });
 
-            var availableFeatures = _extensionManager.AvailableFeatures();
-            var activeFeatures = availableFeatures.Where(FeatureIsEnabled);
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result;
             var activeExtensions = Once(activeFeatures);
 
             var hits = activeExtensions.Select(extensionDescriptor =>
@@ -153,12 +149,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 _logger.LogInformation("Done discovering shapes");
             }
-        }
-
-        private bool FeatureIsEnabled(FeatureDescriptor fd)
-        {
-            return (DefaultExtensionTypes.IsTheme(fd.Extension.ExtensionType) && (fd.Id == "TheAdmin" || fd.Id == "SafeMode")) ||
-                _shellDescriptor.Features.Any(sf => sf.Name == fd.Id);
         }
 
         private async Task<IHtmlContent> RenderAsync(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)

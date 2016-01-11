@@ -7,15 +7,16 @@ using Microsoft.AspNet.Razor.Compilation.TagHelpers;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DependencyInjection;
 using Microsoft.AspNet.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
-    public class ViewComponentTagHelperDescriptorResolver : TagHelperDescriptorResolver, ITagHelperDescriptorResolver, ISingletonDependency
+    public class ShapeTagHelperDescriptorResolver : TagHelperDescriptorResolver, ITagHelperDescriptorResolver, ISingletonDependency
     {
         private static readonly Type ShapeTagHelperType = typeof(ShapeTagHelper);
         private readonly IHttpContextAccessor _httpContextAccessor;
          
-        public ViewComponentTagHelperDescriptorResolver(
+        public ShapeTagHelperDescriptorResolver(
             TagHelperTypeResolver typeResolver,
             IHttpContextAccessor httpContextAccessor
             )
@@ -34,7 +35,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             var prefix = descriptors.FirstOrDefault()?.Prefix ?? string.Empty;
 
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var shapeTableManager = (IShapeTableManager)serviceProvider.GetService(typeof(IShapeTableManager));
+            var shapeTableManager = serviceProvider.GetService<IShapeTableManager>();
 
             // During Setup, shapeTableManager is null
             if(shapeTableManager == null)

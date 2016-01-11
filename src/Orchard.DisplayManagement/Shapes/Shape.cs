@@ -14,11 +14,11 @@ namespace Orchard.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private readonly ISet<IPositioned> _items = new SortedSet<IPositioned>(_positionComparer);
+        private static readonly IComparer<IPositioned> PositionComparer = new FlatPositionComparer();
+
         private readonly IList<string> _classes = new List<string>();
         private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
-        private static FlatPositionComparer _positionComparer = new FlatPositionComparer();
-
+        private readonly IList<IPositioned> _items = new List<IPositioned>();
         public ShapeMetadata Metadata { get; set; }
 
         public string Id { get; set; }
@@ -26,7 +26,6 @@ namespace Orchard.DisplayManagement.Shapes
         public IDictionary<string, string> Attributes => _attributes;
         public IEnumerable<dynamic> Items => _items;
         public bool HasItems => _items.Count > 0;
-
         public string Position => Metadata.Position;
 
         public Shape()
@@ -41,13 +40,18 @@ namespace Orchard.DisplayManagement.Shapes
                 return this;
             }
 
+            if(position == null)
+            {
+                position = "";
+            }
+
             if (item is IHtmlContent)
             {
-                _items.Add(new PositionWrapper((IHtmlContent)item, position));
+                AddItem(new PositionWrapper((IHtmlContent)item, position));
             }
             else if (item is string)
             {
-                _items.Add(new PositionWrapper((string)item, position));
+                AddItem(new PositionWrapper((string)item, position));
             }
             else
             {
@@ -59,7 +63,7 @@ namespace Orchard.DisplayManagement.Shapes
                         shape.Metadata.Position = position;
                     }
 
-                    _items.Add(shape);
+                    AddItem(shape);
                 }
             }
 
@@ -74,6 +78,61 @@ namespace Orchard.DisplayManagement.Shapes
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Add the item in order based on its position
+        /// </summary>
+        private void AddItem(IPositioned item)
+        {
+            if(_items.Count == 0)
+            {
+                _items.Add(item);
+                return;
+            }
+
+            int start = 0;
+            int end = _items.Count - 1;
+            int index = 0;
+
+            while (start != end)
+            {
+                index = (end + start) / 2;
+                var indexItem = _items[index];
+                var compare = PositionComparer.Compare(item, indexItem);
+                switch(compare)
+                {
+                    case -1:
+                        start = index;
+                        break;
+                    case 0:
+                        start = end;
+                        break;
+                    case 1:
+                        end = index;
+                        break;
+                }
+            }
+
+            // Lookup the last item with the same order so that adding the same 
+            // position will keep the inserted order
+            for (int i = index; index < _items.Count - 1; i++)
+            {
+                if (PositionComparer.Compare(item, _items[i]) != 0)
+                {
+                    break;
+                }
+            }
+
+            // Reached the end of the list, append
+            if (index == _items.Count - 1)
+            {
+                _items.Add(item);
+            }
+            else
+            {
+                _items.Insert(index, item);
+            }
         }
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
@@ -101,9 +160,9 @@ namespace Orchard.DisplayManagement.Shapes
 
         public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
-            if (indexes.Count() == 1)
+            if (indexes.Length == 1)
             {
-                var name = indexes.Single().ToString();
+                var name = indexes[0].ToString();
                 if (name.Equals("Id"))
                 {
                     // need to mutate the actual type
@@ -168,7 +227,14 @@ namespace Orchard.DisplayManagement.Shapes
 
         public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
         {
-            string tagName = shape.Tag ?? defaultTag;
+            string tagName = shape.Tag ;
+
+            // Dont replace by ?? as shape.Tag is dynamic
+            if (tagName == null)
+            {
+                tagName = defaultTag;
+            }
+
             string id = shape.Id;
             IEnumerable<string> classes = shape.Classes;
             IDictionary<string, string> attributes = shape.Attributes;
@@ -179,7 +245,11 @@ namespace Orchard.DisplayManagement.Shapes
         public static TagBuilder GetTagBuilder(string tagName, string id, IEnumerable<string> classes, IDictionary<string, string> attributes)
         {
             var tagBuilder = new TagBuilder(tagName);
-            tagBuilder.MergeAttributes(attributes, false);
+
+            if (attributes != null)
+            {
+                tagBuilder.MergeAttributes(attributes, false);
+            }
 
             foreach (var cssClass in classes ?? Enumerable.Empty<string>())
             {

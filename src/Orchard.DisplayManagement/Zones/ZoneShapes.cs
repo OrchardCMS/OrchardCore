@@ -8,6 +8,7 @@ using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNet.Html.Abstractions;
 using Orchard.DisplayManagement.Implementation;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Zones
 {

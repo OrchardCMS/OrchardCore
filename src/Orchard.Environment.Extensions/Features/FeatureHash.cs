@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Orchard.Environment.Cache.Abstractions;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -22,7 +23,7 @@ namespace Orchard.Environment.Extensions.Features
             _signal = signal;
         }
 
-        public int GetFeatureHash()
+        public async Task<int> GetFeatureHashAsync()
         {
             int serial;
             if (_memoryCache.TryGetValue(FeatureHashCacheKey, out serial))
@@ -31,8 +32,7 @@ namespace Orchard.Environment.Extensions.Features
             }
 
             // Calculate a hash of all enabled features' name
-            serial = _featureManager
-                .GetEnabledFeatures()
+            serial = (await _featureManager.GetEnabledFeaturesAsync())
                 .OrderBy(x => x.Name)
                 .Aggregate(0, (a, f) => a * 7 + f.Name.GetHashCode());
 
@@ -44,14 +44,14 @@ namespace Orchard.Environment.Extensions.Features
             return serial;
         }
 
-        public int GetFeatureHash(string featureId)
+        public async Task<int> GetFeatureHashAsync(string featureId)
         {
             var cacheKey = FeatureHashCacheKey + ":" + featureId;
             bool enabled;
             if (!_memoryCache.TryGetValue(cacheKey, out enabled))
             {
-                enabled = _featureManager
-                    .GetEnabledFeatures()
+                enabled = 
+                    (await _featureManager.GetEnabledFeaturesAsync())
                     .Any(x => x.Name.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()

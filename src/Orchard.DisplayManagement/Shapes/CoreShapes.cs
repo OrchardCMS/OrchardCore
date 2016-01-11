@@ -1,6 +1,7 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Shapes
 {

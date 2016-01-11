@@ -9,8 +9,10 @@ using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
 using Orchard.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Hosting.ShellBuilders;
 using YesSql.Core.Services;
+using Orchard.Environment.Shell.Descriptor;
 
 namespace Orchard.Setup.Services
 {
@@ -103,22 +105,28 @@ namespace Orchard.Setup.Services
 
             // TODO: Add Encryption Settings in
 
-            var shellDescriptor = new ShellDescriptor
-            {
-                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
-            };
-
-            // Creating a standalone environment.
+            // Creating a standalone environment based on a "minimum shell descriptor".
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
+            // It is used to initialize the database before the recipe is run.
 
             using (var environment = _orchardHost.CreateShellContext(shellSettings))
             {
-                executionId = CreateTenantData(context, environment);
-
-                using (var store = (IStore)environment.ServiceProvider.GetService(typeof(IStore)))
+                using (var scope = environment.CreateServiceScope())
                 {
+                    executionId = CreateTenantData(context, environment);
+
+                    var store = scope.ServiceProvider.GetRequiredService<IStore>();
                     store.InitializeAsync();
+                    
+                    // Create the "minimum shell descriptor"
+                    scope
+                        .ServiceProvider
+                        .GetService<IShellDescriptorManager>()
+                        .UpdateShellDescriptorAsync(
+                            0,
+                            environment.Blueprint.Descriptor.Features,
+                            environment.Blueprint.Descriptor.Parameters).Wait();
                 }
             }
 

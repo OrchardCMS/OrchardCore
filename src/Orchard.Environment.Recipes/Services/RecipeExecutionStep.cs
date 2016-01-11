@@ -4,7 +4,6 @@ using Orchard.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Recipes.Models;
 using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement;
 
 namespace Orchard.Environment.Recipes.Services
 {
@@ -52,7 +51,7 @@ namespace Orchard.Environment.Recipes.Services
             return null;
         }
 
-        public virtual dynamic UpdateEditor(dynamic shapeFactory, IUpdateModel updater)
+        public virtual dynamic UpdateEditor(dynamic shapeFactory)
         {
             return null;
         }

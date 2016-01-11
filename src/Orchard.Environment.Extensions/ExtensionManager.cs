@@ -9,6 +9,7 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.Utility;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Utility;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions
 {

@@ -1,4 +1,5 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
+using System.Threading.Tasks;
 
 namespace Orchard.Tests.Stubs
 {

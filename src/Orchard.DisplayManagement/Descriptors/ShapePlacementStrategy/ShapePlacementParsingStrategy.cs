@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Extensions.Features;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -13,33 +12,24 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableProvider
     {
-        private readonly IExtensionManager _extensionManager;
-        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IFeatureManager _featureManager;
         private readonly IPlacementFileParser _placementFileParser;
 
         public ShapePlacementParsingStrategy(
-            IExtensionManager extensionManager,
-            ShellDescriptor shellDescriptor,
+            IFeatureManager featureManager,
             IPlacementFileParser placementFileParser)
         {
-            _extensionManager = extensionManager;
-            _shellDescriptor = shellDescriptor;
+            _featureManager = featureManager;
             _placementFileParser = placementFileParser;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var availableFeatures = _extensionManager.AvailableFeatures();
-            var activeFeatures = availableFeatures.Where(fd => FeatureIsTheme(fd) || FeatureIsEnabled(fd));
-            var activeExtensions = Once(activeFeatures);
-
-            foreach (var extensionDescriptor in activeExtensions)
+            foreach (var featureDescriptor in _featureManager.GetEnabledFeaturesAsync().Result)
             {
-                foreach (var featureDescriptor in extensionDescriptor.Features.Where(fd => fd.Id == fd.Extension.Id))
-                {
-                    ProcessFeatureDescriptor(builder, featureDescriptor);
-                }
+                ProcessFeatureDescriptor(builder, featureDescriptor);
             }
+            
         }
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
@@ -70,7 +60,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
                 Func<ShapePlacementContext, bool> predicate = ctx => true;
                 if (differentiator != "")
                 {
-                    predicate = ctx => (ctx.Differentiator ?? "") == differentiator;
+                    //predicate = ctx => (ctx.Differentiator ?? "") == differentiator;
                 }
 
                 if (matches.Any())
@@ -146,29 +136,32 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate, KeyValuePair<string, string> term)
         {
+            // TODO: Externalize the rules with a provider model such that modules can extend all the placement
+            // file can be constructed
+
             var expression = term.Value;
-            switch (term.Key)
-            {
-                case "ContentPart":
-                    return ctx => ctx.Content != null
-                        && ctx.Content.ContentItem.Has(expression)
-                        && predicate(ctx);
-                case "ContentType":
-                    if (expression.EndsWith("*"))
-                    {
-                        var prefix = expression.Substring(0, expression.Length - 1);
-                        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
-                    }
-                    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
-                case "DisplayType":
-                    if (expression.EndsWith("*"))
-                    {
-                        var prefix = expression.Substring(0, expression.Length - 1);
-                        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
-                    }
-                    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
-                case "Path":
-                    throw new Exception("Path Not currently Supported");
+            //switch (term.Key)
+            //{
+                //case "ContentPart":
+                //    return ctx => ctx.Content != null
+                //        && ctx.Content.ContentItem.Has(expression)
+                //        && predicate(ctx);
+                //case "ContentType":
+                //    if (expression.EndsWith("*"))
+                //    {
+                //        var prefix = expression.Substring(0, expression.Length - 1);
+                //        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
+                //    }
+                //    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
+                //case "DisplayType":
+                //    if (expression.EndsWith("*"))
+                //    {
+                //        var prefix = expression.Substring(0, expression.Length - 1);
+                //        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
+                //    }
+                //    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
+                //case "Path":
+                //    throw new Exception("Path Not currently Supported");
                     //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
                     //                         ? VirtualPathUtility.ToAppRelative(expression)
                     //                         : VirtualPathUtility.Combine("~/", expression);
@@ -180,7 +173,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
                     //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
-            }
+            //}
             return predicate;
         }
 
@@ -207,17 +200,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
         private bool FeatureIsTheme(FeatureDescriptor fd)
         {
             return DefaultExtensionTypes.IsTheme(fd.Extension.ExtensionType);
-        }
-
-        private bool FeatureIsEnabled(FeatureDescriptor fd)
-        {
-            return _shellDescriptor.Features.Any(sf => sf.Name == fd.Id);
-        }
-
-        private static IEnumerable<ExtensionDescriptor> Once(IEnumerable<FeatureDescriptor> featureDescriptors)
-        {
-            var once = new ConcurrentDictionary<string, object>();
-            return featureDescriptors.Select(fd => fd.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
         }
     }
 }

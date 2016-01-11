@@ -19,15 +19,38 @@ namespace Orchard.DisplayManagement.Descriptors
         public IEnumerable<string> Alternates { get; set; }
         public IEnumerable<string> Wrappers { get; set; }
 
-        public string GetZone()
+        public bool IsLayoutZone()
         {
+            return Location.StartsWith("/");
+        }
+
+        /// <summary>
+        /// Returns the list of zone names.
+        /// e.g., <code>Content.Metadata:1</code> will return 'Content', 'Metadata'
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetZones()
+        {
+            string zones;
+            var location = Location;
+
+            // Strip the Layout marker
+            if(IsLayoutZone())
+            {
+                location = location.Substring(1);
+            }
+
             var firstDelimiter = Location.IndexOfAny(Delimiters);
             if (firstDelimiter == -1)
             {
-                return Location.TrimStart('/');
+                zones = location;
+            }
+            else
+            {
+                zones = location.Substring(0, firstDelimiter);
             }
 
-            return Location.Substring(0, firstDelimiter).TrimStart('/');
+            return zones.Split('.');
         }
 
         public string GetPosition()
@@ -45,11 +68,6 @@ namespace Orchard.DisplayManagement.Descriptors
             }
 
             return Location.Substring(contentDelimiter + 1, secondDelimiter - contentDelimiter - 1);
-        }
-
-        public bool IsLayoutZone()
-        {
-            return Location.StartsWith("/");
         }
 
         public string GetTab()

@@ -24,6 +24,8 @@ namespace Orchard.DisplayManagement.Implementation
             _themeManager = themeManager;
         }
 
+        public dynamic New { get { return this; } }
+
         public override bool TryInvokeMember(System.Dynamic.InvokeMemberBinder binder, object[] args, out object result)
         {
             result = Create(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames));
@@ -32,12 +34,22 @@ namespace Orchard.DisplayManagement.Implementation
 
         public IShape Create(string shapeType)
         {
-            return Create(shapeType, Arguments.Empty(), () => new Shape());
+            return Create(shapeType, Arguments.Empty, () => new Shape());
         }
 
         public IShape Create(string shapeType, INamedEnumerable<object> parameters)
         {
             return Create(shapeType, parameters, () => new Shape());
+        }
+
+        public T Create<T>() where T : Shape, new()
+        {
+            return (T)Create(typeof(T).Name, Arguments.Empty, () => new T());
+        }
+
+        public T Create<T>(T obj) where T : Shape
+        {
+            return (T)Create(typeof(T).Name, Arguments.Empty, () => obj);
         }
 
         public IShape Create(string shapeType, INamedEnumerable<object> parameters, Func<dynamic> createShape)
@@ -48,7 +60,7 @@ namespace Orchard.DisplayManagement.Implementation
             ShapeDescriptor shapeDescriptor;
             defaultShapeTable.Descriptors.TryGetValue(shapeType, out shapeDescriptor);
 
-            parameters = parameters ?? Arguments.Empty();
+            parameters = parameters ?? Arguments.Empty;
 
             var creatingContext = new ShapeCreatingContext
             {
@@ -99,6 +111,11 @@ namespace Orchard.DisplayManagement.Implementation
             if (!(createdContext.Shape is IShape))
             {
                 throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
+            }
+
+            if (createdContext.Shape.Metadata == null)
+            {
+                createdContext.Shape.Metadata = new ShapeMetadata();
             }
 
             ShapeMetadata shapeMetadata = createdContext.Shape.Metadata;

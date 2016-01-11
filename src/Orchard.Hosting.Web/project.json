@@ -10,6 +10,7 @@
     "Microsoft.Extensions.Logging": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
+    "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",

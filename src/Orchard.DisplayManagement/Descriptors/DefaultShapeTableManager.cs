@@ -9,6 +9,7 @@ using Orchard.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -20,7 +21,6 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
-        private readonly IFeatureManager _featureManager;
         private readonly IEventBus _eventBus;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
@@ -30,7 +30,6 @@ namespace Orchard.DisplayManagement.Descriptors
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IExtensionManager extensionManager,
-            IFeatureManager featureManager,
             IEventBus eventBus,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
@@ -38,7 +37,6 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             _bindingStrategies = bindingStrategies;
             _extensionManager = extensionManager;
-            _featureManager = featureManager;
             _eventBus = eventBus;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -64,7 +62,9 @@ namespace Orchard.DisplayManagement.Descriptors
                         _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     var builder = new ShapeTableBuilder(strategyDefaultFeature);
+
                     bindingStrategy.Discover(builder);
+
                     var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
                     if (builtAlterations.Any())
                     {
@@ -128,12 +128,6 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeName)
         {
-            // A null theme means we are looking for any shape
-            if(String.IsNullOrEmpty(themeName))
-            {
-                return true;
-            }
-
             if (alteration == null ||
                 alteration.Feature == null ||
                 alteration.Feature.Descriptor == null ||
@@ -157,6 +151,12 @@ namespace Orchard.DisplayManagement.Descriptors
 
             if (DefaultExtensionTypes.IsTheme(extensionType))
             {
+                // A null theme means we are looking for any shape in any module or theme
+                if (String.IsNullOrEmpty(themeName))
+                {
+                    return true;
+                }
+
                 // alterations from themes must be from the given theme or a base theme
                 var featureName = alteration.Feature.Descriptor.Id;
                 return string.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);

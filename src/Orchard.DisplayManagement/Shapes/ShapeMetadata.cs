@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNet.Html.Abstractions;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Shapes
 {
@@ -17,6 +18,7 @@ namespace Orchard.DisplayManagement.Shapes
             BindingSources = new List<string>();
             Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
             Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
+            Processing = Enumerable.Empty<Func<dynamic, Task>>();
         }
 
         public string Type { get; set; }
@@ -39,7 +41,13 @@ namespace Orchard.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
+        public IEnumerable<Func<dynamic, Task>> Processing { get; private set; }
+
+        /// <summary>
+        /// Event use for a specific shape instance.
+        /// </summary>
         public IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; private set; }
+
 
         public IList<string> BindingSources { get; set; }
 
@@ -47,6 +55,12 @@ namespace Orchard.DisplayManagement.Shapes
         {
             var existing = Displaying ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
             Displaying = existing.Concat(new[] { action });
+        }
+
+        public void OnProcessing(Func<dynamic, Task> processing)
+        {
+            var existing = Processing ?? Enumerable.Empty<Func<dynamic, Task>>();
+            Processing = existing.Concat(new[] { processing });
         }
 
         public void OnDisplayed(Action<ShapeDisplayedContext> action)

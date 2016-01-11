@@ -1,4 +1,5 @@
 ﻿using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -17,7 +18,7 @@ namespace Orchard.Environment.Extensions.Features
         /// An <see cref="int"/> value that changes every time the list of features changes.
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
-        int GetFeatureHash();
+        Task<int> GetFeatureHashAsync();
 
         /// <summary>
         /// Returns a serial number representing the list of available features for the current tenant.
@@ -26,7 +27,7 @@ namespace Orchard.Environment.Extensions.Features
         /// A <see cref="int"/> value that changes every time a specific feature is enabled.
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
-        int GetFeatureHash(string featureId);
+        Task<int> GetFeatureHashAsync(string featureId);
 
     }
 }

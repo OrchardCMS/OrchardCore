@@ -15,7 +15,7 @@ namespace Orchard.DisplayManagement.Layout
         {
             if(_layout == null)
             {
-                _layout = _shapeFactory.Create("Layout", Arguments.Empty());
+                _layout = _shapeFactory.Create("Layout", Arguments.Empty);
             }
 
             return _layout;

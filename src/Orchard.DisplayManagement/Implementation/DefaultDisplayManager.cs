@@ -86,7 +86,7 @@ namespace Orchard.DisplayManagement.Implementation
             // invoking ShapeMetadata displaying events
             shapeMetadata.Displaying.Invoke(action => action(displayingContext), _logger);
 
-            // use pre-fectched content if available (e.g. coming from specific cache implmentation)
+            // use pre-fectched content if available (e.g. coming from specific cache implementation)
             if (displayingContext.ChildContent != null)
             {
                 shape.Metadata.ChildContent = displayingContext.ChildContent;
@@ -98,7 +98,10 @@ namespace Orchard.DisplayManagement.Implementation
                 if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
                 {
                     shapeBinding.ShapeDescriptor.Processing.Invoke(action => action(displayingContext), _logger);
-                    
+
+                    // invoking ShapeMetadata processing events
+                    await shapeMetadata.Processing.InvokeAsync(processing => processing(shape), _logger);
+
                     shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
                 }
                 else

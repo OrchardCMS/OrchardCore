@@ -188,9 +188,6 @@ namespace Orchard.DisplayManagement
             }
         }
 
-        public static INamedEnumerable<object> Empty()
-        {
-            return From(Enumerable.Empty<object>(), Enumerable.Empty<string>());
-        }
+        public static INamedEnumerable<object> Empty = From(Enumerable.Empty<object>(), Enumerable.Empty<string>());
     }
 }

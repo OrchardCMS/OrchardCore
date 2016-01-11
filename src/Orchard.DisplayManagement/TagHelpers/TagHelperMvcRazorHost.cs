@@ -18,7 +18,7 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             // It's fine in this context as the TagHelperMvcRazorHost registration is Transient
             // which means we are not keeping any reference on IShapeTableManager and IThemeManager
-            TagHelperDescriptorResolver = new ViewComponentTagHelperDescriptorResolver(
+            TagHelperDescriptorResolver = new ShapeTagHelperDescriptorResolver(
                 new TagHelperTypeResolver(),
                 httpContextAccessor                
             );

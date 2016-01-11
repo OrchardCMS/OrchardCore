@@ -8,7 +8,7 @@ namespace Orchard.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        private readonly IDictionary _props = new HybridDictionary();
+        protected readonly IDictionary _props = new HybridDictionary();
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -40,13 +40,13 @@ namespace Orchard.DisplayManagement.Shapes
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            if (!args.Any())
+            if (args.Length == 0)
             {
                 return TryGetMemberImpl(binder.Name, out result);
             }
 
             // method call with one argument will assign the property
-            if (args.Count() == 1)
+            if (args.Length == 1)
             {
                 result = this;
                 return TrySetMemberImpl(binder.Name, args.First());
@@ -68,7 +68,7 @@ namespace Orchard.DisplayManagement.Shapes
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
-            if (indexes.Count() != 1)
+            if (indexes.Length != 1)
             {
                 return base.TryGetIndex(binder, indexes, out result);
             }
@@ -94,12 +94,12 @@ namespace Orchard.DisplayManagement.Shapes
 
         public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
-            if (indexes.Count() != 1)
+            if (indexes.Length != 1)
             {
                 return base.TrySetIndex(binder, indexes, value);
             }
 
-            var index = indexes.First();
+            var index = indexes[0];
 
             // try to access an existing member
             var strinIndex = index as string;
@@ -109,7 +109,7 @@ namespace Orchard.DisplayManagement.Shapes
                 return true;
             }
 
-            _props[indexes.First()] = value;
+            _props[indexes[0]] = value;
             return true;
         }
 

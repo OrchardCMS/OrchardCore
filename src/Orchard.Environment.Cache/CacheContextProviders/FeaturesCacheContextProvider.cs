@@ -29,7 +29,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             if (contexts.Any(ctx => String.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
             {
                 // Add a hash of the enabled features
-                entries.Add(new CacheContextEntry("features", _featureHash.GetFeatureHash().ToString(CultureInfo.InvariantCulture)));
+                entries.Add(new CacheContextEntry("features", _featureHash.GetFeatureHashAsync().Result.ToString(CultureInfo.InvariantCulture)));
 
                 // If we track any changed feature, we don't need to look into specific ones
                 return;
@@ -38,7 +38,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             foreach(var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
             {
                 var featureName = context.Substring(FeaturesPrefix.Length);
-                var hash = _featureHash.GetFeatureHash(featureName).ToString(CultureInfo.InvariantCulture);
+                var hash = _featureHash.GetFeatureHashAsync(featureName).Result.ToString(CultureInfo.InvariantCulture);
 
                 entries.Add(new CacheContextEntry("features", hash));
             }

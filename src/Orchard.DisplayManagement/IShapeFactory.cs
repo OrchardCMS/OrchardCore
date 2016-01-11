@@ -1,4 +1,5 @@
 ﻿using Orchard.DependencyInjection;
+using Orchard.DisplayManagement.Shapes;
 using System;
 
 namespace Orchard.DisplayManagement
@@ -9,8 +10,11 @@ namespace Orchard.DisplayManagement
     /// </summary>
     public interface IShapeFactory : IDependency
     {
+        T Create<T>() where T : Shape, new();
+        T Create<T>(T obj) where T : Shape;
         IShape Create(string shapeType);
         IShape Create(string shapeType, INamedEnumerable<object> parameters);
         IShape Create(string shapeType, INamedEnumerable<object> parameters, Func<dynamic> createShape);
+        dynamic New { get; }
     }
 }

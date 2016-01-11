@@ -19,7 +19,12 @@ namespace Orchard.DisplayManagement.Descriptors
             Wrappers = new List<string>();
             BindingSources = new List<string>();
             Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
-            Placement = ctx => new PlacementInfo { Location = DefaultPlacement };
+            Placement = DefaultPlacementAction;
+        }
+
+        private PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
+        {
+            return new PlacementInfo { Location = DefaultPlacement };
         }
 
         public string ShapeType { get; set; }

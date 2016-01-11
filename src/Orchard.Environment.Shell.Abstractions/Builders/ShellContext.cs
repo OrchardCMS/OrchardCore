@@ -1,6 +1,7 @@
 ﻿using System;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Hosting.ShellBuilders
 {
@@ -17,6 +18,14 @@ namespace Orchard.Hosting.ShellBuilders
         public IServiceProvider ServiceProvider { get; set; }
 
         public bool IsActivated { get; set; }
+
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services.
+        /// </summary>
+        public IServiceScope CreateServiceScope()
+        {
+            return ServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+        }
 
         public void Dispose()
         {
