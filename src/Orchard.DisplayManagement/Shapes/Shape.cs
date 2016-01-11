@@ -40,7 +40,7 @@ namespace Orchard.DisplayManagement.Shapes
                 return this;
             }
 
-            if(position == null)
+            if (position == null)
             {
                 position = "";
             }
@@ -85,47 +85,60 @@ namespace Orchard.DisplayManagement.Shapes
         /// </summary>
         private void AddItem(IPositioned item)
         {
-            if(_items.Count == 0)
+            if (_items.Count == 0)
             {
                 _items.Add(item);
                 return;
             }
 
+            int index = 0;
+
+            if (_items.Count == 1)
+            {
+                var compare = PositionComparer.Compare(item, _items[index]);
+                if (compare == -1)
+                {
+                    _items.Insert(0, item);
+                }
+                else
+                {
+                    _items.Add(item);
+                }
+
+                return;
+            }
+
             int start = 0;
             int end = _items.Count - 1;
-            int index = 0;
 
             while (start != end)
             {
-                index = (end + start) / 2;
+                index = (end + start + 1) / 2;
                 var indexItem = _items[index];
                 var compare = PositionComparer.Compare(item, indexItem);
-                switch(compare)
+                switch (compare)
                 {
                     case -1:
-                        start = index;
+                        end = index;
                         break;
                     case 0:
                         start = end;
                         break;
                     case 1:
-                        end = index;
+                        start = index;
                         break;
                 }
             }
 
             // Lookup the last item with the same order so that adding the same 
             // position will keep the inserted order
-            for (int i = index; index < _items.Count - 1; i++)
+            while (index < _items.Count && PositionComparer.Compare(item, _items[index]) == 0)
             {
-                if (PositionComparer.Compare(item, _items[i]) != 0)
-                {
-                    break;
-                }
+                index++;
             }
 
             // Reached the end of the list, append
-            if (index == _items.Count - 1)
+            if (index == _items.Count)
             {
                 _items.Add(item);
             }
@@ -149,7 +162,7 @@ namespace Orchard.DisplayManagement.Shapes
         {
             result = Items;
 
-            if (binder.ReturnType == typeof(IEnumerable<object>) || 
+            if (binder.ReturnType == typeof(IEnumerable<object>) ||
                 binder.ReturnType == typeof(IEnumerable<dynamic>))
             {
                 return true;
@@ -227,7 +240,7 @@ namespace Orchard.DisplayManagement.Shapes
 
         public static TagBuilder GetTagBuilder(dynamic shape, string defaultTag = "span")
         {
-            string tagName = shape.Tag ;
+            string tagName = shape.Tag;
 
             // Dont replace by ?? as shape.Tag is dynamic
             if (tagName == null)
