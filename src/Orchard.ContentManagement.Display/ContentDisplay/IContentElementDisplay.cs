@@ -1,7 +1,9 @@
 ﻿using Orchard.ContentManagement.Display.Handlers;
 using Orchard.ContentManagement.Display.Views;
 using Orchard.DependencyInjection;
+using Orchard.DisplayManagement.ModelBinding;
 using System;
+using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
@@ -9,7 +11,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
     {
         DisplayResult BuildDisplay(BuildDisplayContext context);
         DisplayResult BuildEditor(BuildEditorContext context);
-        DisplayResult UpdateEditor(UpdateEditorContext context);
+        Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater);
     }
     
 }

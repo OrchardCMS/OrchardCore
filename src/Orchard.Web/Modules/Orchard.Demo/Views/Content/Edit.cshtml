@@ -1,0 +1,15 @@
+﻿@{
+//var typeDisplayName = Model.ContentItem.TypeDefinition.DisplayName;
+//var pageTitle = T("Edit Content");
+//if (!string.IsNullOrWhiteSpace(typeDisplayName))
+//{
+//    pageTitle = T("Edit {0}", typeDisplayName);
+//}
+//Layout.Title = pageTitle;
+}
+@using (Html.BeginForm()) {
+    //@" method="post" enctype="multipart / form - data">
+    @Html.ValidationSummary()
+    @Display(Model)
+    <button type="submit">Submit</button>
+}

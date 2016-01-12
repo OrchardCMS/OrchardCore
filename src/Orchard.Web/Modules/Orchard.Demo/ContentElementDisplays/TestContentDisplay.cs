@@ -5,6 +5,7 @@ using Orchard.ContentManagement;
 using Orchard.Demo.Models;
 using System;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.Demo.ContentElementDisplays
 {
@@ -36,15 +37,44 @@ namespace Orchard.Demo.ContentElementDisplays
                         return Task.CompletedTask;
                     })
                     .Location("Content")
-                    .Cache("lowerdoll2", cache => cache.During(TimeSpan.FromSeconds(5)))
-                //// A strongly typed shape model is used and initialized when rendered
-                //Shape<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; return Task.CompletedTask; })
-                //    .Location("Content:2"),
-                //// Cached shape
-                //Shape("LowerDoll")
-                //    .Location("/Footer")
-                //    .Cache("lowerdoll", cache => cache.During(TimeSpan.FromSeconds(5)))
+                    .Cache("lowerdoll2", cache => cache.During(TimeSpan.FromSeconds(5))),
+                // A strongly typed shape model is used and initialized when rendered
+                Shape<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; return Task.CompletedTask; })
+                    .Location("Content:2"),
+                // Cached shape
+                Shape("LowerDoll")
+                    .Location("/Footer")
+                    .Cache("lowerdoll", cache => cache.During(TimeSpan.FromSeconds(5)))
                 );
         }
-    }
+
+        public override DisplayResult BuildEditor(BuildEditorContext context)
+        {
+            var testContentPart = context.Content.As<TestContentPartA>();
+
+            if (testContentPart == null)
+            {
+                return null;
+            }
+
+            return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
+        }
+
+        public override async Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
+        {
+            var testContentPart = context.Content.As<TestContentPartA>();
+
+            if (testContentPart == null)
+            {
+                return;
+            }
+
+            if(await updater.TryUpdateModelAsync(testContentPart, ""))
+            {
+                context.Content.ContentItem.Weld(testContentPart);
+            }
+
+            return;
+        }
+    }    
 }

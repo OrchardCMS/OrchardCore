@@ -104,18 +104,6 @@ namespace Orchard.Demo.Controllers
             return View(contentItem);
         }
 
-        public async Task<ActionResult> DisplayContent(int id)
-        {
-            var contentItem = await _contentManager.Get(id);
-
-            if (contentItem == null)
-            {
-                return HttpNotFound();
-            }
-
-            var shape = await _contentDisplay.BuildDisplayAsync(contentItem);
-            return View(shape);
-        }
 
         public async Task<ActionResult> DisplayShape(int id)
         {

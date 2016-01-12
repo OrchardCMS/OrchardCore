@@ -101,13 +101,13 @@ namespace Orchard.ContentManagement.Display
             var context = new UpdateEditorContext(itemShape, content, groupId, _shapeFactory);
             await BindPlacementAsync(context, null, stereotype.Value<string>());
 
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context), Logger);
+            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(context), Logger);
 
 
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(IContent content, string groupInfoId)
+        public async Task UpdateEditorAsync(IContent content, string groupInfoId)
         {
             if (content == null || content.ContentItem == null)
             {
@@ -137,7 +137,7 @@ namespace Orchard.ContentManagement.Display
 
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context), Logger);
 
-            return context.Shape;
+            return;
         }
         
         private async Task BindPlacementAsync(BuildShapeContext context, string displayType, string stereotype)

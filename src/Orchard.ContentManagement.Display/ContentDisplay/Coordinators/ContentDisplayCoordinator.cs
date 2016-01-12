@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Handlers;
+using Orchard.DisplayManagement.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,15 @@ namespace Orchard.ContentManagement.Display.Coordinators
     public class ContentDisplayCoordinator : IDisplayHandler
     {
         private readonly IEnumerable<IContentElementDisplay> _drivers;
+        private readonly IModelUpdaterAccessor _modelUpdaterAccessor;
 
         public ContentDisplayCoordinator(
-            IEnumerable<IContentElementDisplay> drivers, 
+            IEnumerable<IContentElementDisplay> drivers,
+            IModelUpdaterAccessor modelUpdaterAccessor,
             ILogger<ContentDisplayCoordinator> logger)
         {
             _drivers = drivers;
+            _modelUpdaterAccessor = modelUpdaterAccessor;
 
             Logger = logger;
         }
@@ -49,15 +53,12 @@ namespace Orchard.ContentManagement.Display.Coordinators
             return Task.CompletedTask;
         }
 
-        public Task UpdateEditorAsync(UpdateEditorContext context)
+        public async Task UpdateEditorAsync(UpdateEditorContext context)
         {
-            _drivers.Invoke(driver => {
-                var result = driver.UpdateEditor(context);
-                if (result != null)
-                    result.Apply(context);
-            }, Logger);
-
-            return Task.CompletedTask;
+            await _drivers.InvokeAsync(
+                driver => driver.UpdateEditorAsync(context, _modelUpdaterAccessor.ModelUpdater),
+                Logger
+                );
         }
     }
 }

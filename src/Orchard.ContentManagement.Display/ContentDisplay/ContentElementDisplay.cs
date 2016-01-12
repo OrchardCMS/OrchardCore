@@ -1,6 +1,7 @@
 ﻿using Orchard.ContentManagement.Display.Handlers;
 using Orchard.ContentManagement.Display.Views;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Shapes;
 using System;
 using System.Threading.Tasks;
@@ -88,9 +89,9 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        public virtual DisplayResult UpdateEditor(UpdateEditorContext context)
+        public virtual Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
         {
-            return null;
+            return Task.CompletedTask;
         }
     }
 }

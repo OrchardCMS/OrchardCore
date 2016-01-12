@@ -2,8 +2,10 @@ using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Hosting.Mvc.Razor;
+using Orchard.Hosting.Web.Mvc.ModelBinding;
 
 namespace Orchard.Hosting.Mvc
 {
@@ -12,10 +14,11 @@ namespace Orchard.Hosting.Mvc
         public static IServiceCollection AddOrchardMvc(this IServiceCollection services)
         {
             services
-                .AddMvcCore()
+                .AddMvcCore(options => options.Filters.Add(new ModelBinderAccessorFilter()))
                 .AddViews()
                 .AddRazorViewEngine();
 
+            services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
 
             services.AddScoped<IAssemblyProvider, OrchardMvcAssemblyProvider>();

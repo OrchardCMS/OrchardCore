@@ -7,6 +7,6 @@ namespace Orchard.ContentManagement.Display
     {
         Task<dynamic> BuildDisplayAsync(IContent content, string displayType = "", string groupId = "");
         Task<dynamic> BuildEditorAsync(IContent content, string groupId = "");
-        Task<dynamic> UpdateEditorAsync(IContent content, string groupId = "");
+        Task UpdateEditorAsync(IContent content, string groupId = "");
     }
 }
