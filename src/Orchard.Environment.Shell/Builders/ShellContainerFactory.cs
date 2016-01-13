@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
+using Microsoft.AspNet.Mvc.Filters;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -74,6 +75,21 @@ namespace Orchard.Environment.Shell.Builders
                     {
                         tenantServiceCollection.AddTransient(interfaceType, dependency.Type);
                     }                    
+                }
+            }
+
+            // Register components
+            foreach (var dependency in blueprint.Dependencies)
+            {
+                var serviceComponentAttribute = dependency.Type.GetTypeInfo().GetCustomAttribute<ServiceScopeAttribute>();
+                if (serviceComponentAttribute != null)
+                {
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, serviceComponentAttribute.ServiceType);
+                    }
+
+                    serviceComponentAttribute.Register(tenantServiceCollection, dependency.Type);
                 }
             }
 

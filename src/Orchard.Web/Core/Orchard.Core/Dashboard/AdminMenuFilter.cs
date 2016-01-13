@@ -1,27 +1,14 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Filters;
-using Microsoft.AspNet.Routing;
 using Orchard.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Admin;
 using Orchard.DisplayManagement.Layout;
 using Orchard.Environment.Navigation;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Core.Dashboard
 {
-    public class AdminMenuFilterModule : IModule
-    {
-        public void Configure(IServiceCollection serviceCollection)
-        {
-            serviceCollection.Configure<MvcOptions>(setup =>
-            {
-                setup.Filters.Add(typeof(AdminMenuFilter));
-            });
-        }
-    }
-
+    [ScopedComponent(typeof(IFilterMetadata))]
     public class AdminMenuFilter : IResultFilter
     {
         private readonly INavigationManager _navigationManager;

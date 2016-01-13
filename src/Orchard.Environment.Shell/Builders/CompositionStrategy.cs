@@ -141,7 +141,9 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsDependency(Type type)
         {
-            return typeof(IDependency).IsAssignableFrom(type);
+            return 
+                typeof(IDependency).IsAssignableFrom(type) ||
+                type.GetTypeInfo().GetCustomAttribute<ServiceScopeAttribute>() != null;
         }
 
         private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor)
