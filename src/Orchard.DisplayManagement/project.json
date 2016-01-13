@@ -3,6 +3,7 @@
   "dependencies": {
     "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
