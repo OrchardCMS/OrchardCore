@@ -192,10 +192,12 @@ namespace Orchard.Hosting.Mvc.Razor
         {
             var references = new List<MetadataReference>();
 
-            references.AddRange(_libraryManager
-                    .GetAllMetadataReferences()
-                    .OfType<IRoslynMetadataReference>()
-                    .Select(x => x.MetadataReference));
+            var export = _libraryExporter.GetAllExports(_environment.ApplicationName);
+            foreach (var metadataReference in _libraryManager.GetAllMetadataReferences())
+            {
+                if (!export.MetadataReferences.Any(x => x.Name == metadataReference.Name))
+                    references.Add(ConvertMetadataReference(metadataReference));
+            }
 
             // Get the MetadataReference for the executing application. If it's a Roslyn reference,
             // we can copy the references created when compiling the application to the Razor page being compiled.
@@ -216,7 +218,6 @@ namespace Orchard.Hosting.Mvc.Razor
                 }
             }
 
-            var export = _libraryExporter.GetAllExports(_environment.ApplicationName);
             foreach (var metadataReference in export.MetadataReferences)
             {
                 // Taken from https://github.com/aspnet/KRuntime/blob/757ba9bfdf80bd6277e715d6375969a7f44370ee/src/...
