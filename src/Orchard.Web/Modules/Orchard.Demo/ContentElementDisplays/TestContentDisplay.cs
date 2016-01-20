@@ -71,7 +71,14 @@ namespace Orchard.Demo.ContentElementDisplays
 
             if (await updater.TryUpdateModelAsync(testContentPart, ""))
             {
-                context.Content.ContentItem.Weld(testContentPart);
+                if (testContentPart.Line.EndsWith(" "))
+                {
+                    updater.ModelState.AddModelError(nameof(testContentPart.Line), "Value cannot end with a space");
+                }
+                else
+                {
+                    context.Content.ContentItem.Weld(testContentPart);
+                }
             }
             
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");

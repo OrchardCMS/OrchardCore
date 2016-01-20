@@ -60,6 +60,19 @@ $left-navigation-width: 200px;
 // -----------------------------
 
 .hint {
-    @extend .text-muted;
-    @extend small;
+    @extend small, .text-muted;
+}
+
+.validation-summary-errors {
+    @extend .alert, .alert-danger;
+}
+
+.field-validation-error {
+    @extend small, .text-muted;
+    color: $brand-danger;
+}
+
+// When the validation message in inside the label, add a separator
+label .field-validation-error::before {
+    content: "- ";
 }

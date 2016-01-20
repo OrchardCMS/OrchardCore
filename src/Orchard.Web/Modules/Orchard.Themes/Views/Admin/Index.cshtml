@@ -1,5 +1,4 @@
 ﻿@model Orchard.Themes.Models.SelectThemesViewModel
-@addTagHelper "*, Microsoft.AspNet.Mvc.TagHelpers"
 
 <div class="alert alert-warning">
     <h4>Changing default themes</h4>
@@ -15,7 +14,7 @@
     </fieldset>
 
     <fieldset class="form-group">
-        <label asp-for="SiteThemeName">Admin theme name</label>
+        <label asp-for="AdminThemeName">Admin theme name</label>
         <input asp-for="AdminThemeName" class="form-control"/>
         <span class="hint">The name of the theme for the admin.</span>
     </fieldset>

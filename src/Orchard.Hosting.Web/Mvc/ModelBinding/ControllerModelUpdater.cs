@@ -3,6 +3,7 @@ using Orchard.DisplayManagement.ModelBinding;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Mvc.ModelBinding;
 
 namespace Orchard.Hosting.Web.Mvc.ModelBinding
 {
@@ -14,6 +15,8 @@ namespace Orchard.Hosting.Web.Mvc.ModelBinding
         {
             _controller = controller;
         }
+
+        public ModelStateDictionary ModelState => _controller.ModelState;
 
         public Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix)
         {

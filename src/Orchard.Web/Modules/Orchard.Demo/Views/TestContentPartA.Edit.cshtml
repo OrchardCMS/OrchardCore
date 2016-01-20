@@ -1,3 +1,9 @@
-﻿<div>
-    <input type="text" name="line" value="@Model.Line" />
-</div>
+﻿@model dynamic
+
+<fieldset class="form-group">
+    <label for="Line">Value @Html.ValidationMessage("Line")</label>
+    <input name="Line" id="Line" value="@Model.Line" class="form-control" />
+    <span class="hint">The value of the property.</span>
+    
+    @*<span asp-validation-for="@("Line")"></span>*@
+</fieldset>

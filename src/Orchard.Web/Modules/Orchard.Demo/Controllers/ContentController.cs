@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.DisplayManagement.Admin;
 using Orchard.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
@@ -36,6 +37,7 @@ namespace Orchard.Demo.Controllers
             return View(shape);
         }
 
+        [Admin]
         public async Task<ActionResult> Edit(int id)
         {
             var contentItem = await _contentManager.Get(id);
@@ -49,7 +51,7 @@ namespace Orchard.Demo.Controllers
             return View(shape);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [Admin, HttpPost, ActionName("Edit")]
         public async Task<ActionResult> EditPost(int id)
         {
             var contentItem = await _contentManager.Get(id);
@@ -59,11 +61,18 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
-            await _contentDisplay.UpdateEditorAsync(contentItem, this);
+            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, this);
+
+            if (!ModelState.IsValid)
+            {
+                _session.Cancel();
+                return View("Edit", shape);
+            }
 
             _session.Save(contentItem);
+            return RedirectToAction("Edit", id);
 
-            return RedirectToAction("Edit");
+
         }
     }
 }

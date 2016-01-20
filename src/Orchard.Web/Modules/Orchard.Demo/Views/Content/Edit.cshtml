@@ -7,9 +7,10 @@
 //}
 //Layout.Title = pageTitle;
 }
-@using (Html.BeginForm()) {
-    //@" method="post" enctype="multipart / form - data">
+
+<form asp-action="Edit" method="post">
     @Html.ValidationSummary()
     @Display(Model)
-    <button type="submit">Submit</button>
-}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -69,7 +69,7 @@ mark {
   background: #ff0;
   color: #000; }
 
-small, .hint {
+small, .hint, .field-validation-error {
   font-size: 80%; }
 
 sub,
@@ -465,7 +465,7 @@ hr {
   border: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1); }
 
-small, .hint,
+small, .hint, .field-validation-error,
 .small {
   font-size: 80%;
   font-weight: normal; }
@@ -3290,15 +3290,15 @@ a.label:focus, a.label:hover {
   padding-left: 0;
   border-radius: 0; }
 
-.alert {
+.alert, .validation-summary-errors {
   padding: 15px;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: 0.25rem; }
-  .alert > p,
-  .alert > ul {
+  .alert > p, .validation-summary-errors > p,
+  .alert > ul, .validation-summary-errors > ul {
     margin-bottom: 0; }
-  .alert > p + p {
+  .alert > p + p, .validation-summary-errors > p + p {
     margin-top: 5px; }
 
 .alert-heading {
@@ -3342,13 +3342,13 @@ a.label:focus, a.label:hover {
   .alert-warning .alert-link {
     color: #66512c; }
 
-.alert-danger {
+.alert-danger, .validation-summary-errors {
   background-color: #f2dede;
   border-color: #ebcccc;
   color: #a94442; }
-  .alert-danger hr {
+  .alert-danger hr, .validation-summary-errors hr {
     border-top-color: #e4b9b9; }
-  .alert-danger .alert-link {
+  .alert-danger .alert-link, .validation-summary-errors .alert-link {
     color: #843534; }
 
 @-webkit-keyframes progress-bar-stripes {
@@ -3582,12 +3582,15 @@ button.list-group-item {
   .list-group-item.active .list-group-item-heading,
   .list-group-item.active .list-group-item-heading > small,
   .list-group-item.active .list-group-item-heading > .hint,
+  .list-group-item.active .list-group-item-heading > .field-validation-error,
   .list-group-item.active .list-group-item-heading > .small, .list-group-item.active:focus .list-group-item-heading,
   .list-group-item.active:focus .list-group-item-heading > small,
   .list-group-item.active:focus .list-group-item-heading > .hint,
+  .list-group-item.active:focus .list-group-item-heading > .field-validation-error,
   .list-group-item.active:focus .list-group-item-heading > .small, .list-group-item.active:hover .list-group-item-heading,
   .list-group-item.active:hover .list-group-item-heading > small,
   .list-group-item.active:hover .list-group-item-heading > .hint,
+  .list-group-item.active:hover .list-group-item-heading > .field-validation-error,
   .list-group-item.active:hover .list-group-item-heading > .small {
     color: inherit; }
   .list-group-item.active .list-group-item-text, .list-group-item.active:focus .list-group-item-text, .list-group-item.active:hover .list-group-item-text {
@@ -4349,7 +4352,7 @@ button.close {
 .font-italic {
   font-style: italic; }
 
-.text-muted, .hint {
+.text-muted, .hint, .field-validation-error {
   color: #818a91; }
 
 .text-primary {
@@ -4696,3 +4699,9 @@ a.bg-danger:focus, a.bg-danger:hover {
 @media (min-width: 544px) {
   .ta-wrapper .ta-content {
     margin-left: 200px; } }
+
+.field-validation-error {
+  color: #d9534f; }
+
+label .field-validation-error::before {
+  content: "- "; }
