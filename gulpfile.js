@@ -71,6 +71,7 @@ gulp.task("watch", function () {
                     console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group.");
                 var doRebuild = true;
                 var task = createAssetGroupTask(assetGroup, doRebuild);
+                console.log("Finished rebuilding: " + assetGroup.outputFileName);
             });
             watchers.push(watcher);
         });

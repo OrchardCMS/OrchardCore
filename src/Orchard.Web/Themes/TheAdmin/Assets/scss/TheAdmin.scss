@@ -1,1 +1,65 @@
 // Custom variables
+
+$font-family-sans-serif:     "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-monospace:      Consolas, Menlo, Monaco, "Courier New", monospace;
+
+// Because !default means that a variable is not assigned if it already contains a value,
+// we alter the variable before importing boostrap as _variables.scss will use !default
+
+@import "src/Orchard.Web/Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+
+
+$top-nav-height: 55px;
+$left-navigation-width: 200px;
+
+// Layout
+// -----------------------------
+
+.ta-wrapper {
+    
+    .ta-navbar-top {
+        @extend .navbar, .navbar-fixed-top;
+        min-height: $top-nav-height;
+    }
+    
+    .ta-left-sidebar {
+        @extend .hidden-xs-down;
+        width: $left-navigation-width;
+
+        z-index: 1;
+        position: absolute;
+
+        ul {
+            @extend .nav;
+
+            li {
+                @extend .nav-item;
+                padding-left: 1.5rem;
+                a {
+                    @extend .nav-link;
+                }
+            }
+        }
+    }
+
+    .ta-content {
+        @extend .container-fluid;
+        margin-left:0;
+        margin-top: $top-nav-height + 1px;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .ta-content {
+            margin-left:$left-navigation-width;
+        }
+    }
+
+}
+
+// Forms
+// -----------------------------
+
+.hint {
+    @extend .text-muted;
+    @extend small;
+}

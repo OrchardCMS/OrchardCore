@@ -1,7 +1,7 @@
 ﻿[
   {
+    "generateSourceMaps": false,
     "inputs": [
-      "../../Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss",
       "Assets/scss/TheAdmin.scss"
     ],
     "output": "Styles/TheAdmin.css"
