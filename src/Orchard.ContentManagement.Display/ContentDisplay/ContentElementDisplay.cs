@@ -79,6 +79,21 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             return new CombinedResult(results);
         }
 
+        public virtual Task<DisplayResult> BuildDisplayAsync(BuildDisplayContext context)
+        {
+            return Task.FromResult(BuildDisplay(context));
+        }
+
+        public virtual Task<DisplayResult> BuildEditorAsync(BuildEditorContext context)
+        {
+            return Task.FromResult(BuildEditor(context));
+        }
+
+        public virtual Task<DisplayResult> UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
+        {
+            return Task.FromResult(UpdateEditor(context, updater));
+        }
+
         public virtual DisplayResult BuildDisplay(BuildDisplayContext context)
         {
             return null;
@@ -89,9 +104,9 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        public virtual Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
+        public virtual DisplayResult UpdateEditor(UpdateEditorContext context, IModelUpdater updater)
         {
-            return Task.CompletedTask;
+            return null;
         }
     }
 }

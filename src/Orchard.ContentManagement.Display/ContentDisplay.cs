@@ -5,6 +5,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Layout;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Zones;
 using System;
@@ -72,6 +73,7 @@ namespace Orchard.ContentManagement.Display
             await BindPlacementAsync(context, actualDisplayType, stereotype.Value<string>());
 
             await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(context), Logger);
+
             return context.Shape;
         }
 
@@ -102,12 +104,11 @@ namespace Orchard.ContentManagement.Display
             await BindPlacementAsync(context, null, stereotype.Value<string>());
 
             await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(context), Logger);
-
-
+            
             return context.Shape;
         }
 
-        public async Task UpdateEditorAsync(IContent content, string groupInfoId)
+        public async Task<dynamic> UpdateEditorAsync(IContent content, IModelUpdater updater, string groupInfoId)
         {
             if (content == null || content.ContentItem == null)
             {
@@ -135,9 +136,9 @@ namespace Orchard.ContentManagement.Display
             var context = new UpdateEditorContext(itemShape, content, groupInfoId, _shapeFactory);
             await BindPlacementAsync(context, null, stereotype.Value<string>());
 
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context), Logger);
+            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context, updater), Logger);
 
-            return;
+            return context.Shape;
         }
         
         private async Task BindPlacementAsync(BuildShapeContext context, string displayType, string stereotype)

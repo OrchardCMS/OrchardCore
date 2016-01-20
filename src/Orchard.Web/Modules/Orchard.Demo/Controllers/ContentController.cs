@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNet.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers
 {
-    public class ContentController : Controller
+    public class ContentController : Controller, IModelUpdater
     {
         private readonly IContentDisplay _contentDisplay;
         private readonly IContentManager _contentManager;
@@ -58,7 +59,7 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
-            await _contentDisplay.UpdateEditorAsync(contentItem);
+            await _contentDisplay.UpdateEditorAsync(contentItem, this);
 
             _session.Save(contentItem);
 

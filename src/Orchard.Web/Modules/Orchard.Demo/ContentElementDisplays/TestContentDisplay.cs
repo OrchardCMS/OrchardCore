@@ -60,21 +60,21 @@ namespace Orchard.Demo.ContentElementDisplays
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
-        public override async Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
+        public override async Task<DisplayResult> UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
         {
             var testContentPart = context.Content.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
-                return;
+                return null;
             }
 
-            if(await updater.TryUpdateModelAsync(testContentPart, ""))
+            if (await updater.TryUpdateModelAsync(testContentPart, ""))
             {
                 context.Content.ContentItem.Weld(testContentPart);
             }
-
-            return;
+            
+            return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
     }    
 }

@@ -2,9 +2,7 @@
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display.Coordinators
@@ -16,15 +14,12 @@ namespace Orchard.ContentManagement.Display.Coordinators
     public class ContentDisplayCoordinator : IDisplayHandler
     {
         private readonly IEnumerable<IContentElementDisplay> _drivers;
-        private readonly IModelUpdaterAccessor _modelUpdaterAccessor;
 
         public ContentDisplayCoordinator(
             IEnumerable<IContentElementDisplay> drivers,
-            IModelUpdaterAccessor modelUpdaterAccessor,
             ILogger<ContentDisplayCoordinator> logger)
         {
             _drivers = drivers;
-            _modelUpdaterAccessor = modelUpdaterAccessor;
 
             Logger = logger;
         }
@@ -33,32 +28,29 @@ namespace Orchard.ContentManagement.Display.Coordinators
         
         public Task BuildDisplayAsync(BuildDisplayContext context)
         {
-            _drivers.Invoke(driver => {
-                var result = driver.BuildDisplay(context);
+            return _drivers.InvokeAsync(async driver => {
+                var result = await driver.BuildDisplayAsync(context);
                 if (result != null)
                     result.Apply(context);
             }, Logger);
-
-            return Task.CompletedTask;
         }
 
         public Task BuildEditorAsync(BuildEditorContext context)
         {
-            _drivers.Invoke(driver => {
-                var result = driver.BuildEditor(context);
+            return _drivers.InvokeAsync(async driver => {
+                var result = await driver.BuildEditorAsync(context);
                 if (result != null)
                     result.Apply(context);
             }, Logger);
-
-            return Task.CompletedTask;
         }
 
-        public async Task UpdateEditorAsync(UpdateEditorContext context)
+        public Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater modelUpdater)
         {
-            await _drivers.InvokeAsync(
-                driver => driver.UpdateEditorAsync(context, _modelUpdaterAccessor.ModelUpdater),
-                Logger
-                );
+            return _drivers.InvokeAsync(async driver => {
+                var result = await driver.UpdateEditorAsync(context, modelUpdater);
+                if (result != null)
+                    result.Apply(context);
+            }, Logger);
         }
     }
 }
