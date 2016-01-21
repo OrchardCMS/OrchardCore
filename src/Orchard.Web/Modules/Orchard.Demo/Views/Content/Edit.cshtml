@@ -1,12 +1,5 @@
-﻿@{
-//var typeDisplayName = Model.ContentItem.TypeDefinition.DisplayName;
-//var pageTitle = T("Edit Content");
-//if (!string.IsNullOrWhiteSpace(typeDisplayName))
-//{
-//    pageTitle = T("Edit {0}", typeDisplayName);
-//}
-//Layout.Title = pageTitle;
-}
+﻿@*TODO: Replace by display name*@
+<h1>@RenderTitlePart($"Edit {Model.ContentItem.ContentType}")</h1>
 
 <form asp-action="Edit" method="post">
     @Html.ValidationSummary()

@@ -7,6 +7,7 @@ using Orchard.DisplayManagement.Shapes;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Title;
 
 namespace Orchard.DisplayManagement.Razor
 {
@@ -63,7 +64,7 @@ namespace Orchard.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    var layoutAccessor = ViewContext.HttpContext.RequestServices.GetService(typeof(ILayoutAccessor)) as ILayoutAccessor;
+                    var layoutAccessor = ViewContext.HttpContext.RequestServices.GetService<ILayoutAccessor>();
 
                     if (layoutAccessor == null)
                     {
@@ -80,6 +81,26 @@ namespace Orchard.DisplayManagement.Razor
             {
                 _themeLayout = value;
             }
+        }
+
+        private IPageTitleBuilder _pageTitleBuilder;
+        public IPageTitleBuilder Title
+        {
+            get
+            {
+                if (_pageTitleBuilder == null)
+                {
+                    _pageTitleBuilder = ViewContext.HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
+                }
+
+                return _pageTitleBuilder;
+            }
+        }
+
+        public string RenderTitlePart(string titlePart, string position = "0")
+        {
+            Title.AddTitlePart(titlePart, position);
+            return titlePart;
         }
 
         protected HelperResult RenderLayoutBody()
