@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Orchard.Security.Permissions;
+using Orchard.Security;
 
 namespace Microsoft.AspNet.Authorization
 {
@@ -8,8 +9,8 @@ namespace Microsoft.AspNet.Authorization
     {
         public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission)
         {
-            var policy = new AuthorizationPolicyBuilder().RequireClaim(Permission.ClaimType, permission.Name).Build();
-            return service.AuthorizeAsync(user, policy);
+            var requirement = new PermissionRequirement(permission);
+            return service.AuthorizeAsync(user, null, requirement);
         }
     }
 }
