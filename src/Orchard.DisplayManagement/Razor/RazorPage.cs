@@ -8,6 +8,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
+using Microsoft.AspNet.Mvc.Localization;
+using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Razor
 {
@@ -94,6 +96,21 @@ namespace Orchard.DisplayManagement.Razor
                 }
 
                 return _pageTitleBuilder;
+            }
+        }
+
+        private IViewLocalizer _t;
+        public IViewLocalizer T
+        {
+            get
+            {
+                if (_t == null)
+                {
+                    _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
+                    ((ICanHasViewContext)_t).Contextualize(this.ViewContext);
+                }
+
+                return _t;
             }
         }
 

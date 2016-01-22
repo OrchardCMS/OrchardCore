@@ -1,16 +1,17 @@
 @model Orchard.ContentTypes.ViewModels.ListContentTypesViewModel
 @{
-    Style.Require("ContentTypesAdmin");
-    Script.Require("jQuery");
-    Script.Include("admin-contenttypes.js");
-    Layout.Title = T("Manage Content Types").ToString();
+    //Style.Require("ContentTypesAdmin");
+    //Script.Require("jQuery");
+    //Script.Include("admin-contenttypes.js");
+
+    RenderTitlePart("Manage Content Types");
 }
 
 <div class="manage">
-    @Html.ActionLink(T("Create new type").ToString(), "Create", new{Controller="Admin",Area="Orchard.ContentTypes"}, new { @class = "button primaryAction" })
+    @Html.ActionLink(T["Create new type"], "Create", new { Controller="Admin", Area="Orchard.ContentTypes" }, new { @class = "button primaryAction" })
 </div>
 <fieldset class="bulk-actions">
-    <label for="search-box">@T("Filter:")</label>
+    <label for="search-box">@T["Filter:"]</label>
     <input id="search-box" class="text" type="text" autofocus="autofocus" />
 </fieldset>
 <ul class="contentItems">
