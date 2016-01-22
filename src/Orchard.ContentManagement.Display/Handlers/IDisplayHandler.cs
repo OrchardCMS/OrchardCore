@@ -8,6 +8,6 @@ namespace Orchard.ContentManagement.Display.Handlers
     {
         Task BuildDisplayAsync(BuildDisplayContext context);
         Task BuildEditorAsync(BuildEditorContext context);
-        Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater modelUpdater);
+        Task UpdateEditorAsync(UpdateEditorContext context, IUpdateModel modelUpdater);
     }
 }

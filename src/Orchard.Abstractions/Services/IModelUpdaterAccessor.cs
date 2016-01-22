@@ -2,6 +2,6 @@
 {
     public interface IModelUpdaterAccessor
     {
-        IModelUpdater ModelUpdater { get; set; }
+        IUpdateModel ModelUpdater { get; set; }
     }
 }

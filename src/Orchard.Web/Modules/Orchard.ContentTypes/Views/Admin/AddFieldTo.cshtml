@@ -1,0 +1,73 @@
+@using Orchard.Utility.Extensions
+@model Orchard.ContentTypes.ViewModels.AddFieldViewModel
+@{
+    Style.Require("ContentTypesAdmin");
+
+    Layout.Title = T("Add New Field To \"{0}\"", Model.Part.DisplayName).ToString();
+}
+
+@using (Html.BeginFormAntiForgeryPost()) {
+    @Html.ValidationSummary()
+    <fieldset>
+        <label for="DisplayName">@T("Display Name")</label>
+        @Html.TextBoxFor(m => m.DisplayName, new {@class = "text medium", autofocus = "autofocus"})
+        <span class="hint">@T("Name of the field as it will be displayed in screens.")</span>
+        <label for="Name">@T("Technical Name")</label>
+        @Html.TextBoxFor(m => m.Name, new {@class = "text"})
+        <span class="hint">@T("Technical name of the field.")</span>    
+    </fieldset>
+    <fieldset>
+        <label for="FieldTypeName">@T("Field Type")</label>
+        @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly()}), "FieldTypeName", "DisplayName"))
+    </fieldset>
+    <fieldset>
+        <button class="primaryAction" type="submit">@T("Save")</button>
+    </fieldset>
+}
+
+@using(Script.Foot()){
+<script type="text/javascript">
+//<![CDATA[
+    $(function(){
+        var $name = $("#@Html.FieldIdFor(m=>m.Name)");
+        var $displayName = $("#@Html.FieldIdFor(m=>m.DisplayName)");
+        var partName = "@Model.Part.Name";
+        
+        var jsonUrl = "@Url.Action("FieldName", "Admin", new RouteValueDictionary { {"Area","Orchard.ContentTypes"} } )";
+        var version = 0;
+        
+        var nameAltered;
+        $name.keypress(function() {
+            nameAltered = true;
+        });
+        
+        var compute = function() {
+            // stop processing automatically if altered by the user
+            if(nameAltered) {
+                return true;
+            }
+
+            $.post(jsonUrl, {
+                    partName: partName,
+                    displayName: $displayName.val(),
+                    version: ++version,
+                    __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val()
+                },
+                function(data) {
+                    if(version == data.version) {
+                        $name.val(data.result);
+                    }
+                },
+                "json"
+            );
+        };
+        
+        //pull technical name input from tab order
+        $name.attr("tabindex", -1);
+        
+        $displayName.keyup(compute);
+        $displayName.blur(compute);
+    })
+//]]>
+</script>
+}

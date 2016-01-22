@@ -9,17 +9,17 @@ namespace Orchard.ContentManagement.Display.Coordinators
 {
     /// <summary>
     /// This component coordinates how content element display components are taking part in the rendering when some content needs to be rendered.
-    /// It will dispatch BuildDisplay/BuildEditor to all <see cref="IContentElementDisplay"/> implementations.
+    /// It will dispatch BuildDisplay/BuildEditor to all <see cref="IContentDisplay"/> implementations.
     /// </summary>
     public class ContentDisplayCoordinator : IDisplayHandler
     {
-        private readonly IEnumerable<IContentElementDisplay> _drivers;
+        private readonly IEnumerable<IContentDisplay> _contentDisplays;
 
         public ContentDisplayCoordinator(
-            IEnumerable<IContentElementDisplay> drivers,
+            IEnumerable<IContentDisplay> contentDisplays,
             ILogger<ContentDisplayCoordinator> logger)
         {
-            _drivers = drivers;
+            _contentDisplays = contentDisplays;
 
             Logger = logger;
         }
@@ -28,8 +28,8 @@ namespace Orchard.ContentManagement.Display.Coordinators
         
         public Task BuildDisplayAsync(BuildDisplayContext context)
         {
-            return _drivers.InvokeAsync(async driver => {
-                var result = await driver.BuildDisplayAsync(context);
+            return _contentDisplays.InvokeAsync(async contentDisplay => {
+                var result = await contentDisplay.BuildDisplayAsync(context);
                 if (result != null)
                     result.Apply(context);
             }, Logger);
@@ -37,17 +37,17 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildEditorAsync(BuildEditorContext context)
         {
-            return _drivers.InvokeAsync(async driver => {
-                var result = await driver.BuildEditorAsync(context);
+            return _contentDisplays.InvokeAsync(async contentDisplay => {
+                var result = await contentDisplay.BuildEditorAsync(context);
                 if (result != null)
                     result.Apply(context);
             }, Logger);
         }
 
-        public Task UpdateEditorAsync(UpdateEditorContext context, IModelUpdater modelUpdater)
+        public Task UpdateEditorAsync(UpdateEditorContext context, IUpdateModel modelUpdater)
         {
-            return _drivers.InvokeAsync(async driver => {
-                var result = await driver.UpdateEditorAsync(context, modelUpdater);
+            return _contentDisplays.InvokeAsync(async contentDisplay => {
+                var result = await contentDisplay.UpdateEditorAsync(context, modelUpdater);
                 if (result != null)
                     result.Apply(context);
             }, Logger);

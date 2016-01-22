@@ -22,5 +22,6 @@
         public virtual void Removed(RemoveContentContext context) { }
         //public virtual void Indexing(IndexContentContext context) { }
         //public virtual void Indexed(IndexContentContext context) { }
+        public virtual void GetContentItemMetadata(ContentItemMetadataContext context) { }
     }
 }

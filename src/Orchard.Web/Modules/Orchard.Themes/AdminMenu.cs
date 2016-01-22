@@ -11,7 +11,7 @@ namespace Orchard.Themes
             T = localizer;
         }
 
-        public IStringLocalizer<AdminMenu> T { get; set; }
+        public IStringLocalizer T { get; set; }
 
         public void BuildNavigation(string name, NavigationBuilder builder)
         {
@@ -27,7 +27,7 @@ namespace Orchard.Themes
                     .Add(T["Installed"], "0", installed => installed
                         .Action("Index", "Admin", new { area = "Orchard.Themes" })
                         .Permission(Permissions.ApplyTheme)
-                        .Local()
+                        .LocalNav()
                     )
                 );
         }

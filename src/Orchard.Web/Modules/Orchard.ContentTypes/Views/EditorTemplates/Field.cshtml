@@ -1,0 +1,13 @@
+﻿@using Orchard.Utility.Extensions
+@model Orchard.ContentTypes.ViewModels.EditPartFieldViewModel
+    <fieldset class="manage-field">
+        <h3>@Model.DisplayName <span>(@Model.FieldDefinition.Name.CamelFriendly())</span></h3>
+        <div class="manage">
+            @Html.ActionLink(T("Edit").Text, "EditField", new { area = "Orchard.ContentTypes", id = Model.Part.Name, Model.Name }) |
+            @Html.ActionLink(T("Remove").Text, "RemoveFieldFrom", new { area = "Orchard.ContentTypes", id = Model.Part.Name, Model.Name }, new { itemprop = "RemoveUrl UnsafeUrl" })
+        </div>
+        <div class="details">
+            @{Html.RenderTemplates(Model.Templates);}
+            @Html.HiddenFor(m => m.Name)@Html.HiddenFor(m => m.FieldDefinition.Name)@Html.HiddenFor(m => m.Index)
+        </div>
+    </fieldset>

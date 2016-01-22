@@ -381,5 +381,15 @@ namespace Orchard.Utility
             var pattern = $"{string.Join("|", replacements.Keys)}";
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
+
+        public static string TrimEnd(this string rough, string trim = "")
+        {
+            if (rough == null)
+                return null;
+
+            return rough.EndsWith(trim)
+                       ? rough.Substring(0, rough.Length - trim.Length)
+                       : rough;
+        }
     }
 }

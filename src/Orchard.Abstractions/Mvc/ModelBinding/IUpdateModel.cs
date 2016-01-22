@@ -5,7 +5,7 @@ using Microsoft.AspNet.Mvc.ModelBinding;
 
 namespace Orchard.DisplayManagement.ModelBinding
 {
-    public interface IModelUpdater
+    public interface IUpdateModel
     {
         Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix);
         Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class;

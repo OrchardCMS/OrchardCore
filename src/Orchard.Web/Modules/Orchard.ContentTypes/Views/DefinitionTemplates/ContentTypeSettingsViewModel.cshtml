@@ -1,0 +1,36 @@
+﻿@model Orchard.ContentTypes.ViewModels.ContentTypeSettingsViewModel
+
+<fieldset>
+    @Html.EditorFor(m => m.Creatable)
+    <label for="@Html.FieldIdFor(m => m.Creatable)" class="forcheckbox">@T("Creatable")</label>
+    @Html.ValidationMessageFor(m => m.Creatable)
+    <span class="hint">@T("Determines if an instance of this content type can be created through the UI.")</span>
+</fieldset>
+
+<fieldset>
+    @Html.EditorFor(m => m.Listable)
+    <label for="@Html.FieldIdFor(m => m.Listable)" class="forcheckbox">@T("Listable")</label>
+    @Html.ValidationMessageFor(m => m.Listable)
+    <span class="hint">@T("Determines if an instance of this content type can be listed through the UI.")</span>
+</fieldset>
+
+<fieldset>
+    @Html.EditorFor(m => m.Draftable)
+    <label for="@Html.FieldIdFor(m => m.Draftable)" class="forcheckbox">@T("Draftable")</label>
+    @Html.ValidationMessageFor(m => m.Draftable)
+    <span class="hint">@T("Determines if this content type supports draft versions.")</span>
+</fieldset>
+
+<fieldset>
+    @Html.EditorFor(m => m.Securable)
+    <label for="@Html.FieldIdFor(m => m.Securable)" class="forcheckbox">@T("Securable")</label>
+    @Html.ValidationMessageFor(m => m.Securable)
+    <span class="hint">@T("Determines if this content type can have custom permissions.")</span>
+</fieldset>
+
+<fieldset>
+    <label for="@Html.FieldIdFor(m => m.Stereotype)">@T("Stereotype")</label>
+    @Html.TextBoxFor(m => m.Stereotype, new { @class = "text medium"})
+    @Html.ValidationMessageFor(m => m.Stereotype)
+    <span class="hint">@T("(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ...")</span>
+</fieldset>

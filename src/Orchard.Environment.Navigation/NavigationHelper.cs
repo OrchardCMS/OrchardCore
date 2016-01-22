@@ -51,7 +51,7 @@ namespace Orchard.Environment.Navigation
                 .Menu(menu)
                 .Parent(parentShape)
                 .Level(parentShape.Selected == null ? 1 : (int)parentShape.Level + 1)
-                .Local(menuItem.Local);
+                .Local(menuItem.LocalNav);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);

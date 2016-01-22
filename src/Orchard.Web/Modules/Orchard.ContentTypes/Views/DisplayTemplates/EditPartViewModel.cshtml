@@ -1,0 +1,10 @@
+﻿@model Orchard.ContentTypes.ViewModels.EditPartViewModel
+<div class="summary">
+    <div class="properties">
+        <h3>@Model.DisplayName</h3>
+        @if(!string.IsNullOrWhiteSpace(Model.Description)) {<span class="hint">@T(Model.Description)</span>}
+    </div>
+    <div class="related">
+        @Html.ActionLink(T("Edit").ToString(), "EditPart", new { area = "Orchard.ContentTypes", id = Model.Name })
+    </div>
+</div>

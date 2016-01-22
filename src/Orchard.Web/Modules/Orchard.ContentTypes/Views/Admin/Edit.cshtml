@@ -1,0 +1,55 @@
+@model Orchard.ContentTypes.ViewModels.EditTypeViewModel
+@{
+    Style.Require("ContentTypesAdmin");
+    Script.Require("jQuery");
+    Layout.Title = T("Edit Content Type - {0}", Html.Raw(Model.DisplayName)).Text;
+}
+
+<div class="manage">
+    @Html.ActionLink(T("Edit Placement").Text, "EditPlacement", new { area = "Orchard.ContentTypes", id = Model.Name }, new { @class = "button" })
+</div>
+
+@using (Html.BeginFormAntiForgeryPost()) {
+    // todo: come up with real itemtype definitions and locations for said definitions
+    <div itemscope="itemscope" itemid="@Model.Name" itemtype="http://orchardproject.net/data/ContentType">
+        @Html.ValidationSummary()
+        <fieldset>
+            <label for="DisplayName">@T("Display Name")</label>
+            @Html.TextBoxFor(m => m.DisplayName, new { @class = "text medium" })
+            <span class="hint">@T("Content Type Id: {0}", Model.Name)</span>
+            @* todo: if we continue to go down the midrodata route, some helpers would be nice *@
+            <meta itemprop="DisplayName" content="@Model.DisplayName" />
+            @* has unintended consequences (renamging the type) - changing the name creates a new type of that name *@
+            <meta itemprop="Id" content="@Model.Name" />
+            @Html.HiddenFor(m => m.Name)
+        </fieldset>
+        @{ Html.RenderTemplates(Model.Templates); }    
+        <div class="manage-type">
+            <h2>@T("Fields")</h2>
+            <div class="manage add-to-type">
+                @Html.ActionLink(T("Add Field").Text, "AddFieldTo", new { area = "Orchard.ContentTypes", id = Model.Name }, new { @class = "button" })
+            </div>
+                @Html.EditorFor(m => m.Fields, "Fields", "")
+            <h2>@T("Parts")</h2>
+            <div class="manage add-to-type">
+                @Html.ActionLink(T("Add Parts").Text, "AddPartsTo", new { area = "Orchard.ContentTypes", id = Model.Name }, new { @class = "button" })
+            </div>
+            @Html.EditorFor(m => m.Parts, "TypeParts", "")
+        </div>
+        <fieldset class="action">
+            <button class="primaryAction" type="submit" name="submit.Save" value="Save">@T("Save")</button>
+            <button class="primaryAction" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T("Delete")</button>
+        </fieldset>
+    </div> 
+}
+
+@using(Script.Foot()){
+<script type="text/javascript">
+//<![CDATA[
+    (function ($) {
+        $(".manage-field h3,.manage-part h3").expandoControl(function (controller) { return controller.nextAll(".details"); }, { collapse: true, remember: false });
+        $(".manage-field h4").expandoControl(function (controller) { return controller.nextAll(".settings"); }, { collapse: true, remember: false });
+    })(jQuery);
+//]]>
+</script>
+}

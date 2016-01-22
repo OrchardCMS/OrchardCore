@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.Core": "6.0.0-rc1-final",
     "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.Validation": "2.0.0-*"

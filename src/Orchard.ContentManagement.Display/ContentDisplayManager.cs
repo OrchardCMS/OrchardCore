@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display
 {
-    public class DefaultContentDisplay : IContentDisplay
+    public class DefaultContentDisplayManager : IContentDisplayManager
     {
         private readonly IEnumerable<IDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
@@ -23,13 +23,13 @@ namespace Orchard.ContentManagement.Display
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
-        public DefaultContentDisplay(
+        public DefaultContentDisplayManager(
             IEnumerable<IDisplayHandler> handlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
-            ILogger<DefaultContentDisplay> logger,
+            ILogger<DefaultContentDisplayManager> logger,
             ILayoutAccessor layoutAccessor
             )
         {
@@ -108,7 +108,7 @@ namespace Orchard.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(IContent content, IModelUpdater updater, string groupInfoId)
+        public async Task<dynamic> UpdateEditorAsync(IContent content, IUpdateModel updater, string groupInfoId)
         {
             if (content == null || content.ContentItem == null)
             {

@@ -1,0 +1,19 @@
+﻿@model Orchard.ContentTypes.ViewModels.EditTypeViewModel
+@using Orchard.Core.Contents.Settings;
+@{
+    var settings = Model.Settings.GetModel<ContentTypeSettings>();
+    var creatable = settings.Creatable;
+    var stereotype = Model.Settings.ContainsKey("Stereotype") ? Model.Settings["Stereotype"] : default(string);
+}
+<div class="summary">
+    <div class="properties">
+        <h3>@Model.DisplayName</h3> @if (!string.IsNullOrWhiteSpace(stereotype)) { <text><span class="stereotype" title="Stereotype">- @stereotype</span></text>}
+        @if (creatable) {
+        <p class="pageStatus">@Html.ActionLink(T("Create New {0}", Html.Raw(Model.DisplayName)).Text, "Create", new {area = "Contents", id = Model.Name})</p>
+        }
+    </div>
+    <div class="related">@if (creatable) {
+        @Html.ActionLink(T("List Items").ToString(), "List", new {area = "Contents", id = Model.Name})@T(" | ")}
+        @Html.ActionLink(T("Edit").ToString(), "Edit", new {area = "Orchard.ContentTypes", id = Model.Name})
+    </div>
+</div>

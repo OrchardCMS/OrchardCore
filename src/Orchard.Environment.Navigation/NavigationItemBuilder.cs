@@ -64,15 +64,15 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public NavigationItemBuilder Local()
+        public NavigationItemBuilder LocalNav()
         {
-            _item.Local = true;
+            _item.LocalNav = true;
             return this;
         }
 
         public NavigationItemBuilder Local(bool value)
         {
-            _item.Local = value;
+            _item.LocalNav = value;
             return this;
         }
 

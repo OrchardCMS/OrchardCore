@@ -7,7 +7,7 @@ using Microsoft.AspNet.Mvc.ModelBinding;
 
 namespace Orchard.Hosting.Web.Mvc.ModelBinding
 {
-    public class ControllerModelUpdater : IModelUpdater
+    public class ControllerModelUpdater : IUpdateModel
     {
         private readonly Controller _controller;
 

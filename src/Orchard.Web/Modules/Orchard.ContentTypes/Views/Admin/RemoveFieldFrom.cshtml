@@ -1,0 +1,13 @@
+@model Orchard.ContentTypes.ViewModels.RemoveFieldViewModel
+@{
+    Style.Require("ContentTypesAdmin");
+    Layout.Title = T("Remove the \"{0}\" part from  \"{1}\"", Model.Name, Model.Part.DisplayName).ToString();
+}
+
+@using (Html.BeginFormAntiForgeryPost()) {
+    <p>@T("Looks like you couldn't use the fancy way to remove the field. Try hitting the button below to force the issue.")</p>
+    <fieldset>
+        @Html.HiddenFor(m => m.Name)
+        <button class="primaryAction" type="submit">@T("Remove")</button>
+    </fieldset>
+}

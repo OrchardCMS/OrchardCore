@@ -1,0 +1,6 @@
+﻿.navicon-content-definition {
+background-image:url(images/menu.contenttypes.png) !important;
+}
+.navicon-content-definition:hover {
+background-position:0 -30px !important;
+}

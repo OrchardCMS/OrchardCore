@@ -1,0 +1,39 @@
+@model Orchard.ContentTypes.ViewModels.EditPartViewModel
+@{
+    Style.Require("ContentTypesAdmin");
+    Script.Require("jQuery");
+    Layout.Title = T("Edit Part").ToString();
+}
+
+@using (Html.BeginFormAntiForgeryPost()) {
+    @Html.ValidationSummary()
+    <fieldset>
+        <label for="Name">@T("Name")</label>
+        @* has unintended consequences (renaming the part) - changing the name creates a new part of that name  *@
+        @Html.TextBoxFor(m => m.Name, new {@class = "text medium", disabled = "disabled"})
+        @Html.HiddenFor(m => m.Name)
+    </fieldset>
+    <div class="manage-part">
+        <div class="settings">
+        @{ Html.RenderTemplates(Model.Templates); }
+        </div>
+        <h2>@T("Fields")</h2>
+        <div class="manage add-to-type">@Html.ActionLink(T("Add").Text, "AddFieldTo", new { area = "Orchard.ContentTypes", id = Model.Name }, new { @class = "button" })</div>
+        @Html.EditorFor(m => m.Fields, "Fields", "")
+    </div>
+    <fieldset class="action">
+        <button class="primaryAction" type="submit" name="submit.Save" value="Save">@T("Save")</button>
+        <button class="primaryAction" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T("Delete")</button>
+    </fieldset>
+}
+
+@using(Script.Foot()){
+<script type="text/javascript">
+//<![CDATA[
+    (function ($) {
+        $(".manage-field h3,.manage-part h3").expandoControl(function (controller) { return controller.nextAll(".details"); }, { collapse: true, remember: false });
+        $(".manage-field h4").expandoControl(function (controller) { return controller.nextAll(".settings"); }, { collapse: true, remember: false });
+    })(jQuery);
+//]]>
+</script>
+}

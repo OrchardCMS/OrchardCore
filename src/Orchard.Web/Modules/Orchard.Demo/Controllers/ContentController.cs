@@ -8,15 +8,15 @@ using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers
 {
-    public class ContentController : Controller, IModelUpdater
+    public class ContentController : Controller, IUpdateModel
     {
-        private readonly IContentDisplay _contentDisplay;
+        private readonly IContentDisplayManager _contentDisplay;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
         public ContentController(
             IContentManager contentManager,
-            IContentDisplay contentDisplay,
+            IContentDisplayManager contentDisplay,
             ISession session)
         {
             _contentManager = contentManager;

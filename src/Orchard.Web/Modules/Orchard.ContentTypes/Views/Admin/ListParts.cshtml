@@ -1,0 +1,20 @@
+@model Orchard.ContentTypes.ViewModels.ListContentPartsViewModel
+@{
+    Script.Require("jQuery");
+    Script.Include("admin-contenttypes.js");
+    Layout.Title = T("Content Parts").ToString();
+}
+<div class="manage">
+    @Html.ActionLink(T("Create new part").ToString(), "CreatePart", new{Controller="Admin",Area="Orchard.ContentTypes"}, new { @class = "button primaryAction" })
+</div>
+<fieldset class="bulk-actions">
+    <label for="search-box">@T("Filter:")</label>
+    <input id="search-box" class="text" type="text" autofocus="autofocus" />
+</fieldset>
+<ul class="contentItems">
+    @foreach (var type in Model.Parts) {
+    <li data-record-text="@type.DisplayName">
+        @Html.DisplayFor(m => type)
+    </li>
+    }
+</ul>

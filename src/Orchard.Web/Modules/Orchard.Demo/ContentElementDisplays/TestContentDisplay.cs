@@ -60,7 +60,7 @@ namespace Orchard.Demo.ContentElementDisplays
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
-        public override async Task<DisplayResult> UpdateEditorAsync(UpdateEditorContext context, IModelUpdater updater)
+        public override async Task<DisplayResult> UpdateEditorAsync(UpdateEditorContext context, IUpdateModel updater)
         {
             var testContentPart = context.Content.As<TestContentPartA>();
 

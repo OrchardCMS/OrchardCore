@@ -7,13 +7,13 @@ namespace Orchard.ContentManagement
     /// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
     /// and <see cref="ContentField"/>
     /// </summary>
-    public abstract class ContentElement : IContent
+    public class ContentElement : IContent
     {
-        public ContentElement() : this(new JObject())
+        protected ContentElement() : this(new JObject())
         {
         }
 
-        public ContentElement(JObject data)
+        protected ContentElement(JObject data)
         {
             Data = data;
         }
@@ -60,6 +60,29 @@ namespace Orchard.ContentManagement
             }
 
             return default(T);
+        }
+
+        /// <summary>
+        /// Extract some named content.
+        /// </summary>
+        public ContentElement Get(string name)
+        {
+            JToken value;
+            if (Data.TryGetValue(name, out value))
+            {
+                var obj = value as JObject;
+                if (value == null)
+                {
+                    return null;
+                }
+
+                var contentElement = new ContentElement(obj);
+                contentElement.ContentItem = ((IContent)this).ContentItem;
+
+                return contentElement;
+            }
+
+            return null;
         }
 
         /// <summary>

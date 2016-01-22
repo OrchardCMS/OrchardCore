@@ -49,10 +49,11 @@ namespace Orchard.Environment.Navigation
         /// Whether the menu item should link to the same url as its first child.
         /// </summary>
         public bool LinkToFirstChild { get; set; }
+
         /// <summary>
         /// <c>True</c> if the menu item is is local to the page, like a tab.
         /// </summary>
-        public bool Local { get; set; }
+        public bool LocalNav { get; set; }
 
         /// <summary>
         /// The culture for which this menu item is used.
