@@ -1,30 +1,28 @@
 @model Orchard.ContentTypes.ViewModels.AddPartsViewModel
 @{
-    Style.Require("ContentTypesAdmin");
-    Layout.Title = T("Add Parts To \"{0}\"", Model.Type.DisplayName).ToString();
+    //Style.Require("ContentTypesAdmin");
+
+    int i = 0;
 }
-@T("Choose the Parts to add to this Content Type.")
-@using (Html.BeginFormAntiForgeryPost()) {
+<h1>@T["Add Parts To \"{0}\"", Model.Type.DisplayName]</h1>
+
+@T["Choose the Parts to add to this Content Type."]
+
+<form asp-for="AddPartsTo">
     @Html.ValidationSummary()
-    <fieldset>
-        @Html.UnorderedList(
-            Model.PartSelections,
-            (partSelection, i) => {
-                var fieldNameStart = "PartSelections[" + i + "].";
-                var fieldId = ViewData.TemplateInfo.GetFullHtmlFieldId(fieldNameStart + "IsSelected");
-                return MvcHtmlString.Create(
-                    string.Format(
-                        "{0} <label for=\"{1}\" class=\"forcheckbox\">{2}</label>{3}{4}",
-                        Html.CheckBox(fieldNameStart + "IsSelected"),
-                        fieldId,
-                        partSelection.PartDisplayName,
-                        !string.IsNullOrWhiteSpace(partSelection.PartDescription) ? string.Format("<label for=\"{0}\" class=\"part hint\">{1}</label>", fieldId, partSelection.PartDescription) : "",
-                        Html.Hidden(fieldNameStart + "PartName", partSelection.PartName)));
-                  
-            },
-            "available-parts")
+        <ul class="list-group">
+            @foreach(var partSelection in Model.PartSelections)
+            {
+                
+                <li class="list-group-item">
+                    <label asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
+                    <input asp-for="PartSelections[i].IsSelected" type="checkbox" checked="@partSelection.IsSelected" />
+                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    <span class="hint">@partSelection.PartDescription</span>
+                </li>
+            }
+        </ul>
+    <fieldset class="form-group">
+        <button class="primaryAction" type="submit">@T["Save"]</button>
     </fieldset>
-    <fieldset>
-        <button class="primaryAction" type="submit">@T("Save")</button>
-    </fieldset>
-}
+</form>

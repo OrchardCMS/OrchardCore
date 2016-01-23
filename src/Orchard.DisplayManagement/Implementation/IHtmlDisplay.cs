@@ -9,7 +9,7 @@ namespace Orchard.DisplayManagement.Implementation
     /// This interface isn't used directly - instead you would call through a
     /// DisplayHelper created by the IDisplayHelperFactory interface
     /// </summary>
-    public interface IDisplayManager : IDependency
+    public interface IHtmlDisplay : IDependency
     {
         Task<IHtmlContent> ExecuteAsync(DisplayContext context);
     }

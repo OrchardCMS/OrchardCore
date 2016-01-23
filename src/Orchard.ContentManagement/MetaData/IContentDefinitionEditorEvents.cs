@@ -3,12 +3,13 @@ using System.Linq;
 using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.ViewModels;
-using Orchard.Events;
+
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DependencyInjection;
 
 namespace Orchard.ContentManagement.MetaData
 {
-    public interface IContentDefinitionEditorEvents : IEventHandler
+    public interface IContentDefinitionEditorEvents : IDependency
     {
         IEnumerable<TemplateViewModel> TypeEditor(ContentTypeDefinition definition);
         IEnumerable<TemplateViewModel> TypePartEditor(ContentTypePartDefinition definition);

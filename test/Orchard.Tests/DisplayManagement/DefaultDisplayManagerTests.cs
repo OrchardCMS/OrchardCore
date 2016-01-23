@@ -52,7 +52,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
-            serviceCollection.AddScoped<IDisplayManager, DefaultDisplayManager>();
+            serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
@@ -98,7 +98,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task RenderSimpleShape()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -126,7 +126,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task RenderPreCalculatedShape()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -161,7 +161,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task RenderFallbackShape()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -189,7 +189,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task RenderAlternateShapeExplicitly()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -222,7 +222,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task RenderAlternateShapeByMostRecentlyAddedMatchingAlternate()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -260,7 +260,7 @@ namespace Orchard.Tests.DisplayManagement
 
         //[Fact]
         //public void IShapeDisplayEventsIsCalled() {
-        //    var displayManager = _serviceProvider.GetService<IDisplayManager>();
+        //    var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
         //    var shape = new Shape {
         //        Metadata = new ShapeMetadata {
@@ -290,7 +290,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shape = new Shape
             {
@@ -322,7 +322,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task DisplayingEventFiresEarlyEnoughToAddAlternateShapeBindingNames()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shapeFoo = new Shape
             {
@@ -358,7 +358,7 @@ namespace Orchard.Tests.DisplayManagement
         [Fact]
         public async Task ShapeTypeAndBindingNamesAreNotCaseSensitive()
         {
-            var displayManager = _serviceProvider.GetService<IDisplayManager>();
+            var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
 
             var shapeFoo = new Shape
             {

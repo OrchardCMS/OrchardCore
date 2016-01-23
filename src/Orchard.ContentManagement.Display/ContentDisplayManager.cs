@@ -1,22 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Display.Handlers;
+using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Theming;
-using Orchard.DisplayManagement.Zones;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display
 {
-    public class DefaultContentDisplayManager : IContentDisplayManager
+    public class DefaultContentDisplayManager : BaseDisplayManager<IContent>, IContentDisplayManager
     {
-        private readonly IEnumerable<IDisplayHandler> _handlers;
+        private readonly IEnumerable<IContentDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
@@ -24,14 +24,14 @@ namespace Orchard.ContentManagement.Display
         private readonly ILayoutAccessor _layoutAccessor;
 
         public DefaultContentDisplayManager(
-            IEnumerable<IDisplayHandler> handlers,
+            IEnumerable<IContentDisplayHandler> handlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
             ILogger<DefaultContentDisplayManager> logger,
             ILayoutAccessor layoutAccessor
-            )
+            ) : base(shapeTableManager, shapeFactory, themeManager)
         {
             _handlers = handlers;
             _shapeTableManager = shapeTableManager;
@@ -67,7 +67,7 @@ namespace Orchard.ContentManagement.Display
             itemShape.ContentItem = content.ContentItem;
             itemShape.Metadata.DisplayType = actualDisplayType;
 
-            var context = new BuildDisplayContext(itemShape, content, actualDisplayType, groupId, _shapeFactory);
+            var context = new BuildDisplayContext<IContent>(itemShape, content, actualDisplayType, groupId, _shapeFactory);
             context.Layout = _layoutAccessor.GetLayout();
 
             await BindPlacementAsync(context, actualDisplayType, stereotype.Value<string>());
@@ -100,7 +100,7 @@ namespace Orchard.ContentManagement.Display
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + content.ContentItem.ContentType);
 
-            var context = new UpdateEditorContext(itemShape, content, groupId, _shapeFactory);
+            var context = new UpdateEditorContext<IContent>(itemShape, content, groupId, _shapeFactory);
             await BindPlacementAsync(context, null, stereotype.Value<string>());
 
             await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(context), Logger);
@@ -133,51 +133,12 @@ namespace Orchard.ContentManagement.Display
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + content.ContentItem.ContentType);
 
-            var context = new UpdateEditorContext(itemShape, content, groupInfoId, _shapeFactory);
+            var context = new UpdateEditorContext<IContent>(itemShape, content, groupInfoId, _shapeFactory);
             await BindPlacementAsync(context, null, stereotype.Value<string>());
 
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context, updater), Logger);
 
             return context.Shape;
-        }
-        
-        private async Task BindPlacementAsync(BuildShapeContext context, string displayType, string stereotype)
-        {
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
-
-            context.FindPlacement = (partShapeType, differentiator, defaultLocation) => {
-
-                ShapeDescriptor descriptor;
-                if (shapeTable.Descriptors.TryGetValue(partShapeType, out descriptor))
-                {
-                    var placementContext = new ShapePlacementContext
-                    {
-                        Shape = context.Shape
-                    };
-
-                    // define which location should be used if none placement is hit
-                    descriptor.DefaultPlacement = defaultLocation;
-
-                    var placement = descriptor.Placement(placementContext);
-                    if (placement != null)
-                    {
-                        placement.Source = placementContext.Source;
-                        return placement;
-                    }
-                }
-
-                return new PlacementInfo
-                {
-                    Location = defaultLocation,
-                    Source = String.Empty
-                };
-            };
-        }
-
-        private dynamic CreateContentShape(string actualShapeType)
-        {
-            return _shapeFactory.Create(actualShapeType, Arguments.Empty, () => new ZoneHolding(() => _shapeFactory.Create("ContentZone", Arguments.Empty)));
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Orchard.ContentManagement.Display.ContentDisplay
+﻿using Orchard.DisplayManagement.Handlers;
+
+namespace Orchard.ContentManagement.Display.ContentDisplay
 {
-    public class ContentElementDisplay : ContentDisplayBase, IContentDisplay
+    public class ContentElementDisplay : DisplayBase<IContent>, IContentDisplay
     {
     }
 }

@@ -18,11 +18,13 @@ $left-navigation-width: 200px;
 .ta-wrapper {
     
     .ta-navbar-top {
+        @extend .bg-faded;
         @extend .navbar, .navbar-fixed-top;
         min-height: $top-nav-height;
     }
     
     .ta-left-sidebar {
+        @extend .bg-faded;
         @extend .hidden-xs-down;
         width: $left-navigation-width;
 
@@ -45,7 +47,8 @@ $left-navigation-width: 200px;
     .ta-content {
         @extend .container-fluid;
         margin-left:0;
-        margin-top: $top-nav-height + 1px;
+        margin-top: $top-nav-height;
+        padding-top: 1em;
     }
 
     @include media-breakpoint-up(sm) {
@@ -75,4 +78,18 @@ $left-navigation-width: 200px;
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
+}
+
+
+.button {
+    @extend .btn, .btn-primary;
+}
+
+// Toolbar
+// ------------------------------
+
+.admin-toolbar {
+    @extend .navbar, .navbar-light, .bg-faded;
+    margin-bottom: 1em;
+
 }

@@ -4,10 +4,10 @@ namespace Orchard.DisplayManagement.Implementation
 {
     public class DisplayHelperFactory : IDisplayHelperFactory
     {
-        private readonly IDisplayManager _displayManager;
+        private readonly IHtmlDisplay _displayManager;
         private readonly IShapeFactory _shapeFactory;
 
-        public DisplayHelperFactory(IDisplayManager displayManager, IShapeFactory shapeFactory)
+        public DisplayHelperFactory(IHtmlDisplay displayManager, IShapeFactory shapeFactory)
         {
             _displayManager = displayManager;
             _shapeFactory = shapeFactory;

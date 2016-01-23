@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Implementation
 {
-    public class DefaultDisplayManager : IDisplayManager
+    public class DefaultIHtmlDisplay : IHtmlDisplay
     {
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
@@ -22,12 +22,12 @@ namespace Orchard.DisplayManagement.Implementation
 
         private readonly IThemeManager _themeManager;
 
-        public DefaultDisplayManager(
+        public DefaultIHtmlDisplay(
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
-            ILogger<DefaultDisplayManager> logger,
+            ILogger<DefaultIHtmlDisplay> logger,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;

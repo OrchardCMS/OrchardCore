@@ -3,7 +3,7 @@
     <fieldset class="manage-part" itemscope="itemscope" itemid="@Model.PartDefinition.Name" itemtype="http://orchardproject.net/data/ContentTypePart">
         <h3 itemprop="Name">@Model.PartDefinition.DisplayName @if(!string.IsNullOrWhiteSpace(Model.Description)){<span class="description"> - @Model.Description</span>}</h3>
         <div class="manage">
-            @if (Model.PartDefinition.Settings.GetModel<ContentPartSettings>().Attachable) {
+            @if (Model.PartDefinition.Settings.ToObject<ContentPartSettings>().Attachable) {
                 @Html.ActionLink(T("Remove").Text, "RemovePartFrom", new { area = "Orchard.ContentTypes", id = Model.Type.Name, Model.PartDefinition.Name }, new { itemprop = "RemoveUrl UnsafeUrl" });
             }
         </div>

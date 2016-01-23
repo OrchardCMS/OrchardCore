@@ -1,11 +1,11 @@
-﻿using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Handlers;
-using Orchard.ContentManagement.Display.Views;
-using Orchard.ContentManagement;
+﻿using Orchard.ContentManagement;
+using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.Demo.Models;
+using Orchard.DisplayManagement.Handlers;
+using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Views;
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.Demo.ContentElementDisplays
 {
@@ -14,9 +14,9 @@ namespace Orchard.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override DisplayResult BuildDisplay(BuildDisplayContext context)
+        public override DisplayResult<IContent> BuildDisplay(BuildDisplayContext<IContent> context)
         {
-            var testContentPart = context.Content.As<TestContentPartA>();
+            var testContentPart = context.Model.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -48,9 +48,9 @@ namespace Orchard.Demo.ContentElementDisplays
                 );
         }
 
-        public override DisplayResult BuildEditor(BuildEditorContext context)
+        public override DisplayResult<IContent> BuildEditor(BuildEditorContext<IContent> context)
         {
-            var testContentPart = context.Content.As<TestContentPartA>();
+            var testContentPart = context.Model.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -60,9 +60,9 @@ namespace Orchard.Demo.ContentElementDisplays
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
-        public override async Task<DisplayResult> UpdateEditorAsync(UpdateEditorContext context, IUpdateModel updater)
+        public override async Task<DisplayResult<IContent>> UpdateEditorAsync(UpdateEditorContext<IContent> context, IUpdateModel updater)
         {
-            var testContentPart = context.Content.As<TestContentPartA>();
+            var testContentPart = context.Model.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -77,7 +77,7 @@ namespace Orchard.Demo.ContentElementDisplays
                 }
                 else
                 {
-                    context.Content.ContentItem.Weld(testContentPart);
+                    context.Model.ContentItem.Weld(testContentPart);
                 }
             }
             

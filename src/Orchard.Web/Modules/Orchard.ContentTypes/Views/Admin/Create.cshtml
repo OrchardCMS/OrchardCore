@@ -1,22 +1,32 @@
 @model Orchard.ContentTypes.ViewModels.CreateTypeViewModel
 
-@{ Layout.Title = T("New Content Type").ToString(); }
+<h1>@RenderTitlePart(T["New Content Type"])</h1>
 
-@using (Html.BeginFormAntiForgeryPost()) {
+<form asp-action="Create">
     @Html.ValidationSummary()
-    <fieldset>
-        <label for="DisplayName">@T("Display Name")</label>
-        @Html.TextBoxFor(m => m.DisplayName, new {@class = "text medium", autofocus = "autofocus"})
-        <span class="hint">@T("Name of the type as it will be displayed in screens.")</span>
-        <label for="Name">@T("Content Type Id")</label>
-        @Html.TextBoxFor(m => m.Name, new {@class = "text"})
-        <span class="hint">@T("Technical name of the type.")</span>
-    </fieldset>
-    <fieldset>
-        <button class="primaryAction" type="submit">@T("Create")</button>
-    </fieldset>}
 
-@using(Script.Foot()){
+    <fieldset class="form-group row">
+        <div class="col-xs-6 ">
+            <label asp-for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" />
+            <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
+        </div>
+    </fieldset>
+
+    <fieldset class="form-group row">
+        <div class="col-xs-4 ">
+            <label asp-for="Name">@T["Content Type Id"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the type."]</span>
+        </div>
+    </fieldset>
+    
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+    </fieldset>
+</form>
+
+@*@using(Script.Foot()){
 <script type="text/javascript">
 //<![CDATA[
     $(function(){
@@ -58,4 +68,4 @@
     })
 //]]>
 </script>
-}
+}*@

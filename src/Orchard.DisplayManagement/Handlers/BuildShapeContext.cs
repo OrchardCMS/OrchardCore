@@ -1,24 +1,21 @@
-﻿using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Descriptors;
+﻿using Orchard.DisplayManagement.Descriptors;
 using System;
 
-namespace Orchard.ContentManagement.Display.Handlers
+namespace Orchard.DisplayManagement.Handlers
 {
-    public class BuildShapeContext
+    public class BuildShapeContext<TModel>
     {
-        protected BuildShapeContext(IShape shape, IContent content, string groupId, IShapeFactory shapeFactory)
+        protected BuildShapeContext(IShape shape, TModel model, string groupId, IShapeFactory shapeFactory)
         {
             Shape = shape;
-            Content = content;
-            ContentItem = content.ContentItem;
+            Model = model;
             ShapeFactory = shapeFactory;
             GroupId = groupId;
             FindPlacement = (partType, differentiator, defaultLocation) => new PlacementInfo { Location = defaultLocation, Source = String.Empty };
         }
 
         public dynamic Shape { get; private set; }
-        public IContent Content { get; private set; }
-        public ContentItem ContentItem { get; private set; }
+        public TModel Model { get; private set; }
         public IShapeFactory ShapeFactory { get; private set; }
         public dynamic New => ShapeFactory;
         public IShape Layout { get; set; }

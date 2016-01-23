@@ -1,0 +1,22 @@
+﻿@model Orchard.ContentTypes.ViewModels.EditTypeViewModel
+@using Orchard.ContentManagement.MetaData.Settings;
+@{
+    var settings = Model.Settings.ToObject<ContentTypeSettings>();
+    var creatable = settings.Creatable;
+    var stereotype = Model.Settings.Value<string>("Stereotype");
+}
+    @Model.DisplayName
+    @if (!string.IsNullOrWhiteSpace(stereotype))
+    {
+        <span class="label label-default label-pill pull-xs-right" title="Stereotype">@stereotype</span>
+    }
+
+    @if (creatable)
+    {
+        <a asp-route-action="Create" asp-route-id="@Model.Name" class="button" role="button">@T["Create New {0}", Model.DisplayName]</a>
+    }
+    
+<div class="pull-xs-right">
+    <a asp-route-action="List" asp-route-area="Contents" asp-route-id="@Model.Name" class="btn btn-secondary btn-sm" role="button">@T["List Items"]</a>
+    <a asp-route-action="Edit" asp-route-area="Orchard.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary  btn-sm" role="button">@T["Edit"]</a>
+</div>

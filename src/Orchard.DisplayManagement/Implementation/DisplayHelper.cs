@@ -12,11 +12,11 @@ namespace Orchard.DisplayManagement.Implementation
 {
     public class DisplayHelper : DynamicObject
     {
-        private readonly IDisplayManager _displayManager;
+        private readonly IHtmlDisplay _displayManager;
         private readonly IShapeFactory _shapeFactory;
 
         public DisplayHelper(
-            IDisplayManager displayManager,
+            IHtmlDisplay displayManager,
             IShapeFactory shapeFactory,
             ViewContext viewContext)
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Handlers;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
     /// This component coordinates how content element display components are taking part in the rendering when some content needs to be rendered.
     /// It will dispatch BuildDisplay/BuildEditor to all <see cref="IContentDisplay"/> implementations.
     /// </summary>
-    public class ContentDisplayCoordinator : IDisplayHandler
+    public class ContentDisplayCoordinator : IDisplayHandler<IContent>, IContentDisplayHandler
     {
         private readonly IEnumerable<IContentDisplay> _contentDisplays;
 
@@ -26,7 +26,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public ILogger Logger { get; set; }
         
-        public Task BuildDisplayAsync(BuildDisplayContext context)
+        public Task BuildDisplayAsync(BuildDisplayContext<IContent> context)
         {
             return _contentDisplays.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.BuildDisplayAsync(context);
@@ -35,7 +35,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
             }, Logger);
         }
 
-        public Task BuildEditorAsync(BuildEditorContext context)
+        public Task BuildEditorAsync(BuildEditorContext<IContent> context)
         {
             return _contentDisplays.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.BuildEditorAsync(context);
@@ -44,7 +44,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
             }, Logger);
         }
 
-        public Task UpdateEditorAsync(UpdateEditorContext context, IUpdateModel modelUpdater)
+        public Task UpdateEditorAsync(UpdateEditorContext<IContent> context, IUpdateModel modelUpdater)
         {
             return _contentDisplays.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.UpdateEditorAsync(context, modelUpdater);
