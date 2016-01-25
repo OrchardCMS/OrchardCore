@@ -8,22 +8,28 @@
 
 @T["Choose the Parts to add to this Content Type."]
 
-<form asp-for="AddPartsTo">
+<form asp-action="AddPartsTo">
     @Html.ValidationSummary()
+    <fieldset class="form-group">
         <ul class="list-group">
-            @foreach(var partSelection in Model.PartSelections)
+            @foreach (var partSelection in Model.PartSelections)
             {
-                
                 <li class="list-group-item">
-                    <label asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
-                    <input asp-for="PartSelections[i].IsSelected" type="checkbox" checked="@partSelection.IsSelected" />
-                    <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    <div class="checkbox">
+                        
+                        <label asp-for="PartSelections[i].IsSelected">
+                            <input asp-for="PartSelections[i].IsSelected" type="checkbox" />
+                            @partSelection.PartDisplayName
+                        </label>
+                        <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                    </div>
                     <span class="hint">@partSelection.PartDescription</span>
                 </li>
             }
         </ul>
+    </fieldset>
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary" >@T["Cancel"]</a>
+        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
     </fieldset>
 </form>

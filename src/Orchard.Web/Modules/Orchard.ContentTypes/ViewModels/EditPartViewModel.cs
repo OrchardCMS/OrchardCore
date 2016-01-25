@@ -37,8 +37,8 @@ namespace Orchard.ContentTypes.ViewModels
 
         public string Description
         {
-            get { return Settings["ContentPartSettings.Description"].Value<string>(); }
-            set { Settings["ContentPartSettings.Description"] = value; }
+            get { return Settings.Value<string>("Description"); }
+            set { Settings["Description"] = value; }
         }
 
         public IEnumerable<TemplateViewModel> Templates { get; set; }

@@ -71,11 +71,13 @@ namespace Orchard.Core.Settings.Metadata
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
         {
             Apply(contentTypeDefinition, Acquire(contentTypeDefinition));
+            _session.Save(_contentDefinitionRecord);
         }
 
         public void StorePartDefinition(ContentPartDefinition contentPartDefinition)
         {
             Apply(contentPartDefinition, Acquire(contentPartDefinition));
+            _session.Save(_contentDefinitionRecord);
         }
 
         public void DeleteTypeDefinition(string name)
@@ -106,6 +108,7 @@ namespace Orchard.Core.Settings.Metadata
             if (record != null)
             {
                 GetContentDefinitionRecord().ContentPartDefinitionRecords.Remove(record);
+                _session.Save(_contentDefinitionRecord);
             }
         }
 
