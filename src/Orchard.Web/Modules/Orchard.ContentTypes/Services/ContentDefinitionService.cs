@@ -67,21 +67,21 @@ namespace Orchard.ContentTypes.Services
 
             var viewModel = new EditTypeViewModel(contentTypeDefinition)
             {
-                Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditor(contentTypeDefinition), Logger).SelectMany(x => x)
+                Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditor(contentTypeDefinition), Logger)
             };
 
             foreach (var part in viewModel.Parts)
             {
                 part._Definition.ContentTypeDefinition = contentTypeDefinition;
-                part.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditor(part._Definition), Logger).SelectMany(x => x);
+                part.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditor(part._Definition), Logger);
                 foreach (var field in part.PartDefinition.Fields)
-                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger).SelectMany(x => x);
+                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
             }
 
             if (viewModel.Fields.Any())
             {
                 foreach (var field in viewModel.Fields)
-                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger).SelectMany(x => x);
+                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
             }
 
             return viewModel;
@@ -125,7 +125,7 @@ namespace Orchard.ContentTypes.Services
 
                 // allow extensions to alter type configuration
                 _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdating(typeBuilder), Logger);
-                typeViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdate(typeBuilder, updater), Logger).SelectMany(x => x);
+                typeViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdate(typeBuilder, updater), Logger);
                 _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdated(typeBuilder), Logger);
 
                 foreach (var part in typeViewModel.Parts)
@@ -139,7 +139,7 @@ namespace Orchard.ContentTypes.Services
                     typeBuilder.WithPart(partViewModel.PartDefinition.Name, typePartBuilder =>
                     {
                         _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdating(typePartBuilder), Logger);
-                        partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdate(typePartBuilder, updater), Logger).SelectMany(x => x);
+                        partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdate(typePartBuilder, updater), Logger);
                         _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdated(typePartBuilder), Logger);
                     });
 
@@ -160,7 +160,7 @@ namespace Orchard.ContentTypes.Services
                             partBuilder.WithField(fieldViewModel.Name, partFieldBuilder =>
                             {
                                 _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdating(partFieldBuilder), Logger);
-                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger).SelectMany(x => x);
+                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger);
                                 _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdated(partFieldBuilder), Logger);
                             });
                         }
@@ -183,7 +183,7 @@ namespace Orchard.ContentTypes.Services
                             partBuilder.WithField(fieldViewModel.Name, partFieldBuilder =>
                             {
                                 _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdating(partFieldBuilder), Logger);
-                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger).SelectMany(x => x);
+                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger);
                                 _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdated(partFieldBuilder), Logger);
                             });
                         }
@@ -275,7 +275,7 @@ namespace Orchard.ContentTypes.Services
 
             var viewModel = new EditPartViewModel(contentPartDefinition)
             {
-                Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditor(contentPartDefinition), Logger).SelectMany(x => x)
+                Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditor(contentPartDefinition), Logger)
             };
 
             return viewModel;
@@ -304,7 +304,7 @@ namespace Orchard.ContentTypes.Services
             _contentDefinitionManager.AlterPartDefinition(partViewModel.Name, partBuilder =>
             {
                 _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdating(partBuilder), Logger);
-                partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdate(partBuilder, updateModel), Logger).SelectMany(x => x);
+                partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdate(partBuilder, updateModel), Logger);
                 _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdated(partBuilder), Logger);
             });
         }

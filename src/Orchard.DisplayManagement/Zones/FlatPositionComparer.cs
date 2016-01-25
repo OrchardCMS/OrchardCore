@@ -4,13 +4,19 @@ using System.Collections.Generic;
 
 namespace Orchard.UI
 {
-    public class FlatPositionComparer : IComparer<IPositioned>
+    public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
+
         public int Compare(IPositioned a, IPositioned b)
         {
             var x = a.Position;
             var y = b.Position;
 
+            return Compare(x, y);
+        }
+
+        public int Compare(string x, string y)
+        {
             if (x == y)
             {
                 return 0;

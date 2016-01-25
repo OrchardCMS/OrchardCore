@@ -23,6 +23,7 @@
             }
         </ul>
     <fieldset class="form-group">
-        <button class="primaryAction" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary" >@T["Cancel"]</a>
     </fieldset>
 </form>

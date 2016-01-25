@@ -4,9 +4,9 @@ using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.ViewModels;
 using Orchard.ContentTypes.ViewModels;
-using Orchard.Core.Contents.Settings;
 using Orchard.ContentManagement.MetaData.Settings;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.ContentManagement.Metadata.Settings;
 
 namespace Orchard.ContentTypes.Settings
 {
@@ -32,7 +32,7 @@ namespace Orchard.ContentTypes.Settings
         public override IEnumerable<TemplateViewModel> TypeEditorUpdate(ContentTypeDefinitionBuilder builder, IUpdateModel updateModel)
         {
             var model = new ContentTypeSettingsViewModel();
-            updateModel.TryUpdateModelAsync(model, "ContentTypeSettingsViewModel", null, null).Wait();
+            updateModel.TryUpdateModelAsync(model, "ContentTypeSettingsViewModel").Wait();
 
             builder.Creatable(model.Creatable);
             builder.Listable(model.Listable);
@@ -52,7 +52,7 @@ namespace Orchard.ContentTypes.Settings
         public override IEnumerable<TemplateViewModel> PartEditorUpdate(ContentPartDefinitionBuilder builder, IUpdateModel updateModel)
         {
             var model = new ContentPartSettings();
-            updateModel.TryUpdateModelAsync(model, "ContentPartSettings", null, null).Wait();
+            updateModel.TryUpdateModelAsync(model, "ContentPartSettings").Wait();
             builder.Attachable(model.Attachable);
             builder.WithDescription(model.Description);
             yield return DefinitionTemplate(model);

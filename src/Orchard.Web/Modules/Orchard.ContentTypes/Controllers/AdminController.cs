@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Orchard.Utility;
 using YesSql.Core.Services;
 using Orchard.Mvc;
-using Orchard.Core.Contents.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 
 namespace Orchard.ContentTypes.Controllers
 {
@@ -114,9 +114,6 @@ namespace Orchard.ContentTypes.Controllers
 
             var contentTypeDefinition = _contentDefinitionService.AddType(viewModel.Name, viewModel.DisplayName);
 
-            // adds CommonPart by default
-            _contentDefinitionService.AddPartToType("CommonPart", viewModel.Name);
-
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
 
 
@@ -196,7 +193,7 @@ namespace Orchard.ContentTypes.Controllers
 
             //Services.Notifier.Information(T("\"{0}\" settings have been saved.", typeViewModel.DisplayName));
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction("List");
         }
 
         [HttpPost, ActionName("Edit")]
@@ -443,7 +440,7 @@ namespace Orchard.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel,
-                Fields = _contentDefinitionService.GetFields().OrderBy(x => x.FieldName)
+                Fields = _contentDefinitionService.GetFields().OrderBy(x => x.FieldTypeName)
             };
 
             return View(viewModel);

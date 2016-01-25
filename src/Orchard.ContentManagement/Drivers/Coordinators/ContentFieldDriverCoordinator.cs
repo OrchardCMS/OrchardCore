@@ -41,7 +41,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators {
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldTypeName = partFieldDefinition.FieldDefinition.Name;
-                    var fieldInfo = fieldInfos.FirstOrDefault(fi => fi.FieldName == fieldTypeName);
+                    var fieldInfo = fieldInfos.FirstOrDefault(fi => fi.FieldTypeName == fieldTypeName);
                     var field = fieldInfo != null
                         ? fieldInfo.Factory(partFieldDefinition)
                         : new ContentField();

@@ -22,7 +22,7 @@ namespace Orchard.ContentTypes {
             builder.Add(T["Content Definition"], "1", contentDefinition => contentDefinition
                 .LinkToFirstChild(true)
                     .Add(T["Content Types"], "1", contentTypes => contentTypes
-                        .Action("Index", "Admin", new { area = "Orchard.ContentTypes" })
+                        .Action("List", "Admin", new { area = "Orchard.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
                     .Add(T["Content Parts"], "2", contentParts => contentParts

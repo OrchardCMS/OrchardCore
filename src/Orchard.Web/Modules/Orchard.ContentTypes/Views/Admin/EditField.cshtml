@@ -1,21 +1,21 @@
-@using Orchard.Utility.Extensions
+@using Orchard.Utility
 @model Orchard.ContentTypes.ViewModels.EditFieldNameViewModel
 @{
-    Style.Require("ContentTypesAdmin");
-
-    Layout.Title = T("Edit Field \"{0}\"", Html.Raw(Model.DisplayName)).ToString();
+//Style.Require("ContentTypesAdmin");
 }
 
-@using (Html.BeginFormAntiForgeryPost()) {
+@RenderTitlePart(T["Edit Field \"{0}\"", Html.Raw(Model.DisplayName)]);
+
+<form asp-action="EditField"></form>
     @Html.ValidationSummary()
-    <fieldset>
-        <label for="DisplayName">@T("Display Name")</label>
-        @Html.TextBoxFor(m => m.DisplayName, new {@class = "text medium", autofocus = "autofocus"})
-        <span class="hint">@T("Name of the field as it will be displayed in screens.")</span>
-        
-        @Html.HiddenFor(m => m.Name)
+    <fieldset class="form-group">
+        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <input asp-for="DisplayName" autofocus class="form-control" />
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        <input asp-for="Name" type="hidden" />
     </fieldset>
-    <fieldset>
-        <button class="primaryAction" type="submit" name="submit.Save" value="Save">@T("Save")</button>
+
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
     </fieldset>
 }

@@ -32,7 +32,7 @@ namespace Orchard.ContentTypes.ViewModels
 
         public string Description
         {
-            get { return PartSettings["ContentPartSettings.Description"].Value<string>(); }
+            get { return PartSettings["ContentPartSettings.Description"].Value<string>() ?? ""; }
         }
     }
 }

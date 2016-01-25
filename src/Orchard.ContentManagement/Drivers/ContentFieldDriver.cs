@@ -11,7 +11,7 @@ namespace Orchard.ContentManagement.Drivers
         {
             _contentFieldInfo = new ContentFieldInfo
             {
-                FieldName = typeof(TField).Name,
+                FieldTypeName = typeof(TField).Name,
                 Factory = partFieldDefinition => new TField()
             };
             

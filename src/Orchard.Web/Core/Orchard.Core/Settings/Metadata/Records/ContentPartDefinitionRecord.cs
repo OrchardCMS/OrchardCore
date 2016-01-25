@@ -9,6 +9,7 @@ namespace Orchard.Core.Settings.Metadata.Records
         public ContentPartDefinitionRecord()
         {
             ContentPartFieldDefinitionRecords = new List<ContentPartFieldDefinitionRecord>();
+            Settings = new JObject();
         }
 
         public virtual int Id { get; set; }

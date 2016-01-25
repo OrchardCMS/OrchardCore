@@ -1,0 +1,29 @@
+﻿using Orchard.ContentManagement.MetaData.Builders;
+
+namespace Orchard.ContentManagement.Metadata.Settings
+{
+    public static class ContentTypeSettingsExtensions
+    {
+        // TODO: WithSetting should append the "ContentTypeSettings" object itself
+        public static ContentTypeDefinitionBuilder Creatable(this ContentTypeDefinitionBuilder builder, bool creatable = true)
+        {
+            return builder.WithSetting("Creatable", creatable.ToString());
+        }
+
+        public static ContentTypeDefinitionBuilder Listable(this ContentTypeDefinitionBuilder builder, bool listable = true)
+        {
+            return builder.WithSetting("Listable", listable.ToString());
+        }
+
+        public static ContentTypeDefinitionBuilder Draftable(this ContentTypeDefinitionBuilder builder, bool draftable = true)
+        {
+            return builder.WithSetting("Draftable", draftable.ToString());
+        }
+
+        public static ContentTypeDefinitionBuilder Securable(this ContentTypeDefinitionBuilder builder, bool securable = true)
+        {
+            return builder.WithSetting("Securable", securable.ToString());
+        }
+
+    }
+}

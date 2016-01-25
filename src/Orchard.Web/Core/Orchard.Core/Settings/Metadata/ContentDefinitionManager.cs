@@ -80,12 +80,13 @@ namespace Orchard.Core.Settings.Metadata
 
         public void DeleteTypeDefinition(string name)
         {
-            var record = GetContentDefinitionRecord().ContentTypeDefinitionRecords.SingleOrDefault(x => x.Name == name);
+            var record = GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == name);
 
             // deletes the content type record associated
             if (record != null)
             {
                 GetContentDefinitionRecord().ContentTypeDefinitionRecords.Remove(record);
+                _session.Save(_contentDefinitionRecord);
             }
         }
 
@@ -100,7 +101,7 @@ namespace Orchard.Core.Settings.Metadata
             }
 
             // delete part
-            var record = GetContentDefinitionRecord().ContentPartDefinitionRecords.SingleOrDefault(x => x.Name == name);
+            var record = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == name);
 
             if (record != null)
             {
@@ -110,7 +111,7 @@ namespace Orchard.Core.Settings.Metadata
 
         private ContentTypeDefinitionRecord Acquire(ContentTypeDefinition contentTypeDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentTypeDefinitionRecords.SingleOrDefault(x => x.Name == contentTypeDefinition.Name);
+            var result = GetContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => x.Name == contentTypeDefinition.Name);
             if (result == null)
             {
                 result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
@@ -121,7 +122,7 @@ namespace Orchard.Core.Settings.Metadata
 
         private ContentPartDefinitionRecord Acquire(ContentPartDefinition contentPartDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentPartDefinitionRecords.SingleOrDefault(x => x.Name == contentPartDefinition.Name);
+            var result = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == contentPartDefinition.Name);
             if (result == null)
             {
                 result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
@@ -132,7 +133,7 @@ namespace Orchard.Core.Settings.Metadata
 
         private ContentFieldDefinitionRecord Acquire(ContentFieldDefinition contentFieldDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentFieldDefinitionRecords.SingleOrDefault(x => x.Name == contentFieldDefinition.Name);
+            var result = GetContentDefinitionRecord().ContentFieldDefinitionRecords.FirstOrDefault(x => x.Name == contentFieldDefinition.Name);
             if (result == null)
             {
                 result = new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
@@ -158,7 +159,7 @@ namespace Orchard.Core.Settings.Metadata
             foreach (var part in model.Parts)
             {
                 var partName = part.PartDefinition.Name;
-                var typePartRecord = record.ContentTypePartDefinitionRecords.SingleOrDefault(r => r.ContentPartDefinitionRecord.Name == partName);
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.ContentPartDefinitionRecord.Name == partName);
                 if (typePartRecord == null)
                 {
                     typePartRecord = new ContentTypePartDefinitionRecord { ContentPartDefinitionRecord = Acquire(part.PartDefinition) };
@@ -192,7 +193,7 @@ namespace Orchard.Core.Settings.Metadata
             foreach (var field in model.Fields)
             {
                 var fieldName = field.Name;
-                var partFieldRecord = record.ContentPartFieldDefinitionRecords.SingleOrDefault(r => r.Name == fieldName);
+                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => r.Name == fieldName);
                 if (partFieldRecord == null)
                 {
                     partFieldRecord = new ContentPartFieldDefinitionRecord

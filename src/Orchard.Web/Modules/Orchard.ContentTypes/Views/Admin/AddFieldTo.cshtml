@@ -1,31 +1,36 @@
-@using Orchard.Utility.Extensions
+@using Orchard.Utility
 @model Orchard.ContentTypes.ViewModels.AddFieldViewModel
 @{
-    Style.Require("ContentTypesAdmin");
-
-    Layout.Title = T("Add New Field To \"{0}\"", Model.Part.DisplayName).ToString();
+    //Style.Require("ContentTypesAdmin");
 }
 
-@using (Html.BeginFormAntiForgeryPost()) {
+<h1>@RenderTitlePart(T["Add New Field To \"{0}\"", Model.Part.DisplayName])</h1>
+
+<form asp-action="AddFieldTo">
     @Html.ValidationSummary()
-    <fieldset>
-        <label for="DisplayName">@T("Display Name")</label>
-        @Html.TextBoxFor(m => m.DisplayName, new {@class = "text medium", autofocus = "autofocus"})
-        <span class="hint">@T("Name of the field as it will be displayed in screens.")</span>
-        <label for="Name">@T("Technical Name")</label>
-        @Html.TextBoxFor(m => m.Name, new {@class = "text"})
-        <span class="hint">@T("Technical name of the field.")</span>    
+    <fieldset class="form-group">
+        <label for="DisplayName">@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control" autofocus />
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </fieldset>
-    <fieldset>
-        <label for="FieldTypeName">@T("Field Type")</label>
-        @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly()}), "FieldTypeName", "DisplayName"))
+            
+    <fieldset class="form-group">
+        <label for="Name">@T["Technical Name"]</label>
+        <input asp-for="Name" class="form-control" />
+        <span class="hint">@T["Technical name of the field."]</span>
     </fieldset>
+    
     <fieldset>
-        <button class="primaryAction" type="submit">@T("Save")</button>
+        <label asp-for="FieldTypeName">@T["Field Type"]</label>
+        @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly() }), "FieldTypeName", "DisplayName"))
     </fieldset>
-}
 
-@using(Script.Foot()){
+    <fieldset>
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    </fieldset>
+</form>
+
+@*@using(Script.Foot()){
 <script type="text/javascript">
 //<![CDATA[
     $(function(){
@@ -70,4 +75,4 @@
     })
 //]]>
 </script>
-}
+}*@

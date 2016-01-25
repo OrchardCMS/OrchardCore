@@ -1,7 +1,12 @@
-﻿@model Orchard.ContentTypes.ViewModels.EditPartFieldViewModel
-    <fieldset class="manage-field">
-        <h4>@Model.Name <span>(@Model.FieldDefinition.Name)</span></h4>@if (Model.Templates.Any()) {
-        <div class="settings">@{Html.RenderTemplates(Model.Templates);}
-        </div>}
-        @Html.HiddenFor(m => m.Name)@Html.HiddenFor(m => m.FieldDefinition.Name)@Html.HiddenFor(m => m.Index)
+﻿@using Orchard.ContentTypes.ViewModels;
+@model EditPartFieldViewModel
+    <fieldset class="form-group">
+        <h4>@Model.Name <span>(@Model.FieldDefinition.Name)</span></h4>
+        @if (Model.Templates.Any()) {
+            <div class="settings">@{await Html.RenderTemplatesAsync(Model.Templates);}
+            </div>
+        }
+        <input type="hidden" asp-for="Name" />
+        <input type="hidden" asp-for="FieldDefinition.Name" />
+        <input type="hidden" asp-for="Index" />
     </fieldset>
