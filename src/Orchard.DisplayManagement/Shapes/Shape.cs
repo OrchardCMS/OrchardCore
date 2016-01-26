@@ -14,8 +14,6 @@ namespace Orchard.DisplayManagement.Shapes
     [DebuggerTypeProxy(typeof(ShapeDebugView))]
     public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
-        private static readonly IComparer<IPositioned> PositionComparer = new FlatPositionComparer();
-
         private readonly IList<string> _classes = new List<string>();
         private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
         private readonly IList<IPositioned> _items = new List<IPositioned>();
@@ -95,7 +93,7 @@ namespace Orchard.DisplayManagement.Shapes
 
             if (_items.Count == 1)
             {
-                var compare = PositionComparer.Compare(item, _items[index]);
+                var compare = FlatPositionComparer.Instance.Compare(item, _items[index]);
                 if (compare == -1)
                 {
                     _items.Insert(0, item);
@@ -115,7 +113,7 @@ namespace Orchard.DisplayManagement.Shapes
             {
                 index = (end + start + 1) / 2;
                 var indexItem = _items[index];
-                var compare = PositionComparer.Compare(item, indexItem);
+                var compare = FlatPositionComparer.Instance.Compare(item, indexItem);
                 switch (compare)
                 {
                     case -1:
@@ -132,7 +130,7 @@ namespace Orchard.DisplayManagement.Shapes
 
             // Lookup the last item with the same order so that adding the same 
             // position will keep the inserted order
-            while (index < _items.Count && PositionComparer.Compare(item, _items[index]) == 0)
+            while (index < _items.Count && FlatPositionComparer.Instance.Compare(item, _items[index]) == 0)
             {
                 index++;
             }

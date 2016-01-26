@@ -14,7 +14,7 @@ namespace Orchard.ContentTypes.ViewModels
             if (templates == null)
                 return;
 
-            foreach (var template in templates.OrderByDescending(t => t.Position, new FlatPositionComparer()))
+            foreach (var template in templates.OrderByDescending(t => t.Position, FlatPositionComparer.Instance))
             {
                 await html.RenderTemplatesAsync(template);
             }

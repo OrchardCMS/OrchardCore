@@ -7,6 +7,17 @@ namespace Orchard.UI
     public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>
     {
 
+        public static FlatPositionComparer Instance { get; private set; }
+        
+        static FlatPositionComparer()
+        {
+            Instance = new FlatPositionComparer();
+        }
+
+        private FlatPositionComparer()
+        {
+        }
+
         public int Compare(IPositioned a, IPositioned b)
         {
             var x = a.Position;
