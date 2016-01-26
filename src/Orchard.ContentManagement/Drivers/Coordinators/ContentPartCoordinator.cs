@@ -7,17 +7,16 @@ using System;
 
 namespace Orchard.ContentManagement.Drivers.Coordinators {
     /// <summary>
-    /// This component coordinates how parts are taking part in the rendering when some content needs to be rendered.
-    /// It will dispatch BuildDisplay/BuildEditor to all <see cref="IContentPartDriver"/> implementations.
+    /// This component coordinates how parts are affecting content items.
     /// </summary>
-    public class ContentPartDriverCoordinator : ContentHandlerBase {
+    public class ContentPartCoordinator : ContentHandlerBase {
         private readonly IEnumerable<IContentPartDriver> _drivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentPartDriverCoordinator(
+        public ContentPartCoordinator(
             IEnumerable<IContentPartDriver> drivers, 
             IContentDefinitionManager contentDefinitionManager,
-            ILogger<ContentPartDriverCoordinator> logger) {
+            ILogger<ContentPartCoordinator> logger) {
             _drivers = drivers;
             _contentDefinitionManager = contentDefinitionManager;
             Logger = logger;

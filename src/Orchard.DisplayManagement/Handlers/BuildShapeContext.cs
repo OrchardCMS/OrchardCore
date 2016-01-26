@@ -3,23 +3,27 @@ using System;
 
 namespace Orchard.DisplayManagement.Handlers
 {
-    public class BuildShapeContext<TModel>
+    public abstract class BuildShapeContext : IBuildShapeContext
     {
-        protected BuildShapeContext(IShape shape, TModel model, string groupId, IShapeFactory shapeFactory)
+        protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IShape layout)
         {
             Shape = shape;
-            Model = model;
             ShapeFactory = shapeFactory;
             GroupId = groupId;
-            FindPlacement = (partType, differentiator, defaultLocation) => new PlacementInfo { Location = defaultLocation, Source = String.Empty };
+            Layout = layout;
+            FindPlacement = FindDefaultPlacement;
         }
 
         public dynamic Shape { get; private set; }
-        public TModel Model { get; private set; }
         public IShapeFactory ShapeFactory { get; private set; }
         public dynamic New => ShapeFactory;
         public IShape Layout { get; set; }
         public string GroupId { get; private set; }
         public Func<string, string, string, PlacementInfo> FindPlacement { get; set; }
+
+        private PlacementInfo FindDefaultPlacement(string partType, string differentiator, string defaultLocation)
+        {
+            return new PlacementInfo { Location = defaultLocation, Source = String.Empty };
+        }
     }
 }

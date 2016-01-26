@@ -2,7 +2,7 @@
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
-    public class ContentElementDisplay : DisplayBase<IContent>, IContentDisplay
+    public class ContentFieldDisplayDriver<TField> where TField : ContentField
     {
     }
 }

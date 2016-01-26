@@ -1,7 +1,6 @@
 ﻿using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.Demo.Models;
-using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using System;
@@ -9,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Orchard.Demo.ContentElementDisplays
 {
-    public class TestContentElementDisplay : ContentElementDisplay
+    public class TestContentElementDisplay : ContentDisplayDriver
     {
         private static int _creating;
         private static int _processing;
 
-        public override DisplayResult<IContent> BuildDisplay(BuildDisplayContext<IContent> context)
+        public override IDisplayResult Display(ContentItem contentItem)
         {
-            var testContentPart = context.Model.As<TestContentPartA>();
+            var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -48,9 +47,9 @@ namespace Orchard.Demo.ContentElementDisplays
                 );
         }
 
-        public override DisplayResult<IContent> BuildEditor(BuildEditorContext<IContent> context)
+        public override IDisplayResult Edit(ContentItem contentItem)
         {
-            var testContentPart = context.Model.As<TestContentPartA>();
+            var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -60,9 +59,9 @@ namespace Orchard.Demo.ContentElementDisplays
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
 
-        public override async Task<DisplayResult<IContent>> UpdateEditorAsync(UpdateEditorContext<IContent> context, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
         {
-            var testContentPart = context.Model.As<TestContentPartA>();
+            var testContentPart = contentItem.As<TestContentPartA>();
 
             if (testContentPart == null)
             {
@@ -77,7 +76,7 @@ namespace Orchard.Demo.ContentElementDisplays
                 }
                 else
                 {
-                    context.Model.ContentItem.Weld(testContentPart);
+                    contentItem.Weld(testContentPart);
                 }
             }
             

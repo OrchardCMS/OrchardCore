@@ -5,24 +5,24 @@ using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Views
 {
-    public class ShapeResult<TModel> : DisplayResult<TModel>
+    public class ShapeResult : IDisplayResult
     {
         private string _defaultLocation;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
         private readonly string _shapeType;
-        private readonly Func<BuildShapeContext<TModel>, dynamic> _shapeBuilder;
+        private readonly Func<IBuildShapeContext, dynamic> _shapeBuilder;
         private readonly Func<dynamic, Task> _processing;
         private Action<ShapeMetadataCacheContext> _cache;
         private string _groupId;
 
-        public ShapeResult(string shapeType, Func<BuildShapeContext<TModel>, dynamic> shapeBuilder)
+        public ShapeResult(string shapeType, Func<IBuildShapeContext, dynamic> shapeBuilder)
             :this(shapeType, shapeBuilder, null)
         {
         }
 
-        public ShapeResult(string shapeType, Func<BuildShapeContext<TModel>, dynamic> shapeBuilder, Func<dynamic, Task> processing)
+        public ShapeResult(string shapeType, Func<IBuildShapeContext, dynamic> shapeBuilder, Func<dynamic, Task> processing)
         {
             // The shape type is necessary before the shape is created as it will drive the placement
             // resolution which itself can prevent the shape from being created.
@@ -32,17 +32,17 @@ namespace Orchard.DisplayManagement.Views
             _processing = processing;
         }
 
-        public override void Apply(BuildDisplayContext<TModel> context)
+        public void Apply(BuildDisplayContext context)
         {
             ApplyImplementation(context, context.DisplayType);
         }
 
-        public override void Apply(BuildEditorContext<TModel> context)
+        public void Apply(BuildEditorContext context)
         {
             ApplyImplementation(context, null);
         }
 
-        private void ApplyImplementation(BuildShapeContext<TModel> context, string displayType)
+        private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
             var placement = context.FindPlacement(_shapeType, _differentiator, _defaultLocation);
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
@@ -128,31 +128,31 @@ namespace Orchard.DisplayManagement.Views
             }
         }
 
-        public ShapeResult<TModel> Prefix(string prefix)
+        public ShapeResult Prefix(string prefix)
         {
             _prefix = prefix;
             return this;
         }
 
-        public ShapeResult<TModel> Location(string zone)
+        public ShapeResult Location(string zone)
         {
             _defaultLocation = zone;
             return this;
         }
 
-        public ShapeResult<TModel> Differentiator(string differentiator)
+        public ShapeResult Differentiator(string differentiator)
         {
             _differentiator = differentiator;
             return this;
         }
 
-        public ShapeResult<TModel> OnGroup(string groupId)
+        public ShapeResult OnGroup(string groupId)
         {
             _groupId = groupId;
             return this;
         }
 
-        public ShapeResult<TModel> Cache(string cacheId, Action<ShapeMetadataCacheContext> cache = null)
+        public ShapeResult Cache(string cacheId, Action<ShapeMetadataCacheContext> cache = null)
         {
             _cacheId = cacheId;
             _cache = cache;

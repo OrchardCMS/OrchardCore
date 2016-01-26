@@ -14,7 +14,13 @@ using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display
 {
-    public class DefaultContentDisplayManager : BaseDisplayManager<IContent>, IContentDisplayManager
+    /// <summary>
+    /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render
+    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayDriver"/> 
+    /// implementation. The resulting shapes are targetting the stereotype of the content item
+    /// to display.
+    /// </summary>
+    public class DefaultContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
     {
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
@@ -23,13 +29,13 @@ namespace Orchard.ContentManagement.Display
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
-        public DefaultContentDisplayManager(
+        public DefaultContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
-            ILogger<DefaultContentDisplayManager> logger,
+            ILogger<DefaultContentItemDisplayManager> logger,
             ILayoutAccessor layoutAccessor
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
@@ -45,14 +51,14 @@ namespace Orchard.ContentManagement.Display
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(IContent content, string displayType, string groupId)
+        public async Task<dynamic> BuildDisplayAsync(ContentItem contentItem, string displayType, string groupId)
         {
-            if(content == null || content.ContentItem == null)
+            if(contentItem == null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             JToken stereotype;
             if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
@@ -64,27 +70,32 @@ namespace Orchard.ContentManagement.Display
             var actualDisplayType = string.IsNullOrWhiteSpace(displayType) ? "Detail" : displayType;
 
             dynamic itemShape = CreateContentShape(actualShapeType);
-            itemShape.ContentItem = content.ContentItem;
+            itemShape.ContentItem = contentItem;
             itemShape.Metadata.DisplayType = actualDisplayType;
 
-            var context = new BuildDisplayContext<IContent>(itemShape, content, actualDisplayType, groupId, _shapeFactory);
-            context.Layout = _layoutAccessor.GetLayout();
+            var context = new BuildDisplayContext(
+                itemShape, 
+                actualDisplayType, 
+                groupId, 
+                _shapeFactory, 
+                _layoutAccessor.GetLayout()
+            );
 
-            await BindPlacementAsync(context, actualDisplayType, stereotype.Value<string>());
+            await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(context), Logger);
+            await _handlers.InvokeAsync(handler => handler.BuildDisplayAsync(contentItem, context), Logger);
 
             return context.Shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(IContent content, string groupId)
+        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, string groupId)
         {
-            if (content == null || content.ContentItem == null)
+            if (contentItem == null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             JToken stereotype;
             if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
@@ -95,27 +106,33 @@ namespace Orchard.ContentManagement.Display
             var actualShapeType = stereotype + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
-            itemShape.ContentItem = content.ContentItem;
+            itemShape.ContentItem = contentItem;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + content.ContentItem.ContentType);
+            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
-            var context = new UpdateEditorContext<IContent>(itemShape, content, groupId, _shapeFactory);
-            await BindPlacementAsync(context, null, stereotype.Value<string>());
+            var context = new BuildEditorContext(
+                itemShape, 
+                groupId, 
+                _shapeFactory,
+                _layoutAccessor.GetLayout()
+            );
 
-            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(context), Logger);
+            await BindPlacementAsync(context);
+
+            await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(contentItem, context), Logger);
             
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(IContent content, IUpdateModel updater, string groupInfoId)
+        public async Task<dynamic> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupInfoId)
         {
-            if (content == null || content.ContentItem == null)
+            if (contentItem == null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             JToken stereotype;
             if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
             {
@@ -125,18 +142,25 @@ namespace Orchard.ContentManagement.Display
             var actualShapeType = stereotype + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
-            itemShape.ContentItem = content.ContentItem;
+            itemShape.ContentItem = contentItem;
 
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + content.ContentItem.ContentType);
+            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
-            var context = new UpdateEditorContext<IContent>(itemShape, content, groupInfoId, _shapeFactory);
-            await BindPlacementAsync(context, null, stereotype.Value<string>());
+            var context = new UpdateEditorContext(
+                itemShape, 
+                groupInfoId, 
+                _shapeFactory,
+                _layoutAccessor.GetLayout(), 
+                updater
+            );
 
-            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(context, updater), Logger);
+            await BindPlacementAsync(context);
+
+            await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
 
             return context.Shape;
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement.Descriptors;
+﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Zones;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement
 {
-    public abstract class BaseDisplayManager<TModel>
+    public abstract class BaseDisplayManager
     {
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IShapeFactory _shapeFactory;
@@ -25,15 +24,13 @@ namespace Orchard.DisplayManagement
             _themeManager = themeManager;
         }
 
-        ILogger Logger { get; set; }
-                
-        protected async Task BindPlacementAsync(BuildShapeContext<TModel> context, string displayType, string stereotype)
+        protected async Task BindPlacementAsync(IBuildShapeContext context)
         {
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (partShapeType, differentiator, defaultLocation) => {
-
+            context.FindPlacement = (partShapeType, differentiator, defaultLocation) =>
+            {
                 ShapeDescriptor descriptor;
                 if (shapeTable.Descriptors.TryGetValue(partShapeType, out descriptor))
                 {

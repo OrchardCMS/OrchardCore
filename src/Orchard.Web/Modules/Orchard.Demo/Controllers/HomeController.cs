@@ -26,7 +26,7 @@ namespace Orchard.Demo.Controllers
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
-        private readonly IContentDisplayManager _contentDisplay;
+        private readonly IContentItemDisplayManager _contentDisplay;
 
         public HomeController(
             ITestDependency testDependency,
@@ -37,7 +37,7 @@ namespace Orchard.Demo.Controllers
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
-            IContentDisplayManager contentDisplay)
+            IContentItemDisplayManager contentDisplay)
         {
             _session = session;
             _testDependency = testDependency;

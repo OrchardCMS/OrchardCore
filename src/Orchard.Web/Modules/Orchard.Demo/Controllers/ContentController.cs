@@ -10,13 +10,13 @@ namespace Orchard.Demo.Controllers
 {
     public class ContentController : Controller, IUpdateModel
     {
-        private readonly IContentDisplayManager _contentDisplay;
+        private readonly IContentItemDisplayManager _contentDisplay;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
         public ContentController(
             IContentManager contentManager,
-            IContentDisplayManager contentDisplay,
+            IContentItemDisplayManager contentDisplay,
             ISession session)
         {
             _contentManager = contentManager;

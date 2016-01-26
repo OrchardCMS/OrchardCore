@@ -1,9 +1,9 @@
 ﻿namespace Orchard.DisplayManagement.Handlers
 {
-    public class BuildEditorContext<TModel> : BuildShapeContext<TModel>
+    public class BuildEditorContext : BuildShapeContext
     {
-        public BuildEditorContext(IShape model, TModel content, string groupId, IShapeFactory shapeFactory)
-            : base(model, content, groupId, shapeFactory)
+        public BuildEditorContext(IShape model, string groupId, IShapeFactory shapeFactory, IShape layout)
+            : base(model, groupId, shapeFactory, layout)
         {
         }
     }

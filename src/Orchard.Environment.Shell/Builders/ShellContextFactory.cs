@@ -91,6 +91,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Settings" },
                     new ShellFeature { Name = "Dashboard" },
+                    new ShellFeature { Name = "Title" },
                     new ShellFeature { Name = "Navigation" },
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "Orchard.ContentTypes" },

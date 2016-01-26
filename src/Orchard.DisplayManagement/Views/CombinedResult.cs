@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Views
 {
-    public class CombinedResult<TModel> : DisplayResult<TModel>
+    public class CombinedResult : IDisplayResult
     {
-        private readonly IEnumerable<DisplayResult<TModel>> _results;
+        private readonly IEnumerable<IDisplayResult> _results;
 
-        public CombinedResult(params DisplayResult<TModel>[] results)
+        public CombinedResult(params IDisplayResult[] results)
         {
             _results = results;
         }
 
-        public CombinedResult(IEnumerable<DisplayResult<TModel>> results)
+        public CombinedResult(IEnumerable<IDisplayResult> results)
         {
             _results = results;
         }
 
-        public override void Apply(BuildDisplayContext<TModel> context)
+        public void Apply(BuildDisplayContext context)
         {
             foreach (var result in _results)
             {
@@ -25,7 +25,7 @@ namespace Orchard.DisplayManagement.Views
             }
         }
 
-        public override void Apply(BuildEditorContext<TModel> context)
+        public void Apply(BuildEditorContext context)
         {
             foreach (var result in _results)
             {
@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.Views
             }
         }
 
-        public IEnumerable<DisplayResult<TModel>> GetResults()
+        public IEnumerable<IDisplayResult> GetResults()
         {
             return _results;
         }
