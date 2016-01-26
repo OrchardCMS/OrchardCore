@@ -8,7 +8,7 @@ namespace Orchard.DisplayManagement.Handlers.Coordinators
     /// This component coordinates <see cref="IDisplayDriver"/> instances by applying
     /// their <see cref="Orchard.DisplayManagement.Views.IDisplayResult"/> to be applied on the result shape.
     /// </summary>
-    public abstract class DisplayCoordinator<TDisplayDriver> where TDisplayDriver : IDisplayDriver
+    public abstract class DisplayCoordinator<TModel, TDisplayDriver> where TDisplayDriver : IDisplayDriver
     {
         private readonly IEnumerable<TDisplayDriver> _displayHandlers;
 
@@ -22,7 +22,7 @@ namespace Orchard.DisplayManagement.Handlers.Coordinators
 
         private ILogger Logger { get; set; }
         
-        public Task BuildDisplayAsync(object model, BuildDisplayContext context)
+        public Task BuildDisplayAsync(TModel model, BuildDisplayContext context)
         {
             return _displayHandlers.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.BuildDisplayAsync(model, context);
@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Handlers.Coordinators
             }, Logger);
         }
 
-        public Task BuildEditorAsync(object model, BuildEditorContext context)
+        public Task BuildEditorAsync(TModel model, BuildEditorContext context)
         {
             return _displayHandlers.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.BuildEditorAsync(model, context);
@@ -40,7 +40,7 @@ namespace Orchard.DisplayManagement.Handlers.Coordinators
             }, Logger);
         }
 
-        public Task UpdateEditorAsync(object model, UpdateEditorContext context)
+        public Task UpdateEditorAsync(TModel model, UpdateEditorContext context)
         {
             return _displayHandlers.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.UpdateEditorAsync(model, context);

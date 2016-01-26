@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace Orchard.ContentManagement.Display.Coordinators
 {
     /// <summary>
-    /// This component coordinates how content element display components are taking part in the rendering when some content needs to be rendered.
-    /// It will dispatch BuildDisplay/BuildEditor to all <see cref="IContentDisplay"/> implementations.
+    /// Provides a concrete implementation of a display coordinator managing <see cref="IContentDisplayDriver"/>
+    /// implementations.
     /// </summary>
-    public class ContentDisplayCoordinator : DisplayCoordinator<IContentDisplayDriver>, IContentDisplayHandler
+    public class ContentDisplayCoordinator : DisplayCoordinator<ContentItem, IContentDisplayDriver>, IContentDisplayHandler
     {
         private readonly IEnumerable<IContentDisplayDriver> _contentDisplayHandlers;
 
