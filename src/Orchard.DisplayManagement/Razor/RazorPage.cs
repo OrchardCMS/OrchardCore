@@ -114,10 +114,14 @@ namespace Orchard.DisplayManagement.Razor
             }
         }
 
-        public string RenderTitlePart(string titlePart, string position = "0")
+        public string RenderTitleSegments(string segment = "", string position = "0")
         {
-            Title.AddTitlePart(titlePart, position);
-            return titlePart;
+            if (!String.IsNullOrWhiteSpace(segment))
+            {
+                Title.AddSegment(segment, position);
+            }
+
+            return Title.GenerateTitle();
         }
 
         protected HelperResult RenderLayoutBody()

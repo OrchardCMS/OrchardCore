@@ -4,21 +4,25 @@ namespace Orchard.DisplayManagement.Title
 {
     public interface IPageTitleBuilder : IDependency
     {
-
         /// <summary>
-        /// Adds a strings to the title.
+        /// Clears the current list of segments.
         /// </summary>
-        /// <param name="titleParts">A string to add at the specific location in the title.</param>
-        void AddTitlePart(string titlePart, string position = "0");
+        void Clear();
 
         /// <summary>
-        /// Adds some strings to the title.
+        /// Adds a segment to the title.
         /// </summary>
-        /// <param name="titleParts">A set of strings to add at the specific location inthe title.</param>
-        void AddTitleParts(string[] titlePart, string position = "0");
+        /// <param name="segment">A string to add at the specific location in the title.</param>
+        void AddSegment(string segment, string position = "0");
 
         /// <summary>
-        /// Concatenates every title parts using the separator defined in settings.
+        /// Adds some segments to the title.
+        /// </summary>
+        /// <param name="segments">A set of strings to add at the specific location inthe title.</param>
+        void AddSegments(string[] segments, string position = "0");
+
+        /// <summary>
+        /// Concatenates every title segments using the separator defined in settings.
         /// </summary>
         /// <returns>A string representing the aggregate title for the current page.</returns>
         string GenerateTitle();

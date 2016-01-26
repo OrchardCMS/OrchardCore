@@ -4,7 +4,7 @@
 
 }
 
-@RenderTitlePart(T["Remove the \"{0}\" part from  \"{1}\"", Model.Name, Model.Part.DisplayName]);
+@RenderTitleSegments(T["Remove the \"{0}\" part from  \"{1}\"", Model.Name, Model.Part.DisplayName]);
 
 <form asp-action="RemoveFieldFrom">
     <p>@T["Looks like you couldn't use the fancy way to remove the field. Try hitting the button below to force the issue."]</p>

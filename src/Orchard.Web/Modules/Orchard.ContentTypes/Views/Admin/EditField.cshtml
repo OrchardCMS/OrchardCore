@@ -4,7 +4,7 @@
 //Style.Require("ContentTypesAdmin");
 }
 
-@RenderTitlePart(T["Edit Field \"{0}\"", Html.Raw(Model.DisplayName)]);
+@RenderTitleSegments(T["Edit Field \"{0}\"", Html.Raw(Model.DisplayName)]);
 
 <form asp-action="EditField"></form>
     @Html.ValidationSummary()

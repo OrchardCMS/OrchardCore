@@ -6,7 +6,7 @@
 //Script.Require("jQuery");
 
 }
-<h1>@RenderTitlePart(T["Edit Content Type - {0}", Model.DisplayName])</h1>
+<h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.DisplayName])</h1>
 
 
 <form asp-action="Edit">
@@ -18,9 +18,6 @@
             <input asp-for="DisplayName" class="form-control" />
             <input asp-for="Name" type="hidden" />
             <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
-    @{ await Html.RenderTemplatesAsync(Model.Templates); }
-
-    <fieldset class="form-group">
         </div>
     </fieldset>
 
@@ -31,12 +28,13 @@
         @Html.EditorFor(m => m.Fields, "Fields", "")
         <a asp-route-action="AddFieldTo" asp-route-id="@Model.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </fieldset>
+
     <fieldset class="form-group">
         <h3>@T["Parts"]</h3>
         @Html.EditorFor(m => m.Parts, "TypeParts", "")
         <a asp-route-action="AddPartsTo" asp-route-id="@Model.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
     </fieldset>
-    
+
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
