@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Handlers
 {
-    public class DisplayDriver<TModel> : IDisplayDriver
+    public class DisplayDriver<TModel> : IDisplayDriver<TModel>  where TModel : class
     {
         /// <summary>
         /// Creates a new strongly typed shape.
@@ -77,50 +77,50 @@ namespace Orchard.DisplayManagement.Handlers
             return new CombinedResult(results);
         }
 
-        Task<IDisplayResult> IDisplayDriver.BuildDisplayAsync(object model, BuildDisplayContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel>.BuildDisplayAsync(TModel model, BuildDisplayContext context)
         {
-            return DisplayAsync((TModel)model);
+            return DisplayAsync(model);
         }
 
-        Task<IDisplayResult> IDisplayDriver.BuildEditorAsync(object model, BuildEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel>.BuildEditorAsync(TModel model, BuildEditorContext context)
         {
-            return EditAsync((TModel)model);
-
+            return EditAsync(model);
         }
 
-        Task<IDisplayResult> IDisplayDriver.UpdateEditorAsync(object model, UpdateEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel>.UpdateEditorAsync(TModel model, UpdateEditorContext context)
         {
-            return UpdateAsync((TModel)model, context.Updater);
+            return UpdateAsync(model, context.Updater);
         }
 
-        public virtual Task<IDisplayResult> DisplayAsync(TModel contentItem)
+        public virtual Task<IDisplayResult> DisplayAsync(TModel model)
         {
-            return Task.FromResult(Display(contentItem));
+            return Task.FromResult(Display(model));
         }
 
-        public virtual Task<IDisplayResult> EditAsync(TModel contentItem)
+        public virtual Task<IDisplayResult> EditAsync(TModel model)
         {
-            return Task.FromResult(Edit(contentItem));
+            return Task.FromResult(Edit(model));
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TModel contentItem, IUpdateModel updater)
+        public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
         {
-            return Task.FromResult(Update(contentItem, updater));
+            return Task.FromResult(Update(model, updater));
         }
 
-        public virtual IDisplayResult Display(TModel contentItem)
-        {
-            return null;
-        }
-
-        public virtual IDisplayResult Edit(TModel contentItem)
+        public virtual IDisplayResult Display(TModel model)
         {
             return null;
         }
 
-        public virtual IDisplayResult Update(TModel contentItem, IUpdateModel updater)
+        public virtual IDisplayResult Edit(TModel model)
         {
             return null;
         }
+
+        public virtual IDisplayResult Update(TModel model, IUpdateModel updater)
+        {
+            return null;
+        }
+
     }
 }

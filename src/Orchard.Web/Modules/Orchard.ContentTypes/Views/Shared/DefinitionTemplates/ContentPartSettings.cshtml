@@ -6,7 +6,11 @@
     <span class="hint">@T["Optionally provide a description for this part"]</span>
 </fieldset>
 <fieldset class="form-group">
-    <input asp-for="Attachable" class="form-control" />
-    <label asp-for="Attachable">@T["Attachable"]</label>
+    <div>
+        <label asp-for="Attachable">
+            <input asp-for="Attachable" type="checkbox">
+            @T["Attachable"]
+        </label>
+    </div>
     <span class="hint">@T["Check to allow this part to be attached to other content types."]</span>
 </fieldset>

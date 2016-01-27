@@ -26,7 +26,7 @@ namespace Orchard.Demo.Controllers
 
         public async Task<ActionResult> Display(int id)
         {
-            var contentItem = await _contentManager.Get(id);
+            var contentItem = await _contentManager.GetAsync(id);
 
             if (contentItem == null)
             {
@@ -40,7 +40,7 @@ namespace Orchard.Demo.Controllers
         [Admin]
         public async Task<ActionResult> Edit(int id)
         {
-            var contentItem = await _contentManager.Get(id);
+            var contentItem = await _contentManager.GetAsync(id);
 
             if (contentItem == null)
             {
@@ -54,7 +54,7 @@ namespace Orchard.Demo.Controllers
         [Admin, HttpPost, ActionName("Edit")]
         public async Task<ActionResult> EditPost(int id)
         {
-            var contentItem = await _contentManager.Get(id);
+            var contentItem = await _contentManager.GetAsync(id);
 
             if (contentItem == null)
             {

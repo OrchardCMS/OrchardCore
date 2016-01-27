@@ -39,17 +39,18 @@ namespace Orchard.ContentManagement
         /// Gets the content item with the specified id
         /// </summary>
         /// <param name="id">Numeric id of the content item</param>
-        Task<ContentItem> Get(int id);
+        Task<ContentItem> GetAsync(int id);
 
         /// <summary>
         /// Gets the content item with the specified id and version
         /// </summary>
         /// <param name="id">Numeric id of the content item</param>
         /// <param name="options">The version option</param>
-        Task<ContentItem> Get(int id, VersionOptions options);
+        Task<ContentItem> GetAsync(int id, VersionOptions options);
 
-        Task Publish(ContentItem contentItem);
-        Task Unpublish(ContentItem contentItem);
+        Task PublishAsync(ContentItem contentItem);
+        Task UnpublishAsync(ContentItem contentItem);
+        ContentItemMetadata GetItemMetadata(IContent content);
     }
 
     public class VersionOptions

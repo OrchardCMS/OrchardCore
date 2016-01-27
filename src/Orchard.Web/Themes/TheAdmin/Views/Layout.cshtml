@@ -2,10 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    @{
-        Title.AddSegment("Orchard", "before");
-    }
-
     <title>@Title.GenerateTitle()</title>
     <!-- Required meta tags always come first -->
     <meta charset="utf-8">
@@ -51,8 +47,13 @@
     </div><!-- /.ta-wrapper -->
 
     @await RenderSectionAsync("Footer", required: false)
+
+    <script type="text/javascript">
+        var confirmRemoveMessage = '@Html.JavaScriptStringEncoder.JavaScriptStringEncode(T["Are you sure you want to remove this element?"])';
+    </script>
+
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="~/TheAdmin/Scripts/TheAdmin.min.js"></script>
+    <script src="~/TheAdmin/Scripts/TheAdmin.js"></script>
 </body>
 </html>

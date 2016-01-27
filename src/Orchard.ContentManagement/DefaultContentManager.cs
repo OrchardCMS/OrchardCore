@@ -82,12 +82,12 @@ namespace Orchard.ContentManagement
             return context3.ContentItem;
         }
 
-        public async Task<ContentItem> Get(int contentItemId)
+        public async Task<ContentItem> GetAsync(int contentItemId)
         {
-            return await Get(contentItemId, VersionOptions.Published);
+            return await GetAsync(contentItemId, VersionOptions.Published);
         }
 
-        public async Task<ContentItem> Get(int contentItemId, VersionOptions options)
+        public async Task<ContentItem> GetAsync(int contentItemId, VersionOptions options)
         {
             ContentItem contentItem;
 
@@ -184,7 +184,7 @@ namespace Orchard.ContentManagement
             return contentItem;
         }
 
-        public async Task Publish(ContentItem contentItem)
+        public async Task PublishAsync(ContentItem contentItem)
         {
             if (contentItem.Published)
             {
@@ -217,7 +217,7 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Published(context), _logger);
         }
 
-        public async Task Unpublish(ContentItem contentItem)
+        public async Task UnpublishAsync(ContentItem contentItem)
         {
             ContentItem publishedItem;
             if (contentItem.Published)
@@ -228,7 +228,7 @@ namespace Orchard.ContentManagement
             else
             {
                 // Try to locate the published version of this item
-                publishedItem = await Get(contentItem.ContentItemId, VersionOptions.Published);
+                publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
             }
 
             if (publishedItem == null)
@@ -336,5 +336,19 @@ namespace Orchard.ContentManagement
             _session.Save(contentItem);
             _contentManagerSession.Store(contentItem);
         }
+
+        public ContentItemMetadata GetItemMetadata(IContent content)
+        {
+            var context = new ContentItemMetadataContext
+            {
+                ContentItem = content.ContentItem,
+                Metadata = new ContentItemMetadata()
+            };
+
+            Handlers.Invoke(handler => handler.GetContentItemMetadata(context), _logger);
+
+            return context.Metadata;
+        }
+
     }
 }

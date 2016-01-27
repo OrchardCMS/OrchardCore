@@ -9,7 +9,7 @@ namespace Orchard.ContentManagement.MetaData
 {
     /// <summary>
     /// This interface is an <see cref="IDependency"/> so that each client gets
-    /// a different copy of <see cref="ContentDefinition"/> to work with in case
+    /// a different copy of <see cref="ContentTypeDefinition"/> to work with in case
     /// multiple clients do modifications.
     /// </summary>
     public interface IContentDefinitionManager : IDependency

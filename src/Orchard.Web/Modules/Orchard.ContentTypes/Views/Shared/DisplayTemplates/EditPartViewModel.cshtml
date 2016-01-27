@@ -1,10 +1,9 @@
 ﻿@model Orchard.ContentTypes.ViewModels.EditPartViewModel
-<div class="summary">
-    <div class="properties">
-        <h3>@Model.DisplayName</h3>
-        @if(!string.IsNullOrWhiteSpace(Model.Description)) {<span class="hint">@T[Model.Description]</span>}
-    </div>
-    <div class="related">
-        <a asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
-    </div>
+<div class="pull-xs-right">
+    <a class="btn btn-primary btn-sm" asp-route-action="EditPart" asp-route-id="@Model.Name">@T["Edit"]</a>
 </div>
+<div>@Model.DisplayName</div>
+@if(!string.IsNullOrWhiteSpace(Model.Description))
+{
+    <span class="hint">@Model.Description</span>
+}

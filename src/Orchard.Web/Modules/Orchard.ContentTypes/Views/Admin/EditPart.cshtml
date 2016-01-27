@@ -9,13 +9,13 @@
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
-    <fieldset>
+    <fieldset class="form-group">
         <label asp-for="Name">@T["Name"]</label>
         <input asp-for="Name" class="form-control" disabled />
         <input asp-for="Name" type="hidden" />
     </fieldset>
 
-    <div class="manage-part">
+    <fieldset class="form-group">
         <div class="settings">
             @{ await Html.RenderTemplatesAsync(Model.Templates); }
         </div>
@@ -24,11 +24,12 @@
             <a asp-for-action="AddFieldTo" asp-route-id="@Model.Name" class="btn btn-primary">@T["Add"]</a>
         </div>
         @Html.EditorFor(m => m.Fields, "Fields", "")
-    </div>
-    <fieldset class="action">
-        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
-    </fieldset>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+            <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+        </fieldset>
 </form>    
 
 @*@using(Script.Foot()){

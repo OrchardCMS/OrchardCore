@@ -16,15 +16,17 @@
             {
                 <li class="list-group-item">
                     <div class="checkbox">
-                        
                         <label asp-for="PartSelections[i].IsSelected">
                             <input asp-for="PartSelections[i].IsSelected" type="checkbox" />
                             @partSelection.PartDisplayName
                         </label>
                         <input asp-for="PartSelections[i].IsSelected" type="hidden" />
+                        <input asp-for="PartSelections[i].PartName" type="hidden" />
                     </div>
                     <span class="hint">@partSelection.PartDescription</span>
                 </li>
+
+                i++;
             }
         </ul>
     </fieldset>

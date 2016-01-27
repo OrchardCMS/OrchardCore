@@ -9,4 +9,12 @@ namespace Orchard.DisplayManagement.Handlers
         Task<IDisplayResult> BuildEditorAsync(object model, BuildEditorContext context);
         Task<IDisplayResult> UpdateEditorAsync(object model, UpdateEditorContext context);
     }
+
+
+    public interface IDisplayDriver<TModel>
+    {
+        Task<IDisplayResult> BuildDisplayAsync(TModel model, BuildDisplayContext context);
+        Task<IDisplayResult> BuildEditorAsync(TModel model, BuildEditorContext context);
+        Task<IDisplayResult> UpdateEditorAsync(TModel model, UpdateEditorContext context);
+    }
 }

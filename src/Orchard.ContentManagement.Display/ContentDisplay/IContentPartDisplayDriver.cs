@@ -1,9 +1,10 @@
 ﻿using Orchard.DependencyInjection;
 using Orchard.DisplayManagement.Handlers;
+using System;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
-    public interface IContentDisplayDriver : IDisplayDriver<ContentItem>, IDependency
+    public interface IContentPartDisplayDriver : IDisplayDriver<ContentPart>, IDependency
     {
     }
 }

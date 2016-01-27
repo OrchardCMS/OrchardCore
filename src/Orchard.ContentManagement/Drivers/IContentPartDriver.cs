@@ -7,6 +7,5 @@ namespace Orchard.ContentManagement.Drivers
     public interface IContentPartDriver : IDependency
     {
         ContentPartInfo GetPartInfo();
-        void GetContentItemMetadata(IContent contentPart, ContentItemMetadataContext context);
     }
 }

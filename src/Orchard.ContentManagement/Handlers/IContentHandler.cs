@@ -25,5 +25,7 @@ namespace Orchard.ContentManagement.Handlers
 
         //void Indexing(IndexContentContext context);
         //void Indexed(IndexContentContext context);
+
+        void GetContentItemMetadata(ContentItemMetadataContext context);
     }
 }
