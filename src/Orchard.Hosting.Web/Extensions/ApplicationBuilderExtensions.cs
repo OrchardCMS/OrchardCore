@@ -1,4 +1,5 @@
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;
@@ -12,6 +13,11 @@ namespace Orchard.Hosting
             ILoggerFactory loggerFactory)
         {
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
+
+            // Add diagnostices pages
+            // TODO: make this modules or configurations
+            builder.UseRuntimeInfoPage();
+            builder.UseDeveloperExceptionPage();
 
             // Add static files to the request pipeline.
             builder.UseStaticFiles();
