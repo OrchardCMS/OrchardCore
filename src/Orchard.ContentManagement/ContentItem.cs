@@ -1,5 +1,5 @@
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System;
 
 namespace Orchard.ContentManagement
 {
@@ -11,17 +11,13 @@ namespace Orchard.ContentManagement
     {
         public ContentItem() : base()
         {
+            ContentItem = this;
         }
 
         /// <summary>
         /// The unique identifier of the current version.
         /// </summary>
         public int Id { get; set; }
-
-        /// <summary>
-        /// The content item id of this version.
-        /// </summary>
-        ContentItem IContent.ContentItem => this;
 
         public int ContentItemId { get; set; }
 
@@ -44,5 +40,25 @@ namespace Orchard.ContentManagement
         /// Whether the version is the latest version of the content item.
         /// </summary>
         public bool Latest { get; set; }
+
+        /// <summary>
+        /// When the content item version has been updated.
+        /// </summary>
+        public DateTimeOffset? ModifiedUtc { get; set; }
+
+        /// <summary>
+        /// When the content item has been published.
+        /// </summary>
+        public DateTimeOffset? PublishedUtc { get; set; }
+
+        /// <summary>
+        /// When the content item has been created or first published.
+        /// </summary>
+        public DateTimeOffset? CreatedUtc { get; set; }
+
+        /// <summary>
+        /// The name of the user who last modified this content item.
+        /// </summary>
+        public string ModifiedBy { get; set; }
     }
 }

@@ -1,0 +1,16 @@
+﻿.navicon-content {
+background-image:url(images/menu.content.png) !important;
+}
+.navicon-content:hover {
+background-position:0 -30px !important;
+}
+.section-new .menuItems a {
+background-image:url(images/menu.content.png);
+}
+/* subnav */
+#menu .menu-admin .section-new .menuItems a {
+background-position:0 4px;
+}
+#menu .menu-admin .section-new .menuItems a:hover, #menu .menu-admin .section-new .menuItems .selected a {
+background-position:0 -28px;
+}

@@ -9,8 +9,13 @@ namespace Microsoft.AspNet.Authorization
     {
         public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission)
         {
+            return service.AuthorizeAsync(user, null, permission);
+        }
+
+        public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission, object resource)
+        {
             var requirement = new PermissionRequirement(permission);
-            return service.AuthorizeAsync(user, null, requirement);
+            return service.AuthorizeAsync(user, resource, requirement);
         }
     }
 }

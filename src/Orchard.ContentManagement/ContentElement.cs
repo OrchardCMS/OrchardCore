@@ -26,7 +26,7 @@ namespace Orchard.ContentManagement
         internal JObject Data { get; set; }
 
         [JsonIgnore]
-        public virtual ContentItem ContentItem { get; set; }
+        public ContentItem ContentItem { get; protected set; }
 
         /// <summary>
         /// Whether the content has a named property or not.

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Mvc.Routing;
@@ -6,6 +7,7 @@ using Microsoft.AspNet.Mvc.ViewFeatures;
 using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using System;
@@ -24,16 +26,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
     public class ShapeAttributeBindingStrategy : IShapeTableProvider
     {
         private readonly IEnumerable<ShapeAttributeOccurrence> _shapeAttributeOccurrences;
-        private readonly IServiceProvider _componentContext;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IServiceProvider _serviceProvider;
 
         public ShapeAttributeBindingStrategy(
             IEnumerable<ShapeAttributeOccurrence> shapeAttributeOccurrences,
-            IServiceProvider componentContext,
+            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor,
             ITypeFeatureProvider typeFeatureProvider)
         {
+            _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
             _shapeAttributeOccurrences = shapeAttributeOccurrences;
-            _componentContext = componentContext;
             _typeFeatureProvider = typeFeatureProvider;
         }
 
@@ -58,7 +63,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         {
             return context =>
             {
-                var serviceInstance = _componentContext.GetService(attributeOccurrence.ServiceType);
+                var serviceInstance = _serviceProvider.GetService(attributeOccurrence.ServiceType);
                 // oversimplification for the sake of evolving
                 return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
             };
@@ -104,7 +109,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 return displayContext.Display;
             }
-            
+
+            if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+                return httpContext.RequestServices.GetService<IShapeFactory>();
+            }
+
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
                 return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
@@ -113,31 +124,36 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
             {
-                return _componentContext.GetService<IUrlHelper>();
+                var httpContext = _httpContextAccessor.HttpContext;
+                return httpContext.RequestServices.GetService<IUrlHelper>();
             }
 
             if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType == typeof(TextWriter))
             {
-                throw new InvalidOperationException("Output is no more a valid Shape method parameter");
+                throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
 
             if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType == typeof(Action<object>))
             {
-                throw new InvalidOperationException("Output is no more a valid Shape method parameter");
+                throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
-
 
             var getter = _getters.GetOrAdd(parameter.Name, n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(
                 Binder.GetMember(
                 CSharpBinderFlags.None, n, null, new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));
 
-            var result = getter.Target(getter, displayContext.Value);
+            object result = getter.Target(getter, displayContext.Value);
 
             if (result == null)
                 return null;
+
+            if(parameter.ParameterType.IsAssignableFrom(result.GetType()))
+            {
+                return result;
+            }
 
             return Convert.ChangeType(result, parameter.ParameterType);
         }

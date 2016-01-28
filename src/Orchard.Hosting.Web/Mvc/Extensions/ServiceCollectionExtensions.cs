@@ -7,6 +7,7 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.Razor;
+using Orchard.Hosting.Routing;
 using Orchard.Hosting.Web.Mvc.ModelBinding;
 
 namespace Orchard.Hosting.Mvc
@@ -16,7 +17,11 @@ namespace Orchard.Hosting.Mvc
         public static IServiceCollection AddOrchardMvc(this IServiceCollection services)
         {
             services
-                .AddMvcCore(options => options.Filters.Add(new ModelBinderAccessorFilter()))
+                .AddMvcCore(options =>
+                {
+                    options.Filters.Add(new ModelBinderAccessorFilter());
+                    options.Conventions.Add(new ModuleAreaRouteConstraintConvention());
+                })
                 .AddViews()
                 .AddViewLocalization()
                 .AddRazorViewEngine()

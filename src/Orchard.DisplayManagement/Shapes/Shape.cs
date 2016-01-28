@@ -117,6 +117,12 @@ namespace Orchard.DisplayManagement.Shapes
                 switch (compare)
                 {
                     case -1:
+                        if(end - start == 1)
+                        {
+                            _items.Insert(end, item);
+                            return;
+                        }
+
                         end = index;
                         break;
                     case 0:

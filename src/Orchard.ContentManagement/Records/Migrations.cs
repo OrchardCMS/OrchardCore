@@ -1,4 +1,5 @@
 ﻿using Orchard.Data.Migration;
+using System;
 
 namespace Orchard.ContentManagement.Records
 {
@@ -12,6 +13,9 @@ namespace Orchard.ContentManagement.Records
                 .Column<int>("Number")
                 .Column<int>("Published")
                 .Column<string>("ContentType", column => column.WithLength(255))
+                .Column<DateTime>("ModifiedUtc", column => column.WithLength(255).Nullable())
+                .Column<DateTime>("PublishedUtc", column => column.WithLength(255).Nullable())
+                .Column<DateTime>("CreatedUtc", column => column.WithLength(255).Nullable())
             );
 
             return 1;

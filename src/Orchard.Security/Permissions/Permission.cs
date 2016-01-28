@@ -18,6 +18,13 @@ namespace Orchard.Security.Permissions
             Description = description;
         }
 
+        public Permission(string name, string description, IEnumerable<Permission> impliedBy)
+        {
+            Name = name;
+            Description = description;
+            ImpliedBy = impliedBy;
+        }
+
         public string Name { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }

@@ -34,9 +34,9 @@ namespace Orchard.Hosting.Web.Routing.Routes
                 routePrefix = _shellSettings.RequestUrlPrefix + "/";
             }
 
-            orderedRoutes.Insert(0, new RouteDescriptor
+            orderedRoutes.Add(new RouteDescriptor
             {
-                Route = new Route("Default", "{area}/{controller}/{action}/{id?}")
+                Route = new Route("Default", "{area:exists}/{controller}/{action}/{id?}")
             });
 
 

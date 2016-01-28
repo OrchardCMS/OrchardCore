@@ -45,7 +45,10 @@ namespace Orchard.Core.Settings.Services
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
                                 PageTitleSeparator = " - ",
-                                TimeZone = TimeZoneInfo.Local.Id
+                                TimeZone = TimeZoneInfo.Local.Id,
+                                PageSize = 10,
+                                MaxPageSize = 100,
+                                MaxPagedCount = 500
                             });
 
                             _contentManager.Create(site);

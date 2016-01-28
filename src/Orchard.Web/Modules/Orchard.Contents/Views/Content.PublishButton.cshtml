@@ -1,0 +1,9 @@
+﻿@using Orchard.ContentManagement;
+@using Orchard.Contents;
+@using Orchard.Utility;
+
+@*@if (Authorizer.Authorize(Permissions.PublishContent, (IContent)Model.ContentItem)) {*@
+<fieldset class="publish-button">
+    <button type="submit" name="submit.Publish" value="submit.Publish">@T["Publish Now"]</button>
+</fieldset>
+@*  *@}

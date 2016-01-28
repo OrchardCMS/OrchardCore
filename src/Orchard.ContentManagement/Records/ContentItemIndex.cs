@@ -1,15 +1,20 @@
 ﻿using Orchard.DependencyInjection;
+using System;
 using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement.Records
 {
     public class ContentItemIndex : MapIndex
     {
+        public int DocumentId { get; set; }
         public int ContentItemId { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }
         public string ContentType { get; set; }
+        public DateTimeOffset? ModifiedUtc { get; set; }
+        public DateTimeOffset? PublishedUtc { get; set; }
+        public DateTimeOffset? CreatedUtc { get; set; }
     }
 
     public class ContentItemIndexProvider : IndexProvider<ContentItem>, IDependency
@@ -23,7 +28,10 @@ namespace Orchard.ContentManagement.Records
                     Number = contentItem.Number,
                     Published = contentItem.Published,
                     ContentType = contentItem.ContentType,
-                    ContentItemId = contentItem.ContentItemId
+                    ContentItemId = contentItem.ContentItemId,
+                    ModifiedUtc = contentItem.ModifiedUtc,
+                    PublishedUtc = contentItem.PublishedUtc,
+                    CreatedUtc = contentItem.CreatedUtc
                 });
         }
     }

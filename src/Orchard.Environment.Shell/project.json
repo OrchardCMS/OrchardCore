@@ -12,7 +12,7 @@
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
-    "YesSql.Core": "2.0.0-alpha-9010",
+    "YesSql.Core": "2.0.0-alpha-9018",
     "YesSql.Storage.Sql": "1.0.0-alpha-1005"
   },
   "compilationOptions": {
