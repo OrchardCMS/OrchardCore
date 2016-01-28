@@ -1,5 +1,4 @@
-﻿using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
+﻿using Orchard.ContentManagement.MetaData;
 using Orchard.DependencyInjection;
 
 namespace Orchard.ContentManagement.Drivers

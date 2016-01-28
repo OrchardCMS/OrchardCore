@@ -44,5 +44,6 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             return Task.FromResult<IDisplayResult>(null);
         }
+
     }
 }

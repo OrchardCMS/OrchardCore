@@ -6,6 +6,6 @@ namespace Orchard.ContentManagement.MetaData
     public class ContentPartInfo
     {
         public string PartName { get; set; }
-        public Func<ContentTypePartDefinition, object> Factory { get; set; }
+        public Func<ContentTypePartDefinition, ContentPart> Factory { get; set; }
     }
 }

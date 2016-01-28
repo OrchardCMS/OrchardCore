@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Handlers
 {
-    public class DisplayDriver<TModel> : IDisplayDriver<TModel>  where TModel : class
+    public class DisplayDriverBase
     {
         /// <summary>
         /// Creates a new strongly typed shape.
@@ -22,7 +22,7 @@ namespace Orchard.DisplayManagement.Handlers
         public ShapeResult Shape<T>(Func<T, Task> initialize) where T : Shape, new()
         {
             return new ShapeResult(
-                typeof(T).Name, 
+                typeof(T).Name,
                 ctx => ctx.ShapeFactory.Create<T>(),
                 shape => initialize((T)shape)
                 );
@@ -42,7 +42,7 @@ namespace Orchard.DisplayManagement.Handlers
         public ShapeResult Shape(string shapeType, Func<dynamic, Task> initialize)
         {
             return new ShapeResult(
-                shapeType, 
+                shapeType,
                 ctx => ctx.ShapeFactory.Create(shapeType),
                 initialize
                 );
@@ -76,6 +76,10 @@ namespace Orchard.DisplayManagement.Handlers
         {
             return new CombinedResult(results);
         }
+    }
+
+    public class DisplayDriver<TModel> : DisplayDriverBase, IDisplayDriver<TModel>  where TModel : class
+    {
 
         Task<IDisplayResult> IDisplayDriver<TModel>.BuildDisplayAsync(TModel model, BuildDisplayContext context)
         {
