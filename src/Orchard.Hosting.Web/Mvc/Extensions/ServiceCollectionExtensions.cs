@@ -19,7 +19,8 @@ namespace Orchard.Hosting.Mvc
                 .AddMvcCore(options => options.Filters.Add(new ModelBinderAccessorFilter()))
                 .AddViews()
                 .AddViewLocalization()
-                .AddRazorViewEngine();
+                .AddRazorViewEngine()
+                .AddJsonFormatters();
 
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
