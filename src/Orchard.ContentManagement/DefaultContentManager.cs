@@ -263,11 +263,20 @@ namespace Orchard.ContentManagement
         {
             var buildingContentItem = New(existingContentItem.ContentType);
 
-            var latestVersion = await _session
-                .QueryAsync<ContentItem, ContentItemIndex>(x =>
-                    x.ContentItemId == existingContentItem.ContentItemId &&
-                    x.Latest)
-                .FirstOrDefault();
+            ContentItem latestVersion;
+
+            if (existingContentItem.Latest)
+            {
+                latestVersion = existingContentItem;
+            }
+            else
+            {
+                latestVersion = await _session
+                    .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                        x.ContentItemId == existingContentItem.ContentItemId &&
+                        x.Latest)
+                    .FirstOrDefault();
+            }
 
             if (latestVersion != null)
             {
@@ -280,6 +289,7 @@ namespace Orchard.ContentManagement
             }
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
+            buildingContentItem.Latest = true;
 
             var context = new VersionContentContext
             {

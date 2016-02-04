@@ -18,6 +18,10 @@ namespace Orchard.ContentManagement
             o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
             o.Add(new JProperty(nameof(ContentItem.Number), contentItem.Number));
             o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
+            o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
+            o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
+            o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
+            o.Add(new JProperty(nameof(ContentItem.ModifiedBy), contentItem.ModifiedBy));
 
             // Write all custom content properties
             o.Merge(contentItem.Data);
@@ -56,13 +60,28 @@ namespace Orchard.ContentManagement
                 {
                     contentItem.Published = (bool)p.Value;
                 }
+                else if (p.Name == nameof(ContentItem.PublishedUtc))
+                {
+                    contentItem.PublishedUtc = (DateTimeOffset?)p.Value;
+                }
+                else if (p.Name == nameof(ContentItem.ModifiedUtc))
+                {
+                    contentItem.ModifiedUtc = (DateTimeOffset?)p.Value;
+                }
+                else if (p.Name == nameof(ContentItem.CreatedUtc))
+                {
+                    contentItem.CreatedUtc = (DateTimeOffset?)p.Value;
+                }
+                else if (p.Name == nameof(ContentItem.ModifiedBy))
+                {
+                    contentItem.ModifiedBy = (string)p.Value;
+                }
                 else
                 {
                     contentItem.Data.Add(p);
                 }
             }
             
-
             return contentItem;
         }
 
