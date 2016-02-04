@@ -3323,15 +3323,15 @@ a.label:focus, a.label:hover {
   padding-left: 0;
   border-radius: 0; }
 
-.alert, .validation-summary-errors {
+.alert, .validation-summary-errors, .message {
   padding: 15px;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: 0.25rem; }
-  .alert > p, .validation-summary-errors > p,
-  .alert > ul, .validation-summary-errors > ul {
+  .alert > p, .validation-summary-errors > p, .message > p,
+  .alert > ul, .validation-summary-errors > ul, .message > ul {
     margin-bottom: 0; }
-  .alert > p + p, .validation-summary-errors > p + p {
+  .alert > p + p, .validation-summary-errors > p + p, .message > p + p {
     margin-top: 5px; }
 
 .alert-heading {
@@ -3348,40 +3348,40 @@ a.label:focus, a.label:hover {
     right: -21px;
     color: inherit; }
 
-.alert-success {
+.alert-success, .message-success {
   background-color: #dff0d8;
   border-color: #d0e9c6;
   color: #3c763d; }
-  .alert-success hr {
+  .alert-success hr, .message-success hr {
     border-top-color: #c1e2b3; }
-  .alert-success .alert-link {
+  .alert-success .alert-link, .message-success .alert-link {
     color: #2b542c; }
 
-.alert-info {
+.alert-info, .message-information {
   background-color: #d9edf7;
   border-color: #bcdff1;
   color: #31708f; }
-  .alert-info hr {
+  .alert-info hr, .message-information hr {
     border-top-color: #a6d5ec; }
-  .alert-info .alert-link {
+  .alert-info .alert-link, .message-information .alert-link {
     color: #245269; }
 
-.alert-warning {
+.alert-warning, .message-warning {
   background-color: #fcf8e3;
   border-color: #faf2cc;
   color: #8a6d3b; }
-  .alert-warning hr {
+  .alert-warning hr, .message-warning hr {
     border-top-color: #f7ecb5; }
-  .alert-warning .alert-link {
+  .alert-warning .alert-link, .message-warning .alert-link {
     color: #66512c; }
 
-.alert-danger, .validation-summary-errors {
+.alert-danger, .validation-summary-errors, .message-error {
   background-color: #f2dede;
   border-color: #ebcccc;
   color: #a94442; }
-  .alert-danger hr, .validation-summary-errors hr {
+  .alert-danger hr, .validation-summary-errors hr, .message-error hr {
     border-top-color: #e4b9b9; }
-  .alert-danger .alert-link, .validation-summary-errors .alert-link {
+  .alert-danger .alert-link, .validation-summary-errors .alert-link, .message-error .alert-link {
     color: #843534; }
 
 @-webkit-keyframes progress-bar-stripes {

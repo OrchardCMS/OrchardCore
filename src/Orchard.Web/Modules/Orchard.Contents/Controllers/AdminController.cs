@@ -19,6 +19,8 @@ using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.MetaData.Settings;
 using Orchard.Mvc;
 using Microsoft.AspNet.Routing;
+using Orchard.DisplayManagement.Notify;
+using Microsoft.AspNet.Mvc.Localization;
 
 namespace Orchard.Contents.Controllers
 {
@@ -29,27 +31,33 @@ namespace Orchard.Contents.Controllers
         private readonly ISiteService _siteService;
         private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly INotifier _notifier;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
+            INotifier notifier,
             ISession session,
             IShapeFactory shapeFactory,
-            ILogger<AdminController> logger
+            ILogger<AdminController> logger,
+            IHtmlLocalizer<AdminController> localizer
             )
         {
+            _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
             _session = session;
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
 
+            T = localizer;
             New = shapeFactory;
             Logger = logger;
         }
 
+        public IHtmlLocalizer T { get; }
         public dynamic New { get; set; }
 
         public ILogger Logger { get; set; }
@@ -311,9 +319,11 @@ namespace Orchard.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            //Services.Notifier.Information(string.IsNullOrWhiteSpace(contentItem.TypeDefinition.DisplayName)
-            //    ? T("Your content has been created.")
-            //    : T("Your {0} has been created.", contentItem.TypeDefinition.DisplayName));
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+            _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                ? T.Html("Your content has been created.")
+                : T.Html("Your {0} has been created.", typeDefinition.DisplayName));
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
@@ -404,9 +414,11 @@ namespace Orchard.Contents.Controllers
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
 
-            //Services.Notifier.Information(string.IsNullOrWhiteSpace(contentItem.TypeDefinition.DisplayName)
-            //    ? T("Your content has been saved.")
-            //    : T("Your {0} has been saved.", contentItem.TypeDefinition.DisplayName));
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+            _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                ? T.Html("Your content has been saved.")
+                : T.Html("Your {0} has been saved.", typeDefinition.DisplayName));
 
             if (returnUrl == null)
             {

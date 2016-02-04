@@ -15,6 +15,7 @@
 </head>
 <body>
     <div class="ta-wrapper">
+
         <div class="ta-navbar-top">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Orchard</a>
@@ -41,6 +42,8 @@
         </div>
 
         <div class="ta-content">
+            @await RenderSectionAsync("Messages", required: false)
+
             @RenderBody()
         </div>
 

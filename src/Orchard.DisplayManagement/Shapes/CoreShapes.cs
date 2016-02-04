@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Mvc.Localization;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Notify;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -100,6 +102,19 @@ namespace Orchard.DisplayManagement.Shapes
             }
 
             return listTag;
+        }
+
+        [Shape]
+        public IHtmlContent Message(dynamic Shape)
+        {
+            TagBuilder tagBuilder = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
+            string type = Shape.Type.ToString().ToLowerInvariant();
+            IHtmlContent message = Shape.Message;
+            tagBuilder.AddCssClass("message");
+            tagBuilder.AddCssClass("message-" + type);
+            tagBuilder.Attributes["role"] = "alert";
+            tagBuilder.InnerHtml.Append(message);
+            return tagBuilder;
         }
     }
 }

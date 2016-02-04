@@ -8,6 +8,7 @@
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.FileSystem.Web": "2.0.0-*",
     "System.Reflection.Extensions": "4.0.1-beta-23516"
   },
