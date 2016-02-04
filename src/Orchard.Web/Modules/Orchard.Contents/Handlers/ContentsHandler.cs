@@ -25,7 +25,7 @@ namespace Orchard.Contents.Handlers
                     {"Area", "Orchard.Contents"},
                     {"Controller", "Admin"},
                     {"Action", "Edit"},
-                    {"Id", context.ContentItem.Id}
+                    {"Id", context.ContentItem.ContentItemId}
                 };
             }
 
@@ -35,7 +35,7 @@ namespace Orchard.Contents.Handlers
                     {"Area", "Orchard.Contents"},
                     {"Controller", "Admin"},
                     {"Action", "Edit"},
-                    {"Id", context.ContentItem.Id}
+                    {"Id", context.ContentItem.ContentItemId}
                 };
             }
 
@@ -45,7 +45,7 @@ namespace Orchard.Contents.Handlers
                     {"Area", "Orchard.Contents"},
                     {"Controller", "Item"},
                     {"Action", "Display"},
-                    {"Id", context.ContentItem.Id}
+                    {"Id", context.ContentItem.ContentItemId}
                 };
             }
 
@@ -55,7 +55,7 @@ namespace Orchard.Contents.Handlers
                     {"Area", "Orchard.Contents"},
                     {"Controller", "Admin"},
                     {"Action", "Remove"},
-                    {"Id", context.ContentItem.Id}
+                    {"Id", context.ContentItem.ContentItemId}
                 };
             }
         }

@@ -7,8 +7,8 @@
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "YesSql.Core": "2.0.0-alpha-9018",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1005"
+    "YesSql.Core": "2.0.0-alpha-9020",
+    "YesSql.Storage.Sql": "1.0.0-alpha-1006"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

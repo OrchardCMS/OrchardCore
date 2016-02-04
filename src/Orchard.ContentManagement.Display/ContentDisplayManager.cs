@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.MetaData.Settings;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
@@ -97,13 +98,9 @@ namespace Orchard.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            JToken stereotype;
-            if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
-            {
-                stereotype = "Content";
-            }
-
-            var actualShapeType = stereotype + "_Edit";
+            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            
+            var actualShapeType = stereotype ?? "Content" + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
@@ -133,13 +130,8 @@ namespace Orchard.ContentManagement.Display
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            JToken stereotype;
-            if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
-            {
-                stereotype = "Content";
-            }
-
-            var actualShapeType = stereotype + "_Edit";
+            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            var actualShapeType = stereotype ?? "Content" + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;

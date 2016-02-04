@@ -191,7 +191,9 @@ namespace Orchard.ContentManagement
                 return;
             }
 
-            // create a context for the item and it's previous published record
+            // Create a context for the item and it's previous published record
+            // Because of this query the content item will need to be re-enlisted
+            // to be saved.
             var previous = await _session
                 .QueryAsync<ContentItem, ContentItemIndex>(x =>
                     x.ContentItemId == contentItem.ContentItemId && x.Published)
@@ -209,10 +211,13 @@ namespace Orchard.ContentManagement
 
             if (previous != null)
             {
+                _session.Save(previous);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
+
+            _session.Save(contentItem);
 
             Handlers.Invoke(handler => handler.Published(context), _logger);
         }
@@ -249,6 +254,8 @@ namespace Orchard.ContentManagement
 
             publishedItem.Published = false;
 
+            _session.Save(contentItem);
+
             Handlers.Invoke(handler => handler.Unpublished(context), _logger);
         }
 
@@ -276,7 +283,6 @@ namespace Orchard.ContentManagement
 
             var context = new VersionContentContext
             {
-                Id = existingContentItem.ContentItemId,
                 ContentType = existingContentItem.ContentType,
                 ExistingContentItem = existingContentItem,
                 BuildingContentItem = buildingContentItem,
@@ -284,7 +290,7 @@ namespace Orchard.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Invoke(handler => handler.Versioned(context), _logger);
-
+            
             return context.BuildingContentItem;
         }
 

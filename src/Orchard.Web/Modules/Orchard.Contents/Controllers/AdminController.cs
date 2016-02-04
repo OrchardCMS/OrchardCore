@@ -77,7 +77,7 @@ namespace Orchard.Contents.Controllers
             }
 
             // TODO: Filter on listable types
-            var query = _session.QueryIndexAsync<ContentItemIndex>();
+            var query = _session.QueryAsync<ContentItem, ContentItemIndex>();
             
             if (!string.IsNullOrEmpty(model.TypeName))
             {
@@ -133,10 +133,9 @@ namespace Orchard.Contents.Controllers
 
             var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.Count());
             var pageOfContentItemIndexes = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
-            var contentItems = await _session.GetAsync<ContentItem>(pageOfContentItemIndexes.Select(x => x.DocumentId));
-
+            
             var viewModel = New.ViewModel()
-                .ContentItems(contentItems)
+                .ContentItems(pageOfContentItemIndexes)
                 .Pager(pagerShape)
                 .Options(model.Options)
                 .TypeDisplayName(model.TypeDisplayName ?? "");
