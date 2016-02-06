@@ -99,7 +99,11 @@ namespace Orchard.Contents.Controllers
             }
             else
             {
-                query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(GetListableTypes().Select(t => t.Name)));
+                var listableTypes = GetListableTypes().Select(t => t.Name).ToArray();
+                if(listableTypes.Any())
+                {
+                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
+                }                
             }
 
             switch (model.Options.OrderBy)
