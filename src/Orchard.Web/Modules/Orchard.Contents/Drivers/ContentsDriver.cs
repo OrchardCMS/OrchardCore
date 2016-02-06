@@ -23,8 +23,10 @@ namespace Orchard.Contents.Drivers
             return Combine(
                 Shape("Parts_Contents_Publish", model),
                 Shape("Parts_Contents_Publish_Summary", model),
-                Shape("Parts_Contents_Publish_SummaryAdmin", model),
+                Shape("Parts_Contents_Publish_SummaryAdmin", model)
+                    .Location("SummaryAdmin", "Actions:5"),
                 Shape("Parts_Contents_Clone_SummaryAdmin", model)
+                    .Location("SummaryAdmin", "Actions:6")
             );
         }
 

@@ -366,5 +366,26 @@ namespace Orchard.ContentManagement
             return context.Metadata;
         }
 
+        public virtual async Task RemoveAsync(ContentItem contentItem)
+        {
+            var activeVersions = await _session.QueryAsync<ContentItem, ContentItemIndex>()
+                .Where(x => 
+                    x.ContentItemId == contentItem.ContentItemId && 
+                    (x.Published || x.Latest)).List();
+
+            var context = new RemoveContentContext(contentItem);
+
+            Handlers.Invoke(handler => handler.Removing(context), _logger);
+
+            foreach (var version in activeVersions)
+            {
+                version.Published = false;
+                version.Latest = false;
+                _session.Save(version);
+            }
+
+            Handlers.Invoke(handler => handler.Removed(context), _logger);
+        }
+
     }
 }

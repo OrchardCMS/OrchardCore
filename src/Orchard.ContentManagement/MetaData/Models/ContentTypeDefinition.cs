@@ -29,5 +29,18 @@ namespace Orchard.ContentManagement.MetaData.Models
         public string DisplayName { get; private set; }
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
         public JObject Settings { get; private set; }
+
+        /// <summary>
+        /// Returns the <see cref="DisplayName"/> value of the type if defined,
+        /// or the <see cref="Name"/> otherwise.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.IsNullOrEmpty(DisplayName)
+                ? Name
+                : DisplayName;
+        }
     }
+
 }

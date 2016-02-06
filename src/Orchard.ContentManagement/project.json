@@ -1,7 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc.DataAnnotations": "6.0.0-*",
+    "Microsoft.AspNet.Mvc.ViewFeatures": "6.0.0-rc1-final",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",

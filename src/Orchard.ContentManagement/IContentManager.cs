@@ -48,6 +48,14 @@ namespace Orchard.ContentManagement
         /// <param name="options">The version option</param>
         Task<ContentItem> GetAsync(int id, VersionOptions options);
 
+        /// <summary>
+        /// Removes <see cref="ContentItem.Latest"/> and <see cref="ContentItem.Published"/> flags
+        /// from a content item, making it invisible from the system. It doesn't physically delete 
+        /// the content item.
+        /// </summary>
+        /// <param name="contentItem"></param>
+        Task RemoveAsync(ContentItem contentItem);
+
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
         ContentItemMetadata GetItemMetadata(IContent content);

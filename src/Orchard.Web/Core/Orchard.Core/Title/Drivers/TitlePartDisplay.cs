@@ -10,7 +10,9 @@ namespace Orchard.Core.Title.Drivers
     {
         public override IDisplayResult Display(TitlePart titlePart)
         {
-            return Shape("TitlePart", titlePart).Location("Content");
+            return Shape("TitlePart", titlePart)
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart)

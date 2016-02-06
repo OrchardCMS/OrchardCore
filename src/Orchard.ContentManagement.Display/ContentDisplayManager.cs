@@ -61,14 +61,15 @@ namespace Orchard.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            JToken stereotype;
-            if (!contentTypeDefinition.Settings.TryGetValue("Stereotype", out stereotype))
-            {
-                stereotype = "Content";
-            }
+            var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
+            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualShapeType = stereotype ?? "Content";
 
-            var actualShapeType = stereotype.Value<string>();
-            var actualDisplayType = string.IsNullOrWhiteSpace(displayType) ? "Detail" : displayType;
+            // _[DisplayType] is only added for the ones different than Detail
+            if (actualDisplayType != "Detail")
+            {
+                actualShapeType = actualShapeType + "_" + actualDisplayType;
+            }
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;

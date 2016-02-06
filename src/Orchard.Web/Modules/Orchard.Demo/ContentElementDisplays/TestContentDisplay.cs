@@ -24,9 +24,9 @@ namespace Orchard.Demo.ContentElementDisplays
 
             return Combine(
                 // A new shape is created and the properties of the object are bound to it when rendered
-                Shape("TestContentPartA", testContentPart).Location("Content"),
+                Shape("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location
-                Shape("LowerDoll").Location("Footer"),
+                Shape("LowerDoll").Location("Detail", "Footer"),
                 // New shape 
                 Shape("TestContentPartA",
                     ctx => ctx.New.TestContentPartA().Creating(_creating++),
@@ -35,14 +35,14 @@ namespace Orchard.Demo.ContentElementDisplays
                         shape.Processing = _processing++;
                         return Task.CompletedTask;
                     })
-                    .Location("Content")
+                    .Location("Detail", "Content")
                     .Cache("lowerdoll2", cache => cache.During(TimeSpan.FromSeconds(5))),
                 // A strongly typed shape model is used and initialized when rendered
                 Shape<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; return Task.CompletedTask; })
-                    .Location("Content:2"),
+                    .Location("Detail", "Content:2"),
                 // Cached shape
                 Shape("LowerDoll")
-                    .Location("/Footer")
+                    .Location("Detail", "/Footer")
                     .Cache("lowerdoll", cache => cache.During(TimeSpan.FromSeconds(5)))
                 );
         }

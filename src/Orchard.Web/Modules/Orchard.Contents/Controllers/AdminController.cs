@@ -14,7 +14,6 @@ using YesSql.Core.Services;
 using Orchard.ContentManagement.Records;
 using Orchard.DisplayManagement;
 using Orchard.ContentManagement.Display;
-using YesSql.Core.Indexes;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.MetaData.Settings;
 using Orchard.Mvc;
@@ -84,7 +83,6 @@ namespace Orchard.Contents.Controllers
                     break;
             }
 
-            // TODO: Filter on listable types
             var query = _session.QueryAsync<ContentItem, ContentItemIndex>();
             
             if (!string.IsNullOrEmpty(model.TypeName))
@@ -93,13 +91,15 @@ namespace Orchard.Contents.Controllers
                 if (contentTypeDefinition == null)
                     return HttpNotFound();
 
-                model.TypeDisplayName = !string.IsNullOrWhiteSpace(contentTypeDefinition.DisplayName)
-                                            ? contentTypeDefinition.DisplayName
-                                            : contentTypeDefinition.Name;
+                model.TypeDisplayName = contentTypeDefinition.ToString();
 
                 // We display a specific type even if it's not listable so that admin pages
                 // can reuse the Content list page for specific types.
                 query = query.With<ContentItemIndex>(x => x.ContentType == model.TypeName);
+            }
+            else
+            {
+                query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(GetListableTypes().Select(t => t.Name)));
             }
 
             switch (model.Options.OrderBy)
@@ -129,9 +129,9 @@ namespace Orchard.Contents.Controllers
             //}
 
             model.Options.SelectedFilter = model.TypeName;
-            //model.Options.FilterOptions = GetListableTypes(false)
-            //    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-            //    .ToList().OrderBy(kvp => kvp.Value);
+            model.Options.FilterOptions = GetListableTypes()
+                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                .ToList().OrderBy(kvp => kvp.Value);
 
             //model.Options.Cultures = _cultureManager.ListCultures();
 
@@ -140,10 +140,16 @@ namespace Orchard.Contents.Controllers
                 pager.PageSize = maxPagedCount;
 
             var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.Count());
-            var pageOfContentItemIndexes = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
-            
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
+
+            var contentItemSummaries = new List<dynamic>();
+            foreach(var contentItem in pageOfContentItems)
+            {
+                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, "SummaryAdmin"));
+            }
+
             var viewModel = New.ViewModel()
-                .ContentItems(pageOfContentItemIndexes)
+                .ContentItems(contentItemSummaries)
                 .Pager(pagerShape)
                 .Options(model.Options)
                 .TypeDisplayName(model.TypeDisplayName ?? "");
@@ -159,13 +165,13 @@ namespace Orchard.Contents.Controllers
                 );
         }
 
-        //private IEnumerable<ContentTypeDefinition> GetListableTypes(bool andContainable)
-        //{
-        //    return _contentDefinitionManager.ListTypeDefinitions().Where(ctd =>
-        //        Services.Authorizer.Authorize(Permissions.EditContent, _contentManager.New(ctd.Name)) &&
-        //        ctd.Settings.GetModel<ContentTypeSettings>().Listable &&
-        //        (!andContainable || ctd.Parts.Any(p => p.PartDefinition.Name == "ContainablePart")));
-        //}
+        private IEnumerable<ContentTypeDefinition> GetListableTypes()
+        {
+            return _contentDefinitionManager.ListTypeDefinitions().Where(ctd =>
+                //Services.Authorizer.Authorize(Permissions.EditContent, _contentManager.New(ctd.Name)) &&
+                ctd.Settings.ToObject<ContentTypeSettings>().Listable
+                );
+        }
 
         //[HttpPost, ActionName("List")]
         //[Mvc.FormValueRequired("submit.Filter")]
@@ -456,67 +462,82 @@ namespace Orchard.Contents.Controllers
         //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
         //}
 
-        //[HttpPost]
-        //public ActionResult Remove(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.Get(id, VersionOptions.Latest);
+        [HttpPost]
+        public async Task<IActionResult> Remove(int id, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
 
-        //    if (!Services.Authorizer.Authorize(Permissions.DeleteContent, contentItem, T("Couldn't remove content")))
-        //        return new HttpUnauthorizedResult();
+            //if (!Services.Authorizer.Authorize(Permissions.DeleteContent, contentItem, T("Couldn't remove content")))
+            //    return new HttpUnauthorizedResult();
 
-        //    if (contentItem != null)
-        //    {
-        //        _contentManager.Remove(contentItem);
-        //        Services.Notifier.Information(string.IsNullOrWhiteSpace(contentItem.TypeDefinition.DisplayName)
-        //            ? T("That content has been removed.")
-        //            : T("That {0} has been removed.", contentItem.TypeDefinition.DisplayName));
-        //    }
+            if (contentItem != null)
+            {
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+                await _contentManager.RemoveAsync(contentItem);
 
-        //[HttpPost]
-        //public ActionResult Publish(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.GetLatest(id);
-        //    if (contentItem == null)
-        //        return HttpNotFound();
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T.Html("That content has been removed.")
+                    : T.Html("That {0} has been removed.", typeDefinition.DisplayName));
+            }
 
-        //    if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't publish content")))
-        //        return new HttpUnauthorizedResult();
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
-        //    _contentManager.Publish(contentItem);
+        [HttpPost]
+        public async Task<IActionResult> Publish(int id, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
 
-        //    Services.Notifier.Information(string.IsNullOrWhiteSpace(contentItem.TypeDefinition.DisplayName) ? T("That content has been published.") : T("That {0} has been published.", contentItem.TypeDefinition.DisplayName));
+            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't publish content")))
+            //    return new HttpUnauthorizedResult();
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+            await _contentManager.PublishAsync(contentItem);
 
-        //[HttpPost]
-        //public ActionResult Unpublish(int id, string returnUrl)
-        //{
-        //    var contentItem = _contentManager.GetLatest(id);
-        //    if (contentItem == null)
-        //        return HttpNotFound();
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-        //    if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't unpublish content")))
-        //        return new HttpUnauthorizedResult();
+            if (string.IsNullOrEmpty(typeDefinition.DisplayName))
+            {
+                _notifier.Success(T.Html("That content has been published."));
+            }
+            else
+            {
+                _notifier.Success(T.Html("That {0} has been published.", typeDefinition.DisplayName));
+            }
 
-        //    _contentManager.Unpublish(contentItem);
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
-        //    Services.Notifier.Information(string.IsNullOrWhiteSpace(contentItem.TypeDefinition.DisplayName) ? T("That content has been unpublished.") : T("That {0} has been unpublished.", contentItem.TypeDefinition.DisplayName));
+        [HttpPost]
+        public async Task<IActionResult> Unpublish(int id, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
 
-        //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
-        //}
+            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't unpublish content")))
+            //    return new HttpUnauthorizedResult();
 
-        //bool IUpdateModel.TryUpdateModel<TModel>(TModel model, string prefix, string[] includeProperties, string[] excludeProperties)
-        //{
-        //    return TryUpdateModel(model, prefix, includeProperties, excludeProperties);
-        //}
+            await _contentManager.UnpublishAsync(contentItem);
 
-        //void IUpdateModel.AddModelError(string key, LocalizedString errorMessage)
-        //{
-        //    ModelState.AddModelError(key, errorMessage.ToString());
-        //}
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+            if (string.IsNullOrEmpty(typeDefinition.DisplayName))
+            {
+                _notifier.Success(T.Html("That content has been unpublished."));
+            }
+            else
+            {
+                _notifier.Success(T.Html("That {0} has been unpublished.", typeDefinition.DisplayName));
+            }
+
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Shapes;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Views
@@ -8,6 +10,7 @@ namespace Orchard.DisplayManagement.Views
     public class ShapeResult : IDisplayResult
     {
         private string _defaultLocation;
+        private IDictionary<string,string> _otherLocations;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
@@ -44,6 +47,11 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
+            if(_otherLocations != null)
+            {
+                _otherLocations.TryGetValue(displayType, out _defaultLocation);
+            }
+
             var placement = context.FindPlacement(_shapeType, _differentiator, _defaultLocation);
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
@@ -134,9 +142,20 @@ namespace Orchard.DisplayManagement.Views
             return this;
         }
 
-        public ShapeResult Location(string zone)
+        public ShapeResult Location(string location)
         {
-            _defaultLocation = zone;
+            _defaultLocation = location;
+            return this;
+        }
+
+        public ShapeResult Location(string displayType, string location)
+        {
+            if(_otherLocations == null)
+            {
+                _otherLocations = new Dictionary<string, string>(2);
+            }
+
+            _otherLocations[displayType] = location;
             return this;
         }
 
@@ -157,26 +176,6 @@ namespace Orchard.DisplayManagement.Views
             _cacheId = cacheId;
             _cache = cache;
             return this;
-        }
-
-        public string GetDifferentiator()
-        {
-            return _differentiator;
-        }
-
-        public string GetGroup()
-        {
-            return _groupId;
-        }
-
-        public string GetLocation()
-        {
-            return _defaultLocation;
-        }
-
-        public string GetShapeType()
-        {
-            return _shapeType;
         }
     }
 }

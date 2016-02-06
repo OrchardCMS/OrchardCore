@@ -1,8 +1,7 @@
 ﻿@using Orchard.ContentManagement;
 @using Orchard.Contents;
-@using Orchard.Utility.Extensions;
 
-@{
+@*@{
     Script.Require("ShapesBase");
     ContentPart contentPart = Model.ContentPart;
 }
@@ -38,4 +37,4 @@
         @Html.Link(T("Publish").Text, Url.Action("Publish", "Admin", new {area = "Contents", id = contentPart.ContentItem.Id, returnUrl = Request.ToUrlString()}), new {itemprop = "UnsafeUrl"})
         @T(" | ")
     }
-}
+}*@

@@ -17,10 +17,6 @@
 }
 <h1>@RenderTitleSegments(pageTitle)</h1>
 
-<div class="manage">
-    @Html.ActionLink(createLinkText, "Create", new { Area = "Contents", Id = (string)Model.Options.SelectedFilter }, new { @class = "button primaryAction" })
-</div>
-
 @using (Html.BeginForm()) {
     @*<fieldset class="bulk-actions">
         <label><input type="checkbox" class="check-all" />@T["Select all"]</label>@T[" | "]
@@ -68,14 +64,13 @@
         </select>
         <button type="submit" name="submit.Filter" value="yes please">@T("Apply")</button>
     </fieldset>*@
+
+    
 <ul class="list-group">
-    @foreach (ContentItem contentItem in Model.ContentItems)
+    @foreach (var contentItemSummary in Model.ContentItems)
     {
     <li class="list-group-item">
-        @ContentManager.GetItemMetadata(contentItem).DisplayText <span class="hint">@contentItem.ContentType</span>
-        <div class="pull-xs-right">
-            <a asp-action="Edit" asp-route-id="@contentItem.ContentItemId" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-        </div>
+        @Display(contentItemSummary) 
     </li>
     }
 </ul>
