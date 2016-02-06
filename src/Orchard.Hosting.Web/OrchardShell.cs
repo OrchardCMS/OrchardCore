@@ -35,6 +35,8 @@ namespace Orchard.Hosting
 
         public Task ActivatingAsync()
         {
+            // Build the middleware pipeline for the current tenant
+
             IApplicationBuilder appBuilder = new ApplicationBuilder(_serviceProvider);
 
             var orderedMiddlewares = _middlewareProviders
@@ -42,19 +44,15 @@ namespace Orchard.Hosting
                 .OrderBy(obj => obj.Priority)
                 .ToArray();
 
-            RequestDelegate pipeline = null;
-
-            // If there are custom middleware for this tenant,
-            // build a custom pipeline for its routes
-            if (orderedMiddlewares.Length > 0)
+            foreach (var middleware in orderedMiddlewares)
             {
-                foreach (var middleware in orderedMiddlewares)
-                {
-                    middleware.Configure(appBuilder);
-                }
-
-                pipeline = appBuilder.Build();
+                middleware.Configure(appBuilder);
             }
+
+            // Orchard is always the last middleware
+            appBuilder.UseMiddleware<OrchardMiddleware>();
+
+            var pipeline = appBuilder.Build();
 
             _routePublisher.Publish(
                 _routeProviders.SelectMany(provider => provider.GetRoutes()),

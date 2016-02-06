@@ -5,22 +5,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Orchard.Hosting.Web.Routing.Routes
 {
     public class TenantRoute : IRouter
     {
-        private readonly IRouter _target;
         private readonly RequestDelegate _pipeline;
         private readonly ShellSettings _shellSettings;
+        private readonly IEnumerable<IRouter> _routes;
 
         public TenantRoute(
             ShellSettings shellSettings,
-            IRouter target,
+            IEnumerable<IRouter> routes,
             RequestDelegate pipeline)
         {
-            _target = target;
+            _routes = routes;
             _shellSettings = shellSettings;
             _pipeline = pipeline;
         }
@@ -34,17 +35,10 @@ namespace Orchard.Hosting.Web.Routing.Routes
                     // Store the requested targetted action so that the OrchardMiddleware
                     // can continue with it once the tenant pipeline has been executed
 
-                    if (_pipeline != null)
-                    {
-                        context.HttpContext.Items["orchard.Handler.Target"] = _target;
-                        context.HttpContext.Items["orchard.Handler.RouteContext"] = context;
+                    context.HttpContext.Items["orchard.middleware.context"] = context;
+                    context.HttpContext.Items["orchard.middleware.routes"] = _routes;
 
-                        await _pipeline.Invoke(context.HttpContext);
-                    }
-                    else
-                    {
-                        await _target.RouteAsync(context);
-                    }
+                    await _pipeline.Invoke(context.HttpContext);
                 }
                 catch (Exception ex)
                 {
@@ -55,6 +49,9 @@ namespace Orchard.Hosting.Web.Routing.Routes
             }
         }
 
+        /// <summary>
+        /// Returns <c>True</c> if this tenant route matches the current tenant
+        /// </summary>
         private bool IsValidRequest(HttpContext httpContext)
         {
             return httpContext.RequestServices.GetService<ShellSettings>() == _shellSettings;
@@ -64,7 +61,14 @@ namespace Orchard.Hosting.Web.Routing.Routes
         {
             if (IsValidRequest(context.Context))
             {
-                return _target.GetVirtualPath(context);
+                foreach (var route in _routes)
+                {
+                    var result = route.GetVirtualPath(context);
+                    if(result != null)
+                    {
+                        return result;
+                    }
+                }
             }
 
             return null;
