@@ -41,9 +41,17 @@ namespace Orchard.Core.Settings.Metadata
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            return Build(GetContentDefinitionRecord()
+            var contentTypeDefinitionRecord = GetContentDefinitionRecord()
                 .ContentTypeDefinitionRecords
-                .FirstOrDefault(x => x.Name == name));
+                .FirstOrDefault(x => x.Name == name);
+
+            // If the type doesn't exist return a mock
+            if(contentTypeDefinitionRecord == null)
+            {
+                return new ContentTypeDefinition(name, null);
+            }
+
+            return Build(contentTypeDefinitionRecord);
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
