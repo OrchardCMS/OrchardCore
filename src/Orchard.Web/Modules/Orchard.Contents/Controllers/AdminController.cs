@@ -66,24 +66,24 @@ namespace Orchard.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var versionOptions = VersionOptions.Latest;
+            var query = _session.QueryAsync<ContentItem, ContentItemIndex>();
+
             switch (model.Options.ContentsStatus)
             {
                 case ContentsStatus.Published:
-                    versionOptions = VersionOptions.Published;
+                    query = query.With<ContentItemIndex>(x => x.Published);
                     break;
                 case ContentsStatus.Draft:
-                    versionOptions = VersionOptions.Draft;
+                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
                     break;
                 case ContentsStatus.AllVersions:
-                    versionOptions = VersionOptions.AllVersions;
+                    query = query.With<ContentItemIndex>(x => x.Latest || x.Published);
                     break;
                 default:
-                    versionOptions = VersionOptions.Latest;
+                    query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
             }
 
-            var query = _session.QueryAsync<ContentItem, ContentItemIndex>();
             
             if (!string.IsNullOrEmpty(model.TypeName))
             {
