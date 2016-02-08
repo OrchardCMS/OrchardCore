@@ -27,20 +27,25 @@ namespace Orchard.DisplayManagement.Theming
             // This can't be cached as each request gets a different value.
             if (_theme == null)
             {
-                var allThemeResults = await Task.WhenAll(_themeSelectors.Select(async x => await x.GetThemeAsync().ConfigureAwait(false))).ConfigureAwait(false);
+                var themeResults = new List<ThemeSelectorResult>();
+                foreach (var themeSelector in _themeSelectors)
+                {
+                    var themeResult = await themeSelector.GetThemeAsync();
+                    if (themeResult != null)
+                    {
+                        themeResults.Add(themeResult);
+                    }
+                }
 
-                var requestTheme = allThemeResults
-                    .Where(x => x != null)
-                    .OrderByDescending(x => x.Priority)
-                    .ToList();
+                themeResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
 
-                if (requestTheme.Count == 0)
+                if (themeResults.Count == 0)
                 {
                     return null;
                 }
 
                 // Try to load the theme to ensure it's present
-                foreach (var theme in requestTheme)
+                foreach (var theme in themeResults)
                 {
                     var t = _extensionManager.GetExtension(theme.ThemeName);
                     if (t != null)
