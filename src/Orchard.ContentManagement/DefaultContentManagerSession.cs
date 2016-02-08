@@ -15,7 +15,7 @@ namespace Orchard.ContentManagement
             _itemByContentItemId.Add(Tuple.Create(item.ContentItemId, item.Number), item);
 
             // is it the Published version ?
-            if (item.Latest && item.Published)
+            if (item.Published)
             {
                 _publishedItemsById[item.ContentItemId] = item;
             }

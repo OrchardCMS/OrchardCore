@@ -165,21 +165,38 @@ namespace Orchard.ContentManagement
                 }
             }
 
-            // store in session prior to loading to avoid some problems with simple circular dependencies
-            _contentManagerSession.Store(contentItem);
+            // Return item if obtained earlier in session
+            ContentItem recalled;
+            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
+            {
+                // store in session prior to loading to avoid some problems with simple circular dependencies
+                _contentManagerSession.Store(contentItem);
 
-            // create a context with a new instance to load
-            var context = new LoadContentContext(contentItem);
+                // create a context with a new instance to load
+                var context = new LoadContentContext(contentItem);
 
-            // invoke handlers to acquire state, or at least establish lazy loading callbacks
-            Handlers.Invoke(handler => handler.Loading(context), _logger);
-            Handlers.Invoke(handler => handler.Loaded(context), _logger);
+                // invoke handlers to acquire state, or at least establish lazy loading callbacks
+                Handlers.Invoke(handler => handler.Loading(context), _logger);
+                Handlers.Invoke(handler => handler.Loaded(context), _logger);
+
+                contentItem = context.ContentItem;
+            }
+            else
+            {
+                contentItem = recalled;
+            }
 
             // when draft is required and latest is published a new version is appended
             if (options.IsDraftRequired && contentItem.Published)
             {
-                contentItem = await BuildNewVersionAsync(context.ContentItem);
+                // Save the previous version first
+                _session.Save(contentItem);
+
+                contentItem = await BuildNewVersionAsync(contentItem);
             }
+
+            // Save the current/new version
+            _session.Save(contentItem);
 
             return contentItem;
         }
@@ -300,7 +317,7 @@ namespace Orchard.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Invoke(handler => handler.Versioned(context), _logger);
-            
+
             return context.BuildingContentItem;
         }
 
