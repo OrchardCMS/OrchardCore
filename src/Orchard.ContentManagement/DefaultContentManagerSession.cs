@@ -9,8 +9,12 @@ namespace Orchard.ContentManagement
         private readonly IDictionary<Tuple<int, int>, ContentItem> _itemByContentItemId = new Dictionary<Tuple<int, int>, ContentItem>();
         private readonly IDictionary<int, ContentItem> _publishedItemsById = new Dictionary<int, ContentItem>();
 
+        private bool _hasItems;
+
         public void Store(ContentItem item)
         {
+            _hasItems = true;
+
             _itemByVersionId.Add(item.Id, item);
             _itemByContentItemId.Add(Tuple.Create(item.ContentItemId, item.Number), item);
 
@@ -23,16 +27,34 @@ namespace Orchard.ContentManagement
 
         public bool RecallVersionId(int id, out ContentItem item)
         {
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
+
             return _itemByVersionId.TryGetValue(id, out item);
         }
 
         public bool RecallContentItemId(int contentItemId, int versionNumber, out ContentItem item)
         {
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
+
             return _itemByContentItemId.TryGetValue(Tuple.Create(contentItemId, versionNumber), out item);
         }
 
         public bool RecallPublishedItemId(int id, out ContentItem item)
         {
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
+
             return _publishedItemsById.TryGetValue(id, out item);
         }
 
@@ -41,6 +63,7 @@ namespace Orchard.ContentManagement
             _itemByVersionId.Clear();
             _itemByContentItemId.Clear();
             _publishedItemsById.Clear();
+            _hasItems = false;
         }
     }
 }

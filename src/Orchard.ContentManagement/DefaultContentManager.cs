@@ -89,7 +89,7 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetAsync(int contentItemId, VersionOptions options)
         {
-            ContentItem contentItem;
+            ContentItem contentItem = null;
 
             // obtain the root records based on version options
             if (options.VersionRecordId != 0)
@@ -115,13 +115,6 @@ namespace Orchard.ContentManagement
                         x.Number == options.VersionNumber
                     )
                     .FirstOrDefault();
-            }
-            else if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
-            {
-                if (options.IsPublished)
-                {
-                    return contentItem;
-                }
             }
             else if (options.IsLatest)
             {
@@ -151,6 +144,13 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsPublished)
             {
+                // If the published version is requested and is already loaded, we can 
+                // return it right away
+                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                {
+                    return contentItem;
+                }
+
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Published == true)
@@ -166,7 +166,8 @@ namespace Orchard.ContentManagement
             }
 
             // Return item if obtained earlier in session
-            ContentItem recalled;
+            // If IsPublished is required then the test has already been checked before
+            ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {
                 // store in session prior to loading to avoid some problems with simple circular dependencies
@@ -186,17 +187,17 @@ namespace Orchard.ContentManagement
                 contentItem = recalled;
             }
 
-            // when draft is required and latest is published a new version is appended
+            // When draft is required and latest is published a new version is added
             if (options.IsDraftRequired && contentItem.Published)
             {
-                // Save the previous version first
+                // Save the previous version
                 _session.Save(contentItem);
 
                 contentItem = await BuildNewVersionAsync(contentItem);
-            }
 
-            // Save the current/new version
-            _session.Save(contentItem);
+                // Save the new version
+                _session.Save(contentItem);
+            }
 
             return contentItem;
         }
