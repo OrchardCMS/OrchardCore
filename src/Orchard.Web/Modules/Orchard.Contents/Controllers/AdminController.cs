@@ -20,6 +20,7 @@ using Orchard.Mvc;
 using Microsoft.AspNet.Routing;
 using Orchard.DisplayManagement.Notify;
 using Microsoft.AspNet.Mvc.Localization;
+using Microsoft.AspNet.Authorization;
 
 namespace Orchard.Contents.Controllers
 {
@@ -31,6 +32,7 @@ namespace Orchard.Contents.Controllers
         private readonly ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
+        private readonly IAuthorizationService _authorizationService;
 
         public AdminController(
             IContentManager contentManager,
@@ -41,9 +43,11 @@ namespace Orchard.Contents.Controllers
             ISession session,
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
+            IHtmlLocalizer<AdminController> localizer,
+            IAuthorizationService authorizationService
             )
         {
+            _authorizationService = authorizationService;
             _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
             _session = session;
@@ -99,7 +103,7 @@ namespace Orchard.Contents.Controllers
             }
             else
             {
-                var listableTypes = GetListableTypes().Select(t => t.Name).ToArray();
+                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
                 if(listableTypes.Any())
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
@@ -133,7 +137,7 @@ namespace Orchard.Contents.Controllers
             //}
 
             model.Options.SelectedFilter = model.TypeName;
-            model.Options.FilterOptions = GetListableTypes()
+            model.Options.FilterOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
@@ -161,20 +165,38 @@ namespace Orchard.Contents.Controllers
             return View(viewModel);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetCreatableTypes()
+        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
         {
-            return _contentDefinitionManager.ListTypeDefinitions().Where(ctd =>
-                //Services.Authorizer.Authorize(Permissions.EditContent, _contentManager.New(ctd.Name)) &&
-                ctd.Settings.ToObject<ContentTypeSettings>().Creatable
-                );
+            var creatable = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if(ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
+                    if (authorized)
+                    {
+                        creatable.Add(ctd);
+                    }
+                }
+            }
+            return creatable;
         }
 
-        private IEnumerable<ContentTypeDefinition> GetListableTypes()
+        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
         {
-            return _contentDefinitionManager.ListTypeDefinitions().Where(ctd =>
-                //Services.Authorizer.Authorize(Permissions.EditContent, _contentManager.New(ctd.Name)) &&
-                ctd.Settings.ToObject<ContentTypeSettings>().Listable
-                );
+            var listable = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Listable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
+                    if (authorized)
+                    {
+                        listable.Add(ctd);
+                    }
+                }
+            }
+            return listable;
         }
 
         //[HttpPost, ActionName("List")]
@@ -213,7 +235,7 @@ namespace Orchard.Contents.Controllers
         //            case ContentsBulkAction.PublishNow:
         //                foreach (var item in checkedContentItems)
         //                {
-        //                    if (!Services.Authorizer.Authorize(Permissions.PublishContent, item, T("Couldn't publish selected content.")))
+        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't publish selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
         //                        return new HttpUnauthorizedResult();
@@ -226,7 +248,7 @@ namespace Orchard.Contents.Controllers
         //            case ContentsBulkAction.Unpublish:
         //                foreach (var item in checkedContentItems)
         //                {
-        //                    if (!Services.Authorizer.Authorize(Permissions.PublishContent, item, T("Couldn't unpublish selected content.")))
+        //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't unpublish selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
         //                        return new HttpUnauthorizedResult();
@@ -239,7 +261,7 @@ namespace Orchard.Contents.Controllers
         //            case ContentsBulkAction.Remove:
         //                foreach (var item in checkedContentItems)
         //                {
-        //                    if (!Services.Authorizer.Authorize(Permissions.DeleteContent, item, T("Couldn't remove selected content.")))
+        //                    if (!await _authorizationService.Authorize(User, Permissions.DeleteContent, item, T("Couldn't remove selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
         //                        return new HttpUnauthorizedResult();
@@ -273,8 +295,10 @@ namespace Orchard.Contents.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            //if (!Services.Authorizer.Authorize(Permissions.EditContent, contentItem, T("Cannot create content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem);
 
@@ -298,24 +322,28 @@ namespace Orchard.Contents.Controllers
 
         [HttpPost, ActionName("Create")]
         [FormValueRequired("submit.Publish")]
-        public Task<IActionResult> CreateAndPublishPOST(string id, string returnUrl)
+        public async Task<IActionResult> CreateAndPublishPOST(string id, string returnUrl)
         {
 
             // pass a dummy content to the authorization check to check for "own" variations
             var dummyContent = _contentManager.New(id);
 
-            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, dummyContent, T("Couldn't create content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
-            return CreatePOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
+            return await CreatePOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
         }
 
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = _contentManager.New(id);
 
-            //if (!Services.Authorizer.Authorize(Permissions.EditContent, contentItem, T("Couldn't create content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             _contentManager.Create(contentItem, VersionOptions.Draft);
 
@@ -351,8 +379,10 @@ namespace Orchard.Contents.Controllers
             if (contentItem == null)
                 return HttpNotFound();
 
-            //if (!Services.Authorizer.Authorize(Permissions.EditContent, contentItem, T("Cannot edit content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem);
 
@@ -381,8 +411,10 @@ namespace Orchard.Contents.Controllers
             if (content == null)
                 return HttpNotFound();
 
-            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, content, T("Couldn't publish content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             return await EditPOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
         }
@@ -392,10 +424,14 @@ namespace Orchard.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
 
             if (contentItem == null)
+            {
                 return HttpNotFound();
+            }
 
-            //if (!Services.Authorizer.Authorize(Permissions.EditContent, contentItem, T("Couldn't edit content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             string previousRoute = null;
             //if (contentItem.Has<IAliasAspect>() && 
@@ -448,7 +484,7 @@ namespace Orchard.Contents.Controllers
         //    if (contentItem == null)
         //        return HttpNotFound();
 
-        //    if (!Services.Authorizer.Authorize(Permissions.EditContent, contentItem, T("Couldn't clone content")))
+        //    if (!await _authorizationService.Authorize(User, Permissions.EditContent, contentItem, T("Couldn't clone content")))
         //        return new HttpUnauthorizedResult();
 
         //    try
@@ -471,8 +507,10 @@ namespace Orchard.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
 
-            //if (!Services.Authorizer.Authorize(Permissions.DeleteContent, contentItem, T("Couldn't remove content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             if (contentItem != null)
             {
@@ -497,8 +535,10 @@ namespace Orchard.Contents.Controllers
                 return HttpNotFound();
             }
 
-            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't publish content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             await _contentManager.PublishAsync(contentItem);
 
@@ -525,8 +565,10 @@ namespace Orchard.Contents.Controllers
                 return HttpNotFound();
             }
 
-            //if (!Services.Authorizer.Authorize(Permissions.PublishContent, contentItem, T("Couldn't unpublish content")))
-            //    return new HttpUnauthorizedResult();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
 
             await _contentManager.UnpublishAsync(contentItem);
 
