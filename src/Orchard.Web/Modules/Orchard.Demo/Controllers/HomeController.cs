@@ -151,12 +151,4 @@ namespace Orchard.Demo.Controllers
             };
         }
     }
-
-    public class TestContentPartAHandler : ContentHandlerBase
-    {
-        public override void Activating(ActivatingContentContext context)
-        {
-            context.Builder.Weld<TestContentPartA>();
-        }
-    }
 }
