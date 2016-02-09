@@ -5,10 +5,17 @@ using System.Threading;
 
 namespace Orchard.Environment.Cache
 {
+    /// <summary>
+    /// This component is a singleton and holds all the existing signal token for a tenant.
+    /// </summary>
     public class Signal : ISignal
     {
-        private readonly ConcurrentDictionary<string, ChangeTokenInfo> _changeTokens
-            = new ConcurrentDictionary<string, ChangeTokenInfo>();
+        private readonly ConcurrentDictionary<string, ChangeTokenInfo> _changeTokens;
+            
+        public Signal()
+        {
+            _changeTokens = new ConcurrentDictionary<string, ChangeTokenInfo>();
+        }
 
         public IChangeToken GetToken(string key)
         {

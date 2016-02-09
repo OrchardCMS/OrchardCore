@@ -1,5 +1,6 @@
 ﻿using Orchard.DependencyInjection;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Cache.Abstractions
 {
@@ -9,6 +10,6 @@ namespace Orchard.Environment.Cache.Abstractions
     /// </summary>
     public interface ICacheContextManager : IDependency
     {
-        IEnumerable<CacheContextEntry> GetContext(IEnumerable<string> contexts);
+        Task<IEnumerable<CacheContextEntry>> GetContextAsync(IEnumerable<string> contexts);
     }
 }

@@ -21,7 +21,7 @@ namespace Orchard.DynamicCache.Services
         private static char ContextSeparator = ';';
 
         private readonly ICacheContextManager _cacheContextManager;
-        private readonly HashSet<ShapeMetadataCacheContext> _cached = new HashSet<ShapeMetadataCacheContext>();
+        private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
         private readonly Dictionary<string, string> _cache = new Dictionary<string, string>();
         private readonly IDynamicCache _dynamicCache;
         private readonly ITagCache _tagCache;
@@ -121,7 +121,7 @@ namespace Orchard.DynamicCache.Services
             return key;
         }
 
-        private IEnumerable<CacheContextEntry> GetCacheEntries(ShapeMetadataCacheContext cacheContext)
+        private IEnumerable<CacheContextEntry> GetCacheEntries(CacheContext cacheContext)
         {
             // All contexts' entries
             foreach(var entry in GetCacheEntries(cacheContext.Contexts))
@@ -132,7 +132,7 @@ namespace Orchard.DynamicCache.Services
 
         private IEnumerable<CacheContextEntry> GetCacheEntries(IEnumerable<string> contexts)
         {
-            return _cacheContextManager.GetContext(contexts);
+            return _cacheContextManager.GetContextAsync(contexts).Result;
         }
 
         private bool ProcessESIs(ref string content, Func<string, string> cache)

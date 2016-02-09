@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Cache.Abstractions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Cache
 {
@@ -13,13 +14,13 @@ namespace Orchard.Environment.Cache
             _cacheContextProviders = cacheContextProviders;
         }
 
-        public IEnumerable<CacheContextEntry> GetContext(IEnumerable<string> contexts)
+        public async Task<IEnumerable<CacheContextEntry>> GetContextAsync(IEnumerable<string> contexts)
         {
             var entries = new List<CacheContextEntry>();
 
             foreach (var provider in _cacheContextProviders.Reverse())
             {
-                provider.PopulateContextEntries(contexts, entries);
+                await provider.PopulateContextEntriesAsync(contexts, entries);
             }
 
             return entries;

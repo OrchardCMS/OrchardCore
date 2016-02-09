@@ -1,5 +1,6 @@
 ﻿using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.Environment.Cache.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -17,7 +18,7 @@ namespace Orchard.DisplayManagement.Views
         private readonly string _shapeType;
         private readonly Func<IBuildShapeContext, dynamic> _shapeBuilder;
         private readonly Func<dynamic, Task> _processing;
-        private Action<ShapeMetadataCacheContext> _cache;
+        private Action<CacheContext> _cache;
         private string _groupId;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, dynamic> shapeBuilder)
@@ -171,7 +172,7 @@ namespace Orchard.DisplayManagement.Views
             return this;
         }
 
-        public ShapeResult Cache(string cacheId, Action<ShapeMetadataCacheContext> cache = null)
+        public ShapeResult Cache(string cacheId, Action<CacheContext> cache = null)
         {
             _cacheId = cacheId;
             _cache = cache;

@@ -4,16 +4,29 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using YesSql.Core.Services;
 using Orchard.Core.Settings.Metadata.Records;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.Core.Settings.Metadata
 {
     public class ContentDefinitionManager : IContentDefinitionManager
     {
+        private const string TypeHashCacheKey = "ContentDefinitionManager:Serial";
+
         private readonly ISession _session;
         private ContentDefinitionRecord _contentDefinitionRecord;
+        private readonly IMemoryCache _memoryCache;
+        private readonly ISignal _signal;
 
-        public ContentDefinitionManager(ISession session)
+        public ContentDefinitionManager(
+            ISession session,
+            IMemoryCache memoryCache,
+            ISignal signal)
         {
+            _signal = signal;
+            _memoryCache = memoryCache;
             _session = session;
         }
 
@@ -33,7 +46,7 @@ namespace Orchard.Core.Settings.Metadata
             if (_contentDefinitionRecord == null)
             {
                 _contentDefinitionRecord = new ContentDefinitionRecord();
-                _session.Save(_contentDefinitionRecord);
+                UpdateContentDefinitionRecord();
             }
 
             return _contentDefinitionRecord;
@@ -44,13 +57,7 @@ namespace Orchard.Core.Settings.Metadata
             var contentTypeDefinitionRecord = GetContentDefinitionRecord()
                 .ContentTypeDefinitionRecords
                 .FirstOrDefault(x => x.Name == name);
-
-            // If the type doesn't exist return a mock
-            if(contentTypeDefinitionRecord == null)
-            {
-                return new ContentTypeDefinition(name, null);
-            }
-
+            
             return Build(contentTypeDefinitionRecord);
         }
 
@@ -79,13 +86,13 @@ namespace Orchard.Core.Settings.Metadata
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
         {
             Apply(contentTypeDefinition, Acquire(contentTypeDefinition));
-            _session.Save(_contentDefinitionRecord);
+            UpdateContentDefinitionRecord();
         }
 
         public void StorePartDefinition(ContentPartDefinition contentPartDefinition)
         {
             Apply(contentPartDefinition, Acquire(contentPartDefinition));
-            _session.Save(_contentDefinitionRecord);
+            UpdateContentDefinitionRecord();
         }
 
         public void DeleteTypeDefinition(string name)
@@ -96,7 +103,7 @@ namespace Orchard.Core.Settings.Metadata
             if (record != null)
             {
                 GetContentDefinitionRecord().ContentTypeDefinitionRecords.Remove(record);
-                _session.Save(_contentDefinitionRecord);
+                UpdateContentDefinitionRecord();
             }
         }
 
@@ -116,7 +123,7 @@ namespace Orchard.Core.Settings.Metadata
             if (record != null)
             {
                 GetContentDefinitionRecord().ContentPartDefinitionRecords.Remove(record);
-                _session.Save(_contentDefinitionRecord);
+                UpdateContentDefinitionRecord();
             }
         }
 
@@ -180,7 +187,7 @@ namespace Orchard.Core.Settings.Metadata
             }
 
             // Persist changes
-            _session.Save(_contentDefinitionRecord);
+            UpdateContentDefinitionRecord();
         }
 
         private void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
@@ -259,6 +266,32 @@ namespace Orchard.Core.Settings.Metadata
         ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
         {
             return source == null ? null : new ContentFieldDefinition(source.Name);
+        }
+
+        private void UpdateContentDefinitionRecord()
+        {
+            _contentDefinitionRecord.Serial++;
+            _session.Save(_contentDefinitionRecord);
+            _signal.SignalToken(TypeHashCacheKey);
+        }
+
+        public Task<int> GetTypesHashAsync()
+        {
+            // The serial number is store in local cache in order to prevent
+            // loading the record if it's not necessary
+
+            int serial;
+            if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
+            {
+                var options = new MemoryCacheEntryOptions()
+                    .AddExpirationToken(_signal.GetToken(TypeHashCacheKey));
+
+                serial = GetContentDefinitionRecord().Serial;
+
+                _memoryCache.Set(TypeHashCacheKey, serial, options);
+            }
+
+            return Task.FromResult(serial);
         }
     }
 }

@@ -4,6 +4,7 @@ using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DependencyInjection;
 using Orchard.Utility;
+using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.MetaData
 {
@@ -25,6 +26,15 @@ namespace Orchard.ContentManagement.MetaData
 
         void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition);
         void StorePartDefinition(ContentPartDefinition contentPartDefinition);
+
+        /// <summary>
+        /// Returns a serial number representing the list of types and settings for the current tenant.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="int"/> value that changes every time the list of types changes.
+        /// The implementation is efficient in order to be called frequently.
+        /// </returns>
+        Task<int> GetTypesHashAsync();
     }
 
     public static class ContentDefinitionManagerExtensions

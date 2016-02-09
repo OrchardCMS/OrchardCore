@@ -1,6 +1,7 @@
 ﻿using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Cache.Abstractions;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Cache.CacheContextProviders
 {
@@ -13,10 +14,12 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             _themeManager = themeManager;
         }
 
-        public void PopulateContextEntries(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+        public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
             // Always vary by theme
-            entries.Add(new CacheContextEntry("theme", _themeManager.GetThemeAsync().Result.Name));
+
+            var theme = await _themeManager.GetThemeAsync();
+            entries.Add(new CacheContextEntry("theme", theme.Name));
         }
     }
 }

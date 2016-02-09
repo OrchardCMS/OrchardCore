@@ -15,5 +15,6 @@ namespace Orchard.Core.Settings.Metadata.Records
         public IList<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
         public IList<ContentPartDefinitionRecord> ContentPartDefinitionRecords { get; set; }
         public IList<ContentFieldDefinitionRecord> ContentFieldDefinitionRecords { get; set; }
+        public int Serial { get; set; }
     }
 }

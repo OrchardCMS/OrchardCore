@@ -3,6 +3,7 @@ using Orchard.Environment.Cache.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Cache.CacheContextProviders
 {
@@ -16,7 +17,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public void PopulateContextEntries(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+        public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
             if (contexts.Any(ctx => String.Equals(ctx, "query", StringComparison.OrdinalIgnoreCase)))
             {
@@ -30,7 +31,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
                     ));
 
                 // If we track any query value, we don't need to look into specific ones
-                return;
+                return Task.CompletedTask;
             }
 
             foreach (var context in contexts.Where(ctx => ctx.StartsWith(QueryPrefix, StringComparison.OrdinalIgnoreCase)))
@@ -45,6 +46,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
                     );
             }
 
+            return Task.CompletedTask;
         }
     }
 }

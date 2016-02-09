@@ -52,6 +52,7 @@ namespace Orchard.Core.Dashboard
                 .Cache("menu-admin")
                 .AddContext("user.roles")
                 .AddDependency("features")
+                .AddDependency("types") // This should go in a Displaying Shape event in the Contents module
                 ;
 
             _layoutAccessor.GetLayout().Navigation.Add(menuShape);
