@@ -9,6 +9,8 @@ using Orchard.DisplayManagement.Layout;
 using Microsoft.AspNet.Http;
 using System.Text;
 using Orchard.Environment.Shell;
+using Microsoft.AspNet.DataProtection;
+using System.Net;
 
 namespace Orchard.DisplayManagement.Notify
 {
@@ -21,6 +23,7 @@ namespace Orchard.DisplayManagement.Notify
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ShellSettings _shellSettings;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         private IList<NotifyEntry> _existingEntries;
         private bool _shouldDeleteCookie;
@@ -31,8 +34,10 @@ namespace Orchard.DisplayManagement.Notify
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IDataProtectionProvider dataProtectionProvider)
         {
+            _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
 
             _layoutAccessor = layoutAccessor;
@@ -124,6 +129,11 @@ namespace Orchard.DisplayManagement.Notify
         {
         }
 
+        private IDataProtector CreateTenantProtector()
+        {
+            return _dataProtectionProvider.CreateProtector(nameof(NotifyFilter), _tenantPath);
+        }
+
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
             var settings = new JsonSerializerSettings();
@@ -131,9 +141,9 @@ namespace Orchard.DisplayManagement.Notify
 
             try
             {
-                return Convert.ToBase64String(
-                    Encoding.UTF8.GetBytes(
-                        JsonConvert.SerializeObject(notifyEntries, settings)));
+                var protector = CreateTenantProtector();
+                var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, settings));
+                return WebUtility.UrlEncode(signed);
             }
             catch
             {
@@ -148,9 +158,9 @@ namespace Orchard.DisplayManagement.Notify
 
             try
             {
-                return JsonConvert.DeserializeObject<NotifyEntry[]>(
-                    Encoding.UTF8.GetString(Convert.FromBase64String(value)),
-                    settings);
+                var protector = CreateTenantProtector();
+                var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
+                return JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, settings);
             }
             catch
             {
