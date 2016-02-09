@@ -63,18 +63,18 @@ namespace Orchard.Environment.Shell.Builders
                     {
                         _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
                     }
-                    if (typeof(IDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
-                    }
-                    else if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
+                    if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
                     {
                         tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);
                     }
                     else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
                     {
                         tenantServiceCollection.AddTransient(interfaceType, dependency.Type);
-                    }                    
+                    }
+                    else if (typeof(IDependency).IsAssignableFrom(interfaceType))
+                    {
+                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
+                    }
                 }
             }
 
