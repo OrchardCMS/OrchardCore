@@ -10,8 +10,8 @@ namespace Orchard.ContentManagement.Display
     /// </summary>
     public interface IContentItemDisplayManager : ITransientDependency
     {
-        Task<dynamic> BuildDisplayAsync(ContentItem content, string displayType = "", string groupId = "");
-        Task<dynamic> BuildEditorAsync(ContentItem content, string groupId = "");
+        Task<dynamic> BuildDisplayAsync(ContentItem content, IUpdateModel updater, string displayType = "", string groupId = "");
+        Task<dynamic> BuildEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "");
         Task<dynamic> UpdateEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "");
     }
 }

@@ -83,12 +83,12 @@ namespace Orchard.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel>.BuildDisplayAsync(TModel model, BuildDisplayContext context)
         {
-            return DisplayAsync(model);
+            return DisplayAsync(model, context.Updater);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel>.BuildEditorAsync(TModel model, BuildEditorContext context)
         {
-            return EditAsync(model);
+            return EditAsync(model, context.Updater);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel>.UpdateEditorAsync(TModel model, UpdateEditorContext context)
@@ -96,14 +96,14 @@ namespace Orchard.DisplayManagement.Handlers
             return UpdateAsync(model, context.Updater);
         }
 
-        public virtual Task<IDisplayResult> DisplayAsync(TModel model)
+        public virtual Task<IDisplayResult> DisplayAsync(TModel model, IUpdateModel updater)
         {
-            return Task.FromResult(Display(model));
+            return Task.FromResult(Display(model, updater));
         }
 
-        public virtual Task<IDisplayResult> EditAsync(TModel model)
+        public virtual Task<IDisplayResult> EditAsync(TModel model, IUpdateModel updater)
         {
-            return Task.FromResult(Edit(model));
+            return Task.FromResult(Edit(model, updater));
         }
 
         public virtual Task<IDisplayResult> UpdateAsync(TModel model, IUpdateModel updater)
@@ -111,19 +111,19 @@ namespace Orchard.DisplayManagement.Handlers
             return Task.FromResult(Update(model, updater));
         }
 
-        public virtual IDisplayResult Display(TModel model)
+        public virtual IDisplayResult Display(TModel model, IUpdateModel updater)
         {
             return null;
         }
 
-        public virtual IDisplayResult Edit(TModel model)
+        public virtual IDisplayResult Edit(TModel model, IUpdateModel updater)
         {
             return null;
         }
 
         public virtual IDisplayResult Update(TModel model, IUpdateModel updater)
         {
-            return null;
+            return Edit(model, updater);
         }
 
     }

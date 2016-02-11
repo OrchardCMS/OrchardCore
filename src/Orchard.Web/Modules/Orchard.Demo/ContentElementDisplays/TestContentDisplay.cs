@@ -13,7 +13,7 @@ namespace Orchard.Demo.ContentElementDisplays
         private static int _creating;
         private static int _processing;
 
-        public override IDisplayResult Display(ContentItem contentItem)
+        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 
@@ -47,7 +47,7 @@ namespace Orchard.Demo.ContentElementDisplays
                 );
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem)
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
             var testContentPart = contentItem.As<TestContentPartA>();
 

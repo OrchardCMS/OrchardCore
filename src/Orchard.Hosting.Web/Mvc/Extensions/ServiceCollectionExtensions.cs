@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Hosting.Mvc.Filters;
+using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
 using Orchard.Hosting.Web.Mvc.ModelBinding;
@@ -21,6 +22,7 @@ namespace Orchard.Hosting.Mvc
                 {
                     options.Filters.Add(new ModelBinderAccessorFilter());
                     options.Conventions.Add(new ModuleAreaRouteConstraintConvention());
+                    options.ModelBinders.Insert(0, new CheckMarkModelBinder());
                 })
                 .AddViews()
                 .AddViewLocalization()

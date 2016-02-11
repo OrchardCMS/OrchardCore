@@ -1,17 +1,19 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.ModelBinding;
 using System;
 
 namespace Orchard.DisplayManagement.Handlers
 {
     public abstract class BuildShapeContext : IBuildShapeContext
     {
-        protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IShape layout)
+        protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IShape layout, IUpdateModel updater)
         {
             Shape = shape;
             ShapeFactory = shapeFactory;
             GroupId = groupId;
             Layout = layout;
             FindPlacement = FindDefaultPlacement;
+            Updater = updater;
         }
 
         public dynamic Shape { get; private set; }
@@ -20,6 +22,7 @@ namespace Orchard.DisplayManagement.Handlers
         public IShape Layout { get; set; }
         public string GroupId { get; private set; }
         public Func<string, string, string, PlacementInfo> FindPlacement { get; set; }
+        public IUpdateModel Updater { get; }
 
         private PlacementInfo FindDefaultPlacement(string partType, string differentiator, string defaultLocation)
         {

@@ -1,26 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Contents.ViewModels;
+﻿using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
-using Orchard.DisplayManagement.ModelBinding;
+using Microsoft.AspNet.Mvc.Localization;
+using Microsoft.AspNet.Routing;
 using Microsoft.Extensions.Logging;
-using Orchard.Navigation;
-using Orchard.Core.Settings.Services;
-using System.Threading.Tasks;
-using YesSql.Core.Services;
-using Orchard.ContentManagement.Records;
-using Orchard.DisplayManagement;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.MetaData.Settings;
-using Orchard.Mvc;
-using Microsoft.AspNet.Routing;
+using Orchard.ContentManagement.Records;
+using Orchard.Contents.Services;
+using Orchard.Contents.ViewModels;
+using Orchard.Core.Settings.Services;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Authorization;
+using Orchard.Mvc;
+using Orchard.Navigation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.Contents.Controllers
 {
@@ -33,6 +34,7 @@ namespace Orchard.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
 
         public AdminController(
             IContentManager contentManager,
@@ -44,9 +46,11 @@ namespace Orchard.Contents.Controllers
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IEnumerable<IContentAdminFilter> contentAdminFilters
             )
         {
+            _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
@@ -143,6 +147,9 @@ namespace Orchard.Contents.Controllers
 
             //model.Options.Cultures = _cultureManager.ListCultures();
 
+            // Invoke any service that could alter the query
+            await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
+
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
@@ -153,7 +160,7 @@ namespace Orchard.Contents.Controllers
             var contentItemSummaries = new List<dynamic>();
             foreach(var contentItem in pageOfContentItems)
             {
-                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, "SummaryAdmin"));
+                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
 
             var viewModel = New.ViewModel()
@@ -300,7 +307,7 @@ namespace Orchard.Contents.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
 
             return View(model);
         }
@@ -372,6 +379,25 @@ namespace Orchard.Contents.Controllers
             return RedirectToRoute(adminRouteValues);
         }
 
+        public async Task<IActionResult> Display(int id)
+        {
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Published);
+
+            if (contentItem == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            {
+                return new HttpUnauthorizedResult();
+            }
+
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
+
+            return View(model);
+        }
+
         public async Task<IActionResult> Edit(int id)
         {
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
@@ -384,7 +410,7 @@ namespace Orchard.Contents.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem);
+            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
 
             return View(model);
         }

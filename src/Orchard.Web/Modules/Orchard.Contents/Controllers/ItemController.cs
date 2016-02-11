@@ -2,11 +2,12 @@
 using Microsoft.AspNet.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
 
 namespace Orchard.Contents.Controllers
 {
-    public class ItemController : Controller
+    public class ItemController : Controller, IUpdateModel
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
@@ -43,7 +44,7 @@ namespace Orchard.Contents.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
             return View(model);
         }
@@ -76,7 +77,7 @@ namespace Orchard.Contents.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem);
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
             return View(model);
         }

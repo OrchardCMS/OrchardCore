@@ -33,7 +33,7 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
-            var shape = await _contentDisplay.BuildDisplayAsync(contentItem);
+            var shape = await _contentDisplay.BuildDisplayAsync(contentItem, this);
             return View(shape);
         }
 
@@ -47,7 +47,7 @@ namespace Orchard.Demo.Controllers
                 return HttpNotFound();
             }
 
-            var shape = await _contentDisplay.BuildEditorAsync(contentItem);
+            var shape = await _contentDisplay.BuildEditorAsync(contentItem, this);
             return View(shape);
         }
 

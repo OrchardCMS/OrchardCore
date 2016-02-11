@@ -52,7 +52,7 @@ namespace Orchard.ContentManagement.Display
 
         ILogger Logger { get; set; }
 
-        public async Task<dynamic> BuildDisplayAsync(ContentItem contentItem, string displayType, string groupId)
+        public async Task<dynamic> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
             if(contentItem == null)
             {
@@ -80,7 +80,8 @@ namespace Orchard.ContentManagement.Display
                 actualDisplayType, 
                 groupId, 
                 _shapeFactory, 
-                _layoutAccessor.GetLayout()
+                _layoutAccessor.GetLayout(),
+                updater
             );
 
             await BindPlacementAsync(context);
@@ -90,7 +91,7 @@ namespace Orchard.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, string groupId)
+        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId)
         {
             if (contentItem == null)
             {
@@ -113,7 +114,8 @@ namespace Orchard.ContentManagement.Display
                 itemShape, 
                 groupId, 
                 _shapeFactory,
-                _layoutAccessor.GetLayout()
+                _layoutAccessor.GetLayout(),
+                updater
             );
 
             await BindPlacementAsync(context);

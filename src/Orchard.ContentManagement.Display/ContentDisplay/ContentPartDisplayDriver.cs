@@ -12,7 +12,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var part = model.As<TPart>();
             if(part != null)
             {
-                return DisplayAsync(part);
+                return DisplayAsync(part, context.Updater);
             }
 
             return Task.FromResult<IDisplayResult>(null);
@@ -23,7 +23,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var part = model.As<TPart>();
             if (part != null)
             {
-                return EditAsync(part);
+                return EditAsync(part, context.Updater);
             }
 
             return Task.FromResult<IDisplayResult>(null);

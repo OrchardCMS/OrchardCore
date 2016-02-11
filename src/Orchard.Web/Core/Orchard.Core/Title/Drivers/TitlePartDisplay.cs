@@ -8,14 +8,14 @@ namespace Orchard.Core.Title.Drivers
 {
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
-        public override IDisplayResult Display(TitlePart titlePart)
+        public override IDisplayResult Display(TitlePart titlePart, IUpdateModel updater)
         {
             return Shape("TitlePart", titlePart)
                 .Location("Detail", "Content")
                 .Location("Summary", "Content");
         }
 
-        public override IDisplayResult Edit(TitlePart titlePart)
+        public override IDisplayResult Edit(TitlePart titlePart, IUpdateModel updater)
         {
             return Shape("TitlePart_Edit", titlePart).Location("Content");
         }
@@ -24,7 +24,7 @@ namespace Orchard.Core.Title.Drivers
         {
             await updater.TryUpdateModelAsync(model, typeof(TitlePart), "");
 
-            return Edit(model);
+            return Edit(model, updater);
         }
     }
 }

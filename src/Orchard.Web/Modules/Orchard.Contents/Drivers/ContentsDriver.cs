@@ -18,7 +18,7 @@ namespace Orchard.Contents.Drivers
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override IDisplayResult Display(ContentItem model)
+        public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             return Combine(
                 Shape("Parts_Contents_Publish", model),
@@ -30,7 +30,7 @@ namespace Orchard.Contents.Drivers
             );
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem)
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -47,11 +47,6 @@ namespace Orchard.Contents.Drivers
             }
 
             return Combine(results.ToArray());
-        }
-
-        public override Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
-        {
-            return Task.FromResult(Edit(contentItem));
         }
     }
 }
