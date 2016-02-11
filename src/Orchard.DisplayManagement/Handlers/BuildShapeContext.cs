@@ -21,7 +21,7 @@ namespace Orchard.DisplayManagement.Handlers
         public dynamic New => ShapeFactory;
         public IShape Layout { get; set; }
         public string GroupId { get; private set; }
-        public Func<string, string, string, PlacementInfo> FindPlacement { get; set; }
+        public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
 
         private PlacementInfo FindDefaultPlacement(string partType, string differentiator, string defaultLocation)

@@ -29,7 +29,7 @@ namespace Orchard.DisplayManagement
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (partShapeType, differentiator, defaultLocation) =>
+            context.FindPlacement = (partShapeType, differentiator, displayType) =>
             {
                 ShapeDescriptor descriptor;
                 if (shapeTable.Descriptors.TryGetValue(partShapeType, out descriptor))
@@ -39,9 +39,6 @@ namespace Orchard.DisplayManagement
                         Shape = context.Shape
                     };
 
-                    // define which location should be used if none placement is hit
-                    descriptor.DefaultPlacement = defaultLocation;
-
                     var placement = descriptor.Placement(placementContext);
                     if (placement != null)
                     {
@@ -50,11 +47,7 @@ namespace Orchard.DisplayManagement
                     }
                 }
 
-                return new PlacementInfo
-                {
-                    Location = defaultLocation,
-                    Source = String.Empty
-                };
+                return null;
             };
         }
 

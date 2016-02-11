@@ -3,7 +3,6 @@ using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Views
@@ -48,12 +47,23 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
-            if(_otherLocations != null)
+            
+            // Look into specific implementations of placements (like placement.info files)
+            var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
+
+            // If no placement is found, use the default location
+            if (placement == null)
             {
-                _otherLocations.TryGetValue(displayType, out _defaultLocation);
+                // Look for mapped display type locations
+                if (_otherLocations != null)
+                {
+                    _otherLocations.TryGetValue(displayType, out _defaultLocation);
+                }
+
+                placement = new Descriptors.PlacementInfo() { Location = _defaultLocation };
             }
 
-            var placement = context.FindPlacement(_shapeType, _differentiator, _defaultLocation);
+            // If there are no placement or it's explicitely noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
@@ -62,6 +72,7 @@ namespace Orchard.DisplayManagement.Views
             // Parse group placement.
             _groupId = placement.GetGroup();
 
+            // If the shape's group doesn't match the currently rendered one, return
             if (!String.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -136,19 +147,32 @@ namespace Orchard.DisplayManagement.Views
                 parentShape.Add(newShape, position);
             }
         }
-
+        
+        /// <summary>
+        /// Sets the prefix of the form elements rendered in the shape.
+        /// </summary>
+        /// <remarks>
+        /// The goal is to isolate each shape in case several ones of the same
+        /// type are rendered in a view.
+        /// </remarks>
         public ShapeResult Prefix(string prefix)
         {
             _prefix = prefix;
             return this;
         }
 
+        /// <summary>
+        /// Sets the default location of the shape when no specific placement applies.
+        /// </summary>
         public ShapeResult Location(string location)
         {
             _defaultLocation = location;
             return this;
         }
 
+        /// <summary>
+        /// Sets the location to use for a matching display type.
+        /// </summary>
         public ShapeResult Location(string displayType, string location)
         {
             if(_otherLocations == null)
@@ -160,18 +184,29 @@ namespace Orchard.DisplayManagement.Views
             return this;
         }
 
+        /// <summary>
+        /// Sets a discriminator that is used to find the location of the shape.
+        /// </summary>
         public ShapeResult Differentiator(string differentiator)
         {
             _differentiator = differentiator;
             return this;
         }
 
+        /// <summary>
+        /// Sets the group identifier the shape will be rendered in.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
         public ShapeResult OnGroup(string groupId)
         {
             _groupId = groupId;
             return this;
         }
 
+        /// <summary>
+        /// Sets the caching properties of the shape to render.
+        /// </summary>
         public ShapeResult Cache(string cacheId, Action<CacheContext> cache = null)
         {
             _cacheId = cacheId;
