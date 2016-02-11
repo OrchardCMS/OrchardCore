@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Razor.TagHelpers;
+using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Layout;
 using System;
 using System.Collections.Generic;
@@ -28,18 +29,15 @@ namespace Orchard.DisplayManagement.TagHelpers
 
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-
-            var childContent = await output.GetChildContentAsync();
-            var zoneContent = childContent.GetContent();
-
             if (String.IsNullOrEmpty(Name))
             {
                 throw new ArgumentException("The name attribute can't be empty");
             }
 
+            var childContent = await output.GetChildContentAsync();
             var zone = _layoutAccessor.GetLayout().Zones[Name];
 
-            zone.Add(zoneContent, Position);
+            zone.Add(childContent, Position);
 
             output.TagName = null;
             output.Content.Clear();
