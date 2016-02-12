@@ -74,7 +74,7 @@ namespace Orchard.DisplayManagement.Implementation
             {
                 foreach (var fragment in _fragments)
                 {
-                    writer.Write(fragment.ToString());
+                    fragment.WriteTo(writer, encoder);
                 }
             }
         }

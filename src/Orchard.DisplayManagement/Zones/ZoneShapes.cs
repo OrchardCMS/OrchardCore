@@ -20,15 +20,12 @@ namespace Orchard.DisplayManagement.Zones
         public IHtmlContent Zone(dynamic Display, dynamic Shape)
         {
             var htmlContents = new List<IHtmlContent>();
-            foreach (var item in (IEnumerable<dynamic>)Shape)
+            foreach (var item in Shape)
             {
                 htmlContents.Add(Display(item));
             }
 
-            // TODO: Replace by HtmlContentBuilder when available
-            var combined = new DisplayHelper.Combined(htmlContents);
-
-            return combined;
+            return new DisplayHelper.Combined(htmlContents);
         }
 
         [Shape]
