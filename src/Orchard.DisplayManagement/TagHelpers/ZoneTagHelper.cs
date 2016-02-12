@@ -39,8 +39,8 @@ namespace Orchard.DisplayManagement.TagHelpers
 
             zone.Add(childContent, Position);
 
-            output.TagName = null;
-            output.Content.Clear();
+            // Don't render the zone tag or the inner content
+            output.SuppressOutput();
         }
     }
 }
