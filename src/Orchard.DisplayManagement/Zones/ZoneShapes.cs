@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Utility;
@@ -8,7 +7,6 @@ using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNet.Html.Abstractions;
 using Orchard.DisplayManagement.Implementation;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Zones
 {
@@ -16,33 +14,21 @@ namespace Orchard.DisplayManagement.Zones
     {
         public void Discover(ShapeTableBuilder builder)
         {
-
-            // 'Zone' shapes are built on the Zone base class
-            // They have class="zone zone-{name}"
-            // and the template can be specialized with "Zone-{Name}" base file name
-            builder.Describe("Zone")
-                .OnDisplaying(displaying =>
-                {
-                    var zone = displaying.Shape;
-                    string zoneName = zone.ZoneName;
-                    zone.Classes.Add("zone-" + zoneName.HtmlClassify());
-                    zone.Classes.Add("zone");
-
-                    // Zone__[ZoneName] e.g. Zone-SideBar
-                    zone.Metadata.Alternates.Add("Zone__" + zoneName);
-                });
         }
 
         [Shape]
         public IHtmlContent Zone(dynamic Display, dynamic Shape)
         {
-            TagBuilder zoneWrapper = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
-            foreach (var item in Shape)
+            var htmlContents = new List<IHtmlContent>();
+            foreach (var item in (IEnumerable<dynamic>)Shape)
             {
-                zoneWrapper.InnerHtml.Append(Display(item));
+                htmlContents.Add(Display(item));
             }
 
-            return zoneWrapper;
+            // TODO: Replace by HtmlContentBuilder when available
+            var combined = new DisplayHelper.Combined(htmlContents);
+
+            return combined;
         }
 
         [Shape]
