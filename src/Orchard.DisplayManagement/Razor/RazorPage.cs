@@ -140,18 +140,12 @@ namespace Orchard.DisplayManagement.Razor
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        protected override HelperResult RenderBody()
+        protected new IHtmlContent RenderBody()
         {
-            return new HelperResult(tw =>
-            {
-                // TODO: Implement async
-                var content = (IHtmlContent)Display(ThemeLayout.Content);
-                content.WriteTo(tw, HtmlEncoder);
-                return Task.CompletedTask;
-            });
+            return Display(ThemeLayout.Content);
         }
 
-        public new Task<HtmlString> RenderSectionAsync(string name, bool required)
+        public new Task<IHtmlContent> RenderSectionAsync(string name, bool required)
         {
             if (name == null)
             {
@@ -165,12 +159,8 @@ namespace Orchard.DisplayManagement.Razor
                 throw new InvalidOperationException("Zone not found: " + name);
             }
 
-            var content = (IHtmlContent)Display(zone);
-            using (var sw = new StringWriter())
-            {
-                content.WriteTo(sw, HtmlEncoder);
-                return Task.FromResult(new HtmlString(sw.ToString()));
-            }
+            IHtmlContent result = Display(zone);
+            return Task.FromResult(result);
         }
     }
 

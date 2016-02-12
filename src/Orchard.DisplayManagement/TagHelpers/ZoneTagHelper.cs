@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNet.Razor.TagHelpers;
-using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Layout;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.TagHelpers
