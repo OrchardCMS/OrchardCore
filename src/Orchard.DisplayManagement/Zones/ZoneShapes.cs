@@ -50,8 +50,8 @@ namespace Orchard.DisplayManagement.Zones
         {
             var htmlContents = new List<IHtmlContent>();
 
-            var unordered = ((IEnumerable<dynamic>)Shape).ToArray();
-            var tabbed = unordered.GroupBy(x => (string)x.Metadata.Tab);
+            var shapes = ((IEnumerable<dynamic>)Shape);
+            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab);
 
             if (tabbed.Count() > 1)
             {
@@ -70,7 +70,7 @@ namespace Orchard.DisplayManagement.Zones
             }
             else
             {
-                foreach (var item in unordered)
+                foreach (var item in tabbed.First())
                 {
                     htmlContents.Add(Display(item));
                 }
@@ -80,13 +80,6 @@ namespace Orchard.DisplayManagement.Zones
             var combined = new DisplayHelper.Combined(htmlContents);
 
             return combined;
-        }
-
-        [Shape]
-        public void DocumentZone(dynamic Display, dynamic Shape, TextWriter Output)
-        {
-            foreach (var item in Shape)
-                Output.Write(Display(item));
         }
     }
 }
