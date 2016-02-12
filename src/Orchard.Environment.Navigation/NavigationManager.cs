@@ -13,6 +13,8 @@ namespace Orchard.Environment.Navigation
 {
     public class NavigationManager : INavigationManager
     {
+        private static string[] Schemes = new[] { "http", "https", "tel", "mailto" };
+
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
         protected readonly ShellSettings _shellSettings;
@@ -132,21 +134,30 @@ namespace Orchard.Environment.Navigation
         /// <returns></returns>
         public string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, HttpContext httpContext)
         {
-            var url = string.IsNullOrEmpty(menuItemUrl) && (routeValueDictionary == null || routeValueDictionary.Count == 0)
-                          ? "~/"
-                          : !string.IsNullOrEmpty(menuItemUrl)
-                                ? menuItemUrl
-                                : _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
+            string url;
+            if (routeValueDictionary == null || routeValueDictionary.Count == 0)
+            {
+                if (!String.IsNullOrEmpty(menuItemUrl))
+                {
+                    return "#";
+                }
+                else
+                {
+                    url = menuItemUrl;
+                }
+            }
+            else
+            {
+                url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
+            }
 
-            var schemes = new[] { "http", "https", "tel", "mailto" };
             if (!string.IsNullOrEmpty(url) && 
                 httpContext != null &&
-                !(url.StartsWith("/") || 
-                schemes.Any(scheme => url.StartsWith(scheme + ":"))))
+                !(url.StartsWith("/") ||
+                Schemes.Any(scheme => url.StartsWith(scheme + ":"))))
             {
                 if (url.StartsWith("~/"))
                 {
-
                     if (!String.IsNullOrEmpty(_shellSettings.RequestUrlPrefix))
                     {
                         url = _shellSettings.RequestUrlPrefix + "/" + url.Substring(2);

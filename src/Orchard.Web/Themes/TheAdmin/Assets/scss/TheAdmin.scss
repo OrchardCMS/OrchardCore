@@ -1,7 +1,7 @@
 // Custom variables
 
-$font-family-sans-serif:     "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-family-monospace:      Consolas, Menlo, Monaco, "Courier New", monospace;
+$font-family-sans-serif: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-monospace: Consolas, Menlo, Monaco, "Courier New", monospace;
 
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
@@ -10,53 +10,42 @@ $font-family-monospace:      Consolas, Menlo, Monaco, "Courier New", monospace;
 
 
 $top-nav-height: 55px;
-$left-navigation-width: 200px;
+$left-navigation-width: 5em;
+$left-navigation-expand-width: 15em;
 
 // Layout
 // -----------------------------
 
 .ta-wrapper {
-    
+
     .ta-navbar-top {
         @extend .bg-faded;
         @extend .navbar, .navbar-fixed-top;
         min-height: $top-nav-height;
     }
-    
+
     .ta-left-sidebar {
         @extend .bg-faded;
         @extend .hidden-xs-down;
         width: $left-navigation-width;
-
+        height: 100%;
         z-index: 1;
         position: absolute;
-
-        ul {
-            @extend .nav;
-
-            li {
-                @extend .nav-item;
-                padding-left: 1.5rem;
-                a {
-                    @extend .nav-link;
-                }
-            }
-        }
     }
 
     .ta-content {
         @extend .container-fluid;
-        margin-left:0;
+        margin-left: 0;
         margin-top: $top-nav-height;
         padding-top: 1em;
+        border-left: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     @include media-breakpoint-up(sm) {
         .ta-content {
-            margin-left:$left-navigation-width;
+            margin-left: $left-navigation-width + $left-navigation-expand-width;
         }
     }
-
 }
 
 // Forms
@@ -91,7 +80,6 @@ label .field-validation-error::before {
 .admin-toolbar {
     @extend .navbar, .navbar-light, .bg-faded;
     margin-bottom: 1em;
-
 }
 
 
@@ -116,4 +104,131 @@ label .field-validation-error::before {
 
 .message-error {
     @extend .alert-danger;
+}
+
+// Navigation
+// ------------------------------
+
+.ta-left-sidebar nav {
+    @extend .bg-faded;
+    position: fixed;
+    top: $top-nav-height;
+    left: 0;
+    height: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    overflow: hidden;
+    /*box-shadow: 2px 0 18px rgba(0, 0, 0, 0.26);*/
+
+    .menu-admin {
+        @extend .nav;
+
+        li {
+            @extend .nav-item;
+        }
+    }
+    // When a root link is hovered, highlight it
+    .menu-admin > li:hover > a {
+        @extend .bg-inverse;
+    }
+    // Add a top border to the first root link
+    .menu-admin > li:first-child > a {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    // Top menu links are just showing the icons, and are square
+    .menu-admin > li > a {
+        @extend .nav-link;
+        text-indent: -500em;
+        display: block;
+        height: $left-navigation-width;
+        width: $left-navigation-width;
+        line-height: $left-navigation-width;
+        text-align: center;
+        position: relative;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: background 0.1s ease-in-out;
+    }
+
+    .menu-admin > li > a:before {
+        font-family: FontAwesome;
+        speak: none;
+        text-indent: 0em;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        font-size: 1.4em;
+    }
+
+    // Second level menu
+    .menu-admin > li > ul {
+        width: 0;
+        overflow: hidden;
+        z-index: 5;
+        transition: all 0.1s ease-in-out;
+        position: fixed;
+        top: $top-nav-height;
+        left: $left-navigation-width;
+        height: 100%;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            
+            > a {
+                @extend .nav-link;
+                display: block;
+                height: 2em;
+                text-indent: 0em;
+                line-height: 2em;
+                text-align: center;
+                text-decoration: none;
+                position: relative;
+                font-family: verdana;
+                transition: background 0.1s ease-in-out;
+                border: none;
+                padding-left:1em;
+
+            }
+
+            :hover {
+                background-color: $gray-lighter;
+            }
+
+            :first-child {
+                // clears the border (inherited)
+                border-top: none;
+            }
+        }
+    }
+
+    .menu-admin > li > ul.open {
+        width: $left-navigation-expand-width;
+        height: 100%;
+        display: block;
+
+        a {
+            text-align: left;
+        }
+    }
+}
+
+.menu-admin > li.content > a:before {
+    content: "\f187";
+}
+
+.menu-admin > li.new > a:before {
+    content: "\f044";
+}
+
+.menu-admin > li.content-definition > a:before {
+    content: "\f1b2";
+}
+
+.menu-admin > li.themes > a:before {
+    content: "\f083";
 }

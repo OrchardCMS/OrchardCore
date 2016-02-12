@@ -1,4 +1,4 @@
-﻿$(function () {
+﻿$(document).ready(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
@@ -13,9 +13,9 @@
 
         return confirm(dataMessage);
     });
-})(jQuery);
+});
 
-$(function () {
+$(document).ready(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
         $("body").on("click", "a[itemprop~=UnsafeUrl], a[data-unsafe-url]", function () {
@@ -59,4 +59,4 @@ $(function () {
 
         });
     }
-})(jQuery);
+});

@@ -2610,33 +2610,39 @@ input[type="button"].btn-block {
   border: 1px solid #ddd;
   border-radius: 0 .25rem .25rem 0; }
 
-.nav, .ta-wrapper .ta-left-sidebar ul {
+.nav, .ta-left-sidebar nav .menu-admin {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none; }
 
-.nav-link, .ta-wrapper .ta-left-sidebar ul li a {
+.nav-link, .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .menu-admin > li > ul > li > a {
   display: inline-block; }
-  .nav-link:focus, .ta-wrapper .ta-left-sidebar ul li a:focus, .nav-link:hover, .ta-wrapper .ta-left-sidebar ul li a:hover {
+  .nav-link:focus, .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .nav-link:hover, .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover {
     text-decoration: none; }
-  .nav-link.disabled, .ta-wrapper .ta-left-sidebar ul li a.disabled {
+  .nav-link.disabled, .ta-left-sidebar nav .menu-admin > li > a.disabled, .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled {
     color: #818a91; }
-    .nav-link.disabled, .ta-wrapper .ta-left-sidebar ul li a.disabled, .nav-link.disabled:focus, .ta-wrapper .ta-left-sidebar ul li a.disabled:focus, .nav-link.disabled:hover, .ta-wrapper .ta-left-sidebar ul li a.disabled:hover {
+    .nav-link.disabled, .ta-left-sidebar nav .menu-admin > li > a.disabled, .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled, .nav-link.disabled:focus, .ta-left-sidebar nav .menu-admin > li > a.disabled:focus, .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled:focus, .nav-link.disabled:hover, .ta-left-sidebar nav .menu-admin > li > a.disabled:hover, .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled:hover {
       color: #818a91;
       cursor: not-allowed;
       background-color: transparent; }
 
-.nav-inline .nav-item, .nav-inline .ta-wrapper .ta-left-sidebar ul li, .ta-wrapper .ta-left-sidebar ul .nav-inline li {
+.nav-inline .nav-item, .nav-inline .ta-left-sidebar nav .menu-admin li, .ta-left-sidebar nav .menu-admin .nav-inline li {
   display: inline-block; }
 
-.nav-inline .nav-item + .nav-item, .nav-inline .ta-wrapper .ta-left-sidebar ul li + .nav-item, .ta-wrapper .ta-left-sidebar ul .nav-inline li + .nav-item, .nav-inline .ta-wrapper .ta-left-sidebar ul .nav-item + li, .ta-wrapper .ta-left-sidebar ul .nav-inline .nav-item + li, .nav-inline .ta-wrapper .ta-left-sidebar ul li + li, .ta-wrapper .ta-left-sidebar ul .nav-inline li + li,
+.nav-inline .nav-item + .nav-item, .nav-inline .ta-left-sidebar nav .menu-admin li + .nav-item, .ta-left-sidebar nav .menu-admin .nav-inline li + .nav-item, .nav-inline .ta-left-sidebar nav .menu-admin .nav-item + li, .ta-left-sidebar nav .menu-admin .nav-inline .nav-item + li, .nav-inline .ta-left-sidebar nav .menu-admin li + li, .ta-left-sidebar nav .menu-admin .nav-inline li + li,
 .nav-inline .nav-link + .nav-link,
-.nav-inline .ta-wrapper .ta-left-sidebar ul li a + .nav-link, .ta-wrapper .ta-left-sidebar ul li
-.nav-inline a + .nav-link,
-.nav-inline .ta-wrapper .ta-left-sidebar ul li .nav-link + a, .ta-wrapper .ta-left-sidebar ul li
-.nav-inline .nav-link + a,
-.nav-inline .ta-wrapper .ta-left-sidebar ul li a + a, .ta-wrapper .ta-left-sidebar ul li
-.nav-inline a + a {
+.nav-inline .ta-left-sidebar nav .menu-admin > li > a + .nav-link, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > a + .nav-link,
+.nav-inline .ta-left-sidebar nav .menu-admin > li > ul > li > a + .nav-link, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > ul > li > a + .nav-link,
+.nav-inline .ta-left-sidebar nav .menu-admin > li > .nav-link + a, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > .nav-link + a,
+.nav-inline .ta-left-sidebar nav .menu-admin > li > a + a, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > a + a,
+.nav-inline .ta-left-sidebar nav .menu-admin > li > ul > li > .nav-link + a, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > ul > li > .nav-link + a,
+.nav-inline .ta-left-sidebar nav .menu-admin > li > ul > li > a + a, .ta-left-sidebar nav
+.nav-inline .menu-admin > li > ul > li > a + a {
   margin-left: 1rem; }
 
 .nav-tabs {
@@ -2645,44 +2651,56 @@ input[type="button"].btn-block {
     content: "";
     display: table;
     clear: both; }
-  .nav-tabs .nav-item, .nav-tabs .ta-wrapper .ta-left-sidebar ul li, .ta-wrapper .ta-left-sidebar ul .nav-tabs li {
+  .nav-tabs .nav-item, .nav-tabs .ta-left-sidebar nav .menu-admin li, .ta-left-sidebar nav .menu-admin .nav-tabs li {
     float: left;
     margin-bottom: -1px; }
-    .nav-tabs .nav-item + .nav-item, .nav-tabs .ta-wrapper .ta-left-sidebar ul li + .nav-item, .ta-wrapper .ta-left-sidebar ul .nav-tabs li + .nav-item, .nav-tabs .ta-wrapper .ta-left-sidebar ul .nav-item + li, .ta-wrapper .ta-left-sidebar ul .nav-tabs .nav-item + li, .nav-tabs .ta-wrapper .ta-left-sidebar ul li + li, .ta-wrapper .ta-left-sidebar ul .nav-tabs li + li {
+    .nav-tabs .nav-item + .nav-item, .nav-tabs .ta-left-sidebar nav .menu-admin li + .nav-item, .ta-left-sidebar nav .menu-admin .nav-tabs li + .nav-item, .nav-tabs .ta-left-sidebar nav .menu-admin .nav-item + li, .ta-left-sidebar nav .menu-admin .nav-tabs .nav-item + li, .nav-tabs .ta-left-sidebar nav .menu-admin li + li, .ta-left-sidebar nav .menu-admin .nav-tabs li + li {
       margin-left: .2rem; }
-  .nav-tabs .nav-link, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a {
+  .nav-tabs .nav-link, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a {
     display: block;
     padding: 0.5em 1em;
     border: 1px solid transparent;
     border-radius: 0.25rem 0.25rem 0 0; }
-    .nav-tabs .nav-link:focus, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a:focus, .nav-tabs .nav-link:hover, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a:hover {
+    .nav-tabs .nav-link:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a:focus, .nav-tabs .nav-link:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a:hover {
       border-color: #eceeef #eceeef #ddd; }
-    .nav-tabs .nav-link.disabled, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.disabled, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.disabled, .nav-tabs .nav-link.disabled:focus, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.disabled:focus, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.disabled:focus, .nav-tabs .nav-link.disabled:hover, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.disabled:hover, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.disabled:hover {
+    .nav-tabs .nav-link.disabled, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.disabled, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.disabled, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.disabled, .nav-tabs .nav-link.disabled:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.disabled:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.disabled:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.disabled:focus, .nav-tabs .nav-link.disabled:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.disabled:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.disabled:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.disabled:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.disabled:hover {
       color: #818a91;
       background-color: transparent;
       border-color: transparent; }
-  .nav-tabs .nav-link.active, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.active, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.active, .nav-tabs .nav-link.active:focus, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.active:focus, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.active:focus, .nav-tabs .nav-link.active:hover, .nav-tabs .ta-wrapper .ta-left-sidebar ul li a.active:hover, .ta-wrapper .ta-left-sidebar ul li .nav-tabs a.active:hover,
+  .nav-tabs .nav-link.active, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.active, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.active, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.active, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.active, .nav-tabs .nav-link.active:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.active:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.active:focus, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:focus, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.active:focus, .nav-tabs .nav-link.active:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > a.active:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > a.active:hover, .nav-tabs .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:hover, .ta-left-sidebar nav .nav-tabs .menu-admin > li > ul > li > a.active:hover,
   .nav-tabs .nav-item.open .nav-link,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open .nav-link, .ta-wrapper .ta-left-sidebar ul
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .nav-link, .ta-left-sidebar nav .menu-admin
   .nav-tabs li.open .nav-link,
-  .nav-tabs .nav-item.open .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li
-  .nav-tabs .nav-item.open a,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open a, .ta-wrapper .ta-left-sidebar ul
-  .nav-tabs li.open a,
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > a,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > a,
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > ul > li > a,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > ul > li > a,
   .nav-tabs .nav-item.open .nav-link:focus,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open .nav-link:focus, .ta-wrapper .ta-left-sidebar ul
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .nav-link:focus, .ta-left-sidebar nav .menu-admin
   .nav-tabs li.open .nav-link:focus,
-  .nav-tabs .nav-item.open .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li
-  .nav-tabs .nav-item.open a:focus,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open a:focus, .ta-wrapper .ta-left-sidebar ul
-  .nav-tabs li.open a:focus,
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > a:focus,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a:focus, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > a:focus,
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > ul > li > a:focus,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > ul > li > a:focus,
   .nav-tabs .nav-item.open .nav-link:hover,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open .nav-link:hover, .ta-wrapper .ta-left-sidebar ul
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .nav-link:hover, .ta-left-sidebar nav .menu-admin
   .nav-tabs li.open .nav-link:hover,
-  .nav-tabs .nav-item.open .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li
-  .nav-tabs .nav-item.open a:hover,
-  .nav-tabs .ta-wrapper .ta-left-sidebar ul li.open a:hover, .ta-wrapper .ta-left-sidebar ul
-  .nav-tabs li.open a:hover {
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > a:hover,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a:hover, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > a:hover,
+  .nav-tabs .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav
+  .nav-tabs .nav-item.open .menu-admin > li > ul > li > a:hover,
+  .nav-tabs .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .menu-admin
+  .nav-tabs li.open .menu-admin > li > ul > li > a:hover {
     color: #55595c;
     background-color: #fff;
     border-color: #ddd #ddd transparent; }
@@ -2692,46 +2710,58 @@ input[type="button"].btn-block {
   display: table;
   clear: both; }
 
-.nav-pills .nav-item, .nav-pills .ta-wrapper .ta-left-sidebar ul li, .ta-wrapper .ta-left-sidebar ul .nav-pills li {
+.nav-pills .nav-item, .nav-pills .ta-left-sidebar nav .menu-admin li, .ta-left-sidebar nav .menu-admin .nav-pills li {
   float: left; }
-  .nav-pills .nav-item + .nav-item, .nav-pills .ta-wrapper .ta-left-sidebar ul li + .nav-item, .ta-wrapper .ta-left-sidebar ul .nav-pills li + .nav-item, .nav-pills .ta-wrapper .ta-left-sidebar ul .nav-item + li, .ta-wrapper .ta-left-sidebar ul .nav-pills .nav-item + li, .nav-pills .ta-wrapper .ta-left-sidebar ul li + li, .ta-wrapper .ta-left-sidebar ul .nav-pills li + li {
+  .nav-pills .nav-item + .nav-item, .nav-pills .ta-left-sidebar nav .menu-admin li + .nav-item, .ta-left-sidebar nav .menu-admin .nav-pills li + .nav-item, .nav-pills .ta-left-sidebar nav .menu-admin .nav-item + li, .ta-left-sidebar nav .menu-admin .nav-pills .nav-item + li, .nav-pills .ta-left-sidebar nav .menu-admin li + li, .ta-left-sidebar nav .menu-admin .nav-pills li + li {
     margin-left: .2rem; }
 
-.nav-pills .nav-link, .nav-pills .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .nav-pills a {
+.nav-pills .nav-link, .nav-pills .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .nav-pills .menu-admin > li > a, .nav-pills .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .nav-pills .menu-admin > li > ul > li > a {
   display: block;
   padding: 0.5em 1em;
   border-radius: 0.25rem; }
 
-.nav-pills .nav-link.active, .nav-pills .ta-wrapper .ta-left-sidebar ul li a.active, .ta-wrapper .ta-left-sidebar ul li .nav-pills a.active, .nav-pills .nav-link.active:focus, .nav-pills .ta-wrapper .ta-left-sidebar ul li a.active:focus, .ta-wrapper .ta-left-sidebar ul li .nav-pills a.active:focus, .nav-pills .nav-link.active:hover, .nav-pills .ta-wrapper .ta-left-sidebar ul li a.active:hover, .ta-wrapper .ta-left-sidebar ul li .nav-pills a.active:hover,
+.nav-pills .nav-link.active, .nav-pills .ta-left-sidebar nav .menu-admin > li > a.active, .ta-left-sidebar nav .nav-pills .menu-admin > li > a.active, .nav-pills .ta-left-sidebar nav .menu-admin > li > ul > li > a.active, .ta-left-sidebar nav .nav-pills .menu-admin > li > ul > li > a.active, .nav-pills .nav-link.active:focus, .nav-pills .ta-left-sidebar nav .menu-admin > li > a.active:focus, .ta-left-sidebar nav .nav-pills .menu-admin > li > a.active:focus, .nav-pills .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:focus, .ta-left-sidebar nav .nav-pills .menu-admin > li > ul > li > a.active:focus, .nav-pills .nav-link.active:hover, .nav-pills .ta-left-sidebar nav .menu-admin > li > a.active:hover, .ta-left-sidebar nav .nav-pills .menu-admin > li > a.active:hover, .nav-pills .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:hover, .ta-left-sidebar nav .nav-pills .menu-admin > li > ul > li > a.active:hover,
 .nav-pills .nav-item.open .nav-link,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open .nav-link, .ta-wrapper .ta-left-sidebar ul
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .nav-link, .ta-left-sidebar nav .menu-admin
 .nav-pills li.open .nav-link,
-.nav-pills .nav-item.open .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li
-.nav-pills .nav-item.open a,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open a, .ta-wrapper .ta-left-sidebar ul
-.nav-pills li.open a,
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > a,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > a,
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > ul > li > a,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > ul > li > a,
 .nav-pills .nav-item.open .nav-link:focus,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open .nav-link:focus, .ta-wrapper .ta-left-sidebar ul
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .nav-link:focus, .ta-left-sidebar nav .menu-admin
 .nav-pills li.open .nav-link:focus,
-.nav-pills .nav-item.open .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li
-.nav-pills .nav-item.open a:focus,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open a:focus, .ta-wrapper .ta-left-sidebar ul
-.nav-pills li.open a:focus,
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > a:focus,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a:focus, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > a:focus,
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > ul > li > a:focus,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > ul > li > a:focus,
 .nav-pills .nav-item.open .nav-link:hover,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open .nav-link:hover, .ta-wrapper .ta-left-sidebar ul
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .nav-link:hover, .ta-left-sidebar nav .menu-admin
 .nav-pills li.open .nav-link:hover,
-.nav-pills .nav-item.open .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li
-.nav-pills .nav-item.open a:hover,
-.nav-pills .ta-wrapper .ta-left-sidebar ul li.open a:hover, .ta-wrapper .ta-left-sidebar ul
-.nav-pills li.open a:hover {
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > a:hover,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > a:hover, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > a:hover,
+.nav-pills .nav-item.open .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav
+.nav-pills .nav-item.open .menu-admin > li > ul > li > a:hover,
+.nav-pills .ta-left-sidebar nav .menu-admin li.open .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .menu-admin
+.nav-pills li.open .menu-admin > li > ul > li > a:hover {
   color: #fff;
   cursor: default;
   background-color: #0275d8; }
 
-.nav-stacked .nav-item, .nav-stacked .ta-wrapper .ta-left-sidebar ul li, .ta-wrapper .ta-left-sidebar ul .nav-stacked li {
+.nav-stacked .nav-item, .nav-stacked .ta-left-sidebar nav .menu-admin li, .ta-left-sidebar nav .menu-admin .nav-stacked li {
   display: block;
   float: none; }
-  .nav-stacked .nav-item + .nav-item, .nav-stacked .ta-wrapper .ta-left-sidebar ul li + .nav-item, .ta-wrapper .ta-left-sidebar ul .nav-stacked li + .nav-item, .nav-stacked .ta-wrapper .ta-left-sidebar ul .nav-item + li, .ta-wrapper .ta-left-sidebar ul .nav-stacked .nav-item + li, .nav-stacked .ta-wrapper .ta-left-sidebar ul li + li, .ta-wrapper .ta-left-sidebar ul .nav-stacked li + li {
+  .nav-stacked .nav-item + .nav-item, .nav-stacked .ta-left-sidebar nav .menu-admin li + .nav-item, .ta-left-sidebar nav .menu-admin .nav-stacked li + .nav-item, .nav-stacked .ta-left-sidebar nav .menu-admin .nav-item + li, .ta-left-sidebar nav .menu-admin .nav-stacked .nav-item + li, .nav-stacked .ta-left-sidebar nav .menu-admin li + li, .ta-left-sidebar nav .menu-admin .nav-stacked li + li {
     margin-top: .2rem;
     margin-left: 0; }
 
@@ -2834,17 +2864,17 @@ input[type="button"].btn-block {
   .navbar-toggleable-md {
     display: block !important; } }
 
-.navbar-nav .nav-item, .navbar-nav .ta-wrapper .ta-left-sidebar ul li, .ta-wrapper .ta-left-sidebar ul .navbar-nav li {
+.navbar-nav .nav-item, .navbar-nav .ta-left-sidebar nav .menu-admin li, .ta-left-sidebar nav .menu-admin .navbar-nav li {
   float: left; }
 
-.navbar-nav .nav-link, .navbar-nav .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .navbar-nav a {
+.navbar-nav .nav-link, .navbar-nav .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > a, .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > ul > li > a {
   display: block;
   padding-top: .425rem;
   padding-bottom: .425rem; }
-  .navbar-nav .nav-link + .nav-link, .navbar-nav .ta-wrapper .ta-left-sidebar ul li a + .nav-link, .ta-wrapper .ta-left-sidebar ul li .navbar-nav a + .nav-link, .navbar-nav .ta-wrapper .ta-left-sidebar ul li .nav-link + a, .ta-wrapper .ta-left-sidebar ul li .navbar-nav .nav-link + a, .navbar-nav .ta-wrapper .ta-left-sidebar ul li a + a, .ta-wrapper .ta-left-sidebar ul li .navbar-nav a + a {
+  .navbar-nav .nav-link + .nav-link, .navbar-nav .ta-left-sidebar nav .menu-admin > li > a + .nav-link, .ta-left-sidebar nav .navbar-nav .menu-admin > li > a + .nav-link, .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a + .nav-link, .ta-left-sidebar nav .navbar-nav .menu-admin > li > ul > li > a + .nav-link, .navbar-nav .ta-left-sidebar nav .menu-admin > li > .nav-link + a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > .nav-link + a, .navbar-nav .ta-left-sidebar nav .menu-admin > li > a + a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > a + a, .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > .nav-link + a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > ul > li > .nav-link + a, .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a + a, .ta-left-sidebar nav .navbar-nav .menu-admin > li > ul > li > a + a {
     margin-left: 1rem; }
 
-.navbar-nav .nav-item + .nav-item, .navbar-nav .ta-wrapper .ta-left-sidebar ul li + .nav-item, .ta-wrapper .ta-left-sidebar ul .navbar-nav li + .nav-item, .navbar-nav .ta-wrapper .ta-left-sidebar ul .nav-item + li, .ta-wrapper .ta-left-sidebar ul .navbar-nav .nav-item + li, .navbar-nav .ta-wrapper .ta-left-sidebar ul li + li, .ta-wrapper .ta-left-sidebar ul .navbar-nav li + li {
+.navbar-nav .nav-item + .nav-item, .navbar-nav .ta-left-sidebar nav .menu-admin li + .nav-item, .ta-left-sidebar nav .menu-admin .navbar-nav li + .nav-item, .navbar-nav .ta-left-sidebar nav .menu-admin .nav-item + li, .ta-left-sidebar nav .menu-admin .navbar-nav .nav-item + li, .navbar-nav .ta-left-sidebar nav .menu-admin li + li, .ta-left-sidebar nav .menu-admin .navbar-nav li + li {
   margin-left: 1rem; }
 
 .navbar-light .navbar-brand, .admin-toolbar .navbar-brand {
@@ -2852,39 +2882,57 @@ input[type="button"].btn-block {
   .navbar-light .navbar-brand:focus, .admin-toolbar .navbar-brand:focus, .navbar-light .navbar-brand:hover, .admin-toolbar .navbar-brand:hover {
     color: rgba(0, 0, 0, 0.8); }
 
-.navbar-light .navbar-nav .nav-link, .admin-toolbar .navbar-nav .nav-link, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav a, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a {
+.navbar-light .navbar-nav .nav-link, .admin-toolbar .navbar-nav .nav-link, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a {
   color: rgba(0, 0, 0, 0.3); }
-  .navbar-light .navbar-nav .nav-link:focus, .admin-toolbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav a:focus, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a:focus, .navbar-light .navbar-nav .nav-link:hover, .admin-toolbar .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav a:hover, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a:hover {
+  .navbar-light .navbar-nav .nav-link:focus, .admin-toolbar .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a:focus, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a:focus, .navbar-light .navbar-nav .nav-link:hover, .admin-toolbar .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a:hover, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a:hover {
     color: rgba(0, 0, 0, 0.6); }
 
-.navbar-light .navbar-nav .open > .nav-link, .admin-toolbar .navbar-nav .open > .nav-link, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav .open > a, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .open > a, .navbar-light .navbar-nav .open > .nav-link:focus, .admin-toolbar .navbar-nav .open > .nav-link:focus, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:focus, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav .open > a:focus, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:focus, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .open > a:focus, .navbar-light .navbar-nav .open > .nav-link:hover, .admin-toolbar .navbar-nav .open > .nav-link:hover, .navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:hover, .ta-wrapper .ta-left-sidebar ul li .navbar-light .navbar-nav .open > a:hover, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:hover, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .open > a:hover,
+.navbar-light .navbar-nav .open > .nav-link, .admin-toolbar .navbar-nav .open > .nav-link, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li.open > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.open > a, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li.open > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.open > a, .navbar-light .navbar-nav .open > .nav-link:focus, .admin-toolbar .navbar-nav .open > .nav-link:focus, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:focus, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li.open > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.open > a:focus, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:focus, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li.open > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.open > a:focus, .navbar-light .navbar-nav .open > .nav-link:hover, .admin-toolbar .navbar-nav .open > .nav-link:hover, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:hover, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li.open > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.open > a:hover, .navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:hover, .ta-left-sidebar nav .navbar-light .navbar-nav .menu-admin > li > ul > li.open > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.open > a:hover,
 .navbar-light .navbar-nav .active > .nav-link, .admin-toolbar .navbar-nav .active > .nav-link,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav .active > a, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .active > a,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li.active > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.active > a,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li.active > a, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.active > a,
 .navbar-light .navbar-nav .active > .nav-link:focus, .admin-toolbar .navbar-nav .active > .nav-link:focus,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav .active > a:focus, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:focus, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .active > a:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li.active > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.active > a:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li.active > a:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.active > a:focus,
 .navbar-light .navbar-nav .active > .nav-link:hover, .admin-toolbar .navbar-nav .active > .nav-link:hover,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav .active > a:hover, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:hover, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav .active > a:hover,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li.active > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li.active > a:hover,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li.active > a:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li.active > a:hover,
 .navbar-light .navbar-nav .nav-link.open, .admin-toolbar .navbar-nav .nav-link.open,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.open, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.open,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.open, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.open,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.open, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.open,
 .navbar-light .navbar-nav .nav-link.open:focus, .admin-toolbar .navbar-nav .nav-link.open:focus,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.open:focus, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:focus, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.open:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.open:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.open:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.open:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.open:focus,
 .navbar-light .navbar-nav .nav-link.open:hover, .admin-toolbar .navbar-nav .nav-link.open:hover,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.open:hover, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:hover, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.open:hover,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.open:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.open:hover,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.open:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.open:hover,
 .navbar-light .navbar-nav .nav-link.active, .admin-toolbar .navbar-nav .nav-link.active,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.active, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.active,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.active, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.active,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.active, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.active,
 .navbar-light .navbar-nav .nav-link.active:focus, .admin-toolbar .navbar-nav .nav-link.active:focus,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.active:focus, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:focus, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.active:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.active:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.active:focus,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:focus, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.active:focus, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:focus, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.active:focus,
 .navbar-light .navbar-nav .nav-link.active:hover, .admin-toolbar .navbar-nav .nav-link.active:hover,
-.navbar-light .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-light .navbar-nav a.active:hover, .admin-toolbar .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:hover, .ta-wrapper .ta-left-sidebar ul li .admin-toolbar .navbar-nav a.active:hover {
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > a.active:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > a.active:hover,
+.navbar-light .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:hover, .ta-left-sidebar nav
+.navbar-light .navbar-nav .menu-admin > li > ul > li > a.active:hover, .admin-toolbar .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:hover, .ta-left-sidebar nav .admin-toolbar .navbar-nav .menu-admin > li > ul > li > a.active:hover {
   color: rgba(0, 0, 0, 0.8); }
 
 .navbar-light .navbar-divider, .admin-toolbar .navbar-divider {
@@ -2895,39 +2943,57 @@ input[type="button"].btn-block {
   .navbar-dark .navbar-brand:focus, .navbar-dark .navbar-brand:hover {
     color: white; }
 
-.navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav a {
+.navbar-dark .navbar-nav .nav-link, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > a, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li > a {
   color: rgba(255, 255, 255, 0.5); }
-  .navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:focus, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav a:focus, .navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a:hover, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav a:hover {
+  .navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:focus, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > a:focus, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:focus, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li > a:focus, .navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a:hover, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > a:hover, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a:hover, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li > a:hover {
     color: rgba(255, 255, 255, 0.75); }
 
-.navbar-dark .navbar-nav .open > .nav-link, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav .open > a, .navbar-dark .navbar-nav .open > .nav-link:focus, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:focus, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav .open > a:focus, .navbar-dark .navbar-nav .open > .nav-link:hover, .navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .open > a:hover, .ta-wrapper .ta-left-sidebar ul li .navbar-dark .navbar-nav .open > a:hover,
+.navbar-dark .navbar-nav .open > .nav-link, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li.open > a, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li.open > a, .navbar-dark .navbar-nav .open > .nav-link:focus, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:focus, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li.open > a:focus, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:focus, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li.open > a:focus, .navbar-dark .navbar-nav .open > .nav-link:hover, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.open > a:hover, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li.open > a:hover, .navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.open > a:hover, .ta-left-sidebar nav .navbar-dark .navbar-nav .menu-admin > li > ul > li.open > a:hover,
 .navbar-dark .navbar-nav .active > .nav-link,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav .active > a,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li.active > a,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li.active > a,
 .navbar-dark .navbar-nav .active > .nav-link:focus,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav .active > a:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li.active > a:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li.active > a:focus,
 .navbar-dark .navbar-nav .active > .nav-link:hover,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li .active > a:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav .active > a:hover,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li.active > a:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li.active > a:hover,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li.active > a:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li.active > a:hover,
 .navbar-dark .navbar-nav .nav-link.open,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.open,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.open,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.open,
 .navbar-dark .navbar-nav .nav-link.open:focus,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.open:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.open:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.open:focus,
 .navbar-dark .navbar-nav .nav-link.open:hover,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.open:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.open:hover,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.open:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.open:hover,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.open:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.open:hover,
 .navbar-dark .navbar-nav .nav-link.active,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.active,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.active,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.active,
 .navbar-dark .navbar-nav .nav-link.active:focus,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:focus, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.active:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.active:focus,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:focus, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.active:focus,
 .navbar-dark .navbar-nav .nav-link.active:hover,
-.navbar-dark .navbar-nav .ta-wrapper .ta-left-sidebar ul li a.active:hover, .ta-wrapper .ta-left-sidebar ul li
-.navbar-dark .navbar-nav a.active:hover {
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > a.active:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > a.active:hover,
+.navbar-dark .navbar-nav .ta-left-sidebar nav .menu-admin > li > ul > li > a.active:hover, .ta-left-sidebar nav
+.navbar-dark .navbar-nav .menu-admin > li > ul > li > a.active:hover {
   color: white; }
 
 .navbar-dark .navbar-divider {
@@ -4418,11 +4484,11 @@ a.text-warning:focus, a.text-warning:hover {
 a.text-danger:focus, a.text-danger:hover {
   color: #c9302c; }
 
-.bg-inverse {
+.bg-inverse, .ta-left-sidebar nav .menu-admin > li:hover > a {
   color: #eceeef;
   background-color: #373a3c; }
 
-.bg-faded, .ta-wrapper .ta-navbar-top, .ta-wrapper .ta-left-sidebar, .admin-toolbar {
+.bg-faded, .ta-wrapper .ta-navbar-top, .ta-wrapper .ta-left-sidebar, .admin-toolbar, .ta-left-sidebar nav {
   background-color: #f7f7f9; }
 
 .bg-primary {
@@ -4719,20 +4785,20 @@ a.bg-danger:focus, a.bg-danger:hover {
   min-height: 55px; }
 
 .ta-wrapper .ta-left-sidebar {
-  width: 200px;
+  width: 5em;
+  height: 100%;
   z-index: 1;
   position: absolute; }
-  .ta-wrapper .ta-left-sidebar ul li {
-    padding-left: 1.5rem; }
 
 .ta-wrapper .ta-content {
   margin-left: 0;
   margin-top: 55px;
-  padding-top: 1em; }
+  padding-top: 1em;
+  border-left: 1px solid rgba(0, 0, 0, 0.05); }
 
 @media (min-width: 544px) {
   .ta-wrapper .ta-content {
-    margin-left: 200px; } }
+    margin-left: 20em; } }
 
 .field-validation-error {
   color: #d9534f; }
@@ -4742,3 +4808,83 @@ label .field-validation-error::before {
 
 .admin-toolbar {
   margin-bottom: 1em; }
+
+.ta-left-sidebar nav {
+  position: fixed;
+  top: 55px;
+  left: 0;
+  height: 100%;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+  overflow: hidden;
+  /*box-shadow: 2px 0 18px rgba(0, 0, 0, 0.26);*/ }
+  .ta-left-sidebar nav .menu-admin > li:first-child > a {
+    border-top: 1px solid rgba(0, 0, 0, 0.05); }
+  .ta-left-sidebar nav .menu-admin > li > a {
+    text-indent: -500em;
+    display: block;
+    height: 5em;
+    width: 5em;
+    line-height: 5em;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: background 0.1s ease-in-out; }
+  .ta-left-sidebar nav .menu-admin > li > a:before {
+    font-family: FontAwesome;
+    speak: none;
+    text-indent: 0em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 1.4em; }
+  .ta-left-sidebar nav .menu-admin > li > ul {
+    width: 0;
+    overflow: hidden;
+    z-index: 5;
+    transition: all 0.1s ease-in-out;
+    position: fixed;
+    top: 55px;
+    left: 5em;
+    height: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    .ta-left-sidebar nav .menu-admin > li > ul > li > a {
+      display: block;
+      height: 2em;
+      text-indent: 0em;
+      line-height: 2em;
+      text-align: center;
+      text-decoration: none;
+      position: relative;
+      font-family: verdana;
+      transition: background 0.1s ease-in-out;
+      border: none;
+      padding-left: 1em; }
+    .ta-left-sidebar nav .menu-admin > li > ul > li :hover {
+      background-color: #eceeef; }
+    .ta-left-sidebar nav .menu-admin > li > ul > li :first-child {
+      border-top: none; }
+  .ta-left-sidebar nav .menu-admin > li > ul.open {
+    width: 15em;
+    height: 100%;
+    display: block; }
+    .ta-left-sidebar nav .menu-admin > li > ul.open a {
+      text-align: left; }
+
+.menu-admin > li.content > a:before {
+  content: "\f187"; }
+
+.menu-admin > li.new > a:before {
+  content: "\f044"; }
+
+.menu-admin > li.content-definition > a:before {
+  content: "\f1b2"; }
+
+.menu-admin > li.themes > a:before {
+  content: "\f083"; }

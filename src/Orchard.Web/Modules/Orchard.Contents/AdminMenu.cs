@@ -36,6 +36,7 @@ namespace Orchard.Contents
 
             builder.Add(T["Content"], "1.4", content => content
                 .Permission(Permissions.EditOwnContent)
+                .AddClass("content")
                 .Add(T["Content Items"], "1", contentItems => contentItems
                     .Action("List", "Admin", new { area = "Orchard.Contents", id = "" })
                     .LocalNav())
@@ -45,7 +46,7 @@ namespace Orchard.Contents
             if (contentTypes.Any()) {
                 builder.Add(T["New"], "-1", newMenu => 
                 {
-                    newMenu.LinkToFirstChild(false);
+                    newMenu.LinkToFirstChild(false).AddClass("new");
                     foreach (var contentTypeDefinition in contentTypes)
                     {
                         var ci = _contentManager.New(contentTypeDefinition.Name);

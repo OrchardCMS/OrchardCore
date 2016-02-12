@@ -22,6 +22,7 @@ namespace Orchard.Themes
 
             builder
                 .Add(T["Themes"], "10", themes => themes
+                    .AddClass("themes")
                     .Action("Index", "Admin", new { area = "Orchard.Themes" })
                     .Permission(Permissions.ApplyTheme)
                     .Add(T["Installed"], "0", installed => installed
