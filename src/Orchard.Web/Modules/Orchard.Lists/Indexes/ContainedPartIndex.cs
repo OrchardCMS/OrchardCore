@@ -12,7 +12,7 @@ namespace Orchard.Lists.Indexes
         public int Order { get; set; }
     }
 
-    public class ContentItemIndexProvider : IndexProvider<ContentItem>, IDependency
+    public class ContainedPartIndexProvider : IndexProvider<ContentItem>, IDependency
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
