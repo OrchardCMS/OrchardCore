@@ -8,7 +8,8 @@
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "YesSql.Core": "2.0.0-alpha-9021",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1007"
+    "YesSql.Storage.Sql": "1.0.0-alpha-1007",
+    "YesSql.Storage.LightningDB": "1.0.0-alpha-1004"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿#define SQL
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
@@ -16,6 +18,8 @@ using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
 using Microsoft.AspNet.Mvc.Filters;
+using YesSql.Storage.LightningDB;
+using System.IO;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -152,19 +156,30 @@ namespace Orchard.Environment.Shell.Builders
                             //    connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
                             //    break;
                             default:
-                                throw new ArgumentException("Unkown database provider: " + settings.DatabaseProvider);
+                                throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
                         }
 
-                        var sqlFactory = new SqlDocumentStorageFactory(connectionFactory); ;
-
                         cfg.ConnectionFactory = connectionFactory;
-                        cfg.DocumentStorageFactory = sqlFactory;
-                        cfg.IsolationLevel = sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
+                        cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
 
                         if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
                         {
-                            cfg.TablePrefix = sqlFactory.TablePrefix = settings.TablePrefix + "_";
+                            cfg.TablePrefix = settings.TablePrefix + "_";
                         }
+#if SQL
+                        var sqlFactory = new SqlDocumentStorageFactory(connectionFactory);
+                        sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
+                        sqlFactory.ConnectionFactory = connectionFactory;
+                        if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
+                        {
+                            sqlFactory.TablePrefix = settings.TablePrefix + "_";
+                        }
+                        cfg.DocumentStorageFactory = sqlFactory;
+#else
+                        var storageFactory = new LightningDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
+                        cfg.DocumentStorageFactory = storageFactory;
+#endif
+
 
                         //cfg.RunDefaultMigration();
                     }
