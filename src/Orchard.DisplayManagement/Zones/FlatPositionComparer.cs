@@ -33,12 +33,12 @@ namespace Orchard.UI
                 return 0;
             }
 
-            // null == "before; "" == "0"
+            // null == "before"; "" == "0"
             x = x == null
-                ? "before"
+                ? "before." // in order to have before < null when 'before' is explicitely defined
                 : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
             y = y == null
-                ? "before"
+                ? "before."
                 : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
 
             var xParts = x.Split(new[] { '.', ':' });
@@ -52,11 +52,8 @@ namespace Orchard.UI
                 }
 
                 int xPos, yPos;
-                var xPart = string.IsNullOrWhiteSpace(xParts[i]) ? "before" : xParts[i];
-                var yPart = string.IsNullOrWhiteSpace(yParts[i]) ? "before" : yParts[i];
-
-                xPart = NormalizeKnownPartitions(xPart);
-                yPart = NormalizeKnownPartitions(yPart);
+                var xPart = string.IsNullOrEmpty(xParts[i]) ? "before" : NormalizeKnownPartitions(xParts[i]);
+                var yPart = string.IsNullOrEmpty(yParts[i]) ? "before" : NormalizeKnownPartitions(yParts[i]);
 
                 var xIsInt = int.TryParse(xPart, out xPos);
                 var yIsInt = int.TryParse(yPart, out yPos);

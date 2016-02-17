@@ -16,7 +16,8 @@ namespace Orchard.DisplayManagement.Shapes
     {
         private readonly IList<string> _classes = new List<string>();
         private readonly IDictionary<string, string> _attributes = new Dictionary<string, string>();
-        private readonly IList<IPositioned> _items = new List<IPositioned>();
+        private readonly List<IPositioned> _items = new List<IPositioned>();
+        private bool _sorted = false;
         public ShapeMetadata Metadata { get; set; }
 
         public string Id { get; set; }
@@ -43,13 +44,15 @@ namespace Orchard.DisplayManagement.Shapes
                 position = "";
             }
 
+            _sorted = false;
+
             if (item is IHtmlContent)
             {
-                AddItem(new PositionWrapper((IHtmlContent)item, position));
+                _items.Add(new PositionWrapper((IHtmlContent)item, position));
             }
             else if (item is string)
             {
-                AddItem(new PositionWrapper((string)item, position));
+                _items.Add(new PositionWrapper((string)item, position));
             }
             else
             {
@@ -61,7 +64,7 @@ namespace Orchard.DisplayManagement.Shapes
                         shape.Metadata.Position = position;
                     }
 
-                    AddItem(shape);
+                    _items.Add(shape);
                 }
             }
 
@@ -78,87 +81,26 @@ namespace Orchard.DisplayManagement.Shapes
             return this;
         }
 
-        /// <summary>
-        /// Add the item in order based on its position
-        /// </summary>
-        private void AddItem(IPositioned item)
-        {
-            if (_items.Count == 0)
-            {
-                _items.Add(item);
-                return;
-            }
-
-            int index = 0;
-
-            if (_items.Count == 1)
-            {
-                var compare = FlatPositionComparer.Instance.Compare(item, _items[index]);
-                if (compare == -1)
-                {
-                    _items.Insert(0, item);
-                }
-                else
-                {
-                    _items.Add(item);
-                }
-
-                return;
-            }
-
-            int start = 0;
-            int end = _items.Count - 1;
-
-            while (start != end)
-            {
-                index = (end + start + 1) / 2;
-                var indexItem = _items[index];
-                var compare = FlatPositionComparer.Instance.Compare(item, indexItem);
-                switch (compare)
-                {
-                    case -1:
-                        if(end - start == 1)
-                        {
-                            _items.Insert(end, item);
-                            return;
-                        }
-
-                        end = index;
-                        break;
-                    case 0:
-                        start = end;
-                        break;
-                    case 1:
-                        start = index;
-                        break;
-                }
-            }
-
-            // Lookup the last item with the same order so that adding the same 
-            // position will keep the inserted order
-            while (index < _items.Count && FlatPositionComparer.Instance.Compare(item, _items[index]) == 0)
-            {
-                index++;
-            }
-
-            // Reached the end of the list, append
-            if (index == _items.Count)
-            {
-                _items.Add(item);
-            }
-            else
-            {
-                _items.Insert(index, item);
-            }
-        }
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
+            if(!_sorted)
+            {
+                _items.Sort(FlatPositionComparer.Instance);
+                _sorted = true;
+            }
+
             return _items.GetEnumerator();
         }
 
         public IEnumerator GetEnumerator()
         {
+            if (!_sorted)
+            {
+                _items.Sort(FlatPositionComparer.Instance);
+                _sorted = true;
+            }
+
             return _items.GetEnumerator();
         }
 
