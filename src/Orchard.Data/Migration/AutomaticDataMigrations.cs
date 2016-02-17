@@ -30,7 +30,9 @@ namespace Orchard.Data.Migration
 
         public async Task ActivatedAsync()
         {
-            foreach (var feature in await _dataMigrationManager.GetFeaturesThatNeedUpdate())
+            var featuresThatNeedUpdate = await _dataMigrationManager.GetFeaturesThatNeedUpdate();
+
+            foreach (var feature in featuresThatNeedUpdate)
             {
                 try
                 {

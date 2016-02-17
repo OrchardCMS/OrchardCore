@@ -45,13 +45,11 @@ namespace Orchard.Data.Migration
 
         public Localizer T { get; set; }
 
-        public async Task<DataMigrationRecord> GetDataMigrationRecord()
+        public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
             if (_dataMigrationRecord == null)
             {
-                _dataMigrationRecord = await _session
-                .QueryAsync<DataMigrationRecord>()
-                .FirstOrDefault();
+                _dataMigrationRecord = await _session.QueryAsync<DataMigrationRecord>().FirstOrDefault();
 
                 if (_dataMigrationRecord == null)
                 {
@@ -65,7 +63,7 @@ namespace Orchard.Data.Migration
 
         public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate()
         {
-            var currentVersions = (await GetDataMigrationRecord()).DataMigrations
+            var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations
                 .ToDictionary(r => r.DataMigrationClass);
 
             var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
@@ -116,7 +114,7 @@ namespace Orchard.Data.Migration
                     continue;
                 }
 
-                (await GetDataMigrationRecord()).DataMigrations.Remove(dataMigrationRecord);
+                (await GetDataMigrationRecordAsync()).DataMigrations.Remove(dataMigrationRecord);
             }
         }
 
@@ -162,10 +160,7 @@ namespace Orchard.Data.Migration
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
             {
-                // Create a new transaction for this migration
-                //await _session.CommitAsync();
-
-                _store.ExecuteMigration(async schemaBuilder =>
+                _session.ExecuteMigration(schemaBuilder =>
                 {
                     migration.SchemaBuilder = schemaBuilder;
 
@@ -173,12 +168,17 @@ namespace Orchard.Data.Migration
                     var tempMigration = migration;
 
                     // get current version for this migration
-                    var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
+                    var dataMigrationRecord = GetDataMigrationRecordAsync(tempMigration).Result;
 
                     var current = 0;
                     if (dataMigrationRecord != null)
                     {
                         current = dataMigrationRecord.Version.Value;
+                    }
+                    else
+                    {
+                        dataMigrationRecord = new DataMigration { DataMigrationClass = migration.GetType().FullName };
+                        _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
                     }
 
                     try
@@ -223,14 +223,8 @@ namespace Orchard.Data.Migration
                         {
                             return;
                         }
-                        if (dataMigrationRecord == null)
-                        {
-                            _dataMigrationRecord.DataMigrations.Add(new DataMigration { Version = current, DataMigrationClass = migration.GetType().FullName });
-                        }
-                        else
-                        {
-                            dataMigrationRecord.Version = current;
-                        }
+
+                        dataMigrationRecord.Version = current;
                     }
                     catch (Exception ex)
                     {
@@ -253,7 +247,9 @@ namespace Orchard.Data.Migration
 
         private async Task<DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
         {
-            return (await GetDataMigrationRecord()).DataMigrations
+            var dataMigrationRecord = await GetDataMigrationRecordAsync();
+            return dataMigrationRecord
+                .DataMigrations
                 .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
         }
 
