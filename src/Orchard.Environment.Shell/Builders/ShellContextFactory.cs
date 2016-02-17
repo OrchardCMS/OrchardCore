@@ -30,23 +30,9 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
+            
             var knownDescriptor = MinimumShellDescriptor();
-            var initialContext = CreateDescribedContext(settings, knownDescriptor);
-            var shellDescriptorManager = initialContext.ServiceProvider.GetService<IShellDescriptorManager>();
-            ShellDescriptor currentDescriptor = shellDescriptorManager.GetShellDescriptorAsync().Result;
-
-            if (currentDescriptor != null && knownDescriptor.SerialNumber != currentDescriptor.SerialNumber)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Newer descriptor obtained. Rebuilding shell container.");
-                }
-
-                initialContext.Dispose();
-                return CreateDescribedContext(settings, currentDescriptor);
-            }
-
-            return initialContext;
+            return CreateDescribedContext(settings, knownDescriptor);
         }
         
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
