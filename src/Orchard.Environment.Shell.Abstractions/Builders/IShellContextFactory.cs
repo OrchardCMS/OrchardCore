@@ -1,4 +1,5 @@
-﻿using Orchard.Hosting.ShellBuilders;
+﻿using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -18,5 +19,11 @@ namespace Orchard.Environment.Shell.Builders
         /// to display setup user interface.
         /// </summary>
         ShellContext CreateSetupContext(ShellSettings settings);
+
+        /// <summary>
+        /// Builds a shell context given a specific description of features and parameters.
+        /// Shell's actual current descriptor has no effect. Does not use or update descriptor cache.
+        /// </summary>
+        ShellContext CreateDescribedContext(ShellSettings settings, ShellDescriptor shellDescriptor);
     }
 }

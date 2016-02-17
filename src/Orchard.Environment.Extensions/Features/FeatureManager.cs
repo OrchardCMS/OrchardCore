@@ -94,21 +94,21 @@ namespace Orchard.Environment.Extensions.Features
                 .Select(featureId => EnableFeature(featureId, availableFeatures, force)).ToList()
                 .SelectMany(ies => ies.Select(s => s));
 
-            if (featuresToEnable.Count() > 0)
+            if (featuresToEnable.Any())
             {
                 foreach (string featureId in featuresToEnable)
                 {
-                    string id = featureId;
-
-                    enabledFeatures.Add(new ShellFeature { Name = id });
+                    enabledFeatures.Add(new ShellFeature { Name = featureId });
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
                         _logger.LogInformation("{0} was enabled", featureId);
                     }
                 }
 
-                await _shellDescriptorManager.UpdateShellDescriptorAsync(shellDescriptor.SerialNumber, enabledFeatures,
-                                                              shellDescriptor.Parameters);
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(
+                    shellDescriptor.SerialNumber, 
+                    enabledFeatures,
+                    shellDescriptor.Parameters);
             }
 
             return featuresToEnable;
@@ -140,24 +140,23 @@ namespace Orchard.Environment.Extensions.Features
             {
                 var disabled = await DisableFeatureAsync(featureId, force);
                 featuresToDisable.AddRange(disabled);
-
             }
 
             if (featuresToDisable.Any())
             {
                 foreach (string featureId in featuresToDisable)
                 {
-                    string id = featureId;
-
-                    enabledFeatures.RemoveAll(shellFeature => shellFeature.Name == id);
+                    enabledFeatures.RemoveAll(shellFeature => shellFeature.Name == featureId);
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
                         _logger.LogInformation("{0} was disabled", featureId);
                     }
                 }
 
-                await _shellDescriptorManager.UpdateShellDescriptorAsync(shellDescriptor.SerialNumber, enabledFeatures,
-                                                              shellDescriptor.Parameters);
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(
+                    shellDescriptor.SerialNumber, 
+                    enabledFeatures,
+                    shellDescriptor.Parameters);
             }
 
             return featuresToDisable;
