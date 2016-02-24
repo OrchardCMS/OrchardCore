@@ -6,7 +6,6 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
-using Orchard.FileSystem.AppData;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,9 +16,6 @@ using System.Threading.Tasks;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
-using Microsoft.AspNet.Mvc.Filters;
-using YesSql.Storage.LightningDB;
-using System.IO;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -28,19 +24,16 @@ namespace Orchard.Environment.Shell.Builders
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly IAppDataFolderRoot _appDataFolderRoot;
         private readonly IServiceCollection _applicationServices;
 
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
-            IAppDataFolderRoot appDataFolderRoot,
             IServiceCollection applicationServices)
         {
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
-            _appDataFolderRoot = appDataFolderRoot;
             _loggerFactory = loggerFactory;
             _logger = logger;
         }

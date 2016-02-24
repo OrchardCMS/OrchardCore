@@ -1,4 +1,5 @@
 ﻿using Orchard.FileSystem.AppData;
+using Orchard.Tests.Stubs;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,17 +11,12 @@ namespace Orchard.Tests.FileSystem
     {
         private string _tempFolder;
         private IAppDataFolder _appDataFolder;
-
-        public class StubAppDataFolderRoot : IAppDataFolderRoot
-        {
-            public string RootPath { get; set; }
-            public string RootFolder { get; set; }
-        }
-
+        
         public static IAppDataFolder CreateAppDataFolder(string tempFolder)
         {
-            var folderRoot = new StubAppDataFolderRoot { RootPath = "~/App_Data", RootFolder = tempFolder };
-            return new PhysicalAppDataFolder(folderRoot, new NullLogger<PhysicalAppDataFolder>());
+            return new PhysicalAppDataFolder(
+                new StubHostingFileSystem { RootPath = "App_Data" }, 
+                new NullLogger<PhysicalAppDataFolder>());
         }
 
         public PhysicalAppDataFolderTests()

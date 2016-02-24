@@ -31,13 +31,13 @@ namespace Orchard.Environment.Extensions.Folders
         private const string FeaturesSection = "features";
         private const string SessionStateSection = "sessionstate";
 
-        private readonly IClientFolder _clientFolder;
+        private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
-        public ExtensionHarvester(IClientFolder clientFolder,
+        public ExtensionHarvester(IOrchardFileSystem fileSystem,
             ILogger<ExtensionHarvester> logger)
         {
-            _clientFolder = clientFolder;
+            _fileSystem = fileSystem;
             _logger = logger;
 
             T = NullLocalizer.Instance;
@@ -63,12 +63,12 @@ namespace Orchard.Environment.Extensions.Folders
             {
                 _logger.LogInformation("Start looking for extensions in '{0}'...", path);
             }
-            var subfolderPaths = _clientFolder.ListDirectories(path);
+            var subfolders = _fileSystem.ListDirectories(path);
             var localList = new List<ExtensionDescriptor>();
-            foreach (var subfolderPath in subfolderPaths)
+            foreach (var subfolder in subfolders)
             {
-                var extensionId = Path.GetFileName(subfolderPath);
-                var manifestPath = Path.Combine(subfolderPath, manifestName);
+                var extensionId = subfolder.Name;
+                var manifestPath = _fileSystem.Combine(path, extensionId, manifestName);
                 try
                 {
                     var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);
@@ -135,7 +135,7 @@ namespace Orchard.Environment.Extensions.Folders
 
         private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional)
         {
-            var manifestText = _clientFolder.ReadFile(manifestPath);
+            var manifestText = _fileSystem.ReadFile(manifestPath);
             if (manifestText == null)
             {
                 if (manifestIsOptional)

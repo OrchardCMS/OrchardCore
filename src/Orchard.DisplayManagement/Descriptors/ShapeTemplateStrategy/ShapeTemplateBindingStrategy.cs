@@ -2,17 +2,16 @@
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Infrastructure;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewEngines;
 using Microsoft.AspNet.Mvc.ViewFeatures;
 using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.OptionsModel;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Features;
-using Orchard.FileSystem.VirtualPath;
+using Orchard.Environment.Extensions.Models;
+using Orchard.FileSystem;
 using Orchard.Utility;
 using System;
 using System.Collections.Concurrent;
@@ -25,29 +24,29 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableProvider
     {
-        private readonly IVirtualPathProvider _virtualPathProvider;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IFeatureManager featureManager,
-            IVirtualPathProvider virtualPathProvider,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IActionContextAccessor actionContextAccessor,
+            IOrchardFileSystem fileSystem,
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
             _featureManager = featureManager;
-            _virtualPathProvider = virtualPathProvider;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _actionContextAccessor = actionContextAccessor;
+            _fileSystem = fileSystem;
             _logger = logger;
         }
 
@@ -76,33 +75,33 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     _logger.LogInformation("Start discovering candidate views filenames");
                 }
+
+                var matcher = new Matcher();
+                foreach(var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
+                {
+                    matcher.AddInclude(string.Format("*.{0}", extension));
+                }
+
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var basePath = Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id).Replace(Path.DirectorySeparatorChar, '/');
-                    var virtualPath = Path.Combine(basePath, subPath).Replace(Path.DirectorySeparatorChar, '/');
-                    IReadOnlyList<string> fileNames;
+                    var basePath = _fileSystem.Combine(extensionDescriptor.Location, extensionDescriptor.Id);
+                    var virtualPath = _fileSystem.Combine(basePath, subPath);
+                    var files = _fileSystem.ListFiles(virtualPath, matcher).ToReadOnlyCollection();
 
-                    if (!_virtualPathProvider.DirectoryExists(virtualPath))
-                        fileNames = new List<string>();
-                    else
-                    {
-                        fileNames = _virtualPathProvider.ListFiles(virtualPath).Select(Path.GetFileName).ToReadOnlyCollection();
-                    }
-
-                    return new { harvesterInfo.harvester, basePath, subPath, virtualPath, fileNames };
+                    return new { harvesterInfo.harvester, basePath, subPath, virtualPath, files };
                 })).ToList();
+
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Done discovering candidate views filenames");
                 }
                 var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
                 {
-                    var fileNames = ve.DetectTemplateFileNames(pathContext.fileNames);
-                    return fileNames.Select(
-                        fileName => new
+                    return pathContext.files.Select(
+                        file => new
                         {
-                            fileName = Path.GetFileNameWithoutExtension(fileName),
-                            fileVirtualPath = Path.Combine(pathContext.virtualPath, fileName).Replace(Path.DirectorySeparatorChar, '/'),
+                            fileName = Path.GetFileNameWithoutExtension(file.Name),
+                            fileVirtualPath = "~/" + _fileSystem.Combine(pathContext.virtualPath, file.Name),
                             pathContext
                         });
                 }));

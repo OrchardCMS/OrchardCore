@@ -5,6 +5,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public interface IShapeTemplateViewEngine : IDependency
     {
-        IEnumerable<string> DetectTemplateFileNames(IEnumerable<string> fileNames);
+        IEnumerable<string> TemplateFileExtensions { get; }
     }
 }

@@ -71,15 +71,15 @@ public class Startup {
         services.AddWebHost();
 
         // Add folders the easy way
-        services.AddModuleFolder("~/Core/Orchard.Core");
-        services.AddModuleFolder("~/Modules");
-        services.AddThemeFolder("~/Themes");
+        services.AddModuleFolder("Core/Orchard.Core");
+        services.AddModuleFolder("Modules");
+        services.AddThemeFolder("Themes");
 
         // Add folders the more configurable way
         services.Configure<ExtensionHarvestingOptions>(options => {
             var expander = new ModuleLocationExpander(
                 DefaultExtensionTypes.Module,
-                new[] { "~/Core/Orchard.Core", "~/Modules" },
+                new[] { "Core/Orchard.Core", "Modules" },
                 "Module.txt"
                 );
 

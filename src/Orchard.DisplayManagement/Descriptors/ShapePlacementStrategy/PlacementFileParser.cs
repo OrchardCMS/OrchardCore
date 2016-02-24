@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Orchard.DependencyInjection;
+using Orchard.FileSystem;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Orchard.FileSystem;
-using Orchard.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -18,18 +18,18 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
     public class PlacementFileParser : IPlacementFileParser
     {
-        private readonly IClientFolder _webSiteFolder;
+        private readonly IOrchardFileSystem _fileSystem;
 
-        public PlacementFileParser(IClientFolder webSiteFolder)
+        public PlacementFileParser(IOrchardFileSystem fileSystem)
         {
-            _webSiteFolder = webSiteFolder;
+            _fileSystem = fileSystem;
         }
 
         public bool DisableMonitoring { get; set; }
 
         public PlacementFile Parse(string virtualPath)
         {
-            var placementText = _webSiteFolder.ReadFile(virtualPath);
+            var placementText = _fileSystem.ReadFile(virtualPath);
             return ParseText(placementText);
         }
 

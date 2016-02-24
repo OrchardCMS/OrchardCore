@@ -14,7 +14,7 @@ namespace Orchard.Hosting
 
         public string MapPath(string virtualPath)
         {
-            return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~/", "\\");
+            return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~/", "");
         }
     }
 }

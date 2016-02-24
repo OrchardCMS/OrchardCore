@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Logging;
+using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Loaders;
+using Orchard.Logging;
 using System;
 using System.Linq;
-using Orchard.Environment.Shell.Builders;
 using System.Reflection;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Hosting.Extensions
 {
