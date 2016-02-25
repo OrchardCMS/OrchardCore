@@ -1,4 +1,5 @@
-﻿using Orchard.DependencyInjection;
+﻿using Microsoft.AspNet.FileProviders;
+using Orchard.DependencyInjection;
 using Orchard.FileSystem;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// </summary>
     public interface IPlacementFileParser : IDependency
     {
-        PlacementFile Parse(string virtualPath);
+        PlacementFile Parse(IFileInfo fileInfo);
         PlacementFile ParseText(string placementText);
     }
 
@@ -27,17 +28,26 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public bool DisableMonitoring { get; set; }
 
-        public PlacementFile Parse(string virtualPath)
+        public PlacementFile Parse(IFileInfo fileInfo)
         {
-            var placementText = _fileSystem.ReadFile(virtualPath);
-            return ParseText(placementText);
+            if (!fileInfo.Exists)
+            {
+                return null;
+            }
+
+            var element = XElement.Load(fileInfo.CreateReadStream());
+            return new PlacementFile
+            {
+                Nodes = Accept(element).ToList()
+            };
         }
 
         public PlacementFile ParseText(string placementText)
         {
             if (placementText == null)
+            {
                 return null;
-
+            }
 
             var element = XElement.Parse(placementText);
             return new PlacementFile

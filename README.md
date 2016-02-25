@@ -152,6 +152,21 @@ public void CreateMeAFileSystem()
 }
 ```
 
+If you would like to deal with files within a particular Extension Folder you can do this:
+
+```c#
+public void GetMePlacement()
+{
+  // First get the extension.
+  ExtensionDescriptor extensionDescriptor = _extensionManager.GetExtension("Orchard.Lists");
+
+  // Second use the extension to get the placement info file
+  IFileInfo placementInfoFile = _fileSystem
+    .GetExtensionFileProvider(extensionDescriptor, _logger)
+    .GetFileInfo("Placement.info");
+}
+```
+
 ###Testing
 
 We currently use XUnit to do unit testing.

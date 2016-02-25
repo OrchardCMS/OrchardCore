@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Features;
-using System.Threading.Tasks;
+using Orchard.FileSystem;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.FileSystem;
+using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -13,13 +16,19 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     public class ShapePlacementParsingStrategy : IShapeTableProvider
     {
         private readonly IFeatureManager _featureManager;
+        private readonly IOrchardFileSystem _fileSystem;
         private readonly IPlacementFileParser _placementFileParser;
+        private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IFeatureManager featureManager,
-            IPlacementFileParser placementFileParser)
+            IOrchardFileSystem fileSystem,
+            IPlacementFileParser placementFileParser,
+            ILogger<ShapePlacementParsingStrategy> logger)
         {
+            _logger = logger;
             _featureManager = featureManager;
+            _fileSystem = fileSystem;
             _placementFileParser = placementFileParser;
         }
 
@@ -34,7 +43,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
         {
-            var virtualPath = featureDescriptor.Extension.Location + "/" + featureDescriptor.Extension.Id + "/Placement.info";
+            var virtualPath = _fileSystem
+                .GetExtensionFileProvider(featureDescriptor.Extension, _logger)
+                .GetFileInfo("Placement.info");
+
             var placementFile = _placementFileParser.Parse(virtualPath);
             if (placementFile != null)
             {
