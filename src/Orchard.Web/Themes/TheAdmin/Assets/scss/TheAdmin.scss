@@ -162,46 +162,49 @@ label .field-validation-error::before {
         height: 100%;
         font-size: 1.4em;
     }
-
+    
     // Second level menu
-    .menu-admin > li > ul {
-        width: 0;
-        overflow: hidden;
-        z-index: 5;
-        transition: all 0.1s ease-in-out;
-        position: fixed;
-        top: $top-nav-height;
-        left: $left-navigation-width;
-        height: 100%;
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+    .menu-admin > li {
+        ul {
+            margin:0;
+            padding-left:1em;
+        }
 
-        > li {
+        > ul {
+            width: 0;
+            overflow: hidden;
+            z-index: 5;
+            transition: all 0.1s ease-in-out;
+            position: fixed;
+            top: $top-nav-height;
+            left: $left-navigation-width;
+            height: 100%;
             
-            > a {
-                @extend .nav-link;
-                display: block;
-                height: 2em;
-                text-indent: 0em;
-                line-height: 2em;
-                text-align: center;
-                text-decoration: none;
-                position: relative;
-                font-family: verdana;
-                transition: background 0.1s ease-in-out;
-                border: none;
-                padding-left:1em;
+            li {
+                list-style-type:none;
+                // common style properties for all 
+                // second level menu links
 
-            }
+                a {
+                    @extend .nav-link;
+                    display: block;
+                    height: 2em;
+                    text-indent: 0em;
+                    line-height: 2em;
+                    text-align: center;
+                    position: relative;
+                    transition: background 0.1s ease-in-out;
+                    border: none;
+                    font-size: 1rem;
+                    font-weight: normal;
+                    text-decoration: none;
+                }
+                
+                :first-child {
+                    // clears the border (inherited)
+                    border-top: none;
+                }
 
-            :hover {
-                background-color: $gray-lighter;
-            }
-
-            :first-child {
-                // clears the border (inherited)
-                border-top: none;
             }
         }
     }
@@ -232,3 +235,8 @@ label .field-validation-error::before {
 .menu-admin > li.themes > a:before {
     content: "\f083";
 }
+
+.menu-admin > li.demo > a:before {
+    content: "\f292";
+}
+
