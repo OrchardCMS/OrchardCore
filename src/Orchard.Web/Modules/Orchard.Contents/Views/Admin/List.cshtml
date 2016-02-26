@@ -7,8 +7,8 @@
     var createLinkText = T["Create New Content"];
     if (!string.IsNullOrWhiteSpace(typeDisplayName))
     {
-        pageTitle = T["Manage {0} Content", typeDisplayName];
-        createLinkText = T["Create New {0}", typeDisplayName];
+        pageTitle = T["Manage {0} Content", (string)typeDisplayName];
+        createLinkText = T["Create New {0}", (string)typeDisplayName];
     }
 
     IEnumerable<string> cultures = Model.Options.Cultures;
