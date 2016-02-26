@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 namespace Orchard.DisplayManagement.TagHelpers
 {
     [HtmlTargetElement("zone", Attributes = NameAttribute)]
-    public class MarkdownTagHelper : TagHelper
+    public class ZoneTagHelper : TagHelper
     {
         private const string PositionAttribute = "position";
         private const string NameAttribute = "name";
 
         private readonly ILayoutAccessor _layoutAccessor;
 
-        public MarkdownTagHelper(ILayoutAccessor layoutAccessor)
+        public ZoneTagHelper(ILayoutAccessor layoutAccessor)
         {
             _layoutAccessor = layoutAccessor;
         }
