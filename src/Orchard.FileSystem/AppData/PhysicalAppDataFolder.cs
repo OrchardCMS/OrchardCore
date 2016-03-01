@@ -1,93 +1,41 @@
-﻿using System;
+﻿using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.FileProviders;
-using Orchard.Localization;
 
 namespace Orchard.FileSystem.AppData
 {
     public class PhysicalAppDataFolder : IAppDataFolder
     {
-        private readonly IFileProvider _fileProvider;
+        private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
-        public PhysicalAppDataFolder(IAppDataFolderRoot root,
+        private static string InternalRootPath = "App_Data";
+        
+        public PhysicalAppDataFolder(
+            IOrchardFileSystem parentFileSystem,
             ILogger<PhysicalAppDataFolder> logger)
         {
-            if (!Directory.Exists(root.RootFolder))
-                Directory.CreateDirectory(root.RootFolder);
-
-            _fileProvider = new PhysicalFileProvider(root.RootFolder);
             _logger = logger;
 
-            T = NullLocalizer.Instance;
+            if (!parentFileSystem.DirectoryExists(InternalRootPath))
+            {
+                parentFileSystem.CreateDirectory(InternalRootPath);
+            }
+
+            var root = parentFileSystem.GetDirectoryInfo(InternalRootPath).FullName;
+
+            _fileSystem = new OrchardFileSystem(root,
+                new PhysicalFileProvider(root),
+                _logger);
         }
 
-        public Localizer T { get; set; }
-
-        private void MakeDestinationFileNameAvailable(string destinationFileName)
+        public string RootPath
         {
-            var directory = GetDirectoryInfo(destinationFileName);
-            // Try deleting the destination first
-            try
+            get
             {
-                if (directory.IsDirectory)
-                    Directory.Delete(destinationFileName);
-                else
-                    File.Delete(destinationFileName);
-            }
-            catch
-            {
-                // We land here if the file is in use, for example. Let's move on.
-            }
-
-            if (directory.IsDirectory && GetDirectoryInfo(destinationFileName).Exists)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
-                }
-                return;
-            }
-            // If destination doesn't exist, we are good
-            if (!GetFileInfo(destinationFileName).Exists)
-                return;
-
-            // Try renaming destination to a unique filename
-            const string extension = "deleted";
-            for (int i = 0; i < 100; i++)
-            {
-                var newExtension = (i == 0 ? extension : string.Format("{0}{1}", extension, i));
-                var newFileName = Path.ChangeExtension(destinationFileName, newExtension);
-                try
-                {
-                    File.Delete(newFileName);
-                    File.Move(destinationFileName, newFileName);
-
-                    // If successful, we are done...
-                    return;
-                }
-                catch
-                {
-                    // We need to try with another extension
-                }
-            }
-
-            // Try again with the original filename. This should throw the same exception
-            // we got at the very beginning.
-            try
-            {
-                File.Delete(destinationFileName);
-            }
-            catch (Exception ex)
-            {
-                if (ex.IsFatal())
-                {
-                    throw;
-                }
-                throw new OrchardCoreException(T("Unable to make room for file \"{0}\" in \"App_Data\" folder", destinationFileName), ex);
+                return Path.Combine(_fileSystem.RootPath, InternalRootPath);
             }
         }
 
@@ -96,109 +44,77 @@ namespace Orchard.FileSystem.AppData
         /// </summary>
         public string Combine(params string[] paths)
         {
-            return Path.Combine(paths).Replace(Path.DirectorySeparatorChar, '/');
+            return _fileSystem.Combine(paths);
         }
 
         public void CreateFile(string path, string content)
         {
-            using (var stream = CreateFile(path))
-            {
-                using (var tw = new StreamWriter(stream))
-                {
-                    tw.Write(content);
-                }
-            }
+            _fileSystem.CreateFile(path, content);
         }
 
         public Stream CreateFile(string path)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
-            if (!fileInfo.Exists)
-                Directory.CreateDirectory(Path.GetDirectoryName(fileInfo.PhysicalPath));
-            return File.Create(fileInfo.PhysicalPath);
+            return _fileSystem.CreateFile(path);
         }
 
         public string ReadFile(string path)
         {
-            var file = _fileProvider.GetFileInfo(path);
-            return file.Exists ? File.ReadAllText(file.PhysicalPath) : null;
+            return _fileSystem.ReadFile(path);
         }
 
         public Stream OpenFile(string path)
         {
-            return _fileProvider.GetFileInfo(path).CreateReadStream();
+            return _fileSystem.OpenFile(path);
         }
 
         public void StoreFile(string sourceFileName, string destinationPath)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
-            }
-
-            var destinationFileName = GetFileInfo(destinationPath).PhysicalPath;
-            MakeDestinationFileNameAvailable(destinationFileName);
-            File.Copy(sourceFileName, destinationFileName, true);
+            _fileSystem.StoreFile(sourceFileName, destinationPath);
         }
 
         public void DeleteFile(string path)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
-            }
-
-            MakeDestinationFileNameAvailable(GetFileInfo(path).PhysicalPath);
+            _fileSystem.DeleteFile(path);
         }
 
         public void CreateDirectory(string path)
         {
-            Directory.CreateDirectory(GetFileInfo(path).PhysicalPath);
+            _fileSystem.CreateDirectory(path);
         }
 
         public bool DirectoryExists(string path)
         {
-            return GetFileInfo(path).Exists;
+            return _fileSystem.DirectoryExists(path);
         }
 
-        public DateTime GetFileLastWriteTimeUtc(string path)
+        public DateTimeOffset GetFileLastWriteTimeUtc(string path)
         {
-            return File.GetLastWriteTimeUtc(GetFileInfo(path).PhysicalPath);
+            return _fileSystem.GetFileLastWriteTimeUtc(path);
         }
 
         public IFileInfo GetFileInfo(string path)
         {
-            return _fileProvider.GetFileInfo(path);
+            return _fileSystem.GetFileInfo(path);
         }
 
-        public IFileInfo GetDirectoryInfo(string path)
+        public DirectoryInfo GetDirectoryInfo(string path)
         {
-            return _fileProvider.GetFileInfo(path);
+            return _fileSystem.GetDirectoryInfo(path);
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)
         {
-            var directoryContents = _fileProvider.GetDirectoryContents(path);
-            if (!directoryContents.Exists)
-                return Enumerable.Empty<IFileInfo>();
-
-            return directoryContents
-                .Where(x => !x.IsDirectory);
+            return _fileSystem.ListFiles(path);
         }
 
-        public IEnumerable<IFileInfo> ListDirectories(string path)
+        public IEnumerable<DirectoryInfo> ListDirectories(string path)
         {
-            var directoryContents = _fileProvider.GetDirectoryContents(path);
-            if (!directoryContents.Exists)
-                return Enumerable.Empty<IFileInfo>();
-
-            return directoryContents
-                .Where(x => x.IsDirectory);
+            return _fileSystem.ListDirectories(path);
         }
 
         public string MapPath(string path)
         {
-            return _fileProvider.GetFileInfo(path).PhysicalPath;
+            return _fileSystem.GetFileInfo(path).PhysicalPath;
         }
     }
 }

@@ -66,20 +66,20 @@ Additional locations for module discovery can be added in your client setup:
 
 ```c#
 public class Startup {
-    public IServiceProvider ConfigureServices(IServiceCollection services) 
+    public IServiceProvider ConfigureServices(IServiceCollection services)
     {
         services.AddWebHost();
 
         // Add folders the easy way
-        services.AddModuleFolder("~/Core/Orchard.Core");
-        services.AddModuleFolder("~/Modules");
-        services.AddThemeFolder("~/Themes");
+        services.AddModuleFolder("Core/Orchard.Core");
+        services.AddModuleFolder("Modules");
+        services.AddThemeFolder("Themes");
 
         // Add folders the more configurable way
         services.Configure<ExtensionHarvestingOptions>(options => {
             var expander = new ModuleLocationExpander(
                 DefaultExtensionTypes.Module,
-                new[] { "~/Core/Orchard.Core", "~/Modules" },
+                new[] { "Core/Orchard.Core", "Modules" },
                 "Module.txt"
                 );
 
@@ -107,13 +107,63 @@ You can also override the 'Sites' folder in your client setup
 
 ```c#
 public class Startup {
-    public IServiceProvider ConfigureServices(IServiceCollection services) 
+    public IServiceProvider ConfigureServices(IServiceCollection services)
     {
         services.AddWebHost();
 
         // Change the folder name here
         services.ConfigureShell("Sites");
     });
+}
+```
+
+### Orchard file System
+
+Orchard now has a build in file system that is scoped to the running site. To use this, you just need to inject in IOrchardFileSystem.
+
+You use non virtual paths for access, so for example, lets say you have this folder.
+
+> D:\Orchard2\src\Orchard.Web\Modules\Orchard.Lists\Module.txt
+
+and in you code you want to read that file,
+
+```c#
+public void GetMeThatFile()
+{
+  var fileText = _fileSystem.ReadFile("Modules\Orchard.Lists\Module.txt");
+  // The physical path will be D:\Orchard2\src\Orchard.Web\Modules\Orchard.Lists\Module.txt
+}
+```
+
+The file system is scoped to the Orchard.Web folder by default. If however you want another filesystem, you can create a new one elsewhere.
+
+```c#
+public void CreateMeAFileSystem()
+{
+  var root = "C:\MyFileSystemRootPath";
+  var fileSystem = new OrchardFileSystem(
+    root,
+    new PhysicalFileProvider(root),
+    _logger);
+
+  // now if I get my module file..
+  var fileText = fileSystem.ReadFile("Modules\Orchard.Lists\Module.txt");
+  // The physical path will be C:\MyFileSystemRootPath\Modules\Orchard.Lists\Module.txt
+}
+```
+
+If you would like to deal with files within a particular Extension Folder you can do this:
+
+```c#
+public void GetMePlacement()
+{
+  // First get the extension.
+  ExtensionDescriptor extensionDescriptor = _extensionManager.GetExtension("Orchard.Lists");
+
+  // Second use the extension to get the placement info file
+  IFileInfo placementInfoFile = _fileSystem
+    .GetExtensionFileProvider(extensionDescriptor, _logger)
+    .GetFileInfo("Placement.info");
 }
 ```
 

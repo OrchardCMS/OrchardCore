@@ -5,7 +5,7 @@ namespace Orchard.Environment.Extensions.Models
     public class ExtensionDescriptor
     {
         /// <summary>
-        /// Virtual path base, "~/Themes", "~/Modules", or "~/Core"
+        /// Virtual path base, "Themes", "Modules", or "Core"
         /// </summary>
         public string Location { get; set; }
 

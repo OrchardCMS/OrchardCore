@@ -1,15 +1,12 @@
-using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.FileSystemGlobbing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Orchard.FileSystem.AppData
+namespace Orchard.FileSystem
 {
-    /// <summary>
-    /// Abstraction of App_Data folder. All virtual paths passed in or returned are relative to "~/App_Data".
-    /// Expected to work on physical filesystem, but decouples core system from web hosting apis
-    /// </summary>
-    public interface IAppDataFolder
+    public interface IOrchardFileSystem
     {
         string RootPath { get; }
 
@@ -17,6 +14,7 @@ namespace Orchard.FileSystem.AppData
         DirectoryInfo GetDirectoryInfo(string path);
 
         IEnumerable<IFileInfo> ListFiles(string path);
+        IEnumerable<IFileInfo> ListFiles(string path, Matcher matcher);
         IEnumerable<DirectoryInfo> ListDirectories(string path);
 
         string Combine(params string[] paths);
@@ -61,7 +59,5 @@ namespace Orchard.FileSystem.AppData
 
         void CreateDirectory(string path);
         bool DirectoryExists(string path);
-
-        string MapPath(string path);
     }
 }

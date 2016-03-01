@@ -6,6 +6,7 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using Orchard.FileSystem;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -15,17 +16,20 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IAssemblyLoaderContainer _loaderContainer;
         private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
+        private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
         public CoreExtensionLoader(
             IHostEnvironment hostEnvironment,
             IAssemblyLoaderContainer container,
             IExtensionAssemblyLoader extensionAssemblyLoader,
+            IOrchardFileSystem fileSystem,
             ILogger<CoreExtensionLoader> logger)
         {
             _hostEnvironment = hostEnvironment;
             _loaderContainer = container;
             _extensionAssemblyLoader = extensionAssemblyLoader;
+            _fileSystem = fileSystem;
             _logger = logger;
         }
 
@@ -48,14 +52,14 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            if (!descriptor.Location.StartsWith("~/Core/"))
+            if (!descriptor.Location.StartsWith("Core"))
             {
                 return null;
             }
 
-            var plocation = _hostEnvironment.MapPath("~/Core");
+            var directory = _fileSystem.GetDirectoryInfo("Core");
 
-            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(plocation)))
+            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(directory.FullName)))
             {
                 var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 

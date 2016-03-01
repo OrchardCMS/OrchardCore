@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
+using Orchard.FileSystem;
+using Orchard.Hosting.FileSystem;
 using Orchard.Hosting.Mvc.Routing;
 using Orchard.Hosting.Routing.Routes;
 
