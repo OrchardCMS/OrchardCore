@@ -213,7 +213,7 @@ namespace Orchard.FileSystem
             {
                 return Enumerable.Empty<DirectoryInfo>();
             }
-
+            
             return directory.EnumerateDirectories();
         }
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
 
@@ -13,11 +12,9 @@ namespace Orchard.Environment.Extensions.FileSystem
             ILogger logger)
         {
             var subPath = parentFileSystem.Combine(extensionDescriptor.Location, extensionDescriptor.Id);
-            var root = parentFileSystem.GetDirectoryInfo(subPath).FullName;
 
-            return new OrchardFileSystem(root,
-                new PhysicalFileProvider(root),
-                logger);
+            return parentFileSystem
+                .GetSubPathFileProvider(subPath, logger);
         }
     }
 }

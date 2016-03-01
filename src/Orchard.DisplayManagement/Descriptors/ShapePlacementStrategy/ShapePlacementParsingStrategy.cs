@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.FileSystem;
+using Orchard.Environment.Extensions.Models;
+using Orchard.FileSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Extensions.Features;
-using Orchard.FileSystem;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.FileSystem;
-using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
