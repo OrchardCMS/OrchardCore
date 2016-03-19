@@ -1,7 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-*",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Xml": "1.0.0-*",
