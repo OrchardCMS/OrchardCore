@@ -35,7 +35,7 @@ namespace Orchard.DependencyInjection
                     {
                         // When a service from the main container is resolved, just add its instance to the container.
                         // It will be shared by all tenant service providers.
-                        clonedCollection.AddInstance(service.ServiceType, serviceProvider.GetService(service.ServiceType));
+                        clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
                     }
                 }
                 else
