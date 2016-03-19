@@ -11,7 +11,12 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "dependencies": {
+        "System.IO": "4.1.0-*",
+        "System.IO.FileSystem": "4.0.1-*"
+      }
+    }
   },
   "repository": {
     "type": "git",
