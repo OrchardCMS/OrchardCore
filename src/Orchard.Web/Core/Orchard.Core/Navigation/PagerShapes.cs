@@ -12,6 +12,7 @@ using Orchard.DisplayManagement.Descriptors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 
 namespace Orchard.Core.Navigation
 {
@@ -325,7 +326,7 @@ namespace Orchard.Core.Navigation
             string id = Shape.Id;
             var tag = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder("a", id, classes, attributes);
 
-            tag.InnerHtml.Append(CoerceHtmlString(Value));
+            tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
             return tag;
         }
 
@@ -351,7 +352,7 @@ namespace Orchard.Core.Navigation
             if (result != null)
                 return result;
 
-            return new HtmlString(HtmlEncoder.Default.HtmlEncode(value.ToString()));
+            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
     }
 }
