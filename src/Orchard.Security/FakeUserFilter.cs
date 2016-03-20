@@ -7,7 +7,7 @@ namespace Orchard.Security
     [ScopedComponent(typeof(IFilterMetadata))]
     public class FakeUserFilter : IAuthorizationFilter
     {
-        public void OnAuthorization(AuthorizationContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             var validPrincipal = new ClaimsPrincipal(
                 new ClaimsIdentity( new[] {
