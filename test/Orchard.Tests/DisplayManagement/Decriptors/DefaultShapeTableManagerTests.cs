@@ -47,7 +47,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
-            serviceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(new Dictionary<Type, Feature>()));
+            serviceCollection.AddSingleton<ITypeFeatureProvider>(new TypeFeatureProvider(new Dictionary<Type, Feature>()));
 
             var features = new[] {
                 new FeatureDescriptor {
@@ -73,7 +73,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                     }
                 }
             };
-            serviceCollection.AddInstance<IExtensionManager>(new TestExtensionManager(features));
+            serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
             TestShapeProvider.FeatureShapes = new Dictionary<Feature, IEnumerable<string>> {
                 { TestFeature(), new [] {"Hello"} },

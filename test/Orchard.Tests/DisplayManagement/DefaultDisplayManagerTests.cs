@@ -58,7 +58,7 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
 
-            serviceCollection.AddInstance(_defaultShapeTable);
+            serviceCollection.AddSingleton(_defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }

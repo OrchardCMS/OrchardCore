@@ -43,12 +43,12 @@ namespace Orchard.Environment.Shell.Builders
             var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
             IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            tenantServiceCollection.AddInstance(settings);
-            tenantServiceCollection.AddInstance(blueprint.Descriptor);
-            tenantServiceCollection.AddInstance(blueprint);
+            tenantServiceCollection.AddSingleton(settings);
+            tenantServiceCollection.AddSingleton(blueprint.Descriptor);
+            tenantServiceCollection.AddSingleton(blueprint);
 
             // Sure this is right?
-            tenantServiceCollection.AddInstance(_loggerFactory);
+            tenantServiceCollection.AddSingleton(_loggerFactory);
 
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
@@ -182,15 +182,15 @@ namespace Orchard.Environment.Shell.Builders
 
                 store.RegisterIndexes(indexes);
 
-                tenantServiceCollection.AddInstance<IStore>(store);
-                tenantServiceCollection.AddInstance<LinearBlockIdGenerator>(idGenerator);
+                tenantServiceCollection.AddSingleton<IStore>(store);
+                tenantServiceCollection.AddSingleton<LinearBlockIdGenerator>(idGenerator);
 
                 tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
                     store.CreateSession()
                 );
             }
 
-            tenantServiceCollection.AddInstance<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
+            tenantServiceCollection.AddSingleton<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
             IServiceCollection moduleServiceCollection =
                 _serviceProvider.CreateChildContainer(_applicationServices);

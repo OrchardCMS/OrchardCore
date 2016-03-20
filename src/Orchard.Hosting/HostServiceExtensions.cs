@@ -17,7 +17,7 @@ namespace Orchard.Hosting
             services.AddFileSystems();
 
             // Caching - Move out
-            //services.AddInstance<ICacheContextAccessor>(new CacheContextAccessor());
+            //services.AddSingleton<ICacheContextAccessor>(new CacheContextAccessor());
             //services.AddSingleton<ICache, Cache>();
 
             additionalDependencies(services);

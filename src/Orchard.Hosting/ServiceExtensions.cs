@@ -11,7 +11,7 @@ namespace Orchard.Hosting
     {
         internal static IServiceCollection AddFallback(this IServiceCollection services)
         {
-            services.AddInstance<IRuntimeServices>(new ServiceManifest(services));
+            services.AddSingleton<IRuntimeServices>(new ServiceManifest(services));
 
             return services;
         }

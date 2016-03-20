@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                         hasShapes = true;
                         // PERF: Analyze the impact of an important number of instances
                         // in the service collection
-                        serviceCollection.AddInstance(
+                        serviceCollection.AddSingleton(
                             new ShapeAttributeOccurrence(customAttribute,
                             method,
                             serviceType));
