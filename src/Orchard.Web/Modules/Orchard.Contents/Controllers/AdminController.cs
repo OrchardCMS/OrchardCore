@@ -367,8 +367,8 @@ namespace Orchard.Contents.Controllers
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T.Html("Your content has been created.")
-                : T.Html("Your {0} has been created.", typeDefinition.DisplayName));
+                ? T["Your content has been created."]
+                : T["Your {0} has been created.", typeDefinition.DisplayName]);
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
@@ -489,8 +489,8 @@ namespace Orchard.Contents.Controllers
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T.Html("Your content has been saved.")
-                : T.Html("Your {0} has been saved.", typeDefinition.DisplayName));
+                ? T["Your content has been saved."]
+                : T["Your {0} has been saved.", typeDefinition.DisplayName]);
 
             if (returnUrl == null)
             {
@@ -545,8 +545,8 @@ namespace Orchard.Contents.Controllers
                 await _contentManager.RemoveAsync(contentItem);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T.Html("That content has been removed.")
-                    : T.Html("That {0} has been removed.", typeDefinition.DisplayName));
+                    ? T["That content has been removed."]
+                    : T["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -572,11 +572,11 @@ namespace Orchard.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T.Html("That content has been published."));
+                _notifier.Success(T["That content has been published."]);
             }
             else
             {
-                _notifier.Success(T.Html("That {0} has been published.", typeDefinition.DisplayName));
+                _notifier.Success(T["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -602,11 +602,11 @@ namespace Orchard.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T.Html("That content has been unpublished."));
+                _notifier.Success(T["That content has been unpublished."]);
             }
             else
             {
-                _notifier.Success(T.Html("That {0} has been unpublished.", typeDefinition.DisplayName));
+                _notifier.Success(T["That {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
