@@ -2,8 +2,8 @@
 using System.Dynamic;
 using System.Linq;
 using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
 using System.IO;
 using Microsoft.Extensions.WebEncoders;
 using System.Threading.Tasks;

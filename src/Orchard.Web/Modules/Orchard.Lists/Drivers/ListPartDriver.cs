@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.Handlers;

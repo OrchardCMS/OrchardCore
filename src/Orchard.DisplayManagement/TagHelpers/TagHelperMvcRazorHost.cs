@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Razor.Directives;
-using Microsoft.AspNet.Razor.Runtime.TagHelpers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Directives;
+using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {

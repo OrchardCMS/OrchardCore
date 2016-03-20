@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data;
 using Orchard.DependencyInjection;

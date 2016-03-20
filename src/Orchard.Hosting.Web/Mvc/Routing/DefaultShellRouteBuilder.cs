@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc.Infrastructure;
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Routing;
 
 namespace Orchard.Hosting.Mvc.Routing
 {

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orchard.DisplayManagement.ModelBinding;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Orchard.Hosting.Web.Mvc.ModelBinding
 {

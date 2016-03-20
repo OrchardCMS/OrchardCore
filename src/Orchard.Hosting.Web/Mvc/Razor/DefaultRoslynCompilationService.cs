@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
-using Microsoft.AspNet.FileProviders;
-using Microsoft.AspNet.Mvc.Razor.Internal;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -17,10 +17,10 @@ using Microsoft.Dnx.Compilation.Caching;
 using Microsoft.Dnx.Compilation.CSharp;
 using Microsoft.Dnx.Runtime;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Mvc.Razor.Compilation;
-using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Orchard.Hosting.Mvc.Razor
 {

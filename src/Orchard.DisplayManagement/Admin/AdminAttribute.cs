@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.DisplayManagement.Admin
 {

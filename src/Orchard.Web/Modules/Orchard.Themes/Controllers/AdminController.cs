@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orchard.Core.Dashboard;
 using Orchard.DisplayManagement.Admin;
 using Orchard.Themes.Models;

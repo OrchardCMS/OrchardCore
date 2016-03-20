@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 
 namespace Orchard.Hosting.Middleware
 {

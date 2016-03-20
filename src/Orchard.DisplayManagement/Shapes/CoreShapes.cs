@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Html;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Notify;
 using System;

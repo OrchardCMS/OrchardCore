@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Html;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;
 using System.IO;
 

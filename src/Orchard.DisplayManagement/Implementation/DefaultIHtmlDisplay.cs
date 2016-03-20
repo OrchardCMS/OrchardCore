@@ -2,10 +2,10 @@
 using System.Linq;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Localization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;

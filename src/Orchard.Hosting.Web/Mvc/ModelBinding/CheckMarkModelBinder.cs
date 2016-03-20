@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.ModelBinding;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 
 namespace Orchard.Hosting.Mvc.ModelBinding

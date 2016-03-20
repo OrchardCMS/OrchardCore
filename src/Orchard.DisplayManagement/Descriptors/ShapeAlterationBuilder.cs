@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Models;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors

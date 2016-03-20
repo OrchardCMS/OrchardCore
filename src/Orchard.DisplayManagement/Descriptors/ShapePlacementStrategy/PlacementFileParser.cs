@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Orchard.DependencyInjection;
 using Orchard.FileSystem;
 using System.Collections.Generic;

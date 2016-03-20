@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Hosting.Web.Routing.Routes

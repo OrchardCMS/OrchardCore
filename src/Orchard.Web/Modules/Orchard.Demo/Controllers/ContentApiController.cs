@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using System;
 using System.Collections.Generic;

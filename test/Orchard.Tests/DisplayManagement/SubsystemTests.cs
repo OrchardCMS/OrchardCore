@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -12,7 +12,7 @@ using System;
 using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;

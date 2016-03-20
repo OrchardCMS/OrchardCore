@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.ContentManagement.ViewModels;
 using Orchard.UI;
 using System.Collections.Generic;

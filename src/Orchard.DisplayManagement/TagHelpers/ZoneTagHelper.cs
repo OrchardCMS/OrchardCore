@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Layout;
 using System;
 using System.Threading.Tasks;

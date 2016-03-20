@@ -1,5 +1,5 @@
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Orchard.DisplayManagement.Notify
 {

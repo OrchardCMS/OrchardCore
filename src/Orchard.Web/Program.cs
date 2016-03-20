@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Orchard.Hosting;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ namespace Orchard.Console
 {
     public class Program
     {
-        //https://github.com/aspnet/Hosting/blob/dev/src/Microsoft.AspNet.Hosting/Program.cs
+        //https://github.com/aspnet/Hosting/blob/dev/src/Microsoft.AspNetCore.Hosting/Program.cs
         public Task<int> Main(string[] args)
         {
             //Add command line configuration source to read command line parameters.
@@ -15,7 +15,7 @@ namespace Orchard.Console
             var config = builder.Build();
 
             var host = new WebHostBuilder(config, true)
-                .UseServer("Microsoft.AspNet.Server.Kestrel")
+                .UseServer("Microsoft.AspNetCore.Server.Kestrel")
                 .Build();
             using (var app = host.Start())
             {

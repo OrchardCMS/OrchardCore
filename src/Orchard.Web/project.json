@@ -2,12 +2,12 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*"
   },
   "commands": {
-    "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:5001",
+    "web": "Microsoft.AspNetCore.Hosting --server Microsoft.AspNetCore.Server.Kestrel --server.urls http://localhost:5001",
     "run": "run"
   },
   "compilationOptions": {

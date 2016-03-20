@@ -1,5 +1,5 @@
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Diagnostics;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;

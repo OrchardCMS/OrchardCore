@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNet.Html;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNet.Mvc.Razor.RazorPage<TModel>
+    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;

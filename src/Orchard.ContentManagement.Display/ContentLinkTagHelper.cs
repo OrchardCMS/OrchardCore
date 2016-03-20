@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.ContentManagement.MetaData;
 
 namespace Orchard.ContentManagement.Display

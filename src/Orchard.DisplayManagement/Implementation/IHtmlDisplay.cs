@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Html;
+﻿using Microsoft.AspNetCore.Html;
 using Orchard.DependencyInjection;
 using System.Threading.Tasks;
 

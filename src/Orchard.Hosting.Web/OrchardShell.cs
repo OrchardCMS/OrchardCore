@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Builder.Internal;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder.Internal;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.Middleware;
 using Orchard.Hosting.Web.Routing.Routes;

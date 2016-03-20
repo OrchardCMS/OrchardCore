@@ -2,7 +2,7 @@
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DependencyInjection;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement
 {

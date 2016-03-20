@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Orchard.DependencyInjection;
 using System.Security.Claims;
 

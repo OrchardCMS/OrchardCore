@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
-using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Orchard.DisplayManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy

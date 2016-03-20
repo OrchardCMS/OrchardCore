@@ -4,9 +4,9 @@ using System.Dynamic;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Html;
 using System.Reflection;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.UI;
 
 namespace Orchard.DisplayManagement.Shapes

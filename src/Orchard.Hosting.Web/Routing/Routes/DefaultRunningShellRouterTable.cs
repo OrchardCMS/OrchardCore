@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Orchard.Environment.Shell;
 using System;
 using System.Collections.Concurrent;

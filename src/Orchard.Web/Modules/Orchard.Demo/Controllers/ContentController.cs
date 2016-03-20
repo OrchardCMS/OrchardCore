@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.DisplayManagement.Admin;

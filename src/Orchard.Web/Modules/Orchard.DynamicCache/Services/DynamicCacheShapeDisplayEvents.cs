@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Implementation;

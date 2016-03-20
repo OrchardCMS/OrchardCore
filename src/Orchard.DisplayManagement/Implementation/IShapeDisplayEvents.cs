@@ -1,6 +1,6 @@
 ﻿using Orchard.DisplayManagement.Shapes;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Html;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Implementation
 {

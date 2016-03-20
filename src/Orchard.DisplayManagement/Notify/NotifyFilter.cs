@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Orchard.DisplayManagement.Layout;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using Orchard.Environment.Shell;
-using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNetCore.DataProtection;
 using System.Net;
 
 namespace Orchard.DisplayManagement.Notify
