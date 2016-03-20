@@ -3,7 +3,7 @@ using System.Dynamic;
 using System.Linq;
 using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Html;
 using System.IO;
 using Microsoft.Extensions.WebEncoders;
 using System.Threading.Tasks;

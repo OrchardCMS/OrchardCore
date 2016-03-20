@@ -3,7 +3,7 @@ using System.Linq;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Localization;
 using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Html;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.WebEncoders;

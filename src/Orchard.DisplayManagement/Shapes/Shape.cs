@@ -4,7 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Html;
 using System.Reflection;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.UI;

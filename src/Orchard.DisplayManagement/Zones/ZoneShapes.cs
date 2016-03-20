@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Utility;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Html;
 using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.Zones

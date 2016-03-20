@@ -12,7 +12,7 @@ using System;
 using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNet.Html;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;

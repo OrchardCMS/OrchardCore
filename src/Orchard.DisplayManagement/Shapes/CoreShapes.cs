@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
+﻿using Microsoft.AspNet.Html;
 using Microsoft.AspNet.Mvc.Localization;
 using Microsoft.AspNet.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
