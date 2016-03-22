@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAuthorizationFilter
     {
-        public void OnAuthorization(AuthorizationContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             Apply(context.HttpContext);
         }
