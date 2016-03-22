@@ -5,11 +5,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Orchard.DisplayManagement.Razor
 {
@@ -107,7 +106,7 @@ namespace Orchard.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((ICanHasViewContext)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
                 return _t;

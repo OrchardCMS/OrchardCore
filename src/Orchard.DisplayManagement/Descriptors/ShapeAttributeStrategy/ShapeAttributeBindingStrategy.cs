@@ -4,10 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using System;
@@ -187,7 +185,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
-            var contextable = newHelper as ICanHasViewContext;
+            var contextable = newHelper as IViewContextAware;
             if (contextable != null)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);

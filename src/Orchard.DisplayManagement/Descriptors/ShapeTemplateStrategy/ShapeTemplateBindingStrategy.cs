@@ -202,7 +202,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
-            var contextable = newHelper as ICanHasViewContext;
+            var contextable = newHelper as IViewContextAware;
             if (contextable != null)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
