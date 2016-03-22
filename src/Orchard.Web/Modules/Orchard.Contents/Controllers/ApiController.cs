@@ -25,12 +25,12 @@ namespace Orchard.Content.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
 
             return new ObjectResult(contentItem);

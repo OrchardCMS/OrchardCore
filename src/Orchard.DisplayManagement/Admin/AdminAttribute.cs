@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Admin
             // TODO: Check permission
             //if (!_authorizer.Authorize(StandardPermissions.AccessAdminPanel, T("Can't access the admin")))
             //{
-            //    filterContext.Result = new HttpUnauthorizedResult();
+            //    filterContext.Result = new UnauthorizedResult();
             //}
         }
 

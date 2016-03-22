@@ -30,7 +30,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var shape = await _contentDisplay.BuildDisplayAsync(contentItem, this);
@@ -44,7 +44,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var shape = await _contentDisplay.BuildEditorAsync(contentItem, this);
@@ -58,7 +58,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var shape = await _contentDisplay.UpdateEditorAsync(contentItem, this);

@@ -18,7 +18,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return new ObjectResult(contentItem);
