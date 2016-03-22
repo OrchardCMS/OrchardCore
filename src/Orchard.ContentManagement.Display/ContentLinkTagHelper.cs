@@ -76,8 +76,8 @@ namespace Orchard.ContentManagement.Display
                 {
                     return;
                 }
-
-                output.Attributes["href"] = _urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues);
+                
+                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
             }
             else if (EditFor != null)
             {
@@ -89,7 +89,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes["href"] = _urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
+                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
             }
             else if (AdminFor != null)
             {
@@ -101,7 +101,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes["href"] = _urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues);
+                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
             }
             else if (RemoveFor != null)
             {
@@ -113,7 +113,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes["href"] = _urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues);
+                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
             }
             else if (CreateFor != null)
             {
@@ -125,7 +125,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes["href"] = _urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues);
+                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
             }
 
             // A self closing anchor tag will be rendered using the display text
