@@ -5,7 +5,7 @@ using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.FileSystem;
 

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
