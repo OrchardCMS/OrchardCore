@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using System.IO;
-using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Implementation
@@ -70,7 +70,7 @@ namespace Orchard.DisplayManagement.Implementation
                 _fragments = fragments;
             }
 
-            public void WriteTo(TextWriter writer, IHtmlEncoder encoder)
+            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
             {
                 foreach (var fragment in _fragments)
                 {

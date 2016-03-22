@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -214,7 +214,7 @@ namespace Orchard.DisplayManagement.Implementation
             if (result != null)
                 return result;
 
-            return new HtmlString(HtmlEncoder.Default.HtmlEncode(value.ToString()));
+            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
 
         static async Task<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)

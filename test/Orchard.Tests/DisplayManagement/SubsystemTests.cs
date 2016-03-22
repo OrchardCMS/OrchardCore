@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
 using System.IO;
-using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
 
 namespace Orchard.Tests.DisplayManagement
 {
