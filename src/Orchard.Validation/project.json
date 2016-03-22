@@ -1,6 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.NETCore.Platforms": "1.0.1-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -10,7 +11,10 @@
     "dnxcore50": {
       "dependencies": {
         "System.Runtime": "4.1.0-*"
-      }
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
     }
   },
   "repository": {

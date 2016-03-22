@@ -3,6 +3,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*"
   },
@@ -15,7 +16,11 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "exclude": [
     "wwwroot",

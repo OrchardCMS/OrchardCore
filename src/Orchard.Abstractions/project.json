@@ -6,6 +6,7 @@
     "Microsoft.Extensions.DependencyModel": "1.0.0-*",
     "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Validation": "2.0.0-*"
   },
   "compilationOptions": {
@@ -17,7 +18,10 @@
       "dependencies": {
         "System.Globalization.Extensions": "4.0.1-*",
         "System.Text.RegularExpressions": "4.0.12-*"
-      }
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
     }
   },
   "repository": {

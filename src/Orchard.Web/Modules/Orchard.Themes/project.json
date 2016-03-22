@@ -3,12 +3,17 @@
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.0-*",
     "Microsoft.AspNetCore.Tooling.Razor": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Core": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*"
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   }
 }

@@ -3,13 +3,14 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Newtonsoft.Json": "8.0.3",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "YesSql.Core": "2.0.0-alpha-9022",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1007",
-    "YesSql.Storage.LightningDB": "1.0.0-alpha-1004"
+    "YesSql.Storage.LightningDB": "1.0.0-alpha-1004",
+    "YesSql.Storage.Sql": "1.0.0-alpha-1007"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
@@ -21,7 +22,10 @@
         "System.ComponentModel.Annotations": "4.1.0-*",
         "System.Linq.Queryable": "4.0.1-*",
         "System.Data.SqlClient": "4.0.0-*"
-      }
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
     }
   },
   "repository": {
