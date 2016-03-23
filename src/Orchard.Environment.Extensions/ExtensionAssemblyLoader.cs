@@ -9,6 +9,7 @@ using System.IO;
 using System.Collections.Generic;
 using Microsoft.Extensions.PlatformAbstractions;
 using System;
+using Microsoft.Extensions.CompilationAbstractions;
 
 namespace Orchard.Environment.Extensions
 {

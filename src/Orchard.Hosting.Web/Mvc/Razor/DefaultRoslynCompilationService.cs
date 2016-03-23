@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.CompilationAbstractions;
 
 namespace Orchard.Hosting.Mvc.Razor
 {
