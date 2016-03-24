@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -182,7 +183,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(_actionContextAccessor.ActionContext, path, isMainPage: false);
             if (viewEngineResult.Success)
             {
-                using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding))
+                var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
+                var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
+                using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
                 {
                     // Forcing synchronous behavior so users don't have to await templates.
                     var view = viewEngineResult.View;
@@ -190,7 +193,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     {
                         var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
                         await viewEngineResult.View.RenderAsync(viewContext);
-                        return writer.Content;
+                        return viewBuffer;
                     }
                 }
             }
