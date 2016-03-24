@@ -20,7 +20,8 @@ namespace Orchard.DisplayManagement.TagHelpers
             // which means we are not keeping any reference on IShapeTableManager and IThemeManager
             TagHelperDescriptorResolver = new ShapeTagHelperDescriptorResolver(
                 new TagHelperTypeResolver(),
-                httpContextAccessor                
+                new TagHelperDescriptorFactory(designTime: false),
+                httpContextAccessor
             );
         }
     }
