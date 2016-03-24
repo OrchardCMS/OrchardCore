@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Notify;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Shapes
 {
@@ -95,8 +92,8 @@ namespace Orchard.DisplayManagement.Shapes
                     item.Tag = itemTag;
                 }
 
-                itemTag.InnerHtml.Append(itemContents[index]);
-                listTag.InnerHtml.Append(itemTag);
+                itemTag.InnerHtml.AppendHtml(itemContents[index]);
+                listTag.InnerHtml.AppendHtml(itemTag);
 
                 ++index;
             }
@@ -113,7 +110,7 @@ namespace Orchard.DisplayManagement.Shapes
             tagBuilder.AddCssClass("message");
             tagBuilder.AddCssClass("message-" + type);
             tagBuilder.Attributes["role"] = "alert";
-            tagBuilder.InnerHtml.Append(message);
+            tagBuilder.InnerHtml.AppendHtml(message);
             return tagBuilder;
         }
     }
