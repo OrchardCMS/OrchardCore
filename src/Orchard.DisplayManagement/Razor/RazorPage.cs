@@ -123,7 +123,7 @@ namespace Orchard.DisplayManagement.Razor
             return Title.GenerateTitle();
         }
 
-        protected HelperResult RenderLayoutBody()
+        protected IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;
