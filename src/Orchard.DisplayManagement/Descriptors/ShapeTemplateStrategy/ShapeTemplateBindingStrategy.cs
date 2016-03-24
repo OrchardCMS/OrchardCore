@@ -179,7 +179,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
         {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
+            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(_actionContextAccessor.ActionContext, path, isMainPage: false);
             if (viewEngineResult.Success)
             {
                 using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding))
