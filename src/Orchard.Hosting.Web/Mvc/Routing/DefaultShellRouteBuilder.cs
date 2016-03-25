@@ -1,27 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
 
 namespace Orchard.Hosting.Mvc.Routing
 {
     public class DefaultShellRouteBuilder : IRouteBuilder
     {
-        public DefaultShellRouteBuilder(IServiceProvider serviceProvider)
+        public DefaultShellRouteBuilder(IApplicationBuilder applicationBuilder)
+            : this(applicationBuilder, defaultHandler: new MvcRouteHandler())
         {
+        }
+
+        public DefaultShellRouteBuilder(IApplicationBuilder applicationBuilder, IRouter defaultHandler)
+        {
+            if (applicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(applicationBuilder));
+            }
+
+            ApplicationBuilder = applicationBuilder;
+            DefaultHandler = defaultHandler;
+            ServiceProvider = applicationBuilder.ApplicationServices;
             Routes = new List<IRouter>();
-            DefaultHandler = new MvcRouteHandler();
-            ServiceProvider = serviceProvider;
         }
 
+        public IApplicationBuilder ApplicationBuilder { get; }
         public IRouter DefaultHandler { get; set; }
-
-        public IServiceProvider ServiceProvider { get; set; }
-
-        public IList<IRouter> Routes
-        {
-            get;
-        }
+        public IServiceProvider ServiceProvider { get; }
+        public IList<IRouter> Routes { get; }
 
         public IRouter Build()
         {
