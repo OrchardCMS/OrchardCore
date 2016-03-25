@@ -42,7 +42,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
                 }
                 catch (Exception ex)
                 {
-                    var logger = context.HttpContext.ApplicationServices.GetService<ILogger<TenantRoute>>();
+                    var logger = context.HttpContext.RequestServices.GetService<ILogger<TenantRoute>>();
                     logger.LogError("Error occured serving tenant route", ex);
                     throw;
                 }
@@ -59,7 +59,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            if (IsValidRequest(context.Context))
+            if (IsValidRequest(context.HttpContext))
             {
                 foreach (var route in _routes)
                 {
