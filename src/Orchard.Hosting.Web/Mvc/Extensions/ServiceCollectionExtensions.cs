@@ -37,7 +37,7 @@ namespace Orchard.Hosting.Mvc
 
             services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
 
-            services.Configure<RazorViewEngineOptions>(options =>
+            services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
