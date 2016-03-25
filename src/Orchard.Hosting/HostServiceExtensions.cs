@@ -22,7 +22,7 @@ namespace Orchard.Hosting
 
             additionalDependencies(services);
 
-            return services.AddFallback();
+            return services;
         }
 
         public static IServiceCollection AddHostCore(this IServiceCollection services)
