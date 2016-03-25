@@ -21,6 +21,7 @@ namespace Orchard.Environment.Extensions
         private readonly IAssemblyLoadContextAccessor _assemblyLoadContextAccessor;
         private readonly IRuntimeEnvironment _runtimeEnvironment;
         private readonly IOrchardLibraryManager _libraryManager;
+        private readonly string _configuration;
         private string _path;
 
         public ExtensionAssemblyLoader(
@@ -28,13 +29,15 @@ namespace Orchard.Environment.Extensions
             //ICache cache,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IRuntimeEnvironment runtimeEnvironment,
-            IOrchardLibraryManager libraryManager)
+            IOrchardLibraryManager libraryManager,
+            string configuration)
         {
             _applicationEnvironment = applicationEnvironment;
             //_cache = cache;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
             _runtimeEnvironment = runtimeEnvironment;
             _libraryManager = libraryManager;
+            _configuration = configuration;
         }
 
         public IExtensionAssemblyLoader WithPath(string path)
@@ -80,7 +83,7 @@ namespace Orchard.Environment.Extensions
                 _compilationCache));
 
             var exporter = engine.CreateProjectExporter(
-                moduleContext.Project, moduleContext.TargetFramework, _applicationEnvironment.Configuration);
+                moduleContext.Project, moduleContext.TargetFramework, _configuration);
 
             var exports = exporter.GetAllExports(moduleContext.Project.Name);
             foreach (var metadataReference in exports.MetadataReferences)
@@ -93,7 +96,8 @@ namespace Orchard.Environment.Extensions
                 _applicationEnvironment.RuntimeFramework,
                 null,
                 _assemblyLoadContextAccessor.Default,
-                assemblyName);
+                assemblyName,
+                _configuration);
 
             IList<LibraryDependency> flattenedList = moduleContext
                 .Project

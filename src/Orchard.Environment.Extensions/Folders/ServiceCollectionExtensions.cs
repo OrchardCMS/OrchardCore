@@ -9,7 +9,7 @@ namespace Orchard.Environment.Extensions.Folders
             this IServiceCollection services,
             string virtualPath)
         {
-            return services.Configure<ExtensionHarvestingOptions>(options =>
+            return services.Configure<ExtensionHarvestingOptions>(configureOptions: options =>
             {
                 var expander = new ModuleLocationExpander(
                     DefaultExtensionTypes.Module,
@@ -25,16 +25,16 @@ namespace Orchard.Environment.Extensions.Folders
             this IServiceCollection services,
             string virtualPath)
         {
-            return services.Configure<ExtensionHarvestingOptions>(options =>
-            {
-                var expander = new ModuleLocationExpander(
-                    DefaultExtensionTypes.Theme,
-                    new[] { virtualPath },
-                    "Theme.txt"
-                    );
+            return services.Configure<ExtensionHarvestingOptions>(configureOptions: options =>
+             {
+                 var expander = new ModuleLocationExpander(
+                     DefaultExtensionTypes.Theme,
+                     new[] { virtualPath },
+                     "Theme.txt"
+                     );
 
-                options.ModuleLocationExpanders.Add(expander);
-            });
+                 options.ModuleLocationExpanders.Add(expander);
+             });
         }
     }
 }
