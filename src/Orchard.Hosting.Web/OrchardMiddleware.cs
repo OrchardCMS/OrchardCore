@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,13 +20,13 @@ namespace Orchard.Hosting
 
             var context = httpContext.Items["orchard.middleware.context"] as RouteContext;
             var routes = httpContext.Items["orchard.middleware.routes"] as IEnumerable<IRouter>;
-                
+
             // Process each route in order        
             foreach (var route in routes)
             {
                 await route.RouteAsync(context);
 
-                if (context.IsHandled)
+                if (context.Handler != null)
                 {
                     return;
                 }

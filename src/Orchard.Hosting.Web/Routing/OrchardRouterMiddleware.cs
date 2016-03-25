@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +40,7 @@ namespace Orchard.Hosting.Web.Routing
 
             await router.RouteAsync(context);
 
-            if (!context.IsHandled)
+            if (context.Handler == null)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
