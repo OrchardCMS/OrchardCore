@@ -4,7 +4,7 @@
     "Microsoft.Dnx.Compilation": "1.0.0-*",
     "Microsoft.Dnx.Runtime": "1.0.0-*",
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-*",
+    "Microsoft.Extensions.Options": "1.0.0-*",
     "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
