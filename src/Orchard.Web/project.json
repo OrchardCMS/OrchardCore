@@ -4,20 +4,24 @@
   "dependencies": {
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
     "Microsoft.NETCore.Platforms": "1.0.1-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.Hosting.Console": "2.0.0-*"
-  },
-  "commands": {
-    "web": "Microsoft.AspNetCore.Hosting --server Microsoft.AspNetCore.Server.Kestrel --server.urls http://localhost:5001",
-    "run": "run"
+    "Orchard.Hosting.Console": "2.0.0-*",
+    "Orchard.Hosting.Web": "2.0.0-*"
   },
   "compilationOptions": {
+    "emitEntryPoint": true,
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
+  "commands": {
+    "web": "Orchard.Web"
+  },
   "frameworks": {
-    "dnxcore50": {
+    "netstandardapp1.5": {
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      },
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
       ]
     }
