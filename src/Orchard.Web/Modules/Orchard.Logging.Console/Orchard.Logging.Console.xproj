@@ -10,7 +10,7 @@
     <ProjectGuid>bd87418f-052f-4cc2-8926-c8d98a03ef42</ProjectGuid>
     <RootNamespace>Orchard.Logging.Console</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
