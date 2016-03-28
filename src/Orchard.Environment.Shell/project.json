@@ -23,6 +23,9 @@
   },
   "frameworks": {
     "dnxcore50": {
+      "dependencies": {
+        "System.Data.SqlClient": "4.1.0-*"
+      },
       "imports": [
         "portable-net451+win8"
       ]

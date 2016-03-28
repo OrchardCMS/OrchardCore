@@ -21,7 +21,7 @@
       "dependencies": {
         "System.ComponentModel.Annotations": "4.1.0-*",
         "System.Linq.Queryable": "4.0.1-*",
-        "System.Data.SqlClient": "4.0.0-*"
+        "System.Data.SqlClient": "4.1.0-*"
       },
       "imports": [
         "portable-net451+win8"
