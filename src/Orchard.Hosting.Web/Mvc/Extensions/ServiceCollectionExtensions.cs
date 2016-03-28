@@ -29,13 +29,15 @@ namespace Orchard.Hosting.Mvc
                 .AddRazorViewEngine()
                 .AddJsonFormatters();
 
+            services.AddMvcDnx();
+
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
 
             services.AddScoped<IAssemblyProvider, OrchardMvcAssemblyProvider>();
 
-            services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
+            services.AddSingleton<ICompilationService, DnxRoslynCompilationService>();
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
