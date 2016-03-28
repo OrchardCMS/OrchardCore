@@ -1,4 +1,8 @@
-[![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)
+MyGet: [![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)
+
+AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/ccmxpn9l3q377jhg/branch/dev?svg=true)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/dev)
+
+Travis:   [![Travis](https://travis-ci.org/alexbocharov/Orchard2.svg?branch=dev)](https://travis-ci.org/alexbocharov/Orchard2)
 
 # Orchard 2
 
