@@ -22,7 +22,7 @@ namespace Orchard.Hosting.Mvc
                 {
                     options.Filters.Add(new ModelBinderAccessorFilter());
                     options.Conventions.Add(new ModuleAreaRouteConstraintConvention());
-                    options.ModelBinders.Insert(0, new CheckMarkModelBinder());
+                    options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
                 })
                 .AddViews()
                 .AddViewLocalization()
