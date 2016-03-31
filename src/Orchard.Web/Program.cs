@@ -9,14 +9,14 @@ namespace Orchard.Console
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseServer("Microsoft.AspNetCore.Server.Kestrel")
+                .UseKestrel()
                 .UseDefaultHostingConfiguration(args)
                 .UseStartup<Startup>()
                 .Build();
 
             using (host)
             {
-                host.Start();
+                host.Run();
 
                 var orchardHost = new OrchardHost(host.Services, System.Console.In, System.Console.Out, args);
                 orchardHost.Run();
