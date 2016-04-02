@@ -36,6 +36,11 @@ namespace Orchard.Tests
 
     public class NullLogger : ILogger
     {
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            throw new NotImplementedException();
+        }
+
         public IDisposable BeginScopeImpl(object state)
         {
             throw new NotImplementedException();
