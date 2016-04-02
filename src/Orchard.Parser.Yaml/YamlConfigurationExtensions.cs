@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using Orchard.Parser.Yaml;
 
@@ -14,17 +13,17 @@ namespace Orchard.Parser
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            return AddYamlFile(configuration, path, optional: false);
+            return AddYamlFile(configuration, source => source.Path = path);
         }
 
         public static IConfigurationBuilder AddYamlFile(
-            this IConfigurationBuilder configurationBuilder,
+            this IConfigurationBuilder builder,
             string path,
             bool optional)
         {
-            if (configurationBuilder == null)
+            if (builder == null)
             {
-                throw new ArgumentNullException(nameof(configurationBuilder));
+                throw new ArgumentNullException(nameof(builder));
             }
 
             if (string.IsNullOrEmpty(path))
@@ -32,15 +31,21 @@ namespace Orchard.Parser
                 throw new ArgumentException("InvalidFilePath", nameof(path));
             }
 
-            var fullPath = Path.Combine(configurationBuilder.GetBasePath(), path);
-
-            if (!optional && !File.Exists(fullPath))
+            return AddYamlFile(builder, source =>
             {
-                throw new FileNotFoundException("FormatError_FileNotFound(fullPath)", fullPath);
-            }
+                source.Path = path;
+                source.Optional = optional;
+            });
+        }
 
-            configurationBuilder.Add(new YamlConfigurationProvider(fullPath, optional: optional));
-            return configurationBuilder;
+        public static IConfigurationBuilder AddYamlFile(
+            this IConfigurationBuilder builder,
+            Action<YamlConfigurationSource> configureSource)
+        {
+            var source = new YamlConfigurationSource();
+            configureSource(source);
+            builder.Add(source);
+            return builder;
         }
 
         public static string Get(this IConfigurationProvider provider, string key)

@@ -80,8 +80,11 @@ namespace Orchard.Environment.Shell
                     shellSettings.Name, 
                     string.Format(SettingsFileNameFormat, "txt")));
 
-            var configurationProvider = 
-                new YamlConfigurationProvider(tenantPath, false);
+            var configurationProvider = new YamlConfigurationProvider(new YamlConfigurationSource
+            {
+                Path = tenantPath,
+                Optional = false
+            });
 
             foreach (var key in shellSettings.Keys)
             {
