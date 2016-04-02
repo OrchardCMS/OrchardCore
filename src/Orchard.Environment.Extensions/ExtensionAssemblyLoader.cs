@@ -29,15 +29,15 @@ namespace Orchard.Environment.Extensions
             //ICache cache,
             IAssemblyLoadContextAccessor assemblyLoadContextAccessor,
             IRuntimeEnvironment runtimeEnvironment,
-            IOrchardLibraryManager libraryManager,
-            string configuration)
+            IOrchardLibraryManager libraryManager)
         {
             _applicationEnvironment = applicationEnvironment;
             //_cache = cache;
             _assemblyLoadContextAccessor = assemblyLoadContextAccessor;
             _runtimeEnvironment = runtimeEnvironment;
             _libraryManager = libraryManager;
-            _configuration = configuration;
+
+            _configuration = "Debug";
         }
 
         public IExtensionAssemblyLoader WithPath(string path)

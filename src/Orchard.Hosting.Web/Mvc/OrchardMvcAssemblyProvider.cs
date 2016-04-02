@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Orchard.Hosting.Mvc
 {
-    public class OrchardMvcAssemblyProvider : IAssemblyProvider
+    public class OrchardMvcAssemblyProvider
     {
         /// <summary>
         /// Gets the set of assembly names that are used as root for discovery of
@@ -33,8 +33,7 @@ namespace Orchard.Hosting.Mvc
             "Microsoft.AspNetCore.Mvc.Razor",
             "Microsoft.AspNetCore.Mvc.Razor.Host",
             "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures",
-            "Microsoft.AspNetCore.PageExecutionInstrumentation.Interfaces",
+            "Microsoft.AspNetCore.Mvc.ViewFeatures"
         };
 
         private readonly IOrchardLibraryManager _libraryManager;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Antiforgery.Internal;
+using Microsoft.AspNetCore.Mvc.Internal;
 
 namespace Orchard.Hosting.Mvc.ModelBinding
 {

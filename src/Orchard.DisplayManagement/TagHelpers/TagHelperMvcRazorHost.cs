@@ -10,7 +10,7 @@ namespace Orchard.DisplayManagement.TagHelpers
         public TagHelperMvcRazorHost(
             IChunkTreeCache chunkTreeCache,
             IHttpContextAccessor httpContextAccessor)
-            : base(chunkTreeCache)
+            : base(chunkTreeCache, new TagHelperDescriptorResolver(designTime: false))
         {
             // We need to resolve the services using the scoped service provider
             // explicitly as IRazorViewEngine which is resolving IMvcRazorHost is
