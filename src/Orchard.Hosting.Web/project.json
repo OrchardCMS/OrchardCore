@@ -1,14 +1,18 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Diagnostics": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Http": "1.0.0-*",
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-*",
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.AspNet.Routing": "1.0.0-*",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0-*",
+    "Microsoft.AspNetCore.Http": "1.0.0-*",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Dnx": "1.0.0-*",
+    "Microsoft.AspNetCore.Routing": "1.0.0-*",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0-*",
+    "Microsoft.Dnx.Compilation.CSharp.Common": "1.0.0-*",
+    "Microsoft.Dnx.Compilation.CSharp.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
@@ -25,7 +29,11 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

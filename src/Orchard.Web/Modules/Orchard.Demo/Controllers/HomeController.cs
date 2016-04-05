@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
@@ -98,7 +98,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View(contentItem);
@@ -111,7 +111,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var shape = Shape

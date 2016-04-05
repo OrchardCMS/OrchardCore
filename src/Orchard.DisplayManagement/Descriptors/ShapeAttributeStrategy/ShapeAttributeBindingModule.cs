@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
-using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Orchard.DisplayManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                         hasShapes = true;
                         // PERF: Analyze the impact of an important number of instances
                         // in the service collection
-                        serviceCollection.AddInstance(
+                        serviceCollection.AddSingleton(
                             new ShapeAttributeOccurrence(customAttribute,
                             method,
                             serviceType));

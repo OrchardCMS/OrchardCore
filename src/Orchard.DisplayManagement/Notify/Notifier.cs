@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 
 namespace Orchard.DisplayManagement.Notify
 {

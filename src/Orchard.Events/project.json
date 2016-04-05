@@ -1,7 +1,8 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "System.Reflection.DispatchProxy": "4.0.1-beta-23409"
   },
@@ -10,7 +11,11 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

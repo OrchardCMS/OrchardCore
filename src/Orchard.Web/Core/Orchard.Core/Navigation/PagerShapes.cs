@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 
 namespace Orchard.Core.Navigation
 {
@@ -325,7 +324,7 @@ namespace Orchard.Core.Navigation
             string id = Shape.Id;
             var tag = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder("a", id, classes, attributes);
 
-            tag.InnerHtml.Append(CoerceHtmlString(Value));
+            tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
             return tag;
         }
 
@@ -351,7 +350,7 @@ namespace Orchard.Core.Navigation
             if (result != null)
                 return result;
 
-            return new HtmlString(HtmlEncoder.Default.HtmlEncode(value.ToString()));
+            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
     }
 }

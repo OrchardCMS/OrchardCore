@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.Tests.Stubs
 {

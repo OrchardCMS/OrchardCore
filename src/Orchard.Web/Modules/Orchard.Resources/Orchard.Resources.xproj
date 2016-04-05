@@ -9,7 +9,7 @@
     <ProjectGuid>2becb83c-2eb3-4459-862a-254ed0064801</ProjectGuid>
     <RootNamespace>Orchard.Resources</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

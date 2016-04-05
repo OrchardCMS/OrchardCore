@@ -9,7 +9,7 @@
     <ProjectGuid>4da8dff9-74a5-4111-8043-9d901b525347</ProjectGuid>
     <RootNamespace>Orchard.DynamicCache</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\$(MSBuildProjectName)\</OutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>

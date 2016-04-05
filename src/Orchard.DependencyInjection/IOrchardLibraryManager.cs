@@ -1,6 +1,6 @@
-﻿using Microsoft.Dnx.Compilation;
-using Microsoft.Extensions.PlatformAbstractions;
+﻿using Microsoft.Extensions.PlatformAbstractions;
 using System.Collections.Generic;
+using Microsoft.Extensions.CompilationAbstractions;
 
 namespace Orchard.DependencyInjection
 {

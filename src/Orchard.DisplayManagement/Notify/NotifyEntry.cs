@@ -1,5 +1,6 @@
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Orchard.DisplayManagement.Notify
 {
@@ -14,6 +15,6 @@ namespace Orchard.DisplayManagement.Notify
     public class NotifyEntry
     {
         public NotifyType Type { get; set; }
-        public HtmlString Message { get; set; }
+        public IHtmlContent Message { get; set; }
     }
 }

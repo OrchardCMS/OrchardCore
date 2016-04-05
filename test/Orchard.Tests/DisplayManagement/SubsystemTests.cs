@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -12,14 +12,14 @@ using System;
 using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
 using System.IO;
-using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
 
 namespace Orchard.Tests.DisplayManagement
 {
@@ -72,12 +72,12 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddInstance<ITypeFeatureProvider>(
+            serviceCollection.AddSingleton<ITypeFeatureProvider>(
                 new TypeFeatureProvider(new Dictionary<Type, Feature>() {
                     { typeof(SimpleShapes), testFeature }
                 }));
 
-            serviceCollection.AddInstance(new SimpleShapes());
+            serviceCollection.AddSingleton(new SimpleShapes());
 
             new ShapeAttributeBindingModule().Configure(serviceCollection);
 

@@ -10,6 +10,8 @@
     <ProjectGuid>d2b2a745-17ba-4b5f-8992-93ea803bd068</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Orchard.Core</RootNamespace>
+    <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
+    <OutputPath Condition="'$(OutputPath)'=='' ">..\..\..\..\artifacts\bin\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AssemblyName>Orchard.Core</AssemblyName>

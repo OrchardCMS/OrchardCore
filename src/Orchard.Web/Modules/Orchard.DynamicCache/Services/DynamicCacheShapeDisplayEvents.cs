@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.WebEncoders;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace Orchard.DynamicCache.Services
 {

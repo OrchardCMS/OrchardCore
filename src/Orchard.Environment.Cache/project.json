@@ -1,19 +1,24 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc1-final",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
-    "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final"
+    "Microsoft.Extensions.Caching.Memory": "1.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

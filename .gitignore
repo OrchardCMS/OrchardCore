@@ -173,7 +173,8 @@ profiling/
 *.orig
 .vs/
 .vscode/
-
+.build/
+.testPublish/
 
 nuget.exe
 .nuget/

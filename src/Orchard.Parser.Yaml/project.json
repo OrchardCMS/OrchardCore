@@ -4,6 +4,7 @@
     "Microsoft.Extensions.Configuration": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "YamlDotNet": "3.7.0"
   },
   "compilationOptions": {
@@ -11,7 +12,15 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "dependencies": {
+        "System.IO": "4.1.0-*",
+        "System.IO.FileSystem": "4.0.1-*"
+      },
+      "imports": [
+        "portable-net451+win8" 
+      ]
+    }
   },
   "repository": {
     "type": "git",

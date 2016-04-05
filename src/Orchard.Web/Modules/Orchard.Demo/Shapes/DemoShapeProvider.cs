@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Extensions.WebEncoders;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {

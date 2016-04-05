@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Orchard.Environment.Cache.Abstractions;
 using Orchard.Environment.Extensions.Features;
 using System;

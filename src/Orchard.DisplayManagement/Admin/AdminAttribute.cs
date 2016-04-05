@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.DisplayManagement.Admin
 {
@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAuthorizationFilter
     {
-        public void OnAuthorization(AuthorizationContext context)
+        public void OnAuthorization(AuthorizationFilterContext context)
         {
             Apply(context.HttpContext);
         }
@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Admin
             // TODO: Check permission
             //if (!_authorizer.Authorize(StandardPermissions.AccessAdminPanel, T("Can't access the admin")))
             //{
-            //    filterContext.Result = new HttpUnauthorizedResult();
+            //    filterContext.Result = new UnauthorizedResult();
             //}
         }
 

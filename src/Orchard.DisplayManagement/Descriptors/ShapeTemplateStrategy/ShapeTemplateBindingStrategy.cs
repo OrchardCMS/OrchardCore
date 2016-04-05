@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Infrastructure;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
@@ -19,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -180,10 +180,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
         {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
+            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(_actionContextAccessor.ActionContext, path, isMainPage: false);
             if (viewEngineResult.Success)
             {
-                using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding))
+                var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
+                var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
+                using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
                 {
                     // Forcing synchronous behavior so users don't have to await templates.
                     var view = viewEngineResult.View;
@@ -191,7 +193,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     {
                         var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
                         await viewEngineResult.View.RenderAsync(viewContext);
-                        return writer.Content;
+                        return viewBuffer;
                     }
                 }
             }
@@ -203,7 +205,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
-            var contextable = newHelper as ICanHasViewContext;
+            var contextable = newHelper as IViewContextAware;
             if (contextable != null)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);

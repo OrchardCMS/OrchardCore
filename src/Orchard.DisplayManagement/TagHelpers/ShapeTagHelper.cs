@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Razor.TagHelpers;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Implementation;
 using System;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace Orchard.DisplayManagement.TagHelpers
     [HtmlTargetElement("shape", Attributes = nameof(Type))]
     public class ShapeTagHelper : TagHelper
     {
-        private static string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
+        private static readonly string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
 
         private readonly IShapeFactory _shapeFactory;
         private readonly IDisplayHelperFactory _displayHelperFactory;
@@ -48,27 +48,27 @@ namespace Orchard.DisplayManagement.TagHelpers
                 .ToDictionary(x => LowerKebabToPascalCase(x.Name), x => (object)x.Value.ToString())
                 ;
 
-            if (String.IsNullOrWhiteSpace(Type))
+            if (string.IsNullOrWhiteSpace(Type))
             {
                 Type = output.TagName;
             }
 
-            if (String.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
+            if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
                 Cache = Convert.ToString(output.Attributes["cache-id"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
+            if (string.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
             {
                 Context = Convert.ToString(output.Attributes["cache-context"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("cache-dependency"))
+            if (string.IsNullOrWhiteSpace(Dependency) && output.Attributes.ContainsName("cache-dependency"))
             {
                 Dependency = Convert.ToString(output.Attributes["cache-dependency"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
+            if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
             {
                 Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
@@ -76,44 +76,44 @@ namespace Orchard.DisplayManagement.TagHelpers
             if (!Duration.HasValue && output.Attributes.ContainsName("cache-duration"))
             {
                 TimeSpan timespan;
-                if(TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-duration"].Value), out timespan))
+                if (TimeSpan.TryParse(Convert.ToString(output.Attributes["cache-duration"].Value), out timespan))
                 {
                     Duration = timespan;
                 }
             }
 
             var shape = _shapeFactory.Create(Type, Arguments.From(properties));
-            
-            if (!String.IsNullOrWhiteSpace(Cache))
+
+            if (!string.IsNullOrWhiteSpace(Cache))
             {
                 var metadata = shape.Metadata;
                 metadata.Cache(Cache);
 
-                if(Duration.HasValue)
+                if (Duration.HasValue)
                 {
                     metadata.Cache().During(Duration.Value);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Context))
+                if (!string.IsNullOrWhiteSpace(Context))
                 {
                     var contexts = Context.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Tag))
+                if (!string.IsNullOrWhiteSpace(Tag))
                 {
                     var tags = Tag.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Dependency))
+                if (!string.IsNullOrWhiteSpace(Dependency))
                 {
                     var dependency = Dependency.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddDependency(dependency);
                 }
             }
 
-            output.Content.SetContent(await display.ShapeExecuteAsync(shape));
+            output.Content.SetHtmlContent(await display.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;
@@ -127,16 +127,16 @@ namespace Orchard.DisplayManagement.TagHelpers
             attribute = attribute.Trim();
             bool nextIsUpper = true;
             var result = new StringBuilder();
-            for(int i=0; i<attribute.Length; i++)
+            for (int i = 0; i < attribute.Length; i++)
             {
                 var c = attribute[i];
-                if(c == '-')
+                if (c == '-')
                 {
                     nextIsUpper = true;
                     continue;
                 }
 
-                if(nextIsUpper)
+                if (nextIsUpper)
                 {
                     result.Append(c.ToString().ToUpper());
                 }

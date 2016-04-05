@@ -1,13 +1,14 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-rc1-final",
+    "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Xml": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-*",
+    "Microsoft.Extensions.Options": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
@@ -21,7 +22,14 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "dependencies": {
+        "System.Data.SqlClient": "4.1.0-*"
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

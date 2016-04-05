@@ -17,7 +17,7 @@ namespace Orchard.Environment.Cache
 
             // LocalCache is registered as transient as its implementation resolves IMemoryCache, thus
             // there is no state to keep in its instance.
-            serviceCollection.Add(ServiceDescriptor.Transient<IDistributedCache, LocalCache>());
+            serviceCollection.Add(ServiceDescriptor.Transient<IDistributedCache, MemoryDistributedCache>());
         }
     }
 }

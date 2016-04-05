@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;

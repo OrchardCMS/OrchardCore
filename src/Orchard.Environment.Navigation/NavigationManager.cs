@@ -1,13 +1,13 @@
 ﻿using Orchard.Environment.Shell;
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Mvc.Routing;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Orchard.Environment.Navigation
 {

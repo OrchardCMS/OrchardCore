@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Routing;
-using Microsoft.AspNet.Routing.Template;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
-using System;
+using Microsoft.AspNetCore.Http;
 
 namespace Orchard.Hosting.Web.Routing.Routes
 {
@@ -37,7 +35,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
                 .ToList();
 
             string routePrefix = "";
-            if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
             {
                 routePrefix = _shellSettings.RequestUrlPrefix + "/";
             }
@@ -54,7 +52,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
 
             foreach (var route in orderedRoutes)
             {
-                IRouter router = new TemplateRoute(
+                IRouter router = new Microsoft.AspNetCore.Routing.Route(
                     _routeBuilder.DefaultHandler,
                     route.Route.RouteName,
                     routePrefix + route.Route.RouteTemplate,

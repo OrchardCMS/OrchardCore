@@ -1,16 +1,21 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc.Core": "6.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
+    "Orchard.Hosting.Web": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

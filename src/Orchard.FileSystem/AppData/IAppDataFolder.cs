@@ -1,4 +1,4 @@
-using Microsoft.AspNet.FileProviders;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,16 +1,23 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Authorization": "1.0.0-rc1-final",
-    "Orchard.DependencyInjection": "2.0.0-*",
-    "System.Security.Claims": "4.0.1-beta-23516"
+    "Microsoft.AspNetCore.Authorization": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
+    "Orchard.DependencyInjection": "2.0.0-*"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "dnxcore50": {
+      "dependencies": {
+        "System.Security.Claims": "4.0.1-*"
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
+    }
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
@@ -58,7 +58,7 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
 
-            serviceCollection.AddInstance(_defaultShapeTable);
+            serviceCollection.AddSingleton(_defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Orchard.FileSystem;
 

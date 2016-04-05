@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

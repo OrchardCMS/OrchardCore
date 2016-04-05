@@ -6,6 +6,7 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.Environment.Cache": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
@@ -20,7 +21,10 @@
     "dnxcore50": {
       "dependencies": {
         "System.Threading.Tasks.Parallel": "4.0.1-*"
-      }
+      },
+      "imports": [
+        "portable-net451+win8"
+      ]
     }
   },
   "repository": {

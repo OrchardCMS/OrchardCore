@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.Contents;
 using System.Threading.Tasks;
@@ -25,12 +25,12 @@ namespace Orchard.Content.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return new UnauthorizedResult();
             }
 
             return new ObjectResult(contentItem);

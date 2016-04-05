@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Orchard.Security.Permissions;
 using Orchard.Security;
 
-namespace Microsoft.AspNet.Authorization
+namespace Microsoft.AspNetCore.Authorization
 {
     public static class AuthorizationServiceExtensions
     {

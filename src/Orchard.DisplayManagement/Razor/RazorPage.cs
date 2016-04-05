@@ -1,19 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Orchard.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNet.Mvc.Razor.RazorPage<TModel>
+    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
@@ -107,7 +106,7 @@ namespace Orchard.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((ICanHasViewContext)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
                 return _t;
@@ -124,7 +123,7 @@ namespace Orchard.DisplayManagement.Razor
             return Title.GenerateTitle();
         }
 
-        protected HelperResult RenderLayoutBody()
+        protected IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;

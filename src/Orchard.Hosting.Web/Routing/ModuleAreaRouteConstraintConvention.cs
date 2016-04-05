@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Mvc.ApplicationModels;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Orchard.Hosting.Routing
 {

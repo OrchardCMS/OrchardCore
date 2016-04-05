@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DependencyInjection;
 using System;
@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Orchard.Hosting.Mvc
 {
-    public class OrchardMvcAssemblyProvider : IAssemblyProvider
+    public class OrchardMvcAssemblyProvider
     {
         /// <summary>
         /// Gets the set of assembly names that are used as root for discovery of
@@ -22,19 +22,18 @@ namespace Orchard.Hosting.Mvc
         protected virtual HashSet<string> ReferenceAssemblies { get; }
         = new HashSet<string>(StringComparer.Ordinal)
         {
-            "Microsoft.AspNet.Mvc",
-            "Microsoft.AspNet.Mvc.Abstractions",
-            "Microsoft.AspNet.Mvc.ApiExplorer",
-            "Microsoft.AspNet.Mvc.Core",
-            "Microsoft.AspNet.Mvc.Cors",
-            "Microsoft.AspNet.Mvc.DataAnnotations",
-            "Microsoft.AspNet.Mvc.Formatters.Json",
-            "Microsoft.AspNet.Mvc.Formatters.Xml",
-            "Microsoft.AspNet.Mvc.Razor",
-            "Microsoft.AspNet.Mvc.Razor.Host",
-            "Microsoft.AspNet.Mvc.TagHelpers",
-            "Microsoft.AspNet.Mvc.ViewFeatures",
-            "Microsoft.AspNet.PageExecutionInstrumentation.Interfaces",
+            "Microsoft.AspNetCore.Mvc",
+            "Microsoft.AspNetCore.Mvc.Abstractions",
+            "Microsoft.AspNetCore.Mvc.ApiExplorer",
+            "Microsoft.AspNetCore.Mvc.Core",
+            "Microsoft.AspNetCore.Mvc.Cors",
+            "Microsoft.AspNetCore.Mvc.DataAnnotations",
+            "Microsoft.AspNetCore.Mvc.Formatters.Json",
+            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
+            "Microsoft.AspNetCore.Mvc.Razor",
+            "Microsoft.AspNetCore.Mvc.Razor.Host",
+            "Microsoft.AspNetCore.Mvc.TagHelpers",
+            "Microsoft.AspNetCore.Mvc.ViewFeatures"
         };
 
         private readonly IOrchardLibraryManager _libraryManager;

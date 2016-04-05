@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Orchard.Localization;
 using Orchard.Environment.Shell;
 using Orchard.Setup.Services;

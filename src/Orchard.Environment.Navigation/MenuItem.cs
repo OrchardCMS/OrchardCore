@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.Security.Permissions;
 using System.Collections.Generic;

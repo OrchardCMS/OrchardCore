@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Razor.Directives;
-using Microsoft.AspNet.Razor.Runtime.TagHelpers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Directives;
+using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
@@ -10,7 +10,7 @@ namespace Orchard.DisplayManagement.TagHelpers
         public TagHelperMvcRazorHost(
             IChunkTreeCache chunkTreeCache,
             IHttpContextAccessor httpContextAccessor)
-            : base(chunkTreeCache)
+            : base(chunkTreeCache, new TagHelperDescriptorResolver(designTime: false))
         {
             // We need to resolve the services using the scoped service provider
             // explicitly as IRazorViewEngine which is resolving IMvcRazorHost is
@@ -20,7 +20,8 @@ namespace Orchard.DisplayManagement.TagHelpers
             // which means we are not keeping any reference on IShapeTableManager and IThemeManager
             TagHelperDescriptorResolver = new ShapeTagHelperDescriptorResolver(
                 new TagHelperTypeResolver(),
-                httpContextAccessor                
+                new TagHelperDescriptorFactory(designTime: false),
+                httpContextAccessor
             );
         }
     }

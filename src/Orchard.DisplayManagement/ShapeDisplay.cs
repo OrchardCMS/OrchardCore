@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement
 {

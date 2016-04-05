@@ -1,7 +1,7 @@
 using Orchard.Hosting;
 using System;
 using System.Linq;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Builders;

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement;
@@ -33,7 +33,7 @@ namespace Orchard.Tests.DisplayManagement
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             };
-            serviceCollection.AddInstance(defaultShapeTable);
+            serviceCollection.AddSingleton(defaultShapeTable);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
