@@ -16,22 +16,22 @@ Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), communi
 
 ## Getting Started
 
-- First off, [follow the instructions here](https://github.com/aspnet/home) in order to install DNVM, then install Visual Studio 2015, or what ever you flavour of editor is.
-- Next you want to clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch.
-- Run the `build.cmd` file included in the repository to bootstrap DNX and build the solution.
-- Next navigate to "D:\Orchard2\src\Orchard.Web" or where ever your retrospective folder is on the command line in Administrator mode.
+- Clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch. 
+- Delete `%LocalAppData%\Microsoft\dotnet` – The shared runtime dotnet installer doesn’t account for the old CLI structure.
+- Delete `.build` (or run git clean -xdf) to get the latest KoreBuild
+- Delete `C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\dotnet-test-xunit`
+- Run the `build.cmd` file included in the repository to dotnet CLI and build the solution.
+- Next navigate to `D:\Orchard2\src\Orchard.Web` or where ever your retrospective folder is on the command line in Administrator mode.
 
 ### Using Kestrel
 
-- Call `dnx web`.
+- Call `dotnet run`.
 - Then open the `http://localhost:5001` URL in your browser.
 
 ### Using Console
 
-- Call `dnx run`.
+- Call `dotnet run`.
 - From here you can now execute commands in a similar fashion as before.
-
-## Using Orchard 2
 
 ### Creating a host
 
