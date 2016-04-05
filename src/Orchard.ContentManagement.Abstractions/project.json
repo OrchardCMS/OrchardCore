@@ -10,10 +10,14 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
+    "netstandard1.5": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
     }
   },
   "repository": {

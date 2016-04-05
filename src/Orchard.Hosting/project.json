@@ -18,13 +18,15 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
-      "dependencies": {
-        "System.Threading.Tasks.Parallel": "4.0.1-*"
-      },
+    "netstandard1.5": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*",
+        "System.Threading.Tasks.Parallel": "4.0.1-rc2-23931"
+      }
     }
   },
   "repository": {

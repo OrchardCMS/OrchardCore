@@ -15,14 +15,14 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
-      "dependencies": {
-        "System.Xml.XDocument": "4.0.11-*",
-        "System.Runtime.Serialization.Primitives": "4.1.1-*"
-      },
+    "netstandard1.5": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
     }
   },
   "repository": {

@@ -15,13 +15,14 @@
     "console": "Orchard.Hosting.CommandConsole"
   },
   "frameworks": {
-    "dnxcore50": {
-      "dependencies": {
-        "System.Console": "4.0.0-*"
-      },
+    "netstandard1.5": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
     }
   },
   "repository": {

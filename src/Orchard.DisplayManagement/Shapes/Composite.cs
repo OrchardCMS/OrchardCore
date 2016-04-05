@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +8,7 @@ namespace Orchard.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly IDictionary _props = new HybridDictionary();
+        protected readonly IDictionary<object, object> _props = new Dictionary<object, object>();
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -17,9 +17,8 @@ namespace Orchard.DisplayManagement.Shapes
 
         protected virtual bool TryGetMemberImpl(string name, out object result)
         {
-            if (_props.Contains(name))
+            if (_props.TryGetValue(name, out result))
             {
-                result = _props[name];
                 return true;
             }
 
@@ -75,9 +74,8 @@ namespace Orchard.DisplayManagement.Shapes
 
             var index = indexes.First();
 
-            if (_props.Contains(index))
+            if (_props.TryGetValue(index, out result))
             {
-                result = _props[index];
                 return true;
             }
 
@@ -113,7 +111,7 @@ namespace Orchard.DisplayManagement.Shapes
             return true;
         }
 
-        public IDictionary Properties
+        public IDictionary<object, object> Properties
         {
             get { return _props; }
         }

@@ -8,24 +8,23 @@
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "YesSql.Core": "2.0.0-alpha-9022",
-    "YesSql.Storage.LightningDB": "1.0.0-alpha-1004",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1007"
+    "YesSql.Core": "2.0.0-alpha-9027",
+    "YesSql.Storage.LightningDB": "1.0.0-alpha-1010",
+    "YesSql.Storage.Sql": "1.0.0-alpha-1013"
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
-      "dependencies": {
-        "System.ComponentModel.Annotations": "4.1.0-*",
-        "System.Linq.Queryable": "4.0.1-*",
-        "System.Data.SqlClient": "4.1.0-*"
-      },
+    "netstandard1.5": {
       "imports": [
+        "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
     }
   },
   "repository": {
