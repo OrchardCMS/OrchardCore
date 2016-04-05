@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using Orchard.Data.Conventions;
 
 namespace Orchard.Core.Settings.Metadata.Records
 {

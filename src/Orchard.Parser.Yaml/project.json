@@ -12,14 +12,14 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
-      "dependencies": {
-        "System.IO": "4.1.0-*",
-        "System.IO.FileSystem": "4.0.1-*"
-      },
+    "netstandard1.5": {
       "imports": [
-        "portable-net451+win8" 
-      ]
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
     }
   },
   "repository": {
