@@ -5,7 +5,6 @@ using System.Reflection;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.FileSystem;
 
 namespace Orchard.Environment.Extensions.Loaders
@@ -14,21 +13,15 @@ namespace Orchard.Environment.Extensions.Loaders
     {
         private const string CoreAssemblyName = "Orchard.Core";
         private readonly IHostEnvironment _hostEnvironment;
-        private readonly IAssemblyLoaderContainer _loaderContainer;
-        private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
         public CoreExtensionLoader(
             IHostEnvironment hostEnvironment,
-            IAssemblyLoaderContainer container,
-            IExtensionAssemblyLoader extensionAssemblyLoader,
             IOrchardFileSystem fileSystem,
             ILogger<CoreExtensionLoader> logger)
         {
             _hostEnvironment = hostEnvironment;
-            _loaderContainer = container;
-            _extensionAssemblyLoader = extensionAssemblyLoader;
             _fileSystem = fileSystem;
             _logger = logger;
         }
@@ -59,21 +52,18 @@ namespace Orchard.Environment.Extensions.Loaders
 
             var directory = _fileSystem.GetDirectoryInfo("Core");
 
-            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(directory.FullName)))
-            {
-                var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
+            var assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
-                }
-                return new ExtensionEntry
-                {
-                    Descriptor = descriptor,
-                    Assembly = assembly,
-                    ExportedTypes = assembly.ExportedTypes.Where(x => IsTypeFromModule(x, descriptor))
-                };
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
             }
+            return new ExtensionEntry
+            {
+                Descriptor = descriptor,
+                Assembly = assembly,
+                ExportedTypes = assembly.ExportedTypes.Where(x => IsTypeFromModule(x, descriptor))
+            };
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)

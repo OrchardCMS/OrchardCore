@@ -31,30 +31,28 @@ namespace Orchard.Hosting.Mvc
                 .AddRazorViewEngine()
                 .AddJsonFormatters();
 
-            services.AddMvcDnx();
-
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
 
-            if (DnxPlatformServices.Default.LibraryManager != null)
-            {
-                var partManager = GetApplicationPartManager(services);
-                var libraryManager = new OrchardLibraryManager(DnxPlatformServices.Default.LibraryManager);
-                var provider = new OrchardMvcAssemblyProvider(
-                    libraryManager,
-                    DnxPlatformServices.Default.AssemblyLoaderContainer,
-                    new ExtensionAssemblyLoader(
-                        PlatformServices.Default.Application,
-                        DnxPlatformServices.Default.AssemblyLoadContextAccessor,
-                        PlatformServices.Default.Runtime,
-                        libraryManager));
+            //if (DnxPlatformServices.Default.LibraryManager != null)
+            //{
+            //    var partManager = GetApplicationPartManager(services);
+            //    var libraryManager = new OrchardLibraryManager(DnxPlatformServices.Default.LibraryManager);
+            //    var provider = new OrchardMvcAssemblyProvider(
+            //        libraryManager,
+            //        DnxPlatformServices.Default.AssemblyLoaderContainer,
+            //        new ExtensionAssemblyLoader(
+            //            PlatformServices.Default.Application,
+            //            DnxPlatformServices.Default.AssemblyLoadContextAccessor,
+            //            PlatformServices.Default.Runtime,
+            //            libraryManager));
 
-                foreach (var assembly in provider.CandidateAssemblies)
-                {
-                    partManager.ApplicationParts.Add(new AssemblyPart(assembly));
-                }
-            }
+            //    foreach (var assembly in provider.CandidateAssemblies)
+            //    {
+            //        partManager.ApplicationParts.Add(new AssemblyPart(assembly));
+            //    }
+            //}
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {

@@ -125,7 +125,7 @@ namespace Orchard.FileSystem
             {
                 CreateDirectory(Path.GetDirectoryName(fileInfo.PhysicalPath));
             }
-            
+
             return File.Create(fileInfo.PhysicalPath);
         }
 
@@ -184,7 +184,13 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            return new DirectoryInfo(_fileProvider.GetFileInfo(path).PhysicalPath);
+            var physicalPath = _fileProvider.GetFileInfo(path).PhysicalPath;
+            if (string.IsNullOrEmpty(physicalPath))
+            {
+                return null;
+            }
+
+            return new DirectoryInfo(physicalPath);
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)
@@ -199,7 +205,7 @@ namespace Orchard.FileSystem
             {
                 return Enumerable.Empty<IFileInfo>();
             }
-            
+
             return matcher.Execute(new DirectoryInfoWrapper(directory))
                     .Files
                     .Select(result => GetFileInfo(Combine(directory.FullName, result.Path)));
@@ -209,11 +215,11 @@ namespace Orchard.FileSystem
         {
             var directory = GetDirectoryInfo(path);
 
-            if (!directory.Exists)
+            if (directory == null || !directory.Exists)
             {
                 return Enumerable.Empty<DirectoryInfo>();
             }
-            
+
             return directory.EnumerateDirectories();
         }
     }

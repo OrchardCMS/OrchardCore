@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
@@ -15,15 +14,13 @@ namespace Orchard.Environment.Shell.Builders
     public class CompositionStrategy : ICompositionStrategy
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly ILibraryManager _libraryManager;
         private readonly ILogger _logger;
 
-        public CompositionStrategy(IExtensionManager extensionManager,
-            ILibraryManager libraryManager,
+        public CompositionStrategy(
+            IExtensionManager extensionManager,
             ILogger<CompositionStrategy> logger)
         {
             _extensionManager = extensionManager;
-            _libraryManager = libraryManager;
             _logger = logger;
         }
 
@@ -83,30 +80,32 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            var additionalLibraries = _libraryManager
-                .GetLibraries()
-                .Where(x => x.Name.StartsWith("Orchard"))
-                .Select(x => Assembly.Load(new AssemblyName(x.Name)));
+            //var additionalLibraries = _libraryManager
+            //    .GetLibraries()
+            //    .Where(x => x.Name.StartsWith("Orchard"))
+            //    .Select(x => Assembly.Load(new AssemblyName(x.Name)));
 
-            foreach (var additonalLib in additionalLibraries)
-            {
-                yield return new Feature
-                {
-                    Descriptor = new FeatureDescriptor
-                    {
-                        Id = additonalLib.GetName().Name,
-                        Extension = new ExtensionDescriptor
-                        {
-                            Id = additonalLib.GetName().Name
-                        }
-                    },
-                    ExportedTypes =
-                        additonalLib.ExportedTypes
-                            .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
-                            //.Except(new[] { typeof(DefaultOrchardHost) })
-                            .ToArray()
-                };
-            }
+            //foreach (var additonalLib in additionalLibraries)
+            //{
+            //    yield return new Feature
+            //    {
+            //        Descriptor = new FeatureDescriptor
+            //        {
+            //            Id = additonalLib.GetName().Name,
+            //            Extension = new ExtensionDescriptor
+            //            {
+            //                Id = additonalLib.GetName().Name
+            //            }
+            //        },
+            //        ExportedTypes =
+            //            additonalLib.ExportedTypes
+            //                .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
+            //                //.Except(new[] { typeof(DefaultOrchardHost) })
+            //                .ToArray()
+            //    };
+            //}
+
+            return Enumerable.Empty<Feature>();
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
@@ -141,7 +140,7 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsDependency(Type type)
         {
-            return 
+            return
                 typeof(IDependency).IsAssignableFrom(type) ||
                 type.GetTypeInfo().GetCustomAttribute<ServiceScopeAttribute>() != null;
         }

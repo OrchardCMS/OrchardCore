@@ -14,7 +14,7 @@ namespace Orchard.Environment
         {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
-                services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
+                //services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
 
                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
 

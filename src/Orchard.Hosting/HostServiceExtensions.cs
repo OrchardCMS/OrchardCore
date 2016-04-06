@@ -37,7 +37,7 @@ namespace Orchard.Hosting
                 {
                     services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
                     {
-                        services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
+                        //services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
                     }
 
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();

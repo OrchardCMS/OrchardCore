@@ -10,7 +10,7 @@ using Orchard.FileSystem;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
-    public class DynamicExtensionLoader : IExtensionLoader
+    public class PrecompiledExtensionLoader : IExtensionLoader
     {
         private readonly string[] ExtensionsSearchPaths;
 
@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
-        public DynamicExtensionLoader(
+        public PrecompiledExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
             IOrchardFileSystem fileSystem,
@@ -32,7 +32,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public string Name => GetType().Name;
 
-        public int Order => 100;
+        public int Order => 30;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
         {
@@ -56,7 +56,19 @@ namespace Orchard.Environment.Extensions.Loaders
 
             var directory = _fileSystem.GetDirectoryInfo(descriptor.Location);
 
-            return null;
+            var assembly = Assembly.Load(new AssemblyName(descriptor.Location));
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+            }
+
+            return new ExtensionEntry
+            {
+                Descriptor = descriptor,
+                Assembly = assembly,
+                ExportedTypes = assembly.ExportedTypes
+            };
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)

@@ -6,7 +6,7 @@ namespace Orchard.Data
     {
         public static IServiceCollection AddDataAccess(this IServiceCollection services)
         {
-            services.AddScoped<IOrchardDataAssemblyProvider, OrchardDataAssemblyProvider>();
+            //services.AddScoped<IOrchardDataAssemblyProvider, OrchardDataAssemblyProvider>();
 
             return services;
         }

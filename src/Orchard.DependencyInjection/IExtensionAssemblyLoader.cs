@@ -2,8 +2,8 @@
 
 namespace Orchard.DependencyInjection
 {
-    public interface IExtensionAssemblyLoader : IAssemblyLoader
-    {
-        IExtensionAssemblyLoader WithPath(string path);
-    }
+    //public interface IExtensionAssemblyLoader : IAssemblyLoader
+    //{
+    //    IExtensionAssemblyLoader WithPath(string path);
+    //}
 }
