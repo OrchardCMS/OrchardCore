@@ -1,11 +1,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.Dnx.Compilation.CSharp;
-using Microsoft.Extensions.CompilationAbstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DisplayManagement.ModelBinding;
@@ -46,7 +42,7 @@ namespace Orchard.Hosting.Mvc
                 var partManager = GetApplicationPartManager(services);
                 var libraryManager = new OrchardLibraryManager(DnxPlatformServices.Default.LibraryManager);
                 var provider = new OrchardMvcAssemblyProvider(
-                    libraryManager, 
+                    libraryManager,
                     DnxPlatformServices.Default.AssemblyLoaderContainer,
                     new ExtensionAssemblyLoader(
                         PlatformServices.Default.Application,
@@ -60,8 +56,6 @@ namespace Orchard.Hosting.Mvc
                 }
             }
 
-            services.AddSingleton<ICompilationService, DnxRoslynCompilationService>();
-
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var expander = new ModuleViewLocationExpander();
@@ -72,7 +66,7 @@ namespace Orchard.Hosting.Mvc
 
         private static ApplicationPartManager GetApplicationPartManager(IServiceCollection services)
         {
-            var manager = GetServiceFromCollection<ApplicationPartManager>(services) 
+            var manager = GetServiceFromCollection<ApplicationPartManager>(services)
                 ?? new ApplicationPartManager();
 
             return manager;
@@ -83,6 +77,6 @@ namespace Orchard.Hosting.Mvc
             return (T) services
                 .FirstOrDefault(d => d.ServiceType == typeof (T))
                 ?.ImplementationInstance;
-        } 
+        }
     }
 }
