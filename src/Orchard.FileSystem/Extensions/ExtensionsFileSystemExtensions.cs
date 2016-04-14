@@ -13,9 +13,7 @@ namespace Orchard.Environment.Extensions.FileSystem
         {
             var root = parentFileSystem.GetDirectoryInfo(subPath).FullName;
 
-            return new OrchardFileSystem(root,
-                new PhysicalFileProvider(root),
-                logger);
+            return new OrchardFileSystem(new PhysicalFileProvider(root), logger);
         }
     }
 }

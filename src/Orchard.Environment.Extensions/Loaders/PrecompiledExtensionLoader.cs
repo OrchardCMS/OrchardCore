@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.Options;
 using Orchard.FileSystem;
+using System.IO;
+using Microsoft.DotNet.ProjectModel.Loader;
+using Microsoft.DotNet.ProjectModel;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -22,7 +25,7 @@ namespace Orchard.Environment.Extensions.Loaders
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
             IOrchardFileSystem fileSystem,
-            ILogger<DynamicExtensionLoader> logger)
+            ILogger<PrecompiledExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
@@ -54,9 +57,18 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
 
-            var directory = _fileSystem.GetDirectoryInfo(descriptor.Location);
+            var extensionPath = Path.Combine(descriptor.Location, descriptor.Id);
 
-            var assembly = Assembly.Load(new AssemblyName(descriptor.Location));
+            var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
+
+            if (projectContext == null)
+            {
+                return null;
+            }
+
+            var loadContext = projectContext.CreateLoadContext();
+
+            var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(descriptor.Id));
 
             if (_logger.IsEnabled(LogLevel.Information))
             {

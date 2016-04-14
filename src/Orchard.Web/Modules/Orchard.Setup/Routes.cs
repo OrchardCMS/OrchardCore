@@ -17,10 +17,6 @@ namespace Orchard.Setup
                             controller = "Setup",
                             action = "Index"
                         },
-                        constraints: new {
-                            area = "Orchard.Setup",
-                            controller = "Setup"
-                        },
                         dataTokens: new {
                             area = "Orchard.Setup"
                         })

@@ -8,28 +8,29 @@ namespace Orchard.Hosting.Mvc.Routing
 {
     public class DefaultShellRouteBuilder : IRouteBuilder
     {
-        public DefaultShellRouteBuilder(IApplicationBuilder applicationBuilder)
-            : this(applicationBuilder, defaultHandler: new MvcRouteHandler())
+        public DefaultShellRouteBuilder(IServiceProvider serviceProvider)
+            : this(serviceProvider, defaultHandler: new MvcRouteHandler())
         {
         }
 
-        public DefaultShellRouteBuilder(IApplicationBuilder applicationBuilder, IRouter defaultHandler)
+        public DefaultShellRouteBuilder(IServiceProvider serviceProvider, IRouter defaultHandler)
         {
-            if (applicationBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(applicationBuilder));
-            }
-
-            ApplicationBuilder = applicationBuilder;
             DefaultHandler = defaultHandler;
-            ServiceProvider = applicationBuilder.ApplicationServices;
+            ServiceProvider = serviceProvider;
             Routes = new List<IRouter>();
         }
 
-        public IApplicationBuilder ApplicationBuilder { get; }
         public IRouter DefaultHandler { get; set; }
         public IServiceProvider ServiceProvider { get; }
         public IList<IRouter> Routes { get; }
+
+        public IApplicationBuilder ApplicationBuilder
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public IRouter Build()
         {

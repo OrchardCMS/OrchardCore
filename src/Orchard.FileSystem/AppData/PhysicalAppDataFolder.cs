@@ -12,7 +12,7 @@ namespace Orchard.FileSystem.AppData
         private readonly ILogger _logger;
 
         private static string InternalRootPath = "App_Data";
-        
+
         public PhysicalAppDataFolder(
             IOrchardFileSystem parentFileSystem,
             ILogger<PhysicalAppDataFolder> logger)
@@ -26,9 +26,7 @@ namespace Orchard.FileSystem.AppData
 
             var root = parentFileSystem.GetDirectoryInfo(InternalRootPath).FullName;
 
-            _fileSystem = new OrchardFileSystem(root,
-                new PhysicalFileProvider(root),
-                _logger);
+            _fileSystem = new OrchardFileSystem(new PhysicalFileProvider(root), _logger);
         }
 
         public string RootPath

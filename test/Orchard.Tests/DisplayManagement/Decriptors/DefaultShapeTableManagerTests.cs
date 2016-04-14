@@ -146,6 +146,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             {
                 return _availableFeautures.Any(x => x.Id == item.Id);
             }
+
+            public ExtensionEntry LoadExtension(ExtensionDescriptor descriptor)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class TestShapeProvider : IShapeTableProvider

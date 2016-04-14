@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
-using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.Options;
 using Orchard.FileSystem;
@@ -16,18 +13,15 @@ namespace Orchard.Environment.Extensions.Loaders
 
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IOrchardFileSystem _fileSystem;
-        private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
-            IOrchardFileSystem fileSystem,
-            ILogger<DynamicExtensionLoader> logger)
+            IOrchardFileSystem fileSystem)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
-            _logger = logger;
         }
 
         public string Name => GetType().Name;
@@ -49,7 +43,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            if (!ExtensionsSearchPaths.Contains(descriptor.Location))
+            if (ExtensionsSearchPaths == null || descriptor == null || !ExtensionsSearchPaths.Contains(descriptor.Location))
             {
                 return null;
             }

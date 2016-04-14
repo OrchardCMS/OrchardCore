@@ -2,6 +2,7 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
     "Microsoft.NETCore.Platforms": "1.0.1-*",
     "Orchard.Hosting.Console": "2.0.0-*",
@@ -9,11 +10,7 @@
   },
   "compilationOptions": {
     "emitEntryPoint": true,
-    "define": [ "TRACE" ],
-    "warningsAsErrors": true
-  },
-  "commands": {
-    "web": "Orchard.Web"
+    "preserveCompilationContext": true
   },
   "frameworks": {
     "netstandardapp1.5": {
@@ -26,6 +23,10 @@
       ]
     }
   },
+  "content": [
+    "Views",
+    "web.config"
+  ],
   "exclude": [
     "wwwroot",
     "node_modules",

@@ -15,14 +15,12 @@ namespace Orchard.FileSystem
         private readonly IFileProvider _fileProvider;
         private readonly ILogger _logger;
 
-        public OrchardFileSystem(string rootPath,
+        public OrchardFileSystem(
             IFileProvider fileProvider,
             ILogger logger)
         {
             _fileProvider = fileProvider;
             _logger = logger;
-
-            RootPath = rootPath;
 
             T = NullLocalizer.Instance;
         }
@@ -99,11 +97,11 @@ namespace Orchard.FileSystem
         }
 
         /// <summary>
-        /// Combine a set of paths in to a signle path
+        /// Combine a set of paths in to a single path
         /// </summary>
         public string Combine(params string[] paths)
         {
-            return Path.Combine(paths).Replace(RootPath, string.Empty).Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
+            return Path.Combine(paths);
         }
 
         public void CreateFile(string path, string content)
@@ -184,7 +182,9 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            var physicalPath = _fileProvider.GetFileInfo(path).PhysicalPath;
+            var fileInfo = _fileProvider.GetFileInfo(path);
+            var physicalPath = fileInfo.PhysicalPath;
+
             if (string.IsNullOrEmpty(physicalPath))
             {
                 return null;
@@ -215,7 +215,7 @@ namespace Orchard.FileSystem
         {
             var directory = GetDirectoryInfo(path);
 
-            if (directory == null || !directory.Exists)
+            if (!directory.Exists)
             {
                 return Enumerable.Empty<DirectoryInfo>();
             }

@@ -8,8 +8,7 @@ namespace Orchard.Hosting.FileSystem
     {
         public HostedFileSystem(IHostingEnvironment hostingEnvironment,
             ILogger<HostedFileSystem> logger) :
-            base(hostingEnvironment.WebRootPath,
-                 hostingEnvironment.WebRootFileProvider,
+            base(hostingEnvironment.ContentRootFileProvider,
                  logger)
         { }
     }

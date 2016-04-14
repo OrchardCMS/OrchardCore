@@ -70,6 +70,7 @@ namespace Orchard.Environment.Extensions.Folders
             {
                 _logger.LogInformation("Start looking for extensions in '{0}'...", path);
             }
+
             var subfolders = _fileSystem.ListDirectories(path);
             foreach (var subfolder in subfolders)
             {
@@ -77,6 +78,8 @@ namespace Orchard.Environment.Extensions.Folders
                 var manifestPath = _fileSystem.Combine(path, extensionId, manifestName);
                 try
                 {
+                    Console.WriteLine($"Looking for manifest: {manifestPath}");
+
                     var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);
 
                     if (descriptor == null)

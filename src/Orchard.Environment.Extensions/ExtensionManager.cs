@@ -101,6 +101,22 @@ namespace Orchard.Environment.Extensions
                    item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
         }
 
+        public ExtensionEntry LoadExtension(ExtensionDescriptor extensionDescriptor)
+        {
+            ExtensionEntry extensionEntry;
+            try
+            {
+                extensionEntry = BuildEntry(extensionDescriptor);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Error loading extension '{0}'", extensionDescriptor.Id), ex);
+                throw new OrchardException(T("Error while loading extension '{0}'.", extensionDescriptor.Id), ex);
+            }
+
+            return extensionEntry;
+        }
+
         public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
         {
             if (_logger.IsEnabled(LogLevel.Information))
@@ -142,16 +158,7 @@ namespace Orchard.Environment.Extensions
                 var featureId = featureDescriptor.Id;
                 var extensionId = extensionDescriptor.Id;
 
-                ExtensionEntry extensionEntry;
-                try
-                {
-                    extensionEntry = BuildEntry(extensionDescriptor);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(string.Format("Error loading extension '{0}'", extensionId), ex);
-                    throw new OrchardException(T("Error while loading extension '{0}'.", extensionId), ex);
-                }
+                var extensionEntry = LoadExtension(extensionDescriptor);
 
                 Feature feature;
                 if (extensionEntry == null)

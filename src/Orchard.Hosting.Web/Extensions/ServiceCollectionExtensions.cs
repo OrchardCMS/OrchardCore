@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment;
 using Orchard.Environment.Commands;
@@ -21,6 +22,7 @@ namespace Orchard.Hosting
 
                 internalServices.AddSingleton<IHostEnvironment, WebHostEnvironment>();
                 internalServices.AddSingleton<IOrchardFileSystem, HostedFileSystem>();
+                internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             });
         }
     }

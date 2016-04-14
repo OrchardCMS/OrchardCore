@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Orchard.Hosting;
 using Orchard.Web;
 
@@ -9,8 +10,10 @@ namespace Orchard.Console
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
+                .UseIISIntegration()
                 .UseKestrel()
                 .UseDefaultHostingConfiguration(args)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
 
