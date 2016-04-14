@@ -25,7 +25,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
             // Register one top level TenantRoute per tenant. Each instance contains all the routes
             // for this tenant.
 
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize 
+            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
             // the TenantRoute resolution we can create a single Router type that would index the
             // TenantRoute object by their ShellSetting. This way there would just be one lookup.
             // And the ShellSettings test in TenantRoute would also be useless.
