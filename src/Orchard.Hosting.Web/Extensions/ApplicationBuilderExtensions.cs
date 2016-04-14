@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;
 
@@ -28,6 +30,15 @@ namespace Orchard.Hosting
 
             // Route the request to the correct Orchard pipeline
             builder.UseMiddleware<OrchardRouterMiddleware>();
+
+            // Load controllers
+            var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
+            var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
+            foreach (var extension in extensionManager.AvailableExtensions())
+            {
+                var extensionEntry = extensionManager.LoadExtension(extension);
+                applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
+            }
 
             return builder;
         }
