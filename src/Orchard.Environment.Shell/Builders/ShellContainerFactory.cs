@@ -53,13 +53,22 @@ namespace Orchard.Environment.Shell.Builders
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
             {
-                foreach (var interfaceType in dependency.Type.GetInterfaces()
-                    .Where(itf => typeof(IDependency).IsAssignableFrom(itf)))
+                foreach (var interfaceType in dependency.Type.GetInterfaces())
                 {
+                    // GetInterfaces returns the full hierarchy of interfaces
+                    if (interfaceType == typeof(ISingletonDependency) ||
+                        interfaceType == typeof(ITransientDependency) ||
+                        interfaceType == typeof(IDependency) ||
+                        !typeof(IDependency).IsAssignableFrom(interfaceType))
+                    {
+                        continue;
+                    }
+
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
                         _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
                     }
+
                     if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
                     {
                         tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);

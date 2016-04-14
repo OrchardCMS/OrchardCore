@@ -78,8 +78,6 @@ namespace Orchard.Environment.Extensions.Folders
                 var manifestPath = _fileSystem.Combine(path, extensionId, manifestName);
                 try
                 {
-                    Console.WriteLine($"Looking for manifest: {manifestPath}");
-
                     var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);
 
                     if (descriptor == null)

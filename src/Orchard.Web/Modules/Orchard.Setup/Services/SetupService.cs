@@ -118,7 +118,7 @@ namespace Orchard.Setup.Services
 
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
                     store.InitializeAsync();
-                    
+
                     // Create the "minimum shell descriptor"
                     scope
                         .ServiceProvider
