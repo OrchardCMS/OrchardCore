@@ -3,7 +3,8 @@
     "src",
     "test",
     "src/Orchard.Web/Core",
-    "src/Orchard.Web/Modules"
+    "src/Orchard.Web/Modules",
+    "src/Orchard.Web/Themes"
   ],
   "sdk": {
     "runtime": "coreclr",

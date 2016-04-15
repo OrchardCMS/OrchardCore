@@ -89,11 +89,13 @@ namespace Orchard.Environment.Extensions.Loaders
         {
             if (_assembly == null)
             {
-                var projectContext = ProjectContext.CreateContextForEachFramework("Core/Orchard.Core").FirstOrDefault();
+                _assembly = Assembly.Load(new AssemblyName(CoreAssemblyName));
 
-                var loadContext = projectContext.CreateLoadContext();
+                //var projectContext = ProjectContext.CreateContextForEachFramework("Core/Orchard.Core").FirstOrDefault();
 
-                _assembly = loadContext.LoadFromAssemblyName(new AssemblyName(CoreAssemblyName));
+                //var loadContext = projectContext.CreateLoadContext();
+
+                //_assembly = loadContext.LoadFromAssemblyName(new AssemblyName(CoreAssemblyName));
             }
 
             return _assembly;

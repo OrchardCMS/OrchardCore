@@ -22,6 +22,7 @@ namespace Orchard.Environment
                     ServiceDescriptor.Transient<IConfigureOptions<ExtensionHarvestingOptions>, ExtensionHarvestingOptionsSetup>());
                 services.AddSingleton<IExtensionLocator, ExtensionLocator>();
 
+                services.AddSingleton<IExtensionLoader, AmbientExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
