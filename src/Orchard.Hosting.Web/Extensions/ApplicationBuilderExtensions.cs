@@ -32,14 +32,6 @@ namespace Orchard.Hosting
             // Route the request to the correct Orchard pipeline
             builder.UseMiddleware<OrchardRouterMiddleware>();
 
-            Console.WriteLine($"PROCESS ID: {System.Diagnostics.Process.GetCurrentProcess().Id}");
-            Console.Out.Flush();
-            while (!System.Diagnostics.Debugger.IsAttached)
-            {
-                System.Threading.Thread.Sleep(1000);
-            }
-            System.Diagnostics.Debugger.Break();
-
             // Load controllers
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
