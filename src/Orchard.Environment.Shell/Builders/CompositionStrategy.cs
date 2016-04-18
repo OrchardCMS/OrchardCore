@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.DotNet.ProjectModel;
+using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -89,65 +90,31 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            if(_builtInFeatures != null)
+            var projectContext = ProjectContext.CreateContextForEachFramework(_environment.ApplicationName).FirstOrDefault();
+
+            var additionalLibraries = projectContext.LibraryManager
+                .GetLibraries()
+                .Where(x => x.Identity.Name.StartsWith("Orchard"))
+                .Select(x => Assembly.Load(new AssemblyName(x.Identity.Name)));
+
+            foreach (var additonalLib in additionalLibraries)
             {
-                return _builtInFeatures;
-            }
-
-            var buildIntFeatures = new List<Feature>();
-
-            if (_environment.ApplicationName != null)
-            {
-                var assemblyNames = new HashSet<string>();
-                GetTransitiveAssemblyNames(_environment.ApplicationName, assemblyNames);
-                var additionalAssemblies = assemblyNames.Select(x => Assembly.Load(new AssemblyName(x)));
-
-                var extensionNames = _extensionManager.AvailableExtensions().Select(x => x.Id).ToArray();
-
-                foreach (var additonalLib in additionalAssemblies)
+                yield return new Feature
                 {
-                    // Don't use an assembly that will be harvested as an extension
-                    if(extensionNames.Contains(additonalLib.GetName().Name))
+                    Descriptor = new FeatureDescriptor
                     {
-                        continue;
-                    }
-
-                    var feature = new Feature
-                    {
-                        Descriptor = new FeatureDescriptor
+                        Id = additonalLib.GetName().Name,
+                        Extension = new ExtensionDescriptor
                         {
-                            Id = additonalLib.GetName().Name,
-                            Extension = new ExtensionDescriptor
-                            {
-                                Id = additonalLib.GetName().Name
-                            }
-                        },
-                        ExportedTypes =
-                            additonalLib.ExportedTypes
-                                .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
-                                .ToArray()
-                    };
-
-                    buildIntFeatures.Add(feature);
-                }
-            }
-
-            _builtInFeatures = buildIntFeatures;
-            return _builtInFeatures ;
-        }
-        private void GetTransitiveAssemblyNames(string assemblyName, HashSet<string> assemblyNames)
-        {
-            if(assemblyNames.Contains(assemblyName))
-            {
-                return;
-            }
-
-            assemblyNames.Add(assemblyName);
-            var assembly = Assembly.Load(new AssemblyName(assemblyName));
-
-            foreach (var referencedAssembly in assembly.GetReferencedAssemblies().Where(x => x.Name.StartsWith("Orchard")))
-            {
-                GetTransitiveAssemblyNames(referencedAssembly.Name, assemblyNames);
+                            Id = additonalLib.GetName().Name
+                        }
+                    },
+                    ExportedTypes =
+                        additonalLib.ExportedTypes
+                            .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
+                            //.Except(new[] { typeof(DefaultOrchardHost) })
+                            .ToArray()
+                };
             }
         }
 
