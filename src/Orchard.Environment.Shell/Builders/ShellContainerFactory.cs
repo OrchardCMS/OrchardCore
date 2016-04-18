@@ -207,7 +207,7 @@ namespace Orchard.Environment.Shell.Builders
             foreach (var dependency in blueprint.Dependencies
                 .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
             {
-                moduleServiceCollection.AddScoped(typeof(IModule), dependency.Type);
+                moduleServiceCollection.AddSingleton(typeof(IModule), dependency.Type);
             }
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();

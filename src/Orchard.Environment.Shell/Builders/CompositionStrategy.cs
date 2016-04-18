@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -15,11 +16,15 @@ namespace Orchard.Environment.Shell.Builders
     {
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
+        private readonly IHostingEnvironment _environment;
+        private IList<Feature> _builtInFeatures;
 
         public CompositionStrategy(
+            IHostingEnvironment environment,
             IExtensionManager extensionManager,
             ILogger<CompositionStrategy> logger)
         {
+            _environment = environment;
             _extensionManager = extensionManager;
             _logger = logger;
         }
@@ -34,8 +39,12 @@ namespace Orchard.Environment.Shell.Builders
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
 
+            // Requiring "Orchard.Hosting" is a shortcut for adding all referenced
+            // assemblies as features
             if (descriptor.Features.Any(feature => feature.Name == "Orchard.Hosting"))
+            {
                 features = BuiltinFeatures().Concat(features);
+            }
 
             var excludedTypes = GetExcludedTypes(features);
 
@@ -80,32 +89,66 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            //var additionalLibraries = _libraryManager
-            //    .GetLibraries()
-            //    .Where(x => x.Name.StartsWith("Orchard"))
-            //    .Select(x => Assembly.Load(new AssemblyName(x.Name)));
+            if(_builtInFeatures != null)
+            {
+                return _builtInFeatures;
+            }
 
-            //foreach (var additonalLib in additionalLibraries)
-            //{
-            //    yield return new Feature
-            //    {
-            //        Descriptor = new FeatureDescriptor
-            //        {
-            //            Id = additonalLib.GetName().Name,
-            //            Extension = new ExtensionDescriptor
-            //            {
-            //                Id = additonalLib.GetName().Name
-            //            }
-            //        },
-            //        ExportedTypes =
-            //            additonalLib.ExportedTypes
-            //                .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
-            //                //.Except(new[] { typeof(DefaultOrchardHost) })
-            //                .ToArray()
-            //    };
-            //}
+            var buildIntFeatures = new List<Feature>();
 
-            return Enumerable.Empty<Feature>();
+            if (_environment.ApplicationName != null)
+            {
+                var assemblyNames = new HashSet<string>();
+                GetTransitiveAssemblyNames(_environment.ApplicationName, assemblyNames);
+                var additionalAssemblies = assemblyNames.Select(x => Assembly.Load(new AssemblyName(x)));
+
+                var extensionNames = _extensionManager.AvailableExtensions().Select(x => x.Id).ToArray();
+
+                foreach (var additonalLib in additionalAssemblies)
+                {
+                    // Don't use an assembly that will be harvested as an extension
+                    if(extensionNames.Contains(additonalLib.GetName().Name))
+                    {
+                        continue;
+                    }
+
+                    var feature = new Feature
+                    {
+                        Descriptor = new FeatureDescriptor
+                        {
+                            Id = additonalLib.GetName().Name,
+                            Extension = new ExtensionDescriptor
+                            {
+                                Id = additonalLib.GetName().Name
+                            }
+                        },
+                        ExportedTypes =
+                            additonalLib.ExportedTypes
+                                .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
+                                .ToArray()
+                    };
+
+                    buildIntFeatures.Add(feature);
+                }
+            }
+
+            _builtInFeatures = buildIntFeatures;
+            return _builtInFeatures ;
+        }
+        private void GetTransitiveAssemblyNames(string assemblyName, HashSet<string> assemblyNames)
+        {
+            if(assemblyNames.Contains(assemblyName))
+            {
+                return;
+            }
+
+            assemblyNames.Add(assemblyName);
+            var assembly = Assembly.Load(new AssemblyName(assemblyName));
+
+            foreach (var referencedAssembly in assembly.GetReferencedAssemblies().Where(x => x.Name.StartsWith("Orchard")))
+            {
+                GetTransitiveAssemblyNames(referencedAssembly.Name, assemblyNames);
+            }
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(

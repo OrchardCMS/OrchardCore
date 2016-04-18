@@ -11,7 +11,7 @@ namespace Orchard.Hosting.Web.Routing
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
-        
+
         public OrchardRouterMiddleware(
             RequestDelegate next,
             ILogger<OrchardRouterMiddleware> logger)
@@ -31,7 +31,7 @@ namespace Orchard.Hosting.Web.Routing
             var routerTable = httpContext.RequestServices.GetService<IRunningShellRouterTable>();
 
             var router = routerTable.GetOrAdd(
-                shellSettings.Name, 
+                shellSettings.Name,
                 name => httpContext.RequestServices.GetService<IRouteBuilder>().Build()
             );
 
