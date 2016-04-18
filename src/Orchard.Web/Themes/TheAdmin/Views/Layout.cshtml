@@ -11,7 +11,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/TheAdmin/Styles/TheAdmin.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    
+
     @await RenderSectionAsync("Header", required: false)
 </head>
 <body>
@@ -21,11 +21,11 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Orchard</a>
             </div>
-            
+
 
             <div class="navbar-content">
                 @await RenderSectionAsync("NavbarTop", required: false)
-                
+
                 <!-- Example of pulled navbar -->
                 <ul class="nav navbar-nav navbar-ri pull-xs-right">
                     <li class="nav-item active">
@@ -52,9 +52,7 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <script type="text/javascript">
-        var confirmRemoveMessage = '@Html.JavaScriptStringEncoder.JavaScriptStringEncode(T["Are you sure you want to remove this element?"])';
-    </script>
+    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"/>
 
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

@@ -3620,7 +3620,7 @@ $(document).ready(function () {
         // use a custom message if its set in data-message
         var dataMessage = $(this).data('message');
         if (dataMessage === undefined) {
-            dataMessage = confirmRemoveMessage;
+            dataMessage = getConfirmRemoveMessage();
         }
 
         return confirm(dataMessage);
@@ -3658,7 +3658,7 @@ $(document).ready(function () {
                 // use a custom message if its set in data-message
                 var dataMessage = _this.data('message');
                 if (dataMessage === undefined) {
-                    dataMessage = confirmRemoveMessage;
+                    dataMessage = getConfirmRemoveMessage();
                 }
 
                 if (!confirm(dataMessage)) {
