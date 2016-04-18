@@ -16,11 +16,13 @@ namespace Orchard.FileSystem
         private readonly ILogger _logger;
 
         public OrchardFileSystem(
+            string rootPath,
             IFileProvider fileProvider,
             ILogger logger)
         {
             _fileProvider = fileProvider;
             _logger = logger;
+            RootPath = rootPath;
 
             T = NullLocalizer.Instance;
         }
@@ -101,7 +103,7 @@ namespace Orchard.FileSystem
         /// </summary>
         public string Combine(params string[] paths)
         {
-            return Path.Combine(paths);
+            return Path.Combine(paths).Replace(RootPath, string.Empty).Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
         }
 
         public void CreateFile(string path, string content)
