@@ -27,7 +27,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IOptions<MvcViewOptions> _viewEngine;
-        private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
@@ -37,7 +36,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IFeatureManager featureManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
-            IActionContextAccessor actionContextAccessor,
             IOrchardFileSystem fileSystem,
             ILogger<DefaultShapeTableManager> logger)
         {
@@ -45,7 +43,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _featureManager = featureManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
-            _actionContextAccessor = actionContextAccessor;
             _fileSystem = fileSystem;
             _logger = logger;
         }
@@ -180,7 +177,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
         {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(_actionContextAccessor.ActionContext, path, isMainPage: false);
+            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(context.ViewContext, path, isMainPage: false);
             if (viewEngineResult.Success)
             {
                 var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();

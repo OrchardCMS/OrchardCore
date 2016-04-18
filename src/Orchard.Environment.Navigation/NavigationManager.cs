@@ -18,28 +18,27 @@ namespace Orchard.Environment.Navigation
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
         protected readonly ShellSettings _shellSettings;
-        private readonly IUrlHelper _urlHelper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUrlHelperFactory _urlHelperFactory;
         //private readonly IAuthorizationService _authorizationService;
+
+        private IUrlHelper _urlHelper;
 
         public NavigationManager(
             IEnumerable<INavigationProvider> navigationProviders,
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
-            IUrlHelper urlHelper,
+            IUrlHelperFactory urlHelperFactory
             //IAuthorizationService authorizationService ,
-            IHttpContextAccessor httpContextAccessor
             )
         {
             _navigationProviders = navigationProviders;
             _logger = logger;
             _shellSettings = shellSettings;
-            _urlHelper = urlHelper;
-            _httpContextAccessor = httpContextAccessor;
+            _urlHelperFactory = urlHelperFactory;
             //_authorizationService = authorizationService;
         }
 
-        public IEnumerable<MenuItem> BuildMenu(string name)
+        public IEnumerable<MenuItem> BuildMenu(string name, ActionContext actionContext)
         {
             var builder = new NavigationBuilder();
 
@@ -66,7 +65,7 @@ namespace Orchard.Environment.Navigation
             menuItems = Arrange(menuItems);
 
             // Compute Url and RouteValues properties to Href
-            menuItems = ComputeHref(menuItems, _httpContextAccessor.HttpContext);
+            menuItems = ComputeHref(menuItems, actionContext);
 
             return menuItems;
         }
@@ -115,24 +114,24 @@ namespace Orchard.Environment.Navigation
         /// Computes the <see cref="MenuItem.Href"/> properties based on <see cref="MenuItem.Url"/>
         /// and <see cref="MenuItem.RouteValues"/> values.
         /// </summary>
-        private IEnumerable<MenuItem> ComputeHref(IEnumerable<MenuItem> menuItems, HttpContext httpContext)
+        private IEnumerable<MenuItem> ComputeHref(IEnumerable<MenuItem> menuItems, ActionContext actionContext)
         {
             foreach (var menuItem in menuItems)
             {
-                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, httpContext);
-                menuItem.Items = ComputeHref(menuItem.Items.ToArray(), httpContext);
+                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                menuItem.Items = ComputeHref(menuItem.Items.ToArray(), actionContext);
             }
 
             return menuItems;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="menuItemUrl"></param>
         /// <param name="routeValueDictionary"></param>
         /// <returns></returns>
-        public string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, HttpContext httpContext)
+        private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
         {
             string url;
             if (routeValueDictionary == null || routeValueDictionary.Count == 0)
@@ -148,11 +147,16 @@ namespace Orchard.Environment.Navigation
             }
             else
             {
+                if (_urlHelper == null)
+                {
+                    _urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
+                }
+
                 url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (!string.IsNullOrEmpty(url) && 
-                httpContext != null &&
+            if (!string.IsNullOrEmpty(url) &&
+                actionContext?.HttpContext != null &&
                 !(url.StartsWith("/") ||
                 Schemes.Any(scheme => url.StartsWith(scheme + ":"))))
             {
@@ -170,7 +174,7 @@ namespace Orchard.Environment.Navigation
 
                 if (!url.StartsWith("#"))
                 {
-                    var appPath = httpContext.Request.PathBase.ToString();
+                    var appPath = actionContext.HttpContext.Request.PathBase.ToString();
                     if (appPath == "/")
                         appPath = "";
                     url = appPath + "/" + url;
@@ -215,7 +219,7 @@ namespace Orchard.Environment.Navigation
                 item.Items = Reduce(item.Items, user).ToList();
 
                 // if all sub items have been filtered out, ensure the main one is not one of them
-                // e.g., Manage Roles and Manage Users are not granted, the Users item should not show up 
+                // e.g., Manage Roles and Manage Users are not granted, the Users item should not show up
                 if (oldItems.Any() && !item.Items.Any())
                 {
                     if (oldItems.Any(x => NavigationHelper.RouteMatches(x.RouteValues, item.RouteValues)))

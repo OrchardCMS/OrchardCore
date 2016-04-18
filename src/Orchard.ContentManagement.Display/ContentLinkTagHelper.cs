@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.ContentManagement.MetaData;
 
@@ -18,19 +21,22 @@ namespace Orchard.ContentManagement.Display
         private const string ContentLinkCreate = "create-for";
 
         private readonly IContentManager _contentManager;
-        private readonly IUrlHelper _urlHelper;
+        private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public ContentLinkTagHelper(
-            IContentManager contentManager, 
-            IUrlHelper urlHelper,
+            IContentManager contentManager,
+            IUrlHelperFactory urlHelperFactory,
             IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            // TODO: Change to IUrlHelperFactory in RC2
-            _urlHelper = urlHelper;
+            _urlHelperFactory = urlHelperFactory;
             _contentManager = contentManager;
         }
+
+        [ViewContext]
+        [HtmlAttributeNotBound]
+        public ViewContext ViewContext { get; set; }
 
         /// <summary>
         /// Links to the admin page of this content item.
@@ -67,6 +73,8 @@ namespace Orchard.ContentManagement.Display
             ContentItemMetadata metadata = null;
             ContentItem contentItem = null;
 
+            var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
+
             if (DisplayFor != null)
             {
                 contentItem = DisplayFor;
@@ -76,8 +84,8 @@ namespace Orchard.ContentManagement.Display
                 {
                     return;
                 }
-                
-                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
+
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
             }
             else if (EditFor != null)
             {
@@ -89,7 +97,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
             }
             else if (AdminFor != null)
             {
@@ -101,7 +109,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
             }
             else if (RemoveFor != null)
             {
@@ -113,7 +121,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
             }
             else if (CreateFor != null)
             {
@@ -125,7 +133,7 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", _urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
             }
 
             // A self closing anchor tag will be rendered using the display text
@@ -141,7 +149,7 @@ namespace Orchard.ContentManagement.Display
                     var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
                     output.Content.Append(typeDefinition.ToString());
                 }
-                
+
             }
 
             return;

@@ -123,7 +123,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
-                return httpContext.RequestServices.GetService<IUrlHelper>();
+                var urlHelperFactory = httpContext.RequestServices.GetService<IUrlHelperFactory>();
+                return urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
             }
 
             if (String.Equals(parameter.Name, "Output", StringComparison.OrdinalIgnoreCase) &&

@@ -22,7 +22,7 @@ namespace Orchard.Core.Navigation
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
-                .OnDisplaying(displaying => 
+                .OnDisplaying(displaying =>
                 {
                     var menu = displaying.Shape;
                     string menuName = menu.MenuName;
@@ -31,7 +31,7 @@ namespace Orchard.Core.Navigation
                     menu.Classes.Add("menu");
                     menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
                 })
-                .OnProcessing(processing => 
+                .OnProcessing(processing =>
                 {
                     dynamic menu = processing.Shape;
                     string menuName = menu.MenuName;
@@ -49,7 +49,7 @@ namespace Orchard.Core.Navigation
                     var navigationManager = httpContext.RequestServices.GetService<INavigationManager>();
                     var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
 
-                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName);
+                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, processing.DisplayContext.ViewContext);
 
                     // adding query string parameters
                     RouteData route = menu.RouteData;
@@ -74,7 +74,7 @@ namespace Orchard.Core.Navigation
                 });
 
             builder.Describe("MenuItem")
-                .OnDisplaying(displaying => 
+                .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
                     var menu = menuItem.Menu;
@@ -87,7 +87,7 @@ namespace Orchard.Core.Navigation
                 });
 
             builder.Describe("MenuItemLink")
-                .OnDisplaying(displaying => 
+                .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
@@ -120,7 +120,7 @@ namespace Orchard.Core.Navigation
         }
 
         /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames 
+        /// Encodes dashed and dots so that they don't conflict in filenames
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>

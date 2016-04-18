@@ -62,7 +62,8 @@ namespace Orchard.DisplayManagement.Implementation
             var displayingContext = new ShapeDisplayingContext
             {
                 Shape = shape,
-                ShapeMetadata = shapeMetadata
+                ShapeMetadata = shapeMetadata,
+                DisplayContext = context
             };
 
             // Evaluate global Shape Display Events
@@ -124,6 +125,7 @@ namespace Orchard.DisplayManagement.Implementation
                 Shape = shape,
                 ShapeMetadata = shape.Metadata,
                 ChildContent = shape.Metadata.ChildContent,
+                DisplayContext = context
             };
 
             _shapeDisplayEvents.Invoke(sde =>
