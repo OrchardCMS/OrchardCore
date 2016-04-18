@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.DotNet.ProjectModel;
+using Microsoft.DotNet.ProjectModel.Loader;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
@@ -18,7 +19,6 @@ namespace Orchard.Environment.Shell.Builders
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _environment;
-        private IList<Feature> _builtInFeatures;
 
         public CompositionStrategy(
             IHostingEnvironment environment,
@@ -53,11 +53,29 @@ namespace Orchard.Environment.Shell.Builders
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor),
                 excludedTypes);
 
+            var uniqueDependencies = new Dictionary<Type, DependencyBlueprint>();
+
+            foreach(var dependency in dependencies)
+            {
+                if(!uniqueDependencies.ContainsKey(dependency.Type))
+                {
+                    uniqueDependencies.Add(dependency.Type, dependency);
+                }
+            }
+
+            foreach (var dependency in modules)
+            {
+                if (!uniqueDependencies.ContainsKey(dependency.Type))
+                {
+                    uniqueDependencies.Add(dependency.Type, dependency);
+                }
+            }
+
             var result = new ShellBlueprint
             {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = dependencies.Concat(modules).ToArray()
+                Dependencies = uniqueDependencies.Values
             };
 
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -90,32 +108,39 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            var projectContext = ProjectContext.CreateContextForEachFramework(_environment.ApplicationName).FirstOrDefault();
+            var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
 
             var additionalLibraries = projectContext.LibraryManager
                 .GetLibraries()
-                .Where(x => x.Identity.Name.StartsWith("Orchard"))
-                .Select(x => Assembly.Load(new AssemblyName(x.Identity.Name)));
+                .Where(x => x.Identity.Name.StartsWith("Orchard"));
+
+            var features = new List<Feature>();
 
             foreach (var additonalLib in additionalLibraries)
             {
-                yield return new Feature
+                var assembly = Assembly.Load(new AssemblyName(additonalLib.Identity.Name));
+
+                var feature = new Feature
                 {
                     Descriptor = new FeatureDescriptor
                     {
-                        Id = additonalLib.GetName().Name,
+                        Id = additonalLib.Identity.Name,
                         Extension = new ExtensionDescriptor
                         {
-                            Id = additonalLib.GetName().Name
+                            Id = additonalLib.Identity.Name
                         }
                     },
                     ExportedTypes =
-                        additonalLib.ExportedTypes
+                        assembly.ExportedTypes
                             .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
                             //.Except(new[] { typeof(DefaultOrchardHost) })
                             .ToArray()
                 };
+
+                features.Add(feature);
             }
+
+            return features;
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
