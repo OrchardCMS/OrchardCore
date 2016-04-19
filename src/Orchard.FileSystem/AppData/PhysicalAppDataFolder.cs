@@ -33,7 +33,7 @@ namespace Orchard.FileSystem.AppData
         {
             get
             {
-                return Path.Combine(_fileSystem.RootPath, InternalRootPath);
+                return _fileSystem.RootPath;
             }
         }
 
