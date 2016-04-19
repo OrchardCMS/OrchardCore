@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Razor
 {
@@ -113,24 +114,21 @@ namespace Orchard.DisplayManagement.Razor
             }
         }
 
-        public string RenderTitleSegments()
+        public IHtmlContent RenderTitleSegments()
         {
             return Title.GenerateTitle();
         }
 
-        public string RenderTitleSegments(string segment = null, string position = "0")
+        public IHtmlContent RenderTitleSegments(LocalizedHtmlString segment, string position = "0")
         {
-            if (!String.IsNullOrWhiteSpace(segment))
-            {
-                Title.AddSegment(segment, position);
-            }
-
+            Title.AddSegment(segment);
             return RenderTitleSegments();
         }
 
-        public string RenderTitleSegments(LocalizedHtmlString segment, string position = "0")
+        public IHtmlContent RenderTitleSegments(IEnumerable<LocalizedHtmlString> segments, string position = "0")
         {
-            return RenderTitleSegments(segment.Value);
+            Title.AddSegments(segments);
+            return RenderTitleSegments();
         }
 
         protected IHtmlContent RenderLayoutBody()

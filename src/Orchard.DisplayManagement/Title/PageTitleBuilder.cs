@@ -2,46 +2,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Title
 {
     public class PageTitleBuilder : IPageTitleBuilder
     {
         private readonly List<PositionalTitlePart> _titleParts;
-        private string _titleSeparator;
-        private string _title;
+        private IHtmlContent _titleSeparator;
+        private IHtmlContent _title;
 
         public PageTitleBuilder()
         {
             _titleParts = new List<PositionalTitlePart>(5);
         }
 
-        public void AddSegment(string titlePart, string position)
+        public void AddSegment(IHtmlContent titlePart, string position)
         {
             _title = null;
 
-            if (!string.IsNullOrEmpty(titlePart))
+            _titleParts.Add(new PositionalTitlePart
             {
-                _titleParts.Add(new PositionalTitlePart
-                {
-                    Value = titlePart,
-                    Position = position
-                });
-            }
+                Value = titlePart,
+                Position = position
+            });
         }
 
-        public void AddSegments(string[] titleParts, string position)
+        public void AddSegments(IEnumerable<IHtmlContent> titleParts, string position)
         {
-            if (titleParts.Length > 0)
+            foreach (var titlePart in titleParts)
             {
-                foreach (string titlePart in titleParts)
-                {
-                    AddSegment(titlePart, position);
-                }
+                AddSegment(titlePart, position);
             }
         }
 
-        public string GenerateTitle()
+        public IHtmlContent GenerateTitle()
         {
             if (_title != null)
             {
@@ -50,14 +46,31 @@ namespace Orchard.DisplayManagement.Title
 
             if (_titleSeparator == null)
             {
-                _titleSeparator = " - ";
+                _titleSeparator = new HtmlString(" - ");
             }
 
             _titleParts.Sort(FlatPositionComparer.Instance);
 
-            return _title = _titleParts.Count == 0
-                ? String.Empty
-                : String.Join(_titleSeparator, _titleParts.Select(x => x.Value).ToArray());
+            var htmlContentBuilder = new HtmlContentBuilder();
+
+            if (_titleParts.Count == 0)
+            {
+                return HtmlString.Empty;
+            }
+
+            for (var i = 0; i < _titleParts.Count; i++)
+            {
+                htmlContentBuilder.AppendHtml(_titleParts[i].Value);
+
+                if (i < _titleParts.Count - 1)
+                {
+                    htmlContentBuilder.AppendHtml(_titleSeparator);
+                }
+            }
+
+            _title = htmlContentBuilder;
+
+            return _title;
         }
 
         public void Clear()
@@ -69,6 +82,6 @@ namespace Orchard.DisplayManagement.Title
     internal class PositionalTitlePart : IPositioned
     {
         public string Position { get; set; }
-        public string Value { get; set; }
+        public IHtmlContent Value { get; set; }
     }
 }
