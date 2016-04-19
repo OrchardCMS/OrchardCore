@@ -118,13 +118,18 @@ namespace Orchard.DisplayManagement.Razor
             return Title.GenerateTitle();
         }
 
-        public IHtmlContent RenderTitleSegments(LocalizedHtmlString segment, string position = "0")
+        public IHtmlContent RenderTitleSegments(string segment, string position = "0")
+        {
+            return RenderTitleSegments(new HtmlString(HtmlEncoder.Encode(segment)), position);
+        }
+
+        public IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0")
         {
             Title.AddSegment(segment);
             return RenderTitleSegments();
         }
 
-        public IHtmlContent RenderTitleSegments(IEnumerable<LocalizedHtmlString> segments, string position = "0")
+        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0")
         {
             Title.AddSegments(segments);
             return RenderTitleSegments();
