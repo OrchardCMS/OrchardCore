@@ -175,7 +175,7 @@ namespace Orchard.DynamicCache.Services
                 result.Append(content.Substring(end, content.Length - end));
                 content = result.ToString();
             }
-            
+
             return true;
         }
 

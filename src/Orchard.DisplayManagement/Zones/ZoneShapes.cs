@@ -46,7 +46,7 @@ namespace Orchard.DisplayManagement.Zones
                     tabBuilder.Attributes["data-tab"] = tabName;
                     foreach (var item in tab)
                     {
-                        tabBuilder.InnerHtml.Append(Display(item));
+                        tabBuilder.InnerHtml.AppendHtml(Display(item));
                     }
                     htmlContents.Add(tabBuilder);
                 }

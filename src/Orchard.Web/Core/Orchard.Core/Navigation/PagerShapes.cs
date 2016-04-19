@@ -173,7 +173,7 @@ namespace Orchard.Core.Navigation
                     }
                 }
             }
-            
+
             int firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             int lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));
 
@@ -274,7 +274,7 @@ namespace Orchard.Core.Navigation
         public IHtmlContent Pager_CurrentPage(IHtmlHelper Html, dynamic Display, object Value)
         {
             var tagBuilder = new TagBuilder("span");
-            tagBuilder.InnerHtml.Append(Display(Value));
+            tagBuilder.InnerHtml.AppendHtml(Display(Value));
             return tagBuilder;
         }
 
@@ -332,7 +332,7 @@ namespace Orchard.Core.Navigation
         public IHtmlContent Pager_Gap(IHtmlHelper Html, dynamic Display, object Value)
         {
             var tagBuilder = new TagBuilder("span");
-            tagBuilder.InnerHtml.Append(Display(Value));
+            tagBuilder.InnerHtml.AppendHtml(Display(Value));
             return tagBuilder;
         }
 
