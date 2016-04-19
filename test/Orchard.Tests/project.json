@@ -3,25 +3,25 @@
     "warningsAsErrors": true
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
-    "Orchard.ContentManagement": "2.0.0-*",
-    "Orchard.Data": "2.0.0-*",
-    "Orchard.DisplayManagement": "2.0.0-*",
-    "Orchard.Environment.Extensions": "2.0.0-*",
-    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Environment.Shell": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*",
-    "Orchard.FileSystem": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Hosting.Console": "2.0.0-*",
-    "Orchard.Parser.Yaml": "2.0.0-*",
-    "xunit": "2.1.0-*"
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc3-20613",
+    "Orchard.ContentManagement": "2.0.0",
+    "Orchard.Data": "2.0.0",
+    "Orchard.DisplayManagement": "2.0.0",
+    "Orchard.Environment.Extensions": "2.0.0",
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0",
+    "Orchard.Environment.Shell": "2.0.0",
+    "Orchard.Events": "2.0.0",
+    "Orchard.FileSystem": "2.0.0",
+    "Orchard.Hosting": "2.0.0",
+    "Orchard.Hosting.Console": "2.0.0",
+    "Orchard.Parser.Yaml": "2.0.0",
+    "xunit": "2.1.0-rc2-build3178"
   },
   "testRunner": "xunit",
   "frameworks": {
     "netstandardapp1.5": {
       "dependencies": {
-        "Microsoft.NETCore.Platforms": "1.0.1-*",
+        "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
         "dotnet-test-xunit": "1.0.0-dev-*"
       },
       "imports": [

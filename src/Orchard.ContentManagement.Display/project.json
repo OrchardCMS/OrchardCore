@@ -1,7 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.NETCore.Platforms": "1.0.1-*",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*"
   },
