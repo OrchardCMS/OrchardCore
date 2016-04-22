@@ -2,9 +2,12 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc3-20613",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc3-20613",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20634",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20634",
+    "Microsoft.NETCore.App": {
+      "version": "1.0.0-rc2-3002426",
+      "type": "platform"
+    },
     "Orchard.Hosting.Console": "2.0.0",
     "Orchard.Hosting.Web": "2.0.0",
     "Orchard.Core": "2.0.0",

@@ -1,7 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc3-20613",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-20634",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Orchard.Abstractions": "2.0.0",
     "Orchard.DependencyInjection": "2.0.0-*",

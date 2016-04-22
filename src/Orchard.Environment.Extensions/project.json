@@ -1,8 +1,8 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc3-20613",
-    "Microsoft.Extensions.Options": "1.0.0-*",
+    "Microsoft.Extensions.Caching.Abstractions": "1.0.0-rc2-20581",
+    "Microsoft.Extensions.Options": "1.0.0-rc2-20581",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Microsoft.DotNet.ProjectModel": "1.0.0-rc2-002353",
     "Microsoft.DotNet.ProjectModel.Loader":"1.0.0-rc2-002353",
