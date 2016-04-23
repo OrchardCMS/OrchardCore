@@ -48,7 +48,7 @@ namespace Orchard.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                 })
-                .Location("DetailAdmin", "Content"),
+                .Location("DetailAdmin", "Content:10"),
 
                 Shape("ListPart_Detail", async shape =>
                 {
@@ -66,7 +66,7 @@ namespace Orchard.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                 })
-                .Location("Detail", "Content")
+                .Location("Detail", "Content:10")
             );
         }
 

@@ -10,14 +10,17 @@ namespace Orchard.Core.Title.Drivers
     {
         public override IDisplayResult Display(TitlePart titlePart, IUpdateModel updater)
         {
-            return Shape("TitlePart", titlePart)
-                .Location("Detail", "Content")
-                .Location("Summary", "Content");
+            return Combine(
+                Shape("TitlePart", titlePart)
+                    .Location("Detail", "Content:5"),
+                Shape("TitlePart_Summary", titlePart)
+                    .Location("Summary", "Content:5")
+            );
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, IUpdateModel updater)
         {
-            return Shape("TitlePart_Edit", titlePart).Location("Content");
+            return Shape("TitlePart_Edit", titlePart).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)

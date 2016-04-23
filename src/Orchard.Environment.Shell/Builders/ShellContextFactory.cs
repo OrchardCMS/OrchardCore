@@ -30,11 +30,11 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
-            
+
             var knownDescriptor = MinimumShellDescriptor();
             return CreateDescribedContext(settings, knownDescriptor);
         }
-        
+
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -80,6 +80,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Settings" },
+                    new ShellFeature { Name = "Body" },
                     new ShellFeature { Name = "Dashboard" },
                     new ShellFeature { Name = "Title" },
                     new ShellFeature { Name = "Navigation" },
