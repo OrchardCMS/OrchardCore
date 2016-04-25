@@ -1,4 +1,5 @@
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -24,7 +25,6 @@ namespace Orchard.Hosting.Mvc
                 .AddMvcCore(options =>
                 {
                     options.Filters.Add(new ModelBinderAccessorFilter());
-                    options.Conventions.Add(new ModuleAreaRouteConstraintConvention());
                     options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
                 })
                 .AddViews()
@@ -35,6 +35,7 @@ namespace Orchard.Hosting.Mvc
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
+            services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 
             //if (DnxPlatformServices.Default.LibraryManager != null)
             //{

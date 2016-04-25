@@ -40,7 +40,6 @@ namespace Orchard.Environment.Shell.Builders
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
-            var featureByType = blueprint.Dependencies.ToDictionary(x => x.Type, x => x.Feature);
             IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
             tenantServiceCollection.AddSingleton(settings);
@@ -198,8 +197,6 @@ namespace Orchard.Environment.Shell.Builders
                     store.CreateSession()
                 );
             }
-
-            tenantServiceCollection.AddSingleton<ITypeFeatureProvider>(new TypeFeatureProvider(featureByType));
 
             IServiceCollection moduleServiceCollection =
                 _serviceProvider.CreateChildContainer(_applicationServices);

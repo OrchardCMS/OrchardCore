@@ -14,16 +14,17 @@ namespace Orchard.Hosting.Mvc.Razor
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            return ExpandViewLocationsCore(viewLocations);
-        }
+            var result = new List<string>();
 
-        private IEnumerable<string> ExpandViewLocationsCore(IEnumerable<string> viewLocations)
-        {
-            foreach (var location in viewLocations)
-            {
-                yield return location.Replace("/Areas/", "/Modules/");
-                yield return location;
-            }
+            result.Add("/Modules/{2}/Views/{1}/{0}.cshtml");
+            result.Add("/Modules/{2}/Views/Shared/{0}.cshtml");
+
+            result.Add("/Core/Orchard.Core/{2}/Views/{1}/{0}.cshtml");
+            result.Add("/Core/Orchard.Core/{2}/Views/Shared/{0}.cshtml");
+
+            result.AddRange(viewLocations);
+
+            return result;
         }
     }
 }

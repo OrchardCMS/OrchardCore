@@ -72,10 +72,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddSingleton<ITypeFeatureProvider>(
-                new TypeFeatureProvider(new Dictionary<Type, Feature>() {
-                    { typeof(SimpleShapes), testFeature }
-                }));
+            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             serviceCollection.AddSingleton(new SimpleShapes());
 

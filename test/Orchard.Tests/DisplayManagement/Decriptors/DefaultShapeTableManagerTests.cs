@@ -47,7 +47,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
-            serviceCollection.AddSingleton<ITypeFeatureProvider>(new TypeFeatureProvider(new Dictionary<Type, Feature>()));
+            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             var features = new[] {
                 new FeatureDescriptor {

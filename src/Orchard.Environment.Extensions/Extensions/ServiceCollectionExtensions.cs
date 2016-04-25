@@ -16,6 +16,7 @@ namespace Orchard.Environment
             {
                 //services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
 
+                services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
 
                 services.TryAddEnumerable(

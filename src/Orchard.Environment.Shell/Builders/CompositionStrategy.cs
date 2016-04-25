@@ -19,12 +19,17 @@ namespace Orchard.Environment.Shell.Builders
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _environment;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
+
+        private bool _builtinFeatureRegistered;
 
         public CompositionStrategy(
             IHostingEnvironment environment,
             IExtensionManager extensionManager,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<CompositionStrategy> logger)
         {
+            _typeFeatureProvider = typeFeatureProvider;
             _environment = environment;
             _extensionManager = extensionManager;
             _logger = logger;
@@ -138,7 +143,22 @@ namespace Orchard.Environment.Shell.Builders
                 };
 
                 features.Add(feature);
+
+                // Register built-in features in the type provider
+
+                // TODO: Prevent this code from adding the services from modules as it's already added
+                // by the extension loader.
+
+                if (!_builtinFeatureRegistered)
+                {
+                    foreach (var type in feature.ExportedTypes)
+                    {
+                        _typeFeatureProvider.TryAdd(type, feature);
+                    }
+                }
             }
+
+            _builtinFeatureRegistered = true;
 
             return features;
         }

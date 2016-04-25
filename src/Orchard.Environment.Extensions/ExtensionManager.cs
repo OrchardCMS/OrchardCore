@@ -19,6 +19,7 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionLocator _extensionLocator;
         private readonly IEnumerable<IExtensionLoader> _loaders;
         private readonly ILogger _logger;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private List<ExtensionDescriptor> _availableExtensions;
         private List<FeatureDescriptor> _availableFeatures;
 
@@ -30,8 +31,10 @@ namespace Orchard.Environment.Extensions
         public ExtensionManager(
             IExtensionLocator extensionLocator,
             IEnumerable<IExtensionLoader> loaders,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger)
         {
+            _typeFeatureProvider = typeFeatureProvider;
             _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
             _logger = logger;
@@ -116,7 +119,9 @@ namespace Orchard.Environment.Extensions
                     {
                         ExtensionEntry entry = loader.Load(extensionDescriptor);
                         if (entry != null)
+                        {
                             return entry;
+                        }
                     }
 
                     if (_logger.IsEnabled(LogLevel.Warning))
@@ -209,6 +214,12 @@ namespace Orchard.Environment.Extensions
                     Descriptor = featureDescriptor,
                     ExportedTypes = featureTypes
                 };
+
+                foreach (var type in feature.ExportedTypes)
+                {
+                    _typeFeatureProvider.TryAdd(type, feature);
+                }
+
 
                 _features.Add(featureDescriptor.Id, feature);
                 return feature;
