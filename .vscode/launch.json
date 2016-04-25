@@ -1,0 +1,45 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": ".NET Core Launch (console)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Dotnet Build Debug",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"args": [],
+			"cwd": "${workspaceRoot}/src/Orchard.Web",
+			"stopAtEntry": false
+		},
+		{
+			"name": ".NET Core Launch (web)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Dotnet Build Debug",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"args": [],
+			"cwd": "${workspaceRoot}/src/Orchard.Web",
+			"stopAtEntry": false,
+			"launchBrowser": {
+				"enabled": true,
+				"args": "${auto-detect-url}",
+				"windows": {
+					"command": "cmd.exe",
+					"args": "/C start http://localhost:5000"
+				},
+				"osx": {
+					"command": "open"
+				},
+				"linux": {
+					"command": "xdg-open"
+				}
+			}
+		},
+		{
+			"name": ".NET Core Attach",
+			"type": "coreclr",
+			"request": "attach",
+			"processId": "*"
+		}
+	]
+}

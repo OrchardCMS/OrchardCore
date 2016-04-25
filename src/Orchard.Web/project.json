@@ -26,6 +26,7 @@
   },
   "compilationOptions": {
     "emitEntryPoint": true,
+    "debugType": "portable",
     "preserveCompilationContext": true
   },
   "frameworks": {

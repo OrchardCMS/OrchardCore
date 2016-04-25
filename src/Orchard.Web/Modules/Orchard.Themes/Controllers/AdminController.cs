@@ -5,7 +5,7 @@ using Orchard.Themes.Models;
 using Orchard.Themes.Services;
 using System.Threading.Tasks;
 
-namespace Orchard.Demo.Controllers
+namespace Orchard.Themes.Controllers
 {
     [Admin]
     public class AdminController : Controller

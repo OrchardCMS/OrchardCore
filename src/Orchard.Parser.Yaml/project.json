@@ -9,7 +9,8 @@
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
-    "warningsAsErrors": true
+    "debugType": "portable",
+   "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.5": {
