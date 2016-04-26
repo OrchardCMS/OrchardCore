@@ -27,7 +27,7 @@ namespace Orchard.Hosting.Mvc.Filters
             {
                 foreach (var filter in filters)
                 {
-                    var filterItem = new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter) { IsReusable = false };
+                    var filterItem = new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter);
                     context.Results.Add(filterItem);
                 }
             }
