@@ -1,7 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-20634",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-20679",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Orchard.DependencyInjection": "2.0.0"
   },

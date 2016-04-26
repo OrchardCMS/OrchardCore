@@ -28,18 +28,6 @@ namespace Orchard.Hosting.Mvc.Filters
                 foreach (var filter in filters)
                 {
                     var filterItem = new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter) { IsReusable = false };
-
-                    // TODO: Remove this when https://github.com/aspnet/Mvc/issues/4504
-                    // is fixed
-                    for (var i=0; i < context.Results.Count; i++)
-                    {
-                        if(context.Results[i].Filter.GetType() == filter.GetType())
-                        {
-                            context.Results.RemoveAt(i);
-                            break;
-                        }
-                    }
-
                     context.Results.Add(filterItem);
                 }
             }

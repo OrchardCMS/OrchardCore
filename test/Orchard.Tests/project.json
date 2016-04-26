@@ -7,7 +7,7 @@
       "version": "1.0.0-rc2-3002426",
       "type": "platform"
     },
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20634",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20679",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.Data": "2.0.0",
     "Orchard.DisplayManagement": "2.0.0",
