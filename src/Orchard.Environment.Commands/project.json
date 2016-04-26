@@ -8,6 +8,7 @@
   },
   "compilationOptions": {
     "define": [ "TRACE" ],
+    "debugType": "portable",
     "warningsAsErrors": true
   },
   "frameworks": {

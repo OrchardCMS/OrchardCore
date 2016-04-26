@@ -14,6 +14,7 @@ namespace Orchard.Console
                 .UseKestrel()
                 .UseDefaultHostingConfiguration(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseWebRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
 

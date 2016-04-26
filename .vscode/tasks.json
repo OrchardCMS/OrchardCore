@@ -1,0 +1,43 @@
+{
+	"version": "0.1.0",
+	"command": "cmd",
+	"isShellCommand": true,
+	"args": ["/C"],
+	"showOutput": "always",
+	"suppressTaskName": true,
+	"tasks": [
+		{
+			"taskName": "Dotnet Restore",
+			"args": [ "dotnet restore" ]
+		},
+		{
+			"taskName": "Dotnet Force Restore",
+			"args": [ "dotnet restore --no-cache" ]
+		},
+		{
+			"taskName": "Dotnet Rebuild Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web --no-incremental -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Dotnet Build Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Debug" ],
+			"isBuildCommand": true,
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Dotnet Build Release",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Release" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Dotnet Run",
+			"args": [ "cd ${workspaceRoot}/src/orchard.web & dotnet run" ]
+		},
+		{
+			"taskName": "Gulp Build",
+			"args": [ "gulp build" ],
+			"problemMatcher": "$gulp-tsc"
+		}
+	]
+}

@@ -9,6 +9,9 @@
     "Orchard.Environment.Navigation": "2.0.0",
     "Orchard.Hosting.Web": "2.0.0"
   },
+  "compilationOptions": {
+    "debugType": "portable"
+  },
   "frameworks": {
     "netstandard1.5": {
       "imports": [
