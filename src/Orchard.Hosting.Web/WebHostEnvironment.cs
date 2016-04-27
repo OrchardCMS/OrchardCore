@@ -4,8 +4,7 @@ namespace Orchard.Hosting
 {
     public class WebHostEnvironment : HostEnvironment
     {
-        public WebHostEnvironment(
-            IApplicationEnvironment applicationEnvironment) : base(applicationEnvironment)
+        public WebHostEnvironment(IHostingEnvironment hostingEnvironment) : base(hostingEnvironment)
         {
             T = NullLocalizer.Instance;
         }

@@ -5,16 +5,16 @@ namespace Orchard.Hosting
 {
     public abstract class HostEnvironment : IHostEnvironment
     {
-        private readonly IApplicationEnvironment _applicationEnvrionment;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        protected HostEnvironment(IApplicationEnvironment applicationEnvrionment)
+        protected HostEnvironment(IHostingEnvironment hostingEnvrionment)
         {
-            _applicationEnvrionment = applicationEnvrionment;
+            _hostingEnvironment = hostingEnvrionment;
         }
 
         public string MapPath(string virtualPath)
         {
-            return _applicationEnvrionment.ApplicationBasePath + virtualPath.Replace("~/", "");
+            return _hostingEnvironment.ContentRootPath + virtualPath.Replace("~/", "");
         }
     }
 }
