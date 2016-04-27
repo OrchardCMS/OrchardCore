@@ -1,11 +1,11 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.FileProviders.Abstractions": "1.0.0-rc2-20679",
-    "Microsoft.Extensions.FileProviders.Physical": "1.0.0-rc2-20679",
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20679",
-    "Microsoft.Extensions.FileSystemGlobbing": "1.0.0-rc2-20679",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-20679",
+    "Microsoft.Extensions.FileProviders.Abstractions": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.FileProviders.Physical": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.FileSystemGlobbing": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-20704",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Orchard.Abstractions": "2.0.0"
   },
