@@ -7,7 +7,7 @@ using Orchard.ContentManagement.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DependencyInjection;
 
-namespace Orchard.ContentManagement.MetaData
+namespace Orchard.ContentTypes.Editors
 {
     public interface IContentDefinitionEditorEvents : IDependency
     {

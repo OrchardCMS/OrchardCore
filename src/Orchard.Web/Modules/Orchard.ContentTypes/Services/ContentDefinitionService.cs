@@ -15,6 +15,7 @@ using YesSql.Core.Services;
 using Orchard.ContentManagement.Records;
 using Orchard.Events;
 using Microsoft.Extensions.Logging;
+using Orchard.ContentTypes.Editors;
 
 namespace Orchard.ContentTypes.Services
 {
