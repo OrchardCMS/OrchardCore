@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20679",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20679",
+    "Microsoft.AspNetCore.Tooling.Razor": "1.0.0-rc2-16160",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Orchard.ContentManagement": "2.0.0",
+    "Orchard.ContentTypes": "2.0.0",
+    "Orchard.ContentManagement.Display": "2.0.0",
+    "Orchard.Core": "2.0.0",
+    "Orchard.Hosting.Web": "2.0.0"
+  },
+  "compilationOptions": {
+    "debugType": "portable"
+  },
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.5.0-*"
+      }
+    }
+  }
+}
