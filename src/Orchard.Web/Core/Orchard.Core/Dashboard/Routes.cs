@@ -18,7 +18,7 @@ namespace Orchard.Core.Dashboard
                             controller = "Admin",
                             action = "Index"
                         },
-                        dataTokens:  new
+                        constraints: new
                         {
                             area = "Dashboard"
                         })

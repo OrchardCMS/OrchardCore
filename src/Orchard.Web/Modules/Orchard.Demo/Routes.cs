@@ -18,7 +18,7 @@ namespace Orchard.Demo
                                 controller = "Home",
                                 action = "Index"
                             },
-                        dataTokens:  new
+                        constraints:  new
                             {
                                 area = "Orchard.Demo"
                             }
@@ -34,7 +34,7 @@ namespace Orchard.Demo
                                 controller = "Home",
                                 action = "Display",
                             },
-                        dataTokens:  new
+                        constraints:  new
                             {
                                 area = "Orchard.Demo"
                             }
@@ -50,7 +50,7 @@ namespace Orchard.Demo
                                 controller = "Home",
                                 action = "IndexError"
                             },
-                        dataTokens:  new
+                        constraints:  new
                             {
                                 area = "Orchard.Demo"
                             }
