@@ -2,8 +2,8 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20704",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20704",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20704",
     "Microsoft.NETCore.App": {
       "version": "1.0.0-rc2-3002426",
       "type": "platform"
@@ -34,6 +34,15 @@
       "dependencies": {
         "NETStandard.Library": "1.5.0-*"
       },
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    }
+  },
+  "tools": {
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
+      "version": "1.0.0-rc2-20704",
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
