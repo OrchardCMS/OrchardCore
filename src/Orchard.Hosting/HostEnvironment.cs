@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.PlatformAbstractions;
+﻿using Microsoft.AspNetCore.Hosting; 
+using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Environment;
 
 namespace Orchard.Hosting
