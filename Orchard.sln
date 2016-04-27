@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25029.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Web", "src\Orchard.Web\Orchard.Web.xproj", "{07D91819-4C81-434F-8DE4-51D2B5A4EDA8}"
 EndProject
@@ -104,6 +104,8 @@ EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Contents", "src\Orchard.Web\Modules\Orchard.Contents\Orchard.Contents.xproj", "{7505FA6A-F08E-4B17-9F15-8ECF1D8A16C8}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Lists", "src\Orchard.Web\Modules\Orchard.Lists\Orchard.Lists.xproj", "{826288A6-3AAA-4C48-9B00-0E7407420610}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.ContentFields", "src\Orchard.Web\Modules\Orchard.ContentFields\Orchard.ContentFields.xproj", "{A2C9387B-C489-4B85-96F5-4FB16344B53C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -263,6 +265,10 @@ Global
 		{826288A6-3AAA-4C48-9B00-0E7407420610}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{826288A6-3AAA-4C48-9B00-0E7407420610}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{826288A6-3AAA-4C48-9B00-0E7407420610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C9387B-C489-4B85-96F5-4FB16344B53C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C9387B-C489-4B85-96F5-4FB16344B53C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C9387B-C489-4B85-96F5-4FB16344B53C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C9387B-C489-4B85-96F5-4FB16344B53C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,5 +317,6 @@ Global
 		{A62BE9EE-B9CA-4ED9-8457-116C3B3564BB} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{7505FA6A-F08E-4B17-9F15-8ECF1D8A16C8} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{826288A6-3AAA-4C48-9B00-0E7407420610} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{A2C9387B-C489-4B85-96F5-4FB16344B53C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

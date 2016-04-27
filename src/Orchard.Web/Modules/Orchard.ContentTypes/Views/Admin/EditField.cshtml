@@ -4,9 +4,9 @@
 //Style.Require("ContentTypesAdmin");
 }
 
-@RenderTitleSegments(T["Edit Field \"{0}\"", Html.Raw(Model.DisplayName)]);
+<h1>@RenderTitleSegments(T["Edit Field \"{0}\"", Model.DisplayName])</h1>
 
-<form asp-action="EditField"></form>
+<form asp-action="EditField">
     @Html.ValidationSummary()
     <fieldset class="form-group">
         <label asp-for="DisplayName">@T["Display Name"]</label>
@@ -18,4 +18,4 @@
     <fieldset class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
     </fieldset>
-}
+</form>

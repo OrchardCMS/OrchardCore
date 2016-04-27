@@ -1,14 +1,11 @@
 ﻿using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Drivers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Views;
 using Orchard.DisplayManagement.ModelBinding;
 
-namespace Orchard.Demo.Fields
+namespace Orchard.ContentFields.Fields
 {
     public class TextField : ContentField
     {
