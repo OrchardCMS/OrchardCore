@@ -1,8 +1,7 @@
 {
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20679",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20679",
-    "Microsoft.AspNetCore.Tooling.Razor": "1.0.0-rc2-16160",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20704",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.ContentManagement.Display": "2.0.0",
@@ -20,6 +19,15 @@
       "dependencies": {
         "NETStandard.Library": "1.5.0-*"
       }
+    }
+  },
+  "tools": {
+    "dotnet-razor-tooling": {
+      "version": "1.0.0-rc2-20704",
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
     }
   }
 }
