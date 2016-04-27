@@ -3,6 +3,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.ViewModels;
 using Orchard.ContentFields.Settings;
+using Orchard.ContentTypes.Editors;
 
 namespace Orchard.ContentFields.Events
 {

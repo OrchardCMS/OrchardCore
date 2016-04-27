@@ -2,7 +2,7 @@
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
-    public abstract class ContentDisplayDriver : DisplayDriver<ContentItem>, IContentDisplayDriver
+    public abstract class ContentDisplayDriver : DisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IContentDisplayDriver
     {
     }
 }

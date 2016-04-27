@@ -4,9 +4,10 @@ using Orchard.ContentManagement.MetaData.Builders;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.ViewModels;
 using Orchard.ContentTypes.ViewModels;
-using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.MetaData.Settings;
 
 namespace Orchard.ContentTypes.Settings
 {

@@ -78,20 +78,24 @@ namespace Orchard.DisplayManagement.Handlers
         }
     }
 
-    public class DisplayDriver<TModel> : DisplayDriverBase, IDisplayDriver<TModel>  where TModel : class
+    public class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext> : DisplayDriverBase, IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
+        where TModel : class
+        where TDisplayContext : BuildDisplayContext
+        where TEditorContext : BuildEditorContext
+        where TUpdateContext : UpdateEditorContext
     {
 
-        Task<IDisplayResult> IDisplayDriver<TModel>.BuildDisplayAsync(TModel model, BuildDisplayContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
             return DisplayAsync(model, context.Updater);
         }
 
-        Task<IDisplayResult> IDisplayDriver<TModel>.BuildEditorAsync(TModel model, BuildEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
             return EditAsync(model, context.Updater);
         }
 
-        Task<IDisplayResult> IDisplayDriver<TModel>.UpdateEditorAsync(TModel model, UpdateEditorContext context)
+        Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
             return UpdateAsync(model, context.Updater);
         }
