@@ -60,6 +60,7 @@ namespace Orchard.Lists.Drivers
             })
             .Location("Content");
         }
+
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var viewModel = new EditContainedPartViewModel();

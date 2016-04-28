@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Display.ContentDisplay;
-using System.Collections.Generic;
-using Orchard.DisplayManagement.Handlers;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentManagement.Display.Coordinators
 {
     /// <summary>
-    /// Provides a concrete implementation of a display coordinator managing <see cref="IContentDisplayDriver"/>
-    /// implementations.
+    /// Coordinates all implementations of <see cref="IContentDisplayDriver"/> to render a <see cref="ContentItem"/>.
     /// </summary>
     public class ContentDisplayCoordinator : IContentDisplayHandler
     {
