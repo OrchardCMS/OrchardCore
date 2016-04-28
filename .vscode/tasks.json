@@ -1,8 +1,9 @@
 {
 	"version": "0.1.0",
-	"command": "cmd",
+  	"linux": { "command": "sh", "args": ["-c"] },
+  	"osx": { "command": "sh", "args": ["-c"] },
+  	"windows": { "command": "cmd", "args": ["/C"] },
 	"isShellCommand": true,
-	"args": ["/C"],
 	"showOutput": "always",
 	"suppressTaskName": true,
 	"tasks": [
