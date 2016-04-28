@@ -1,10 +1,10 @@
-﻿using Orchard.ContentManagement;
+﻿using System;
+using System.Threading.Tasks;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.Demo.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using System;
-using System.Threading.Tasks;
 
 namespace Orchard.Demo.ContentElementDisplays
 {
@@ -27,7 +27,7 @@ namespace Orchard.Demo.ContentElementDisplays
                 Shape("TestContentPartA", testContentPart).Location("Detail", "Content"),
                 // New shape, no initialization, custom location
                 Shape("LowerDoll").Location("Detail", "Footer"),
-                // New shape 
+                // New shape
                 Shape("TestContentPartA",
                     ctx => ctx.New.TestContentPartA().Creating(_creating++),
                     shape =>
@@ -79,8 +79,8 @@ namespace Orchard.Demo.ContentElementDisplays
                     contentItem.Weld(testContentPart);
                 }
             }
-            
+
             return Shape("TestContentPartA_Edit", testContentPart).Location("Content");
         }
-    }    
+    }
 }

@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.ContentManagement.Display.ContentDisplay;
+﻿using System;
 using System.Collections.Generic;
-using Orchard.DisplayManagement.Handlers;
-using System.Threading.Tasks;
-using System;
 using System.Linq;
-using Orchard.ContentManagement.MetaData;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Drivers;
+using Orchard.ContentManagement.MetaData;
+using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentManagement.Display.Coordinators
 {
@@ -64,7 +64,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return Process(model, (part, fieldName) => 
+            return Process(model, (part, fieldName) =>
                 _displayDrivers.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.UpdateEditorAsync(fieldName, part, context);
                 if (result != null)
@@ -106,7 +106,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 {
                     var fieldName = partFieldDefinition.Name;
                     return action(part, fieldName);
-                }                    
+                }
             }
 
             return Task.CompletedTask;

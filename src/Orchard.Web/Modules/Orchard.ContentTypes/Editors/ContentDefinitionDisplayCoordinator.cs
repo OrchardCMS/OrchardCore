@@ -87,7 +87,6 @@ namespace Orchard.ContentTypes.Editors
         }
     }
 
-
     public class UpdatePartEditorContext : UpdateContentDefinitionEditorContext<ContentTypePartDefinitionBuilder>
     {
         public UpdatePartEditorContext(
@@ -131,7 +130,7 @@ namespace Orchard.ContentTypes.Editors
         }
     }
 
-    public interface IContentDefinitionDisplayCoordinator : IDependency
+    public interface IContentDefinitionDisplayHandler : IDependency
     {
         Task BuildTypeDisplayAsync(ContentTypeDefinition definition, BuildDisplayContext context);
         Task BuildTypeEditorAsync(ContentTypeDefinition definition, BuildTypeEditorContext context);
@@ -158,7 +157,7 @@ namespace Orchard.ContentTypes.Editors
     {
     }
 
-    public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayCoordinator
+    public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHandler
     {
         private readonly IEnumerable<IContentTypeDefinitionDisplayDriver> _typeDisplayDrivers;
         private readonly IEnumerable<IContentTypePartDefinitionDisplayDriver> _partDisplayDrivers;
@@ -168,7 +167,7 @@ namespace Orchard.ContentTypes.Editors
             IEnumerable<IContentTypeDefinitionDisplayDriver> typeDisplayDrivers,
             IEnumerable<IContentTypePartDefinitionDisplayDriver> partDisplayDrivers,
             IEnumerable<IContentPartFieldDefinitionDisplayDriver> fieldDisplayDrivers,
-            ILogger<IContentDefinitionDisplayCoordinator> logger)
+            ILogger<IContentDefinitionDisplayHandler> logger)
         {
             _fieldDisplayDrivers = fieldDisplayDrivers;
             _partDisplayDrivers = partDisplayDrivers;

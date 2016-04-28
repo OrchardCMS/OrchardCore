@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Views;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
@@ -77,6 +76,6 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             return null;
         }
 
-        
+
     }
 }

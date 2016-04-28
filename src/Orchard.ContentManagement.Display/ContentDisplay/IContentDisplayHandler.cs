@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
+    /// <summary>
+    /// An implementation of <see cref="IContentDisplayHandler"/> is able to take part in the rendering of
+    /// a <see cref="ContentItem"/> instance.
+    /// </summary>
     public interface IContentDisplayHandler : IDependency
     {
         Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context);
