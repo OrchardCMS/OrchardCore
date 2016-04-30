@@ -30,7 +30,9 @@ namespace Orchard.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, ContentPart part, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(field, typeof(TextField), "");
+            // TIP: For security and performance reasons, either use a ViewModel or specify which properties need to be updated.
+
+            await updater.TryUpdateModelAsync(field, "", f => f.Text);
 
             return Edit(field, part);
         }

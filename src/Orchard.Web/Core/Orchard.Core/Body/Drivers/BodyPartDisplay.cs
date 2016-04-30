@@ -26,7 +26,7 @@ namespace Orchard.Core.Body.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, typeof(BodyPart), "");
+            await updater.TryUpdateModelAsync(model, Prefix, b => b.Body);
 
             return Edit(model, updater);
         }

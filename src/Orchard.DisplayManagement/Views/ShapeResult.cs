@@ -47,7 +47,7 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
-            
+
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
 
@@ -85,7 +85,7 @@ namespace Orchard.DisplayManagement.Views
             {
                 return;
             }
-            
+
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
             newShapeMetadata.DisplayType = displayType;
@@ -147,7 +147,7 @@ namespace Orchard.DisplayManagement.Views
                 parentShape.Add(newShape, position);
             }
         }
-        
+
         /// <summary>
         /// Sets the prefix of the form elements rendered in the shape.
         /// </summary>

@@ -25,5 +25,10 @@ namespace Orchard.ContentManagement.Metadata.Settings
             return builder.WithSetting("Securable", securable.ToString());
         }
 
+        public static ContentTypeDefinitionBuilder Stereotype(this ContentTypeDefinitionBuilder builder, string stereotype)
+        {
+            return builder.WithSetting("Stereotype", stereotype);
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Shapes;
 using System.Reflection;
 using Orchard.DisplayManagement.Theming;
+using Castle.DynamicProxy;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -32,6 +33,43 @@ namespace Orchard.DisplayManagement.Implementation
             return true;
         }
 
+        private class ShapeImplementation : IShape, IPositioned
+        {
+            public ShapeMetadata Metadata { get; } = new ShapeMetadata();
+
+            public string Position
+            {
+                get
+                {
+                    return Metadata.Position;
+                }
+
+                set
+                {
+                    Metadata.Position = value;
+                }
+            }
+        }
+
+        public T Create<T>(string shapeType) where T : class
+        {
+            return (T)Create(typeof(T), shapeType);
+        }
+
+        public object Create(Type type, string shapeType)
+        {
+            ProxyGenerator a = new ProxyGenerator();
+            var mixin = new ShapeImplementation();
+            mixin.Metadata.Type = shapeType;
+
+            ProxyGenerationOptions pgo = new ProxyGenerationOptions();
+            pgo.AddMixinInstance(mixin);
+
+            var t = a.CreateClassProxy(type, pgo);
+
+            return t;
+        }
+
         public IShape Create(string shapeType)
         {
             return Create(shapeType, Arguments.Empty, () => new Shape());
@@ -42,12 +80,7 @@ namespace Orchard.DisplayManagement.Implementation
             return Create(shapeType, parameters, () => new Shape());
         }
 
-        public T Create<T>() where T : Shape, new()
-        {
-            return (T)Create(typeof(T).Name, Arguments.Empty, () => new T());
-        }
-
-        public T Create<T>(T obj) where T : Shape
+        public T Create<T>(T obj) where T : class
         {
             return (T)Create(typeof(T).Name, Arguments.Empty, () => obj);
         }
@@ -122,7 +155,7 @@ namespace Orchard.DisplayManagement.Implementation
             createdContext.Shape.Metadata.Type = shapeType;
 
             // Concatenate wrappers if there are any
-            if (shapeDescriptor != null && 
+            if (shapeDescriptor != null &&
                 shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
             {
                 shapeMetadata.Wrappers = shapeMetadata.Wrappers.Concat(shapeDescriptor.Wrappers).ToList();

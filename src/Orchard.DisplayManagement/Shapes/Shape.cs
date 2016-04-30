@@ -25,7 +25,11 @@ namespace Orchard.DisplayManagement.Shapes
         public IDictionary<string, string> Attributes => _attributes;
         public IEnumerable<dynamic> Items => _items;
         public bool HasItems => _items.Count > 0;
-        public string Position => Metadata.Position;
+        public string Position
+        {
+            get { return Metadata.Position; }
+            set { Metadata.Position = value; }
+        }
 
         public Shape()
         {
@@ -56,12 +60,12 @@ namespace Orchard.DisplayManagement.Shapes
             }
             else
             {
-                var shape = item as Shape;
+                var shape = item as IPositioned;
                 if (shape != null)
                 {
                     if (position != null)
                     {
-                        shape.Metadata.Position = position;
+                        shape.Position = position;
                     }
 
                     _items.Add(shape);

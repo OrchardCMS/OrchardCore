@@ -25,7 +25,7 @@ namespace Orchard.Core.Title.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, typeof(TitlePart), "");
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
 
             return Edit(model, updater);
         }

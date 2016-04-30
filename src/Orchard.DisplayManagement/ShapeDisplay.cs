@@ -40,13 +40,15 @@ namespace Orchard.DisplayManagement
 
         public async Task<IHtmlContent> DisplayAsync(IEnumerable<object> shapes)
         {
-            var result = new List<IHtmlContent>();
+            var htmlContents = new List<IHtmlContent>();
+            var htmlContentBuilder = new HtmlContentBuilder();
+
             foreach (var shape in shapes)
             {
-                result.Add(await DisplayAsync(shape));
+                htmlContentBuilder.AppendHtml(await DisplayAsync(shape));
             }
 
-            return new DisplayHelper.Combined(result);
+            return htmlContentBuilder;
         }
     }
 }
