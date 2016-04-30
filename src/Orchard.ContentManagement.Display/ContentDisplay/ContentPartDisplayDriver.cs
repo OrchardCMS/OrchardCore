@@ -10,6 +10,11 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
     /// <typeparam name="TPart"></typeparam>
     public abstract class ContentPartDisplayDriver<TPart> : DisplayDriver<TPart, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IContentDisplayDriver where TPart : ContentPart, new()
     {
+        public ContentPartDisplayDriver()
+        {
+            Prefix = typeof(TPart).Name;
+        }
+
         Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
         {
             var part = model.As<TPart>();

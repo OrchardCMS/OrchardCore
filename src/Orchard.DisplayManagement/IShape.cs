@@ -9,6 +9,6 @@ namespace Orchard.DisplayManagement
     /// </summary>
     public interface IShape
     {
-        ShapeMetadata Metadata { get; set; }
+        ShapeMetadata Metadata { get; }
     }
 }

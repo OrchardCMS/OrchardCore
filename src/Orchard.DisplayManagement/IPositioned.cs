@@ -2,6 +2,6 @@
 {
     public interface IPositioned
     {
-        string Position { get; }
+        string Position { get; set; }
     }
 }

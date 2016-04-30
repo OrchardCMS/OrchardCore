@@ -1,0 +1,10 @@
+@using Orchard.ContentManagement.MetaData.Models;
+
+@{
+    ContentTypePartDefinition contentPartDefinition = Model.ContentPart;
+}
+
+<h1>@T["Edit Content Part - {0}", contentPartDefinition.PartDefinition.Name]</h1>
+
+@* Display all shapes rendered for this part *@
+@Display(Model.Content)

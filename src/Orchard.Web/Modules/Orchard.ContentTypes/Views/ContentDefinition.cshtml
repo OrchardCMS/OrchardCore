@@ -1,0 +1,49 @@
+@model Orchard.ContentTypes.ViewModels.ContentTypeDefinitionViewModel
+
+@using Orchard.ContentManagement.MetaData.Models;
+
+@{
+    ContentTypeDefinition contentTypeDefinition = Model.ContentTypeDefinition;
+}
+
+<h1>@RenderTitleSegments(T["Edit Content Type - {0}", contentTypeDefinition.DisplayName])</h1>
+
+
+<form asp-action="Edit2">
+    @Html.ValidationSummary()
+
+    <fieldset class="form-group row">
+        <div class="col-xs-6 ">
+            <label asp-for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" />
+            <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
+        </div>
+    </fieldset>
+
+    @Display(Model.TypeSettings)
+
+    @*<fieldset class="form-group">
+            <h3>@T["Fields"]</h3>
+            @Html.EditorFor(m => m.Fields, "Fields", "")
+            <a asp-route-action="AddFieldTo" asp-route-id="@Model.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+        </fieldset>*@
+
+    <fieldset class="form-group">
+        <h3>@T["Parts"]</h3>
+
+        @{
+            foreach (var part in Model.TypePartSettings)
+            {
+                @Display(part)
+            }
+        }
+
+        @*@Html.EditorFor(m => m.Parts, "TypeParts", "")*@
+        <a asp-route-action="AddPartsTo" asp-route-id="@contentTypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+    </fieldset>
+</form>

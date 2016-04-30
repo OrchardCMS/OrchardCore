@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Utility;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Shapes;
 using Microsoft.AspNetCore.Html;
-using Orchard.DisplayManagement.Implementation;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Shapes;
+using Orchard.Utility;
 
 namespace Orchard.DisplayManagement.Zones
 {
@@ -25,7 +24,13 @@ namespace Orchard.DisplayManagement.Zones
                 htmlContents.Add(Display(item));
             }
 
-            return new DisplayHelper.Combined(htmlContents);
+            var htmlContentBuilder = new HtmlContentBuilder();
+            foreach (var htmlContent in htmlContents)
+            {
+                htmlContentBuilder.AppendHtml(htmlContent);
+            }
+
+            return htmlContentBuilder;
         }
 
         [Shape]
@@ -34,9 +39,9 @@ namespace Orchard.DisplayManagement.Zones
             var htmlContents = new List<IHtmlContent>();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
-            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab);
+            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab).ToList();
 
-            if (tabbed.Count() > 1)
+            if (tabbed.Count > 1)
             {
                 foreach (var tab in tabbed)
                 {
@@ -51,18 +56,21 @@ namespace Orchard.DisplayManagement.Zones
                     htmlContents.Add(tabBuilder);
                 }
             }
-            else
+            else if (tabbed.Count > 0)
             {
-                foreach (var item in tabbed.First())
+                foreach (var item in tabbed[0])
                 {
                     htmlContents.Add(Display(item));
                 }
             }
 
-            // TODO: Replace by HtmlContentBuilder when available
-            var combined = new DisplayHelper.Combined(htmlContents);
+            var htmlContentBuilder = new HtmlContentBuilder();
+            foreach (var htmlContent in htmlContents)
+            {
+                htmlContentBuilder.AppendHtml(htmlContent);
+            }
 
-            return combined;
+            return htmlContentBuilder;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Orchard.DisplayManagement
     public class PositionWrapper : IHtmlContent, IPositioned
     {
         private IHtmlContent _value;
-        public string Position { get; private set; }
+        public string Position { get; set; }
 
         public PositionWrapper(IHtmlContent value, string position)
         {

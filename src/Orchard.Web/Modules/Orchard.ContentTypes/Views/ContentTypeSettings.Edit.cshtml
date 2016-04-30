@@ -1,4 +1,6 @@
-﻿@*<fieldset class="form-group">
+@model Orchard.ContentTypes.ViewModels.ContentTypeSettingsViewModel
+
+<fieldset class="form-group">
     <label asp-for="Creatable">
         <input asp-for="Creatable" type="checkbox">
         @T["Creatable"]
@@ -37,4 +39,4 @@
         <input asp-for="Stereotype" type="text" class="form-control">
         <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
     </label>
-</fieldset>*@
+</fieldset>

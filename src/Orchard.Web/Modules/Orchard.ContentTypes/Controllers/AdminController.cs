@@ -16,6 +16,7 @@ using Orchard.Utility;
 using YesSql.Core.Services;
 using Orchard.Mvc;
 using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentTypes.Editors;
 
 namespace Orchard.ContentTypes.Controllers
 {
@@ -26,8 +27,10 @@ namespace Orchard.ContentTypes.Controllers
         private readonly ShellSettings _settings;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
+        private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
 
         public AdminController(
+            IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
             ShellSettings settings,
@@ -37,6 +40,7 @@ namespace Orchard.ContentTypes.Controllers
             IStringLocalizer<AdminMenu> localizer
             )
         {
+            _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
             _session = session;
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
@@ -151,6 +155,17 @@ namespace Orchard.ContentTypes.Controllers
                 return NotFound();
 
             return View(typeViewModel);
+        }
+
+        public async Task<ActionResult> Edit2(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+                return new UnauthorizedResult();
+
+            var contentDefinition =_contentDefinitionManager.GetTypeDefinition(id);
+            var shape = await _contentDefinitionDisplayManager.BuildEditorAsync(contentDefinition, this);
+
+            return View(shape);
         }
 
 

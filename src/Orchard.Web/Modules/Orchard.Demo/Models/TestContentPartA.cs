@@ -6,7 +6,7 @@ namespace Orchard.Demo.Models
 {
     public class TestContentPartA : ContentPart, IShape
     {
-        public ShapeMetadata Metadata { get; set; } 
+        public ShapeMetadata Metadata { get; set; }
         public string Line { get; set; }
     }
 }

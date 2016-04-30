@@ -53,30 +53,16 @@ namespace Orchard.DisplayManagement.Implementation
 
             if (parameters.Positional.Any())
             {
-                return new Combined(await ShapeExecuteAsync(parameters.Positional));
+                var htmlContents = await ShapeExecuteAsync(parameters.Positional);
+                var htmlContentBuilder = new HtmlContentBuilder();
+                foreach (var htmlContent in htmlContents)
+                {
+                    htmlContentBuilder.AppendHtml(htmlContent);
+                }
             }
 
             // zero args - no display to execute
             return null;
-        }
-
-        // TODO: Replace with HtmlContentBuilder once available in MVC 6 rc2
-        public class Combined : IHtmlContent
-        {
-            private readonly IEnumerable<IHtmlContent> _fragments;
-
-            public Combined(IEnumerable<IHtmlContent> fragments)
-            {
-                _fragments = fragments;
-            }
-
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-            {
-                foreach (var fragment in _fragments)
-                {
-                    fragment.WriteTo(writer, encoder);
-                }
-            }
         }
 
         private Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)
