@@ -1,10 +1,34 @@
 @using Orchard.ContentManagement.MetaData.Models;
+@using Orchard.ContentManagement.Metadata.Settings;
+@using Orchard.ContentTypes.ViewModels;
 
 @{
     ContentTypePartDefinition contentPartDefinition = Model.ContentPart;
 }
 
-<h1>@T["Edit Content Part - {0}", contentPartDefinition.PartDefinition.Name]</h1>
+<h3>
+    @Model.PartDefinition.DisplayName
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <span class="description"> - @Model.Description</span>
+    }
+</h3>
 
-@* Display all shapes rendered for this part *@
-@Display(Model.Content)
+@if (Model.PartDefinition.Settings.ToObject<ContentPartSettings>().Attachable)
+{
+    <a asp-route-action="RemovePartFrom" asp-route-id="@Model.Type.Name" asp-route-name="@Model.Type.Name" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>
+}
+
+<fieldset class="form-group">
+    @Html.EditorFor(m => m.PartDefinition.Fields, "TypePartFields", "PartDefinition")
+    @if (Model.Templates.Any())
+    {
+        <div class="settings">
+            <h4>@T["{0} Settings:", Model.PartDefinition.DisplayName]</h4>
+            @{ await Html.RenderTemplatesAsync(Model.Templates); }
+        </div>
+                }
+                @* don't show global part settings for now - @Html.DisplayFor(m => m.PartDefinition.Settings, "Settings", "PartDefinition") *@
+                <input asp-for="PartDefinition.Name" type="hidden" />
+                <input asp-for="Index" type="hidden" />
+            </fieldset>
