@@ -12,7 +12,6 @@ namespace Orchard.Console
             var host = new WebHostBuilder()
                 .UseIISIntegration()
                 .UseKestrel()
-                .UseDefaultHostingConfiguration(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseWebRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
