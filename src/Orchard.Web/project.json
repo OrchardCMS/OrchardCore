@@ -2,8 +2,8 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20704",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20750",
     "Microsoft.NETCore.App": {
       "version": "1.0.0-rc2-3002426",
       "type": "platform"
@@ -24,10 +24,24 @@
     "TheAdmin": "1.0.0",
     "TheTheme": "1.0.0"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "copyToOutput": [
+        "Views",
+        "web.config"
+    ],
+    "compile": {
+      "exclude": [
+        "wwwroot",
+        "node_modules",
+        "App_Data",
+        "Core",
+        "Modules",
+        "Themes"
+      ]
+    }
   },
   "frameworks": {
     "netstandardapp1.5": {
@@ -42,25 +56,13 @@
   },
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-rc2-20704",
+      "version": "1.0.0-rc2-20750",
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
       ]
     }
   },
-  "content": [
-    "Views",
-    "web.config"
-  ],
-  "exclude": [
-    "wwwroot",
-    "node_modules",
-    "App_Data",
-    "Core",
-    "Modules",
-    "Themes"
-  ],
   "packExclude": [
     "node_modules",
     "bower_components",
@@ -68,7 +70,7 @@
     "**.user",
     "**.vspscc"
   ],
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   },

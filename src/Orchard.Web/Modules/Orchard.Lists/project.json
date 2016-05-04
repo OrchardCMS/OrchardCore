@@ -1,15 +1,15 @@
 {
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20704",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20704",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20750",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20750",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.ContentManagement.Display": "2.0.0",
     "Orchard.Contents": "1.0.0",
     "Orchard.Core": "2.0.0",
     "Orchard.Hosting.Web": "2.0.0"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "debugType": "portable"
   },
   "frameworks": {
@@ -25,7 +25,7 @@
   },
   "tools": {
     "dotnet-razor-tooling": {
-      "version": "1.0.0-rc2-20704",
+      "version": "1.0.0-rc2-20750",
       "imports": [
         "dnxcore50",
         "portable-net451+win8"

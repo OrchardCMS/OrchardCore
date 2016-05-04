@@ -1,13 +1,13 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Configuration": "1.0.0-rc2-20704",
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc2-20704",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc2-20704",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Microsoft.Extensions.Configuration": "1.0.0-rc2-20750",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-rc2-20750",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-rc2-20750",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
     "YamlDotNet": "3.7.0"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
    "warningsAsErrors": true
@@ -23,7 +23,7 @@
       }
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   }

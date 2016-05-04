@@ -1,15 +1,15 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.Http": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.Routing": "1.0.0-rc2-20704",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-20704",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-20704",
-    "Microsoft.Extensions.Logging": "1.0.0-rc2-20704",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Http": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Routing": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-20750",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-rc2-20801",
+    "Microsoft.Extensions.Logging": "1.0.0-rc2-20750",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
     "Orchard.Abstractions": "2.0.0",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.ContentManagement.Display": "2.0.0",
@@ -22,7 +22,7 @@
     "Orchard.Validation": "2.0.0",
     "System.Diagnostics.Process": "4.1.0-rc2-24008"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
     "warningsAsErrors": true
@@ -38,7 +38,7 @@
       }
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   }
