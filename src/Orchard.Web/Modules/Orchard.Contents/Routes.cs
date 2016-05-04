@@ -18,7 +18,7 @@ namespace Orchard.Contents
                                 controller = "Item",
                                 action = "Display"
                             },
-                        dataTokens:  new
+                        constraints:  new
                             {
                                 area = "Orchard.Contents"
                             }
@@ -34,7 +34,7 @@ namespace Orchard.Contents
                                 controller = "Item",
                                 action = "Preview"
                             },
-                        dataTokens:  new
+                        constraints:  new
                             {
                                 area = "Orchard.Contents"
                             }
