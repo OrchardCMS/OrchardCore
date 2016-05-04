@@ -1,14 +1,14 @@
+using System;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
-using Orchard.Environment.Extensions;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
@@ -37,30 +37,34 @@ namespace Orchard.Hosting.Mvc
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 
-            //if (DnxPlatformServices.Default.LibraryManager != null)
-            //{
-            //    var partManager = GetApplicationPartManager(services);
-            //    var libraryManager = new OrchardLibraryManager(DnxPlatformServices.Default.LibraryManager);
-            //    var provider = new OrchardMvcAssemblyProvider(
-            //        libraryManager,
-            //        DnxPlatformServices.Default.AssemblyLoaderContainer,
-            //        new ExtensionAssemblyLoader(
-            //            PlatformServices.Default.Application,
-            //            DnxPlatformServices.Default.AssemblyLoadContextAccessor,
-            //            PlatformServices.Default.Runtime,
-            //            libraryManager));
-
-            //    foreach (var assembly in provider.CandidateAssemblies)
-            //    {
-            //        partManager.ApplicationParts.Add(new AssemblyPart(assembly));
-            //    }
-            //}
+            var applicationPartManager = services.BuildServiceProvider().GetRequiredService<ApplicationPartManager>();
+            var assemblyParts = applicationPartManager.ApplicationParts.OfType<AssemblyPart>();
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
+
+                var previous = options.CompilationCallback;
+                options.CompilationCallback = (context) => 
+                {
+                    previous?.Invoke(context);
+
+                    var assemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    var metadataReferences = new List<MetadataReference>();
+ 
+                    foreach (var assemblyPart in assemblyParts)
+                    {
+                        if (assemblyPaths.Add(assemblyPart.Assembly.GetName().Name)) {
+                            var metadataReference = MetadataReference.CreateFromFile(assemblyPart.Assembly.Location);
+                            metadataReferences.Add(metadataReference);
+                        }
+                    }
+
+                    context.Compilation = context.Compilation.AddReferences(metadataReferences);
+                };
             });
+
             return services;
         }
 

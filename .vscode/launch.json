@@ -5,7 +5,7 @@
 			"name": ".NET Core Launch (console)",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "Dotnet Build Debug",
+			"preLaunchTask": "Web App: Dotnet Build Debug",
 			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
@@ -15,7 +15,7 @@
 			"name": ".NET Core Launch (web)",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "Dotnet Build Debug",
+			"preLaunchTask": "Web App: Dotnet Build Debug",
 			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
@@ -25,7 +25,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000"
+					"args": "/C start http://localhost:5000/orchard.demo/home/display/2"
 				},
 				"osx": {
 					"command": "open"
