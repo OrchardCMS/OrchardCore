@@ -1,9 +1,9 @@
 {
-  "compilationOptions": {
+  "buildOptions": {
     "warningsAsErrors": true
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20704",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20750",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.Data": "2.0.0",
     "Orchard.DisplayManagement": "2.0.0",
@@ -21,7 +21,7 @@
   "frameworks": {
     "netstandardapp1.5": {
       "dependencies": {
-        "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+        "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
         "dotnet-test-xunit": "1.0.0-dev-*"
       },
       "imports": [
@@ -30,7 +30,7 @@
       ]
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Brochard"
   }

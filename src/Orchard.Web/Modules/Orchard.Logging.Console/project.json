@@ -1,11 +1,11 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-20704",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24018",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-20750",
+    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
     "Orchard.Abstractions": "2.0.0"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
     "warningsAsErrors": true
@@ -21,7 +21,7 @@
       }
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   }
