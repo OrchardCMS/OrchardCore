@@ -150,7 +150,9 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
                 }))))
         .pipe(plumber())
         .pipe(gulpif("*.less", less()))
-        .pipe(gulpif("*.scss", scss()))
+        .pipe(gulpif("*.scss", scss({ 
+            precision: 10
+        })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(cssnano({
             autoprefixer: { browsers: ["last 2 versions"] },
