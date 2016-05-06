@@ -14,7 +14,7 @@ RUN sudo apt-get update
 
 #3 Install .NET Core
 
-RUN sudo apt-get install -y dotnet-dev-1.0.0-rc2-002545
+RUN sudo apt-get install -y dotnet-dev-1.0.0-rc2-002673
 
 #4 Install Mono (Required by KoreBuild)
 
