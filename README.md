@@ -246,7 +246,7 @@ Orchard 2 can be run using dotnet CLI under Ubuntu 14.04 LTS for now. Here are t
 6. Install Omnisharp
 
     Download with browser
-    https://github.com/OmniSharp/omnisharp-vscode/releases/download/v1.0.3-rc2/csharp-1.0.3-rc2.vsix
+    https://github.com/OmniSharp/omnisharp-vscode/releases/download/v1.0.5-rc2/csharp-1.0.5-rc2.vsix
 
     ```shell
     code //opens vs code from command shell
