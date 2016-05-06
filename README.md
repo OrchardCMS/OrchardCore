@@ -4,7 +4,7 @@ Orchard 2 is the implementation of [Orchard CMS](https://github.com/OrchardCMS/O
 
 [![Join the chat at https://gitter.im/OrchardCMS/Orchard2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## Build Statuses
+## Build Status
 
 | Build server| Platform       | Status                                                                                                                                                                  |
 |-------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -28,7 +28,7 @@ Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), communi
 ### Using Kestrel
 
 - Call `dotnet run`.
-- Then open the `http://localhost:5001` URL in your browser.
+- Then open the `http://localhost:5000` URL in your browser.
 
 ### Using Console
 
@@ -102,7 +102,7 @@ All tenant configuration lives in `src\Orchard.Web\App_Data\Sites\Default` withi
 ```yaml
 State: Running
 Name: Default
-RequestUrlHost: localhost:5001
+RequestUrlHost: localhost:5000
 RequestUrlPrefix:
 ```
 
@@ -199,7 +199,7 @@ Orchard 2 can be run using dotnet CLI under Ubuntu 14.04 LTS for now. Here are t
         Installing .NET Core is a simple thing on Ubuntu. The below will install the package and all of its dependencies.
 
         ```shell
-        sudo apt-get install dotnet-dev-1.0.0-rc2-002543  //default version can change over time
+        sudo apt-get install dotnet-dev-1.0.0-rc2-002673  //default version can change over time
         ```
         
         * Other usefull commands
