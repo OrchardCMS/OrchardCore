@@ -1,14 +1,11 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
+using Orchard.Environment.Extensions;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
@@ -37,33 +34,22 @@ namespace Orchard.Hosting.Mvc
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 
-            var applicationPartManager = services.BuildServiceProvider().GetRequiredService<ApplicationPartManager>();
-            var assemblyParts = applicationPartManager.ApplicationParts.OfType<AssemblyPart>();
-
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
 
+                var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
+
                 var previous = options.CompilationCallback;
-                options.CompilationCallback = (context) => 
+                options.CompilationCallback = (context) =>
                 {
                     previous?.Invoke(context);
-
-                    var assemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    var metadataReferences = new List<MetadataReference>();
- 
-                    foreach (var assemblyPart in assemblyParts)
-                    {
-                        if (assemblyPaths.Add(assemblyPart.Assembly.GetName().Name)) {
-                            var metadataReference = MetadataReference.CreateFromFile(assemblyPart.Assembly.Location);
-                            metadataReferences.Add(metadataReference);
-                        }
-                    }
-
-                    context.Compilation = context.Compilation.AddReferences(metadataReferences);
+                    context.Compilation = context.Compilation.AddReferences(extensionLibraryService.MetadataReferences());
                 };
             });
+
+            services.AddSingleton<ICompilationService, Orchard.Hosting.Mvc.Razor.DefaultRoslynCompilationService>();
 
             return services;
         }

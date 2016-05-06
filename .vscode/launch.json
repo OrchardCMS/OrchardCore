@@ -25,7 +25,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000/orchard.demo/home/display/2"
+					"args": "/C start http://localhost:5000/orchard.themes/admin/index"
 				},
 				"osx": {
 					"command": "open"

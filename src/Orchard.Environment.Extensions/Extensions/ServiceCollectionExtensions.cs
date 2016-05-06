@@ -27,6 +27,8 @@ namespace Orchard.Environment
                 services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
+
+                services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
 
             return services;
