@@ -112,7 +112,7 @@ namespace Orchard.Environment.Extensions
                     }
                 }
             }
-            
+ 
             return assembly;
         }
     }
