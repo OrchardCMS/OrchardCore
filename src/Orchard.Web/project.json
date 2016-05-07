@@ -2,27 +2,27 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20750",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20750",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20825",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20825",
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002426",
+      "version": "1.0.0-rc2-3002673",
       "type": "platform"
     },
-    "Orchard.Hosting.Console": "2.0.0",
-    "Orchard.Hosting.Web": "2.0.0",
-    "Orchard.Core": "2.0.0",
-    "Orchard.Contents": "1.0.0",
-    "Orchard.ContentTypes": "1.0.0",
-    "Orchard.Demo": "1.0.0",
-    "Orchard.DynamicCache": "1.0.0",
-    "Orchard.Lists": "1.0.0",
-    "Orchard.Logging.Console": "2.0.0",
-    "Orchard.Resources": "1.0.0",
-    "Orchard.Setup": "2.0.0",
-    "Orchard.Themes": "1.0.0",
-    "SafeMode": "1.0.0",
-    "TheAdmin": "1.0.0",
-    "TheTheme": "1.0.0"
+    "Orchard.Hosting.Console": "2.0.0-*",
+    "Orchard.Hosting.Web": "2.0.0-*",
+    "Orchard.Core": "2.0.0-*",
+    "Orchard.Contents": "1.0.0-*",
+    "Orchard.ContentTypes": "1.0.0-*",
+    "Orchard.Demo": "1.0.0-*",
+    "Orchard.DynamicCache": "1.0.0-*",
+    "Orchard.Lists": "1.0.0-*",
+    "Orchard.Logging.Console": "2.0.0-*",
+    "Orchard.Resources": "1.0.0-*",
+    "Orchard.Setup": "2.0.0-*",
+    "Orchard.Themes": "1.0.0-*",
+    "SafeMode": "1.0.0-*",
+    "TheAdmin": "1.0.0-*",
+    "TheTheme": "1.0.0-*"
   },
   "buildOptions": {
     "emitEntryPoint": true,
@@ -56,7 +56,7 @@
   },
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-rc2-20750",
+      "version": "1.0.0-rc2-20825",
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
