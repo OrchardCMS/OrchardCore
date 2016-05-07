@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
@@ -153,9 +154,9 @@ namespace Orchard.Environment.Shell.Builders
                             case "SqlConnection":
                                 connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
                                 break;
-                            //case "SqliteConnection":
-                            //    connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                            //    break;
+                            case "SqliteConnection":
+                                connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                                break;
                             default:
                                 throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
                         }
