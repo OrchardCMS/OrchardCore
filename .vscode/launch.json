@@ -25,7 +25,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000/orchard.themes/admin/index"
+					"args": "/C start http://localhost:5000"
 				},
 				"osx": {
 					"command": "open"
@@ -39,7 +39,7 @@
 			"name": ".NET Core Attach",
 			"type": "coreclr",
 			"request": "attach",
-			"processId": "*"
+			"processId": 0
 		}
 	]
 }
