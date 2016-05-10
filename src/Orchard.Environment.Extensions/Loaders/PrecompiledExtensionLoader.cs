@@ -55,7 +55,7 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
 
-            var assembly = _extensionLibraryService.LoadProject(descriptor);
+            var assembly = _extensionLibraryService.LoadExternalAssembly(descriptor);
             
             if (assembly == null)
                 return null;

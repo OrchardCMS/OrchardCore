@@ -84,7 +84,7 @@ namespace Orchard.Environment.Extensions
             return metadataReferences;
         }
 
-        public Assembly LoadProject(ExtensionDescriptor descriptor)
+        public Assembly LoadExternalAssembly(ExtensionDescriptor descriptor)
         {
             var projectContext = ProjectContext.CreateContextForEachFramework(Path.Combine( descriptor.Location, descriptor.Id)).FirstOrDefault();
 
