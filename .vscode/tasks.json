@@ -12,27 +12,42 @@
 			"args": [ "dotnet restore" ]
 		},
 		{
-			"taskName": "Dotnet Force Restore",
+			"taskName": "Dotnet Restore Force",
 			"args": [ "dotnet restore --no-cache" ]
 		},
 		{
-			"taskName": "Dotnet Rebuild Debug",
-			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web --no-incremental -c Debug" ],
+			"taskName": "Projects: Dotnet Build Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Projects -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"taskName": "Dotnet Build Debug",
+			"taskName": "Projects: Dotnet Rebuild Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Projects --no-incremental -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Projects: Dotnet Build Release",
+			"args": [ "dotnet build ${workspaceRoot}/src/Projects -c Release" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Build Debug",
 			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Debug" ],
 			"isBuildCommand": true,
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"taskName": "Dotnet Build Release",
+			"taskName": "Web App: Dotnet Rebuild Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web --no-incremental -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Build Release",
 			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Release" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"taskName": "Dotnet Run",
+			"taskName": "Web App: Dotnet Run",
 			"args": [ "cd ${workspaceRoot}/src/orchard.web & dotnet run" ]
 		},
 		{

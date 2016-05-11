@@ -1,11 +1,8 @@
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Environment.Extensions;
@@ -37,30 +34,23 @@ namespace Orchard.Hosting.Mvc
             services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 
-            //if (DnxPlatformServices.Default.LibraryManager != null)
-            //{
-            //    var partManager = GetApplicationPartManager(services);
-            //    var libraryManager = new OrchardLibraryManager(DnxPlatformServices.Default.LibraryManager);
-            //    var provider = new OrchardMvcAssemblyProvider(
-            //        libraryManager,
-            //        DnxPlatformServices.Default.AssemblyLoaderContainer,
-            //        new ExtensionAssemblyLoader(
-            //            PlatformServices.Default.Application,
-            //            DnxPlatformServices.Default.AssemblyLoadContextAccessor,
-            //            PlatformServices.Default.Runtime,
-            //            libraryManager));
-
-            //    foreach (var assembly in provider.CandidateAssemblies)
-            //    {
-            //        partManager.ApplicationParts.Add(new AssemblyPart(assembly));
-            //    }
-            //}
-
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
+
+                var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
+
+                var previous = options.CompilationCallback;
+                options.CompilationCallback = (context) =>
+                {
+                    previous?.Invoke(context);
+                    context.Compilation = context.Compilation.AddReferences(extensionLibraryService.MetadataReferences());
+                };
             });
+
+            services.AddSingleton<ICompilationService, Orchard.Hosting.Mvc.Razor.DefaultRoslynCompilationService>();
+
             return services;
         }
 

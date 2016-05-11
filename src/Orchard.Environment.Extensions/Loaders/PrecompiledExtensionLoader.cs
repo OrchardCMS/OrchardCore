@@ -1,15 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
-using Orchard.DependencyInjection;
-using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.Options;
+using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
-using System.IO;
-using Microsoft.DotNet.ProjectModel.Loader;
-using Microsoft.DotNet.ProjectModel;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -19,17 +14,20 @@ namespace Orchard.Environment.Extensions.Loaders
 
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IOrchardFileSystem _fileSystem;
+        private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
         public PrecompiledExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
             IOrchardFileSystem fileSystem,
+            IExtensionLibraryService extensionLibraryService,
             ILogger<PrecompiledExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
+            _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
 
@@ -57,18 +55,10 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
 
-            var extensionPath = Path.Combine(descriptor.Location, descriptor.Id);
-
-            var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
-
-            if (projectContext == null)
-            {
+            var assembly = _extensionLibraryService.LoadExternalAssembly(descriptor);
+            
+            if (assembly == null)
                 return null;
-            }
-
-            var loadContext = projectContext.CreateLoadContext();
-
-            var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(descriptor.Id));
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
