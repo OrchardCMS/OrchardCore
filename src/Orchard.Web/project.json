@@ -17,10 +17,12 @@
     "emitEntryPoint": true,
     "debugType": "portable",
     "preserveCompilationContext": true,
-    "copyToOutput": [
+    "copyToOutput": {
+      "include": [
         "Views",
         "web.config"
-    ],
+      ]
+    },
     "compile": {
       "exclude": [
         "wwwroot",
