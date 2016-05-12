@@ -1,17 +1,16 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0-rc2-20825",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20825",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-20825",
-    "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
+    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
-    "System.Reflection.Extensions": "4.0.1-rc2-24018",
-    "System.Diagnostics.TraceSource": "4.0.0-rc2-24027",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
+    "System.Reflection.Extensions": "4.0.1-*",
+    "System.Diagnostics.TraceSource": "4.0.0-*",
     "Castle.Core": "4.0.0-alpha001"
   },
   "buildOptions": {
@@ -26,8 +25,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.5.0-*",
-        "System.Reflection.Extensions": "4.0.1-rc2-24027"
+        "NETStandard.Library": "1.5.0-*"
       }
     }
   },
