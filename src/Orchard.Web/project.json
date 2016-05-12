@@ -2,16 +2,16 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20825",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20825",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002673",
+      "version": "1.0.0-*",
       "type": "platform"
     },
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Core": "2.0.0-*",
-    "Orchard.ContentFields": "1.0.0",
+    "Orchard.ContentFields": "1.0.0-*"
   },
   "buildOptions": {
     "emitEntryPoint": true,
@@ -45,7 +45,7 @@
   },
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-rc2-20825",
+      "version": "1.0.0-*",
       "imports": [
         "dnxcore50",
         "portable-net451+win8"

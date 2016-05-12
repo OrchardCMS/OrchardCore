@@ -3,7 +3,7 @@
     "warningsAsErrors": true
   },
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-rc2-20825",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
@@ -19,15 +19,18 @@
   },
   "testRunner": "xunit",
   "frameworks": {
-    "netstandardapp1.5": {
-      "dependencies": {
-        "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
-        "dotnet-test-xunit": "1.0.0-rc2-173384-19"
-      },
+    "netcoreapp1.0": {
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ]
+      ],
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "version": "1.0.0-*",
+          "type": "platform"
+        },
+        "dotnet-test-xunit": "1.0.0-rc2-*",
+      }
     }
   },
   "packOptions": {
