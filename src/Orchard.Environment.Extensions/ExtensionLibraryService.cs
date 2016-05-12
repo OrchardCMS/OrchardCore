@@ -26,7 +26,7 @@ namespace Orchard.Environment.Extensions
         {
             _applicationServices = applicationServices;
         }
- 
+
         private IEnumerable<string> ApplicationAssemblyNames()
         {
             return LazyInitializer.EnsureInitialized(
@@ -35,7 +35,7 @@ namespace Orchard.Environment.Extensions
                 ref _applicationAssembliesNamesLock,
                 GetApplicationAssemblyNames);
         }
- 
+
         public IEnumerable<MetadataReference> MetadataReferences()
         {
             return LazyInitializer.EnsureInitialized(
@@ -49,7 +49,7 @@ namespace Orchard.Environment.Extensions
         {
             var assemblyNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
             var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
- 
+
             // TODO: find a way to select the right configuration
             var libraryExporter = projectContext.CreateExporter("Debug");
 
@@ -68,7 +68,7 @@ namespace Orchard.Environment.Extensions
         {
             var assemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
-            
+
             var extensionManager = _applicationServices.BuildServiceProvider().GetService<IExtensionManager>();
 
             foreach (var extension in extensionManager.AvailableExtensions())
@@ -108,11 +108,13 @@ namespace Orchard.Environment.Extensions
                             if (loadedAssembly.GetName().Name == projectContext.ProjectFile.Name)
                                 assembly = loadedAssembly;
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
                 }
             }
- 
+
             return assembly;
         }
     }
