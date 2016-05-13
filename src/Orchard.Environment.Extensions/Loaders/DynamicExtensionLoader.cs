@@ -4,6 +4,9 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Folders;
 using Microsoft.Extensions.Options;
 using Orchard.FileSystem;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -43,12 +46,29 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            if (ExtensionsSearchPaths == null || descriptor == null || !ExtensionsSearchPaths.Contains(descriptor.Location))
-            {
-                return null;
-            }
+            //var probingFolder = _fileSystem.GetDirectoryInfo("bin");
+            //if (!probingFolder.Exists)
+            //{
+            //    probingFolder.Create();
+            //}
 
-            var directory = _fileSystem.GetDirectoryInfo(descriptor.Location);
+            //var location = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
+
+            //Process.Start("dotnet", $"build \"{location}\" --output \"{probingFolder}\" --framework netstandard1.5").WaitForExit();
+
+            //var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(probingFolder.FullName, descriptor.Id) + ".dll");
+
+            //if (assembly == null)
+            //{
+            //    return null;
+            //}
+
+            //return new ExtensionEntry
+            //{
+            //    Descriptor = descriptor,
+            //    Assembly = assembly,
+            //    ExportedTypes = assembly.ExportedTypes
+            //};
 
             return null;
         }
