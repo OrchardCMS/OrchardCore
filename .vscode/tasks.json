@@ -16,18 +16,18 @@
 			"args": [ "dotnet restore --no-cache" ]
 		},
 		{
-			"taskName": "Projects: Dotnet Build Debug",
-			"args": [ "dotnet build ${workspaceRoot}/src/Projects -c Debug" ],
+			"taskName": "Solution: Dotnet Build Debug",
+			"args": [ "dotnet build src/*/project.json -c Debug & dotnet build src/orchard.web/modules/*/project.json -c Debug & dotnet build src/orchard.web/themes/*/project.json -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"taskName": "Projects: Dotnet Rebuild Debug",
-			"args": [ "dotnet build ${workspaceRoot}/src/Projects --no-incremental -c Debug" ],
+			"taskName": "Solution: Dotnet Rebuild Debug",
+			"args": [ "dotnet build src/*/project.json --no-incremental -c Debug & dotnet build src/orchard.web/modules/*/project.json --no-incremental -c Debug & dotnet build src/orchard.web/themes/*/project.json --no-incremental -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"taskName": "Projects: Dotnet Build Release",
-			"args": [ "dotnet build ${workspaceRoot}/src/Projects -c Release" ],
+			"taskName": "Solution: Dotnet Build Release",
+			"args": [ "dotnet build src/*/project.json -c Release & dotnet build src/orchard.web/modules/*/project.json -c Release & dotnet build src/orchard.web/themes/*/project.json -c Release" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
