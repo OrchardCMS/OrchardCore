@@ -5,13 +5,12 @@
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-*",
+      "version": "1.0.0-rc2-3002700",
       "type": "platform"
     },
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.Core": "2.0.0-*",
-    "Orchard.ContentFields": "1.0.0-*"
+    "Orchard.Core": "2.0.0-*"
   },
   "buildOptions": {
     "emitEntryPoint": true,
