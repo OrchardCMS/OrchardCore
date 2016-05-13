@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Environment.Extensions.Loaders
@@ -28,7 +29,26 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            return null;
+            try
+            {
+                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+
+                if (assembly == null)
+                {
+                    return null;
+                }
+
+                return new ExtensionEntry
+                {
+                    Descriptor = descriptor,
+                    Assembly = assembly,
+                    ExportedTypes = assembly.ExportedTypes
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
