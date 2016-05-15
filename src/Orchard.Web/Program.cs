@@ -9,11 +9,13 @@ namespace Orchard.Console
     {
         public static void Main(string[] args)
         {
+            var currentDirectory = Directory.GetCurrentDirectory();
+
             var host = new WebHostBuilder()
                 .UseIISIntegration()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseWebRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(currentDirectory)
+                .UseWebRoot(currentDirectory)
                 .UseStartup<Startup>()
                 .Build();
 
