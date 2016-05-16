@@ -2,23 +2,23 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20825",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20825",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20890",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20890",
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002673",
+      "version": "1.0.0-rc2-3002702",
       "type": "platform"
     },
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.Core": "2.0.0-*",
+    "Orchard.Core": "2.0.0-*"
   },
   "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
     "preserveCompilationContext": true,
     "copyToOutput": [
-        "Views",
-        "web.config"
+      "Views",
+      "web.config"
     ],
     "compile": {
       "exclude": [
@@ -43,11 +43,30 @@
     }
   },
   "tools": {
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview1-final",
+      "imports": "portable-net45+win8+dnxcore50"
+    },
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-rc2-20825",
+      "version": "1.0.0-preview1-final",
+      "imports": "portable-net45+win8+dnxcore50"
+    },
+    "Microsoft.EntityFrameworkCore.Tools": {
+      "version": "1.0.0-preview1-final",
       "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
+        "portable-net45+win8+dnxcore50",
+        "portable-net45+win8"
+      ]
+    },
+    "Microsoft.Extensions.SecretManager.Tools": {
+      "version": "1.0.0-preview1-final",
+      "imports": "portable-net45+win8+dnxcore50"
+    },
+    "Microsoft.VisualStudio.Web.CodeGeneration.Tools": {
+      "version": "1.0.0-preview1-final",
+      "imports": [
+        "portable-net45+win8+dnxcore50",
+        "portable-net45+win8"
       ]
     }
   },
@@ -61,9 +80,5 @@
   "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
-  },
-  "scripts": {
-    "prepublish": [ "gulp publish" ],
-    "postrestore": [ "gulp publish" ]
   }
 }
