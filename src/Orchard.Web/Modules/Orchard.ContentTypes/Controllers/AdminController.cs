@@ -163,6 +163,12 @@ namespace Orchard.ContentTypes.Controllers
                 return new UnauthorizedResult();
 
             var contentDefinition =_contentDefinitionManager.GetTypeDefinition(id);
+
+            if (contentDefinition == null)
+            {
+                return NotFound();
+            }
+
             var shape = await _contentDefinitionDisplayManager.BuildEditorAsync(contentDefinition, this);
 
             return View(shape);
@@ -209,6 +215,48 @@ namespace Orchard.ContentTypes.Controllers
             //Services.Notifier.Information(T("\"{0}\" settings have been saved.", typeViewModel.DisplayName));
 
             return RedirectToAction("List");
+        }
+
+
+        [HttpPost, ActionName("Edit2")]
+        [FormValueRequired("submit.Save")]
+        public async Task<ActionResult> Edit2POST(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+                return new UnauthorizedResult();
+
+            var contentDefinition = _contentDefinitionManager.GetTypeDefinition(id);
+
+            if (contentDefinition == null)
+            {
+                return NotFound();
+            }
+
+            var shape = await _contentDefinitionDisplayManager.UpdateEditorAsync(contentDefinition, this);
+
+
+            //if (String.IsNullOrWhiteSpace(typeViewModel.DisplayName))
+            //{
+            //    ModelState.AddModelError("DisplayName", T["The Content Type name can't be empty."]);
+            //}
+
+            //if (_contentDefinitionService.GetTypes().Any(t => String.Equals(t.DisplayName.Trim(), typeViewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase) && !String.Equals(t.Name, id)))
+            //{
+            //    ModelState.AddModelError("DisplayName", T["A type with the same name already exists."]);
+            //}
+
+            if (!ModelState.IsValid)
+            {
+                _session.Cancel();
+                return View(shape);
+            }
+            else
+            {
+                // Services.Notifier.Success(T("\"{0}\" settings have been saved.", typeViewModel.DisplayName));
+            }
+
+            return View(shape);
+
         }
 
         [HttpPost, ActionName("Edit")]

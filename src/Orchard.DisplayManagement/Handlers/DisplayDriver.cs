@@ -108,17 +108,17 @@ namespace Orchard.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
-            return DisplayAsync(model, context.Updater);
+            return DisplayAsync(model, context);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
-            return EditAsync(model, context.Updater);
+            return EditAsync(model, context);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
-            return UpdateAsync(model, context.Updater);
+            return UpdateAsync(model, context);
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TModel model, TDisplayContext context)
