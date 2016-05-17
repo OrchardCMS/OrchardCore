@@ -19,10 +19,10 @@ $(document).ready(function () {
     });
 });
 
-$(document).ready(function () {
+$(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
-        $("body").on("click", "a[itemprop~=UnsafeUrl], a[data-unsafe-url]", function () {
+        $("body").on("click", "a[itemprop~='UnsafeUrl'], a[data-unsafe-url]", function () {
             var _this = $(this);
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
