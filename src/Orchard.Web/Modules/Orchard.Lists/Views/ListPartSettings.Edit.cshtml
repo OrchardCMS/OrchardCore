@@ -1,0 +1,9 @@
+@model Orchard.Lists.Models.ListPartSettings
+
+<fieldset class="form-group">
+    <label asp-for="ContainedContentType">
+        @T["Contained Content Type"]
+        <input asp-for="ContainedContentType" type="text" class="form-control">
+        <span class="hint">@T["The content type that this list can contain, e.g. BlogPost for a Blog."]</span>
+    </label>
+</fieldset>

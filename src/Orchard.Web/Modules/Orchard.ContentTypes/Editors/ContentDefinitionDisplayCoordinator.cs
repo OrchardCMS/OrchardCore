@@ -346,9 +346,75 @@ namespace Orchard.ContentTypes.Editors
             return contentTypeDefinitionShape;
         }
 
-        public Task<dynamic> UpdateEditorAsync(ContentTypeDefinition definition, IUpdateModel updater, string groupInfoId)
+        public Task<dynamic> UpdateEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
         {
-            return Task.FromResult<dynamic>(null);
+            if (contentTypeDefinition == null)
+            {
+                throw new ArgumentNullException(nameof(contentTypeDefinition));
+            }
+
+            var contentTypeDefinitionShape = _shapeFactory.Create<ContentTypeDefinitionViewModel>("ContentDefinition");
+
+            _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, typeBuilder =>
+            {
+                contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
+                contentTypeDefinitionShape.DisplayName = contentTypeDefinition.DisplayName;
+
+                dynamic typeShape = CreateContentShape("ContentTypeDefinition_Edit");
+
+                var typeContext = new UpdateTypeEditorContext(
+                    typeBuilder,
+                    typeShape,
+                    groupId,
+                    _shapeFactory,
+                    _layoutAccessor.GetLayout(),
+                    updater
+                );
+
+                foreach (var contentPartDefinition in contentTypeDefinition.Parts)
+                {
+                    dynamic partShape = CreateContentShape("ContentTypePartDefinition_Edit");
+
+                    typeBuilder.WithPart(contentPartDefinition.PartDefinition.Name, typePartBuilder =>
+                    {
+                        partShape.ContentPart = contentPartDefinition;
+
+                        var partContext = new UpdatePartEditorContext(
+                            typePartBuilder,
+                            partShape,
+                            groupId,
+                            _shapeFactory,
+                            _layoutAccessor.GetLayout(),
+                            updater
+                        );
+
+                        BindPlacementAsync(partContext).Wait();
+
+                        _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger).Wait();
+
+                        contentTypeDefinitionShape.TypePartSettings.Add(partContext.Shape);
+
+                        // part fields
+                        //foreach (var field in part.PartDefinition.Fields)
+                        //    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
+                    });
+                }
+
+                BindPlacementAsync(typeContext).Wait();
+
+                _handlers.InvokeAsync(handler => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), Logger).Wait();
+
+                contentTypeDefinitionShape.TypeSettings = typeShape;
+
+                // global fields
+                //if (viewModel.Fields.Any())
+                //{
+                //    foreach (var field in viewModel.Fields)
+                //        field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
+                //}
+            });
+
+            return Task.FromResult<dynamic>(contentTypeDefinitionShape);
 
             //_contentDefinitionManager.AlterTypeDefinition(typeViewModel.Name, typeBuilder =>
             //{
@@ -459,7 +525,7 @@ namespace Orchard.ContentTypes.Editors
         {
             var model = new ContentTypeSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, "ContentTypeSettingsViewModel");
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             context.Builder.Creatable(model.Creatable);
             context.Builder.Listable(model.Listable);
@@ -478,16 +544,16 @@ namespace Orchard.ContentTypes.Editors
             return Shape("ContentTypePartSettings_Edit", new { ContentPart = model }).Location("Content");
         }
     }
-    
+
     public class BodyPartSettingsDisplayDriver : ContentTypePartDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition model, IUpdateModel updater)
         {
-            if (!String.Equals("BodyPart", model.PartDefinition.Name, StringComparison.Ordinal)) 
+            if (!String.Equals("BodyPart", model.PartDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }
-            
+
             return Shape("BodyPartSettings_Edit", new { ContentPart = model }).Location("Content");
         }
     }
