@@ -150,7 +150,7 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
                 }))))
         .pipe(plumber())
         .pipe(gulpif("*.less", less()))
-        .pipe(gulpif("*.scss", scss({ 
+        .pipe(gulpif("*.scss", scss({
             precision: 10
         })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
@@ -179,6 +179,9 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(plumber())
         .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
         .pipe(gulpif("*.less", less()))
+        .pipe(gulpif("*.scss", scss({
+            precision: 10
+        })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(header(
             "/*\n" +
