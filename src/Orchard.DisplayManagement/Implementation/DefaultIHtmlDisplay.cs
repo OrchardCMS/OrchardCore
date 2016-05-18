@@ -66,6 +66,9 @@ namespace Orchard.DisplayManagement.Implementation
                 DisplayContext = context
             };
 
+            // Use the same prefix as the shape
+            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix;
+
             // Evaluate global Shape Display Events
             _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayingContext), _logger);
 
