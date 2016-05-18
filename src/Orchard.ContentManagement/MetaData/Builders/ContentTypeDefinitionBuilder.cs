@@ -91,7 +91,9 @@ namespace Orchard.ContentManagement.MetaData.Builders
             else
             {
                 existingPart = new ContentTypePartDefinition(partDefinition, new JObject());
+                existingPart.ContentTypeDefinition = Current;
             }
+
             var configurer = new PartConfigurerImpl(existingPart);
             configuration(configurer);
             _parts.Add(configurer.Build());
@@ -113,7 +115,10 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
             public override ContentTypePartDefinition Build()
             {
-                return new ContentTypePartDefinition(_partDefinition, _settings);
+                return new ContentTypePartDefinition(_partDefinition, _settings)
+                {
+                    ContentTypeDefinition = Current.ContentTypeDefinition
+                };
             }
         }
     }

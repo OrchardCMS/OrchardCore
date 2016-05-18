@@ -13,6 +13,11 @@ namespace Orchard.ContentManagement.MetaData.Models
             DisplayName = displayName;
             Parts = parts.ToList();
             Settings = settings;
+
+            foreach(var part in Parts)
+            {
+                part.ContentTypeDefinition = this;
+            }
         }
 
         public ContentTypeDefinition(string name, string displayName)
