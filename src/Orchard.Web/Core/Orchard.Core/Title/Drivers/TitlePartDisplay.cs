@@ -3,6 +3,7 @@ using Orchard.Core.Title.Model;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using System.Threading.Tasks;
+using Orchard.Core.Title.ViewModels;
 
 namespace Orchard.Core.Title.Drivers
 {
@@ -20,7 +21,13 @@ namespace Orchard.Core.Title.Drivers
 
         public override IDisplayResult Edit(TitlePart titlePart, IUpdateModel updater)
         {
-            return Shape("TitlePart_Edit", titlePart).Location("Content:5");
+            return Shape<TitlePartViewModel>("TitlePart_Edit", model =>
+            {
+                model.Title = titlePart.Title;
+                model.TitlePart = titlePart;
+
+                return Task.CompletedTask;
+            }).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)

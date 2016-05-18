@@ -3,6 +3,7 @@ using Orchard.Core.Body.Model;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using System.Threading.Tasks;
+using Orchard.Core.Body.ViewModels;
 
 namespace Orchard.Core.Body.Drivers
 {
@@ -21,12 +22,18 @@ namespace Orchard.Core.Body.Drivers
 
         public override IDisplayResult Edit(BodyPart bodyPart, IUpdateModel updater)
         {
-            return Shape("BodyPart_Edit", bodyPart).Location("Content:10");
+            return Shape<BodyPartViewModel>("BodyPart_Edit", model =>
+            {
+                model.Body = bodyPart.Body;
+                model.BodyPart = bodyPart;
+
+                return Task.CompletedTask;
+            }).Location("Content:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, b => b.Body);
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Body);
 
             return Edit(model, updater);
         }
