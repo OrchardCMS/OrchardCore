@@ -2,7 +2,6 @@
   "dependencies": {
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
-    "Microsoft.AspNetCore.Tooling.Razor": "1.0.0-rc2-16160",
     "Orchard.ContentManagement": "2.0.0",
     "Orchard.ContentTypes": "1.0.0",
     "Orchard.ContentManagement.Display": "2.0.0",

@@ -1,8 +1,11 @@
-﻿@{
+﻿@using Orchard.ContentManagement.MetaData.Models;
+
+@{
     IEnumerable<dynamic> contentItems = Model.ContentItems;
+    ContentTypeDefinition containedContentTypeDefinition = Model.ContainedContentTypeDefinition;
 }
 <p>
-    <a class="btn btn-primary" role="button" asp-action="Create" asp-controller="Admin" asp-route-id="BlogPost" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@T["Create new element"]</a>
+    <a class="btn btn-primary" role="button" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@T["Create new {0}", containedContentTypeDefinition.DisplayName]</a>
 </p>
 
 @if (contentItems.Any())

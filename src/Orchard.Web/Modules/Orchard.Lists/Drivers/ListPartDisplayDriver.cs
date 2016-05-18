@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Records;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
@@ -19,13 +23,16 @@ namespace Orchard.Lists.Drivers
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public ListPartDisplayDriver(
+            IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             ISession session,
             IServiceProvider serviceProvider
             )
         {
+            _contentDefinitionManager = contentDefinitionManager;
             _serviceProvider = serviceProvider;
             _session = session;
             _contentManager = contentManager;
@@ -47,6 +54,7 @@ namespace Orchard.Lists.Drivers
 
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
+                    shape.ContainedContentTypeDefinition = GetContainedContentType(listPart);
                 })
                 .Location("DetailAdmin", "Content:10"),
 
@@ -65,6 +73,7 @@ namespace Orchard.Lists.Drivers
 
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
+                    shape.ContainedContentTypeDefinition = GetContainedContentType(listPart);
                 })
                 .Location("Detail", "Content:10")
             );
@@ -72,9 +81,21 @@ namespace Orchard.Lists.Drivers
 
         private async Task<IEnumerable<ContentItem>> QueryListItems(ListPart listPart)
         {
-            var query = _session.QueryAsync<ContentItem, ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId);
+            var query = _session.QueryAsync<ContentItem>()
+                .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
+                .With<ContentItemIndex>(x => x.Published)
+                .OrderByDescending(x => x.CreatedUtc);
+
             var containedItems = await query.List();
             return containedItems;
+        }
+
+        private ContentTypeDefinition GetContainedContentType(ListPart listPart)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
+            var contentType = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentType;
+            return _contentDefinitionManager.GetTypeDefinition(contentType);
         }
     }
 }
