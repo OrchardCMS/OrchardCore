@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
-using YesSql.Core.Services;
-using Orchard.Core.Settings.Metadata.Records;
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.MetaData.Models;
+using Orchard.Core.Settings.Metadata.Records;
 using Orchard.Environment.Cache.Abstractions;
+using YesSql.Core.Services;
 
 namespace Orchard.Core.Settings.Metadata
 {
@@ -20,6 +20,9 @@ namespace Orchard.Core.Settings.Metadata
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 
+        private readonly ConcurrentDictionary<string, ContentTypeDefinition> _typeDefinitions;
+        private readonly ConcurrentDictionary<string, ContentPartDefinition> _partDefinitions;
+
         public ContentDefinitionManager(
             ISession session,
             IMemoryCache memoryCache,
@@ -28,6 +31,9 @@ namespace Orchard.Core.Settings.Metadata
             _signal = signal;
             _memoryCache = memoryCache;
             _session = session;
+
+            _typeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>());
+            _partDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>());
         }
 
         private ContentDefinitionRecord GetContentDefinitionRecord()
@@ -54,28 +60,34 @@ namespace Orchard.Core.Settings.Metadata
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            var contentTypeDefinitionRecord = GetContentDefinitionRecord()
-                .ContentTypeDefinitionRecords
-                .FirstOrDefault(x => x.Name == name);
+            return _typeDefinitions.GetOrAdd(name, n =>
+            {
+                var contentTypeDefinitionRecord = GetContentDefinitionRecord()
+                    .ContentTypeDefinitionRecords
+                    .FirstOrDefault(x => x.Name == name);
 
-            return Build(contentTypeDefinitionRecord);
+                return Build(contentTypeDefinitionRecord);
+            });
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
         {
-            return Build(GetContentDefinitionRecord()
+            return _partDefinitions.GetOrAdd(name, n =>
+            {
+                return Build(GetContentDefinitionRecord()
                 .ContentPartDefinitionRecords
                 .FirstOrDefault(x => x.Name == name));
+            });
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
         {
-            return GetContentDefinitionRecord().ContentTypeDefinitionRecords.Where(x => !x.Hidden).Select(Build).ToList();
+            return GetContentDefinitionRecord().ContentTypeDefinitionRecords.Where(x => !x.Hidden).Select(x => GetTypeDefinition(x.Name)).ToList();
         }
 
         public IEnumerable<ContentPartDefinition> ListPartDefinitions()
         {
-            return GetContentDefinitionRecord().ContentPartDefinitionRecords.Where(x => !x.Hidden).Select(Build).ToList();
+            return GetContentDefinitionRecord().ContentPartDefinitionRecords.Where(x => !x.Hidden).Select(x => GetPartDefinition(x.Name)).ToList();
         }
 
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
@@ -271,6 +283,10 @@ namespace Orchard.Core.Settings.Metadata
             _contentDefinitionRecord.Serial++;
             _session.Save(_contentDefinitionRecord);
             _signal.SignalToken(TypeHashCacheKey);
+
+            // Release cached values
+            _typeDefinitions.Clear();
+            _partDefinitions.Clear();
         }
 
         public Task<int> GetTypesHashAsync()
@@ -281,12 +297,11 @@ namespace Orchard.Core.Settings.Metadata
             int serial;
             if (!_memoryCache.TryGetValue(TypeHashCacheKey, out serial))
             {
-                var options = new MemoryCacheEntryOptions()
-                    .AddExpirationToken(_signal.GetToken(TypeHashCacheKey));
-
-                serial = GetContentDefinitionRecord().Serial;
-
-                _memoryCache.Set(TypeHashCacheKey, serial, options);
+                serial = _memoryCache.Set(
+                    TypeHashCacheKey,
+                    GetContentDefinitionRecord().Serial,
+                    _signal.GetToken(TypeHashCacheKey)
+                );
             }
 
             return Task.FromResult(serial);
