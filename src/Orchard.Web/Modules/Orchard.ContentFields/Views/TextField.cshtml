@@ -1,5 +1,5 @@
-﻿@model dynamic
-    
+﻿@model Orchard.ContentFields.ViewModels.DisplayTextFieldViewModel
+
 <div>
-    Text: @Model.Text
+    @Model.PartFieldDefinition.DisplayName: @Model.Field.Text
 </div>

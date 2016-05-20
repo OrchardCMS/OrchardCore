@@ -27,7 +27,9 @@ namespace Orchard.ContentFields.Fields
             {
                 model.Field = field;
                 model.Part = part;
-            }).Location("Content");
+                model.PartFieldDefinition = partFieldDefinition;
+            })
+            .Location("Content");
         }
 
         public override IDisplayResult Edit(TextField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
@@ -38,7 +40,8 @@ namespace Orchard.ContentFields.Fields
                 model.Field = field;
                 model.Part = part;
                 model.PartFieldDefinition = partFieldDefinition;
-            }).Location("Content");
+            })
+            .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition, IUpdateModel updater)
