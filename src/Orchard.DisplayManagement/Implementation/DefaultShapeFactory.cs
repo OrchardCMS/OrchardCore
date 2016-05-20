@@ -6,6 +6,7 @@ using Orchard.DisplayManagement.Shapes;
 using System.Reflection;
 using Orchard.DisplayManagement.Theming;
 using Castle.DynamicProxy;
+using System.Collections.Concurrent;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -35,6 +36,11 @@ namespace Orchard.DisplayManagement.Implementation
 
         private class ShapeImplementation : IShape, IPositioned
         {
+            public ShapeImplementation(string type)
+            {
+                Metadata.Type = type;
+            }
+
             public ShapeMetadata Metadata { get; } = new ShapeMetadata();
 
             public string Position
@@ -58,16 +64,13 @@ namespace Orchard.DisplayManagement.Implementation
 
         public object Create(Type type, string shapeType)
         {
-            ProxyGenerator a = new ProxyGenerator();
-            var mixin = new ShapeImplementation();
-            mixin.Metadata.Type = shapeType;
+            var generator = new ProxyGenerator();
 
-            ProxyGenerationOptions pgo = new ProxyGenerationOptions();
-            pgo.AddMixinInstance(mixin);
+            var options = new ProxyGenerationOptions();
+            options.AddMixinInstance(new ShapeImplementation(shapeType));
+            var shape = generator.CreateClassProxy(type, options) as IShape;
 
-            var t = a.CreateClassProxy(type, pgo);
-
-            return t;
+            return shape;
         }
 
         public IShape Create(string shapeType)
