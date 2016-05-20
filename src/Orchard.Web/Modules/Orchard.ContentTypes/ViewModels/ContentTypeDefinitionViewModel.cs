@@ -8,7 +8,6 @@ namespace Orchard.ContentTypes.ViewModels
     {
         public ContentTypeDefinitionViewModel()
         {
-            TypeSettings = new List<dynamic>();
             TypePartSettings = new List<dynamic>();
             TypeFieldSettings = new List<dynamic>();
         }

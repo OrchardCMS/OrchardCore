@@ -27,7 +27,7 @@ namespace Orchard.Lists.Settings
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             if (!String.Equals("ListPart", contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
             {
