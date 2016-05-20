@@ -10,6 +10,11 @@ using Microsoft.DotNet.ProjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions.Models;
 
+using Microsoft.DotNet.Cli;
+using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.Tools.Compiler;
+
+
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
@@ -86,7 +91,7 @@ namespace Orchard.Environment.Extensions
 
         public Assembly LoadExternalAssembly(ExtensionDescriptor descriptor)
         {
-            var projectContext = ProjectContext.CreateContextForEachFramework(Path.Combine( descriptor.Location, descriptor.Id)).FirstOrDefault();
+            var projectContext = ProjectContext.CreateContextForEachFramework(Path.Combine(descriptor.Location, descriptor.Id)).FirstOrDefault();
 
             if (projectContext == null)
                 return null;
@@ -104,6 +109,22 @@ namespace Orchard.Environment.Extensions
                     if (assemblyNames.Add(asset.Name)) {
                         try
                         {
+                            if (asset.Name == descriptor.Id) {
+                                if (!File.Exists(asset.ResolvedPath)) {
+                                    var location = Path.Combine(descriptor.Location, descriptor.Id);
+
+
+                // We can do this but it relies on the dotnet cli sdk 
+                //Command.CreateDotNet("build", new [] { location }).Execute();
+
+
+                // With an adapted compiler we only need to embed "csc.dll" and "csc.runtimeconfig.json"
+                var success = new ManagedCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
+
+
+                                }
+                            }
+
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
                             if (loadedAssembly.GetName().Name == projectContext.ProjectFile.Name)
                                 assembly = loadedAssembly;

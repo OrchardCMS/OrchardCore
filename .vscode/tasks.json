@@ -17,17 +17,17 @@
 		},
 		{
 			"taskName": "Solution: Dotnet Build Debug",
-			"args": [ "dotnet build src/*/project.json -c Debug & dotnet build src/orchard.web/modules/*/project.json -c Debug & dotnet build src/orchard.web/themes/*/project.json -c Debug" ],
+			"args": [ "dotnet build src/**/project.json -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
 			"taskName": "Solution: Dotnet Rebuild Debug",
-			"args": [ "dotnet build src/*/project.json --no-incremental -c Debug & dotnet build src/orchard.web/modules/*/project.json --no-incremental -c Debug & dotnet build src/orchard.web/themes/*/project.json --no-incremental -c Debug" ],
+			"args": [ "dotnet build src/**/project.json --no-incremental -c Debug" ],
 			"problemMatcher": "$msCompile"
 		},
 		{
 			"taskName": "Solution: Dotnet Build Release",
-			"args": [ "dotnet build src/*/project.json -c Release & dotnet build src/orchard.web/modules/*/project.json -c Release & dotnet build src/orchard.web/themes/*/project.json -c Release" ],
+			"args": [ "dotnet build src/**/project.json -c Release" ],
 			"problemMatcher": "$msCompile"
 		},
 		{

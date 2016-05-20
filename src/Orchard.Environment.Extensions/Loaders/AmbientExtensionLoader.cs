@@ -29,7 +29,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            try
+            /*try
             {
                 var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
 
@@ -48,7 +48,8 @@ namespace Orchard.Environment.Extensions.Loaders
             catch
             {
                 return null;
-            }
+            }*/
+            return null;
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
