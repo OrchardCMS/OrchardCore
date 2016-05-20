@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0-rc2-final",
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0-rc2-final",
-    "Microsoft.Extensions.DependencyModel": "1.0.0-rc2-002702",
+    "Microsoft.Extensions.DependencyModel": "1.0.0-rc2-final",
     "Microsoft.Extensions.Localization.Abstractions": "1.0.0-rc2-final",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc2-final",
     "Microsoft.NETCore.Platforms": "1.0.1-rc2-24027",
