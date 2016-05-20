@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Views;
 
@@ -10,9 +11,9 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
     /// <typeparam name="TPart"></typeparam>
     public abstract class ContentPartDisplayDriver<TPart> : DisplayDriver<TPart, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IContentDisplayDriver where TPart : ContentPart, new()
     {
-        public ContentPartDisplayDriver()
+        public override string GeneratePrefix(TPart part)
         {
-            Prefix = typeof(TPart).Name;
+            return typeof(TPart).Name;
         }
 
         Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
@@ -20,6 +21,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var part = model.As<TPart>();
             if(part != null)
             {
+                Prefix = GeneratePrefix(part);
                 return DisplayAsync(part, context.Updater);
             }
 
@@ -31,6 +33,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var part = model.As<TPart>();
             if (part != null)
             {
+                Prefix = GeneratePrefix(part);
                 return EditAsync(part, context.Updater);
             }
 
@@ -42,6 +45,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var part = model.As<TPart>();
             if (part != null)
             {
+                Prefix = GeneratePrefix(part);
                 var result = UpdateAsync(part, context.Updater);
                 if (context.Updater.ModelState.IsValid)
                 {

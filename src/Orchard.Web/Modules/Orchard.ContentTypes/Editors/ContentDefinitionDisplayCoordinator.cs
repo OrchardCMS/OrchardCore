@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Metadata.Settings;
@@ -561,18 +560,34 @@ namespace Orchard.ContentTypes.Editors
 
     public abstract class ContentTypeDisplayDriver : DisplayDriver<ContentTypeDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypeEditorContext>, IContentTypeDefinitionDisplayDriver
     {
+        public override string GeneratePrefix(ContentTypeDefinition model)
+        {
+            return model.Name;
+        }
     }
 
     public abstract class ContentPartDisplayDriver : DisplayDriver<ContentPartDefinition, BuildDisplayContext, BuildEditorContext, UpdatePartEditorContext>, IContentPartDefinitionDisplayDriver
     {
+        public override string GeneratePrefix(ContentPartDefinition model)
+        {
+            return model.Name;
+        }
     }
 
     public abstract class ContentTypePartDisplayDriver : DisplayDriver<ContentTypePartDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypePartEditorContext>, IContentTypePartDefinitionDisplayDriver
     {
+        public override string GeneratePrefix(ContentTypePartDefinition model)
+        {
+            return $"{model.ContentTypeDefinition.Name}.{model.PartDefinition.Name}";
+        }
     }
 
     public abstract class ContentPartFieldDisplayDriver : DisplayDriver<ContentPartFieldDefinition, BuildDisplayContext, BuildEditorContext, UpdatePartFieldEditorContext>, IContentPartFieldDefinitionDisplayDriver
     {
+        public override string GeneratePrefix(ContentPartFieldDefinition model)
+        {
+            return $"{model.PartDefinition.Name}.{model.Name}";
+        }
     }
 
     public class ContentTypeSettingsDisplayDriver : ContentTypeDisplayDriver
@@ -661,7 +676,7 @@ namespace Orchard.ContentTypes.Editors
             {
                 model.DisplayName = contentTypeDefinition.DisplayName;
                 return Task.CompletedTask;
-            }).Location("Content:0");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

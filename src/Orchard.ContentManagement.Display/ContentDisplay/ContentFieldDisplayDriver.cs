@@ -13,6 +13,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var field = contentPart.Get<TField>(fieldName);
             if(field != null)
             {
+                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
                 return DisplayAsync(field, contentPart, partFieldDefinition);
             }
 
@@ -24,6 +25,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var field = contentPart.Get<TField>(fieldName);
             if (field != null)
             {
+                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
                 return EditAsync(field, contentPart, partFieldDefinition);
             }
 
@@ -35,6 +37,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var field = contentPart.Get<TField>(fieldName);
             if (field != null)
             {
+                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
                 var result = UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
                 if (context.Updater.ModelState.IsValid)
                 {
