@@ -2,11 +2,21 @@
 
 namespace Orchard.Core.Settings.Metadata.Records
 {
+    /// <summary>
+    /// Represents a field and its settings in a part.
+    /// </summary>
     public class ContentPartFieldDefinitionRecord
     {
-        public virtual int Id { get; set; }
-        public virtual ContentFieldDefinitionRecord ContentFieldDefinitionRecord { get; set; }
-        public virtual string Name { get; set; }
-        public virtual JObject Settings { get; set; }
+        public ContentFieldDefinitionRecord ContentFieldDefinitionRecord { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the field.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the settings of the field for this part.
+        /// </summary>
+        public JObject Settings { get; set; }
     }
 }

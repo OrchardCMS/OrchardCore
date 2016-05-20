@@ -5,13 +5,6 @@ namespace Orchard.ContentManagement.MetaData.Models
 {
     public class ContentPartFieldDefinition
     {
-        public ContentPartFieldDefinition(string name)
-        {
-            Name = name;
-            DisplayName = Name.CamelFriendly();
-            FieldDefinition = new ContentFieldDefinition(null);
-            Settings = new JObject();
-        }
         public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, JObject settings)
         {
             Name = name;
@@ -26,5 +19,7 @@ namespace Orchard.ContentManagement.MetaData.Models
 
         public ContentFieldDefinition FieldDefinition { get; private set; }
         public JObject Settings { get; private set; }
+
+        public ContentPartDefinition PartDefinition { get; set; }
     }
 }

@@ -40,6 +40,14 @@ namespace Orchard.DisplayManagement.Handlers
         /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
+        public ShapeResult Shape<TModel>(Action<TModel> initialize) where TModel : class
+        {
+            return Shape<TModel>(shape => { initialize((TModel)shape); return Task.CompletedTask; });
+        }
+
+        /// <summary>
+        /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+        /// </summary>
         public ShapeResult Shape<TModel>(string shapeType, Func<TModel, Task> initialize) where TModel : class
         {
             return new ShapeResult(
@@ -47,6 +55,14 @@ namespace Orchard.DisplayManagement.Handlers
                 ctx => ctx.ShapeFactory.Create<TModel>(shapeType),
                 shape => initialize((TModel)shape)
                 ).Prefix(Prefix);
+        }
+
+        /// <summary>
+        /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+        /// </summary>
+        public ShapeResult Shape<TModel>(string shapeType, Action<TModel> initialize) where TModel : class
+        {
+            return Shape<TModel>(shapeType, shape => { initialize((TModel)shape); return Task.CompletedTask; });
         }
 
         /// <summary>

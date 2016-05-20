@@ -78,11 +78,6 @@ namespace Orchard.Core.Settings.Metadata
             return GetContentDefinitionRecord().ContentPartDefinitionRecords.Where(x => !x.Hidden).Select(Build).ToList();
         }
 
-        public IEnumerable<ContentFieldDefinition> ListFieldDefinitions()
-        {
-            return GetContentDefinitionRecord().ContentFieldDefinitionRecords.OrderBy(x => x.Name).Select(Build).ToList();
-        }
-
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
         {
             Apply(contentTypeDefinition, Acquire(contentTypeDefinition));
@@ -151,13 +146,7 @@ namespace Orchard.Core.Settings.Metadata
 
         private ContentFieldDefinitionRecord Acquire(ContentFieldDefinition contentFieldDefinition)
         {
-            var result = GetContentDefinitionRecord().ContentFieldDefinitionRecords.FirstOrDefault(x => x.Name == contentFieldDefinition.Name);
-            if (result == null)
-            {
-                result = new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
-                GetContentDefinitionRecord().ContentFieldDefinitionRecords.Add(result);
-            }
-            return result;
+            return new ContentFieldDefinitionRecord { Name = contentFieldDefinition.Name };
         }
 
         private void Apply(ContentTypeDefinition model, ContentTypeDefinitionRecord record)
@@ -166,7 +155,7 @@ namespace Orchard.Core.Settings.Metadata
             record.Settings = model.Settings;
 
             var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(partDefinitionRecord => !model.Parts.Any(part => partDefinitionRecord.ContentPartDefinitionRecord.Name == part.PartDefinition.Name))
+                .Where(partDefinitionRecord => !model.Parts.Any(part => partDefinitionRecord.Name == part.PartDefinition.Name))
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -177,10 +166,10 @@ namespace Orchard.Core.Settings.Metadata
             foreach (var part in model.Parts)
             {
                 var partName = part.PartDefinition.Name;
-                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.ContentPartDefinitionRecord.Name == partName);
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.Name == partName);
                 if (typePartRecord == null)
                 {
-                    typePartRecord = new ContentTypePartDefinitionRecord { ContentPartDefinitionRecord = Acquire(part.PartDefinition) };
+                    typePartRecord = new ContentTypePartDefinitionRecord(part.PartDefinition.Name);
                     record.ContentTypePartDefinitionRecords.Add(typePartRecord);
                 }
                 Apply(part, typePartRecord);
@@ -248,8 +237,10 @@ namespace Orchard.Core.Settings.Metadata
 
         ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
         {
+            var partDefinitionRecord = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == source.Name);
+
             return source == null ? null : new ContentTypePartDefinition(
-                Build(source.ContentPartDefinitionRecord),
+                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.Name, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
                 source.Settings);
         }
 
