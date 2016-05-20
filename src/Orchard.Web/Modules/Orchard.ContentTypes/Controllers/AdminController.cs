@@ -149,14 +149,14 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
 
-            var contentDefinition =_contentDefinitionManager.GetTypeDefinition(id);
+            var contentTypeDefinition =_contentDefinitionManager.GetTypeDefinition(id);
 
-            if (contentDefinition == null)
+            if (contentTypeDefinition == null)
             {
                 return NotFound();
             }
 
-            var shape = await _contentDefinitionDisplayManager.BuildEditorAsync(contentDefinition, this);
+            var shape = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(contentTypeDefinition, this);
 
             return View(shape);
         }
@@ -168,25 +168,14 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
 
-            var contentDefinition = _contentDefinitionManager.GetTypeDefinition(id);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
 
-            if (contentDefinition == null)
+            if (contentTypeDefinition == null)
             {
                 return NotFound();
             }
 
-            var shape = await _contentDefinitionDisplayManager.UpdateEditorAsync(contentDefinition, this);
-
-
-            //if (String.IsNullOrWhiteSpace(typeViewModel.DisplayName))
-            //{
-            //    ModelState.AddModelError("DisplayName", T["The Content Type name can't be empty."]);
-            //}
-
-            //if (_contentDefinitionService.GetTypes().Any(t => String.Equals(t.DisplayName.Trim(), typeViewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase) && !String.Equals(t.Name, id)))
-            //{
-            //    ModelState.AddModelError("DisplayName", T["A type with the same name already exists."]);
-            //}
+            var shape = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
             if (!ModelState.IsValid)
             {
@@ -371,12 +360,16 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
 
-            if (partViewModel == null)
+            if (contentPartDefinition == null)
+            {
                 return NotFound();
+            }
 
-            return View(partViewModel);
+            var shape = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, this);
+
+            return View(shape);
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -386,25 +379,26 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
 
-            var partViewModel = _contentDefinitionService.GetPart(id);
+            var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
 
-            if (partViewModel == null)
+            if (contentPartDefinition == null)
+            {
                 return NotFound();
+            }
 
-            if (!await TryUpdateModelAsync(partViewModel))
-                return View(partViewModel);
-
-            _contentDefinitionService.AlterPart(partViewModel, this);
+            var shape = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, this);
 
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
-                return View(partViewModel);
+                return View(shape);
+            }
+            else
+            {
+                // Services.Notifier.Success(T("\"{0}\" settings have been saved.", typeViewModel.DisplayName));
             }
 
-            //Services.Notifier.Information(T("\"{0}\" settings have been saved.", partViewModel.Name));
-
-            return RedirectToAction("ListParts");
+            return View(shape);
         }
 
         [HttpPost, ActionName("EditPart")]

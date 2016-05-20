@@ -20,7 +20,7 @@ namespace Orchard.ContentFields.Settings
                 .Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
