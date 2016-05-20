@@ -84,7 +84,7 @@ namespace Orchard.ContentManagement.MetaData.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(fieldName);
+                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
             }
             var configurer = new FieldConfigurerImpl(existingField, _part);
             configuration(configurer);

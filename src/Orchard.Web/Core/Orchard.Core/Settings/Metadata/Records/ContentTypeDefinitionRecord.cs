@@ -10,12 +10,11 @@ namespace Orchard.Core.Settings.Metadata.Records
             ContentTypePartDefinitionRecords = new List<ContentTypePartDefinitionRecord>();
         }
 
-        public virtual int Id { get; set; }
-        public virtual string Name { get; set; }
-        public virtual string DisplayName { get; set; }
-        public virtual bool Hidden { get; set; }
-        public virtual JObject Settings { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public bool Hidden { get; set; }
+        public JObject Settings { get; set; }
 
-        public virtual IList<ContentTypePartDefinitionRecord> ContentTypePartDefinitionRecords { get; set; }
+        public IList<ContentTypePartDefinitionRecord> ContentTypePartDefinitionRecords { get; set; }
     }
 }

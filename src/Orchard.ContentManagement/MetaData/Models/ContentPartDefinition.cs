@@ -11,6 +11,11 @@ namespace Orchard.ContentManagement.MetaData.Models
             Name = name;
             Fields = fields.ToList();
             Settings = settings;
+
+            foreach(var field in Fields)
+            {
+                field.PartDefinition = this;
+            }
         }
 
         public ContentPartDefinition(string name)

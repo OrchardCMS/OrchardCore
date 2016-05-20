@@ -11,11 +11,16 @@ namespace Orchard.Core.Settings.Metadata.Records
             Settings = new JObject();
         }
 
-        public virtual int Id { get; set; }
-        public virtual string Name { get; set; }
-        public virtual bool Hidden { get; set; }
-        public virtual JObject Settings { get; set; }
+        public string Name { get; set; }
 
-        public virtual IList<ContentPartFieldDefinitionRecord> ContentPartFieldDefinitionRecords { get; set; }
+        public bool Hidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets the settings of a part, like description, or any property that a module would attach
+        /// to a part.
+        /// </summary>
+        public JObject Settings { get; set; }
+
+        public IList<ContentPartFieldDefinitionRecord> ContentPartFieldDefinitionRecords { get; set; }
     }
 }

@@ -149,19 +149,6 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
 
-            var typeViewModel = _contentDefinitionService.GetType(id);
-
-            if (typeViewModel == null)
-                return NotFound();
-
-            return View(typeViewModel);
-        }
-
-        public async Task<ActionResult> Edit2(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
-
             var contentDefinition =_contentDefinitionManager.GetTypeDefinition(id);
 
             if (contentDefinition == null)
@@ -174,53 +161,9 @@ namespace Orchard.ContentTypes.Controllers
             return View(shape);
         }
 
-
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Save")]
         public async Task<ActionResult> EditPOST(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
-
-            var typeViewModel = _contentDefinitionService.GetType(id);
-
-            if (typeViewModel == null)
-                return NotFound();
-
-            var edited = new EditTypeViewModel();
-            await TryUpdateModelAsync(edited);
-            typeViewModel.DisplayName = edited.DisplayName ?? string.Empty;
-
-            if (String.IsNullOrWhiteSpace(typeViewModel.DisplayName))
-            {
-                ModelState.AddModelError("DisplayName", T["The Content Type name can't be empty."]);
-            }
-
-            if (_contentDefinitionService.GetTypes().Any(t => String.Equals(t.DisplayName.Trim(), typeViewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase) && !String.Equals(t.Name, id)))
-            {
-                ModelState.AddModelError("DisplayName", T["A type with the same name already exists."]);
-            }
-
-            if (!ModelState.IsValid)
-                return View(typeViewModel);
-
-            _contentDefinitionService.AlterType(typeViewModel, this);
-
-            if (!ModelState.IsValid)
-            {
-                _session.Cancel();
-                return View(typeViewModel);
-            }
-
-            //Services.Notifier.Information(T("\"{0}\" settings have been saved.", typeViewModel.DisplayName));
-
-            return RedirectToAction("List");
-        }
-
-
-        [HttpPost, ActionName("Edit2")]
-        [FormValueRequired("submit.Save")]
-        public async Task<ActionResult> Edit2POST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return new UnauthorizedResult();
@@ -503,7 +446,7 @@ namespace Orchard.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel,
-                Fields = _contentDefinitionService.GetFields().OrderBy(x => x.FieldTypeName)
+                Fields = _contentDefinitionService.GetFields().OrderBy(x => x.FieldTypeName).ToList()
             };
 
             return View(viewModel);
@@ -579,7 +522,7 @@ namespace Orchard.ContentTypes.Controllers
             {
                 _contentDefinitionService.AddFieldToPart(viewModel.Name, viewModel.DisplayName, viewModel.FieldTypeName, partViewModel.Name);
             }
-            catch (Exception ex)
+            catch
             {
                 //Services.Notifier.Information(T("The \"{0}\" field was not added. {1}", viewModel.DisplayName, ex.Message));
                 _session.Cancel();

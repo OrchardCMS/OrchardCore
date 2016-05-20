@@ -92,7 +92,7 @@ namespace Orchard.Contents.Controllers
                     break;
             }
 
-            
+
             if (!string.IsNullOrEmpty(model.TypeName))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
@@ -459,8 +459,8 @@ namespace Orchard.Contents.Controllers
                 return new UnauthorizedResult();
             }
 
-            string previousRoute = null;
-            //if (contentItem.Has<IAliasAspect>() && 
+            //string previousRoute = null;
+            //if (contentItem.Has<IAliasAspect>() &&
             //    !string.IsNullOrWhiteSpace(returnUrl)
             //    && Request.IsLocalUrl(returnUrl)
             //    // only if the original returnUrl is the content itself

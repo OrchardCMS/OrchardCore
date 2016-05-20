@@ -34,9 +34,9 @@
 
 
 <fieldset class="form-group">
-    <label asp-for="Stereotype">
-        @T["Stereotype"]
+    <div class="row col-xs-4 ">
+        <label asp-for="Stereotype">@T["Stereotype"]</label>
         <input asp-for="Stereotype" type="text" class="form-control">
         <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
-    </label>
+    </div>
 </fieldset>

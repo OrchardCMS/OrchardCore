@@ -17,7 +17,6 @@ namespace Orchard.Lists.Settings
                 return null;
             }
 
-
             return Shape<ListPartSettings>("ListPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();

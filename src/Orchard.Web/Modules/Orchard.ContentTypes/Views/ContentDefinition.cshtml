@@ -9,23 +9,21 @@
 <h1>@RenderTitleSegments(T["Edit Content Type - {0}", contentTypeDefinition.DisplayName])</h1>
 
 
-<form asp-action="Edit2">
+<form asp-action="Edit">
     @Html.ValidationSummary()
-
-    <fieldset class="form-group row">
-        <div class="col-xs-6 ">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" />
-            <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
-        </div>
-    </fieldset>
 
     @Display(Model.TypeSettings)
 
     <fieldset class="form-group">
-            <h3>@T["Fields"]</h3>
-            @*@Html.EditorFor(m => m.Fields, "Fields", "")
-            *@
+        <h2>@T["Fields"]</h2>
+
+        @{
+            foreach (var field in Model.TypeFieldSettings)
+            {
+                @Display(field)
+            }
+        }
+
         <a asp-route-action="AddFieldTo" asp-route-id="@contentTypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </fieldset>
 

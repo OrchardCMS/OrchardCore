@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentManagement.Display.Coordinators
@@ -42,9 +43,9 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
         {
-            return Process(model, (part, fieldName) =>
+            return Process(model, (partFieldDefinition, part, fieldName) =>
                 _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildDisplayAsync(fieldName, part, context);
+                    var result = await contentDisplay.BuildDisplayAsync(fieldName, part, partFieldDefinition, context);
                     if (result != null)
                         result.Apply(context);
                 }, Logger)
@@ -53,9 +54,9 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
         {
-            return Process(model, (part, fieldName) =>
+            return Process(model, (partFieldDefinition, part, fieldName) =>
                 _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildEditorAsync(fieldName, part, context);
+                    var result = await contentDisplay.BuildEditorAsync(fieldName, part, partFieldDefinition, context);
                     if (result != null)
                         result.Apply(context);
                 }, Logger)
@@ -64,16 +65,16 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return Process(model, (part, fieldName) =>
+            return Process(model, (partFieldDefinition, part, fieldName) =>
                 _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.UpdateEditorAsync(fieldName, part, context);
+                var result = await contentDisplay.UpdateEditorAsync(fieldName, part, partFieldDefinition, context);
                 if (result != null)
                     result.Apply(context);
                 }, Logger)
             );
         }
 
-        public Task Process(ContentItem contentItem, Func<ContentPart, string, Task> action)
+        public Task Process(ContentItem contentItem, Func<ContentPartFieldDefinition, ContentPart, string, Task> action)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -105,7 +106,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-                    return action(part, fieldName);
+                    return action(partFieldDefinition, part, fieldName);
                 }
             }
 
