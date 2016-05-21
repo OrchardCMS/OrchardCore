@@ -16,6 +16,8 @@ namespace Orchard.DisplayManagement.Implementation
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
 
+        private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
+
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,
@@ -62,22 +64,21 @@ namespace Orchard.DisplayManagement.Implementation
             return (T)Create(typeof(T), shapeType);
         }
 
-        public object Create(Type type, string shapeType)
+        public object Create(Type baseType, string shapeType)
         {
             IShape shape;
 
             // Don't generate a proxy for shape types
-            if (typeof(IShape).IsAssignableFrom(type))
+            if (typeof(IShape).IsAssignableFrom(baseType))
             {
-                shape = Activator.CreateInstance(type) as IShape;
+                shape = Activator.CreateInstance(baseType) as IShape;
                 shape.Metadata.Type = shapeType;
             }
             else
             {
-                var generator = new ProxyGenerator();
                 var options = new ProxyGenerationOptions();
                 options.AddMixinInstance(new ShapeImplementation(shapeType));
-                shape = generator.CreateClassProxy(type, options) as IShape;
+                shape = ProxyGenerator.CreateClassProxy(baseType, options) as IShape;
             }
 
             return shape;

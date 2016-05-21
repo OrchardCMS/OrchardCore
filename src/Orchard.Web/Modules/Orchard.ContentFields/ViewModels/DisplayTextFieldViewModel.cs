@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.ContentFields.ViewModels
 {
-    public class DisplayTextFieldViewModel : BaseShape
+    public class DisplayTextFieldViewModel
     {
         public TextField Field { get; set; }
         public ContentPart Part { get; set; }
