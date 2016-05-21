@@ -6,7 +6,6 @@ using Orchard.DisplayManagement.Views;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.MetaData.Models;
-using Orchard.ContentFields.Settings;
 
 namespace Orchard.ContentFields.Fields
 {

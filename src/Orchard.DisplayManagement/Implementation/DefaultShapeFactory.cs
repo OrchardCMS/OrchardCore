@@ -64,11 +64,21 @@ namespace Orchard.DisplayManagement.Implementation
 
         public object Create(Type type, string shapeType)
         {
-            var generator = new ProxyGenerator();
+            IShape shape;
 
-            var options = new ProxyGenerationOptions();
-            options.AddMixinInstance(new ShapeImplementation(shapeType));
-            var shape = generator.CreateClassProxy(type, options) as IShape;
+            // Don't generate a proxy for shape types
+            if (typeof(IShape).IsAssignableFrom(type))
+            {
+                shape = Activator.CreateInstance(type) as IShape;
+                shape.Metadata.Type = shapeType;
+            }
+            else
+            {
+                var generator = new ProxyGenerator();
+                var options = new ProxyGenerationOptions();
+                options.AddMixinInstance(new ShapeImplementation(shapeType));
+                shape = generator.CreateClassProxy(type, options) as IShape;
+            }
 
             return shape;
         }
