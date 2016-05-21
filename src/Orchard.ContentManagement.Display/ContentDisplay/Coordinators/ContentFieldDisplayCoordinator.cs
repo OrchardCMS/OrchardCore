@@ -20,9 +20,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
         private readonly IEnumerable<IContentFieldDisplayDriver> _displayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger<ContentDisplayCoordinator> _logger;
-        private readonly IEnumerable<IContentPartDriver> _partDrivers;
-
-        private readonly IDictionary<string, ContentPartInfo> _partInfos;
+        private readonly IEnumerable<IContentPartDriver> _contentPartDrivers;
 
         public ContentFieldDisplayCoordinator(
             IContentDefinitionManager contentDefinitionManager,
@@ -30,26 +28,55 @@ namespace Orchard.ContentManagement.Display.Coordinators
             IEnumerable<IContentPartDriver> partDrivers,
             ILogger<ContentDisplayCoordinator> logger)
         {
-            _partDrivers = partDrivers;
+            _contentPartDrivers = partDrivers;
             _logger = logger;
             _contentDefinitionManager = contentDefinitionManager;
             _displayDrivers = displayDrivers;
             Logger = logger;
-
-            _partInfos = _partDrivers.Select(cpp => cpp.GetPartInfo()).ToDictionary(x => x.PartName, x => x);
         }
 
         private ILogger Logger { get; set; }
 
-        public Task BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
+        public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            return Process(model, (partFieldDefinition, part, fieldName) =>
-                _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildDisplayAsync(fieldName, part, partFieldDefinition, context);
-                    if (result != null)
-                        result.Apply(context);
-                }, Logger)
-            );
+            // Optimized implementation for display
+
+            // For each field on the content item, invoke all IContentFieldDisplayDriver instances
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+            if(contentTypeDefinition == null)
+            {
+                return;
+            }
+
+            foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = contentTypePartDefinition.PartDefinition.Name;
+                var partType = _contentPartDrivers.FirstOrDefault(x => x.GetPartInfo().PartName == partName)?.GetPartInfo().Factory(contentTypePartDefinition).GetType();
+                var part = contentItem.Get(partType ?? typeof(ContentPart), partName) as ContentPart;
+
+                foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
+                {
+                    var fieldName = contentPartFieldDefinition.Name;
+
+                    foreach (var displayDriver in _displayDrivers)
+                    {
+                        try
+                        {
+                            var result = await displayDriver.BuildDisplayAsync(fieldName, part, contentPartFieldDefinition, context);
+                            if (result != null)
+                            {
+                                result.Apply(context);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                        }
+                    }
+                }
+            }
         }
 
         public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
@@ -90,6 +117,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
                 var partName = typePartDefinition.PartDefinition.Name;
                 ContentPartInfo partInfo;
+                var _partInfos = _contentPartDrivers.Select(cpp => cpp.GetPartInfo()).ToDictionary(x => x.PartName, x => x);
                 _partInfos.TryGetValue(partName, out partInfo);
 
                 ContentPart part = partInfo != null

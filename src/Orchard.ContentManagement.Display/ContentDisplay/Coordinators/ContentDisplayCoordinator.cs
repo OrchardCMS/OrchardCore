@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
@@ -23,31 +24,61 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         private ILogger Logger { get; set; }
 
-        public Task BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
+        public async Task BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
         {
-            return _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.BuildDisplayAsync(model, context);
-                if (result != null)
-                    result.Apply(context);
-            }, Logger);
+            foreach (var displayDriver in _displayDrivers)
+            {
+                try
+                {
+                    var result = await displayDriver.BuildDisplayAsync(model, context);
+                    if (result != null)
+                    {
+                        result.Apply(context);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                }
+            }
         }
 
-        public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
+        public async Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
         {
-            return _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    result.Apply(context);
-            }, Logger);
+            foreach (var displayDriver in _displayDrivers)
+            {
+                try
+                {
+                    var result = await displayDriver.BuildEditorAsync(model, context);
+                    if (result != null)
+                    {
+                        result.Apply(context);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                }
+            }
         }
 
-        public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
+        public async Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    result.Apply(context);
-            }, Logger);
+            foreach (var displayDriver in _displayDrivers)
+            {
+                try
+                {
+                    var result = await displayDriver.UpdateEditorAsync(model, context);
+                    if (result != null)
+                    {
+                        result.Apply(context);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                }
+            }
         }
     }
 }

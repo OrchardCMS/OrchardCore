@@ -21,18 +21,7 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
         }
@@ -50,18 +39,7 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
 
@@ -81,18 +59,7 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
 
@@ -113,18 +80,7 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
         }
@@ -142,18 +98,7 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
 
@@ -173,24 +118,28 @@ namespace Orchard
                 }
                 catch (Exception ex)
                 {
-                    if (IsLogged(ex))
-                    {
-                        logger.LogError(string.Format("{2} thrown from {0} by {1}",
-                            typeof(TEvents).Name,
-                            sink.GetType().FullName,
-                            ex.GetType().Name), ex);
-                    }
-
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
+                    HandleException(ex, logger, typeof(TEvents).Name, sink.GetType().FullName);
                 }
             }
 
             return results;
         }
 
+        public static void HandleException(Exception ex, ILogger logger, string sourceType, string method)
+        {
+            if (IsLogged(ex))
+            {
+                logger.LogError(string.Format("{2} thrown from {0} by {1}",
+                    sourceType,
+                    method,
+                    ex.GetType().Name), ex);
+            }
+
+            if (ex.IsFatal())
+            {
+                throw ex;
+            }
+        }
         private static bool IsLogged(Exception ex)
         {
             return ex is OrchardSecurityException || !ex.IsFatal();
