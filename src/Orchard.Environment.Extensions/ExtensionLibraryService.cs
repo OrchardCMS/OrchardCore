@@ -8,12 +8,8 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
-
-using Microsoft.DotNet.Cli;
-using Microsoft.DotNet.Cli.Utils;
-using Microsoft.DotNet.Tools.Compiler;
-
 
 namespace Orchard.Environment.Extensions
 {
@@ -119,7 +115,7 @@ namespace Orchard.Environment.Extensions
 
 
                 // With an adapted compiler we only need to embed "csc.dll" and "csc.runtimeconfig.json"
-                var success = new ManagedCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
+                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
 
 
                                 }
