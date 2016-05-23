@@ -106,7 +106,7 @@ namespace Orchard.Environment.Extensions
                         try
                         {
                             if (asset.Name == descriptor.Id) {
-                                if (!File.Exists(asset.ResolvedPath)) {
+                                //if (!File.Exists(asset.ResolvedPath)) {
                                     var location = Path.Combine(descriptor.Location, descriptor.Id);
 
 
@@ -119,7 +119,7 @@ namespace Orchard.Environment.Extensions
 
 
                                 }
-                            }
+                            //}
 
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
                             if (loadedAssembly.GetName().Name == projectContext.ProjectFile.Name)

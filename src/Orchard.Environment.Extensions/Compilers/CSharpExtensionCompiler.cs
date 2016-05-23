@@ -112,6 +112,38 @@ namespace Orchard.Environment.Extensions.Compilers
                 sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
             }
 
+
+
+
+            // TESTING //////////////////////////////////////////////
+
+            var inputs = new List<string>();
+            var outputs = new List<string>();
+
+            inputs.Add(context.ProjectFile.ProjectFilePath);
+ 
+            if (context.LockFile != null)
+            {
+                inputs.Add(context.LockFile.LockFilePath);
+            }
+
+            if (context.LockFile.ExportFile != null)
+            {
+                inputs.Add(context.LockFile.ExportFile.ExportFilePath);
+            }
+
+            inputs.AddRange(sourceFiles);
+            inputs.AddRange(references);
+            outputs.AddRange(outputPaths.CompilationFiles.All());
+
+            if (!NeedsRebuilding(inputs, outputs))
+                return true;
+
+            /////////////////////////////////////////////////////////
+
+
+
+
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
                 return false;
@@ -271,6 +303,50 @@ namespace Orchard.Environment.Extensions.Compilers
         {
             // Locate CoreRun
             return Command.Create("csc.dll", cscArgs);
+        }
+
+
+        public bool NeedsRebuilding(IEnumerable<string> inputs, IEnumerable<string> outputs)
+        {
+            return InputItemsChanged(inputs, outputs) || TimestampsChanged(inputs, outputs);
+        }
+
+        private bool InputItemsChanged(IEnumerable<string> inputs, IEnumerable<string> outputs)
+        {
+            if (!inputs.Any() || !outputs.Any())
+            {
+                return false;
+            }
+
+            return CheckMissingIO(inputs, "inputs") || CheckMissingIO(outputs, "outputs");
+        }
+
+        private bool CheckMissingIO(IEnumerable<string> items, string itemsType)
+        {
+            var missingItems = items.Where(i => !File.Exists(i)).ToList();
+
+            return missingItems.Any();
+        }
+
+        private bool TimestampsChanged(IEnumerable<string> inputs, IEnumerable<string> outputs)
+        {
+            // find the output with the earliest write time
+            var minDateUtc = DateTime.MaxValue;
+
+            foreach (var outputPath in outputs)
+            {
+                var lastWriteTimeUtc = File.GetLastWriteTimeUtc(outputPath);
+
+                if (lastWriteTimeUtc < minDateUtc)
+                {
+                    minDateUtc = lastWriteTimeUtc;
+                }
+            }
+
+            // find inputs that are newer than the earliest output
+            var newInputs = inputs.Where(p => File.GetLastWriteTimeUtc(p) >= minDateUtc);
+
+            return newInputs.Any();
         }
     }
 }
