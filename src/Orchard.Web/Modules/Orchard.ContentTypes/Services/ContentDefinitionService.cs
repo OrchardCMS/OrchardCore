@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Drivers;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
-using Orchard.Localization;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Utility;
-using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement;
-using YesSql.Core.Services;
-using Orchard.ContentManagement.Records;
 using Orchard.Events;
-using Microsoft.Extensions.Logging;
-using Orchard.ContentTypes.Editors;
+using Orchard.Localization;
+using Orchard.Utility;
+using YesSql.Core.Services;
 
 namespace Orchard.ContentTypes.Services
 {
@@ -24,7 +22,6 @@ namespace Orchard.ContentTypes.Services
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentPartDriver> _contentPartDrivers;
         private readonly IEnumerable<IContentFieldDriver> _contentFieldDrivers;
-        private readonly IEnumerable<IContentDefinitionEditorEvents> _contentDefinitionEditorEvents;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IEventBus _eventBus;
@@ -35,7 +32,6 @@ namespace Orchard.ContentTypes.Services
                 ISession session,
                 IEnumerable<IContentPartDriver> contentPartDrivers,
                 IEnumerable<IContentFieldDriver> contentFieldDrivers,
-                IEnumerable<IContentDefinitionEditorEvents> contentDefinitionEditorEvents,
                 ILogger<IContentDefinitionService> logger,
                 IEventBus eventBus)
         {
@@ -45,7 +41,6 @@ namespace Orchard.ContentTypes.Services
             _contentDefinitionManager = contentDefinitionManager;
             _contentPartDrivers = contentPartDrivers;
             _contentFieldDrivers = contentFieldDrivers;
-            _contentDefinitionEditorEvents = contentDefinitionEditorEvents;
 
             Logger = logger;
             T = NullLocalizer.Instance;
@@ -56,7 +51,10 @@ namespace Orchard.ContentTypes.Services
 
         public IEnumerable<EditTypeViewModel> GetTypes()
         {
-            return _contentDefinitionManager.ListTypeDefinitions().Select(ctd => new EditTypeViewModel(ctd)).OrderBy(m => m.DisplayName);
+            return _contentDefinitionManager
+                .ListTypeDefinitions()
+                .Select(ctd => new EditTypeViewModel(ctd))
+                .OrderBy(m => m.DisplayName);
         }
 
         public EditTypeViewModel GetType(string name)
@@ -64,35 +62,18 @@ namespace Orchard.ContentTypes.Services
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
 
             if (contentTypeDefinition == null)
+            {
                 return null;
-
-            var viewModel = new EditTypeViewModel(contentTypeDefinition)
-            {
-                Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditor(contentTypeDefinition), Logger)
-            };
-
-            foreach (var part in viewModel.Parts)
-            {
-                part._Definition.ContentTypeDefinition = contentTypeDefinition;
-                part.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditor(part._Definition), Logger);
-                foreach (var field in part.PartDefinition.Fields)
-                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
             }
 
-            if (viewModel.Fields.Any())
-            {
-                foreach (var field in viewModel.Fields)
-                    field.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditor(field._Definition), Logger);
-            }
-
-            return viewModel;
+            return new EditTypeViewModel(contentTypeDefinition);
         }
 
         public ContentTypeDefinition AddType(string name, string displayName)
         {
             if (String.IsNullOrWhiteSpace(displayName))
             {
-                throw new ArgumentException("displayName");
+                throw new ArgumentException(nameof(displayName));
             }
 
             if (String.IsNullOrWhiteSpace(name))
@@ -115,82 +96,6 @@ namespace Orchard.ContentTypes.Services
             _eventBus.NotifyAsync<IContentDefinitionEventHandler>(x => x.ContentTypeCreated(new ContentTypeCreatedContext { ContentTypeDefinition = contentTypeDefinition }));
 
             return contentTypeDefinition;
-        }
-
-        public void AlterType(EditTypeViewModel typeViewModel, IUpdateModel updateModel)
-        {
-            var updater = new PrefixedModelUpdater(updateModel);
-            _contentDefinitionManager.AlterTypeDefinition(typeViewModel.Name, typeBuilder =>
-            {
-                typeBuilder.DisplayedAs(typeViewModel.DisplayName);
-
-                // allow extensions to alter type configuration
-                _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdating(typeBuilder), Logger);
-                typeViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdate(typeBuilder, updater), Logger);
-                _contentDefinitionEditorEvents.Invoke(x => x.TypeEditorUpdated(typeBuilder), Logger);
-
-                foreach (var part in typeViewModel.Parts)
-                {
-                    var partViewModel = part;
-
-                    // enable updater to be aware of changing part prefix
-                    updater.Prefix = secondHalf => String.Format("{0}.{1}", partViewModel.Prefix, secondHalf);
-
-                    // allow extensions to alter typePart configuration
-                    typeBuilder.WithPart(partViewModel.PartDefinition.Name, typePartBuilder =>
-                    {
-                        _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdating(typePartBuilder), Logger);
-                        partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdate(typePartBuilder, updater), Logger);
-                        _contentDefinitionEditorEvents.Invoke(x => x.TypePartEditorUpdated(typePartBuilder), Logger);
-                    });
-
-                    if (!partViewModel.PartDefinition.Fields.Any())
-                        continue;
-
-                    _contentDefinitionManager.AlterPartDefinition(partViewModel.PartDefinition.Name, partBuilder =>
-                    {
-                        var fieldFirstHalf = String.Format("{0}.{1}", partViewModel.Prefix, partViewModel.PartDefinition.Prefix);
-                        foreach (var field in partViewModel.PartDefinition.Fields)
-                        {
-                            var fieldViewModel = field;
-
-                            // enable updater to be aware of changing field prefix
-                            updater.Prefix = secondHalf =>
-                                String.Format("{0}.{1}.{2}", fieldFirstHalf, fieldViewModel.Prefix, secondHalf);
-                            // allow extensions to alter partField configuration
-                            partBuilder.WithField(fieldViewModel.Name, partFieldBuilder =>
-                            {
-                                _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdating(partFieldBuilder), Logger);
-                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger);
-                                _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdated(partFieldBuilder), Logger);
-                            });
-                        }
-                    });
-                }
-
-                if (typeViewModel.Fields.Any())
-                {
-                    _contentDefinitionManager.AlterPartDefinition(typeViewModel.Name, partBuilder =>
-                    {
-                        foreach (var field in typeViewModel.Fields)
-                        {
-                            var fieldViewModel = field;
-
-                            // enable updater to be aware of changing field prefix
-                            updater.Prefix = secondHalf =>
-                                string.Format("{0}.{1}", fieldViewModel.Prefix, secondHalf);
-
-                            // allow extensions to alter partField configuration
-                            partBuilder.WithField(fieldViewModel.Name, partFieldBuilder =>
-                            {
-                                _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdating(partFieldBuilder), Logger);
-                                fieldViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdate(partFieldBuilder, updater), Logger);
-                                _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdated(partFieldBuilder), Logger);
-                            });
-                        }
-                    });
-                }
-            });
         }
 
         public void RemoveType(string name, bool deleteContent)
@@ -274,10 +179,7 @@ namespace Orchard.ContentTypes.Services
             if (contentPartDefinition == null)
                 return null;
 
-            var viewModel = new EditPartViewModel(contentPartDefinition)
-            {
-                Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditor(contentPartDefinition), Logger)
-            };
+            var viewModel = new EditPartViewModel(contentPartDefinition);
 
             return viewModel;
         }
@@ -298,16 +200,6 @@ namespace Orchard.ContentTypes.Services
             }
 
             return null;
-        }
-
-        public void AlterPart(EditPartViewModel partViewModel, IUpdateModel updateModel)
-        {
-            _contentDefinitionManager.AlterPartDefinition(partViewModel.Name, partBuilder =>
-            {
-                _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdating(partBuilder), Logger);
-                partViewModel.Templates = _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdate(partBuilder, updateModel), Logger);
-                _contentDefinitionEditorEvents.Invoke(x => x.PartEditorUpdated(partBuilder), Logger);
-            });
         }
 
         public void RemovePart(string name)
@@ -368,9 +260,7 @@ namespace Orchard.ContentTypes.Services
             {
                 partBuilder.WithField(fieldViewModel.Name, fieldBuilder =>
                 {
-                    _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdating(fieldBuilder), Logger);
                     fieldBuilder.WithDisplayName(fieldViewModel.DisplayName);
-                    _contentDefinitionEditorEvents.Invoke(x => x.PartFieldEditorUpdated(fieldBuilder), Logger);
                 });
             });
         }

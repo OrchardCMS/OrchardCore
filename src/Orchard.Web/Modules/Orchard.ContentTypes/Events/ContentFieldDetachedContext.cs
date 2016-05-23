@@ -1,3 +1,4 @@
-﻿namespace Orchard.ContentTypes.Events {
-    public class ContentFieldDetachedContext : ContentPartFieldContext {}
+﻿namespace Orchard.ContentTypes.Events
+{
+    public class ContentFieldDetachedContext : ContentPartFieldContext { }
 }

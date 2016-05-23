@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
-using Orchard.ContentManagement.ViewModels;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.MetaData.Models;
 using Orchard.Utility;
 
 namespace Orchard.ContentTypes.ViewModels
@@ -12,16 +10,14 @@ namespace Orchard.ContentTypes.ViewModels
     {
         public EditPartViewModel()
         {
-            Fields = new List<EditPartFieldViewModel>();
             Settings = new JObject();
         }
 
         public EditPartViewModel(ContentPartDefinition contentPartDefinition)
         {
             Name = contentPartDefinition.Name;
-            Fields = contentPartDefinition.Fields.Select((f, i) => new EditPartFieldViewModel(i, f) { Part = this }).ToList();
             Settings = contentPartDefinition.Settings;
-            _Definition = contentPartDefinition;
+            PartDefinition = contentPartDefinition;
         }
 
         public string Prefix { get { return "PartDefinition"; } }
@@ -41,9 +37,10 @@ namespace Orchard.ContentTypes.ViewModels
             set { Settings["Description"] = value; }
         }
 
-        public IEnumerable<TemplateViewModel> Templates { get; set; }
-        public IEnumerable<EditPartFieldViewModel> Fields { get; set; }
+        [BindNever]
         public JObject Settings { get; set; }
-        public ContentPartDefinition _Definition { get; private set; }
+
+        [BindNever]
+        public ContentPartDefinition PartDefinition { get; private set; }
     }
 }

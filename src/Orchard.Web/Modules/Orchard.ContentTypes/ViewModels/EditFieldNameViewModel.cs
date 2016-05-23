@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Orchard.ContentManagement.MetaData;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Orchard.ContentTypes.ViewModels {
-    public class EditFieldNameViewModel {
+namespace Orchard.ContentTypes.ViewModels
+{
+    public class EditFieldNameViewModel
+    {
         /// <summary>
         /// The technical name of the field
         /// </summary>
@@ -14,5 +14,5 @@ namespace Orchard.ContentTypes.ViewModels {
         /// </summary>
         [Required]
         public string DisplayName { get; set; }
-   }
+    }
 }

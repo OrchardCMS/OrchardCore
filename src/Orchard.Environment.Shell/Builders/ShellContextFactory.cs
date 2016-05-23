@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
-using System;
-using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -80,10 +77,10 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Settings" },
-                    new ShellFeature { Name = "Body" },
                     new ShellFeature { Name = "Dashboard" },
-                    new ShellFeature { Name = "Title" },
                     new ShellFeature { Name = "Navigation" },
+                    new ShellFeature { Name = "Orchard.Body" },
+                    new ShellFeature { Name = "Orchard.Title" },
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "Orchard.Contents" },
                     new ShellFeature { Name = "Orchard.Lists" },
