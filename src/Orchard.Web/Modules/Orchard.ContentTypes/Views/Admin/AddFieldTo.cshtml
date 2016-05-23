@@ -14,19 +14,21 @@
         <input asp-for="DisplayName" class="form-control" autofocus />
         <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </fieldset>
-            
+
     <fieldset class="form-group">
         <label for="Name">@T["Technical Name"]</label>
         <input asp-for="Name" class="form-control" />
         <span class="hint">@T["Technical name of the field."]</span>
     </fieldset>
-    
-    <fieldset>
-        <label asp-for="FieldTypeName">@T["Field Type"]</label>
-        @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly() }), "FieldTypeName", "DisplayName"))
+
+    <fieldset class="form-group">
+        <div class="row col-sm-3">
+            <label asp-for="FieldTypeName">@T["Field Type"]</label>
+            @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly() }), "FieldTypeName", "DisplayName"), new { @class = "form-control" })
+        </div>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="form-group">
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
     </fieldset>
 </form>
@@ -38,15 +40,15 @@
         var $name = $("#@Html.FieldIdFor(m=>m.Name)");
         var $displayName = $("#@Html.FieldIdFor(m=>m.DisplayName)");
         var partName = "@Model.Part.Name";
-        
+
         var jsonUrl = "@Url.Action("FieldName", "Admin", new RouteValueDictionary { {"Area","Orchard.ContentTypes"} } )";
         var version = 0;
-        
+
         var nameAltered;
         $name.keypress(function() {
             nameAltered = true;
         });
-        
+
         var compute = function() {
             // stop processing automatically if altered by the user
             if(nameAltered) {
@@ -67,10 +69,10 @@
                 "json"
             );
         };
-        
+
         //pull technical name input from tab order
         $name.attr("tabindex", -1);
-        
+
         $displayName.keyup(compute);
         $displayName.blur(compute);
     })
