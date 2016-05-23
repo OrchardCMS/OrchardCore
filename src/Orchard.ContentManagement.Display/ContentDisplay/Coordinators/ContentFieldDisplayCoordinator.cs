@@ -50,10 +50,12 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 return;
             }
 
+            var partInfos = _contentPartDrivers.Select(x => x.GetPartInfo()).ToDictionary(x => x.PartName);
+
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = _contentPartDrivers.FirstOrDefault(x => x.GetPartInfo().PartName == partName)?.GetPartInfo().Factory(contentTypePartDefinition).GetType();
+                var partType = partInfos.ContainsKey(partName) ? partInfos[partName].Factory(contentTypePartDefinition).GetType() : null;
                 var part = contentItem.Get(partType ?? typeof(ContentPart), partName) as ContentPart;
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
@@ -107,6 +109,8 @@ namespace Orchard.ContentManagement.Display.Coordinators
             if (contentTypeDefinition == null)
                 return Task.CompletedTask;
 
+            var partInfos = _contentPartDrivers.Select(x => x.GetPartInfo()).ToDictionary(x => x.PartName);
+
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 // Abort if there are not fields in this part
@@ -117,10 +121,8 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
                 var partName = typePartDefinition.PartDefinition.Name;
                 ContentPartInfo partInfo;
-                var _partInfos = _contentPartDrivers.Select(cpp => cpp.GetPartInfo()).ToDictionary(x => x.PartName, x => x);
-                _partInfos.TryGetValue(partName, out partInfo);
 
-                ContentPart part = partInfo != null
+                ContentPart part = partInfos.TryGetValue(partName, out partInfo)
                     ? partInfo.Factory(typePartDefinition)
                     : new ContentPart();
 
@@ -134,7 +136,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-                    return action(partFieldDefinition, part, fieldName);
+                    action(partFieldDefinition, part, fieldName);
                 }
             }
 
