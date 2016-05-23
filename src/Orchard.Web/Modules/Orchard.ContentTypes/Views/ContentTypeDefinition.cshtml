@@ -17,12 +17,12 @@
     <fieldset class="form-group">
         <h2>@T["Fields"]</h2>
 
-        @{
-            foreach (var field in Model.TypeFieldSettings)
+        <ul class="list-group">
+            @foreach (var field in Model.TypeFieldSettings)
             {
                 @Display(field)
             }
-        }
+        </ul>
 
         <a asp-route-action="AddFieldTo" asp-route-id="@contentTypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </fieldset>
@@ -30,14 +30,17 @@
     <fieldset class="form-group">
         <h2>@T["Parts"]</h2>
 
-        @{
-            foreach (var part in Model.TypePartSettings)
+        <ul class="list-group">
+            @foreach (var part in Model.TypePartSettings)
             {
-                @Display(part)
+                <li class="list-group-item">
+                    @Display(part)
+                </li>
             }
-        }
+        </ul>
+    </fieldset>
 
-        @*@Html.EditorFor(m => m.Parts, "TypeParts", "")*@
+    <fieldset class="form-group">
         <a asp-route-action="AddPartsTo" asp-route-id="@contentTypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
     </fieldset>
 

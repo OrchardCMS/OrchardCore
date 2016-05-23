@@ -5,54 +5,20 @@
 @{
     ContentTypePartDefinition contentTypePartDefinition = Model.ContentPart;
     var contentPartSettings = contentTypePartDefinition.PartDefinition.Settings.ToObject<ContentPartSettings>();
-    var attachable = contentPartSettings.Attachable;
-    var description = contentPartSettings.Description;
 }
 
+<h3 data-toggle="collapse" data-target="#collapseExample-@contentTypePartDefinition.PartDefinition.Name">@contentTypePartDefinition.PartDefinition.Name.TrimEnd("Part")</h3>
 
-<fieldset class="form-group">
-<h3>@contentTypePartDefinition.PartDefinition.Name.TrimEnd("Part")</h3>
-    <h5>@description</h5>
+<div>
+    <h5>@contentPartSettings.Description</h5>
+    @Display(Model.Content)
 
-@Display(Model.Content)
+    @if (contentPartSettings.Attachable)
+    {
+        <fieldset class="form-group">
+            <a asp-route-action="RemovePartFrom" asp-route-id="@contentTypePartDefinition.ContentTypeDefinition.Name" asp-route-name="@contentTypePartDefinition.PartDefinition.Name" class="btn btn-warning btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>
+        </fieldset>
+    }
+</div>
 
-</fieldset>
 
-@if (attachable)
-{
-    <fieldset class="form-group">
-        <a asp-route-action="RemovePartFrom" asp-route-id="@contentTypePartDefinition.ContentTypeDefinition.Name" asp-route-name="@contentTypePartDefinition.PartDefinition.Name" class="btn btn-warning btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>
-    </fieldset>
-}
-
-        @*
-
-            <h3>
-                @Model.PartDefinition.DisplayName
-                @if (!string.IsNullOrWhiteSpace(Model.Description))
-                {
-                    <span class="description"> - @Model.Description</span>
-                }@
-            </h3>
-
-            @if (Model.PartDefinition.Settings.ToObject<ContentPartSettings>().Attachable)
-            {
-                <a asp-route-action="RemovePartFrom" asp-route-id="@Model.Type.Name" asp-route-name="@Model.Type.Name" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>
-            }
-
-            <fieldset class="form-group">
-                @Html.EditorFor(m => m.PartDefinition.Fields, "TypePartFields", "PartDefinition")
-                @if (Model.Templates.Any())
-                {
-                    <div class="settings">
-                        <h4>@T["{0} Settings:", Model.PartDefinition.DisplayName]</h4>
-                        @{
-                            // await Html.RenderTemplatesAsync(Model.Templates);
-                        }
-                    </div>
-                            }
-                            <input asp-for="PartDefinition.Name" type="hidden" />
-                            <input asp-for="Index" type="hidden" />
-                        </fieldset>
-
-        *@
