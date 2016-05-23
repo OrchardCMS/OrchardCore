@@ -25,7 +25,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000"
+					"args": "/C start http://localhost:5000/admin"
 				},
 				"osx": {
 					"command": "open"

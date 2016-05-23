@@ -34,9 +34,9 @@ namespace Orchard.Hosting
             // Load controllers
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
-            foreach (var extension in extensionManager.AvailableExtensions())
+            foreach (var feature in extensionManager.AvailableFeatures())
             {
-                var extensionEntry = extensionManager.LoadExtension(extension);
+                var extensionEntry = extensionManager.LoadExtension(feature.Extension);
                 applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
             }
 

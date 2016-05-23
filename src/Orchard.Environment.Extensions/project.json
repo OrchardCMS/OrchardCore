@@ -6,6 +6,8 @@
     "Microsoft.DotNet.ProjectModel": "1.0.0-*",
     "Microsoft.DotNet.ProjectModel.Loader":"1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Razor": "1.0.0-*",
+    "Microsoft.DotNet.Cli.Utils": "1.0.0-*",
+    "Microsoft.DotNet.Compiler.Common": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
