@@ -26,7 +26,12 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public bool Compile(ProjectContext context, string config, string buildBasePath)
         {
-            // Set up Output Paths
+            // BUILDING DEPENDENCIES part 0
+            bool compilationResult = false;
+            if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
+                return compilationResult;
+
+           // Set up Output Paths
             var outputPaths = context.GetOutputPaths(config, buildBasePath);
             var outputPath = outputPaths.CompilationOutputPath;
             var intermediateOutputPath = outputPaths.IntermediateOutputDirectoryPath;
@@ -79,19 +84,37 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add metadata options
             var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
 
+
+           // BUILDING DEPENDENCIES part 1
+           // Gather libraries of the running app
+            if (_compilationResults.IsEmpty)
+            {
+                var appContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
+                var appExporter = appContext.CreateExporter(config, buildBasePath);
+                var appDependencies = appExporter.GetDependencies().ToList();
+
+                foreach (var dependency in appDependencies)
+                {
+                    var library = dependency.Library as ProjectDescription;
+                    if (library != null)
+                    {
+                        _compilationResults[library.Identity] = true;  
+                    }
+                }
+            }
+
+
             foreach (var dependency in dependencies)
             {
                 references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
 
 
-                // TESTING BUILDING DEPENDENCIES
-                // TODO: detect libraries already part of the orchard.web project
-
+                // BUILDING DEPENDENCIES part 2
                 var library = dependency.Library as ProjectDescription;
                 if (library != null)
                 {
-                    bool compilationResult = false;
+                    compilationResult = false;
                     if (!_compilationResults.TryGetValue(library.Identity, out compilationResult))
                     {
                         var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
@@ -102,6 +125,8 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
+            // mark this one as compiled
+            _compilationResults[context.RootProject.Identity] = true;
 
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
