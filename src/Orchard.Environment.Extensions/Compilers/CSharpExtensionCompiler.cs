@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.ProjectModel.Files;
+using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.Extensions.DependencyModel;
 using NuGet.Frameworks;
 
@@ -20,6 +22,8 @@ namespace Orchard.Environment.Extensions.Compilers
 
     public class CSharpExtensionCompiler : ICompiler
     {
+        private static ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
+
         public bool Compile(ProjectContext context, string config, string buildBasePath)
         {
             // Set up Output Paths
@@ -79,7 +83,25 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
+
+
+                // TESTING BUILDING DEPENDENCIES
+                // TODO: detect libraries already part of the orchard.web project
+
+                var library = dependency.Library as ProjectDescription;
+                if (library != null)
+                {
+                    bool compilationResult = false;
+                    if (!_compilationResults.TryGetValue(library.Identity, out compilationResult))
+                    {
+                        var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+                        if (projectContext != null)
+                            compilationResult = Compile(projectContext, "Debug", projectContext.RootDirectory);
+                        _compilationResults[library.Identity] = compilationResult;  
+                    }
+                }
             }
+
 
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
@@ -113,9 +135,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
 
-
-
-            // TESTING //////////////////////////////////////////////
+            // TESTING NEEDS REBUILDING
 
             var inputs = new List<string>();
             var outputs = new List<string>();
@@ -138,10 +158,6 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (!NeedsRebuilding(inputs, outputs))
                 return true;
-
-            /////////////////////////////////////////////////////////
-
-
 
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
