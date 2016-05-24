@@ -12,6 +12,10 @@
     "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.Core": "2.0.0-*"
   },
+  "runtimeOptions": {
+    "gcServer": true,
+    "gcConcurrent": true
+  },
   "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
