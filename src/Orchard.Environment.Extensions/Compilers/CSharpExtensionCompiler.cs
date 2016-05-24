@@ -126,6 +126,8 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // mark this one as compiled
+            if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
+                return compilationResult;
             _compilationResults[context.RootProject.Identity] = true;
 
             var resources = new List<string>();
