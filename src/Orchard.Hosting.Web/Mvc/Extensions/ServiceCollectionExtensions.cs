@@ -11,6 +11,7 @@ using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
 using Orchard.Hosting.Web.Mvc.ModelBinding;
+using Orchard.Identity;
 
 namespace Orchard.Hosting.Mvc
 {

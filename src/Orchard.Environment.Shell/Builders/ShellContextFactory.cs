@@ -88,6 +88,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.ContentTypes" },
                     new ShellFeature { Name = "Orchard.Demo" },
                     new ShellFeature { Name = "Orchard.DynamicCache" },
+                    new ShellFeature { Name = "Orchard.Users" },
                     new ShellFeature { Name = "TheTheme" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },

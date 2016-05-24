@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Security
@@ -9,6 +10,11 @@ namespace Orchard.Security
 
         public PermissionRequirement(Permission permission)
         {
+            if(permission == null)
+            {
+                throw new ArgumentNullException(nameof(permission));
+            }
+
             _permission = permission;
         }
 
@@ -16,7 +22,7 @@ namespace Orchard.Security
         {
             if(context.User == null)
             {
-                context.Succeed(resource);
+                context.Fail();
             }
 
             if (context.User.IsInRole("Administrator"))

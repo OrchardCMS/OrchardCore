@@ -35,7 +35,33 @@
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="~/admin">Dashboard</a></li>
                 </ul>
-            </div><!--/.nav-collapse -->
+
+
+                <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
+                    <ul class="nav navbar-nav navbar-right">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@User.Identity.Name<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-route-area="Dashboard" asp-controller="Admin" asp-action="Index">@T["Dashboard"]</a></li>
+                                    <li class="divider"></li>
+                                    <li><a asp-route-area="Orchard.Users" asp-controller="Account" asp-action="ChangePassword">@T["Change Password"]</a></li>
+                                    <li>
+                                        <button type="submit" class="btn btn-link navbar-btn navbar-link">@T["Log off"]</button>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        }
+                        else
+                        {
+                            <li><a asp-route-area="Orchard.Users" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">@T["Log in"]</a></li>
+                        }
+                    </ul>
+                </form>
+
+</div><!--/.nav-collapse -->
         </div>
     </nav>
 

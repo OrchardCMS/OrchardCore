@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace Orchard.Security.Permissions
@@ -9,19 +10,21 @@ namespace Orchard.Security.Permissions
 
         public Permission(string name)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             Name = name;
         }
 
-        public Permission(string name, string description)
+        public Permission(string name, string description) : this(name)
         {
-            Name = name;
             Description = description;
         }
 
-        public Permission(string name, string description, IEnumerable<Permission> impliedBy)
+        public Permission(string name, string description, IEnumerable<Permission> impliedBy) : this(name, description)
         {
-            Name = name;
-            Description = description;
             ImpliedBy = impliedBy;
         }
 

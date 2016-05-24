@@ -9,13 +9,13 @@ namespace Orchard.Security
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var validPrincipal = new ClaimsPrincipal(
-                new ClaimsIdentity( new[] {
-                    new Claim(ClaimTypes.Name, "Admin"),
-                    new Claim(ClaimTypes.Role, "Administrator"),
-            }));
+            //var validPrincipal = new ClaimsPrincipal(
+            //    new ClaimsIdentity( new[] {
+            //        new Claim(ClaimTypes.Name, "Admin"),
+            //        new Claim(ClaimTypes.Role, "Administrator"),
+            //}));
 
-            context.HttpContext.User = validPrincipal;
+            //context.HttpContext.User = validPrincipal;
         }
     }
 }
