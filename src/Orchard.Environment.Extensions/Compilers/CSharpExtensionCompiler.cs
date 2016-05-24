@@ -360,9 +360,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // find inputs that are newer than the earliest output
-            var newInputs = inputs.Where(p => File.GetLastWriteTimeUtc(p) >= minDateUtc);
-
-            return newInputs.Any();
+            return inputs.Any(p => File.GetLastWriteTimeUtc(p) >= minDateUtc);
         }
     }
 }
