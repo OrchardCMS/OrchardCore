@@ -18,6 +18,9 @@ var fs = require("fs"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
     eol = require("gulp-eol");
+    
+//browser sync "css live reload"    
+var browserSync = require('browser-sync').create();
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -63,6 +66,39 @@ gulp.task("watch", function () {
                 var doRebuild = true;
                 var task = createAssetGroupTask(assetGroup, doRebuild);
             });
+        }
+        createWatcher();
+        gulp.watch(assetGroup.manifestPath, function (event) {
+            console.log("Asset manifest file '" + event.path + "' was " + event.type + ", restarting watcher.");
+            inputWatcher.remove();
+            inputWatcher.end();
+            createWatcher();
+        });
+    });
+});
+
+gulp.task("browser-sync", function () {
+
+    browserSync.init({
+        proxy: "http://localhost:5000/admin"
+    });
+    
+    gulp.watch("./src/Orchard.Web/{Themes,Modules}/**/Views/**/*.cshtml").on('change', browserSync.reload);
+    
+    var pathWin32 = require("path");
+    getAssetGroups().forEach(function (assetGroup) {
+        var watchPaths = assetGroup.inputPaths.concat(assetGroup.watchPaths);
+        var inputWatcher;
+        function createWatcher() {
+            inputWatcher = gulp.watch(watchPaths, function (event) {
+                var isConcat = path.basename(assetGroup.outputFileName, path.extname(assetGroup.outputFileName)) !== "@";
+                if (isConcat)
+                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group with output '" + assetGroup.outputPath + "'.");
+                else
+                    console.log("Asset file '" + event.path + "' was " + event.type + ", rebuilding asset group.");
+                var doRebuild = true;
+                var task = createAssetGroupTask(assetGroup, doRebuild);
+            }).on('changed', browserSync.reload);
         }
         createWatcher();
         gulp.watch(assetGroup.manifestPath, function (event) {
@@ -167,7 +203,8 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         }))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        .pipe(gulp.dest(assetGroup.webroot))
+        .pipe(browserSync.stream());
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
@@ -191,7 +228,8 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        .pipe(gulp.dest(assetGroup.webroot))
+        .pipe(browserSync.stream());
     return merge([minifiedStream, devStream]);
 }
 
@@ -236,5 +274,6 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
         }))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        .pipe(gulp.dest(assetGroup.webroot))
+        .pipe(browserSync.stream());
 }
