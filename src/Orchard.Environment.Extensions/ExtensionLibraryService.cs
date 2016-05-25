@@ -5,6 +5,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
-        private readonly IServiceCollection _applicationServices;
+        private readonly ApplicationPartManager _applicationPartManager;
         private object _applicationAssembliesNamesLock = new object();
         private bool _applicationAssembliesNamesInitialized;
         private List<string> _applicationAssembliesNames;
@@ -23,9 +24,9 @@ namespace Orchard.Environment.Extensions
         private bool _metadataReferencesInitialized;
         private List<MetadataReference> _metadataReferences;
 
-        public ExtensionLibraryService(IServiceCollection applicationServices)
+        public ExtensionLibraryService(ApplicationPartManager applicationPartManager)
         {
-            _applicationServices = applicationServices;
+            _applicationPartManager = applicationPartManager;
         }
 
         private IEnumerable<string> ApplicationAssemblyNames()
@@ -70,16 +71,14 @@ namespace Orchard.Environment.Extensions
             var assemblyPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
 
-            var extensionManager = _applicationServices.BuildServiceProvider().GetService<IExtensionManager>();
-
-            foreach (var extension in extensionManager.AvailableExtensions())
+            foreach (var applicationPart in _applicationPartManager.ApplicationParts)
             {
-                var extensionEntry = extensionManager.LoadExtension(extension);
-
-                if (assemblyPaths.Add(extensionEntry.Assembly.GetName().Name)) {
-                    var metadataReference = MetadataReference.CreateFromFile(extensionEntry.Assembly.Location);
+                var assembly = applicationPart as AssemblyPart;
+                if (assembly != null && assemblyPaths.Add(assembly.Assembly.GetName().Name))
+                {
+                    var metadataReference = MetadataReference.CreateFromFile(assembly.Assembly.Location);
                     metadataReferences.Add(metadataReference);
-                 }
+                }
             }
 
             return metadataReferences;
