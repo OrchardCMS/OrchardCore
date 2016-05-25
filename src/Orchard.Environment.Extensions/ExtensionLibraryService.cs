@@ -104,20 +104,12 @@ namespace Orchard.Environment.Extensions
                         try
                         {
                             if (asset.Name == descriptor.Id) {
-                                //if (!File.Exists(asset.ResolvedPath)) {
-                                    var location = Path.Combine(descriptor.Location, descriptor.Id);
+                                // We can do this but it relies on the dotnet cli sdk 
+                                // Command.CreateDotNet("build", new [] { location }).Execute();
 
-
-                // We can do this but it relies on the dotnet cli sdk 
-                //Command.CreateDotNet("build", new [] { location }).Execute();
-
-
-                // With an adapted compiler we only need to embed "csc.dll" and "csc.runtimeconfig.json"
-                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
-
-
-                                }
-                            //}
+                                // Here we only need to embed "csc.dll" and "csc.runtimeconfig.json"
+                                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
+                            }
 
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
                             if (loadedAssembly.GetName().Name == projectContext.ProjectFile.Name)

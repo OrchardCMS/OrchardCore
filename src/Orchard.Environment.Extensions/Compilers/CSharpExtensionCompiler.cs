@@ -26,10 +26,12 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public bool Compile(ProjectContext context, string config, string buildBasePath)
         {
-            // BUILDING DEPENDENCIES part 0
+            // Check if already compiled
             bool compilationResult = false;
             if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
+            {
                 return compilationResult;
+            }
 
            // Set up Output Paths
             var outputPaths = context.GetOutputPaths(config, buildBasePath);
@@ -60,7 +62,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 diagnostics.Add(diag);
             }
 
-            if(diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
+            if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
             {
                 // We got an unresolved dependency or missing framework. Don't continue the compilation.
                 return false;
@@ -84,16 +86,14 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add metadata options
             var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
 
-
-           // BUILDING DEPENDENCIES part 1
-           // Gather libraries of the running app
+           // mark ambient libraries as compiled
             if (_compilationResults.IsEmpty)
             {
-                var appContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-                var appExporter = appContext.CreateExporter(config, buildBasePath);
-                var appDependencies = appExporter.GetDependencies().ToList();
+                var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
+                var libraryExporter = projectContext.CreateExporter(config, buildBasePath);
+                var projectDependencies = libraryExporter.GetDependencies().ToList();
 
-                foreach (var dependency in appDependencies)
+                foreach (var dependency in projectDependencies)
                 {
                     var library = dependency.Library as ProjectDescription;
                     if (library != null)
@@ -103,14 +103,12 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
-
             foreach (var dependency in dependencies)
             {
                 references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
 
-
-                // BUILDING DEPENDENCIES part 2
+                // Compile other referenced libraries
                 var library = dependency.Library as ProjectDescription;
                 if (library != null)
                 {
@@ -118,16 +116,23 @@ namespace Orchard.Environment.Extensions.Compilers
                     if (!_compilationResults.TryGetValue(library.Identity, out compilationResult))
                     {
                         var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+
                         if (projectContext != null)
-                            compilationResult = Compile(projectContext, "Debug", projectContext.RootDirectory);
+                        {
+                            compilationResult = Compile(projectContext, config, projectContext.RootDirectory);
+                        }
                         _compilationResults[library.Identity] = compilationResult;  
                     }
                 }
             }
 
-            // mark this one as compiled
+            // Check again if already compiled
             if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
+            {
                 return compilationResult;
+            }
+
+            // Mark this library as compiled
             _compilationResults[context.RootProject.Identity] = true;
 
             var resources = new List<string>();
@@ -161,9 +166,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
             }
 
-
-            // TESTING NEEDS REBUILDING
-
+            // Gather all compile IO
             var inputs = new List<string>();
             var outputs = new List<string>();
 
@@ -183,9 +186,11 @@ namespace Orchard.Environment.Extensions.Compilers
             inputs.AddRange(references);
             outputs.AddRange(outputPaths.CompilationFiles.All());
 
+            // Check needs to be compiled
             if (!NeedsRebuilding(inputs, outputs))
+            {
                 return true;
-
+            }
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
