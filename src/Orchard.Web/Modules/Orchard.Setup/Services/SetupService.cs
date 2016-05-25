@@ -1,18 +1,22 @@
-using Orchard.Hosting;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Hosting.ShellBuilders;
-using YesSql.Core.Services;
+using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration;
+using Orchard.DependencyInjection;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Models;
+using Orchard.Hosting;
+using Orchard.Hosting.ShellBuilders;
+using Orchard.Identity;
+using Orchard.Settings.Services;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
 {
@@ -39,7 +43,8 @@ namespace Orchard.Setup.Services
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
             IRunningShellRouterTable runningShellRouterTable,
-            ILogger<SetupService> logger)
+            ILogger<SetupService> logger
+            )
         {
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
@@ -58,12 +63,12 @@ namespace Orchard.Setup.Services
             return _shellSettings;
         }
 
-        public string Setup(SetupContext context)
+        public Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return SetupInternal(context);
+                return SetupInternalAsync(context);
             }
             catch
             {
@@ -72,7 +77,7 @@ namespace Orchard.Setup.Services
             }
         }
 
-        public string SetupInternal(SetupContext context)
+        public async Task<string> SetupInternalAsync(SetupContext context)
         {
             string executionId;
 
@@ -83,10 +88,8 @@ namespace Orchard.Setup.Services
 
             // Features to enable for Setup
             string[] hardcoded = {
-                // Framework
                 "Orchard.Hosting",
-                // Core
-                "Settings"
+                "Orchard.Settings",
                 };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
@@ -117,16 +120,33 @@ namespace Orchard.Setup.Services
                     executionId = CreateTenantData(context, environment);
 
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
-                    store.InitializeAsync();
+                    await store.InitializeAsync();
 
                     // Create the "minimum shell descriptor"
-                    scope
+                    await scope
                         .ServiceProvider
                         .GetService<IShellDescriptorManager>()
                         .UpdateShellDescriptorAsync(
                             0,
                             environment.Blueprint.Descriptor.Features,
-                            environment.Blueprint.Descriptor.Parameters).Wait();
+                            environment.Blueprint.Descriptor.Parameters);
+                }
+
+                using (var scope = environment.CreateServiceScope())
+                {
+                    // Apply all migrations for the newly initialized tenant
+                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
+                    await dataMigrationManager.UpdateAllFeaturesAsync();
+
+                    // Creating super user
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                    await userManager.CreateAsync(new User { UserName = context.AdminUsername }, context.AdminPassword);
+
+                    // Updating site settings
+                    var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+                    var siteSettings = await siteService.GetSiteSettingsAsync();
+                    siteSettings.SuperUser = context.AdminUsername;
+                    await siteService.UpdateSiteSettingsAsync(siteSettings);
                 }
             }
 

@@ -44,7 +44,10 @@ namespace Orchard.Users
             serviceCollection.TryAddScoped<RoleManager<Role>, RoleManager<Role>>();
 
             serviceCollection.AddScoped<IUserStore<User>, UserStore>();
-            serviceCollection.AddScoped<IRoleStore<Role>, RoleStore>();
+            serviceCollection.AddScoped<IRoleClaimStore<Role>, RoleStore>();
+
+            // In RC2 the DI doesn't support multiple interface registration for the same service
+            serviceCollection.AddScoped<IRoleStore<Role>>(s => s.GetService<IRoleClaimStore<Role>>());
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {

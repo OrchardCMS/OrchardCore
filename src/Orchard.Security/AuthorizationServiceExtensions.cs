@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Authorization
     {
         public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission)
         {
-            return service.AuthorizeAsync(user, null, permission);
+            return AuthorizeAsync(service, user, permission, null);
         }
 
         public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission, object resource)

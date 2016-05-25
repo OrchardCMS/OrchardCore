@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using System;
-using System.Threading.Tasks;
 
 namespace Orchard.Data.Migration
 {
@@ -28,26 +27,9 @@ namespace Orchard.Data.Migration
             _logger = logger;
         }
 
-        public async Task ActivatedAsync()
+        public Task ActivatedAsync()
         {
-            var featuresThatNeedUpdate = await _dataMigrationManager.GetFeaturesThatNeedUpdate();
-
-            foreach (var feature in featuresThatNeedUpdate)
-            {
-                try
-                {
-                    await _dataMigrationManager.UpdateAsync(feature);
-                }
-                catch (Exception ex)
-                {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-
-                    _logger.LogError("Could not run migrations automatically on " + feature, ex);
-                }
-            }
+            return _dataMigrationManager.UpdateAllFeaturesAsync();
         }
 
         public Task ActivatingAsync()

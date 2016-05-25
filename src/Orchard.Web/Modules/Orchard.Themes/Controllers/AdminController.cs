@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Orchard.Core.Dashboard;
+using Orchard.Dashboard;
 using Orchard.DisplayManagement.Admin;
 using Orchard.Themes.Models;
 using Orchard.Themes.Services;

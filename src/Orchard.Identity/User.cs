@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Orchard.Identity
 {
@@ -11,5 +8,6 @@ namespace Orchard.Identity
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
         public string PasswordHash { get; set; }
+        public List<string> RoleNames { get; set; } = new List<string>();
     }
 }

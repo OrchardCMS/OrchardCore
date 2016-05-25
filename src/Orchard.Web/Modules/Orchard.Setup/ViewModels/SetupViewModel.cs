@@ -9,5 +9,8 @@ namespace Orchard.Setup.ViewModels
         public string DatabaseProvider { get; set; }
         public string ConnectionString { get; set; }
         public string TablePrefix { get; set; }
+        public string AdminUserName { get; set; }
+        public string Password { get; set; }
+        public string PasswordConfirmation { get; set; }
     }
 }

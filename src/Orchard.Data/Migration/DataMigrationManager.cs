@@ -61,7 +61,7 @@ namespace Orchard.Data.Migration
             return _dataMigrationRecord;
         }
 
-        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate()
+        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync()
         {
             var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations
                 .ToDictionary(r => r.DataMigrationClass);
@@ -326,6 +326,28 @@ namespace Orchard.Data.Migration
             }
 
             return null;
+        }
+
+        public async Task UpdateAllFeaturesAsync()
+        {
+            var featuresThatNeedUpdate = await GetFeaturesThatNeedUpdateAsync();
+
+            foreach (var feature in featuresThatNeedUpdate)
+            {
+                try
+                {
+                    await UpdateAsync(feature);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.IsFatal())
+                    {
+                        throw;
+                    }
+
+                    _logger.LogError("Could not run migrations automatically on " + feature, ex);
+                }
+            }
         }
     }
 }

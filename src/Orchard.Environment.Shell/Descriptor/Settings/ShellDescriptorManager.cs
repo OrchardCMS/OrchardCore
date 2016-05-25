@@ -55,7 +55,7 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             {
                 shellDescriptorRecord.SerialNumber++;
             }
-            
+
             shellDescriptorRecord.Features.Clear();
 
             foreach (var feature in enabledFeatures)

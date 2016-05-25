@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.DependencyInjection;
 using Orchard.Identity.Indexes;
 using YesSql.Core.Services;
 
 namespace Orchard.Identity
 {
-    public class RoleStore : IRoleStore<Role>
+    public class RoleStore : IRoleClaimStore<Role>
     {
         private readonly ISession _session;
 
@@ -17,6 +19,11 @@ namespace Orchard.Identity
             _session = session;
         }
 
+        public void Dispose()
+        {
+        }
+
+        #region IRoleStore<Role>
         public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -61,10 +68,6 @@ namespace Orchard.Identity
             }
 
             return IdentityResult.Success;
-        }
-
-        public void Dispose()
-        {
         }
 
         public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
@@ -174,5 +177,54 @@ namespace Orchard.Identity
 
             return IdentityResult.Success;
         }
+
+        #endregion
+
+        #region IRoleClaimStore<Role>
+        public Task AddClaimAsync(Role role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            role.RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value } );
+
+            return Task.CompletedTask;
+        }
+
+        public Task<IList<Claim>> GetClaimsAsync(Role role, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            return Task.FromResult<IList<Claim>>(role.RoleClaims.Select(x => x.ToClaim()).ToList());
+        }
+
+        public Task RemoveClaimAsync(Role role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (role == null)
+            {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException(nameof(claim));
+            }
+
+            role.RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+
+            return Task.CompletedTask;
+        }
+
+        #endregion
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Core.Settings.Services;
+using Orchard.Settings.Services;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using System;

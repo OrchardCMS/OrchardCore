@@ -9,8 +9,7 @@
       "type": "platform"
     },
     "Orchard.Hosting.Console": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.Core": "2.0.0-*"
+    "Orchard.Hosting.Web": "2.0.0-*"
   },
   "runtimeOptions": {
     "gcServer": true,

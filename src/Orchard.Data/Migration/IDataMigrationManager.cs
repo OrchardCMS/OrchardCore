@@ -14,7 +14,12 @@ namespace Orchard.Data.Migration
         /// <summary>
         /// Returns the features which have at least one Data Migration class with a corresponding Upgrade method to be called
         /// </summary>
-        Task<IEnumerable<string>> GetFeaturesThatNeedUpdate();
+        Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync();
+
+        /// <summary>
+        /// Run all migrations that need to be updated.
+        /// </summary>
+        Task UpdateAllFeaturesAsync();
 
         /// <summary>
         /// Updates the database to the latest version for the specified feature

@@ -7,3 +7,4 @@ OrchardVersion: 2.0.x
 Description:
 FeatureDescription: Themes.
 Category: Theming
+FeatureDependencies: Orchard.Settings, Orchard.Dashboard

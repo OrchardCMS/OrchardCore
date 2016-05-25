@@ -11,7 +11,7 @@ using Orchard.ContentManagement.MetaData.Settings;
 using Orchard.ContentManagement.Records;
 using Orchard.Contents.Services;
 using Orchard.Contents.ViewModels;
-using Orchard.Core.Settings.Services;
+using Orchard.Settings.Services;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;

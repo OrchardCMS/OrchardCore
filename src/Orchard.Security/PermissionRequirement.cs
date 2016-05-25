@@ -20,22 +20,29 @@ namespace Orchard.Security
 
         protected override void Handle(AuthorizationContext context, PermissionRequirement resource)
         {
-            if(context.User == null)
+            if (context.User == null)
             {
                 context.Fail();
+                return;
             }
-
-            if (context.User.IsInRole("Administrator"))
+            if (context.User.Identity.IsAuthenticated)
+            {
+                // Authorize all users for now
+                context.Succeed(resource);
+                return;
+            }
+            else if (context.User.IsInRole("Administrator"))
+            {
+                context.Succeed(resource);
+                return;
+            }
+            else if (context.User.HasClaim(Permission.ClaimType, _permission.Name))
             {
                 context.Succeed(resource);
                 return;
             }
 
-            if (context.User.HasClaim(Permission.ClaimType, _permission.Name))
-            {
-                context.Succeed(resource);
-                return;
-            }
+            context.Fail();
         }
     }
 }

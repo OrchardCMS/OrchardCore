@@ -4,6 +4,7 @@ using Orchard.Environment.Shell;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
 using System;
+using System.Threading.Tasks;
 
 namespace Orchard.Setup.Controllers
 {
@@ -13,7 +14,8 @@ namespace Orchard.Setup.Controllers
         private readonly ShellSettings _shellSettings;
         private const string DefaultRecipe = "Default";
 
-        public SetupController(ISetupService setupService,
+        public SetupController(
+            ISetupService setupService,
             ShellSettings shellSettings)
         {
             _setupService = setupService;
@@ -37,7 +39,7 @@ namespace Orchard.Setup.Controllers
         }
 
         [HttpPost, ActionName("Index")]
-        public ActionResult IndexPOST(SetupViewModel model)
+        public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -50,10 +52,12 @@ namespace Orchard.Setup.Controllers
                 DatabaseProvider = model.DatabaseProvider,
                 DatabaseConnectionString = model.ConnectionString,
                 DatabaseTablePrefix = model.TablePrefix,
-                EnabledFeatures = null, // default list
+                EnabledFeatures = null, // default list,
+                AdminUsername = model.AdminUserName,
+                AdminPassword = model.Password
             };
 
-            var executionId = _setupService.Setup(setupContext);
+            var executionId = await _setupService.SetupAsync(setupContext);
 
             var urlPrefix = "";
             if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))

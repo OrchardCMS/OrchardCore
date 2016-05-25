@@ -3,7 +3,8 @@
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Core": "1.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*"
+    "Orchard.Hosting.Web": "2.0.0-*",
+    "Orchard.Settings": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
