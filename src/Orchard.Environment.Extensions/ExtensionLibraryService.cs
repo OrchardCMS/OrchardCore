@@ -8,7 +8,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.ProjectModel;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
 
