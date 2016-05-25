@@ -1,27 +1,31 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.DependencyInjection;
+using Orchard.Environment.Shell;
 using Orchard.Identity;
 
 namespace Orchard.Users
 {
     public class Module : IModule
     {
+        private readonly string _tenantName;
+        private readonly string _tenantPrefix;
+
+        public Module(ShellSettings shellSettings)
+        {
+            _tenantName = shellSettings.Name;
+            _tenantPrefix = shellSettings.RequestUrlPrefix;
+        }
+
         public void Configure(IServiceCollection serviceCollection)
         {
             /// Adds the default token providers used to generate tokens for reset passwords, change email
             /// and change telephone number operations, and for two factor authentication token generation.
 
             new IdentityBuilder(typeof(User), typeof(Role), serviceCollection).AddDefaultTokenProviders();
-
-            // Services used by identity
-            //serviceCollection.AddAuthentication(options =>
-            //{
-            //    // This is the Default value for ExternalCookieAuthenticationScheme
-            //    options.SignInScheme = new IdentityCookieOptions().ApplicationCookieAuthenticationScheme;
-            //});
 
             // Identity services
             serviceCollection.TryAddSingleton<IdentityMarkerService>();
@@ -44,8 +48,10 @@ namespace Orchard.Users
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {
-                options.Cookies.ApplicationCookie.AuthenticationScheme = new IdentityCookieOptions().ApplicationCookieAuthenticationScheme;
-                //options.Cookies.ExternalCookie.AuthenticationScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
+                options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
+                options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
+                options.Cookies.ApplicationCookie.LoginPath = new PathString("/Orchard.Users/Account/Login/");
+                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
             });
         }
     }

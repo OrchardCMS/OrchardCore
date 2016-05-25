@@ -208,6 +208,9 @@ namespace Orchard.Environment.Shell.Builders
                 moduleServiceCollection.AddSingleton(typeof(IModule), dependency.Type);
             }
 
+            // Make shell settings available to the modules
+            moduleServiceCollection.AddSingleton(settings);
+
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Let any module add custom service descriptors to the tenant
