@@ -1,8 +1,6 @@
-﻿using Orchard.ContentManagement;
-
-namespace Orchard.Settings
+﻿namespace Orchard.Settings
 {
-    public interface ISite : IContent
+    public interface ISite
     {
         string PageTitleSeparator { get; set; }
         string SiteName { get; set; }

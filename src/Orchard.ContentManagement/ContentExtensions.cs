@@ -61,13 +61,19 @@ namespace Orchard.ContentManagement
             return contentPart;
         }
 
+        public static ContentItem Update(this ContentItem contentItem, ContentPart contentPart)
+        {
+            contentItem.Data[contentPart.GetType().Name] = JObject.FromObject(contentPart);
+            return contentItem;
+        }
+
         private static ContentElement AlterContentElement<T>(this ContentElement contentElement, string propertyName, Action<T> action) where T : ContentElement
         {
             if (action != null)
             {
                 JToken value;
                 T slice;
-                
+
                 // Extract the object from the current content to pass to the action
                 if (contentElement.Data.TryGetValue(propertyName, out value))
                 {
@@ -79,7 +85,7 @@ namespace Orchard.ContentManagement
                 }
 
                 action(slice);
-                
+
                 // Get the properties from the slice
                 var jObj = JObject.FromObject(slice);
                 contentElement.Data[propertyName] = jObj;

@@ -15,7 +15,7 @@ using Orchard.Environment.Shell.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 using Orchard.Identity;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services

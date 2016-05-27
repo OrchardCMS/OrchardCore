@@ -1,12 +1,17 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
-using System;
-using System.Threading.Tasks;
+using Orchard.DependencyInjection;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
 {
+    /// <summary>
+    /// Implements <see cref="ISiteService"/> by storing the site as a Content Item
+    /// </summary>
+    [ScopedComponent(typeof(ISiteService))]
     public class SiteService : ISiteService
     {
         private readonly IContentManager _contentManager;
@@ -64,8 +69,12 @@ namespace Orchard.Settings.Services
 
         public Task UpdateSiteSettingsAsync(ISite site)
         {
-            _session.Save(site.ContentItem);
-            _memoryCache.Set(SiteCacheKey, site.ContentItem);
+            var siteSettingsPart = site as SiteSettingsPart;
+            var contentItem = siteSettingsPart.ContentItem;
+            contentItem.Update(siteSettingsPart);
+
+            _session.Save(contentItem);
+            _memoryCache.Set(SiteCacheKey, contentItem);
             return Task.CompletedTask;
         }
     }

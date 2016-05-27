@@ -14,8 +14,7 @@ namespace Microsoft.AspNetCore.Authorization
 
         public static Task<bool> AuthorizeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission permission, object resource)
         {
-            var requirement = new PermissionRequirement(permission);
-            return service.AuthorizeAsync(user, resource, requirement);
+            return service.AuthorizeAsync(user, resource, new PermissionRequirement(permission));
         }
     }
 }
