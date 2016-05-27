@@ -17,14 +17,14 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public interface ICompiler
     {
-        bool Compile(ProjectContext context, string config, string buildBasePath);
+        bool Compile(ProjectContext context, string config);
     }
 
     public class CSharpExtensionCompiler : ICompiler
     {
         private static ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
 
-        public bool Compile(ProjectContext context, string config, string buildBasePath)
+        public bool Compile(ProjectContext context, string config)
         {
             // Check if already compiled
             bool compilationResult = false;
@@ -34,7 +34,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
            // Set up Output Paths
-            var outputPaths = context.GetOutputPaths(config, buildBasePath);
+            var outputPaths = context.GetOutputPaths(config);
             var outputPath = outputPaths.CompilationOutputPath;
             var intermediateOutputPath = outputPaths.IntermediateOutputDirectoryPath;
 
@@ -42,7 +42,7 @@ namespace Orchard.Environment.Extensions.Compilers
             Directory.CreateDirectory(intermediateOutputPath);
 
             // Create the library exporter
-            var exporter = context.CreateExporter(config, buildBasePath);
+            var exporter = context.CreateExporter(config);
 
             // Gather exports for the project
             var dependencies = exporter.GetDependencies().ToList();
@@ -90,7 +90,7 @@ namespace Orchard.Environment.Extensions.Compilers
             if (_compilationResults.IsEmpty)
             {
                 var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-                var libraryExporter = projectContext.CreateExporter(config, buildBasePath);
+                var libraryExporter = projectContext.CreateExporter(config);
                 var projectDependencies = libraryExporter.GetDependencies().ToList();
 
                 foreach (var dependency in projectDependencies)
@@ -119,7 +119,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         if (projectContext != null)
                         {
-                            compilationResult = Compile(projectContext, config, projectContext.RootDirectory);
+                            compilationResult = Compile(projectContext, config/*, projectContext.RootDirectory*/);
                         }
                         _compilationResults[library.Identity] = compilationResult;  
                     }
@@ -349,10 +349,22 @@ namespace Orchard.Environment.Extensions.Compilers
 
         private static Command RunCsc(string[] cscArgs)
         {
+            // Locate runtime config files
+            var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
+            var runtimeDirectory = Path.GetDirectoryName(entryAssembly.Location);
+            var runtimeConfigPath = Path.Combine(runtimeDirectory, entryAssembly.GetName().Name + ".runtimeconfig.json");
+            var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc.runtimeconfig.json");
+
+            // Automatically create the csc runtime config file
+            if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
+                || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+            {
+                File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+            }
+
             // Locate CoreRun
             return Command.Create("csc.dll", cscArgs);
         }
-
 
         public bool NeedsRebuilding(IEnumerable<string> inputs, IEnumerable<string> outputs)
         {

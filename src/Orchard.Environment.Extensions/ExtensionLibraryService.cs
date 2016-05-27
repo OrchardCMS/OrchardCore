@@ -108,7 +108,7 @@ namespace Orchard.Environment.Extensions
                                 // Command.CreateDotNet("build", new [] { location }).Execute();
 
                                 // Here we only need to embed "csc.dll" and "csc.runtimeconfig.json"
-                                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug", projectContext.RootDirectory);
+                                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug");
                             }
 
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);

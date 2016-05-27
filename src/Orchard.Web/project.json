@@ -21,10 +21,10 @@
     "debugType": "portable",
     "preserveCompilationContext": true,
     "copyToOutput": {
-      "include": [
-        "Views",
-        "web.config"
-      ]
+      "include": [ "Tools" ],
+      "mappings": {
+        "csc.dll": "Tools/csc.dll"
+      }
     },
     "compile": {
       "exclude": [
@@ -68,5 +68,22 @@
   "scripts": {
     "prepublish": [ "gulp publish" ],
     "postrestore": [ "gulp publish" ]
+  },
+  "publishOptions": {
+    "include": [
+      "Core",
+      "Modules",
+      "Themes",
+      "Views",
+      "Tools",
+      "web.config"
+    ],
+    "exclude": [ ],
+    "includeFiles": [ ],
+    "excludeFiles": [ ],
+    "builtIns": [ ],
+    "mappings": {
+      "csc.dll": "Tools/csc.dll"
+    }
   }
 }
