@@ -19,7 +19,7 @@ namespace Orchard.ContentTypes {
                 return;
             }
 
-            builder.Add(T["Content Definition"], "1", contentDefinition => contentDefinition
+            builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
                 .AddClass("content-definition")
                 .LinkToFirstChild(true)
                     .Add(T["Content Types"], "1", contentTypes => contentTypes

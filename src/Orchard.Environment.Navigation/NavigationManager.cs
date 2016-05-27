@@ -1,13 +1,12 @@
-﻿using Orchard.Environment.Shell;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Environment.Navigation
 {
@@ -58,11 +57,11 @@ namespace Orchard.Environment.Navigation
 
             var menuItems = builder.Build();
 
+            // Merge all menu hierarchies into a single one
+            Merge(menuItems);
+
             // Remove unauthorized menu items
             menuItems = Reduce(menuItems, null);
-
-            // Organize menu items hierarchy
-            menuItems = Arrange(menuItems);
 
             // Compute Url and RouteValues properties to Href
             menuItems = ComputeHref(menuItems, actionContext);
@@ -71,55 +70,50 @@ namespace Orchard.Environment.Navigation
         }
 
         /// <summary>
-        /// Organizes a list of <see cref="MenuItem"/> into a hierarchy based on their positions
+        /// Mutates a list of <see cref="MenuItem"/> into a hierarchy
         /// </summary>
-        private static IEnumerable<MenuItem> Arrange(IEnumerable<MenuItem> items)
+        private static void Merge(List<MenuItem> items)
         {
-            var result = new List<MenuItem>();
-            var index = new Dictionary<string, MenuItem>();
-
-            foreach (var item in items)
+            // Use two cursors to find all similar captions. If the same caption is represented
+            // by multiple menu item, try to merge it recursively.
+            for (var i = 0; i < items.Count; i++)
             {
-                MenuItem parent;
-                var parentPosition = String.Empty;
-
-                var position = item.Position ?? String.Empty;
-
-                var lastSegment = position.LastIndexOf('.');
-                if (lastSegment != -1)
+                var source = items[i];
+                var merged = false;
+                for (var j = items.Count - 1; j > i ; j--)
                 {
-                    parentPosition = position.Substring(0, lastSegment);
+                    var cursor = items[j];
+                    // A match is found, add all its items to the source
+                    if(String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        merged = true;
+                        foreach (var child in cursor.Items)
+                        {
+                            source.Items.Add(child);
+                        }
+
+                        items.RemoveAt(j);
+                    }
                 }
 
-                if (index.TryGetValue(parentPosition, out parent))
+                // If some items have been merged, apply recursively
+                if (merged)
                 {
-                    parent.Items = parent.Items.Concat(new[] { item });
-                }
-                else
-                {
-                    result.Add(item);
-                }
-
-                if (!index.ContainsKey(position))
-                {
-                    // Prevent invalid positions
-                    index.Add(position, item);
+                    Merge(source.Items);
                 }
             }
-
-            return result;
         }
 
         /// <summary>
         /// Computes the <see cref="MenuItem.Href"/> properties based on <see cref="MenuItem.Url"/>
         /// and <see cref="MenuItem.RouteValues"/> values.
         /// </summary>
-        private IEnumerable<MenuItem> ComputeHref(IEnumerable<MenuItem> menuItems, ActionContext actionContext)
+        private List<MenuItem> ComputeHref(List<MenuItem> menuItems, ActionContext actionContext)
         {
             foreach (var menuItem in menuItems)
             {
                 menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
-                menuItem.Items = ComputeHref(menuItem.Items.ToArray(), actionContext);
+                menuItem.Items = ComputeHref(menuItem.Items, actionContext);
             }
 
             return menuItems;
@@ -186,7 +180,7 @@ namespace Orchard.Environment.Navigation
         /// <summary>
         /// Updates the items by checking for permissions
         /// </summary>
-        private IEnumerable<MenuItem> Reduce(IEnumerable<MenuItem> items, ClaimsPrincipal user)
+        private List<MenuItem> Reduce(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
 
@@ -231,6 +225,5 @@ namespace Orchard.Environment.Navigation
 
             return filtered;
         }
-
     }
 }

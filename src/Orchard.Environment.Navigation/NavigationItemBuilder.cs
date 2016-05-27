@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.Security.Permissions;
-using System.Collections.Generic;
 
 namespace Orchard.Environment.Navigation
 {
@@ -12,6 +13,16 @@ namespace Orchard.Environment.Navigation
         public NavigationItemBuilder()
         {
             _item = new MenuItem();
+        }
+
+        public NavigationItemBuilder(MenuItem existingItem)
+        {
+            if (existingItem == null)
+            {
+                throw new ArgumentNullException(nameof(existingItem));
+            }
+
+            _item = existingItem;
         }
 
         public NavigationItemBuilder Caption(LocalizedString caption)
@@ -118,11 +129,23 @@ namespace Orchard.Environment.Navigation
 
         public NavigationItemBuilder Action(string actionName, string controllerName, RouteValueDictionary values)
         {
+            return Action(actionName, controllerName, null, new RouteValueDictionary());
+        }
+
+        public NavigationItemBuilder Action(string actionName, string controllerName, string areaName)
+        {
+            return Action(actionName, controllerName, areaName, new RouteValueDictionary());
+        }
+
+        public NavigationItemBuilder Action(string actionName, string controllerName, string areaName, RouteValueDictionary values)
+        {
             _item.RouteValues = new RouteValueDictionary(values);
             if (!string.IsNullOrEmpty(actionName))
                 _item.RouteValues["action"] = actionName;
             if (!string.IsNullOrEmpty(controllerName))
                 _item.RouteValues["controller"] = controllerName;
+            if (!string.IsNullOrEmpty(areaName))
+                _item.RouteValues["area"] = areaName;
             return this;
         }
     }

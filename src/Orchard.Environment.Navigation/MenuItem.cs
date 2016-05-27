@@ -68,8 +68,8 @@ namespace Orchard.Environment.Navigation
         /// <summary>
         /// The child menu items.
         /// </summary>
-        /// 
-        public IEnumerable<MenuItem> Items { get; set; }
+        ///
+        public List<MenuItem> Items { get; set; }
 
         /// <summary>
         /// The optional route values for this menu item.

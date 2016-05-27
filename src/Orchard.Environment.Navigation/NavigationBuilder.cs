@@ -55,9 +55,9 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public IEnumerable<MenuItem> Build()
+        public List<MenuItem> Build()
         {
-            return (Contained ?? Enumerable.Empty<MenuItem>()).ToList();
+            return (Contained ?? new List<MenuItem>()).ToList();
         }
     }
 }

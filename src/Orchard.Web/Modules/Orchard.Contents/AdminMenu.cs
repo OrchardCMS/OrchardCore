@@ -26,7 +26,7 @@ namespace Orchard.Contents
         public IStringLocalizer T { get; set; }
 
         public void BuildNavigation(string name, NavigationBuilder builder)
-        { 
+        {
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -44,7 +44,7 @@ namespace Orchard.Contents
 
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.Settings.ToObject<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
             if (contentTypes.Any()) {
-                builder.Add(T["New"], "-1", newMenu => 
+                builder.Add(T["New"], "-1", newMenu =>
                 {
                     newMenu.LinkToFirstChild(false).AddClass("new");
                     foreach (var contentTypeDefinition in contentTypes)
