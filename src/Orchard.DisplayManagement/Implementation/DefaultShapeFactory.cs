@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Castle.DynamicProxy;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Shapes;
-using System.Reflection;
 using Orchard.DisplayManagement.Theming;
-using Castle.DynamicProxy;
-using System.Collections.Concurrent;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -212,4 +211,5 @@ namespace Orchard.DisplayManagement.Implementation
             return createdContext.Shape;
         }
     }
+
 }
