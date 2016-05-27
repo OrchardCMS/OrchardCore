@@ -41,7 +41,7 @@ namespace Orchard.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new UnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
@@ -74,7 +74,7 @@ namespace Orchard.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
             {
-                return new UnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);

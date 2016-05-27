@@ -30,7 +30,7 @@ namespace Orchard.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new UnauthorizedResult();
+                return Unauthorized();
             }
 
             return new ObjectResult(contentItem);

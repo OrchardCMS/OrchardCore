@@ -68,7 +68,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> List()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             return View("List", new ListContentTypesViewModel
             {
@@ -79,7 +79,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> Create(string suggestion)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             return View(new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() });
         }
@@ -88,7 +88,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> CreatePOST(CreateTypeViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             viewModel.DisplayName = viewModel.DisplayName ?? String.Empty;
             viewModel.Name = viewModel.Name ?? String.Empty;
@@ -155,7 +155,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var contentTypeDefinition =_contentDefinitionManager.GetTypeDefinition(id);
 
@@ -174,7 +174,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> EditPOST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
 
@@ -204,7 +204,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> Delete(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var typeViewModel = _contentDefinitionService.GetType(id);
 
@@ -222,7 +222,7 @@ namespace Orchard.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return new UnauthorizedResult();
+                return Unauthorized();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -248,7 +248,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> AddPartsToPOST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var typeViewModel = _contentDefinitionService.GetType(id);
 
@@ -278,7 +278,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> RemovePartFrom(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var typeViewModel = _contentDefinitionService.GetType(id);
 
@@ -296,7 +296,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> RemovePartFromPOST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var typeViewModel = _contentDefinitionService.GetType(id);
 
@@ -336,7 +336,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> CreatePart(string suggestion)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             return View(new CreatePartViewModel { Name = suggestion.ToSafeName() });
         }
@@ -345,7 +345,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> CreatePartPOST(CreatePartViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             if (_contentDefinitionManager.GetPartDefinition(viewModel.Name) != null)
                 ModelState.AddModelError("Name", S["Cannot add part named '{0}'. It already exists.", viewModel.Name]);
@@ -369,7 +369,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> EditPart(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
 
@@ -388,7 +388,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> EditPartPOST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
 
@@ -417,7 +417,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> DeletePart(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -434,7 +434,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> AddFieldTo(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -461,7 +461,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -547,7 +547,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> EditField(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -577,7 +577,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> EditFieldPOST(string id, EditFieldNameViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             if (viewModel == null)
                 return NotFound();
@@ -634,7 +634,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> RemoveFieldFrom(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
@@ -652,7 +652,7 @@ namespace Orchard.ContentTypes.Controllers
         public async Task<ActionResult> RemoveFieldFromPOST(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
-                return new UnauthorizedResult();
+                return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
