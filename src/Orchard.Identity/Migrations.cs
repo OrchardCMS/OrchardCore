@@ -9,7 +9,7 @@ namespace Orchard.Identity
         {
             SchemaBuilder.CreateMapIndexTable(nameof(UserIndex), table => table
                 .Column<string>("NormalizedUserName")
-                .Column<string>("PasswordHash")
+                .Column<string>("NormalizedEmail")
             );
 
             return 1;

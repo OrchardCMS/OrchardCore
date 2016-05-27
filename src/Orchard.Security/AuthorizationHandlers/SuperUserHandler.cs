@@ -7,6 +7,9 @@ using Orchard.Settings;
 
 namespace Orchard.Security.AuthorizationHandlers
 {
+    /// <summary>
+    /// This authorization handler validates any permission when the user is the site owner.
+    /// </summary>
     [ScopedComponent(typeof(IAuthorizationHandler))]
     public class SuperUserHandler : IAuthorizationHandler
     {

@@ -6,7 +6,7 @@ namespace Orchard.Identity.Indexes
     public class UserIndex : MapIndex
     {
         public string NormalizedUserName { get; set; }
-        public string PasswordHash { get; set; }
+        public string NormalizedEmail { get; set; }
     }
 
     public class UserIndexProvider : IndexProvider<User>, IDependency
@@ -19,7 +19,7 @@ namespace Orchard.Identity.Indexes
                     return new UserIndex
                     {
                         NormalizedUserName = user.NormalizedUserName,
-                        PasswordHash = user.PasswordHash
+                        NormalizedEmail = user.NormalizedEmail
                     };
                 });
         }

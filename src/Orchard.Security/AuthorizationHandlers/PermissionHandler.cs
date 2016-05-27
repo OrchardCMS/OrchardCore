@@ -4,6 +4,9 @@ using Orchard.Security.Permissions;
 
 namespace Orchard.Security.AuthorizationHandlers
 {
+    /// <summary>
+    /// This authorization handler ensures that the user has the required permission.
+    /// </summary>
     [ScopedComponent(typeof(IAuthorizationHandler))]
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {

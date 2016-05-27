@@ -9,7 +9,9 @@ namespace Orchard.Identity
 {
     public class UserStore :
         IUserStore<User>,
-        IUserPasswordStore<User>
+        IUserPasswordStore<User>,
+        IUserEmailStore<User>,
+        IUserSecurityStampStore<User>
     {
         private readonly ISession _session;
 
@@ -73,11 +75,11 @@ namespace Orchard.Identity
             return _session.GetAsync<User>(id);
         }
 
-        public async Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
+            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
         }
 
         public Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
@@ -169,7 +171,7 @@ namespace Orchard.Identity
 
         #endregion
 
-        #region IUserPasswordStore<TUser>
+        #region IUserPasswordStore<User>
         public Task<string> GetPasswordHashAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -208,6 +210,119 @@ namespace Orchard.Identity
             return Task.FromResult(user.PasswordHash != null);
         }
 
+        #endregion
+
+        #region ISecurityStampValidator<User>
+        public Task SetSecurityStampAsync(User user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.SecurityStamp = stamp;
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetSecurityStampAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            return Task.FromResult(user.SecurityStamp);
+        }
+        #endregion
+
+        #region IUserEmailStore<User>
+        public Task SetEmailAsync(User user, string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.Email = email;
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetEmailAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.Email);
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.EmailConfirmed);
+        }
+
+        public Task SetEmailConfirmedAsync(User user, bool confirmed, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.EmailConfirmed = confirmed;
+            return Task.CompletedTask;
+        }
+
+        public Task<User> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefault();
+        }
+
+        public Task<string> GetNormalizedEmailAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.NormalizedEmail);
+        }
+
+        public Task SetNormalizedEmailAsync(User user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.NormalizedEmail = normalizedEmail;
+
+            return Task.CompletedTask;
+        }
         #endregion
     }
 }

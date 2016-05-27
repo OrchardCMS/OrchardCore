@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.ContentManagement;
+using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.DependencyInjection;
 using YesSql.Core.Services;
@@ -19,12 +20,15 @@ namespace Orchard.Settings.Services
         private readonly ISession _session;
 
         private const string SiteCacheKey = "Site";
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public SiteService(
             ISession session,
             IContentManager contentManager,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IContentDefinitionManager contentDefinitionManager)
         {
+            _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _session = session;
             _memoryCache = memoryCache;
@@ -44,6 +48,9 @@ namespace Orchard.Settings.Services
                     {
                         if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
                         {
+                            // Ensure the content type exists
+                            _contentDefinitionManager.AlterTypeDefinition("Site", builder => { });
+
                             site = _contentManager.New("Site");
                             site.Weld(new SiteSettingsPart()
                             {

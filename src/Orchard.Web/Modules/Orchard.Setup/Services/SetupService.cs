@@ -140,7 +140,13 @@ namespace Orchard.Setup.Services
 
                     // Creating super user
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-                    await userManager.CreateAsync(new User { UserName = context.AdminUsername }, context.AdminPassword);
+                    var superUser = new User
+                    {
+                        UserName = context.AdminUsername,
+                        Email = context.AdminEmail,
+                    };
+
+                    await userManager.CreateAsync(superUser, context.AdminPassword);
 
                     // Updating site settings
                     var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();

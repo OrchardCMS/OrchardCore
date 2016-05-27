@@ -6,6 +6,7 @@ namespace Orchard.Setup.Services
     {
         public string SiteName { get; set; }
         public string AdminUsername { get; set; }
+        public string AdminEmail { get; set; }
         public string AdminPassword { get; set; }
         public string DatabaseProvider { get; set; }
         public string DatabaseConnectionString { get; set; }

@@ -54,6 +54,7 @@ namespace Orchard.Setup.Controllers
                 DatabaseTablePrefix = model.TablePrefix,
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.AdminUserName,
+                AdminEmail = model.AdminEmail,
                 AdminPassword = model.Password
             };
 
