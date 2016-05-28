@@ -119,7 +119,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         if (projectContext != null)
                         {
-                            compilationResult = Compile(projectContext, config/*, projectContext.RootDirectory*/);
+                            compilationResult = Compile(projectContext, config);
                         }
                         _compilationResults[library.Identity] = compilationResult;  
                     }
@@ -166,6 +166,31 @@ namespace Orchard.Environment.Extensions.Compilers
                 sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
             }
 
+            if (String.IsNullOrEmpty(intermediateOutputPath))
+            {
+                return false;
+            }
+
+            var translated = TranslateCommonOptions(compilationOptions, outputName);
+
+            var allArgs = new List<string>(translated);
+            allArgs.AddRange(GetDefaultOptions());
+
+            // Generate assembly info
+            var assemblyInfo = Path.Combine(intermediateOutputPath, $"dotnet-compile.assemblyinfo.cs");
+
+            allArgs.Add($"\"{assemblyInfo}\"");
+
+            if (!String.IsNullOrEmpty(outputName))
+            {
+                allArgs.Add($"-out:\"{outputName}\"");
+            }
+
+            allArgs.AddRange(references.Select(r => $"-r:\"{r}\""));
+            allArgs.AddRange(resources.Select(resource => $"-resource:{resource}"));
+            allArgs.AddRange(sourceFiles.Select(s => $"\"{s}\""));
+            allArgs.Prepend($"-noconfig");
+
             // Gather all compile IO
             var inputs = new List<string>();
             var outputs = new List<string>();
@@ -186,38 +211,35 @@ namespace Orchard.Environment.Extensions.Compilers
             inputs.AddRange(references);
             outputs.AddRange(outputPaths.CompilationFiles.All());
 
-            // Check needs to be compiled
-            if (!NeedsRebuilding(inputs, outputs))
+            // Check if missing compile IO or time stamps changed
+            var needsRebuild = NeedsRebuilding(inputs, outputs);
+
+            // Locate RSP file
+            var rsp = Path.Combine(intermediateOutputPath, $"dotnet-compile-csc.rsp");
+
+            if (!needsRebuild)
             {
-                return true;
+                if (File.Exists(rsp))
+                {
+                    // Check if any added / deleted inputs
+                    var prevArgs = File.ReadAllLines(rsp);
+                    var prevInputs = new HashSet<string>(prevArgs);
+                    var newInputs = new HashSet<string>(allArgs);
+
+                    if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
+                        return true;
+                }
+                else
+                {
+                    // Write RSP file for the next time
+                    File.WriteAllLines(rsp, allArgs);
+                    return true;
+                }
             }
 
-            if (String.IsNullOrEmpty(intermediateOutputPath))
-            {
-                return false;
-            }
-
-            var translated = TranslateCommonOptions(compilationOptions, outputName);
-
-            var allArgs = new List<string>(translated);
-            allArgs.AddRange(GetDefaultOptions());
-
-            // Generate assembly info
-            var assemblyInfo = Path.Combine(intermediateOutputPath, $"dotnet-compile.assemblyinfo.cs");
-
+            // Write assembly info and RSP files
             File.WriteAllText(assemblyInfo, AssemblyInfoFileGenerator.GenerateCSharp(assemblyInfoOptions, sourceFiles));
-
-            allArgs.Add($"\"{assemblyInfo}\"");
-
-            if (!String.IsNullOrEmpty(outputName))
-            {
-                allArgs.Add($"-out:\"{outputName}\"");
-            }
-
-            allArgs.AddRange(references.Select(r => $"-r:\"{r}\""));
-            allArgs.AddRange(resources.Select(resource => $"-resource:{resource}"));
-            allArgs.AddRange(sourceFiles.Select(s => $"\"{s}\""));
-            allArgs.Prepend($"-noconfig");
+            File.WriteAllLines(rsp, allArgs);
 
             // Execute CSC!
             var result = RunCsc(allArgs.ToArray())
