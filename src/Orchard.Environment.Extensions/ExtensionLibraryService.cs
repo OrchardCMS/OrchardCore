@@ -104,11 +104,9 @@ namespace Orchard.Environment.Extensions
                         try
                         {
                             if (asset.Name == descriptor.Id) {
-                                // We can do this but it relies on the dotnet cli sdk 
-                                // Command.CreateDotNet("build", new [] { location }).Execute();
-
-                                // Here we only need to embed "csc.dll" and "csc.runtimeconfig.json"
-                                var success = new CSharpExtensionCompiler().Compile(projectContext, "Debug");
+                                var compiler = new CSharpExtensionCompiler();
+                                var success = compiler.Compile(projectContext, "Debug");
+                                var diagnostics = compiler.Diagnostics;
                             }
 
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);

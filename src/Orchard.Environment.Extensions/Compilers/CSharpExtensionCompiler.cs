@@ -15,14 +15,16 @@ using NuGet.Frameworks;
 
 namespace Orchard.Environment.Extensions.Compilers
 {
-    public interface ICompiler
-    {
-        bool Compile(ProjectContext context, string config);
-    }
-
-    public class CSharpExtensionCompiler : ICompiler
+    public class CSharpExtensionCompiler
     {
         private static ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
+
+        public CSharpExtensionCompiler ()
+        {
+            Diagnostics = new List<string>();
+        }
+
+        public IList<string> Diagnostics { get; private set; }
 
         public bool Compile(ProjectContext context, string config)
         {
@@ -59,6 +61,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     missingFrameworkDiagnostics.Add(diag);
                 }
 
+                Diagnostics.Add(diag.FormattedMessage);
                 diagnostics.Add(diag);
             }
 
@@ -244,11 +247,16 @@ namespace Orchard.Environment.Extensions.Compilers
             // Execute CSC!
             var result = RunCsc(allArgs.ToArray())
                 .WorkingDirectory(Directory.GetCurrentDirectory())
-                .ForwardStdErr()
-                .ForwardStdOut()
+                .OnErrorLine(line => OnOutputLine(line, context, Diagnostics))
+                .OnOutputLine(line => OnOutputLine(line, context, Diagnostics))
                 .Execute();
 
             return result.ExitCode == 0;
+        }
+
+        private static void OnOutputLine(string line, ProjectContext context, IList<string> diagnostics)
+        {
+            diagnostics.Add(line);
         }
 
         // TODO: Review if this is the place for default options
