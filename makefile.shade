@@ -13,27 +13,7 @@ var baseDir='${Directory.GetCurrentDirectory()}'
 var targetDir='${Path.Combine(baseDir, "artifacts")}'
 var buildDir='${Path.Combine(targetDir, "build")}'
 
-#build-core target='build-test'
-  @{
-      var orchardCoreDir = Path.Combine(baseDir, "src/Orchard.Web/Core");
-      
-      foreach(var projectDir in Directory.GetDirectories(orchardCoreDir)) 
-      {
-          var dotnetArgs = string.Format("pack{0} {1} --configuration {2}", pack_options, projectDir, configuration ?? "Debug");
-          Dotnet(dotnetArgs);
-          
-          var projectName=Path.GetFileName(projectDir);
-          var projectBinDir = Path.Combine(projectDir, "bin");
-          CopyFolder(projectBinDir, Path.Combine(buildDir, projectName), true);
-          
-          foreach(var nupkg in Files.Include(Path.Combine(buildDir, projectName + "/" + configuration + "/*.nupkg")))
-          {
-              File.Copy(nupkg, Path.Combine(buildDir, Path.GetFileName(nupkg)), true);
-          }
-      } 
-  }
-  
-#build-modules target='build-core'
+#build-modules target='build-test'
   @{
       var orchardModulesDir = Path.Combine(baseDir, "src/Orchard.Web/Modules");
       
