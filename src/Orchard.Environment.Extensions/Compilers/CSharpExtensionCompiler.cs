@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
@@ -35,7 +36,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 return compilationResult;
             }
 
-           // mark ambient libraries as compiled
+           // Mark ambient libraries as compiled
             if (_compilationResults.IsEmpty)
             {
                 var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
@@ -244,7 +245,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Execute CSC!
             var result = RunCsc(allArgs.ToArray())
-                .WorkingDirectory(context.ProjectDirectory)
+                .WorkingDirectory(Directory.GetCurrentDirectory())
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
@@ -371,7 +372,7 @@ namespace Orchard.Environment.Extensions.Compilers
         private static Command RunCsc(string[] cscArgs)
         {
             // Locate runtime config files
-            var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
+            var entryAssembly = Assembly.GetEntryAssembly();
             var runtimeDirectory = Path.GetDirectoryName(entryAssembly.Location);
             var runtimeConfigPath = Path.Combine(runtimeDirectory, entryAssembly.GetName().Name + ".runtimeconfig.json");
             var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc.runtimeconfig.json");
