@@ -31,7 +31,6 @@
         "wwwroot",
         "node_modules",
         "App_Data",
-        "Core",
         "Modules",
         "Themes"
       ]
@@ -71,7 +70,6 @@
   },
   "publishOptions": {
     "include": [
-      "Core",
       "Modules",
       "Themes",
       "Views",
