@@ -35,6 +35,23 @@ namespace Orchard.Environment.Extensions.Compilers
                 return compilationResult;
             }
 
+           // mark ambient libraries as compiled
+            if (_compilationResults.IsEmpty)
+            {
+                var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
+                var libraryExporter = projectContext.CreateExporter(config);
+                var projectDependencies = libraryExporter.GetDependencies().ToList();
+
+                foreach (var dependency in projectDependencies)
+                {
+                    var library = dependency.Library as ProjectDescription;
+                    if (library != null)
+                    {
+                        _compilationResults[library.Identity] = true;  
+                    }
+                }
+            }
+
            // Set up Output Paths
             var outputPaths = context.GetOutputPaths(config);
             var outputPath = outputPaths.CompilationOutputPath;
@@ -68,7 +85,7 @@ namespace Orchard.Environment.Extensions.Compilers
             if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
             {
                 // We got an unresolved dependency or missing framework. Don't continue the compilation.
-                return false;
+                return _compilationResults[context.RootProject.Identity] = false;
             }
 
             // Get compilation options
@@ -89,23 +106,6 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add metadata options
             var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
 
-           // mark ambient libraries as compiled
-            if (_compilationResults.IsEmpty)
-            {
-                var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-                var libraryExporter = projectContext.CreateExporter(config);
-                var projectDependencies = libraryExporter.GetDependencies().ToList();
-
-                foreach (var dependency in projectDependencies)
-                {
-                    var library = dependency.Library as ProjectDescription;
-                    if (library != null)
-                    {
-                        _compilationResults[library.Identity] = true;  
-                    }
-                }
-            }
-
             foreach (var dependency in dependencies)
             {
                 references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
@@ -122,21 +122,22 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         if (projectContext != null)
                         {
-                            compilationResult = Compile(projectContext, config);
+                           // Right now, if !success we try to use the last build
+                           compilationResult = Compile(projectContext, config);
                         }
                         _compilationResults[library.Identity] = compilationResult;  
                     }
                 }
             }
 
-            // Check again if already compiled
+            // Check again if already compiled, here through the dependency graph
             if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
             {
                 return compilationResult;
             }
 
-            // Mark this library as compiled
-            _compilationResults[context.RootProject.Identity] = true;
+            // Mark this library as compiled even if it will fail
+            _compilationResults[context.RootProject.Identity] = false;
 
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
@@ -214,29 +215,26 @@ namespace Orchard.Environment.Extensions.Compilers
             inputs.AddRange(references);
             outputs.AddRange(outputPaths.CompilationFiles.All());
 
-            // Check if missing compile IO or time stamps changed
-            var needsRebuild = NeedsRebuilding(inputs, outputs);
-
             // Locate RSP file
             var rsp = Path.Combine(intermediateOutputPath, $"dotnet-compile-csc.rsp");
 
-            if (!needsRebuild)
+            // Check if there is no need to compile
+            if (!CheckMissingIO(inputs, outputs) && !TimestampsChanged(inputs, outputs))
             {
                 if (File.Exists(rsp))
                 {
-                    // Check if any added / deleted inputs
-                    var prevArgs = File.ReadAllLines(rsp);
-                    var prevInputs = new HashSet<string>(prevArgs);
+                    // Check if the compilation context has been changed
+                    var prevInputs = new HashSet<string>(File.ReadAllLines(rsp));
                     var newInputs = new HashSet<string>(allArgs);
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
-                        return true;
+                        return _compilationResults[context.RootProject.Identity] = true;
                 }
                 else
                 {
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
-                    return true;
+                    return _compilationResults[context.RootProject.Identity] = true;
                 }
             }
 
@@ -246,20 +244,14 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Execute CSC!
             var result = RunCsc(allArgs.ToArray())
-                .WorkingDirectory(Directory.GetCurrentDirectory())
-                .OnErrorLine(line => OnOutputLine(line, context, Diagnostics))
-                .OnOutputLine(line => OnOutputLine(line, context, Diagnostics))
+                .WorkingDirectory(context.ProjectDirectory)
+                .OnErrorLine(line => Diagnostics.Add(line))
+                .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
 
-            return result.ExitCode == 0;
+            return _compilationResults[context.RootProject.Identity] = result.ExitCode == 0;
         }
 
-        private static void OnOutputLine(string line, ProjectContext context, IList<string> diagnostics)
-        {
-            diagnostics.Add(line);
-        }
-
-        // TODO: Review if this is the place for default options
         private static IEnumerable<string> GetDefaultOptions()
         {
             var args = new List<string>()
@@ -321,8 +313,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 commonArgs.Add($"-keyfile:\"{options.KeyFile}\"");
 
                 // If we're not on Windows, full signing isn't supported, so we'll
-                // public sign, unless the public sign switch has explicitly been
-                // set to false
+                // public sign, unless the public sign switch has been set to false
                 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
                     options.PublicSign == null)
                 {
@@ -396,31 +387,24 @@ namespace Orchard.Environment.Extensions.Compilers
             return Command.Create("csc.dll", cscArgs);
         }
 
-        public bool NeedsRebuilding(IEnumerable<string> inputs, IEnumerable<string> outputs)
-        {
-            return InputItemsChanged(inputs, outputs) || TimestampsChanged(inputs, outputs);
-        }
-
-        private bool InputItemsChanged(IEnumerable<string> inputs, IEnumerable<string> outputs)
+        private bool CheckMissingIO(IEnumerable<string> inputs, IEnumerable<string> outputs)
         {
             if (!inputs.Any() || !outputs.Any())
             {
                 return false;
             }
 
-            return CheckMissingIO(inputs, "inputs") || CheckMissingIO(outputs, "outputs");
+            return CheckMissingIO(inputs) || CheckMissingIO(outputs);
         }
 
-        private bool CheckMissingIO(IEnumerable<string> items, string itemsType)
+        private bool CheckMissingIO(IEnumerable<string> items)
         {
-            var missingItems = items.Where(i => !File.Exists(i)).ToList();
-
-            return missingItems.Any();
+            return items.Where(i => !File.Exists(i)).Any();
         }
 
         private bool TimestampsChanged(IEnumerable<string> inputs, IEnumerable<string> outputs)
         {
-            // find the output with the earliest write time
+            // Find the output with the earliest write time
             var minDateUtc = DateTime.MaxValue;
 
             foreach (var outputPath in outputs)
@@ -433,7 +417,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
-            // find inputs that are newer than the earliest output
+            // Find inputs that are newer than the earliest output
             return inputs.Any(p => File.GetLastWriteTimeUtc(p) >= minDateUtc);
         }
     }

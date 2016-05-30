@@ -103,10 +103,16 @@ namespace Orchard.Environment.Extensions
                     if (assemblyNames.Add(asset.Name)) {
                         try
                         {
-                            if (asset.Name == descriptor.Id) {
+                            if (asset.Name == projectContext.ProjectFile.Name) {
                                 var compiler = new CSharpExtensionCompiler();
                                 var success = compiler.Compile(projectContext, "Debug");
                                 var diagnostics = compiler.Diagnostics;
+
+                                // TODO: logging and see what's the best to do if !success
+                                // if sucess && ! diagnostics.Any() => some Infos, compilation ok
+                                // if success && diagnostics.Any()  => some Warnings in diagnostics
+                                // if !success => diagnostics.Any() => some Errors in diagnostics
+                                // Right now, if !success we try to use the last successful build
                             }
 
                             var loadedAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
