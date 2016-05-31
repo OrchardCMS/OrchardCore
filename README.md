@@ -199,7 +199,7 @@ Orchard 2 can be run using dotnet CLI under Ubuntu 14.04 LTS for now. Here are t
         Installing .NET Core is a simple thing on Ubuntu. The below will install the package and all of its dependencies.
 
         ```shell
-        sudo apt-get install dotnet-dev-1.0.0-rc2-002673  //default version can change over time
+        sudo apt-get install dotnet-dev-1.0.0-preview1-002702  //stable version
         ```
         
         * Other usefull commands
@@ -246,7 +246,7 @@ Orchard 2 can be run using dotnet CLI under Ubuntu 14.04 LTS for now. Here are t
 6. Install Omnisharp
 
     Download with browser
-    https://github.com/OmniSharp/omnisharp-vscode/releases/download/v1.0.5-rc2/csharp-1.0.5-rc2.vsix
+    https://github.com/OmniSharp/omnisharp-vscode/releases/download/v1.0.11/csharp-1.0.11.vsix
 
     ```shell
     code //opens vs code from command shell
