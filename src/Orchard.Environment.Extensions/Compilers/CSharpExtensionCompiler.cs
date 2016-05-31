@@ -107,7 +107,6 @@ namespace Orchard.Environment.Extensions.Compilers
 
             foreach (var dependency in dependencies)
             {
-                //references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
 
                 // Compile other referenced libraries
