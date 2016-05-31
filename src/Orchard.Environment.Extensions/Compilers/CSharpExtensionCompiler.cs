@@ -68,19 +68,17 @@ namespace Orchard.Environment.Extensions.Compilers
             var dependencies = exporter.GetDependencies().ToList();
 
             var diagnostics = new List<DiagnosticMessage>();
-            var missingFrameworkDiagnostics = new List<DiagnosticMessage>();
 
             // Collect dependency diagnostics
             foreach (var diag in context.LibraryManager.GetAllDiagnostics())
             {
-                if (diag.ErrorCode == ErrorCodes.DOTNET1011 ||
-                    diag.ErrorCode == ErrorCodes.DOTNET1012)
+                // Ambient libraries may not be resolved by the project model (e.g in production)
+                // So, we grab diagnostics only if the library is not marked as already compiled
+                if (!_compilationResults.TryGetValue(diag.Source.Identity, out compilationResult))
                 {
-                    missingFrameworkDiagnostics.Add(diag);
+                    Diagnostics.Add(diag.FormattedMessage);
+                    diagnostics.Add(diag);
                 }
-
-                Diagnostics.Add(diag.FormattedMessage);
-                diagnostics.Add(diag);
             }
 
             if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
@@ -109,7 +107,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             foreach (var dependency in dependencies)
             {
-                references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
+                //references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
 
                 // Compile other referenced libraries
@@ -128,6 +126,17 @@ namespace Orchard.Environment.Extensions.Compilers
                         }
                         _compilationResults[library.Identity] = compilationResult;  
                     }
+                }
+
+                // If an ambient Orchard library is not resolved (e.g in production)
+                if (library != null && !dependency.CompilationAssemblies.Any())
+                {
+                    // Reference this ambient library by only using its name
+                    references.Add(dependency.Library.Identity.Name + ".dll");
+                }
+                else
+                {
+                    references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 }
             }
 
@@ -244,7 +253,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Execute CSC!
             var result = RunCsc(new string[] { $"-noconfig", "@" + $"{rsp}" })
-                .WorkingDirectory(context.ProjectDirectory)
+                .WorkingDirectory(Directory.GetCurrentDirectory())
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();

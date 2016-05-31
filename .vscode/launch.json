@@ -45,7 +45,7 @@
 			"name": ".NET Core Launch (publish)",
 			"type": "coreclr",
 			"request": "launch",
-			//"preLaunchTask": "Web App: Dotnet Build Debug",
+			"preLaunchTask": "Web App: Dotnet Publish",
 			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish",

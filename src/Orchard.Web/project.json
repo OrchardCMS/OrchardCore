@@ -72,7 +72,7 @@
     "include": [
       "./"
     ],
-    "exclude": [ "bin", "obj" ],
+    "exclude": [ "bin", "**/obj", "*.cs", "Properties" ],
     "includeFiles": [ ],
     "excludeFiles": [ ],
     "builtIns": [ ],
