@@ -194,7 +194,6 @@ namespace Orchard.Environment.Extensions.Compilers
             allArgs.AddRange(references.Select(r => $"-r:\"{r}\""));
             allArgs.AddRange(resources.Select(resource => $"-resource:{resource}"));
             allArgs.AddRange(sourceFiles.Select(s => $"\"{s}\""));
-            allArgs.Prepend($"-noconfig");
 
             // Gather all compile IO
             var inputs = new List<string>();
@@ -244,8 +243,8 @@ namespace Orchard.Environment.Extensions.Compilers
             File.WriteAllLines(rsp, allArgs);
 
             // Execute CSC!
-            var result = RunCsc(allArgs.ToArray())
-                .WorkingDirectory(Directory.GetCurrentDirectory())
+            var result = RunCsc(new string[] { $"-noconfig", "@" + $"{rsp}" })
+                .WorkingDirectory(context.ProjectDirectory)
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();

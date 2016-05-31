@@ -70,13 +70,9 @@
   },
   "publishOptions": {
     "include": [
-      "Modules",
-      "Themes",
-      "Views",
-      "Tools",
-      "web.config"
+      "./"
     ],
-    "exclude": [ ],
+    "exclude": [ "bin", "obj" ],
     "includeFiles": [ ],
     "excludeFiles": [ ],
     "builtIns": [ ],
