@@ -70,9 +70,18 @@
   },
   "publishOptions": {
     "include": [
-      "./"
+      "app_data",
+      "modules",
+      "themes",
+      "views",
+      "project.json",
+      "project.lock.json",
+      "_ViewStart.cshtml",
+      "web.config"
     ],
-    "exclude": [ "bin", "**/obj", "*.cs", "Properties" ],
+    "exclude": [
+      "**/obj"
+    ],
     "includeFiles": [ ],
     "excludeFiles": [ ],
     "builtIns": [ ],
