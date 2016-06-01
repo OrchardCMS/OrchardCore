@@ -65,8 +65,8 @@ namespace Orchard.Events
         public static Task Invoke(IServiceProvider serviceProvider, IDictionary<string, object> arguments, MethodInfo methodInfo, Type handlerClass)
         {
             var service = serviceProvider.GetService(handlerClass);
-            var parameters = new object[arguments.Count];
             var methodParameters = methodInfo.GetParameters();
+            var parameters = new object[methodParameters.Length];
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 var parameterName = methodParameters[i].Name;
