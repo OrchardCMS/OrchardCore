@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Orchard.Identity
+namespace Orchard.Users.Models
 {
     public class Role
     {

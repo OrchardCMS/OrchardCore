@@ -29,9 +29,9 @@ namespace Orchard.Tests.DisplayManagement
                 return null;
             }
 
-            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler
+            public Task NotifyAsync<TEventHandler>(Expression<Func<TEventHandler, Task>> eventNotifier) where TEventHandler : IEventHandler
             {
-                return null;
+                return Task.CompletedTask;
             }
 
             public void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action)

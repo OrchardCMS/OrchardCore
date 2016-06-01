@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Orchard.Identity
+namespace Orchard.Users.Models
 {
     /// <summary>
     /// Represents a claim that is granted to all users within a role.

@@ -1,7 +1,7 @@
 ﻿using Orchard.Data.Migration;
-using Orchard.Identity.Indexes;
+using Orchard.Users.Indexes;
 
-namespace Orchard.Identity
+namespace Orchard.Users
 {
     public class Migrations : DataMigrations
     {

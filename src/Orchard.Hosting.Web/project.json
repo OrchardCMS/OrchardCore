@@ -4,7 +4,6 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.0-*",
     "Microsoft.AspNetCore.Http": "1.0.0-*",
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-*",
-    "Microsoft.AspNetCore.Identity": "1.0.0-rc2-final",
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "Microsoft.AspNetCore.Routing": "1.0.0-*",
     "Microsoft.AspNetCore.StaticFiles": "1.0.0-*",
@@ -19,7 +18,6 @@
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Events": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Identity": "1.0.0-*",
     "Orchard.Validation": "2.0.0-*"
   },
   "buildOptions": {

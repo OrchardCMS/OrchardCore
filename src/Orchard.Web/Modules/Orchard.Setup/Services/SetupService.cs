@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration;
@@ -12,9 +11,9 @@ using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Models;
+using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
-using Orchard.Identity;
 using Orchard.Settings;
 using YesSql.Core.Services;
 
@@ -139,14 +138,11 @@ namespace Orchard.Setup.Services
                     await dataMigrationManager.UpdateAllFeaturesAsync();
 
                     // Creating super user
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-                    var superUser = new User
-                    {
-                        UserName = context.AdminUsername,
-                        Email = context.AdminEmail,
-                    };
+                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.CreateSuperUserAsync(context.AdminUsername, context.AdminEmail, context.AdminPassword));
 
-                    await userManager.CreateAsync(superUser, context.AdminPassword);
+                    // TODO: Change the SetupEventHandler to take the SetupContext values with a generic event like
+                    // ISetupEventHandler.Setup andm ove the SuperUser logic into the settings module.
 
                     // Updating site settings
                     var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();

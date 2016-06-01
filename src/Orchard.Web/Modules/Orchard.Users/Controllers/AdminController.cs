@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
-using Orchard.Identity;
-using Orchard.Identity.Indexes;
 using Orchard.Navigation;
 using Orchard.Settings;
+using Orchard.Users.Indexes;
+using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
 using YesSql.Core.Services;
 

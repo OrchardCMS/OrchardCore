@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Orchard.Security;
 
-namespace Orchard.Identity
+namespace Orchard.Users.Models
 {
-    public class User
+    public class User : IUser
     {
         public int Id { get; set; }
         public string UserName { get; set; }
@@ -13,5 +15,15 @@ namespace Orchard.Identity
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
         public List<string> RoleNames { get; set; } = new List<string>();
+
+        string IUser.GetUserName()
+        {
+            return UserName;
+        }
+
+        IEnumerable<string> IUser.GetRoleNames()
+        {
+            return RoleNames;
+        }
     }
 }

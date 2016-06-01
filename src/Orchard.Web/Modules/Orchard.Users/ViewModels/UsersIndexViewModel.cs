@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.Identity;
+using Orchard.Users.Models;
 
 namespace Orchard.Users.ViewModels
 {

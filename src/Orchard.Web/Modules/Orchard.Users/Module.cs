@@ -5,7 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
-using Orchard.Identity;
+using Orchard.Users.Models;
+using Orchard.Users.Services;
 
 namespace Orchard.Users
 {
@@ -43,8 +44,8 @@ namespace Orchard.Users
             serviceCollection.TryAddScoped<SignInManager<User>, SignInManager<User>>();
             serviceCollection.TryAddScoped<RoleManager<Role>, RoleManager<Role>>();
 
-            serviceCollection.AddScoped<IUserStore<User>, UserStore>();
-            serviceCollection.AddScoped<IRoleStore<Role>, RoleStore>();
+            serviceCollection.TryAddScoped<IUserStore<User>, UserStore>();
+            serviceCollection.TryAddScoped<IRoleStore<Role>, RoleStore>();
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {

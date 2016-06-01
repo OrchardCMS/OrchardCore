@@ -10,7 +10,7 @@ using Orchard.DependencyInjection;
 namespace Orchard.Events
 {
     /// <summary>
-    /// Registrations are share accross all EventBus instances for a single tenant
+    /// Registrations are shared accross all EventBus instances for a single tenant
     /// </summary>
     public interface IEventBusState : ISingletonDependency
     {
@@ -62,31 +62,6 @@ namespace Orchard.Events
             _state.Add(message, action);
         }
 
-        public async Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventHandler) where TEventHandler : IEventHandler
-        {
-            var expression = eventHandler.Body as MethodCallExpression;
-
-            if (expression == null)
-            {
-                throw new ArgumentException("Only method calls are allowed in NotifyAsync");
-            }
-
-            var interfaceName = expression.Method.DeclaringType.Name;
-            var methodName = expression.Method.Name;
-            var messageName = $"{interfaceName}.{methodName}";
-
-            var data = expression.Method
-                .GetParameters()
-                .Select((parameter, index) => new
-                {
-                    parameter.Name,
-                    Value = GetValue(parameter, expression.Arguments[index])
-                })
-                .ToDictionary(kv => kv.Name, kv => kv.Value);
-
-            await NotifyAsync(messageName, data);
-        }
-
         public static Task Invoke(IServiceProvider serviceProvider, IDictionary<string, object> arguments, MethodInfo methodInfo, Type handlerClass)
         {
             var service = serviceProvider.GetService(handlerClass);
@@ -114,17 +89,6 @@ namespace Orchard.Events
             var proxyType = genericDispatchProxyCreateMethod.Invoke(null, null) as INotifyProxy;
 
             return proxyType;
-        }
-
-        private object GetValue(ParameterInfo parameterInfo, Expression member)
-        {
-            var objectMember = Expression.Convert(member, parameterInfo.ParameterType);
-
-            var getterLambda = Expression.Lambda<Func<object>>(objectMember);
-
-            var getter = getterLambda.Compile();
-
-            return getter();
         }
     }
 
