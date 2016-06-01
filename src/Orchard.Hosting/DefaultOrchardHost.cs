@@ -85,9 +85,9 @@ namespace Orchard.Hosting
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings()
-                .Where(settings => 
-                    settings.State == TenantState.Running || 
-                    settings.State == TenantState.Uninitialized || 
+                .Where(settings =>
+                    settings.State == TenantState.Running ||
+                    settings.State == TenantState.Uninitialized ||
                     settings.State == TenantState.Initializing)
                 .ToArray();
 

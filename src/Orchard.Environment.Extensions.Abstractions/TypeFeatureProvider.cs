@@ -1,7 +1,6 @@
-﻿using Orchard.Environment.Extensions.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Concurrent;
+using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Environment.Extensions
 {
@@ -17,23 +16,23 @@ namespace Orchard.Environment.Extensions
 
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
-        private readonly IDictionary<Type, Feature> _features = new ConcurrentDictionary<Type, Feature>();
+        private readonly ConcurrentDictionary<Type, Feature> _features = new ConcurrentDictionary<Type, Feature>();
 
         public Feature GetFeatureForDependency(Type dependency)
         {
-            if (_features.ContainsKey(dependency))
+            Feature feature = null;
+
+            if(_features.TryGetValue(dependency, out feature))
             {
-                return _features[dependency];
+                return feature;
             }
+
             return null;
         }
 
         public void TryAdd(Type type, Feature feature)
         {
-            if (!_features.ContainsKey(type))
-            {
-                _features.Add(type, feature);
-            }
+            _features.TryAdd(type, feature);
         }
     }
 }
