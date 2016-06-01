@@ -10,7 +10,7 @@ using YesSql.Core.Services;
 namespace Orchard.Settings.Services
 {
     /// <summary>
-    /// Implements <see cref="ISiteService"/> by storing the site as a Content Item
+    /// Implements <see cref="ISiteService"/> by storing the site as a Content Item.
     /// </summary>
     [ScopedComponent(typeof(ISiteService))]
     public class SiteService : ISiteService
@@ -34,6 +34,7 @@ namespace Orchard.Settings.Services
             _memoryCache = memoryCache;
         }
 
+        /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
         {
             ContentItem site;
@@ -74,6 +75,7 @@ namespace Orchard.Settings.Services
             return site.As<SiteSettingsPart>();
         }
 
+        /// <inheritdoc/>
         public Task UpdateSiteSettingsAsync(ISite site)
         {
             var siteSettingsPart = site as SiteSettingsPart;

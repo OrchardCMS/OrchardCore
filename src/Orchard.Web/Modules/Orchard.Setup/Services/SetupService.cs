@@ -14,7 +14,6 @@ using Orchard.Environment.Shell.Models;
 using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
-using Orchard.Settings;
 using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
@@ -137,18 +136,17 @@ namespace Orchard.Setup.Services
                     var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
                     await dataMigrationManager.UpdateAllFeaturesAsync();
 
-                    // Creating super user
+                    // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.CreateSuperUserAsync(context.AdminUsername, context.AdminEmail, context.AdminPassword));
-
-                    // TODO: Change the SetupEventHandler to take the SetupContext values with a generic event like
-                    // ISetupEventHandler.Setup andm ove the SuperUser logic into the settings module.
-
-                    // Updating site settings
-                    var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-                    var siteSettings = await siteService.GetSiteSettingsAsync();
-                    siteSettings.SuperUser = context.AdminUsername;
-                    await siteService.UpdateSiteSettingsAsync(siteSettings);
+                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
+                        context.SiteName,
+                        context.AdminUsername,
+                        context.AdminEmail,
+                        context.AdminPassword,
+                        context.DatabaseProvider,
+                        context.DatabaseConnectionString,
+                        context.DatabaseTablePrefix)
+                    );
                 }
             }
 

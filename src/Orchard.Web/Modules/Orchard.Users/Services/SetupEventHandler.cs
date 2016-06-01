@@ -9,9 +9,12 @@ namespace Orchard.Users.Services
 {
     public interface ISetupEventHandler : IEventHandler
     {
-        Task CreateSuperUserAsync(string userName, string email, string password);
+        Task Setup(string userName, string email, string password);
     }
 
+    /// <summary>
+    /// During setup, creates the admin user account.
+    /// </summary>
     public class SetupEventHandler : ISetupEventHandler
     {
         private readonly IServiceProvider _serviceProvider;
@@ -21,7 +24,7 @@ namespace Orchard.Users.Services
             _serviceProvider = serviceProvider;
         }
 
-        public Task CreateSuperUserAsync(string userName, string email, string password)
+        public Task Setup(string userName, string email, string password)
         {
             var userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
             var superUser = new User
