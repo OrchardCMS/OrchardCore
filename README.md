@@ -16,6 +16,14 @@ Orchard 2 is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/
 
 Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), community-focused Content Management System built on the ASP.NET MVC platform.
 
+## Status
+
+### Pre-Alpha
+
+The software is still under active development and not feature complete or ready for consumption by anyone other than software developers. There may be milestones during the pre-alpha which deliver specific sets of functionality, and nightly builds for other developers or users who are comfortable living on the absolute bleeding edge.
+
+Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Roadmap).
+
 ## Getting Started
 
 - Clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch. 
