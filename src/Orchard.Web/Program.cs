@@ -21,7 +21,7 @@ namespace Orchard.Console
 
             using (host)
             {
-                host.Run();
+                host.Start();
 
                 var orchardHost = new OrchardHost(host.Services, System.Console.In, System.Console.Out, args);
                 orchardHost.Run();
