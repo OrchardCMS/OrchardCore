@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        private static ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
+        private static readonly ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
 
         public CSharpExtensionCompiler ()
         {
@@ -72,9 +72,10 @@ namespace Orchard.Environment.Extensions.Compilers
             // Collect dependency diagnostics
             foreach (var diag in context.LibraryManager.GetAllDiagnostics())
             {
-                // Ambient libraries may not be resolved by the project model (e.g in production)
-                // So, we grab diagnostics only if the library is not marked as already compiled
-                if (!_compilationResults.TryGetValue(diag.Source.Identity, out compilationResult))
+                // Ambient libraries and packages may not be resolved (e.g in production)
+                // So, we don't grab diagnostics for packages and orchard ambient libraries
+                if (!_compilationResults.TryGetValue(diag.Source.Identity, out compilationResult)
+                    && diag.Source.Identity.Type != LibraryType.Package)
                 {
                     Diagnostics.Add(diag.FormattedMessage);
                     diagnostics.Add(diag);
@@ -109,8 +110,10 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
 
-                // Compile other referenced libraries
                 var library = dependency.Library as ProjectDescription;
+                var package = dependency.Library as PackageDescription;
+
+                // Compile other referenced libraries
                 if (library != null)
                 {
                     compilationResult = false;
@@ -127,11 +130,35 @@ namespace Orchard.Environment.Extensions.Compilers
                     }
                 }
 
-                // If an ambient Orchard library is not resolved (e.g in production)
+                // Check if an ambient library is not resolved (e.g in production)
                 if (library != null && !dependency.CompilationAssemblies.Any())
                 {
                     // Reference this ambient library by only using its name
                     references.Add(dependency.Library.Identity.Name + ".dll");
+                }
+                // Check if a package library is not resolved (e.g in production)
+                else if (package != null && !dependency.CompilationAssemblies.Any())
+                {
+                    foreach (var assembly in package.CompileTimeAssemblies)
+                    {
+                        // Search in the root folder
+                        var assemblyFileName = Path.GetFileName(assembly.Path);
+                        var path = Path.Combine(Directory.GetCurrentDirectory(), assemblyFileName);
+
+                        if (!File.Exists(path))
+                        {
+                            // Fallback to the "refs" subfolder
+                            path = Path.Combine(Directory.GetCurrentDirectory(), "refs", assemblyFileName);
+
+                            if (!File.Exists(path))
+                            {
+                                // Fallback to the extension lib folder
+                                path = Path.Combine(context.ProjectDirectory, "lib", assemblyFileName);
+                            }
+                        }
+
+                        references.Add(path);
+                    }
                 }
                 else
                 {
