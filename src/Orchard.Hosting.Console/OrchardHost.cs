@@ -104,7 +104,7 @@ namespace Orchard.Hosting
                         DisplayInteractiveHelp();
                         break;
                     case "cls":
-                        //System.Console.Clear();
+                        System.Console.Clear();
                         break;
                     default:
                         context = RunCommand(context, command);
