@@ -93,9 +93,9 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public NavigationItemBuilder PersmissionContext(object obj)
+        public NavigationItemBuilder Resource(object resource)
         {
-            _item.PersmissionContext = obj;
+            _item.Resource = resource;
             return this;
         }
 

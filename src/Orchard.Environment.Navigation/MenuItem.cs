@@ -51,7 +51,7 @@ namespace Orchard.Environment.Navigation
         public bool LinkToFirstChild { get; set; }
 
         /// <summary>
-        /// <c>True</c> if the menu item is is local to the page, like a tab.
+        /// <c>True</c> if the menu item is local to the page, like a tab.
         /// </summary>
         public bool LocalNav { get; set; }
 
@@ -61,9 +61,9 @@ namespace Orchard.Environment.Navigation
         public string Culture { get; set; }
 
         /// <summary>
-        /// The target of the permission if the menu item represent some data to protect.
+        /// The resource the permission is protecting.
         /// </summary>
-        public object PersmissionContext { get; set; }
+        public object Resource { get; set; }
 
         /// <summary>
         /// The child menu items.
@@ -77,7 +77,7 @@ namespace Orchard.Environment.Navigation
         public RouteValueDictionary RouteValues { get; set; }
 
         /// <summary>
-        /// The list of <see cref="Permission"/> object the user must have in order to see this menu item.
+        /// The list of <see cref="Permission"/> objects the user must have in order to see this menu item.
         /// </summary>
         public IList<Permission> Permissions { get; }
 
