@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System;
+﻿using System;
 using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement.Records
@@ -17,7 +16,7 @@ namespace Orchard.ContentManagement.Records
         public DateTimeOffset? CreatedUtc { get; set; }
     }
 
-    public class ContentItemIndexProvider : IndexProvider<ContentItem>, IDependency
+    public class ContentItemIndexProvider : IndexProvider<ContentItem>
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {

@@ -2,11 +2,11 @@
   "dependencies": {
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
-    "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Contents": "1.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
-    "Orchard.ContentTypes.Abstractions": "1.0.0-*"
+    "Orchard.ContentTypes.Abstractions": "1.0.0-*",
+    "Orchard.ContentManagement.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

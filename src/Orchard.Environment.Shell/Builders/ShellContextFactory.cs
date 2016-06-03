@@ -73,19 +73,20 @@ namespace Orchard.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new[] {
+                Features = new[]
+                {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Orchard.Settings" },
-                    new ShellFeature { Name = "Orchard.Dashboard" },
+                    new ShellFeature { Name = "Orchard.Admin" },
                     new ShellFeature { Name = "Orchard.Navigation" },
-                    new ShellFeature { Name = "Orchard.Body" },
-                    new ShellFeature { Name = "Orchard.Title" },
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "Orchard.Contents" },
-                    new ShellFeature { Name = "Orchard.Lists" },
-                    new ShellFeature { Name = "Orchard.ContentFields" },
                     new ShellFeature { Name = "Orchard.ContentTypes" },
+                    new ShellFeature { Name = "Orchard.ContentFields" },
+                    new ShellFeature { Name = "Orchard.Body" },
+                    new ShellFeature { Name = "Orchard.Title" },
+                    new ShellFeature { Name = "Orchard.Lists" },
                     new ShellFeature { Name = "Orchard.Demo" },
                     new ShellFeature { Name = "Orchard.DynamicCache" },
                     new ShellFeature { Name = "Orchard.Users" },

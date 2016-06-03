@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Localization;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Recipes.Models;
 
 namespace Orchard.Environment.Recipes.Services
 {
-    public abstract class RecipeBuilderStep : Component, IRecipeBuilderStep
+    public abstract class RecipeBuilderStep : IRecipeBuilderStep
     {
         public abstract string Name { get; }
         public abstract LocalizedString DisplayName { get; }

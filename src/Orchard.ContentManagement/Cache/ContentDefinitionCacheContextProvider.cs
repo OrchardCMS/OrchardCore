@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Environment.Cache.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Orchard.ContentManagement.MetaData;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.ContentManagement.Cache
 {
@@ -15,9 +14,7 @@ namespace Orchard.ContentManagement.Cache
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentDefinitionCacheContextProvider(
-            IContentDefinitionManager contentDefinitionManager
-            )
+        public ContentDefinitionCacheContextProvider(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }

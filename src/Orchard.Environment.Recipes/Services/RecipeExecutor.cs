@@ -1,10 +1,9 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.Environment.Recipes.Models;
+﻿using Orchard.Environment.Recipes.Models;
 using Orchard.Environment.Shell.Descriptor;
 
 namespace Orchard.Environment.Recipes.Services
 {
-    public class RecipeExecutor : Component, IRecipeExecutor
+    public class RecipeExecutor : IRecipeExecutor
     {
         private readonly IRecipeManager _recipeManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;

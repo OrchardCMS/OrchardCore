@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Orchard.DependencyInjection;
 using Orchard.Services;
 
 namespace Orchard.Environment.Recipes.Services
 {
-    public class RecipeBuilder : Component, IRecipeBuilder
+    public class RecipeBuilder : IRecipeBuilder
     {
         private readonly IClock _clock;
 
@@ -34,7 +33,7 @@ namespace Orchard.Environment.Recipes.Services
         {
             var recipeRoot = new XDocument(
                 new XDeclaration("1.0", "", "yes"),
-                new XComment(T("Exported from Orchard").ToString()),
+                new XComment("Exported from Orchard"),
                 new XElement("Orchard",
                     new XElement("Recipe",
                         new XElement("ExportUtc", _clock.UtcNow))

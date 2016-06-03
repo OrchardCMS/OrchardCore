@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
@@ -18,7 +17,7 @@ using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
 {
-    public class SetupService : Component, ISetupService
+    public class SetupService : ISetupService
     {
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;

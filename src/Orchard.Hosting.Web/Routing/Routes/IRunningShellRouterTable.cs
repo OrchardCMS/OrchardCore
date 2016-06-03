@@ -4,7 +4,7 @@ using System;
 
 namespace Orchard.Environment.Shell
 {
-    public interface IRunningShellRouterTable : ISingletonDependency
+    public interface IRunningShellRouterTable
     {
         IRouter GetOrAdd(string shellName, Func<string, IRouter> router);
         void Remove(string shellName);
