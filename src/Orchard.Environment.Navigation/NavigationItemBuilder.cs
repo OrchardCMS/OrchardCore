@@ -129,7 +129,7 @@ namespace Orchard.Environment.Navigation
 
         public NavigationItemBuilder Action(string actionName, string controllerName, RouteValueDictionary values)
         {
-            return Action(actionName, controllerName, null, new RouteValueDictionary());
+            return Action(actionName, controllerName, null, values);
         }
 
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName)
