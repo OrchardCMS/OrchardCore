@@ -47,8 +47,10 @@
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Publish",
 			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish/Orchard.Web.dll",
+			//"program": "${workspaceRoot}/../publish/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish",
+			//"cwd": "${workspaceRoot}/../publish",
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,

@@ -93,6 +93,7 @@ namespace Orchard.Environment.Extensions
             if (projectContext == null)
                 return null;
 
+            // Ambient assemblies
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames(), StringComparer.OrdinalIgnoreCase);
 
             // TODO: find a way to select the right configuration
@@ -134,6 +135,8 @@ namespace Orchard.Environment.Extensions
                     foreach (var item in package.RuntimeAssemblies)
                     {
                         var itemName = Path.GetFileNameWithoutExtension(item.Path);
+
+                        // Check if not ambient
                         if (assemblyNames.Add(itemName))
                         {
                             Assembly itemAssembly;
@@ -142,9 +145,10 @@ namespace Orchard.Environment.Extensions
                             if (_loadedAssemblies.TryGetValue(itemName, out itemAssembly))
                                 continue;
 
+                            // Load from the extension lib folder
                             var itemFileName = Path.GetFileName(item.Path);
-
                             var path = Path.Combine(projectContext.ProjectDirectory, "lib", itemFileName);
+
                             if (File.Exists(path))
                             {
                                 // Load and mark the assembly as loaded
@@ -159,6 +163,7 @@ namespace Orchard.Environment.Extensions
                     // Load the package or the project library
                     foreach (var asset in dependency.RuntimeAssemblyGroups.GetDefaultAssets())
                     {
+                        // Check if not ambient
                         if (assemblyNames.Add(asset.Name))
                         {
                             Assembly assetAssembly;
