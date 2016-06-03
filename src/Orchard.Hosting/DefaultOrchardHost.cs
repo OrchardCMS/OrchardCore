@@ -10,6 +10,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Folders;
 
 namespace Orchard.Hosting
 {
@@ -22,13 +24,16 @@ namespace Orchard.Hosting
 
         private readonly static object _syncLock = new object();
         private ConcurrentDictionary<string, ShellContext> _shellContexts;
+        private readonly IExtensionManager _extensionManager;
 
         public DefaultOrchardHost(
             IShellSettingsManager shellSettingsManager,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
+            IExtensionManager extensionManager,
             ILogger<DefaultOrchardHost> logger)
         {
+            _extensionManager = extensionManager;
             _shellSettingsManager = shellSettingsManager;
             _shellContextFactory = shellContextFactory;
             _runningShellTable = runningShellTable;
@@ -82,6 +87,11 @@ namespace Orchard.Hosting
             {
                 _logger.LogInformation("Start creation of shells");
             }
+
+            // Load all extensions and features so that the controllers are
+            // registered in ITypeFeatureProvider and their areas definedin the application
+            // conventions.
+            _extensionManager.LoadFeatures(_extensionManager.AvailableFeatures());
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings()

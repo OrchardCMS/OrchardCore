@@ -38,8 +38,15 @@ namespace Orchard.Hosting
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
             foreach (var feature in extensionManager.AvailableFeatures())
             {
-                var extensionEntry = extensionManager.LoadExtension(feature.Extension);
-                applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
+                try
+                {
+                    var extensionEntry = extensionManager.LoadExtension(feature.Extension);
+                    applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
+                }
+                catch
+                {
+                    // TODO: An extension couldn't be loaded, log
+                }
             }
 
             return builder;

@@ -49,7 +49,7 @@ namespace Orchard.Hosting.Mvc
                 };
             });
 
-            services.AddSingleton<ICompilationService, Orchard.Hosting.Mvc.Razor.DefaultRoslynCompilationService>();
+            services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
 
             return services;
         }
