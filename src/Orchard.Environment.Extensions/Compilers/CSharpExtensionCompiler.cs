@@ -18,39 +18,38 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        private static readonly ConcurrentDictionary<LibraryIdentity, bool> _compilationResults = new ConcurrentDictionary<LibraryIdentity, bool>();
+        private static readonly ConcurrentDictionary<string, bool> _compilationResults = new ConcurrentDictionary<string, bool>();
+        private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
         public CSharpExtensionCompiler ()
         {
             Diagnostics = new List<string>();
         }
 
+        public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
 
         public bool Compile(ProjectContext context, string config)
         {
-            // Check if already compiled
-            bool compilationResult = false;
-            if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
-            {
-                return compilationResult;
-            }
-
            // Mark ambient libraries as compiled
             if (_compilationResults.IsEmpty)
             {
-                var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-                var libraryExporter = projectContext.CreateExporter(config);
-                var projectDependencies = libraryExporter.GetDependencies().ToList();
+                var libraries = DependencyContext.Default.CompileLibraries
+                    .Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
 
-                foreach (var dependency in projectDependencies)
+                foreach (var library in libraries)
                 {
-                    var library = dependency.Library as ProjectDescription;
-                    if (library != null)
-                    {
-                        _compilationResults[library.Identity] = true;  
-                    }
+                    _compilationResults[library.Name] = true;
                 }
+            }
+
+            // Compiled assemblies
+            var compiledAssemblies = new HashSet<string>(_compilationResults.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
+
+            // Check if already compiled
+            if (compiledAssemblies.Contains(context.RootProject.Identity.Name))
+            {
+                return _compilationResults[context.RootProject.Identity.Name];
             }
 
            // Set up Output Paths
@@ -74,7 +73,7 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 // Ambient libraries and packages may not be resolved (e.g in production)
                 // So, we don't grab diagnostics for packages and orchard ambient libraries
-                if (!_compilationResults.TryGetValue(diag.Source.Identity, out compilationResult)
+                if (!compiledAssemblies.Contains(diag.Source.Identity.Name)
                     && diag.Source.Identity.Type != LibraryType.Package)
                 {
                     Diagnostics.Add(diag.FormattedMessage);
@@ -85,7 +84,7 @@ namespace Orchard.Environment.Extensions.Compilers
             if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
             {
                 // We got an unresolved dependency or missing framework. Don't continue the compilation.
-                return _compilationResults[context.RootProject.Identity] = false;
+                return _compilationResults[context.RootProject.Identity.Name] = false;
             }
 
             // Get compilation options
@@ -106,6 +105,9 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add metadata options
             var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
 
+            // Get the runtime directory
+            var runtimeDirectory = Path.GetDirectoryName(EntryAssembly.Location);
+
             foreach (var dependency in dependencies)
             {
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
@@ -116,17 +118,16 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Compile other referenced libraries
                 if (library != null)
                 {
-                    compilationResult = false;
-                    if (!_compilationResults.TryGetValue(library.Identity, out compilationResult))
+                    if (compiledAssemblies.Add(library.Identity.Name))
                     {
                         var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
 
+                        bool compilationResult = false;
                         if (projectContext != null)
                         {
                            // Right now, if !success we try to use the last build
                            compilationResult = Compile(projectContext, config);
                         }
-                        _compilationResults[library.Identity] = compilationResult;  
                     }
                 }
 
@@ -134,21 +135,21 @@ namespace Orchard.Environment.Extensions.Compilers
                 if (library != null && !dependency.CompilationAssemblies.Any())
                 {
                     // Reference this ambient library by only using its name
-                    references.Add(dependency.Library.Identity.Name + ".dll");
+                    references.Add(dependency.Library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib);
                 }
                 // Check if a package library is not resolved (e.g in production)
                 else if (package != null && !dependency.CompilationAssemblies.Any())
                 {
                     foreach (var assembly in package.CompileTimeAssemblies)
                     {
-                        // Search in the root folder
+                        // Search in the runtime directory
                         var assemblyFileName = Path.GetFileName(assembly.Path);
-                        var path = Path.Combine(Directory.GetCurrentDirectory(), assemblyFileName);
+                        var path = Path.Combine(runtimeDirectory, assemblyFileName);
 
                         if (!File.Exists(path))
                         {
                             // Fallback to the "refs" subfolder
-                            path = Path.Combine(Directory.GetCurrentDirectory(), "refs", assemblyFileName);
+                            path = Path.Combine(runtimeDirectory, "refs", assemblyFileName);
 
                             if (!File.Exists(path))
                             {
@@ -166,14 +167,17 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
+            // Refresh compiled assemblies
+            compiledAssemblies = new HashSet<string>(_compilationResults.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
+
             // Check again if already compiled, here through the dependency graph
-            if (_compilationResults.TryGetValue(context.RootProject.Identity, out compilationResult))
+            if (!compiledAssemblies.Add(context.RootProject.Identity.Name))
             {
-                return compilationResult;
+                return _compilationResults[context.RootProject.Identity.Name];
             }
 
             // Mark this library as compiled even if it will fail
-            _compilationResults[context.RootProject.Identity] = false;
+            _compilationResults[context.RootProject.Identity.Name] = false;
 
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
@@ -208,7 +212,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
-                return false;
+                return _compilationResults[context.RootProject.Identity.Name] = false;
             }
 
             var translated = TranslateCommonOptions(compilationOptions, outputName);
@@ -263,13 +267,13 @@ namespace Orchard.Environment.Extensions.Compilers
                     var newInputs = new HashSet<string>(allArgs);
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
-                        return _compilationResults[context.RootProject.Identity] = true;
+                        return _compilationResults[context.RootProject.Identity.Name] = true;
                 }
                 else
                 {
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
-                    return _compilationResults[context.RootProject.Identity] = true;
+                    return _compilationResults[context.RootProject.Identity.Name] = true;
                 }
             }
 
@@ -277,14 +281,25 @@ namespace Orchard.Environment.Extensions.Compilers
             File.WriteAllText(assemblyInfo, AssemblyInfoFileGenerator.GenerateCSharp(assemblyInfoOptions, sourceFiles));
             File.WriteAllLines(rsp, allArgs);
 
+            // Locate runtime config files
+            var runtimeConfigPath = Path.Combine(runtimeDirectory, EntryAssembly.GetName().Name + ".runtimeconfig.json");
+            var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc.runtimeconfig.json");
+
+            // Automatically create the csc runtime config file
+            if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
+                || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+            {
+                File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+            }
+
             // Execute CSC!
-            var result = RunCsc(new string[] { $"-noconfig", "@" + $"{rsp}" })
-                .WorkingDirectory(Directory.GetCurrentDirectory())
+            var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
+                .WorkingDirectory(runtimeDirectory)
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
 
-            return _compilationResults[context.RootProject.Identity] = result.ExitCode == 0;
+            return _compilationResults[context.RootProject.Identity.Name] = result.ExitCode == 0;
         }
 
         private static IEnumerable<string> GetDefaultOptions()
@@ -401,25 +416,6 @@ namespace Orchard.Environment.Extensions.Compilers
                 return languageVersion.Substring("csharp".Length);
             }
             return languageVersion;
-        }
-
-        private static Command RunCsc(string[] cscArgs)
-        {
-            // Locate runtime config files
-            var entryAssembly = Assembly.GetEntryAssembly();
-            var runtimeDirectory = Path.GetDirectoryName(entryAssembly.Location);
-            var runtimeConfigPath = Path.Combine(runtimeDirectory, entryAssembly.GetName().Name + ".runtimeconfig.json");
-            var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc.runtimeconfig.json");
-
-            // Automatically create the csc runtime config file
-            if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
-                || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
-            {
-                File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
-            }
-
-            // Locate CoreRun
-            return Command.Create("csc.dll", cscArgs);
         }
 
         private bool CheckMissingIO(IEnumerable<string> inputs, IEnumerable<string> outputs)

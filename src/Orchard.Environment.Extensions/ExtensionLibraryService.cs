@@ -9,15 +9,23 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.ProjectModel;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Compilers;
+using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
+using Orchard.FileSystem;
+using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
-        private readonly ConcurrentDictionary <string, Assembly> _loadedAssemblies = new ConcurrentDictionary<string, Assembly>();
         private readonly ApplicationPartManager _applicationPartManager;
+        private readonly IOrchardFileSystem _fileSystem;
+        private readonly ILogger _logger;
+
+        private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>();
         private object _applicationAssembliesNamesLock = new object();
         private bool _applicationAssembliesNamesInitialized;
         private List<string> _applicationAssembliesNames;
@@ -25,9 +33,17 @@ namespace Orchard.Environment.Extensions
         private bool _metadataReferencesInitialized;
         private List<MetadataReference> _metadataReferences;
 
-        public ExtensionLibraryService(ApplicationPartManager applicationPartManager)
+        public Localizer T { get; set; }
+
+        public ExtensionLibraryService(
+            ApplicationPartManager applicationPartManager,
+            IOrchardFileSystem fileSystem,
+            ILogger<ExtensionLibraryService> logger)
         {
             _applicationPartManager = applicationPartManager;
+            _fileSystem = fileSystem;
+            _logger = logger;
+            T = NullLocalizer.Instance;
         }
 
         private IEnumerable<string> ApplicationAssemblyNames()
@@ -50,21 +66,7 @@ namespace Orchard.Environment.Extensions
 
         private List<string> GetApplicationAssemblyNames()
         {
-            var assemblyNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
-            var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-
-            // TODO: find a way to select the right configuration
-            var libraryExporter = projectContext.CreateExporter("Debug");
-
-            foreach (var libraryExport in libraryExporter.GetAllExports())
-            {
-                foreach (var asset in libraryExport.RuntimeAssemblyGroups.GetDefaultAssets())
-                {
-                    assemblyNames.Add(asset.Name);
-                }
-            }
-
-            return assemblyNames.ToList();
+            return DependencyContext.Default.GetDefaultAssemblyNames().Select(x => x.Name).ToList();
         }
 
         private List<MetadataReference> GetMetadataReferences()
@@ -87,11 +89,21 @@ namespace Orchard.Environment.Extensions
 
         public Assembly LoadExternalAssembly(ExtensionDescriptor descriptor)
         {
-            var extensionPath = Path.Combine(descriptor.Location, descriptor.Id);
+            var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
             var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
 
             if (projectContext == null)
                 return null;
+
+            // Runtime loaded assemblies
+            var loadedAssemblies = new HashSet<string>(_loadedAssemblies.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
+
+            // Check if already runtime loaded
+            if (!loadedAssemblies.Add(projectContext.RootProject.Identity.Name))
+            {
+                // Then load it as an ambient assembly
+                return Assembly.Load(new AssemblyName(projectContext.RootProject.Identity.Name));
+            }
 
             // Ambient assemblies
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames(), StringComparer.OrdinalIgnoreCase);
@@ -104,24 +116,31 @@ namespace Orchard.Environment.Extensions
             var success = compiler.Compile(projectContext, "Debug");
             var diagnostics = compiler.Diagnostics;
 
-            // TODO: what's the best to do if !success
-            // TODO: logging diagnostics warnings / errors
-
-            Assembly assembly;
-            var assemblyPath = projectContext.GetOutputPaths("Debug").CompilationFiles.Assembly;
-            var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
-
-            // Check if the extension is already loaded
-            if (_loadedAssemblies.TryGetValue(assemblyName, out assembly))
+            if (success)
             {
-                return assembly;
+                if (_logger.IsEnabled(LogLevel.Information) && !diagnostics.Any())
+                {
+                     _logger.LogInformation("{0} was successfully compiled", descriptor.Id);
+                }
+                else if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    // TODO: log diagnostics messages
+                     _logger.LogWarning("{0} was compiled but has warnings", descriptor.Id);
+                }
             }
             else
             {
-                // Load and mark the assembly as loaded
-                assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-                _loadedAssemblies[assemblyName] = assembly;
+                if (_logger.IsEnabled(LogLevel.Error))
+                {
+                    // TODO: log diagnostics messages
+                     _logger.LogError("{0} compilation failed", descriptor.Id);
+                }
             }
+
+            // Load and mark the assembly as loaded
+            var assemblyPath = projectContext.GetOutputPaths("Debug").CompilationFiles.Assembly;
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            _loadedAssemblies[assembly.GetName().Name] = true;
 
             // Load the extension dependencies
             foreach (var dependency in libraryExporter.GetDependencies())
@@ -137,23 +156,18 @@ namespace Orchard.Environment.Extensions
                         var itemName = Path.GetFileNameWithoutExtension(item.Path);
 
                         // Check if not ambient
-                        if (assemblyNames.Add(itemName))
+                        if (!assemblyNames.Contains(itemName))
                         {
-                            Assembly itemAssembly;
-
-                            // Check if already loaded
-                            if (_loadedAssemblies.TryGetValue(itemName, out itemAssembly))
-                                continue;
-
                             // Load from the extension lib folder
                             var itemFileName = Path.GetFileName(item.Path);
                             var path = Path.Combine(projectContext.ProjectDirectory, "lib", itemFileName);
 
-                            if (File.Exists(path))
+                            // Check if file exists and not already loaded
+                            if (File.Exists(path) && loadedAssemblies.Add(itemName))
                             {
                                 // Load and mark the assembly as loaded
-                                itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-                                _loadedAssemblies[itemName] = itemAssembly;
+                                var itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+                                _loadedAssemblies[itemAssembly.GetName().Name] = true;
                             }
                         }
                     }
@@ -164,16 +178,14 @@ namespace Orchard.Environment.Extensions
                     foreach (var asset in dependency.RuntimeAssemblyGroups.GetDefaultAssets())
                     {
                         // Check if not ambient
-                        if (assemblyNames.Add(asset.Name))
+                        if (!assemblyNames.Contains(asset.Name))
                         {
-                            Assembly assetAssembly;
-
                             // Check if not already loaded
-                            if (!_loadedAssemblies.TryGetValue(asset.Name, out assetAssembly))
+                            if (loadedAssemblies.Add(asset.Name))
                             {
                                 // Load and mark the assembly as loaded
-                                assetAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
-                                _loadedAssemblies[asset.Name] = assetAssembly;
+                                var assetAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
+                                _loadedAssemblies[assetAssembly.GetName().Name] = true;
                             }
 
                             if (package != null)
