@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
+using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
 
@@ -54,6 +55,9 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.LoginPath = new PathString("/Orchard.Users/Account/Login/");
                 options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
             });
+
+            serviceCollection.AddScoped<RoleIndexProvider>();
+            serviceCollection.AddScoped<UserIndexProvider>();
         }
     }
 }

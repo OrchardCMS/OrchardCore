@@ -63,7 +63,7 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
 
             // Dynamic syntax
-            contentItem.Content.TestContentPartA.Line = text;
+            contentItem.Content.TestContentPartA.Line = text + "blah";
 
             // Explicit syntax
             var testPart = contentItem.As<TestContentPartA>();
@@ -72,7 +72,7 @@ namespace Orchard.Demo.Controllers
 
             // "Alter" syntax
             contentItem.Alter<TestContentPartA>(x => x.Line = text);
-             
+
             _contentManager.Create(contentItem);
 
             _logger.LogInformation("This is some log");
@@ -117,7 +117,7 @@ namespace Orchard.Demo.Controllers
             var shape = Shape
                 .Foo()
                 .Line(contentItem.As<TestContentPartA>().Line);
-            
+
             return View(shape);
         }
 

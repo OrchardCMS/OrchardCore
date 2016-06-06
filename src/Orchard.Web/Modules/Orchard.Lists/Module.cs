@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement;
 using Orchard.DependencyInjection;
+using Orchard.Lists.Indexes;
 
-namespace Orchard.Contents
+namespace Orchard.Lists
 {
     public class Module : IModule
     {
         public void Configure(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddContentManagement();
+            serviceCollection.AddScoped<ContainedPartIndexProvider>();
         }
     }
 }

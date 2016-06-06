@@ -135,75 +135,11 @@ namespace Orchard.Environment.Shell.Builders
             //    tenantServiceCollection.ConfigureOptions(optionObject);
             //}
 
-            // Configuring data access
-            var indexes = blueprint
-            .Dependencies
-            .Where(x => typeof(IIndexProvider).IsAssignableFrom(x.Type))
-            .Select(x => x.Type).ToArray();
+            // Execute IModule registrations
 
-            if (settings.DatabaseProvider != null)
-            {
-                var store = new Store(cfg =>
-                    {
-                        // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
+            IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-                        IConnectionFactory connectionFactory = null;
-
-                        switch (settings.DatabaseProvider)
-                        {
-                            case "SqlConnection":
-                                connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
-                                break;
-                            case "SqliteConnection":
-                                connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                                break;
-                            default:
-                                throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
-                        }
-
-                        cfg.ConnectionFactory = connectionFactory;
-                        cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
-
-                        if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
-                        {
-                            cfg.TablePrefix = settings.TablePrefix + "_";
-                        }
-#if SQL
-                        var sqlFactory = new SqlDocumentStorageFactory(connectionFactory);
-                        sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
-                        sqlFactory.ConnectionFactory = connectionFactory;
-                        if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
-                        {
-                            sqlFactory.TablePrefix = settings.TablePrefix + "_";
-                        }
-                        cfg.DocumentStorageFactory = sqlFactory;
-#else
-                        var storageFactory = new LightningDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
-                        cfg.DocumentStorageFactory = storageFactory;
-#endif
-
-
-                        //cfg.RunDefaultMigration();
-                    }
-                );
-
-                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, "contentitem", store.Configuration.TablePrefix);
-
-                store.RegisterIndexes(indexes);
-
-                tenantServiceCollection.AddSingleton<IStore>(store);
-                tenantServiceCollection.AddSingleton<LinearBlockIdGenerator>(idGenerator);
-
-                tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
-                    store.CreateSession()
-                );
-            }
-
-            IServiceCollection moduleServiceCollection =
-                _serviceProvider.CreateChildContainer(_applicationServices);
-
-            foreach (var dependency in blueprint.Dependencies
-                .Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
             {
                 moduleServiceCollection.AddSingleton(typeof(IModule), dependency.Type);
             }
@@ -217,6 +153,72 @@ namespace Orchard.Environment.Shell.Builders
             foreach (var service in moduleServiceProvider.GetServices<IModule>())
             {
                 service.Configure(tenantServiceCollection);
+            }
+
+            // Configuring data access
+
+            var indexes = tenantServiceCollection
+                .Select(x => x.ImplementationType)
+                .Where(t => t != null && typeof(IIndexProvider).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
+                .Distinct()
+                .ToArray();
+
+            if (settings.DatabaseProvider != null)
+            {
+                var store = new Store(cfg =>
+                {
+                    // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
+
+                    IConnectionFactory connectionFactory = null;
+
+                    switch (settings.DatabaseProvider)
+                    {
+                        case "SqlConnection":
+                            connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
+                            break;
+                        case "SqliteConnection":
+                            connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                            break;
+                        default:
+                            throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
+                    }
+
+                    cfg.ConnectionFactory = connectionFactory;
+                    cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
+
+                    if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
+                    {
+                        cfg.TablePrefix = settings.TablePrefix + "_";
+                    }
+#if SQL
+                    var sqlFactory = new SqlDocumentStorageFactory(connectionFactory);
+                    sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
+                    sqlFactory.ConnectionFactory = connectionFactory;
+                    if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
+                    {
+                        sqlFactory.TablePrefix = settings.TablePrefix + "_";
+                    }
+                    cfg.DocumentStorageFactory = sqlFactory;
+#else
+                        var storageFactory = new LightningDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
+                        cfg.DocumentStorageFactory = storageFactory;
+#endif
+
+
+                    //cfg.RunDefaultMigration();
+                }
+                );
+
+                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, "contentitem", store.Configuration.TablePrefix);
+
+                store.RegisterIndexes(indexes);
+
+                tenantServiceCollection.AddSingleton<IStore>(store);
+                tenantServiceCollection.AddSingleton<LinearBlockIdGenerator>(idGenerator);
+
+                tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
+                    store.CreateSession()
+                );
             }
 
             // Register event handlers on the event bus

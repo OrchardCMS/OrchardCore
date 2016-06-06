@@ -6,7 +6,6 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
 using Orchard.Environment.Cache.Abstractions;
-using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement
 {
@@ -18,7 +17,7 @@ namespace Orchard.ContentManagement
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
+            services.AddScoped<ContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             return services;
