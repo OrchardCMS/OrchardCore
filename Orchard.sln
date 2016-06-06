@@ -123,6 +123,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.ContentManagement.A
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Admin.Abstractions", "src\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.xproj", "{C54B0878-5E52-4DE2-A387-F593F5F097D7}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Roles", "src\Orchard.Web\Modules\Orchard.Roles\Orchard.Roles.xproj", "{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -317,6 +319,10 @@ Global
 		{C54B0878-5E52-4DE2-A387-F593F5F097D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C54B0878-5E52-4DE2-A387-F593F5F097D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C54B0878-5E52-4DE2-A387-F593F5F097D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -374,5 +380,6 @@ Global
 		{2D0A6C74-33EE-46AA-9B94-AC2600E67AC5} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{258C4D94-8BBF-4B10-8E17-5376BB4CE4D5} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{C54B0878-5E52-4DE2-A387-F593F5F097D7} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{F36A479D-82D3-4E0E-9681-028CA8D7AEA9} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

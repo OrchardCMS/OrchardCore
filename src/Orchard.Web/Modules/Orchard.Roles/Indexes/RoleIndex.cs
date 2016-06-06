@@ -1,8 +1,8 @@
 ﻿using Orchard.DependencyInjection;
-using Orchard.Users.Models;
+using Orchard.Security;
 using YesSql.Core.Indexes;
 
-namespace Orchard.Users.Indexes
+namespace Orchard.Roles.Indexes
 {
     public class RoleIndex : MapIndex
     {

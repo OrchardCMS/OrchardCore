@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
+using Orchard.Security;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
@@ -35,18 +36,15 @@ namespace Orchard.Users
             serviceCollection.TryAddScoped<IPasswordValidator<User>, PasswordValidator<User>>();
             serviceCollection.TryAddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             serviceCollection.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
-            serviceCollection.TryAddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
 
             // No interface for the error describer so we can add errors without rev'ing the interface
             serviceCollection.TryAddScoped<IdentityErrorDescriber>();
             serviceCollection.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<User>>();
             serviceCollection.TryAddScoped<IUserClaimsPrincipalFactory<User>, UserClaimsPrincipalFactory<User, Role>>();
-            serviceCollection.TryAddScoped<UserManager<User>, UserManager<User>>();
-            serviceCollection.TryAddScoped<SignInManager<User>, SignInManager<User>>();
-            serviceCollection.TryAddScoped<RoleManager<Role>, RoleManager<Role>>();
+            serviceCollection.TryAddScoped<UserManager<User>>();
+            serviceCollection.TryAddScoped<SignInManager<User>>();
 
             serviceCollection.TryAddScoped<IUserStore<User>, UserStore>();
-            serviceCollection.TryAddScoped<IRoleStore<Role>, RoleStore>();
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {
@@ -56,7 +54,6 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
             });
 
-            serviceCollection.AddScoped<RoleIndexProvider>();
             serviceCollection.AddScoped<UserIndexProvider>();
         }
     }

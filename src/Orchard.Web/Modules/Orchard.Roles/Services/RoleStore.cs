@@ -5,11 +5,11 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Users.Indexes;
-using Orchard.Users.Models;
+using Orchard.Roles.Indexes;
+using Orchard.Security;
 using YesSql.Core.Services;
 
-namespace Orchard.Users.Services
+namespace Orchard.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<Role>
     {
