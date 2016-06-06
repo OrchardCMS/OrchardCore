@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        private static readonly ConcurrentDictionary<string, bool> _compilationResults = new ConcurrentDictionary<string, bool>();
+        private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
         public CSharpExtensionCompiler ()
@@ -32,24 +32,23 @@ namespace Orchard.Environment.Extensions.Compilers
         public bool Compile(ProjectContext context, string config)
         {
            // Mark ambient libraries as compiled
-            if (_compilationResults.IsEmpty)
+            if (_compiledLibraries.IsEmpty)
             {
                 var libraries = DependencyContext.Default.CompileLibraries
                     .Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
 
                 foreach (var library in libraries)
                 {
-                    _compilationResults[library.Name] = true;
+                    _compiledLibraries[library.Name] = true;
                 }
             }
 
-            // Compiled assemblies
-            var compiledAssemblies = new HashSet<string>(_compilationResults.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
+            bool compilationResult;
 
             // Check if already compiled
-            if (compiledAssemblies.Contains(context.RootProject.Identity.Name))
+            if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
             {
-                return _compilationResults[context.RootProject.Identity.Name];
+                return _compiledLibraries[context.RootProject.Identity.Name];
             }
 
            // Set up Output Paths
@@ -71,20 +70,17 @@ namespace Orchard.Environment.Extensions.Compilers
             // Collect dependency diagnostics
             foreach (var diag in context.LibraryManager.GetAllDiagnostics())
             {
-                // Ambient libraries and packages may not be resolved (e.g in production)
-                // So, we don't grab diagnostics for packages and orchard ambient libraries
-                if (!compiledAssemblies.Contains(diag.Source.Identity.Name)
-                    && diag.Source.Identity.Type != LibraryType.Package)
-                {
-                    Diagnostics.Add(diag.FormattedMessage);
-                    diagnostics.Add(diag);
-                }
+                // Some library paths may not be resolved by the project model (e.g in production)
+                // So, here we don't grab any diagnostics and we will search in probing folders 
+
+                //Diagnostics.Add(diag.FormattedMessage);
+                //diagnostics.Add(diag);
             }
 
             if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
             {
                 // We got an unresolved dependency or missing framework. Don't continue the compilation.
-                return _compilationResults[context.RootProject.Identity.Name] = false;
+                return _compiledLibraries[context.RootProject.Identity.Name] = false;
             }
 
             // Get compilation options
@@ -116,45 +112,55 @@ namespace Orchard.Environment.Extensions.Compilers
                 var package = dependency.Library as PackageDescription;
 
                 // Compile other referenced libraries
-                if (library != null)
+                if (library != null  && dependency.CompilationAssemblies.Any())
                 {
-                    if (compiledAssemblies.Add(library.Identity.Name))
+                    if (!_compiledLibraries.TryGetValue(library.Identity.Name, out compilationResult))
                     {
                         var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
 
-                        bool compilationResult = false;
                         if (projectContext != null)
                         {
                            // Right now, if !success we try to use the last build
-                           compilationResult = Compile(projectContext, config);
+                           var success = Compile(projectContext, config);
                         }
                     }
                 }
 
-                // Check if an ambient library is not resolved (e.g in production)
+                // Check if a project library is not resolved (e.g in production)
                 if (library != null && !dependency.CompilationAssemblies.Any())
                 {
-                    // Reference this ambient library by only using its name
-                    references.Add(dependency.Library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib);
+                    var fileName = dependency.Library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+
+                    // Search in the runtime directory for an ambient library
+                    var path = Path.Combine(runtimeDirectory, fileName);
+
+                    if (!File.Exists(path))
+                    {
+                        // Fallback to the extension probing folder
+                        path = Path.Combine(context.ProjectDirectory, "lib", fileName);
+                    }
+
+                    references.Add(path);
                 }
                 // Check if a package library is not resolved (e.g in production)
                 else if (package != null && !dependency.CompilationAssemblies.Any())
                 {
                     foreach (var assembly in package.CompileTimeAssemblies)
                     {
+                        var fileName = Path.GetFileName(assembly.Path);
+
                         // Search in the runtime directory
-                        var assemblyFileName = Path.GetFileName(assembly.Path);
-                        var path = Path.Combine(runtimeDirectory, assemblyFileName);
+                        var path = Path.Combine(runtimeDirectory, fileName);
 
                         if (!File.Exists(path))
                         {
                             // Fallback to the "refs" subfolder
-                            path = Path.Combine(runtimeDirectory, "refs", assemblyFileName);
+                            path = Path.Combine(runtimeDirectory, "refs", fileName);
 
                             if (!File.Exists(path))
                             {
-                                // Fallback to the extension lib folder
-                                path = Path.Combine(context.ProjectDirectory, "lib", assemblyFileName);
+                                // Fallback to the extension probing folder
+                                path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                             }
                         }
 
@@ -167,17 +173,14 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
-            // Refresh compiled assemblies
-            compiledAssemblies = new HashSet<string>(_compilationResults.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
-
             // Check again if already compiled, here through the dependency graph
-            if (!compiledAssemblies.Add(context.RootProject.Identity.Name))
+            if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
             {
-                return _compilationResults[context.RootProject.Identity.Name];
+                return _compiledLibraries[context.RootProject.Identity.Name];
             }
 
             // Mark this library as compiled even if it will fail
-            _compilationResults[context.RootProject.Identity.Name] = false;
+            _compiledLibraries[context.RootProject.Identity.Name] = false;
 
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
@@ -212,7 +215,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
-                return _compilationResults[context.RootProject.Identity.Name] = false;
+                return _compiledLibraries[context.RootProject.Identity.Name] = false;
             }
 
             var translated = TranslateCommonOptions(compilationOptions, outputName);
@@ -267,13 +270,13 @@ namespace Orchard.Environment.Extensions.Compilers
                     var newInputs = new HashSet<string>(allArgs);
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
-                        return _compilationResults[context.RootProject.Identity.Name] = true;
+                        return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
                 else
                 {
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
-                    return _compilationResults[context.RootProject.Identity.Name] = true;
+                    return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
             }
 
@@ -299,7 +302,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
 
-            return _compilationResults[context.RootProject.Identity.Name] = result.ExitCode == 0;
+            return _compiledLibraries[context.RootProject.Identity.Name] = result.ExitCode == 0;
         }
 
         private static IEnumerable<string> GetDefaultOptions()

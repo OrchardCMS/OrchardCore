@@ -25,7 +25,7 @@ namespace Orchard.Environment.Extensions
         private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
 
-        private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>();
+        private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private object _applicationAssembliesNamesLock = new object();
         private bool _applicationAssembliesNamesInitialized;
         private List<string> _applicationAssembliesNames;
@@ -95,11 +95,10 @@ namespace Orchard.Environment.Extensions
             if (projectContext == null)
                 return null;
 
-            // Runtime loaded assemblies
-            var loadedAssemblies = new HashSet<string>(_loadedAssemblies.Select(x => x.Key), StringComparer.OrdinalIgnoreCase);
+            bool loaded;
 
             // Check if already runtime loaded
-            if (!loadedAssemblies.Add(projectContext.RootProject.Identity.Name))
+            if (_loadedAssemblies.TryGetValue(projectContext.RootProject.Identity.Name, out loaded))
             {
                 // Then load it as an ambient assembly
                 return Assembly.Load(new AssemblyName(projectContext.RootProject.Identity.Name));
@@ -140,34 +139,56 @@ namespace Orchard.Environment.Extensions
             // Load and mark the assembly as loaded
             var assemblyPath = projectContext.GetOutputPaths("Debug").CompilationFiles.Assembly;
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-            _loadedAssemblies[assembly.GetName().Name] = true;
+            _loadedAssemblies[projectContext.RootProject.Identity.Name] = true;
 
             // Load the extension dependencies
             foreach (var dependency in libraryExporter.GetDependencies())
             {
+                var library = dependency.Library as ProjectDescription;
                 var package = dependency.Library as PackageDescription;
 
-                // Check for an unresolved package (e.g in production)
-                if (package != null && !dependency.RuntimeAssemblyGroups.Any())
+                // Check for an unresolved library (e.g in production)
+                if (library != null && !dependency.RuntimeAssemblyGroups.Any())
                 {
-                    // Load the package from the extension lib folder
+                    var assemblyName = dependency.Library.Identity.Name;
+
+                    // Check if not ambient
+                    if (!assemblyNames.Contains(assemblyName))
+                    {
+                        // Load from the extension probing folder
+                        var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
+                        var path = Path.Combine(projectContext.ProjectDirectory, "lib", fileName);
+
+                        // Check if file exists and not already loaded
+                        if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
+                        {
+                            // Load and mark the assembly as loaded
+                            var itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+                            _loadedAssemblies[assemblyName] = true;
+                        }
+                    }
+                }
+                // Check for an unresolved package (e.g in production)
+                else if (package != null && !dependency.RuntimeAssemblyGroups.Any())
+                {
+                    // Load the package from the probing folder
                     foreach (var item in package.RuntimeAssemblies)
                     {
-                        var itemName = Path.GetFileNameWithoutExtension(item.Path);
+                        var assemblyName = Path.GetFileNameWithoutExtension(item.Path);
 
                         // Check if not ambient
-                        if (!assemblyNames.Contains(itemName))
+                        if (!assemblyNames.Contains(assemblyName))
                         {
-                            // Load from the extension lib folder
-                            var itemFileName = Path.GetFileName(item.Path);
-                            var path = Path.Combine(projectContext.ProjectDirectory, "lib", itemFileName);
+                            // Load from the extension probing folder
+                            var fileName = Path.GetFileName(item.Path);
+                            var path = Path.Combine(projectContext.ProjectDirectory, "lib", fileName);
 
                             // Check if file exists and not already loaded
-                            if (File.Exists(path) && loadedAssemblies.Add(itemName))
+                            if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
                             {
                                 // Load and mark the assembly as loaded
-                                var itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-                                _loadedAssemblies[itemAssembly.GetName().Name] = true;
+                                AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+                                _loadedAssemblies[assemblyName] = true;
                             }
                         }
                     }
@@ -181,24 +202,21 @@ namespace Orchard.Environment.Extensions
                         if (!assemblyNames.Contains(asset.Name))
                         {
                             // Check if not already loaded
-                            if (loadedAssemblies.Add(asset.Name))
+                            if (!_loadedAssemblies.TryGetValue(asset.Name, out loaded))
                             {
                                 // Load and mark the assembly as loaded
-                                var assetAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
-                                _loadedAssemblies[assetAssembly.GetName().Name] = true;
+                                AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
+                                _loadedAssemblies[asset.Name] = true;
                             }
 
-                            if (package != null)
-                            {
-                                // Populate the extension lib folder with the package asset
-                                var assetProbingPath = Path.Combine(extensionPath, "lib", asset.FileName);
+                            // Populate the extension probing folder with the library asset
+                            var assetProbingPath = Path.Combine(extensionPath, "lib", asset.FileName);
 
-                                if (!File.Exists(assetProbingPath)
-                                    || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(assetProbingPath))
-                                {
-                                    Directory.CreateDirectory(Path.Combine(extensionPath, "lib"));
-                                    File.Copy(asset.ResolvedPath, assetProbingPath, true);
-                                }
+                            if (!File.Exists(assetProbingPath)
+                                || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(assetProbingPath))
+                            {
+                                Directory.CreateDirectory(Path.Combine(extensionPath, "lib"));
+                                File.Copy(asset.ResolvedPath, assetProbingPath, true);
                             }
                         }
                     }
