@@ -126,10 +126,10 @@ namespace Orchard.Environment.Extensions.Compilers
                     }
                 }
 
-                // Check if a project library is not resolved (e.g in production)
-                if (library != null && !dependency.CompilationAssemblies.Any())
+                // Check for an unresolved library
+                if (library != null && !library.Resolved)
                 {
-                    var fileName = dependency.Library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                    var fileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
 
                     // Search in the runtime directory for an ambient library
                     var path = Path.Combine(runtimeDirectory, fileName);
@@ -142,8 +142,8 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     references.Add(path);
                 }
-                // Check if a package library is not resolved (e.g in production)
-                else if (package != null && !dependency.CompilationAssemblies.Any())
+                // Check for an unresolved package
+                else if (package != null && !package.Resolved)
                 {
                     foreach (var assembly in package.CompileTimeAssemblies)
                     {

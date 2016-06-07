@@ -52,8 +52,8 @@
 		},
 		{
 			"taskName": "Web App: Dotnet Publish",
-			"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web" ]
-			//"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web --output ../publish" ]
+			//"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web" ]
+			"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web --output ../publish" ]
 		},
 		{
 			"taskName": "Gulp Build",

@@ -147,10 +147,10 @@ namespace Orchard.Environment.Extensions
                 var library = dependency.Library as ProjectDescription;
                 var package = dependency.Library as PackageDescription;
 
-                // Check for an unresolved library (e.g in production)
-                if (library != null && !dependency.RuntimeAssemblyGroups.Any())
+                // Check for an unresolved library
+                if (library != null && !library.Resolved)
                 {
-                    var assemblyName = dependency.Library.Identity.Name;
+                    var assemblyName = library.Identity.Name;
 
                     // Check if not ambient
                     if (!assemblyNames.Contains(assemblyName))
@@ -168,8 +168,8 @@ namespace Orchard.Environment.Extensions
                         }
                     }
                 }
-                // Check for an unresolved package (e.g in production)
-                else if (package != null && !dependency.RuntimeAssemblyGroups.Any())
+                // Check for an unresolved package
+                else if (package != null && !package.Resolved)
                 {
                     // Load the package from the probing folder
                     foreach (var item in package.RuntimeAssemblies)
