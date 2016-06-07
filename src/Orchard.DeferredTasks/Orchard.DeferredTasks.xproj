@@ -7,8 +7,8 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>A8539F3F-9EF5-4A51-AABB-EEE8C915746E</ProjectGuid>
-    <RootNamespace>Orchard.Processing</RootNamespace>
+    <ProjectGuid>F148F38F-BF15-48BD-BA67-0EF9FCAACA40</ProjectGuid>
+    <RootNamespace>Orchard.DeferredTasks</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">..\..\artifacts\obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">..\..\artifacts\bin\</OutputPath>
   </PropertyGroup>

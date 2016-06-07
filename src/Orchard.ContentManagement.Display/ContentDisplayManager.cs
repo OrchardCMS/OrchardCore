@@ -20,7 +20,7 @@ namespace Orchard.ContentManagement.Display
     /// implementation. The resulting shapes are targetting the stereotype of the content item
     /// to display.
     /// </summary>
-    public class DefaultContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
+    public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
     {
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
@@ -29,13 +29,13 @@ namespace Orchard.ContentManagement.Display
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
-        public DefaultContentItemDisplayManager(
+        public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
-            ILogger<DefaultContentItemDisplayManager> logger,
+            ILogger<ContentItemDisplayManager> logger,
             ILayoutAccessor layoutAccessor
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {

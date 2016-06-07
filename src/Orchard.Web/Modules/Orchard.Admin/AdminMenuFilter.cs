@@ -7,7 +7,6 @@ using Orchard.Environment.Navigation;
 
 namespace Orchard.Admin
 {
-    [ScopedComponent(typeof(IFilterMetadata))]
     public class AdminMenuFilter : IResultFilter
     {
         private readonly INavigationManager _navigationManager;

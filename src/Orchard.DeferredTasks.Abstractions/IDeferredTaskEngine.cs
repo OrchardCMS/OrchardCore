@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Orchard.Processing
+namespace Orchard.DeferredTasks
 {
     /// <summary>
-    /// Queue an event to fire inside of an explicitly decribed shell context.
+    /// Registers and executes tasks inside of an explicitly decribed shell context.
     /// </summary>
     public interface IDeferredTaskEngine
     {

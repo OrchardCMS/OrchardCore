@@ -13,7 +13,7 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache.Abstractions;
 using Orchard.Events;
-using Orchard.Processing;
+using Orchard.DeferredTasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers
@@ -28,7 +28,7 @@ namespace Orchard.Demo.Controllers
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
         private readonly IContentItemDisplayManager _contentDisplay;
-        private readonly IDeferredTaskEngine _processingQueue;
+        private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public HomeController(
             ITestDependency testDependency,
@@ -42,7 +42,7 @@ namespace Orchard.Demo.Controllers
             IContentItemDisplayManager contentDisplay,
             IDeferredTaskEngine processingQueue)
         {
-            _processingQueue = processingQueue;
+            _deferredTaskEngine = processingQueue;
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
@@ -148,7 +148,7 @@ namespace Orchard.Demo.Controllers
 
         public string CreateTask()
         {
-            _processingQueue.AddTask(context =>
+            _deferredTaskEngine.AddTask(context =>
             {
                 var logger = context.ServiceProvider.GetService<ILogger<HomeController>>();
                 logger.LogError("Task deferred successfully");

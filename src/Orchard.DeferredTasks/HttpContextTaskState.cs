@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Orchard.Processing;
 
-namespace Orchard.Hosting.ProcessingQueue
+namespace Orchard.DeferredTasks
 {
     public class HttpContextTaskState : IDeferredTaskState
     {

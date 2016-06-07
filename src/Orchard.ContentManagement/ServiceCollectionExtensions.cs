@@ -17,8 +17,8 @@ namespace Orchard.ContentManagement
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.AddScoped<ContentItemIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.TryAddScoped<ContentItemIndexProvider>();
+            services.TryAddScoped<IDataMigration, Migrations>();
 
             return services;
         }

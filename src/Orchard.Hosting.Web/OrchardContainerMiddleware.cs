@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Hosting.ShellBuilders;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Orchard.DeferredTasks;
+using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Processing;
+using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
@@ -77,7 +76,7 @@ namespace Orchard.Hosting
                     using (var scope = shellContext.CreateServiceScope())
                     {
                         var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
-                        var context = new DeferredTaskContext(scope.ServiceProvider, shellSetting);
+                        var context = new DeferredTaskContext(scope.ServiceProvider);
                         await processingQueue.ExecuteTasksAsync(context);
                     }
                 }

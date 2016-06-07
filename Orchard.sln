@@ -125,9 +125,9 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Admin.Abstractions"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Roles", "src\Orchard.Web\Modules\Orchard.Roles\Orchard.Roles.xproj", "{F36A479D-82D3-4E0E-9681-028CA8D7AEA9}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Processing.Abstractions", "src\Orchard.Processing.Abstractions\Orchard.Processing.Abstractions.xproj", "{A8539F3F-9EF5-4A51-AABB-EEE8C915746E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.DeferredTasks.Abstractions", "src\Orchard.DeferredTasks.Abstractions\Orchard.DeferredTasks.Abstractions.xproj", "{A8539F3F-9EF5-4A51-AABB-EEE8C915746E}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Processing", "src\Orchard.Processing\Orchard.Processing.xproj", "{F148F38F-BF15-48BD-BA67-0EF9FCAACA40}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.DeferredTasks", "src\Orchard.DeferredTasks\Orchard.DeferredTasks.xproj", "{F148F38F-BF15-48BD-BA67-0EF9FCAACA40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

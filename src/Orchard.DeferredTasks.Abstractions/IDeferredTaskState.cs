@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Processing
+namespace Orchard.DeferredTasks
 {
     public interface IDeferredTaskState
     {
