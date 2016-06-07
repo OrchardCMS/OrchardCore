@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Routing;
 
-namespace Orchard.Hosting.Web.Routing.Routes
+namespace Orchard.Routes
 {
     public class Route
     {

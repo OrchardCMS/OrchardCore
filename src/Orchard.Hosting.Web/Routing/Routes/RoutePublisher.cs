@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 using Microsoft.AspNetCore.Http;
+using Orchard.Routes;
 
 namespace Orchard.Hosting.Web.Routing.Routes
 {
@@ -43,7 +44,7 @@ namespace Orchard.Hosting.Web.Routing.Routes
             // The default route is added to each tenant as a template route, with a prefix
             orderedRoutes.Add(new RouteDescriptor
             {
-                Route = new Route("Default", "{area:exists}/{controller}/{action}/{id?}")
+                Route = new Orchard.Routes.Route("Default", "{area:exists}/{controller}/{action}/{id?}")
             });
 
             var inlineConstraint = _routeBuilder.ServiceProvider.GetService<IInlineConstraintResolver>();

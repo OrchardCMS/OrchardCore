@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.Environment.Shell.Descriptor.Models
 {
@@ -11,26 +10,19 @@ namespace Orchard.Environment.Shell.Descriptor.Models
     /// </summary>
     public class ShellDescriptor
     {
-        public ShellDescriptor()
-        {
-            Features = new List<ShellFeature>();
-            Parameters = new List<ShellParameter>();
-        }
-
+        /// <summary>
+        /// Gets or sets the version number of the shell descriptor.
+        /// </summary>
         public int SerialNumber { get; set; }
-        public IList<ShellFeature> Features { get; set; }
-        public IList<ShellParameter> Parameters { get; set; }
-    }
 
-    public class ShellFeature
-    {
-        public string Name { get; set; }
-    }
+        /// <summary>
+        /// Gets or sets the list of features in the shell.
+        /// </summary>
+        public IList<ShellFeature> Features { get; set; } = new List<ShellFeature>();
 
-    public class ShellParameter
-    {
-        public string Component { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
+        /// <summary>
+        /// Gets or sets the list of parameters specific to this shell.
+        /// </summary>
+        public IList<ShellParameter> Parameters { get; set; } = new List<ShellParameter>();
     }
 }

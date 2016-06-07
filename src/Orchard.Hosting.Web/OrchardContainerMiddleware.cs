@@ -6,6 +6,7 @@ using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Events;
+using Orchard.Processing;
 
 namespace Orchard.Hosting
 {
@@ -43,6 +44,8 @@ namespace Orchard.Hosting
             {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
 
+                bool hasPendingTasks;
+
                 using (var scope = shellContext.CreateServiceScope())
                 {
                     httpContext.RequestServices = scope.ServiceProvider;
@@ -64,6 +67,19 @@ namespace Orchard.Hosting
                     }
 
                     await _next.Invoke(httpContext);
+
+                    var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
+                    hasPendingTasks = processingQueue.HasPendingTasks;
+                }
+
+                if (hasPendingTasks)
+                {
+                    using (var scope = shellContext.CreateServiceScope())
+                    {
+                        var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
+                        var context = new ProcessingEngineContext(scope.ServiceProvider, shellSetting);
+                        await processingQueue.ExecuteTasksAsync(context);
+                    }
                 }
             }
         }

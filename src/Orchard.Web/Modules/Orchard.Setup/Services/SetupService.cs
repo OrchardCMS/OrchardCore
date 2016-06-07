@@ -110,11 +110,11 @@ namespace Orchard.Setup.Services
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
 
-            using (var environment = _orchardHost.CreateShellContext(shellSettings))
+            using (var shellContext = _orchardHost.CreateShellContext(shellSettings))
             {
-                using (var scope = environment.CreateServiceScope())
+                using (var scope = shellContext.CreateServiceScope())
                 {
-                    executionId = CreateTenantData(context, environment);
+                    executionId = CreateTenantData(context, shellContext);
 
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
                     await store.InitializeAsync();
@@ -125,11 +125,11 @@ namespace Orchard.Setup.Services
                         .GetService<IShellDescriptorManager>()
                         .UpdateShellDescriptorAsync(
                             0,
-                            environment.Blueprint.Descriptor.Features,
-                            environment.Blueprint.Descriptor.Parameters);
+                            shellContext.Blueprint.Descriptor.Features,
+                            shellContext.Blueprint.Descriptor.Parameters);
                 }
 
-                using (var scope = environment.CreateServiceScope())
+                using (var scope = shellContext.CreateServiceScope())
                 {
                     // Apply all migrations for the newly initialized tenant
                     var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();

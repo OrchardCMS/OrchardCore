@@ -4,7 +4,11 @@ using Orchard.Data;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.Mvc.Routing;
+using Orchard.Hosting.ProcessingQueue;
 using Orchard.Hosting.Routing.Routes;
+using Orchard.Hosting.Web.Routing.Routes;
+using Orchard.Processing;
+using Orchard.Routes;
 
 namespace Orchard.Hosting
 {
@@ -19,7 +23,12 @@ namespace Orchard.Hosting
 
             serviceCollection.AddScoped<IOrchardShellEvents, OrchardShell>();
             serviceCollection.AddSingleton<IRunningShellRouterTable, DefaultRunningShellRouterTable>();
+
             serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
+            serviceCollection.AddSingleton<IRoutePublisher, RoutePublisher>();
+
+            serviceCollection.AddScoped<IDeferredTaskEngine, Orchard.Processing.DefaultDeferredTaskEngine>();
+            serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();
         }
     }
 }

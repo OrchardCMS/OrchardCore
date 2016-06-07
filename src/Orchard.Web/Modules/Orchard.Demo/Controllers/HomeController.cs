@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
@@ -11,8 +13,7 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache.Abstractions;
 using Orchard.Events;
-using System;
-using System.Threading.Tasks;
+using Orchard.Processing;
 using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers
@@ -27,6 +28,7 @@ namespace Orchard.Demo.Controllers
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
         private readonly IContentItemDisplayManager _contentDisplay;
+        private readonly IDeferredTaskEngine _processingQueue;
 
         public HomeController(
             ITestDependency testDependency,
@@ -37,8 +39,10 @@ namespace Orchard.Demo.Controllers
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
-            IContentItemDisplayManager contentDisplay)
+            IContentItemDisplayManager contentDisplay,
+            IDeferredTaskEngine processingQueue)
         {
+            _processingQueue = processingQueue;
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
@@ -140,6 +144,18 @@ namespace Orchard.Demo.Controllers
         public ActionResult IndexError()
         {
             throw new Exception("ERROR!!!!");
+        }
+
+        public string CreateTask()
+        {
+            _processingQueue.AddTask(context =>
+            {
+                var logger = context.ServiceProvider.GetService<ILogger<HomeController>>();
+                logger.LogError("Task deferred successfully");
+                return Task.CompletedTask;
+            });
+
+            return "Check for logs";
         }
 
         private DisplayContext CreateDisplayContext(Shape shape)

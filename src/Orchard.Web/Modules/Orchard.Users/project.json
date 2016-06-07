@@ -5,8 +5,7 @@
     "Microsoft.AspNetCore.Identity": "1.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
-    "System.Linq": "4.1.0-rc2-24027"
+    "Orchard.Environment.Navigation": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

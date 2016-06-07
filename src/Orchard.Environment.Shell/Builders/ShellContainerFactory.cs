@@ -167,8 +167,6 @@ namespace Orchard.Environment.Shell.Builders
             {
                 var store = new Store(cfg =>
                 {
-                    // @"Data Source =.; Initial Catalog = test1; User Id=sa;Password=demo123!"
-
                     IConnectionFactory connectionFactory = null;
 
                     switch (settings.DatabaseProvider)

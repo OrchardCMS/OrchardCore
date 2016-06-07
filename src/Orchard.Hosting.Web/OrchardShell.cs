@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
-using Orchard.Environment.Shell;
-using Orchard.Hosting.Middleware;
-using Orchard.Hosting.Web.Routing.Routes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder.Internal;
+using Orchard.DependencyInjection.Middleware;
+using Orchard.Environment.Shell;
+using Orchard.Routes;
 
 namespace Orchard.Hosting
 {

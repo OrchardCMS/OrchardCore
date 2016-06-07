@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.Hosting.Web.Routing.Routes;
+using Orchard.Routes;
 
 namespace Orchard.Setup
 {

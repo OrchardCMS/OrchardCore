@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Orchard.DependencyInjection;
 
-namespace Orchard.Hosting.Middleware
+namespace Orchard.DependencyInjection.Middleware
 {
     /// <summary>
     /// Represents a provider that makes Owin middlewares available for the Orchard Owin pipeline.

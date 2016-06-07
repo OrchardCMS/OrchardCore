@@ -1,4 +1,4 @@
-namespace Orchard.Hosting.Web.Routing.Routes
+namespace Orchard.Routes
 {
     public class RouteDescriptor
     {

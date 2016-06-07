@@ -6,7 +6,7 @@ namespace Orchard.Roles
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageRoles = new Permission("ManageRoles", "Managing Roles");
-        public static readonly Permission AssignRoles = new Permission("AssignRoles", "Assign Roles");
+        public static readonly Permission AssignRoles = new Permission("AssignRoles", "Assign Roles", new[] { ManageRoles });
 
         public IEnumerable<Permission> GetPermissions()
         {

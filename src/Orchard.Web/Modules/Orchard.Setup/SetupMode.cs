@@ -2,6 +2,7 @@
 using Orchard.DependencyInjection;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing.Routes;
+using Orchard.Routes;
 
 namespace Orchard.Setup
 {

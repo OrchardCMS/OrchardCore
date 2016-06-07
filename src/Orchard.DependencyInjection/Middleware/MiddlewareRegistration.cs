@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 
-namespace Orchard.Hosting.Middleware
+namespace Orchard.DependencyInjection.Middleware
 {
     /// <summary>
     /// An Owin middleware registration that can make changes to the Owin pipeline, like registering middlewares to be injected into the Orchard

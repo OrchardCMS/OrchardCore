@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
-using Orchard.Hosting.Middleware;
+using Orchard.DependencyInjection.Middleware;
 
 namespace Orchard.Users
 {

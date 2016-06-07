@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-using Orchard.DependencyInjection;
 
-namespace Orchard.Hosting.Web.Routing.Routes
+namespace Orchard.Routes
 {
-    public interface IRoutePublisher : ISingletonDependency
+    public interface IRoutePublisher
     {
         void Publish(IEnumerable<RouteDescriptor> routes, RequestDelegate pipeline);
     }

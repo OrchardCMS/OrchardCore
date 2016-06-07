@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Orchard.DependencyInjection;
 
-namespace Orchard.Hosting.Web.Routing.Routes
+namespace Orchard.Routes
 {
-    public interface IRouteProvider : ISingletonDependency
+    public interface IRouteProvider
     {
         /// <summary>
         /// obsolete, prefer other format for extension methods

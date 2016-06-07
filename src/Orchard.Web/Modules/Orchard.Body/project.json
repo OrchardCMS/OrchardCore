@@ -5,7 +5,6 @@
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "1.0.0-*",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*"
   },
