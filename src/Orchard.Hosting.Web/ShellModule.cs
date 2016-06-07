@@ -27,7 +27,7 @@ namespace Orchard.Hosting
             serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
             serviceCollection.AddSingleton<IRoutePublisher, RoutePublisher>();
 
-            serviceCollection.AddScoped<IDeferredTaskEngine, Orchard.Processing.DefaultDeferredTaskEngine>();
+            serviceCollection.AddScoped<IDeferredTaskEngine, Orchard.Processing.DeferredTaskEngine>();
             serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();
         }
     }

@@ -77,7 +77,7 @@ namespace Orchard.Hosting
                     using (var scope = shellContext.CreateServiceScope())
                     {
                         var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
-                        var context = new ProcessingEngineContext(scope.ServiceProvider, shellSetting);
+                        var context = new DeferredTaskContext(scope.ServiceProvider, shellSetting);
                         await processingQueue.ExecuteTasksAsync(context);
                     }
                 }

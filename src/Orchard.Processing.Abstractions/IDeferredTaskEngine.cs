@@ -9,7 +9,7 @@ namespace Orchard.Processing
     public interface IDeferredTaskEngine
     {
         bool HasPendingTasks { get; }
-        void AddTask(Func<ProcessingEngineContext, Task> task);
-        Task ExecuteTasksAsync(ProcessingEngineContext context);
+        void AddTask(Func<DeferredTaskContext, Task> task);
+        Task ExecuteTasksAsync(DeferredTaskContext context);
     }
 }

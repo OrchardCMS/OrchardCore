@@ -6,6 +6,6 @@ namespace Orchard.Processing
 {
     public interface IDeferredTaskState
     {
-        IList<Func<ProcessingEngineContext, Task>> Tasks { get; }
+        IList<Func<DeferredTaskContext, Task>> Tasks { get; }
     }
 }
