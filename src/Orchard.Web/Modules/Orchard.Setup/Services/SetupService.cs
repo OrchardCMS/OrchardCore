@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration;
+using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
@@ -103,8 +104,6 @@ namespace Orchard.Setup.Services
                 shellSettings.TablePrefix = context.DatabaseTablePrefix;
             }
 
-            // TODO: Add Encryption Settings in
-
             // Creating a standalone environment based on a "minimum shell descriptor".
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
@@ -127,13 +126,18 @@ namespace Orchard.Setup.Services
                             0,
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
-                }
 
-                using (var scope = shellContext.CreateServiceScope())
-                {
-                    // Apply all migrations for the newly initialized tenant
+                   // Apply all migrations for the newly initialized tenant
                     var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
                     await dataMigrationManager.UpdateAllFeaturesAsync();
+
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                    }
 
                     // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
@@ -146,6 +150,12 @@ namespace Orchard.Setup.Services
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix)
                     );
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                    }
                 }
             }
 

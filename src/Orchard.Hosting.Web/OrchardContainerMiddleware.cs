@@ -43,8 +43,6 @@ namespace Orchard.Hosting
             {
                 ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
 
-                bool hasPendingTasks;
-
                 using (var scope = shellContext.CreateServiceScope())
                 {
                     httpContext.RequestServices = scope.ServiceProvider;
@@ -66,18 +64,16 @@ namespace Orchard.Hosting
                     }
 
                     await _next.Invoke(httpContext);
-
-                    var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
-                    hasPendingTasks = processingQueue.HasPendingTasks;
                 }
 
-                if (hasPendingTasks)
+                using (var scope = shellContext.CreateServiceScope())
                 {
-                    using (var scope = shellContext.CreateServiceScope())
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
-                        var processingQueue = scope.ServiceProvider.GetRequiredService<IDeferredTaskEngine>();
                         var context = new DeferredTaskContext(scope.ServiceProvider);
-                        await processingQueue.ExecuteTasksAsync(context);
+                        await deferredTaskEngine.ExecuteTasksAsync(context);
                     }
                 }
             }

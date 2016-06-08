@@ -30,6 +30,8 @@ namespace Orchard.Settings.Services
             var siteSettings = await siteService.GetSiteSettingsAsync();
             siteSettings.SuperUser = userName;
             await siteService.UpdateSiteSettingsAsync(siteSettings);
+
+            // TODO: Add Encryption Settings in
         }
     }
 }

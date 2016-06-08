@@ -9,7 +9,7 @@ using Orchard.ContentManagement.MetaData.Models;
 using Orchard.Environment.Cache.Abstractions;
 using YesSql.Core.Services;
 
-namespace Orchard.ContentManagement.Metadata
+namespace Orchard.ContentManagement
 {
     public class ContentDefinitionManager : IContentDefinitionManager
     {

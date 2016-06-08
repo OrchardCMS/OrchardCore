@@ -1,11 +1,5 @@
 ﻿#define SQL
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Orchard.DependencyInjection;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Events;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,6 +8,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Orchard.DependencyInjection;
+using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Events;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
@@ -39,6 +38,13 @@ namespace Orchard.Environment.Shell.Builders
             _logger = logger;
         }
 
+        public void AddCoreServices(IServiceCollection services)
+        {
+            services.AddScoped<IShellStateUpdater, ShellStateUpdater>();
+            services.AddScoped<IShellStateManager, ShellStateManager>();
+            services.AddScoped<ShellStateCoordinator>();
+        }
+
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
         {
             IServiceCollection tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
@@ -46,6 +52,8 @@ namespace Orchard.Environment.Shell.Builders
             tenantServiceCollection.AddSingleton(settings);
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
+
+            AddCoreServices(tenantServiceCollection);
 
             // Sure this is right?
             tenantServiceCollection.AddSingleton(_loggerFactory);
@@ -214,9 +222,7 @@ namespace Orchard.Environment.Shell.Builders
                 tenantServiceCollection.AddSingleton<IStore>(store);
                 tenantServiceCollection.AddSingleton<LinearBlockIdGenerator>(idGenerator);
 
-                tenantServiceCollection.AddScoped<ISession>(serviceProvider =>
-                    store.CreateSession()
-                );
+                tenantServiceCollection.AddScoped<ISession>(serviceProvider => store.CreateSession());
             }
 
             // Register event handlers on the event bus

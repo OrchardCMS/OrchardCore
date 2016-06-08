@@ -7,26 +7,28 @@ namespace Orchard.DeferredTasks
 {
     public class DeferredTaskEngine : IDeferredTaskEngine
     {
-        private readonly IDeferredTaskState _processingState;
+        private readonly IDeferredTaskState _deferredTaskState;
         private readonly ILogger _logger;
 
-        public DeferredTaskEngine(IDeferredTaskState processingState, ILogger<DeferredTaskEngine> logger)
+        public DeferredTaskEngine(IDeferredTaskState deferredTaskState, ILogger<DeferredTaskEngine> logger)
         {
-            _processingState = processingState;
+            _deferredTaskState = deferredTaskState;
             _logger = logger;
         }
 
-        public bool HasPendingTasks => _processingState.Tasks.Any();
+        public bool HasPendingTasks => _deferredTaskState.Tasks.Any();
 
         public void AddTask(Func<DeferredTaskContext, Task> task)
         {
-            _processingState.Tasks.Add(task);
+            _deferredTaskState.Tasks.Add(task);
         }
 
         public async Task ExecuteTasksAsync(DeferredTaskContext context)
         {
-            foreach(var task in _processingState.Tasks)
+            for(var i=0; i < _deferredTaskState.Tasks.Count; i++)
             {
+                var task = _deferredTaskState.Tasks[i];
+
                 try
                 {
                     await task(context);
@@ -37,7 +39,7 @@ namespace Orchard.DeferredTasks
                 }
             }
 
-            _processingState.Tasks.Clear();
+            _deferredTaskState.Tasks.Clear();
         }
     }
 }
