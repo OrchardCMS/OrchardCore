@@ -29,7 +29,7 @@ namespace Orchard.Environment.Extensions.Compilers
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
 
-        public bool Compile(ProjectContext context, string config, string probingFolder)
+        public bool Compile(ProjectContext context, string config, string probingDirectoryPath)
         {
            // Mark ambient libraries as compiled
             if (_compiledLibraries.IsEmpty)
@@ -121,7 +121,7 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (projectContext != null)
                         {
                            // Right now, if !success we try to use the last build
-                           var success = Compile(projectContext, config, probingFolder);
+                           var success = Compile(projectContext, config, probingDirectoryPath);
                         }
                     }
                 }
@@ -137,7 +137,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     if (!File.Exists(path))
                     {
                         // Fallback to the probing folder
-                        path = Path.Combine(probingFolder, fileName);
+                        path = Path.Combine(probingDirectoryPath, fileName);
                     }
 
                     references.Add(path);
@@ -160,7 +160,7 @@ namespace Orchard.Environment.Extensions.Compilers
                             if (!File.Exists(path))
                             {
                                 // Fallback to the probing folder
-                                path = Path.Combine(probingFolder, fileName);
+                                path = Path.Combine(probingDirectoryPath, fileName);
                             }
                         }
 
@@ -285,8 +285,8 @@ namespace Orchard.Environment.Extensions.Compilers
             File.WriteAllLines(rsp, allArgs);
 
             // Locate runtime config files
-            var runtimeConfigPath = Path.Combine(runtimeDirectory, EntryAssembly.GetName().Name + ".runtimeconfig.json");
-            var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc.runtimeconfig.json");
+            var runtimeConfigPath = Path.Combine(runtimeDirectory, EntryAssembly.GetName().Name + FileNameSuffixes.RuntimeConfigJson);
+            var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc" + FileNameSuffixes.RuntimeConfigJson);
 
             // Automatically create the csc runtime config file
             if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)

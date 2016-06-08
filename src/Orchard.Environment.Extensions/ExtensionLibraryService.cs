@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
+using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,8 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
+        private const string ProbingDirectoryName = "Dependencies";
+
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly IAppDataFolder _appDataFolder;
@@ -94,6 +97,12 @@ namespace Orchard.Environment.Extensions
         public Assembly LoadExternalAssembly(ExtensionDescriptor descriptor)
         {
             var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
+
+            if (!File.Exists(Path.Combine(extensionPath, Constants.ProjectFileName)))   
+            {
+                return null;
+            }
+
             var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
 
             if (projectContext == null)
@@ -113,15 +122,16 @@ namespace Orchard.Environment.Extensions
 
             // Select the compilation configuration
             var defines = DependencyContext.Default.CompilationOptions.Defines;
-            var config = defines?.Contains("Debug", StringComparer.OrdinalIgnoreCase) == true ? "Debug" : "Release";
+            var config = defines?.Contains(Constants.DefaultConfiguration, StringComparer.OrdinalIgnoreCase) == true
+                ? Constants.DefaultConfiguration : "Release";
 
             // Create the library exporter
             var libraryExporter = projectContext.CreateExporter(config);
 
             // Compile the extension if needed
             var compiler = new CSharpExtensionCompiler();
-            var probingFolder = _appDataFolder.MapPath("Dependencies");
-            var success = compiler.Compile(projectContext, config, probingFolder);
+            var probingDirectoryPath = _appDataFolder.MapPath(ProbingDirectoryName);
+            var success = compiler.Compile(projectContext, config, probingDirectoryPath);
             var diagnostics = compiler.Diagnostics;
 
             if (success)
@@ -151,11 +161,11 @@ namespace Orchard.Environment.Extensions
             _loadedAssemblies[projectContext.RootProject.Identity.Name] = true;
 
             // Populate the probing folder with the extension assembly
-            var probingPath = Path.Combine(probingFolder, projectContext.RootProject.Identity.Name);
+            var probingPath = Path.Combine(probingDirectoryPath, projectContext.RootProject.Identity.Name + FileNameSuffixes.DotNet.DynamicLib);
 
             if (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assemblyPath) > File.GetLastWriteTimeUtc(probingPath))
             {
-                Directory.CreateDirectory(probingFolder);
+                Directory.CreateDirectory(probingDirectoryPath);
                 File.Copy(assemblyPath, probingPath, true);
             }
 
@@ -175,7 +185,7 @@ namespace Orchard.Environment.Extensions
                     {
                         // Load from the probing folder
                         var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
-                        var path = Path.Combine(probingFolder, fileName);
+                        var path = Path.Combine(probingDirectoryPath, fileName);
 
                         // Check if file exists and not already loaded
                         if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
@@ -199,7 +209,7 @@ namespace Orchard.Environment.Extensions
                         {
                             // Load from the probing folder
                             var fileName = Path.GetFileName(item.Path);
-                            var path = Path.Combine(probingFolder, fileName);
+                            var path = Path.Combine(probingDirectoryPath, fileName);
 
                             // Check if file exists and not already loaded
                             if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
@@ -228,11 +238,11 @@ namespace Orchard.Environment.Extensions
                             }
 
                             // Populate the probing folder with the library asset
-                            var path = Path.Combine(probingFolder, asset.FileName);
+                            var path = Path.Combine(probingDirectoryPath, asset.FileName);
 
                             if (!File.Exists(path) || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(path))
                             {
-                                Directory.CreateDirectory(probingFolder);
+                                Directory.CreateDirectory(probingDirectoryPath);
                                 File.Copy(asset.ResolvedPath, path, true);
                             }
                         }
