@@ -71,7 +71,7 @@ namespace Orchard.Environment.Extensions.Compilers
             foreach (var diag in context.LibraryManager.GetAllDiagnostics())
             {
                 // Some library paths may not be resolved by the project model (e.g in production)
-                // So, here we don't grab any diagnostics and we will search in probing folders 
+                // So, here we don't grab any diagnostics and we will search in the probing folder
 
                 //Diagnostics.Add(diag.FormattedMessage);
                 //diagnostics.Add(diag);
@@ -136,7 +136,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!File.Exists(path))
                     {
-                        // Fallback to the extension probing folder
+                        // Fallback to the probing folder
                         path = Path.Combine(probingFolder, fileName);
                         //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                     }
@@ -160,7 +160,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                             if (!File.Exists(path))
                             {
-                                // Fallback to the extension probing folder
+                                // Fallback to the probing folder
                                 path = Path.Combine(probingFolder, fileName);
                                 //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                             }

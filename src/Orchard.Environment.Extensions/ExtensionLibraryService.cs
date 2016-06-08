@@ -169,7 +169,7 @@ namespace Orchard.Environment.Extensions
                     // Check if not ambient
                     if (!assemblyNames.Contains(assemblyName))
                     {
-                        // Load from the extension probing folder
+                        // Load from the probing folder
                         var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
                         var path = Path.Combine(probingFolder, fileName);
 
