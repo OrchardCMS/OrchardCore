@@ -10,8 +10,8 @@ namespace Orchard.ContentManagement.Display
         public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
         {
             services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
-            services.TryAddScoped<IContentDisplayHandler, ContentFieldDisplayCoordinator>();
-            services.TryAddScoped<IContentDisplayHandler, ContentDisplayCoordinator>();
+            services.AddScoped<IContentDisplayHandler, ContentFieldDisplayCoordinator>();
+            services.AddScoped<IContentDisplayHandler, ContentDisplayCoordinator>();
             return services;
         }
     }

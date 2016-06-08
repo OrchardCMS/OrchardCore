@@ -16,6 +16,7 @@ namespace Orchard.Environment.Extensions
 
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
+        private static readonly Feature CoreFeature = new Feature { Descriptor = new FeatureDescriptor { Id = "Core", Extension = new ExtensionDescriptor { Id = "Core" } }, ExportedTypes = new Type[0] };
         private readonly ConcurrentDictionary<Type, Feature> _features = new ConcurrentDictionary<Type, Feature>();
 
         public Feature GetFeatureForDependency(Type dependency)
@@ -27,7 +28,7 @@ namespace Orchard.Environment.Extensions
                 return feature;
             }
 
-            return null;
+            return CoreFeature;
         }
 
         public void TryAdd(Type type, Feature feature)

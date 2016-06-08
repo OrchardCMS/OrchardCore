@@ -46,7 +46,11 @@ namespace Orchard.Environment.Shell.Builders
             var features = _extensionManager.LoadFeatures(enabledFeatures);
 
             // Requiring "Orchard.Hosting" is a shortcut for adding all referenced
-            // assemblies as features
+            // assemblies as features.
+            // TODO: Remove once all services are registered explicitly, so that the container factory
+            // doesn't need to inspect ExportedTypes for the core assemblies. We can then also remove
+            // some references from Orchard.Hosting.Web.
+
             if (descriptor.Features.Any(feature => feature.Name == "Orchard.Hosting"))
             {
                 features = BuiltinFeatures().Concat(features);

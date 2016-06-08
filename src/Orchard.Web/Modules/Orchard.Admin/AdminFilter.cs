@@ -10,7 +10,7 @@ namespace Orchard.Admin
     /// Intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user as the right to access it.
     /// </summary>
-    public class AdminFilter : IAsyncActionFilter
+    public class AdminFilter : ActionFilterAttribute
     {
         private readonly IAuthorizationService _authorizationService;
 
@@ -19,7 +19,7 @@ namespace Orchard.Admin
             _authorizationService = authorizationService;
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (AdminAttribute.IsApplied(context.HttpContext) || IsNameAdmin(context))
             {
@@ -28,8 +28,11 @@ namespace Orchard.Admin
                 if (!authorized)
                 {
                     context.Result = new UnauthorizedResult();
+                    return;
                 }
             }
+
+            await base.OnActionExecutionAsync(context, next);
         }
 
         private bool IsNameAdmin(ActionExecutingContext context)

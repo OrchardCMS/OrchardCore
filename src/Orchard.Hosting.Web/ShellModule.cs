@@ -7,6 +7,7 @@ using Orchard.Hosting.Routing.Routes;
 using Orchard.Hosting.Web.Routing.Routes;
 using Orchard.DeferredTasks;
 using Orchard.Routes;
+using Orchard.Data;
 
 namespace Orchard.Hosting
 {
@@ -25,6 +26,8 @@ namespace Orchard.Hosting
 
             serviceCollection.AddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
             serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();
+
+            serviceCollection.AddDataAccess();
         }
     }
 }

@@ -78,14 +78,6 @@ namespace Orchard.Data.Migration
             return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Descriptor.Id).ToList();
         }
 
-        /// <summary>
-        /// Whether a feature has already been installed, i.e. one of its Data Migration class has already been processed
-        /// </summary>
-        public bool IsFeatureAlreadyInstalled(string feature)
-        {
-            return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecordAsync(dataMigration).Result != null);
-        }
-
         public async Task Uninstall(string feature)
         {
             if (_logger.IsEnabled(LogLevel.Information))

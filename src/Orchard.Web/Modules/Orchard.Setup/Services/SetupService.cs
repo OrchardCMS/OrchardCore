@@ -84,10 +84,10 @@ namespace Orchard.Setup.Services
             }
 
             // Features to enable for Setup
-            string[] hardcoded = {
-                "Orchard.Hosting",
-                "Orchard.Settings",
-                };
+            string[] hardcoded =
+            {
+                "Orchard.Hosting" // shortcut for built-in features
+            };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 

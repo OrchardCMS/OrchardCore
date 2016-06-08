@@ -9,6 +9,8 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging": "1.0.0-*",
     "Orchard.Abstractions": "2.0.0-*",
+    "Orchard.ContentManagement": "2.0.0-*", // Only to discover services automatically
+    "Orchard.ContentManagement.Display": "2.0.0-*", // Such that Razor Views can reference the Tag Helpers
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
@@ -16,7 +18,8 @@
     "Orchard.Events": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
     "Orchard.DeferredTasks": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*"
+    "Orchard.Validation": "2.0.0-*",
+    "Orchard.Data": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

@@ -15,11 +15,6 @@ namespace Orchard.Hosting
             this IServiceCollection services, Action<IServiceCollection> additionalDependencies)
         {
             services.AddFileSystems();
-
-            // Caching - Move out
-            //services.AddSingleton<ICacheContextAccessor>(new CacheContextAccessor());
-            //services.AddSingleton<ICache, Cache>();
-
             additionalDependencies(services);
 
             return services;

@@ -13,12 +13,12 @@ namespace Orchard.ContentManagement
     {
         public static IServiceCollection AddContentManagement(this IServiceCollection services)
         {
-            services.TryAddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
+            services.AddScoped<ICacheContextProvider, ContentDefinitionCacheContextProvider>();
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.TryAddScoped<ContentItemIndexProvider>();
-            services.TryAddScoped<IDataMigration, Migrations>();
+            services.AddScoped<ContentItemIndexProvider>();
+            services.AddScoped<IDataMigration, Migrations>();
 
             return services;
         }
