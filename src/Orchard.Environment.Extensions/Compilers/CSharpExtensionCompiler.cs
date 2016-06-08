@@ -138,7 +138,6 @@ namespace Orchard.Environment.Extensions.Compilers
                     {
                         // Fallback to the probing folder
                         path = Path.Combine(probingFolder, fileName);
-                        //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                     }
 
                     references.Add(path);
@@ -162,7 +161,6 @@ namespace Orchard.Environment.Extensions.Compilers
                             {
                                 // Fallback to the probing folder
                                 path = Path.Combine(probingFolder, fileName);
-                                //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                             }
                         }
 
