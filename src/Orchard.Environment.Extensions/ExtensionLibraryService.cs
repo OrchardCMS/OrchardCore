@@ -111,13 +111,17 @@ namespace Orchard.Environment.Extensions
             // Ambient assemblies
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames(), StringComparer.OrdinalIgnoreCase);
 
-            // TODO: find a way to select the right configuration
-            var libraryExporter = projectContext.CreateExporter("Debug");
+            // Select the compilation configuration
+            var defines = DependencyContext.Default.CompilationOptions.Defines;
+            var config = defines?.Contains("Debug", StringComparer.OrdinalIgnoreCase) == true ? "Debug" : "Release";
+
+            // Create the library exporter
+            var libraryExporter = projectContext.CreateExporter(config);
 
             // Compile the extension if needed
             var compiler = new CSharpExtensionCompiler();
             var probingFolder = _appDataFolder.MapPath("Dependencies");
-            var success = compiler.Compile(projectContext, "Debug", probingFolder);
+            var success = compiler.Compile(projectContext, config, probingFolder);
             var diagnostics = compiler.Diagnostics;
 
             if (success)
@@ -142,7 +146,7 @@ namespace Orchard.Environment.Extensions
             }
 
             // Load and mark the assembly as loaded
-            var assemblyPath = projectContext.GetOutputPaths("Debug").CompilationFiles.Assembly;
+            var assemblyPath = projectContext.GetOutputPaths(config).CompilationFiles.Assembly;
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
             _loadedAssemblies[projectContext.RootProject.Identity.Name] = true;
 
