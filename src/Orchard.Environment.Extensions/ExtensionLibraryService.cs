@@ -15,6 +15,7 @@ using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
+using Orchard.FileSystem.AppData;
 using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions
@@ -23,6 +24,7 @@ namespace Orchard.Environment.Extensions
     {
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
+        private readonly IAppDataFolder _appDataFolder;
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
@@ -38,10 +40,12 @@ namespace Orchard.Environment.Extensions
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
             IOrchardFileSystem fileSystem,
+            IAppDataFolder appDataFolder,
             ILogger<ExtensionLibraryService> logger)
         {
             _applicationPartManager = applicationPartManager;
             _fileSystem = fileSystem;
+            _appDataFolder = appDataFolder;
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -112,7 +116,8 @@ namespace Orchard.Environment.Extensions
 
             // Compile the extension if needed
             var compiler = new CSharpExtensionCompiler();
-            var success = compiler.Compile(projectContext, "Debug");
+            var probingFolder = _appDataFolder.MapPath("Dependencies");
+            var success = compiler.Compile(projectContext, "Debug", probingFolder);
             var diagnostics = compiler.Diagnostics;
 
             if (success)
@@ -141,6 +146,15 @@ namespace Orchard.Environment.Extensions
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
             _loadedAssemblies[projectContext.RootProject.Identity.Name] = true;
 
+            // Populate the probing folder with the extension assembly
+            var probingPath = Path.Combine(probingFolder, projectContext.RootProject.Identity.Name);
+
+            if (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assemblyPath) > File.GetLastWriteTimeUtc(probingPath))
+            {
+                Directory.CreateDirectory(probingFolder);
+                File.Copy(assemblyPath, probingPath, true);
+            }
+
             // Load the extension dependencies
             foreach (var dependency in libraryExporter.GetDependencies())
             {
@@ -157,7 +171,7 @@ namespace Orchard.Environment.Extensions
                     {
                         // Load from the extension probing folder
                         var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
-                        var path = Path.Combine(projectContext.ProjectDirectory, "lib", fileName);
+                        var path = Path.Combine(probingFolder, fileName);
 
                         // Check if file exists and not already loaded
                         if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
@@ -179,9 +193,9 @@ namespace Orchard.Environment.Extensions
                         // Check if not ambient
                         if (!assemblyNames.Contains(assemblyName))
                         {
-                            // Load from the extension probing folder
+                            // Load from the probing folder
                             var fileName = Path.GetFileName(item.Path);
-                            var path = Path.Combine(projectContext.ProjectDirectory, "lib", fileName);
+                            var path = Path.Combine(probingFolder, fileName);
 
                             // Check if file exists and not already loaded
                             if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
@@ -209,14 +223,13 @@ namespace Orchard.Environment.Extensions
                                 _loadedAssemblies[asset.Name] = true;
                             }
 
-                            // Populate the extension probing folder with the library asset
-                            var assetProbingPath = Path.Combine(extensionPath, "lib", asset.FileName);
+                            // Populate the probing folder with the library asset
+                            var path = Path.Combine(probingFolder, asset.FileName);
 
-                            if (!File.Exists(assetProbingPath)
-                                || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(assetProbingPath))
+                            if (!File.Exists(path) || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(path))
                             {
-                                Directory.CreateDirectory(Path.Combine(extensionPath, "lib"));
-                                File.Copy(asset.ResolvedPath, assetProbingPath, true);
+                                Directory.CreateDirectory(probingFolder);
+                                File.Copy(asset.ResolvedPath, path, true);
                             }
                         }
                     }

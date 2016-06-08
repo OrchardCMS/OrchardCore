@@ -29,7 +29,7 @@ namespace Orchard.Environment.Extensions.Compilers
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
 
-        public bool Compile(ProjectContext context, string config)
+        public bool Compile(ProjectContext context, string config, string probingFolder)
         {
            // Mark ambient libraries as compiled
             if (_compiledLibraries.IsEmpty)
@@ -121,7 +121,7 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (projectContext != null)
                         {
                            // Right now, if !success we try to use the last build
-                           var success = Compile(projectContext, config);
+                           var success = Compile(projectContext, config, probingFolder);
                         }
                     }
                 }
@@ -137,7 +137,8 @@ namespace Orchard.Environment.Extensions.Compilers
                     if (!File.Exists(path))
                     {
                         // Fallback to the extension probing folder
-                        path = Path.Combine(context.ProjectDirectory, "lib", fileName);
+                        path = Path.Combine(probingFolder, fileName);
+                        //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                     }
 
                     references.Add(path);
@@ -160,7 +161,8 @@ namespace Orchard.Environment.Extensions.Compilers
                             if (!File.Exists(path))
                             {
                                 // Fallback to the extension probing folder
-                                path = Path.Combine(context.ProjectDirectory, "lib", fileName);
+                                path = Path.Combine(probingFolder, fileName);
+                                //path = Path.Combine(context.ProjectDirectory, "lib", fileName);
                             }
                         }
 
