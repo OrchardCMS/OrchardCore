@@ -4,9 +4,7 @@ namespace Orchard.Security
 {
     public class Role
     {
-        public int Id { get; set; }
         public string RoleName { get; set; }
-        public string NormalizedRoleName { get; set; }
-        public List<RoleClaim> RoleClaims { get; set; } = new List<RoleClaim>();
+        public List<RoleClaim> RoleClaims { get; } = new List<RoleClaim>();
     }
 }
