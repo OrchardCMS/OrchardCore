@@ -34,7 +34,7 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private object _applicationAssembliesNamesLock = new object();
         private bool _applicationAssembliesNamesInitialized;
-        private List<string> _applicationAssembliesNames;
+        private HashSet<string> _applicationAssembliesNames;
         private object _metadataReferencesLock = new object();
         private bool _metadataReferencesInitialized;
         private List<MetadataReference> _metadataReferences;
@@ -72,9 +72,10 @@ namespace Orchard.Environment.Extensions
                 GetMetadataReferences);
         }
 
-        private List<string> GetApplicationAssemblyNames()
+        private HashSet<string> GetApplicationAssemblyNames()
         {
-            return DependencyContext.Default.GetDefaultAssemblyNames().Select(x => x.Name).ToList();
+            return new HashSet<string>(DependencyContext.Default.GetDefaultAssemblyNames()
+                .Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
         }
 
         private List<MetadataReference> GetMetadataReferences()
@@ -95,10 +96,27 @@ namespace Orchard.Environment.Extensions
             return metadataReferences;
         }
 
-        public Assembly LoadExternalAssembly(ExtensionDescriptor descriptor)
+        public Assembly LoadAmbientAssembly(ExtensionDescriptor descriptor)
+        {
+            // Check if ambient
+            if (ApplicationAssemblyNames().Contains(descriptor.Id))
+            {
+                return Assembly.Load(new AssemblyName(descriptor.Id));
+            }
+
+            return null;
+        }
+
+        public Assembly LoadPrecompiledAssembly(ExtensionDescriptor descriptor)
+        {
+            return null;
+        }
+
+        public Assembly LoadDynamicAssembly(ExtensionDescriptor descriptor)
         {
             var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
 
+            // Check if project files are there
             if (!File.Exists(Path.Combine(extensionPath, Project.FileName)))
             {
                 return null;
@@ -106,8 +124,11 @@ namespace Orchard.Environment.Extensions
 
             var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
 
+            // Check for a valid context
             if (projectContext == null)
+            {
                 return null;
+            }
 
             bool loaded;
 
@@ -117,9 +138,6 @@ namespace Orchard.Environment.Extensions
                 // Then load it as an ambient assembly
                 return Assembly.Load(new AssemblyName(projectContext.RootProject.Identity.Name));
             }
-
-            // Ambient assemblies
-            var assemblyNames = new HashSet<string>(ApplicationAssemblyNames(), StringComparer.OrdinalIgnoreCase);
 
             // Select the compilation configuration
             var defines = DependencyContext.Default.CompilationOptions.Defines;
@@ -182,7 +200,7 @@ namespace Orchard.Environment.Extensions
                     var assemblyName = library.Identity.Name;
 
                     // Check if not ambient
-                    if (!assemblyNames.Contains(assemblyName))
+                    if (!ApplicationAssemblyNames().Contains(assemblyName))
                     {
                         // Load from the probing folder
                         var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
@@ -206,7 +224,7 @@ namespace Orchard.Environment.Extensions
                         var assemblyName = Path.GetFileNameWithoutExtension(item.Path);
 
                         // Check if not ambient
-                        if (!assemblyNames.Contains(assemblyName))
+                        if (!ApplicationAssemblyNames().Contains(assemblyName))
                         {
                             // Load from the probing folder
                             var fileName = Path.GetFileName(item.Path);
@@ -228,7 +246,7 @@ namespace Orchard.Environment.Extensions
                     foreach (var asset in dependency.RuntimeAssemblyGroups.GetDefaultAssets())
                     {
                         // Check if not ambient
-                        if (!assemblyNames.Contains(asset.Name))
+                        if (!ApplicationAssemblyNames().Contains(asset.Name))
                         {
                             // Check if not already loaded
                             if (!_loadedAssemblies.TryGetValue(asset.Name, out loaded))

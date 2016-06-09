@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
     public class AmbientExtensionLoader : IExtensionLoader
     {
-        public AmbientExtensionLoader()
+        private readonly IExtensionLibraryService _extensionLibraryService;
+        private readonly ILogger _logger;
+
+        public AmbientExtensionLoader(
+            IExtensionLibraryService extensionLibraryService,
+            ILogger<AmbientExtensionLoader> logger)
         {
+            _extensionLibraryService = extensionLibraryService;
+            _logger = logger;
         }
 
         public string Name => GetType().Name;
@@ -29,13 +37,18 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            /*try
+            try
             {
-                var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+                var assembly = _extensionLibraryService.LoadAmbientAssembly(descriptor);
 
                 if (assembly == null)
                 {
                     return null;
+                }
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Loaded referenced ambient extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
                 }
 
                 return new ExtensionEntry
@@ -48,8 +61,7 @@ namespace Orchard.Environment.Extensions.Loaders
             catch
             {
                 return null;
-            }*/
-            return null;
+            }
         }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
