@@ -24,6 +24,7 @@ namespace Orchard.Environment.Extensions
     public class ExtensionLibraryService : IExtensionLibraryService
     {
         private const string ProbingDirectoryName = "Dependencies";
+        public static readonly string ReleaseConfiguration = "Release";
 
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
@@ -98,7 +99,7 @@ namespace Orchard.Environment.Extensions
         {
             var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
 
-            if (!File.Exists(Path.Combine(extensionPath, Constants.ProjectFileName)))   
+            if (!File.Exists(Path.Combine(extensionPath, Project.FileName)))
             {
                 return null;
             }
@@ -123,7 +124,7 @@ namespace Orchard.Environment.Extensions
             // Select the compilation configuration
             var defines = DependencyContext.Default.CompilationOptions.Defines;
             var config = defines?.Contains(Constants.DefaultConfiguration, StringComparer.OrdinalIgnoreCase) == true
-                ? Constants.DefaultConfiguration : "Release";
+                ? Constants.DefaultConfiguration : ReleaseConfiguration;
 
             // Create the library exporter
             var libraryExporter = projectContext.CreateExporter(config);
