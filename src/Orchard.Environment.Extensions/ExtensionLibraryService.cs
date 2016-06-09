@@ -123,8 +123,8 @@ namespace Orchard.Environment.Extensions
 
             // Select the compilation configuration
             var defines = DependencyContext.Default.CompilationOptions.Defines;
-            var config = defines?.Contains(Constants.DefaultConfiguration, StringComparer.OrdinalIgnoreCase) == true
-                ? Constants.DefaultConfiguration : ReleaseConfiguration;
+            var config = defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
+                ? ReleaseConfiguration : Constants.DefaultConfiguration;
 
             // Create the library exporter
             var libraryExporter = projectContext.CreateExporter(config);
