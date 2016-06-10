@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
+using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Compilers;
@@ -109,15 +110,89 @@ namespace Orchard.Environment.Extensions
 
         public Assembly LoadPrecompiledAssembly(ExtensionDescriptor descriptor)
         {
+            // Check if ambient
+            if (ApplicationAssemblyNames().Contains(descriptor.Id))
+            {
+                return null;
+            }
+
+            var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
+
+            // Check if all project files are there
+            if (File.Exists(Path.Combine(extensionPath, Project.FileName)) && File.Exists(Path.Combine(extensionPath, LockFile.FileName)))
+            {
+                return null;
+            }
+
+            bool loaded;
+
+            // Check if already runtime loaded
+            if (_loadedAssemblies.TryGetValue(descriptor.Id, out loaded))
+            {
+                // Then load it as an ambient assembly
+                return Assembly.Load(new AssemblyName(descriptor.Id));
+            }
+
+            // Select the compilation configuration
+            var defines = DependencyContext.Default.CompilationOptions.Defines;
+            var config = defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
+                ? ReleaseConfiguration : Constants.DefaultConfiguration;
+
+            // Resolve binaries output paths
+            var probingDirectoryPath = _appDataFolder.MapPath(ProbingDirectoryName);
+            var probingPath = Path.Combine(probingDirectoryPath, descriptor.Id + FileNameSuffixes.DotNet.DynamicLib);
+            var assemblyPath = Directory.GetFiles(Path.Combine(extensionPath, Constants.BinDirectoryName, config),
+                descriptor.Id + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories).FirstOrDefault();
+
+            if (String.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
+            {
+                assemblyPath = probingPath;
+                probingPath = null;
+
+                if (String.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
+                {
+                    return null;
+                }
+            }
+
+            // Load and mark the assembly as loaded
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
+            //_loadedAssemblies[descriptor.Id] = true;
+
+            // Populate the probing folder with the extension assembly
+            if (probingPath != null && (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assemblyPath) > File.GetLastWriteTimeUtc(probingPath)))
+            {
+                Directory.CreateDirectory(probingDirectoryPath);
+                File.Copy(assemblyPath, probingPath, true);
+            }
+
+
+            var dependencyContext = DependencyContext.Load(assembly);
+
+            // Check for a valid context
+            if (dependencyContext == null)
+            {
+                return null;
+            }
+
+var test = dependencyContext.RuntimeLibraries.Where(library => library.Type == "project").ToList();
+;
+
             return null;
         }
 
         public Assembly LoadDynamicAssembly(ExtensionDescriptor descriptor)
         {
+            // Check if ambient
+            if (ApplicationAssemblyNames().Contains(descriptor.Id))
+            {
+                return null;
+            }
+
             var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
 
-            // Check if project files are there
-            if (!File.Exists(Path.Combine(extensionPath, Project.FileName)))
+            // Check if not all project files are there
+            if (!File.Exists(Path.Combine(extensionPath, Project.FileName)) || !File.Exists(Path.Combine(extensionPath, LockFile.FileName)))
             {
                 return null;
             }
