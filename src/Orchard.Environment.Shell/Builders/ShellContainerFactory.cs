@@ -58,8 +58,7 @@ namespace Orchard.Environment.Shell.Builders
             // Sure this is right?
             tenantServiceCollection.AddSingleton(_loggerFactory);
 
-            foreach (var dependency in blueprint.Dependencies
-                .Where(t => !typeof(IModule).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies)
             {
                 foreach (var interfaceType in dependency.Type.GetInterfaces())
                 {
@@ -143,13 +142,16 @@ namespace Orchard.Environment.Shell.Builders
             //    tenantServiceCollection.ConfigureOptions(optionObject);
             //}
 
-            // Execute IModule registrations
+            // Execute IStartup registrations
+
+            // TODO: Use StartupLoader in RTM and then don't need to register the classes anymore then
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IModule).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Type)))
             {
-                moduleServiceCollection.AddSingleton(typeof(IModule), dependency.Type);
+                moduleServiceCollection.AddSingleton(typeof(IStartup), dependency.Type);
+                tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Type);
             }
 
             // Make shell settings available to the modules
@@ -158,9 +160,9 @@ namespace Orchard.Environment.Shell.Builders
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Let any module add custom service descriptors to the tenant
-            foreach (var service in moduleServiceProvider.GetServices<IModule>())
+            foreach (var service in moduleServiceProvider.GetServices<IStartup>())
             {
-                service.Configure(tenantServiceCollection);
+                service.ConfigureServices(tenantServiceCollection);
             }
 
             // Configuring data access

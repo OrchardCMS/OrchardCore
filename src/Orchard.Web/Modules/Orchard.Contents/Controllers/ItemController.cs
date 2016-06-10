@@ -39,10 +39,10 @@ namespace Orchard.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
-            {
-                return Unauthorized();
-            }
+            //if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            //{
+            //    return Unauthorized();
+            //}
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 

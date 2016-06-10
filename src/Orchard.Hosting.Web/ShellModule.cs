@@ -14,15 +14,14 @@ namespace Orchard.Hosting
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
-    public class ShellModule : IModule
+    public class ShellModule : StartupBase
     {
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IOrchardShellEvents, OrchardShell>();
             serviceCollection.AddSingleton<IRunningShellRouterTable, DefaultRunningShellRouterTable>();
 
             serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
-            serviceCollection.AddSingleton<IRoutePublisher, RoutePublisher>();
 
             serviceCollection.AddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
             serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();

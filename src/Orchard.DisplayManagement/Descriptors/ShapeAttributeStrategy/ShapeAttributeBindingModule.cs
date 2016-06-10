@@ -7,13 +7,13 @@ using Orchard.DisplayManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
-    public class ShapeAttributeBindingModule : IModule
+    public class ShapeAttributeBindingModule : StartupBase
     {
         /// <summary>
         /// This module looks for any method of IShapeTableProvider implementations
         /// that has the <see cref="ShapeAttribute"/>.
         /// </summary>
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             // Copy the collection as we are about to change it
             ServiceDescriptor[] serviceDescriptors = new ServiceDescriptor[serviceCollection.Count];

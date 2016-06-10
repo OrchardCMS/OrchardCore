@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Users.Indexes;
@@ -12,18 +14,30 @@ using Orchard.Users.Services;
 
 namespace Orchard.Users
 {
-    public class Module : IModule
+    public class Startup : StartupBase
     {
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
+        private readonly IdentityOptions _options;
 
-        public Module(ShellSettings shellSettings)
+        public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options)
         {
+            _options = options.Value;
             _tenantName = shellSettings.Name;
             _tenantPrefix = shellSettings.RequestUrlPrefix;
         }
 
-        public void Configure(IServiceCollection serviceCollection)
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            builder
+                .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
+                .UseCookieAuthentication(_options.Cookies.ExternalCookie)
+                .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
+                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
+                ;
+        }
+
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             /// Adds the default token providers used to generate tokens for reset passwords, change email
             /// and change telephone number operations, and for two factor authentication token generation.

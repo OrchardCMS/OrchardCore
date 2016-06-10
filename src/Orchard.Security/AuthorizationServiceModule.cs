@@ -1,11 +1,10 @@
-﻿using Orchard.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Security
 {
-    public class AuthorizationServiceModule : IModule
+    public class AuthorizationServiceModule : StartupBase
     {
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddAuthorization();
         }

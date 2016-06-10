@@ -1,19 +1,17 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Orchard.Hosting.Web.Routing.Routes
 {
     public class TenantRoute : IRouter
     {
         private readonly RequestDelegate _pipeline;
-        private readonly ShellSettings _shellSettings;
         private readonly IEnumerable<IRouter> _routes;
 
         public TenantRoute(
@@ -22,52 +20,40 @@ namespace Orchard.Hosting.Web.Routing.Routes
             RequestDelegate pipeline)
         {
             _routes = routes;
-            _shellSettings = shellSettings;
+            ShellSettings = shellSettings;
             _pipeline = pipeline;
         }
 
+        public ShellSettings ShellSettings { get; }
+
         public async Task RouteAsync(RouteContext context)
         {
-            if (IsValidRequest(context.HttpContext))
+            try
             {
-                try
-                {
-                    // Store the requested targetted action so that the OrchardMiddleware
-                    // can continue with it once the tenant pipeline has been executed
+                // Store the requested targetted action so that the OrchardMiddleware
+                // can continue with it once the tenant pipeline has been executed
 
-                    context.HttpContext.Items["orchard.middleware.context"] = context;
-                    context.HttpContext.Items["orchard.middleware.routes"] = _routes;
+                context.HttpContext.Items["orchard.middleware.context"] = context;
+                context.HttpContext.Items["orchard.middleware.routes"] = _routes;
 
-                    await _pipeline.Invoke(context.HttpContext);
-                }
-                catch (Exception ex)
-                {
-                    var logger = context.HttpContext.RequestServices.GetService<ILogger<TenantRoute>>();
-                    logger.LogError("Error occured serving tenant route", ex);
-                    throw;
-                }
+                await _pipeline.Invoke(context.HttpContext);
             }
-        }
-
-        /// <summary>
-        /// Returns <c>True</c> if this tenant route matches the current tenant
-        /// </summary>
-        private bool IsValidRequest(HttpContext httpContext)
-        {
-            return httpContext.RequestServices.GetService<ShellSettings>() == _shellSettings;
+            catch (Exception ex)
+            {
+                var logger = context.HttpContext.RequestServices.GetService<ILogger<TenantRoute>>();
+                logger.LogError("Error occured serving tenant route", ex);
+                throw;
+            }
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            if (IsValidRequest(context.HttpContext))
+            foreach (var route in _routes)
             {
-                foreach (var route in _routes)
+                var result = route.GetVirtualPath(context);
+                if(result != null)
                 {
-                    var result = route.GetVirtualPath(context);
-                    if(result != null)
-                    {
-                        return result;
-                    }
+                    return result;
                 }
             }
 

@@ -1,11 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Routing;
+using Orchard.Environment.Shell;
+using Orchard.Hosting.Web.Routing.Routes;
 
 namespace Orchard.Hosting.Mvc.Routing
 {
+    /// <summary>
+    /// Implements <see cref="IRouteBuilder"/> by indexing routes by tenant.
+    /// TODO: OrchardRouteMiddleware seems to already contain this logic
+    /// </summary>
     public class DefaultShellRouteBuilder : IRouteBuilder
     {
         public DefaultShellRouteBuilder(IServiceProvider serviceProvider)
@@ -34,14 +43,55 @@ namespace Orchard.Hosting.Mvc.Routing
 
         public IRouter Build()
         {
-            var routeCollection = new RouteCollection();
+            var shellRoute = new ShellRoute();
 
-            foreach (var route in Routes)
+            foreach (var route in Routes.OfType<TenantRoute>())
             {
-                routeCollection.Add(route);
+                shellRoute.TenantRoutes.Add(route.ShellSettings.Name, route);
             }
 
-            return routeCollection;
+            return shellRoute;
+        }
+
+        private class ShellRoute : IRouter
+        {
+            public Dictionary<string, TenantRoute> TenantRoutes { get; } = new Dictionary<string, TenantRoute>();
+
+            public VirtualPathData GetVirtualPath(VirtualPathContext context)
+            {
+                var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
+
+                if(shellSettings == null)
+                {
+                    return null;
+                }
+
+                TenantRoute route;
+                if (TenantRoutes.TryGetValue(shellSettings.Name, out route))
+                {
+                    return route.GetVirtualPath(context);
+                }
+
+                return null;
+            }
+
+            public Task RouteAsync(RouteContext context)
+            {
+                var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
+
+                if (shellSettings == null)
+                {
+                    return null;
+                }
+
+                TenantRoute route;
+                if (TenantRoutes.TryGetValue(shellSettings.Name, out route))
+                {
+                    return route.RouteAsync(context);
+                }
+
+                return Task.CompletedTask;
+            }
         }
     }
 }

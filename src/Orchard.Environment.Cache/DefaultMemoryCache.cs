@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Orchard.Environment.Cache
 {
-    public class DefaultMemoryCache : IModule
+    public class DefaultMemoryCache : StartupBase
     {
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             // MVC is already registering IMemoryCache as host singleton. We are registering it again
             // in this module so that there is one instance for each tenant.

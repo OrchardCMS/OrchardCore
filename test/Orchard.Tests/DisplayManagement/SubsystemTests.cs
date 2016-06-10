@@ -76,7 +76,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddSingleton(new SimpleShapes());
 
-            new ShapeAttributeBindingModule().Configure(serviceCollection);
+            new ShapeAttributeBindingModule().ConfigureServices(serviceCollection);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }

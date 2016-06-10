@@ -7,9 +7,9 @@ using Orchard.Security;
 
 namespace Orchard.Roles
 {
-    public class Module : IModule
+    public class Startup : StartupBase
     {
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.TryAddScoped<RoleManager<Role>, RoleManager<Role>>();
             serviceCollection.TryAddScoped<IRoleStore<Role>, RoleStore>();

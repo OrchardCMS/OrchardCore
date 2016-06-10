@@ -184,7 +184,7 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsModule(Type type)
         {
-            return typeof(IModule).IsAssignableFrom(type);
+            return typeof(IStartup).IsAssignableFrom(type);
         }
 
         private static DependencyBlueprint BuildModule(Type type, Feature feature)
