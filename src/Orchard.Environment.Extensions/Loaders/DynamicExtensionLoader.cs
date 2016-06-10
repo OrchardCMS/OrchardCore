@@ -33,7 +33,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public string Name => GetType().Name;
 
-        public int Order => 30;
+        public int Order => 50;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
         {
@@ -66,7 +66,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Loaded referenced precompiled extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                    _logger.LogInformation("Loaded referenced dynamic extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
                 }
 
                 return new ExtensionEntry

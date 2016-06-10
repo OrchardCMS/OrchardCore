@@ -24,7 +24,7 @@ namespace Orchard.Environment.Extensions
         Assembly LoadPrecompiledAssembly(ExtensionDescriptor descriptor);
 
         /// <summary>
-        /// Loads a dynamically compiled extension.
+        /// Loads an external dynamic extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
         Assembly LoadDynamicAssembly(ExtensionDescriptor descriptor);
