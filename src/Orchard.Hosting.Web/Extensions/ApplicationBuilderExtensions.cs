@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Web.Routing;
@@ -19,7 +17,7 @@ namespace Orchard.Hosting
             loggerFactory.AddOrchardLogging(builder.ApplicationServices);
 
             // Add diagnostices pages
-            // TODO: make this modules or configurations
+            // TODO: make this modules from configurations
             builder.UseRuntimeInfoPage();
             builder.UseDeveloperExceptionPage();
 
@@ -30,7 +28,7 @@ namespace Orchard.Hosting
             // and replaces the current service provider for the tenant's one.
             builder.UseMiddleware<OrchardContainerMiddleware>();
 
-            // Route the request to the correct Orchard pipeline
+            // Route the request to the correct tenant specific pipeline
             builder.UseMiddleware<OrchardRouterMiddleware>();
 
             // Load controllers

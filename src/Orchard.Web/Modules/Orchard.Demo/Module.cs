@@ -20,7 +20,7 @@ namespace Orchard.Demo
             routes.MapAreaRoute(
                 name: "Display",
                 area: "Orchard.Demo",
-                template: "Home/Display{id}",
+                template: "Home/Display/{id}",
                 controller: "Home",
                 action: "Display"
             );

@@ -28,7 +28,6 @@ namespace Orchard.Setup.Services
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IRunningShellTable _runningShellTable;
-        private readonly IRunningShellRouterTable _runningShellRouterTable;
         private readonly ILogger _logger;
 
         public SetupService(
@@ -40,7 +39,6 @@ namespace Orchard.Setup.Services
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
-            IRunningShellRouterTable runningShellRouterTable,
             ILogger<SetupService> logger
             )
         {
@@ -52,7 +50,6 @@ namespace Orchard.Setup.Services
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
             _runningShellTable = runningShellTable;
-            _runningShellRouterTable = runningShellRouterTable;
             _logger = logger;
         }
 
@@ -160,7 +157,6 @@ namespace Orchard.Setup.Services
             }
 
             shellSettings.State = TenantState.Running;
-            _runningShellRouterTable.Remove(shellSettings.Name);
             _orchardHost.UpdateShellSettings(shellSettings);
             return executionId;
         }

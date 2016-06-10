@@ -1,4 +1,5 @@
-﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+﻿@using Microsoft.Extensions.DependencyInjection;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <div class="jumbotron">
     <p>This page lets you create a new content item. Type any text, you will be redirected to a view displaying the newly created content item.</p>
@@ -13,4 +14,9 @@
 <zone name="Footer" position=""><b>B</b></zone>
 <zone name="Footer" position="before">C</zone>
 
-Logged user: @User?.Identity?.Name
+<div>
+    Logged user: @User?.Identity?.Name
+</div>
+<div>
+    Tenant: @(Context.RequestServices.GetService<Orchard.Environment.Shell.ShellSettings>().Name)
+</div>
