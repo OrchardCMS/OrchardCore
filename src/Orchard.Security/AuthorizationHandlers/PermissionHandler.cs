@@ -12,7 +12,7 @@ namespace Orchard.Security.AuthorizationHandlers
     {
         protected override void Handle(AuthorizationContext context, PermissionRequirement requirement)
         {
-            if (context?.User?.Identity == null)
+            if (!(bool)context?.User?.Identity?.IsAuthenticated)
             {
                 return;
             }

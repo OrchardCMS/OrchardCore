@@ -31,6 +31,7 @@ namespace Orchard.Users.Services
             {
                 UserName = userName,
                 Email = email,
+                RoleNames = { "Administrator" }
             };
 
             return userManager.CreateAsync(superUser, password);
