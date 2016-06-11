@@ -57,7 +57,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
             try
             {
-                var assembly = _extensionLibraryService.LoadPrecompiledAssembly(descriptor);
+                var assembly = _extensionLibraryService.LoadPrecompiledExtension(descriptor);
             
                 if (assembly == null)
                 {

@@ -15,19 +15,19 @@ namespace Orchard.Environment.Extensions
         /// Loads an ambient extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadAmbientAssembly(ExtensionDescriptor descriptor);
+        Assembly LoadAmbientExtension(ExtensionDescriptor descriptor);
 
         /// <summary>
         /// Loads an external precompiled extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadPrecompiledAssembly(ExtensionDescriptor descriptor);
+        Assembly LoadPrecompiledExtension(ExtensionDescriptor descriptor);
 
         /// <summary>
         /// Loads an external dynamic extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadDynamicAssembly(ExtensionDescriptor descriptor);
+        Assembly LoadDynamicExtension(ExtensionDescriptor descriptor);
 
         /// <summary>
         /// Lists references of all the available extensions.

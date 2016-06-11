@@ -39,7 +39,7 @@ namespace Orchard.Environment.Extensions.Loaders
         {
             try
             {
-                var assembly = _extensionLibraryService.LoadAmbientAssembly(descriptor);
+                var assembly = _extensionLibraryService.LoadAmbientExtension(descriptor);
 
                 if (assembly == null)
                 {
