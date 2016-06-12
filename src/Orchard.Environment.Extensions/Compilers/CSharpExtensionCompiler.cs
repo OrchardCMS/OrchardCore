@@ -138,6 +138,12 @@ namespace Orchard.Environment.Extensions.Compilers
                     {
                         // Fallback to the probing folder
                         path = Path.Combine(probingDirectoryPath, fileName);
+
+                            if (!File.Exists(path))
+                            {
+                                // Fallback to project output path
+                                path = Path.Combine(outputPath, fileName);
+                            }
                     }
 
                     references.Add(path);
@@ -161,6 +167,12 @@ namespace Orchard.Environment.Extensions.Compilers
                             {
                                 // Fallback to the probing folder
                                 path = Path.Combine(probingDirectoryPath, fileName);
+
+                                if (!File.Exists(path))
+                                {
+                                    // Fallback to project output path
+                                    path = Path.Combine(outputPath, fileName);
+                                }
                             }
                         }
 

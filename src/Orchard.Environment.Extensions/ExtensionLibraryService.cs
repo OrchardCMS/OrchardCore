@@ -133,33 +133,19 @@ namespace Orchard.Environment.Extensions
                 return Assembly.Load(new AssemblyName(descriptor.Id));
             }
 
-            // Select the compilation configuration
-            var defines = DependencyContext.Default.CompilationOptions.Defines;
-            var config = defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
-                ? ReleaseConfiguration : Constants.DefaultConfiguration;
-
-            // Resolve binaries output paths
-            var probingDirectoryPath = _appDataFolder.MapPath(ProbingDirectoryName);
-            var probingPath = Path.Combine(probingDirectoryPath, descriptor.Id + FileNameSuffixes.DotNet.DynamicLib);
-            var assemblyPath = Directory.GetFiles(Path.Combine(extensionPath, Constants.BinDirectoryName, config),
-                descriptor.Id + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories).FirstOrDefault();
+            // Resolve the precompiled assembly output path
+            var assemblyPath = ResolveAssemblyOutputPath(extensionPath, descriptor.Id);
 
             // Check if the precompiled assembly exists
-            if (String.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
+            if (String.IsNullOrEmpty(assemblyPath))
             {
                 return null;
             }
 
             // Load and mark the assembly as loaded
-            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-            _loadedAssemblies[descriptor.Id] = true;
+            var assembly = LoadFromAssemblyPath(assemblyPath);
 
-            // Populate the shared probing folder with the extension assembly
-            if (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assemblyPath) > File.GetLastWriteTimeUtc(probingPath))
-            {
-                Directory.CreateDirectory(probingDirectoryPath);
-                File.Copy(assemblyPath, probingPath, true);
-            }
+            PopulateProbingFolder(assemblyPath);
 
             var dependencyContext = DependencyContext.Load(assembly);
 
@@ -172,35 +158,19 @@ namespace Orchard.Environment.Extensions
             var assemblyFolderPath = Path.GetDirectoryName(assemblyPath);
 
             // Load the extension dependencies
-            foreach (var assetPath in dependencyContext.RuntimeLibraries.SelectMany(lib => lib.RuntimeAssemblyGroups.SelectMany(a => a.AssetPaths)))
+            foreach (var assetPath in dependencyContext.RuntimeLibraries
+                .SelectMany(library => library.RuntimeAssemblyGroups
+                .SelectMany(a => a.AssetPaths)))
             {
-                var assetName = Path.GetFileNameWithoutExtension(assetPath);
-                var assetFileName = Path.GetFileName(assetPath);
-
                 // Check if not ambient
-                if (!ApplicationAssemblyNames().Contains(assetName))
+                if (!ApplicationAssemblyNames().Contains(Path.GetFileNameWithoutExtension(assetPath)))
                 {
-                    // Load from the extension bin folder
-                    var assetResolvedpath = Path.Combine(assemblyFolderPath, assetFileName);
+                    var assetResolvedPath = ResolveAssetPath(assemblyFolderPath, Path.GetFileName(assetPath));
 
-                    if (File.Exists(assetResolvedpath))
+                    if (assetResolvedPath != null)
                     {
-                        // Check if not already runtime loaded
-                        if (!_loadedAssemblies.TryGetValue(assetName, out loaded))
-                        {
-                            // Load and mark the assembly as loaded
-                            var itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assetResolvedpath);
-                            _loadedAssemblies[assetName] = true;
-                        }
-
-                        // Populate the shared probing folder
-                        var path = Path.Combine(probingDirectoryPath, assetFileName);
-
-                        if (!File.Exists(path) || File.GetLastWriteTimeUtc(assetResolvedpath) > File.GetLastWriteTimeUtc(path))
-                        {
-                            Directory.CreateDirectory(probingDirectoryPath);
-                            File.Copy(assetResolvedpath, path, true);
-                        }
+                        LoadFromAssemblyPath(assetResolvedPath);
+                        PopulateProbingFolder(assetResolvedPath);
                     }
                 }
             }
@@ -241,17 +211,11 @@ namespace Orchard.Environment.Extensions
                 return Assembly.Load(new AssemblyName(projectContext.RootProject.Identity.Name));
             }
 
-            // Select the compilation configuration
-            var defines = DependencyContext.Default.CompilationOptions.Defines;
-            var config = defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
-                ? ReleaseConfiguration : Constants.DefaultConfiguration;
-
-            // Create the library exporter
-            var libraryExporter = projectContext.CreateExporter(config);
+            var config = GetConfig();
+            var probingDirectoryPath = _appDataFolder.MapPath(ProbingDirectoryName);
+            var compiler = new CSharpExtensionCompiler();
 
             // Compile the extension if needed
-            var compiler = new CSharpExtensionCompiler();
-            var probingDirectoryPath = _appDataFolder.MapPath(ProbingDirectoryName);
             var success = compiler.Compile(projectContext, config, probingDirectoryPath);
             var diagnostics = compiler.Diagnostics;
 
@@ -276,21 +240,19 @@ namespace Orchard.Environment.Extensions
                 }
             }
 
+           // Set up output paths
+            var outputPaths = projectContext.GetOutputPaths(config);
+            var assemblyPath = outputPaths.CompilationFiles.Assembly;
+            var assemblyFolderPath = outputPaths.CompilationOutputPath;
+
             // Load and mark the assembly as loaded
-            var assemblyPath = projectContext.GetOutputPaths(config).CompilationFiles.Assembly;
-            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-            _loadedAssemblies[projectContext.RootProject.Identity.Name] = true;
+            var assembly = LoadFromAssemblyPath(assemblyPath);
 
-            // Populate the shared probing folder with the extension assembly
-            var probingPath = Path.Combine(probingDirectoryPath, projectContext.RootProject.Identity.Name + FileNameSuffixes.DotNet.DynamicLib);
+            // Populate the probing folder
+            PopulateProbingFolder(assemblyPath);
 
-            if (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assemblyPath) > File.GetLastWriteTimeUtc(probingPath))
-            {
-                Directory.CreateDirectory(probingDirectoryPath);
-                File.Copy(assemblyPath, probingPath, true);
-            }
-
-            var assemblyFolderPath = Path.GetDirectoryName(assemblyPath);
+            // Create the library exporter
+            var libraryExporter = projectContext.CreateExporter(config);
 
             // Load the extension dependencies
             foreach (var dependency in libraryExporter.GetDependencies())
@@ -301,56 +263,34 @@ namespace Orchard.Environment.Extensions
                 // Check for an unresolved library
                 if (library != null && !library.Resolved)
                 {
-                    var assemblyName = library.Identity.Name;
-
                     // Check if not ambient
-                    if (!ApplicationAssemblyNames().Contains(assemblyName))
+                    if (!ApplicationAssemblyNames().Contains(library.Identity.Name))
                     {
-                        // Load from the extension bin folder
-                        var fileName = assemblyName + FileNameSuffixes.DotNet.DynamicLib;
-                        var path = Path.Combine(assemblyFolderPath, fileName);
+                        var assetFileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                        var assetResolvedPath = ResolveAssetPath(assemblyFolderPath, assetFileName);
 
-                        if (!File.Exists(path))
+                        if (assetResolvedPath != null)
                         {
-                            // Fallback to the shared probing folder
-                            path = Path.Combine(probingDirectoryPath, fileName);
-                        }
-
-                        // Check if file exists and not already loaded
-                        if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
-                        {
-                            // Load and mark the assembly as loaded
-                            var itemAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-                            _loadedAssemblies[assemblyName] = true;
+                            LoadFromAssemblyPath(assetResolvedPath);
+                            PopulateProbingFolder(assetResolvedPath);
                         }
                     }
                 }
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
-                    foreach (var item in package.RuntimeAssemblies)
+                    foreach (var asset in package.RuntimeAssemblies)
                     {
-                        var assemblyName = Path.GetFileNameWithoutExtension(item.Path);
-
                         // Check if not ambient
-                        if (!ApplicationAssemblyNames().Contains(assemblyName))
+                        if (!ApplicationAssemblyNames().Contains(Path.GetFileNameWithoutExtension(asset.Path)))
                         {
-                            // Load from the extension bin folder
-                            var fileName = Path.GetFileName(item.Path);
-                            var path = Path.Combine(assemblyFolderPath, fileName);
+                            var assetFileName = Path.GetFileName(asset.Path);
+                            var assetResolvedPath = ResolveAssetPath(assemblyFolderPath, assetFileName);
 
-                            if (!File.Exists(path))
+                            if (assetResolvedPath != null)
                             {
-                                // Fallback to the shared probing folder
-                                path = Path.Combine(probingDirectoryPath, fileName);
-                            }
-
-                            // Check if file exists and not already loaded
-                            if (File.Exists(path) && !_loadedAssemblies.TryGetValue(assemblyName, out loaded))
-                            {
-                                // Load and mark the assembly as loaded
-                                AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-                                _loadedAssemblies[assemblyName] = true;
+                                LoadFromAssemblyPath(assetResolvedPath);
+                                PopulateProbingFolder(assetResolvedPath);
                             }
                         }
                     }
@@ -360,39 +300,92 @@ namespace Orchard.Environment.Extensions
                     // Load the package or the project library
                     foreach (var asset in dependency.RuntimeAssemblyGroups.GetDefaultAssets())
                     {
-                        // Check if not ambient
                         if (!ApplicationAssemblyNames().Contains(asset.Name))
                         {
-                            // Check if not already loaded
-                            if (!_loadedAssemblies.TryGetValue(asset.Name, out loaded))
-                            {
-                                // Load and mark the assembly as loaded
-                                AssemblyLoadContext.Default.LoadFromAssemblyPath(asset.ResolvedPath);
-                                _loadedAssemblies[asset.Name] = true;
-                            }
-
-                            // Populate the extension bin folder
-                            var path = Path.Combine(assemblyFolderPath, asset.FileName);
-
-                            if (!File.Exists(path) || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(path))
-                            {
-                                File.Copy(asset.ResolvedPath, path, true);
-                            }
-
-                            // Populate the shared probing folder
-                            path = Path.Combine(probingDirectoryPath, asset.FileName);
-
-                            if (!File.Exists(path) || File.GetLastWriteTimeUtc(asset.ResolvedPath) > File.GetLastWriteTimeUtc(path))
-                            {
-                                Directory.CreateDirectory(probingDirectoryPath);
-                                File.Copy(asset.ResolvedPath, path, true);
-                            }
+                            LoadFromAssemblyPath(asset.ResolvedPath);
+                            PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath);
+                            PopulateProbingFolder(asset.ResolvedPath);
                         }
                     }
                 }
             }
 
             return assembly;
+        }
+
+        private string GetConfig()
+        {
+            var defines = DependencyContext.Default.CompilationOptions.Defines;
+            return defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
+                ? ReleaseConfiguration : Constants.DefaultConfiguration;
+        }
+
+        private string ResolveAssemblyOutputPath(string rootPath, string name)
+        {
+            return Directory.GetFiles(Path.Combine(rootPath, Constants.BinDirectoryName, GetConfig()),
+                name + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories).FirstOrDefault();
+        }
+
+        private string ResolveAssetPath(string folderPath, string fileName)
+        {
+            var resolvedPath = Path.Combine(folderPath, fileName);
+
+            if (!File.Exists(resolvedPath))
+            {
+                var probingFolderPath = _appDataFolder.MapPath(ProbingDirectoryName);
+                resolvedPath = Path.Combine(probingFolderPath, fileName);
+
+                if (!File.Exists(resolvedPath))
+                {
+                    return null;
+                }
+            }
+
+            return resolvedPath;
+        }
+
+        private Assembly LoadFromAssemblyPath(string path)
+        {
+            var loaded = false;
+
+            var fileName = Path.GetFileNameWithoutExtension(path);
+
+            if (_loadedAssemblies.TryGetValue(fileName, out loaded))
+            {
+                return null;
+            }
+
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+            _loadedAssemblies[fileName] = true;
+
+            return assembly;
+        }
+
+        private void PopulateBinaryFolder(string folderPath, string path)
+        {
+            var binaryPath = Path.Combine(folderPath, Path.GetFileName(path));
+
+            if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(path) > File.GetLastWriteTimeUtc(binaryPath))
+            {
+                File.Copy(path, binaryPath, true);
+            }
+        }
+
+        private void PopulateProbingFolder(string assetPath)
+        {
+            var probingFolderPath = _appDataFolder.MapPath(ProbingDirectoryName);
+
+            if (!String.Equals(Path.GetDirectoryName(assetPath), probingFolderPath, StringComparison.OrdinalIgnoreCase))
+            {
+                var assetFileName = Path.GetFileName(assetPath);
+                var probingPath = Path.Combine(probingFolderPath, assetFileName);
+
+                if (!File.Exists(probingPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(probingPath))
+                {
+                    Directory.CreateDirectory(probingFolderPath);
+                    File.Copy(assetPath, probingPath, true);
+                }
+            }
         }
     }
 }
