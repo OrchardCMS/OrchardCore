@@ -18,6 +18,7 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
+        private static string RefsDirectoryName = "refs";
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
@@ -29,7 +30,7 @@ namespace Orchard.Environment.Extensions.Compilers
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
 
-        public bool Compile(ProjectContext context, string config, string probingDirectoryPath)
+        public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
            // Mark ambient libraries as compiled
             if (_compiledLibraries.IsEmpty)
@@ -121,7 +122,7 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (projectContext != null)
                         {
                            // Right now, if !success we try to use the last build
-                           var success = Compile(projectContext, config, probingDirectoryPath);
+                           var success = Compile(projectContext, config, probingFolderPath);
                         }
                     }
                 }
@@ -131,22 +132,19 @@ namespace Orchard.Environment.Extensions.Compilers
                 {
                     var fileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
 
-                    // Search in the runtime directory for an ambient library
+                    // Search in the runtime directory
                     var path = Path.Combine(runtimeDirectory, fileName);
 
                     if (!File.Exists(path))
                     {
-                        // Fallback to the probing folder
-                        path = Path.Combine(probingDirectoryPath, fileName);
-
-                            if (!File.Exists(path))
-                            {
-                                // Fallback to project output path
-                                path = Path.Combine(outputPath, fileName);
-                            }
+                        // Fallback to the project output path or probing folder
+                        path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
                     }
 
-                    references.Add(path);
+                    if (!String.IsNullOrEmpty(path))
+                    {
+                        references.Add(path);
+                    }
                 }
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
@@ -161,22 +159,19 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (!File.Exists(path))
                         {
                             // Fallback to the "refs" subfolder
-                            path = Path.Combine(runtimeDirectory, "refs", fileName);
+                            path = Path.Combine(runtimeDirectory, RefsDirectoryName, fileName);
 
                             if (!File.Exists(path))
                             {
-                                // Fallback to the probing folder
-                                path = Path.Combine(probingDirectoryPath, fileName);
-
-                                if (!File.Exists(path))
-                                {
-                                    // Fallback to project output path
-                                    path = Path.Combine(outputPath, fileName);
-                                }
+                                // Fallback to the project output path or probing folder
+                                path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
                             }
                         }
 
-                        references.Add(path);
+                        if (!String.IsNullOrEmpty(path))
+                        {
+                            references.Add(path);
+                        }
                     }
                 }
                 else
@@ -197,7 +192,7 @@ namespace Orchard.Environment.Extensions.Compilers
             var resources = new List<string>();
             if (compilationOptions.PreserveCompilationContext == true)
             {
-                var allExports = exporter.GetAllExports().ToList();
+                var allExports = exporter.GetAllExports()/*.Where(x => x.Library.Compatible)*/.ToList();
                 var dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
                     allExports,
                     allExports,
@@ -315,6 +310,31 @@ namespace Orchard.Environment.Extensions.Compilers
                 .Execute();
 
             return _compiledLibraries[context.RootProject.Identity.Name] = result.ExitCode == 0;
+        }
+
+        private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName)
+        {
+            var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
+            var probingPath = Path.Combine(probingFolderPath, assetFileName);
+
+            if (File.Exists(binaryPath))
+            {
+                if (File.Exists(probingPath))
+                {
+                    if (File.GetLastWriteTimeUtc(probingPath) > File.GetLastWriteTimeUtc(binaryPath))
+                    {
+                        return probingPath;
+                    }
+                }
+
+                return binaryPath;
+            }
+            else if (File.Exists(probingPath))
+            {
+                return probingPath;
+            }
+
+            return null;
         }
 
         private static IEnumerable<string> GetDefaultOptions()
