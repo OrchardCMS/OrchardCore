@@ -190,23 +190,22 @@ namespace Orchard.Environment.Extensions.Compilers
             _compiledLibraries[context.RootProject.Identity.Name] = false;
 
             var resources = new List<string>();
+
+            string depsJsonFile = null;
+            DependencyContext dependencyContext = null;
+
+            // Add dependency context as a resource
             if (compilationOptions.PreserveCompilationContext == true)
             {
                 var allExports = exporter.GetAllExports()/*.Where(x => x.Library.Compatible)*/.ToList();
-                var dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
+                dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
                     allExports,
                     allExports,
                     false, // For now, just assume non-portable mode in the legacy deps file (this is going away soon anyway)
                     context.TargetFramework,
                     context.RuntimeIdentifier ?? string.Empty);
 
-                var writer = new DependencyContextWriter();
-                var depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json");
-                using (var fileStream = File.Create(depsJsonFile))
-                {
-                    writer.Write(dependencyContext, fileStream);
-                }
-
+                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json");
                 resources.Add($"\"{depsJsonFile}\",{compilationOptions.OutputName}.deps.json");
             }
 
@@ -284,6 +283,16 @@ namespace Orchard.Environment.Extensions.Compilers
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
                     return _compiledLibraries[context.RootProject.Identity.Name] = true;
+                }
+            }
+
+            // Write the dependencies file
+            if (dependencyContext != null)
+            {
+                var writer = new DependencyContextWriter();
+                using (var fileStream = File.Create(depsJsonFile))
+                {
+                    writer.Write(dependencyContext, fileStream);
                 }
             }
 
