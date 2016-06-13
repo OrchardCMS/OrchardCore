@@ -229,7 +229,11 @@ namespace Orchard.Environment.Extensions
 
                         if (!String.IsNullOrEmpty(assetResolvedPath))
                         {
-                            LoadFromAssemblyPath(assetResolvedPath);
+                            if (!IsAssemblyLoaded(library.Identity.Name))
+                            {
+                                LoadFromAssemblyPath(assetResolvedPath);
+                            }
+
                             PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
                             PopulateProbingFolder(assetResolvedPath);
                         }
@@ -239,14 +243,20 @@ namespace Orchard.Environment.Extensions
                 {
                     foreach (var asset in package.RuntimeAssemblies)
                     {
-                        if (!IsAmbientAssembly(Path.GetFileNameWithoutExtension(asset.Path)))
+                        var assetName = Path.GetFileNameWithoutExtension(asset.Path);
+
+                        if (!IsAmbientAssembly(assetName))
                         {
                             var assetFileName = Path.GetFileName(asset.Path);
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
 
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
-                                LoadFromAssemblyPath(assetResolvedPath);
+                                if (!IsAssemblyLoaded(assetName))
+                                {
+                                    LoadFromAssemblyPath(assetResolvedPath);
+                                }
+
                                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
                                 PopulateProbingFolder(assetResolvedPath);
                             }
@@ -259,7 +269,11 @@ namespace Orchard.Environment.Extensions
                     {
                         if (!IsAmbientAssembly(asset.Name))
                         {
-                            LoadFromAssemblyPath(asset.ResolvedPath);
+                             if (!IsAssemblyLoaded(asset.Name))
+                            {
+                                LoadFromAssemblyPath(asset.ResolvedPath);
+                            }
+
                             PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath);
                             PopulateProbingFolder(asset.ResolvedPath);
                         }
@@ -291,7 +305,8 @@ namespace Orchard.Environment.Extensions
             {
                 sourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
             }
-            else {
+            else
+            {
                 var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
                 sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
             }
@@ -318,12 +333,6 @@ namespace Orchard.Environment.Extensions
         private Assembly LoadFromAssemblyPath(string assemblyPath)
         {
             var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
-
-            if (IsAssemblyLoaded(assemblyName))
-            {
-                return null;
-            }
-
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
             _loadedAssemblies[assemblyName] = true;
 

@@ -197,7 +197,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add dependency context as a resource
             if (compilationOptions.PreserveCompilationContext == true)
             {
-                var allExports = exporter.GetAllExports()/*.Where(x => x.Library.Compatible)*/.ToList();
+                var allExports = exporter.GetAllExports().Where(x => x.Library.Compatible).ToList();
                 dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
                     allExports,
                     allExports,
