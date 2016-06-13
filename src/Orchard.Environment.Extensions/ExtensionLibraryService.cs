@@ -8,8 +8,11 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
+using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
+using Microsoft.DotNet.ProjectModel.Compilation;
+using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
@@ -114,7 +117,14 @@ namespace Orchard.Environment.Extensions
 
         public Assembly LoadPrecompiledExtension(ExtensionDescriptor descriptor)
         {
-            if (!IsPrecompiledExtension(descriptor))
+            if (IsAmbientExtension(descriptor))
+            {
+                return null;
+            }
+
+            var projectContext = GetProject(descriptor);
+
+            if (projectContext == null || IsDynamicContext(projectContext))
             {
                 return null;
             }
@@ -124,56 +134,19 @@ namespace Orchard.Environment.Extensions
                 return Assembly.Load(new AssemblyName(descriptor.Id));
             }
 
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            var assemblyPath = ResolveAssemblyOutputPath(extensionPath, descriptor.Id);
-
-            if (String.IsNullOrEmpty(assemblyPath))
-            {
-                return null;
-            }
-
-            var assembly = LoadFromAssemblyPath(assemblyPath);
-            var dependencyContext = DependencyContext.Load(assembly);
-
-            if (dependencyContext == null)
-            {
-                return null;
-            }
-
-            var assemblyFolderPath = GetAssemblyFolderPath(extensionPath, dependencyContext.Target.Framework);
-            PopulateBinaryFolder(assemblyFolderPath, assemblyPath);
-            PopulateProbingFolder(assemblyPath);
-
-            foreach (var assetPath in dependencyContext.RuntimeLibraries
-                .SelectMany(library => library.RuntimeAssemblyGroups.SelectMany(a => a.AssetPaths)))
-            {
-                if (!IsAmbientAssembly(Path.GetFileNameWithoutExtension(assetPath)))
-                {
-                    var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, Path.GetFileName(assetPath));
-
-                    if (!String.IsNullOrEmpty(assetResolvedPath))
-                    {
-                        LoadFromAssemblyPath(assetResolvedPath);
-                        PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
-                        PopulateProbingFolder(assetResolvedPath);
-                    }
-                }
-            }
-
-            return assembly;
+            return LoadProject(projectContext);
         }
 
         public Assembly LoadDynamicExtension(ExtensionDescriptor descriptor)
         {
-            if (!IsDynamicExtension(descriptor))
+            if (IsAmbientExtension(descriptor))
             {
                 return null;
             }
 
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            var projectContext = ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
+            var projectContext = GetProject(descriptor);
 
-            if (projectContext == null)
+            if (projectContext == null || !IsDynamicContext(projectContext))
             {
                 return null;
             }
@@ -183,19 +156,33 @@ namespace Orchard.Environment.Extensions
                 return Assembly.Load(new AssemblyName(descriptor.Id));
             }
 
+            CompileProject(projectContext);
+
+            return LoadProject(projectContext);
+        }
+
+        internal ProjectContext GetProject(ExtensionDescriptor descriptor)
+        {
+            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
+            return ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
+        }
+
+        internal void CompileProject(ProjectContext context)
+        {
+
             var compiler = new CSharpExtensionCompiler();
-            var success = compiler.Compile(projectContext, Configuration, _probingFolderPath);
+            var success = compiler.Compile(context, Configuration, _probingFolderPath);
             var diagnostics = compiler.Diagnostics;
 
             if (success)
             {
                 if (_logger.IsEnabled(LogLevel.Information) && !diagnostics.Any())
                 {
-                     _logger.LogInformation("{0} was successfully compiled", descriptor.Id);
+                     _logger.LogInformation("{0} was successfully compiled", context.RootProject.Identity.Name);
                 }
                 else if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                     _logger.LogWarning("{0} was compiled but has warnings", descriptor.Id);
+                     _logger.LogWarning("{0} was compiled but has warnings", context.RootProject.Identity.Name);
 
                      foreach (var diagnostic in diagnostics)
                      {
@@ -207,7 +194,7 @@ namespace Orchard.Environment.Extensions
             {
                 if (_logger.IsEnabled(LogLevel.Error))
                 {
-                     _logger.LogError("{0} compilation failed", descriptor.Id);
+                     _logger.LogError("{0} compilation failed", context.RootProject.Identity.Name);
 
                      foreach (var diagnostic in diagnostics)
                      {
@@ -215,15 +202,18 @@ namespace Orchard.Environment.Extensions
                      }
                 }
             }
+        }
 
-            var outputPaths = projectContext.GetOutputPaths(Configuration);
+        internal Assembly LoadProject(ProjectContext context)
+        {
+            var outputPaths = context.GetOutputPaths(Configuration);
             var assemblyPath = outputPaths.CompilationFiles.Assembly;
 
             var assembly = LoadFromAssemblyPath(assemblyPath);
             PopulateProbingFolder(assemblyPath);
 
             var assemblyFolderPath = outputPaths.CompilationOutputPath;
-            var libraryExporter = projectContext.CreateExporter(Configuration);
+            var libraryExporter = context.CreateExporter(Configuration);
 
             foreach (var dependency in libraryExporter.GetDependencies())
             {
@@ -292,38 +282,26 @@ namespace Orchard.Environment.Extensions
              return IsAmbientAssembly(descriptor.Id);
         }
 
-        private bool IsPrecompiledExtension (ExtensionDescriptor descriptor)
+        private bool IsDynamicContext (ProjectContext context)
         {
-            if (IsAmbientExtension(descriptor))
+            var sourceFiles = new List<string>();
+            var compilationOptions = context.ResolveCompilationOptions(Configuration);
+
+            if (compilationOptions.CompileInclude == null)
             {
-                return false;
+                sourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
+            }
+            else {
+                var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
+                sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
             }
 
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-
-            if (File.Exists(Path.Combine(extensionPath, Project.FileName)) && File.Exists(Path.Combine(extensionPath, LockFile.FileName)))
-            {
-                return false;
-            }
-
-            return true;
+            return sourceFiles.Any();
         }
 
-        private bool IsDynamicExtension (ExtensionDescriptor descriptor)
+        private bool IsPrecompiledContext (ProjectContext context)
         {
-            if (IsAmbientExtension(descriptor))
-            {
-                return false;
-            }
-
-            var extensionPath = _fileSystem.GetExtensionFileProvider(descriptor, _logger).RootPath;
-
-            if (!File.Exists(Path.Combine(extensionPath, Project.FileName)) || !File.Exists(Path.Combine(extensionPath, LockFile.FileName)))
-            {
-                return false;
-            }
-
-            return true;
+            return !IsDynamicContext(context);
         }
 
         private bool IsAmbientAssembly(string assemblyName)
@@ -361,25 +339,6 @@ namespace Orchard.Environment.Extensions
         {
             return Path.Combine(rootPath, Constants.BinDirectoryName, Configuration,
                 NuGetFramework.Parse(framework).GetShortFolderName());
-        }
-
-        private string ResolveAssemblyOutputPath(string rootPath, string assemblyName)
-        {
-            var assemblyOutputPath = Directory.GetFiles(Path.Combine(rootPath, Constants.BinDirectoryName, Configuration),
-                GetAssemblyFileName(assemblyName), SearchOption.AllDirectories).FirstOrDefault();
-
-            if (String.IsNullOrEmpty(assemblyOutputPath))
-            {
-                return ResolveAssemblyProbingPath(assemblyName);
-            }
-
-            return assemblyOutputPath;
-        }
-
-        private string ResolveAssemblyProbingPath(string assemblyName)
-        {
-            var probingPath = Path.Combine(_probingFolderPath, GetAssemblyFileName(assemblyName));
-            return File.Exists(probingPath) ? probingPath : null;
         }
 
         private string ResolveAssemblyPath(string binaryFolderPath, string assemblyName)
