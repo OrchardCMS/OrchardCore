@@ -8,7 +8,6 @@
     "Orchard.DisplayManagement": "2.0.0-*"
   },
   "buildOptions": {
-    "preserveCompilationContext": true,
     "debugType": "portable"
   },
   "frameworks": {

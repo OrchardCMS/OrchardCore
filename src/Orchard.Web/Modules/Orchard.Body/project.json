@@ -10,7 +10,6 @@
   },
   "buildOptions": {
     "define": [ "TRACE" ],
-    "preserveCompilationContext": true,
     "debugType": "portable",
     "warningsAsErrors": true
   },
