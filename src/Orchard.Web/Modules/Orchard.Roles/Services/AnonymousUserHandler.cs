@@ -30,9 +30,14 @@ namespace Orchard.Roles
 
         protected override async Task HandleAsync(AuthorizationContext context, PermissionRequirement requirement)
         {
-            if (!(bool)context?.User?.Identity?.IsAuthenticated)
+            if (context.HasSucceeded)
             {
-                // TODO: Cache roles in IRoleManager
+                // This handler is not revoking any pre-existing grants.
+                return;
+            }
+
+            if (!context.User.Identity.IsAuthenticated)
+            {
                 var anonymous = await _roleManager.GetRoleByNameAsync("Anonymous");
                 if (anonymous.RoleClaims.Any(x => x.ClaimType == Permission.ClaimType && requirement.Permission.Name == x.ClaimValue))
                 {

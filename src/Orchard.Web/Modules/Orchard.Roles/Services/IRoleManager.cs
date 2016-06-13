@@ -16,7 +16,8 @@ namespace Orchard.Roles.Services
     {
         public static async Task<Role> GetRoleByNameAsync(this IRoleManager roleManager, string name)
         {
-            return (await roleManager.GetRolesAsync()).Roles.FirstOrDefault(x => String.Equals(x.RoleName, name, StringComparison.OrdinalIgnoreCase));
+            var roles = await roleManager.GetRolesAsync();
+            return roles.Roles.FirstOrDefault(x => String.Equals(x.RoleName, name, StringComparison.OrdinalIgnoreCase));
         }
 
         public static async Task<Role> CreateRoleAsync(this IRoleManager roleManager, string name)
