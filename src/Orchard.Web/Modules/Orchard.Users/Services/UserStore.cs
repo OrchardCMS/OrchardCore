@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ namespace Orchard.Users.Services
 {
     public class UserStore :
         IUserStore<User>,
+        IUserRoleStore<User>,
         IUserPasswordStore<User>,
         IUserEmailStore<User>,
         IUserSecurityStampStore<User>
@@ -323,6 +325,68 @@ namespace Orchard.Users.Services
             user.NormalizedEmail = normalizedEmail;
 
             return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region IUserRoleStore<User>
+        public Task AddToRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.RoleNames.Add(roleName);
+            _session.Save(roleName);
+
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveFromRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            user.RoleNames.Remove(roleName);
+            _session.Save(roleName);
+
+            return Task.CompletedTask;
+        }
+
+        public Task<IList<string>> GetRolesAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult<IList<string>>(user.RoleNames);
+        }
+
+        public Task<bool> IsInRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(user.RoleNames.Contains(roleName));
+        }
+
+        public Task<IList<User>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

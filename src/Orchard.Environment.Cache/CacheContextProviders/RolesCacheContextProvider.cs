@@ -1,33 +1,37 @@
-﻿using Orchard.Environment.Cache.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.Environment.Cache.CacheContextProviders
 {
-    // TODO: Move this class in Orchard.Roles module
-
     public class RolesCacheContextProvider : ICacheContextProvider
     {
-        public RolesCacheContextProvider()
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RolesCacheContextProvider(IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            // User is a more generic dependency
-            if (contexts.Any(ctx => String.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
-            {
-                return Task.CompletedTask;
-            }
-
             if (contexts.Any(ctx => String.Equals(ctx, "user.roles", StringComparison.OrdinalIgnoreCase)))
             {
-                // TODO: Add actual roles
-                entries.Add(new CacheContextEntry("administrator", "0"));
+                var user = _httpContextAccessor.HttpContext.User;
+                if (user.Identity.IsAuthenticated)
+                {
+                    var roleClaims = user.Claims.Where(x => x.Type == ClaimTypes.Role);
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        entries.Add(new CacheContextEntry("user.roles", roleClaim.Value));
+                    }
 
-                return Task.CompletedTask;
+                    return Task.CompletedTask;
+                }
             }
 
             return Task.CompletedTask;
