@@ -295,20 +295,16 @@ namespace Orchard.Environment.Extensions
 
         private bool IsDynamicContext (ProjectContext context)
         {
-            var sourceFiles = new List<string>();
-            var compilationOptions = context.ResolveCompilationOptions(Configuration);
+            var compileInclude = context.ResolveCompilationOptions(Configuration).CompileInclude;
 
-            if (compilationOptions.CompileInclude == null)
+            if (compileInclude == null)
             {
-                sourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
+                return context.ProjectFile.Files.SourceFiles.Any();
             }
             else
             {
-                var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
-                sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
+                return IncludeFilesResolver.GetIncludeFiles(compileInclude, "/", diagnostics: null).Any();
             }
-
-            return sourceFiles.Any();
         }
 
         private bool IsPrecompiledContext (ProjectContext context)
