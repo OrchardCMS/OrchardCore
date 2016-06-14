@@ -1,0 +1,46 @@
+﻿@model EditRoleViewModel
+@using Orchard.Roles.ViewModels;
+
+<h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
+
+<nav class="admin-toolbar">
+    <div class="nav navbar-nav">
+        <form asp-action="Index" method="post" class="form-inline pull-xs-right">
+            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            <button type="submit" class="btn btn-secondary">@T["Search"]</button>
+        </form>
+    </div>
+</nav>
+
+@using (Html.BeginForm())
+{
+    <fieldset>
+        @foreach (var category in Model.RoleCategoryPermissions.Keys)
+        {
+            <fieldset>
+                <legend>@category</legend>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@T["Permission"]</th>
+                            <th>@T["Allow"]</th>
+                            <th>@T["Effective"]</th>
+                        </tr>
+                    </thead>
+                    @foreach (var permission in Model.RoleCategoryPermissions[category])
+                    {
+                        <tr>
+                            <td>@permission.Description</td>
+                            <td>
+                                <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
+                            </td>
+                            <td>
+                                <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </fieldset>
+        }
+    </fieldset>
+}
