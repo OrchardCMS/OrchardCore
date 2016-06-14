@@ -74,8 +74,6 @@
       "modules",
       "themes",
       "views",
-      "project.json",
-      "project.lock.json",
       "_ViewStart.cshtml",
       "web.config"
     ],

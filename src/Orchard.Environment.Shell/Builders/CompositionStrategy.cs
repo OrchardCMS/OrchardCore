@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.DotNet.ProjectModel;
-using Microsoft.DotNet.ProjectModel.Loader;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
@@ -117,26 +117,24 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            var projectContext = ProjectContext.CreateContextForEachFramework("").FirstOrDefault();
-
-            var additionalLibraries = projectContext.LibraryManager
-                .GetLibraries()
-                .Where(x => x.Identity.Name.StartsWith("Orchard"));
+            var additionalLibraries = DependencyContext.Default
+                .RuntimeLibraries
+                .Where(x => x.Name.StartsWith("Orchard")).ToList();
 
             var features = new List<Feature>();
 
             foreach (var additonalLib in additionalLibraries)
             {
-                var assembly = Assembly.Load(new AssemblyName(additonalLib.Identity.Name));
+                var assembly = Assembly.Load(new AssemblyName(additonalLib.Name));
 
                 var feature = new Feature
                 {
                     Descriptor = new FeatureDescriptor
                     {
-                        Id = additonalLib.Identity.Name,
+                        Id = additonalLib.Name,
                         Extension = new ExtensionDescriptor
                         {
-                            Id = additonalLib.Identity.Name
+                            Id = additonalLib.Name
                         }
                     },
                     ExportedTypes =
