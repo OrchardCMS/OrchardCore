@@ -22,23 +22,25 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>@T["Permission"]</th>
-                            <th>@T["Allow"]</th>
-                            <th>@T["Effective"]</th>
+                            <th class="col-xs-10">@T["Permission"]</th>
+                            <th class="col-xs-1">@T["Allow"]</th>
+                            <th class="col-xs-1">@T["Effective"]</th>
                         </tr>
                     </thead>
-                    @foreach (var permission in Model.RoleCategoryPermissions[category])
-                    {
-                        <tr>
-                            <td>@permission.Description</td>
-                            <td>
-                                <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
-                            </td>
-                            <td>
-                                <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
-                            </td>
-                        </tr>
-                    }
+                    <tbody>
+                        @foreach (var permission in Model.RoleCategoryPermissions[category])
+                        {
+                            <tr>
+                                <td class="col-xs-10">@permission.Description</td>
+                                <td class="col-xs-1">
+                                    <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
+                                </td>
+                                <td class="col-xs-1">
+                                    <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
             </fieldset>
         }

@@ -130,8 +130,12 @@ namespace Orchard.Roles.Controllers
 
         private async Task<IEnumerable<string>> GetEffectivePermissions(Role role)
         {
-            // Create a fake user to check the actual permissions
-            var fakeUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) }));
+            // Create a fake user to check the actual permissions. If the role is anonymous
+            // IsAuthenticated needs to be false.
+            var fakeUser = new ClaimsPrincipal(
+                new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName)},
+                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null)
+            );
 
             var permissionClaims = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
 
