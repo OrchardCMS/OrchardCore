@@ -119,7 +119,7 @@ namespace Orchard.Environment.Shell.Builders
         {
             var additionalLibraries = DependencyContext.Default
                 .RuntimeLibraries
-                .Where(x => x.Name.StartsWith("Orchard")).ToList();
+                .Where(x => x.Name.StartsWith("Orchard"));
 
             var features = new List<Feature>();
 
