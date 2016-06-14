@@ -68,7 +68,7 @@
                             <option value="@recipe.Name" selected="@(Model.RecipeName == null && recipe.Name == "Default")">@recipe.Name</option>
                         }
                     }
-                    @if (unspecifiedCategoryRecipes.Count > 0)
+                    @if (unspecifiedCategoryRecipes.Count() > 0)
                     {
                         if (groupCount > 1)
                         {

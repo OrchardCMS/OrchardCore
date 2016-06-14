@@ -1,0 +1,29 @@
+﻿{
+  "name": "core",
+  "description": "A recipe providing only the core Orchard framework, with limited end-user functionality. This is useful for development scenarios.",
+  "author": "The Orchard Team",
+  "website": "http://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": true,
+  "category": "default",
+  "tags": "developer",
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [ ],
+      "enable": [
+        "Orchard.Logging.Console",
+        "Orchard.Hosting",
+        "Settings",
+        "Dashboard",
+        "Navigation",
+        "Orchard.Themes",
+        "Orchard.Demo",
+        "Orchard.DynamicCache",
+        "TheTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    }
+  ]
+}

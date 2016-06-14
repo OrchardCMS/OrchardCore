@@ -16,7 +16,6 @@ namespace Orchard.Recipes
 
             services.AddRecipeOptions();
             services.AddRecipeExtension("*.recipe.json");
-            throw new NotSupportedException();
         }
     }
 }

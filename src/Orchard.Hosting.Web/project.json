@@ -19,7 +19,8 @@
     "Orchard.Hosting": "2.0.0-*",
     "Orchard.DeferredTasks": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
-    "Orchard.Data": "2.0.0-*"
+    "Orchard.Data": "2.0.0-*",
+    "Orchard.Recipes.Abstractions": "2.0.0-*" // Such that Razor Views can resolve references
   },
   "buildOptions": {
     "define": [ "TRACE" ],

@@ -10,6 +10,7 @@ namespace Orchard.Recipes.Services
         public RecipeDescriptor ParseRecipe(IFileInfo recipeFile)
         {
             var serializer = new JsonSerializer();
+
             using (StreamReader streamReader = new StreamReader(recipeFile.CreateReadStream()))
             {
                 using (JsonTextReader reader = new JsonTextReader(streamReader))
