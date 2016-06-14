@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -276,12 +277,16 @@ namespace Orchard.Environment.Extensions.Compilers
                     var newInputs = new HashSet<string>(allArgs);
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
+                    {
+                        Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name.Black()} ({context.TargetFramework.DotNetFrameworkName.Yellow()}) was previously compiled. Skipping dynamic compilation."));
                         return _compiledLibraries[context.RootProject.Identity.Name] = true;
+                    }
                 }
                 else
                 {
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
+                    Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name.Black()} ({context.TargetFramework.DotNetFrameworkName.Yellow()}) was previously compiled. Skipping dynamic compilation."));
                     return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
             }
@@ -311,12 +316,35 @@ namespace Orchard.Environment.Extensions.Compilers
                 File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
             }
 
+            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name.Black()} for {context.TargetFramework.DotNetFrameworkName.Yellow()}"));
+
             // Execute CSC!
             var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
                 .WorkingDirectory(runtimeDirectory)
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
+
+            if (result.ExitCode == 0 && !Diagnostics.Any())
+            {
+                Debug.WriteLine(String.Format($"Dynamic compilation succeeded."));
+                Debug.WriteLine($"0 Warning(s)");
+                Debug.WriteLine($"0 Error(s)");
+            }
+            else if (result.ExitCode == 0 && Diagnostics.Any())
+            {
+                Debug.WriteLine(String.Format($"Dynamic compilation succeeded but has warnings."));
+                Debug.WriteLine($"0 Error(s)");
+            }
+            else
+            {
+                Debug.WriteLine(String.Format($"Dynamic compilation failed."));
+            }
+
+            foreach (var diagnostic in Diagnostics)
+            {
+                Debug.WriteLine(diagnostic);
+            }
 
             return _compiledLibraries[context.RootProject.Identity.Name] = result.ExitCode == 0;
         }
