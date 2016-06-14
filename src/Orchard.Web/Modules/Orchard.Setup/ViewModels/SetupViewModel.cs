@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Orchard.Setup.Annotations;
+using System.Collections.Generic;
+using Orchard.Recipes.Models;
 
 namespace Orchard.Setup.ViewModels
 {
@@ -31,5 +33,12 @@ namespace Orchard.Setup.ViewModels
         [DataType(DataType.Password)]
         [Compare("Password")]
         public string PasswordConfirmation { get; set; }
+
+        public IEnumerable<RecipeDescriptor> Recipes { get; set; }
+
+        [Required]
+        public string RecipeName { get; set; }
+
+        public string RecipeDescription { get; set; }
     }
 }

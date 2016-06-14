@@ -1,19 +1,10 @@
-﻿using System.Xml.Linq;
+﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Recipes.Models;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeParser
     {
-        Recipe ParseRecipe(XDocument recipeDocument);
-    }
-
-    public static class RecipeParserExtensions
-    {
-        public static Recipe ParseRecipe(this IRecipeParser recipeParser, string recipeText)
-        {
-            var recipeDocument = XDocument.Parse(recipeText, LoadOptions.PreserveWhitespace);
-            return recipeParser.ParseRecipe(recipeDocument);
-        }
+        RecipeDescriptor ParseRecipe(IFileInfo recipeFile);
     }
 }

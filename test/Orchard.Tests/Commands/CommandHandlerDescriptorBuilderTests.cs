@@ -2,6 +2,7 @@
 using System.Linq;
 using Xunit;
 using System.Reflection;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Tests.Commands
 {
@@ -26,6 +27,9 @@ namespace Orchard.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
+            public MyCommand() : base(null) {
+            }
+
             public void FooBar()
             {
             }

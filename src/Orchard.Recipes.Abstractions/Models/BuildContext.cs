@@ -1,9 +1,9 @@
-﻿using System.Xml.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Orchard.Recipes.Services
 {
     public class BuildContext
     {
-        public XDocument RecipeDocument { get; set; }
+        public JObject RecipeDocument { get; set; }
     }
 }

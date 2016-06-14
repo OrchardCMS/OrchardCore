@@ -5,6 +5,9 @@ using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Orchard.Recipes.Services;
 
 namespace Orchard.Setup.Controllers
 {
@@ -16,15 +19,16 @@ namespace Orchard.Setup.Controllers
 
         public SetupController(
             ISetupService setupService,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IHtmlLocalizer<SetupController> localizer)
         {
             _setupService = setupService;
             _shellSettings = shellSettings;
 
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IHtmlLocalizer T { get; }
 
         private ActionResult IndexViewResult(SetupViewModel model)
         {
@@ -33,19 +37,47 @@ namespace Orchard.Setup.Controllers
 
         public ActionResult Index()
         {
+            var initialSettings = _setupService.Prime();
+            var recipes = _setupService.Recipes();
+            string recipeDescription = null;
+
+            if (recipes.Count > 0)
+            {
+                recipeDescription = recipes[0].Description;
+            }
+
             return IndexViewResult(new SetupViewModel
             {
+                Recipes = recipes,
+                RecipeDescription = recipeDescription
             });
         }
 
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
+            var recipes = _setupService.Recipes();
+
+            if (model.RecipeName == null)
+            {
+                if (!(recipes.Select(r => r.Name).Contains(DefaultRecipe)))
+                {
+                    ModelState.AddModelError("Recipe", T["No recipes were found."].Value);
+                }
+                else {
+                    model.RecipeName = DefaultRecipe;
+                }
+            }
+
             if (!ModelState.IsValid)
             {
+                model.Recipes = recipes;
+                model.RecipeDescription = recipes.GetRecipeByName(model.RecipeName).Description;
+
                 return IndexViewResult(model);
             }
 
+            var recipe = recipes.GetRecipeByName(model.RecipeName);
             var setupContext = new SetupContext
             {
                 SiteName = model.SiteName,
@@ -55,13 +87,14 @@ namespace Orchard.Setup.Controllers
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.AdminUserName,
                 AdminEmail = model.AdminEmail,
-                AdminPassword = model.Password
+                AdminPassword = model.Password,
+                Recipe = recipe
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
             var urlPrefix = "";
-            if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
+            if (!string.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
             {
                 urlPrefix = _shellSettings.RequestUrlPrefix + "/";
             }

@@ -4,7 +4,7 @@ namespace Orchard.Recipes.Services
 {
     public interface IRecipeStepQueue
     {
-        void Enqueue(string executionId, RecipeStep step);
-        RecipeStep Dequeue(string executionId);
+        void Enqueue(string executionId, RecipeStepDescriptor step);
+        RecipeStepDescriptor Dequeue(string executionId);
     }
 }

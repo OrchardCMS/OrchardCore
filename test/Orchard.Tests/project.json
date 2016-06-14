@@ -15,6 +15,7 @@
     "Orchard.Hosting": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
+    "Orchard.Recipes": "2.0.0-*",
     "xunit": "2.2.0-*"
   },
   "testRunner": "xunit",

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +11,12 @@ using Orchard.Environment.Shell.Models;
 using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
@@ -28,7 +31,10 @@ namespace Orchard.Setup.Services
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly IRecipeHarvester _recipeHarvester;
         private readonly ILogger _logger;
+
+        private IReadOnlyList<RecipeDescriptor> _recipes;
 
         public SetupService(
             ShellSettings shellSettings,
@@ -39,6 +45,7 @@ namespace Orchard.Setup.Services
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
+            IRecipeHarvester recipeHarvester,
             ILogger<SetupService> logger
             )
         {
@@ -50,12 +57,26 @@ namespace Orchard.Setup.Services
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
             _runningShellTable = runningShellTable;
+            _recipeHarvester = recipeHarvester;
             _logger = logger;
         }
 
         public ShellSettings Prime()
         {
             return _shellSettings;
+        }
+
+        public IReadOnlyList<RecipeDescriptor> Recipes()
+        {
+            if (_recipes == null)
+            {
+                _recipes = _recipeHarvester
+                    .HarvestRecipesAsync()
+                    .Result
+                    .Where(recipe => recipe.IsSetupRecipe)
+                    .ToList();
+            }
+            return _recipes;
         }
 
         public Task<string> SetupAsync(SetupContext context)

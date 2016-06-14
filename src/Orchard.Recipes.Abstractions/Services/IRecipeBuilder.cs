@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Xml.Linq;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeBuilder
     {
-        XDocument Build(IEnumerable<IRecipeBuilderStep> steps);
+        JObject Build(IEnumerable<IRecipeBuilderStep> steps);
     }
 }

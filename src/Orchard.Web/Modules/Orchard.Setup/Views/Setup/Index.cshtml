@@ -1,5 +1,10 @@
 ﻿@using Orchard.Setup.Controllers
 @model Orchard.Setup.ViewModels.SetupViewModel
+@{
+    var groupedRecipes = Model.Recipes.Where(x => !string.IsNullOrWhiteSpace(x.Category)).GroupBy(x => x.Category);
+    var unspecifiedCategoryRecipes = Model.Recipes.Where(x => string.IsNullOrWhiteSpace(x.Category)).ToList();
+    var groupCount = groupedRecipes.Count() + unspecifiedCategoryRecipes.Count;
+}
 <html>
 <head>
     <title>Get Started</title>
@@ -44,7 +49,40 @@
                 @Html.PasswordFor(svm => svm.PasswordConfirmation)
             </div>
         </fieldset>
-
+        <fieldset>
+            <legend>Choose an Orchard Recipe</legend>
+            <div>
+                Orchard Recipes allow you to setup your site with additional pre-configured options,
+                features and settings out of the box.
+            </div>
+            <div>
+                <select id="Recipe" name="Recipe" class="recipe">
+                    @foreach (var recipeGroup in groupedRecipes.OrderBy(x => x.Key))
+                    {
+                        if (groupCount > 1)
+                        {
+                            <optgroup label="@recipeGroup.Key"></optgroup>
+                        }
+                        foreach (var recipe in recipeGroup.OrderBy(x => x.Name))
+                        {
+                            <option value="@recipe.Name" selected="@(Model.RecipeName == null && recipe.Name == "Default")">@recipe.Name</option>
+                        }
+                    }
+                    @if (unspecifiedCategoryRecipes.Count > 0)
+                    {
+                        if (groupCount > 1)
+                        {
+                            <optgroup label="Unspecified"></optgroup>
+                        }
+                        foreach (var recipe in unspecifiedCategoryRecipes.OrderBy(x => x.Name))
+                        {
+                            <option value="@recipe.Name" selected="@(Model.RecipeName == null && recipe.Name == "Default")">@recipe.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div id="recipedescription">@Model.RecipeDescription</div>
+        </fieldset>
         <fieldset>
             <button class="primaryAction setupButton" type="submit">Finish Setup</button>
         </fieldset>

@@ -1,4 +1,4 @@
-﻿using Orchard.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +9,12 @@ namespace Orchard.Environment.Commands
 {
     public abstract class DefaultCommandHandler : ICommandHandler
     {
-        protected DefaultCommandHandler()
+        protected DefaultCommandHandler(IStringLocalizer localizer)
         {
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IStringLocalizer T { get; set; }
         public CommandContext Context { get; set; }
 
         public async Task ExecuteAsync(CommandContext context)
@@ -25,7 +25,7 @@ namespace Orchard.Environment.Commands
 
         private void SetSwitchValues(CommandContext context)
         {
-            if (context.Switches != null && context.Switches.Any())
+            if (context.Switches != null && context.Switches.Count > 0)
             {
                 foreach (var commandSwitch in context.Switches)
                 {
@@ -40,11 +40,11 @@ namespace Orchard.Environment.Commands
             PropertyInfo propertyInfo = GetType().GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
             if (propertyInfo == null)
             {
-                throw new InvalidOperationException(T("Switch \"{0}\" was not found", commandSwitch.Key));
+                throw new InvalidOperationException(T["Switch \"{0}\" was not found", commandSwitch.Key]);
             }
             if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
             {
-                throw new InvalidOperationException(T("A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name));
+                throw new InvalidOperationException(T["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
             }
 
             // Set the value
@@ -61,10 +61,10 @@ namespace Orchard.Environment.Commands
                 }
 
                 //TODO: (ngm) fix this message
-                string message = T("Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+                string message = T["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
                     commandSwitch.Value,
                     propertyInfo.PropertyType.FullName,
-                    commandSwitch.Key);
+                    commandSwitch.Key];
                 throw new InvalidOperationException(message, ex);
             }
         }
@@ -78,7 +78,7 @@ namespace Orchard.Environment.Commands
             object[] invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments);
             if (invokeParameters == null)
             {
-                throw new InvalidOperationException(T("Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)).ToString());
+                throw new InvalidOperationException(T["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
             }
 
             this.Context = context;
@@ -99,7 +99,9 @@ namespace Orchard.Environment.Commands
             if (methodParameters.Length == 0)
             {
                 if (args.Count == 0)
+                {
                     return invokeParameters.ToArray();
+                }
                 return null;
             }
 
@@ -154,7 +156,7 @@ namespace Orchard.Environment.Commands
             {
                 if (!supportedSwitches.Contains(commandSwitch))
                 {
-                    throw new InvalidOperationException(T("Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch).ToString());
+                    throw new InvalidOperationException(T["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
                 }
             }
         }

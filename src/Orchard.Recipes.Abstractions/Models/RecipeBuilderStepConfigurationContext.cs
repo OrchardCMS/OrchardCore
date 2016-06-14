@@ -1,10 +1,10 @@
-using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.Recipes.Models
 {
     public class RecipeBuilderStepConfigurationContext : ConfigurationContext
     {
-        public RecipeBuilderStepConfigurationContext(XElement configurationElement) : base(configurationElement)
+        public RecipeBuilderStepConfigurationContext(JObject configurationElement) : base(configurationElement)
         {
         }
     }

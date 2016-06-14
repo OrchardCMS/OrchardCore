@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Orchard.Recipes.Models
 {
-    public class Recipe
+    public class RecipeDescriptor
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -14,6 +14,7 @@ namespace Orchard.Recipes.Models
         public DateTime? ExportUtc { get; set; }
         public string Category { get; set; }
         public string Tags { get; set; }
-        public IEnumerable<RecipeStep> RecipeSteps { get; set; }
+
+        public IEnumerable<RecipeStepDescriptor> Steps { get; set; }
     }
 }

@@ -4,6 +4,6 @@ namespace Orchard.Recipes.Services
 {
     public interface IRecipeManager
     {
-        string Execute(Recipe recipe);
+        string Execute(RecipeDescriptor recipe);
     }
 }
