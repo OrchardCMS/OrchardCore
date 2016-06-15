@@ -55,6 +55,28 @@ namespace Orchard.Environment.Extensions.Compilers
                 return _compiledLibraries[context.RootProject.Identity.Name];
             }
 
+            // Get compilation options
+            var compilationOptions = context.ResolveCompilationOptions(config);
+            var compileInclude = context.ResolveCompilationOptions(config).CompileInclude;
+
+            var projectSourceFiles = new List<string>();
+
+            // Get project source files
+            if (compilationOptions.CompileInclude == null)
+            {
+                projectSourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
+            }
+            else {
+                var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
+                projectSourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
+            }
+
+            // Check if precompiled
+            if (!projectSourceFiles.Any())
+            {
+                return _compiledLibraries[context.RootProject.Identity.Name] = true;
+            }
+
            // Set up Output Paths
             var outputPaths = context.GetOutputPaths(config);
             var outputPath = outputPaths.CompilationOutputPath;
@@ -89,7 +111,6 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Get compilation options
             var outputName = outputPaths.CompilationFiles.Assembly;
-            var compilationOptions = context.ResolveCompilationOptions(config);
 
             // Set default platform if it isn't already set and we're on desktop
             if (compilationOptions.EmitEntryPoint == true && string.IsNullOrEmpty(compilationOptions.Platform) && context.TargetFramework.IsDesktop())
@@ -223,14 +244,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Add project source files
-            if (compilationOptions.CompileInclude == null)
-            {
-                sourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
-            }
-            else {
-                var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
-                sourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
-            }
+            sourceFiles.AddRange(projectSourceFiles);
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
