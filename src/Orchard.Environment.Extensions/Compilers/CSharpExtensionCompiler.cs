@@ -200,6 +200,8 @@ namespace Orchard.Environment.Extensions.Compilers
             // Mark this library as compiled even if it will fail
             _compiledLibraries[context.RootProject.Identity.Name] = false;
 
+            var sw = Stopwatch.StartNew();
+
             var resources = new List<string>();
 
             string depsJsonFile = null;
@@ -302,6 +304,8 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
+            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name} for {context.TargetFramework.DotNetFrameworkName}"));
+
             // Write the dependencies file
             if (dependencyContext != null)
             {
@@ -326,8 +330,6 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
             }
-
-            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name} for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Execute CSC!
             var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
@@ -356,6 +358,9 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 Debug.WriteLine(diagnostic);
             }
+
+            Debug.WriteLine($"Time elapsed {sw.Elapsed}");
+            Debug.WriteLine(String.Empty);
 
             return _compiledLibraries[context.RootProject.Identity.Name] = result.ExitCode == 0;
         }
