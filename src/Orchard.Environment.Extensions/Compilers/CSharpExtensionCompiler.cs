@@ -20,6 +20,7 @@ namespace Orchard.Environment.Extensions.Compilers
     public class CSharpExtensionCompiler
     {
         private static string RefsDirectoryName = "refs";
+        private static readonly ConcurrentDictionary<string, bool> _ambientLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
@@ -34,13 +35,14 @@ namespace Orchard.Environment.Extensions.Compilers
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
            // Mark ambient libraries as compiled
-            if (_compiledLibraries.IsEmpty)
+            if (_ambientLibraries.IsEmpty)
             {
                 var libraries = DependencyContext.Default.CompileLibraries
                     .Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
 
                 foreach (var library in libraries)
                 {
+                    _ambientLibraries[library.Name] = true;
                     _compiledLibraries[library.Name] = true;
                 }
             }
@@ -177,7 +179,15 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
                 else
                 {
-                    references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
+                    if (library != null && _ambientLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                    {
+                        // always reference ambient assemblies from the runtime directory
+                        references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
+                    }
+                    else
+                    {
+                        references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
+                    }
                 }
             }
 
