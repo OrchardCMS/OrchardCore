@@ -6,7 +6,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
 			"stopAtEntry": false
@@ -17,7 +17,7 @@
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
 			"stopAtEntry": false,
@@ -26,7 +26,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000/admin"
+					"args": "/C start http://localhost:5000"
 				},
 				"osx": {
 					"command": "open"
@@ -41,7 +41,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Build Release",
-			"program": "${workspaceRoot}/src/Orchard.Web/bin/Release/netstandardapp1.5/Orchard.Web.dll",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Release/netcoreapp1.0/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
 			"stopAtEntry": false,
@@ -50,7 +50,7 @@
 				"args": "${auto-detect-url}",
 				"windows": {
 					"command": "cmd.exe",
-					"args": "/C start http://localhost:5000/admin"
+					"args": "/C start http://localhost:5000"
 				}
 			}
 		},
@@ -65,10 +65,10 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Publish",
-			//"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish/Orchard.Web.dll",
+			//"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/publish/Orchard.Web.dll",
 			"program": "${workspaceRoot}/../publish/Orchard.Web.dll",
 			"args": [],
-			//"cwd": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/publish",
+			//"cwd": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/publish",
 			"cwd": "${workspaceRoot}/../publish",
 			"stopAtEntry": false,
 			"launchBrowser": {
