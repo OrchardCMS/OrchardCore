@@ -288,7 +288,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
                     {
-                        Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name.Black()} ({context.TargetFramework.DotNetFrameworkName.Yellow()}) was previously compiled. Skipping dynamic compilation."));
+                        Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name} ({context.TargetFramework.DotNetFrameworkName}) was previously compiled. Skipping dynamic compilation."));
                         return _compiledLibraries[context.RootProject.Identity.Name] = true;
                     }
                 }
@@ -296,7 +296,8 @@ namespace Orchard.Environment.Extensions.Compilers
                 {
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
-                    Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name.Black()} ({context.TargetFramework.DotNetFrameworkName.Yellow()}) was previously compiled. Skipping dynamic compilation."));
+
+                    Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name} ({context.TargetFramework.DotNetFrameworkName}) was previously compiled. Skipping dynamic compilation."));
                     return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
             }
@@ -326,7 +327,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
             }
 
-            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name.Black()} for {context.TargetFramework.DotNetFrameworkName.Yellow()}"));
+            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name} for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Execute CSC!
             var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
