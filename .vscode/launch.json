@@ -64,6 +64,7 @@
 			"name": ".NET Core Launch (web publish)",
 			"type": "coreclr",
 			"request": "launch",
+			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Publish",
 			//"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/publish/Orchard.Web.dll",
 			"program": "${workspaceRoot}/../publish/Orchard.Web.dll",

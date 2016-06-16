@@ -304,7 +304,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
                     {
-                        Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name} ({context.TargetFramework.DotNetFrameworkName}) was previously compiled. Skipping dynamic compilation."));
+                        Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Previously compiled, skipping dynamic compilation."));
                         return _compiledLibraries[context.RootProject.Identity.Name] = true;
                     }
                 }
@@ -313,12 +313,12 @@ namespace Orchard.Environment.Extensions.Compilers
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
 
-                    Debug.WriteLine(String.Format($"Project {context.RootProject.Identity.Name} ({context.TargetFramework.DotNetFrameworkName}) was previously compiled. Skipping dynamic compilation."));
+                    Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}:  Previously compiled, skipping dynamic compilation."));
                     return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
             }
 
-            Debug.WriteLine(String.Format($"Dynamic compiling {context.RootProject.Identity.Name} for {context.TargetFramework.DotNetFrameworkName}"));
+            Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Write the dependencies file
             if (dependencyContext != null)
@@ -352,20 +352,22 @@ namespace Orchard.Environment.Extensions.Compilers
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
 
+            Debug.WriteLine(String.Empty);
+
             if (result.ExitCode == 0 && !Diagnostics.Any())
             {
-                Debug.WriteLine(String.Format($"Dynamic compilation succeeded."));
+                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded."));
                 Debug.WriteLine($"0 Warning(s)");
                 Debug.WriteLine($"0 Error(s)");
             }
             else if (result.ExitCode == 0 && Diagnostics.Any())
             {
-                Debug.WriteLine(String.Format($"Dynamic compilation succeeded but has warnings."));
+                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded but has warnings."));
                 Debug.WriteLine($"0 Error(s)");
             }
             else
             {
-                Debug.WriteLine(String.Format($"Dynamic compilation failed."));
+                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation failed."));
             }
 
             foreach (var diagnostic in Diagnostics)
