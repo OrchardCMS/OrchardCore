@@ -260,6 +260,33 @@ namespace Orchard.Environment.Extensions
                         }
                     }
                 }
+                else if (library != null && !dependency.RuntimeAssemblyGroups.Any())
+                {
+                    if (!IsAmbientAssembly(library.Identity.Name))
+                    {
+                        var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+
+                        if (projectContext != null)
+                        {
+                            var assetFileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                            var outputPath = projectContext.GetOutputPaths(Configuration).CompilationOutputPath;
+                            var assetResolvedPath = Path.Combine(outputPath, assetFileName);
+
+                            if (!File.Exists(assetResolvedPath))
+                            {
+                                assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
+                            }
+
+                            if (!IsAssemblyLoaded(library.Identity.Name))
+                            {
+                                LoadFromAssemblyPath(assetResolvedPath);
+                            }
+
+                            PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
+                            PopulateProbingFolder(assetResolvedPath);
+                        }
+                    }
+                }
                 else
                 {
                     foreach (var asset in dependency.RuntimeAssemblyGroups.GetDefaultAssets())

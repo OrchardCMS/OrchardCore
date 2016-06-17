@@ -34,7 +34,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
-           // Mark ambient libraries as compiled
+            // Mark ambient libraries as compiled
             if (_ambientLibraries.IsEmpty)
             {
                 var libraries = DependencyContext.Default.CompileLibraries
@@ -198,17 +198,38 @@ namespace Orchard.Environment.Extensions.Compilers
                         }
                     }
                 }
+                // Check for a precompiled library
+                else if (library != null && !dependency.CompilationAssemblies.Any())
+                {
+                    var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+
+                    if (projectContext != null)
+                    {
+                        var fileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+
+                        // Search in the precompiled project output path
+                        var path = Path.Combine(projectContext.GetOutputPaths(config).CompilationOutputPath, fileName);
+
+                        if (!File.Exists(path))
+                        {
+                            // Fallback to the project output path or probing folder
+                            path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
+                        }
+
+                        if (!String.IsNullOrEmpty(path))
+                        {
+                            references.Add(path);
+                        }
+                    }
+                }
+                // Check for an ambient library
+                else if (library != null && _ambientLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                {
+                    references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
+                }
                 else
                 {
-                    if (library != null && _ambientLibraries.TryGetValue(library.Identity.Name, out compilationResult))
-                    {
-                        // always reference ambient assemblies from the runtime directory
-                        references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
-                    }
-                    else
-                    {
-                        references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
-                    }
+                    references.AddRange(dependency.CompilationAssemblies.Select(r => r.ResolvedPath));
                 }
             }
 
@@ -217,9 +238,6 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 return _compiledLibraries[context.RootProject.Identity.Name];
             }
-
-            // Mark this library as compiled even if it will fail
-            _compiledLibraries[context.RootProject.Identity.Name] = false;
 
             var sw = Stopwatch.StartNew();
 
