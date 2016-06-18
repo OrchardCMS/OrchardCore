@@ -34,7 +34,8 @@ namespace Orchard.Hosting
             // Load controllers
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
-            foreach (var feature in extensionManager.AvailableFeatures())
+
+            System.Threading.Tasks.Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
             {
                 try
                 {
@@ -45,7 +46,8 @@ namespace Orchard.Hosting
                 {
                     // TODO: An extension couldn't be loaded, log
                 }
-            }
+            });
+
 
             return builder;
         }

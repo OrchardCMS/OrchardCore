@@ -19,7 +19,9 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        private static string RefsDirectoryName = "refs";
+        public const string RefsDirectoryName = "refs";
+        private static readonly Object _syncLock = new Object();
+        private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
         private static readonly ConcurrentDictionary<string, bool> _ambientLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
@@ -33,6 +35,16 @@ namespace Orchard.Environment.Extensions.Compilers
         public IList<string> Diagnostics { get; private set; }
 
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
+        {
+            var compilationlock = _compilationlocks.GetOrAdd(context.RootProject.Identity.Name, id => new object());
+
+            lock (compilationlock)
+            {
+                return CompileInternal(context, config, probingFolderPath);
+            }
+        }
+
+        internal bool CompileInternal(ProjectContext context, string config, string probingFolderPath)
         {
             // Mark ambient libraries as compiled
             if (_ambientLibraries.IsEmpty)
@@ -212,7 +224,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         if (!File.Exists(path))
                         {
-                            // Fallback to the project output path or probing folder
+                            // Fallback to this project output path or probing folder
                             path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
                         }
 
@@ -360,7 +372,10 @@ namespace Orchard.Environment.Extensions.Compilers
             if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
                 || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
             {
-                File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                lock (_syncLock)
+                {
+                    File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                }
             }
 
             // Execute CSC!

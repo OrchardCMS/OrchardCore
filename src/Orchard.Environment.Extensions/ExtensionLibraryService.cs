@@ -25,9 +25,11 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
-        private const string ProbingDirectoryName = "Dependencies";
-        public static readonly string ReleaseConfiguration = "Release";
+        public const string ReleaseConfiguration = "Release";
+        public const string ProbingDirectoryName = "Dependencies";
+        public static string Configuration => _configuration.Value;
         private static readonly Lazy<string> _configuration = new Lazy<string>(GetConfiguration);
+        private static readonly Object _syncLock = new Object();
 
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
@@ -58,7 +60,6 @@ namespace Orchard.Environment.Extensions
         }
 
         public Localizer T { get; set; }
-        private static string Configuration => _configuration.Value;
 
         private IEnumerable<string> ApplicationAssemblyNames()
         {
@@ -403,8 +404,11 @@ namespace Orchard.Environment.Extensions
 
                 if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
                 {
-                    Directory.CreateDirectory(binaryFolderPath);
-                    File.Copy(assetPath, binaryPath, true);
+                    lock (_syncLock)
+                    {
+                        Directory.CreateDirectory(binaryFolderPath);
+                        File.Copy(assetPath, binaryPath, true);
+                    }
                 }
             }
         }
