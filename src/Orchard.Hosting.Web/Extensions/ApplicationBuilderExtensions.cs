@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +37,9 @@ namespace Orchard.Hosting
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
 
-            System.Threading.Tasks.Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
+            var sw = Stopwatch.StartNew();
+
+            Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
             {
                 try
                 {
@@ -47,6 +51,8 @@ namespace Orchard.Hosting
                     // TODO: An extension couldn't be loaded, log
                 }
             });
+
+            Debug.WriteLine($"Overall time to dynamically compile and load extensions: {sw.Elapsed}");
 
 
             return builder;
