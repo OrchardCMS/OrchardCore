@@ -50,7 +50,8 @@ namespace Orchard.Environment.Extensions.Compilers
             if (_ambientLibraries.IsEmpty)
             {
                 var libraries = DependencyContext.Default.CompileLibraries
-                    .Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
+                    //.Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
+                    .Where(x => x.Type.Equals(LibraryType.Project.ToString(), StringComparison.OrdinalIgnoreCase));
 
                 foreach (var library in libraries)
                 {
@@ -64,7 +65,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Check if already compiled
             if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
             {
-                return _compiledLibraries[context.RootProject.Identity.Name];
+                return compilationResult;
             }
 
             // Get compilation options
@@ -248,7 +249,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Check again if already compiled, here through the dependency graph
             if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
             {
-                return _compiledLibraries[context.RootProject.Identity.Name];
+                return compilationResult;
             }
 
             var sw = Stopwatch.StartNew();
@@ -334,7 +335,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
                     {
-                        Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Previously compiled, skipping dynamic compilation."));
+                        Debug.WriteLine($"{context.RootProject.Identity.Name}: Previously compiled, skipping dynamic compilation.");
                         return _compiledLibraries[context.RootProject.Identity.Name] = true;
                     }
                 }
@@ -343,7 +344,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
 
-                    Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}:  Previously compiled, skipping dynamic compilation."));
+                    Debug.WriteLine($"{context.RootProject.Identity.Name}:  Previously compiled, skipping dynamic compilation.");
                     return _compiledLibraries[context.RootProject.Identity.Name] = true;
                 }
             }
@@ -387,20 +388,20 @@ namespace Orchard.Environment.Extensions.Compilers
 
             Debug.WriteLine(String.Empty);
 
-            if (result.ExitCode == 0 && !Diagnostics.Any())
+            if (result.ExitCode == 0 && Diagnostics.Count <= 0)
             {
-                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded."));
+                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded.");
                 Debug.WriteLine($"0 Warning(s)");
                 Debug.WriteLine($"0 Error(s)");
             }
-            else if (result.ExitCode == 0 && Diagnostics.Any())
+            else if (result.ExitCode == 0 && Diagnostics.Count > 0)
             {
-                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded but has warnings."));
+                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded but has warnings.");
                 Debug.WriteLine($"0 Error(s)");
             }
             else
             {
-                Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compilation failed."));
+                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation failed.");
             }
 
             foreach (var diagnostic in Diagnostics)
@@ -573,17 +574,7 @@ namespace Orchard.Environment.Extensions.Compilers
         private bool TimestampsChanged(IEnumerable<string> inputs, IEnumerable<string> outputs)
         {
             // Find the output with the earliest write time
-            var minDateUtc = DateTime.MaxValue;
-
-            foreach (var outputPath in outputs)
-            {
-                var lastWriteTimeUtc = File.GetLastWriteTimeUtc(outputPath);
-
-                if (lastWriteTimeUtc < minDateUtc)
-                {
-                    minDateUtc = lastWriteTimeUtc;
-                }
-            }
+            var minDateUtc = outputs.Min(output => File.GetLastWriteTimeUtc(output));
 
             // Find inputs that are newer than the earliest output
             return inputs.Any(p => File.GetLastWriteTimeUtc(p) >= minDateUtc);
