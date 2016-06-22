@@ -121,7 +121,7 @@ namespace Orchard.Environment.Extensions
                 return null;
             }
 
-            var projectContext = GetProject(descriptor);
+            var projectContext = GetProjectContext(descriptor);
 
             if (projectContext == null || IsDynamicContext(projectContext))
             {
@@ -143,7 +143,7 @@ namespace Orchard.Environment.Extensions
                 return null;
             }
 
-            var projectContext = GetProject(descriptor);
+            var projectContext = GetProjectContext(descriptor);
 
             if (projectContext == null || !IsDynamicContext(projectContext))
             {
@@ -160,10 +160,15 @@ namespace Orchard.Environment.Extensions
             return LoadProject(projectContext);
         }
 
-        internal ProjectContext GetProject(ExtensionDescriptor descriptor)
+        internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
         {
             var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            return ProjectContext.CreateContextForEachFramework(extensionPath).FirstOrDefault();
+            return GetProjectContextFromPath(extensionPath);
+        }
+
+        internal ProjectContext GetProjectContextFromPath(string projectPath)
+        {
+            return ProjectContext.CreateContextForEachFramework(projectPath).FirstOrDefault();
         }
 
         internal void CompileProject(ProjectContext context)
@@ -266,11 +271,11 @@ namespace Orchard.Environment.Extensions
                 {
                     if (!IsAmbientAssembly(library.Identity.Name))
                     {
-                        var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+                        var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
 
                         if (projectContext != null)
                         {
-                            var assetFileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                            var assetFileName = GetAssemblyFileName(library.Identity.Name);
                             var outputPath = projectContext.GetOutputPaths(Configuration).CompilationOutputPath;
                             var assetResolvedPath = Path.Combine(outputPath, assetFileName);
 

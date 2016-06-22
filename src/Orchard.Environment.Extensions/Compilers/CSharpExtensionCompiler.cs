@@ -131,7 +131,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             foreach (var dependency in dependencies)
             {
-                sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
+                sourceFiles.AddRange(dependency.GetSourceReferences(intermediateOutputPath));
 
                 var library = dependency.Library as ProjectDescription;
                 var package = dependency.Library as PackageDescription;
@@ -141,7 +141,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 {
                     if (!_compiledLibraries.TryGetValue(library.Identity.Name, out compilationResult))
                     {
-                        var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+                        var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
 
                         if (projectContext != null)
                         {
@@ -154,7 +154,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved library
                 if (library != null && !library.Resolved)
                 {
-                    var fileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                    var fileName = GetAssemblyFileName(library.Identity.Name);
 
                     // Search in the runtime directory
                     var path = Path.Combine(runtimeDirectory, fileName);
@@ -201,11 +201,11 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for a precompiled library
                 else if (library != null && !dependency.CompilationAssemblies.Any())
                 {
-                    var projectContext = ProjectContext.CreateContextForEachFramework(library.Project.ProjectDirectory).FirstOrDefault();
+                    var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
 
                     if (projectContext != null)
                     {
-                        var fileName = library.Identity.Name + FileNameSuffixes.DotNet.DynamicLib;
+                        var fileName = GetAssemblyFileName(library.Identity.Name);
 
                         // Search in the precompiled project output path
                         var path = Path.Combine(projectContext.GetOutputPaths(config).CompilationOutputPath, fileName);
@@ -400,6 +400,16 @@ namespace Orchard.Environment.Extensions.Compilers
             Debug.WriteLine(String.Empty);
 
             return _compiledLibraries[context.ProjectName()] = result.ExitCode == 0;
+        }
+
+        private ProjectContext GetProjectContextFromPath(string projectPath)
+        {
+            return ProjectContext.CreateContextForEachFramework(projectPath).FirstOrDefault();
+        }
+
+        private string GetAssemblyFileName(string assemblyName)
+        {
+            return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
         }
 
         private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName)
