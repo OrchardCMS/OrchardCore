@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.ProjectModel;
 using Orchard.FileSystem;
 using Orchard.FileSystem.AppData;
 using Orchard.Localization;
@@ -323,16 +324,8 @@ namespace Orchard.Environment.Extensions
 
         private bool IsDynamicContext (ProjectContext context)
         {
-            var compileInclude = context.ResolveCompilationOptions(Configuration).CompileInclude;
-
-            if (compileInclude == null)
-            {
-                return context.ProjectFile.Files.SourceFiles.Any();
-            }
-            else
-            {
-                return IncludeFilesResolver.GetIncludeFiles(compileInclude, "/", diagnostics: null).Any();
-            }
+            var compilationOptions = context.ResolveCompilationOptions(Configuration);
+            return context.GetCompilationSources(compilationOptions).Any();
         }
 
         private bool IsPrecompiledContext (ProjectContext context)
@@ -347,7 +340,7 @@ namespace Orchard.Environment.Extensions
 
         private bool IsAssemblyLoaded(string assemblyName)
         {
-            var loaded = false;
+            bool loaded;
             return _loadedAssemblies.TryGetValue(assemblyName, out loaded);
         }
 

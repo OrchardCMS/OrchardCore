@@ -10,10 +10,10 @@ using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
-using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.Extensions.DependencyModel;
 using NuGet.Frameworks;
+using Orchard.Environment.Extensions.DependencyModel;
 using Orchard.Environment.Extensions.ProjectModel;
 
 namespace Orchard.Environment.Extensions.Compilers
@@ -50,8 +50,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Mark ambient libraries as compiled
             if (_ambientLibraries.IsEmpty)
             {
-                var libraries = DependencyContext.Default.CompileLibraries
-                    .Where(x => x.Type.Equals(LibraryType.Project.ToString(), StringComparison.OrdinalIgnoreCase));
+                var libraries = DependencyContext.Default.GetProjectTypeCompileLibraries();
 
                 foreach (var library in libraries)
                 {
@@ -68,21 +67,9 @@ namespace Orchard.Environment.Extensions.Compilers
                 return compilationResult;
             }
 
-            // Get compilation options
+            // Get compilation options and source files
             var compilationOptions = context.ResolveCompilationOptions(config);
-            var compileInclude = context.ResolveCompilationOptions(config).CompileInclude;
-
-            var projectSourceFiles = new List<string>();
-
-            // Get project source files
-            if (compilationOptions.CompileInclude == null)
-            {
-                projectSourceFiles.AddRange(context.ProjectFile.Files.SourceFiles);
-            }
-            else {
-                var includeFiles = IncludeFilesResolver.GetIncludeFiles(compilationOptions.CompileInclude, "/", diagnostics: null);
-                projectSourceFiles.AddRange(includeFiles.Select(f => f.SourcePath));
-            }
+            var projectSourceFiles = context.GetCompilationSources(compilationOptions);
 
             // Check if precompiled
             if (!projectSourceFiles.Any())
