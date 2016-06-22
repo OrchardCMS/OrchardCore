@@ -176,11 +176,11 @@ namespace Orchard.Environment.Extensions
             {
                 if (_logger.IsEnabled(LogLevel.Information) && !diagnostics.Any())
                 {
-                     _logger.LogInformation($"{0} was successfully compiled", context.RootProject.Identity.Name);
+                     _logger.LogInformation($"{0} was successfully compiled", context.ProjectName());
                 }
                 else if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                     _logger.LogWarning($"{0} was compiled but has warnings", context.RootProject.Identity.Name);
+                     _logger.LogWarning($"{0} was compiled but has warnings", context.ProjectName());
 
                      foreach (var diagnostic in diagnostics)
                      {
@@ -192,7 +192,7 @@ namespace Orchard.Environment.Extensions
             {
                 if (_logger.IsEnabled(LogLevel.Error))
                 {
-                     _logger.LogError($"{0} compilation failed", context.RootProject.Identity.Name);
+                     _logger.LogError($"{0} compilation failed", context.ProjectName());
 
                      foreach (var diagnostic in diagnostics)
                      {

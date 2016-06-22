@@ -14,6 +14,7 @@ using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.Extensions.DependencyModel;
 using NuGet.Frameworks;
+using Orchard.Environment.Extensions.ProjectModel;
 
 namespace Orchard.Environment.Extensions.Compilers
 {
@@ -36,7 +37,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
-            var compilationlock = _compilationlocks.GetOrAdd(context.RootProject.Identity.Name, id => new object());
+            var compilationlock = _compilationlocks.GetOrAdd(context.ProjectName(), id => new object());
 
             lock (compilationlock)
             {
@@ -50,7 +51,6 @@ namespace Orchard.Environment.Extensions.Compilers
             if (_ambientLibraries.IsEmpty)
             {
                 var libraries = DependencyContext.Default.CompileLibraries
-                    //.Where(x => x.Type == LibraryType.Project.ToString().ToLowerInvariant());
                     .Where(x => x.Type.Equals(LibraryType.Project.ToString(), StringComparison.OrdinalIgnoreCase));
 
                 foreach (var library in libraries)
@@ -63,7 +63,7 @@ namespace Orchard.Environment.Extensions.Compilers
             bool compilationResult;
 
             // Check if already compiled
-            if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
+            if (_compiledLibraries.TryGetValue(context.ProjectName(), out compilationResult))
             {
                 return compilationResult;
             }
@@ -87,7 +87,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Check if precompiled
             if (!projectSourceFiles.Any())
             {
-                return _compiledLibraries[context.RootProject.Identity.Name] = true;
+                return _compiledLibraries[context.ProjectName()] = true;
             }
 
            // Set up Output Paths
@@ -119,14 +119,14 @@ namespace Orchard.Environment.Extensions.Compilers
             if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
             {
                 // We got an unresolved dependency or missing framework. Don't continue the compilation.
-                return _compiledLibraries[context.RootProject.Identity.Name] = false;
+                return _compiledLibraries[context.ProjectName()] = false;
             }
 
             // Get compilation options
             var outputName = outputPaths.CompilationFiles.Assembly;
 
             // Set default platform if it isn't already set and we're on desktop
-            if (compilationOptions.EmitEntryPoint == true && string.IsNullOrEmpty(compilationOptions.Platform) && context.TargetFramework.IsDesktop())
+            if (compilationOptions.EmitEntryPoint == true && String.IsNullOrEmpty(compilationOptions.Platform) && context.TargetFramework.IsDesktop())
             {
                 // See https://github.com/dotnet/cli/issues/2428 for more details.
                 compilationOptions.Platform = RuntimeInformation.ProcessArchitecture == Architecture.X64 ?
@@ -247,7 +247,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Check again if already compiled, here through the dependency graph
-            if (_compiledLibraries.TryGetValue(context.RootProject.Identity.Name, out compilationResult))
+            if (_compiledLibraries.TryGetValue(context.ProjectName(), out compilationResult))
             {
                 return compilationResult;
             }
@@ -262,7 +262,7 @@ namespace Orchard.Environment.Extensions.Compilers
             // Add dependency context as a resource
             if (compilationOptions.PreserveCompilationContext == true)
             {
-                var allExports = exporter.GetAllExports().Where(x => x.Library.Compatible).ToList();
+                var allExports = exporter.GetAllCompatibleExports().ToList();
                 dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
                     allExports,
                     allExports,
@@ -279,7 +279,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (String.IsNullOrEmpty(intermediateOutputPath))
             {
-                return _compiledLibraries[context.RootProject.Identity.Name] = false;
+                return _compiledLibraries[context.ProjectName()] = false;
             }
 
             var translated = TranslateCommonOptions(compilationOptions, outputName);
@@ -335,8 +335,8 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
                     {
-                        Debug.WriteLine($"{context.RootProject.Identity.Name}: Previously compiled, skipping dynamic compilation.");
-                        return _compiledLibraries[context.RootProject.Identity.Name] = true;
+                        Debug.WriteLine($"{context.ProjectName()}: Previously compiled, skipping dynamic compilation.");
+                        return _compiledLibraries[context.ProjectName()] = true;
                     }
                 }
                 else
@@ -344,12 +344,12 @@ namespace Orchard.Environment.Extensions.Compilers
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
 
-                    Debug.WriteLine($"{context.RootProject.Identity.Name}:  Previously compiled, skipping dynamic compilation.");
-                    return _compiledLibraries[context.RootProject.Identity.Name] = true;
+                    Debug.WriteLine($"{context.ProjectName()}:  Previously compiled, skipping dynamic compilation.");
+                    return _compiledLibraries[context.ProjectName()] = true;
                 }
             }
 
-            Debug.WriteLine(String.Format($"{context.RootProject.Identity.Name}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
+            Debug.WriteLine(String.Format($"{context.ProjectName()}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Write the dependencies file
             if (dependencyContext != null)
@@ -390,18 +390,18 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (result.ExitCode == 0 && Diagnostics.Count <= 0)
             {
-                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded.");
+                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded.");
                 Debug.WriteLine($"0 Warning(s)");
                 Debug.WriteLine($"0 Error(s)");
             }
             else if (result.ExitCode == 0 && Diagnostics.Count > 0)
             {
-                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation succeeded but has warnings.");
+                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded but has warnings.");
                 Debug.WriteLine($"0 Error(s)");
             }
             else
             {
-                Debug.WriteLine($"{context.RootProject.Identity.Name}: Dynamic compilation failed.");
+                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation failed.");
             }
 
             foreach (var diagnostic in Diagnostics)
@@ -412,7 +412,7 @@ namespace Orchard.Environment.Extensions.Compilers
             Debug.WriteLine($"Time elapsed {sw.Elapsed}");
             Debug.WriteLine(String.Empty);
 
-            return _compiledLibraries[context.RootProject.Identity.Name] = result.ExitCode == 0;
+            return _compiledLibraries[context.ProjectName()] = result.ExitCode == 0;
         }
 
         private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName)
