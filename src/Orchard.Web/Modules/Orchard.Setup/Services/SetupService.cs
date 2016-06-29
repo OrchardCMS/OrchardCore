@@ -79,12 +79,12 @@ namespace Orchard.Setup.Services
             return _recipes;
         }
 
-        public Task<string> SetupAsync(SetupContext context)
+        public async Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return SetupInternalAsync(context);
+                return await SetupInternalAsync(context);
             }
             catch
             {
@@ -131,8 +131,6 @@ namespace Orchard.Setup.Services
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    executionId = CreateTenantData(context, shellContext);
-
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
                     await store.InitializeAsync();
 
@@ -157,6 +155,14 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
 
+                    executionId = await CreateTenantDataAsync(scope, context, shellContext);
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                    }
+
                     // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
                     await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
@@ -168,7 +174,7 @@ namespace Orchard.Setup.Services
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix)
                     );
-
+                    
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
@@ -182,8 +188,15 @@ namespace Orchard.Setup.Services
             return executionId;
         }
 
-        private string CreateTenantData(SetupContext context, ShellContext shellContext)
+        private async Task<string> CreateTenantDataAsync(IServiceScope scope, SetupContext context, ShellContext shellContext)
         {
+            var recipeManager = scope.ServiceProvider.GetService<IRecipeManager>();
+
+            var recipe = context.Recipe;
+            var executionId = await recipeManager.ExecuteAsync(recipe);
+
+
+
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return Guid.NewGuid().ToString();
         }

@@ -64,7 +64,9 @@ namespace Orchard.Recipes.Services
             var recipeFiles = _fileSystem.ListFiles(recipeLocation, _fileMatcher);
 
             return await recipeFiles.InvokeAsync(async recipeFile => {
-                return await Task.FromResult(_recipeParser.ParseRecipe(recipeFile));
+                var recipe = _recipeParser.ParseRecipe(recipeFile);
+                recipe.Location = recipeFile.PhysicalPath;
+                return await Task.FromResult(recipe);
             }, Logger);
         }
     }

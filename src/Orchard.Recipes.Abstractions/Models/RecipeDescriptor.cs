@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Orchard.Recipes.Models
 {
@@ -15,6 +14,6 @@ namespace Orchard.Recipes.Models
         public string Category { get; set; }
         public string Tags { get; set; }
 
-        public IEnumerable<RecipeStepDescriptor> Steps { get; set; }
+        public string Location { get; set; }
     }
 }

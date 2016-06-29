@@ -6,7 +6,8 @@
     "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Options": "1.0.0-*",
-    "Newtonsoft.Json": "8.0.3"
+    "Newtonsoft.Json": "8.0.3",
+    "Orchard.Events": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

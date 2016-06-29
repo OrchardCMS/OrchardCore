@@ -1,13 +1,15 @@
-﻿using Orchard.Recipes.Models;
+﻿using Orchard.Events;
+using Orchard.Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Events
 {
-    public interface IRecipeExecuteEventHandler
+    public interface IRecipeExecuteEventHandler : IEventHandler
     {
-        void ExecutionStart(string executionId, RecipeDescriptor recipe);
-        void RecipeStepExecuting(string executionId, RecipeContext context);
-        void RecipeStepExecuted(string executionId, RecipeContext context);
-        void ExecutionComplete(string executionId);
-        void ExecutionFailed(string executionId);
+        Task ExecutionStartAsync(string executionId, RecipeDescriptor recipe);
+        Task RecipeStepExecutingAsync(string executionId, RecipeContext context);
+        Task RecipeStepExecutedAsync(string executionId, RecipeContext context);
+        Task ExecutionCompleteAsync(string executionId);
+        Task ExecutionFailedAsync(string executionId);
     }
 }
