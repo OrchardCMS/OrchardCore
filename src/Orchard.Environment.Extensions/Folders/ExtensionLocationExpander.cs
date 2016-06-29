@@ -1,6 +1,6 @@
 ﻿namespace Orchard.Environment.Extensions.Folders
 {
-    public interface IModuleLocationExpander
+    public interface IExtensionLocationExpander
     {
         string ExtensionType { get; }
         string ManifestName { get; }
@@ -8,9 +8,9 @@
         string[] SearchPaths { get; }
     }
 
-    public class ModuleLocationExpander : IModuleLocationExpander
+    public class ExtensionLocationExpander: IExtensionLocationExpander
     {
-        public ModuleLocationExpander(string extensionType, string[] searchPaths, string manifestName, bool manifestOptional = false)
+        public ExtensionLocationExpander(string extensionType, string[] searchPaths, string manifestName, bool manifestOptional = false)
         {
             ExtensionType = extensionType;
             SearchPaths = searchPaths;

@@ -41,7 +41,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         {
             var harvester = new ExtensionHarvester(new StubHostingFileSystem(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
-            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
                 new FakeOptions(options),
                 harvester);
@@ -60,7 +60,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         {
             var harvester = new ExtensionHarvester(new StubHostingFileSystem(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
-            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
                 new FakeOptions(options),
                 harvester);
@@ -75,7 +75,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         {
             var harvester = new ExtensionHarvester(new StubHostingFileSystem(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
-            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
                 new FakeOptions(options),
                 harvester);
@@ -94,7 +94,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         {
             var harvester = new ExtensionHarvester(new StubHostingFileSystem(), new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
-            options.ModuleLocationExpanders.Add(ModuleFolder(_tempFolderName));
+            options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
             var folders = new ExtensionLocator(
                 new FakeOptions(options),
                 harvester);
@@ -107,9 +107,9 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
             Assert.Contains("SampleSix", paths); // Sample6 - Name, no Path
             Assert.Contains("Sample7", paths); // Sample7 - Id, no Name or Path
         }
-        public ModuleLocationExpander ModuleFolder(string path)
+        public ExtensionLocationExpander ModuleFolder(string path)
         {
-            return new ModuleLocationExpander(
+            return new ExtensionLocationExpander(
                 DefaultExtensionTypes.Module,
                 new[] { path },
                 "Module.txt"

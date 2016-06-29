@@ -24,7 +24,7 @@ namespace Orchard.Environment.Extensions.Loaders
             IExtensionLibraryService extensionLibraryService,
             ILogger<PrecompiledExtensionLoader> logger)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
+            ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
             _extensionLibraryService = extensionLibraryService;

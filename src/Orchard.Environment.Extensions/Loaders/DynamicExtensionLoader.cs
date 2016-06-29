@@ -22,7 +22,7 @@ namespace Orchard.Environment.Extensions.Loaders
             IHostEnvironment hostEnvironment,
             IOrchardFileSystem fileSystem)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
+            ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
         }

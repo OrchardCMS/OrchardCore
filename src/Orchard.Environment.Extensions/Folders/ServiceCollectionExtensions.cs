@@ -11,13 +11,13 @@ namespace Orchard.Environment.Extensions.Folders
         {
             return services.Configure<ExtensionHarvestingOptions>(configureOptions: options =>
             {
-                var expander = new ModuleLocationExpander(
+                var expander = new ExtensionLocationExpander(
                     DefaultExtensionTypes.Module,
                     new[] { virtualPath },
                     "Module.txt"
                     );
 
-                options.ModuleLocationExpanders.Add(expander);
+                options.ExtensionLocationExpanders.Add(expander);
             });
         }
 
@@ -27,13 +27,13 @@ namespace Orchard.Environment.Extensions.Folders
         {
             return services.Configure<ExtensionHarvestingOptions>(configureOptions: options =>
              {
-                 var expander = new ModuleLocationExpander(
+                 var expander = new ExtensionLocationExpander(
                      DefaultExtensionTypes.Theme,
                      new[] { virtualPath },
                      "Theme.txt"
                      );
 
-                 options.ModuleLocationExpanders.Add(expander);
+                 options.ExtensionLocationExpanders.Add(expander);
              });
         }
     }
