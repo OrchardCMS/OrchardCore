@@ -11,10 +11,9 @@ using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.ProjectModel.Graph;
+using Microsoft.DotNet.ProjectModel.Resources;
 using Microsoft.Extensions.DependencyModel;
 using NuGet.Frameworks;
-using Orchard.Environment.Extensions.DependencyModel;
-using Orchard.Environment.Extensions.ProjectModel;
 
 namespace Orchard.Environment.Extensions.Compilers
 {
@@ -50,7 +49,9 @@ namespace Orchard.Environment.Extensions.Compilers
             // Mark ambient libraries as compiled
             if (_ambientLibraries.IsEmpty)
             {
-                var libraries = DependencyContext.Default.GetProjectTypeCompileLibraries();
+                var libraries = DependencyContext.Default.CompileLibraries
+                    .Where(x => x.Type.Equals(LibraryType.Project.ToString(),
+                    StringComparison.OrdinalIgnoreCase));
 
                 foreach (var library in libraries)
                 {
@@ -69,7 +70,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Get compilation options and source files
             var compilationOptions = context.ResolveCompilationOptions(config);
-            var projectSourceFiles = context.GetCompilationSources(compilationOptions);
+            var projectSourceFiles = CompilerUtility.GetCompilationSources(context, compilationOptions);
 
             // Check if precompiled
             if (!projectSourceFiles.Any())
@@ -91,24 +92,6 @@ namespace Orchard.Environment.Extensions.Compilers
             // Gather exports for the project
             var dependencies = exporter.GetDependencies().ToList();
 
-            var diagnostics = new List<DiagnosticMessage>();
-
-            // Collect dependency diagnostics
-            foreach (var diag in context.LibraryManager.GetAllDiagnostics())
-            {
-                // Some library paths may not be resolved by the project model (e.g in production)
-                // So, here we don't grab any diagnostics and we will search in the probing folder
-
-                //Diagnostics.Add(diag.FormattedMessage);
-                //diagnostics.Add(diag);
-            }
-
-            if (diagnostics.Any(d => d.Severity == DiagnosticMessageSeverity.Error))
-            {
-                // We got an unresolved dependency or missing framework. Don't continue the compilation.
-                return _compiledLibraries[context.ProjectName()] = false;
-            }
-
             // Get compilation options
             var outputName = outputPaths.CompilationFiles.Assembly;
 
@@ -122,16 +105,22 @@ namespace Orchard.Environment.Extensions.Compilers
 
             var references = new List<string>();
             var sourceFiles = new List<string>();
-
-            // Add metadata options
-            var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
+            var resources = new List<string>();
 
             // Get the runtime directory
             var runtimeDirectory = Path.GetDirectoryName(EntryAssembly.Location);
 
             foreach (var dependency in dependencies)
             {
-                sourceFiles.AddRange(dependency.GetSourceReferences(intermediateOutputPath));
+                sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
+
+                foreach (var resourceFile in dependency.EmbeddedResources)
+                {
+                    var transformedResource = resourceFile.GetTransformedFile(intermediateOutputPath);
+                    var resourceName = ResourceManifestName.CreateManifestName(
+                        Path.GetFileName(resourceFile.ResolvedPath), compilationOptions.OutputName);
+                    resources.Add("\"{transformedResource}\",{resourceName}");
+                }
 
                 var library = dependency.Library as ProjectDescription;
                 var package = dependency.Library as PackageDescription;
@@ -241,42 +230,43 @@ namespace Orchard.Environment.Extensions.Compilers
 
             var sw = Stopwatch.StartNew();
 
-            var resources = new List<string>();
-
             string depsJsonFile = null;
             DependencyContext dependencyContext = null;
 
             // Add dependency context as a resource
             if (compilationOptions.PreserveCompilationContext == true)
             {
-                var allExports = exporter.GetAllCompatibleExports().ToList();
+                var allExports = exporter.GetAllExports().ToList();
+                var exportsLookup = allExports.ToDictionary(e => e.Library.Identity.Name);
+                var buildExclusionList = context.GetTypeBuildExclusionList(exportsLookup);
+                var filteredExports = allExports
+                    .Where(e => e.Library.Identity.Type.Equals(LibraryType.ReferenceAssembly) ||
+                        !buildExclusionList.Contains(e.Library.Identity.Name));
+
                 dependencyContext = new DependencyContextBuilder().Build(compilationOptions,
-                    allExports,
-                    allExports,
+                    filteredExports,
+                    filteredExports,
                     false, // For now, just assume non-portable mode in the legacy deps file (this is going away soon anyway)
                     context.TargetFramework,
-                    context.RuntimeIdentifier ?? string.Empty);
 
-                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json");
+                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json"));
                 resources.Add($"\"{depsJsonFile}\",{compilationOptions.OutputName}.deps.json");
             }
 
             // Add project source files
             sourceFiles.AddRange(projectSourceFiles);
 
-            if (String.IsNullOrEmpty(intermediateOutputPath))
-            {
-                return _compiledLibraries[context.ProjectName()] = false;
-            }
+            // Add non culture resources
+            var resgenFiles = CompilerUtility.GetNonCultureResources(context.ProjectFile, intermediateOutputPath, compilationOptions);
+            AddNonCultureResources(resources, resgenFiles);
 
             var translated = TranslateCommonOptions(compilationOptions, outputName);
 
             var allArgs = new List<string>(translated);
             allArgs.AddRange(GetDefaultOptions());
 
-            // Generate assembly info
+            // Add assembly info
             var assemblyInfo = Path.Combine(intermediateOutputPath, $"dotnet-compile.assemblyinfo.cs");
-
             allArgs.Add($"\"{assemblyInfo}\"");
 
             if (!String.IsNullOrEmpty(outputName))
@@ -306,7 +296,15 @@ namespace Orchard.Environment.Extensions.Compilers
 
             inputs.AddRange(sourceFiles);
             inputs.AddRange(references);
+
+            inputs.AddRange(resgenFiles.Select(x => x.InputFile));
+
+            var cultureResgenFiles = CompilerUtility.GetCultureResources(context.ProjectFile, outputPath, compilationOptions);
+            inputs.AddRange(cultureResgenFiles.SelectMany(x => x.InputFileToMetadata.Keys));
+
             outputs.AddRange(outputPaths.CompilationFiles.All());
+            outputs.AddRange(resgenFiles.Where(x => x.OutputFile != null).Select(x => x.OutputFile));
+            //outputs.AddRange(cultureResgenFiles.Where(x => x.OutputFile != null).Select(x => x.OutputFile));
 
             // Locate RSP file
             var rsp = Path.Combine(intermediateOutputPath, $"dotnet-compile-csc.rsp");
@@ -336,6 +334,11 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
+            if (!CompilerUtility.GenerateNonCultureResources(context.ProjectFile, resgenFiles))
+            {
+                return _compiledLibraries[context.ProjectName()] = false;
+            }
+
             Debug.WriteLine(String.Format($"{context.ProjectName()}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Write the dependencies file
@@ -349,6 +352,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Write assembly info and RSP files
+            var assemblyInfoOptions = AssemblyInfoOptions.CreateForProject(context);
             File.WriteAllText(assemblyInfo, AssemblyInfoFileGenerator.GenerateCSharp(assemblyInfoOptions, sourceFiles));
             File.WriteAllLines(rsp, allArgs);
 
@@ -375,7 +379,9 @@ namespace Orchard.Environment.Extensions.Compilers
 
             Debug.WriteLine(String.Empty);
 
-            if (result.ExitCode == 0 && Diagnostics.Count <= 0)
+            compilationResult = result.ExitCode == 0;
+
+            if (compilationResult && Diagnostics.Count <= 0)
             {
                 Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded.");
                 Debug.WriteLine($"0 Warning(s)");
@@ -399,7 +405,12 @@ namespace Orchard.Environment.Extensions.Compilers
             Debug.WriteLine($"Time elapsed {sw.Elapsed}");
             Debug.WriteLine(String.Empty);
 
-            return _compiledLibraries[context.ProjectName()] = result.ExitCode == 0;
+            if (compilationResult)
+            {
+                compilationResult &= CompilerUtility.GenerateCultureResourceAssemblies(context.ProjectFile, cultureResgenFiles, references);
+            }
+
+            return _compiledLibraries[context.ProjectName()] = compilationResult;
         }
 
         private ProjectContext GetProjectContextFromPath(string projectPath)
@@ -435,6 +446,21 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             return null;
+        }
+
+        private static void AddNonCultureResources(List<string> resources, List<CompilerUtility.NonCultureResgenIO> resgenFiles)
+        {
+            foreach (var resgenFile in resgenFiles)
+            {
+                if (ResourceUtility.IsResxFile(resgenFile.InputFile))
+                {
+                    resources.Add($"\"{resgenFile.OutputFile}\",{Path.GetFileName(resgenFile.MetadataName)}");
+                }
+                else
+                {
+                    resources.Add($"\"{resgenFile.InputFile}\",{Path.GetFileName(resgenFile.MetadataName)}");
+                }
+            }
         }
 
         private static IEnumerable<string> GetDefaultOptions()

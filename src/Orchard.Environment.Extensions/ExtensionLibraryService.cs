@@ -11,13 +11,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
-using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Extensions.ProjectModel;
 using Orchard.FileSystem;
 using Orchard.FileSystem.AppData;
 using Orchard.Localization;
@@ -82,8 +80,12 @@ namespace Orchard.Environment.Extensions
 
         private HashSet<string> GetApplicationAssemblyNames()
         {
-            return new HashSet<string>(DependencyContext.Default.GetDefaultAssemblyNames()
+            var assemblyNames = new HashSet<string>(DependencyContext.Default.GetDefaultAssemblyNames()
                 .Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+
+            assemblyNames.UnionWith(DependencyContext.Default.RuntimeLibraries.Select(x => x.Name));
+
+            return assemblyNames;
         }
 
         private List<MetadataReference> GetMetadataReferences()
@@ -330,7 +332,7 @@ namespace Orchard.Environment.Extensions
         private bool IsDynamicContext (ProjectContext context)
         {
             var compilationOptions = context.ResolveCompilationOptions(Configuration);
-            return context.GetCompilationSources(compilationOptions).Any();
+            return CompilerUtility.GetCompilationSources(context, compilationOptions).Any();
         }
 
         private bool IsPrecompiledContext (ProjectContext context)
