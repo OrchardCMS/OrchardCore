@@ -31,8 +31,7 @@ namespace Orchard.Hosting.Routing
                 var feature = _typeFeatureProvider.GetFeatureForDependency(controller.ControllerType.AsType());
                 if (feature != null)
                 {
-                    var areaAttribute = new AreaAttribute(feature.Descriptor.Id);
-                    controller.RouteValues.Add(areaAttribute.RouteKey, areaAttribute.RouteValue);
+                    controller.RouteValues.Add("area", feature.Descriptor.Id);
                 }
             }
         }
