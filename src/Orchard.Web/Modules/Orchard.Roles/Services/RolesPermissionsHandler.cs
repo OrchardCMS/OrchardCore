@@ -24,12 +24,7 @@ namespace Orchard.Roles
             _roleManager = roleManager;
         }
 
-        protected override void Handle(AuthorizationContext context, PermissionRequirement requirement)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override async Task HandleAsync(AuthorizationContext context, PermissionRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             if (context.HasSucceeded)
             {

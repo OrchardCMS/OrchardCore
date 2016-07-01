@@ -20,7 +20,7 @@ namespace Orchard.Security.AuthorizationHandlers
             _siteService = siteService;
         }
 
-        public async Task HandleAsync(AuthorizationContext context)
+        public async Task HandleAsync(AuthorizationHandlerContext context)
         {
             if (context?.User?.Identity?.Name == null)
             {

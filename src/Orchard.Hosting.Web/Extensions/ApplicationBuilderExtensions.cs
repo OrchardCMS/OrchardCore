@@ -20,7 +20,7 @@ namespace Orchard.Hosting
 
             // Add diagnostices pages
             // TODO: make this modules from configurations
-            builder.UseRuntimeInfoPage();
+            // builder.UseRuntimeInfoPage(); // removed!
             builder.UseDeveloperExceptionPage();
 
             // Add static files to the request pipeline.

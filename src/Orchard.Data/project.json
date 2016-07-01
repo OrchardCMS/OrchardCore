@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Newtonsoft.Json": "8.0.3",
+    "Newtonsoft.Json": "9.0.1",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
@@ -17,13 +17,13 @@
     "warningsAsErrors": true
   },
   "frameworks": {
-    "netstandard1.5": {
+    "netstandard1.6": {
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.5.0-*"
+        "NETStandard.Library": "1.6.0-*"
       }
     }
   },
