@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.TagHelpers;
@@ -40,16 +41,8 @@ namespace Orchard.Hosting.Mvc
                 options.ViewLocationExpanders.Add(expander);
 
                 var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
-
-                var previous = options.CompilationCallback;
-                options.CompilationCallback = (context) =>
-                {
-                    previous?.Invoke(context);
-                    context.Compilation = context.Compilation.AddReferences(extensionLibraryService.MetadataReferences());
-                };
+                ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
-
-            services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
 
             return services;
         }
