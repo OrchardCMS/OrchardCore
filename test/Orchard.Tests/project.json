@@ -15,7 +15,7 @@
     "Orchard.Hosting": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
-    "xunit": "2.1.0"
+    "xunit": "2.2.0-*"
   },
   "testRunner": "xunit",
   "frameworks": {
@@ -29,12 +29,12 @@
           "version": "1.0.0-rc2-3002702",
           "type": "platform"
         },
-        "dotnet-test-xunit": "1.0.0-rc2-*"
+        "dotnet-test-xunit": "2.2.0-*"
       }
     }
   },
   "packOptions": {
     "type": "git",
-    "url": "https://github.com/OrchardCMS/Brochard"
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }
