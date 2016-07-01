@@ -10,7 +10,7 @@
     },
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
-    "System.Linq": "4.1.0-rc2-24027"
+    "System.Linq": "4.1.0-*"
   },
   "runtimeOptions": {
     "gcServer": true,
@@ -21,17 +21,16 @@
     "debugType": "portable",
     "preserveCompilationContext": true,
     "copyToOutput": {
-      "include": [
-        "Views",
-        "web.config"
-      ]
+      "include": [ "Tools" ],
+      "mappings": {
+        "csc.dll": "Tools/csc.dll"
+      }
     },
     "compile": {
       "exclude": [
         "wwwroot",
         "node_modules",
         "App_Data",
-        "Core",
         "Modules",
         "Themes"
       ]
@@ -46,13 +45,7 @@
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-*",
-      "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
-      ]
-    }
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-*"
   },
   "packExclude": [
     "node_modules",
@@ -68,5 +61,27 @@
   "scripts": {
     "prepublish": [ "gulp publish" ],
     "postrestore": [ "gulp publish" ]
+  },
+  "publishOptions": {
+    "include": [
+      "app_data",
+      "modules",
+      "themes",
+      "views",
+      "_ViewStart.cshtml",
+      "web.config"
+    ],
+    "exclude": [
+      "**/obj"
+    ],
+    "includeFiles": [ ],
+    "excludeFiles": [ ],
+    "builtIns": [ ],
+    "mappings": {
+      "csc.dll": "Tools/csc.dll"
+    }
+  },
+  "commands": {
+    "web": ""
   }
 }

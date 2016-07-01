@@ -26,11 +26,11 @@ namespace Orchard.Hosting.Mvc.ModelBinding
 
                 if (valueProviderResult.Values == "✓")
                 {
-                    bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName, true);
+                    bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName);
                 }
                 else if (valueProviderResult.Values == "✗")
                 {
-                    bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName, false);
+                    bindingContext.Result = ModelBindingResult.Failed();
                 }
             }
 

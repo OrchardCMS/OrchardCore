@@ -75,7 +75,7 @@ namespace Orchard.Hosting.Web.Routing
 
             var routeBuilder = new RouteBuilder(appBuilder)
             {
-                DefaultHandler = new MvcRouteHandler()
+                DefaultHandler = serviceProvider.GetRequiredService<MvcRouteHandler>()
             };
 
             var prefixedRouteBuilder = new PrefixedRouteBuilder(routePrefix, routeBuilder, inlineConstraintResolver);

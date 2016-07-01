@@ -12,10 +12,22 @@ namespace Orchard.Environment.Extensions
     public interface IExtensionLibraryService
     {
         /// <summary>
+        /// Loads an ambient extension.
+        /// Returns an <see cref="Assembly"/> instance.
+        /// </summary>
+        Assembly LoadAmbientExtension(ExtensionDescriptor descriptor);
+
+        /// <summary>
         /// Loads an external precompiled extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadExternalAssembly(ExtensionDescriptor descriptor);
+        Assembly LoadPrecompiledExtension(ExtensionDescriptor descriptor);
+
+        /// <summary>
+        /// Loads an external dynamic extension.
+        /// Returns an <see cref="Assembly"/> instance.
+        /// </summary>
+        Assembly LoadDynamicExtension(ExtensionDescriptor descriptor);
 
         /// <summary>
         /// Lists references of all the available extensions.

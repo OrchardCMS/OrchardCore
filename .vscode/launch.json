@@ -6,17 +6,18 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
 			"stopAtEntry": false
 		},
 		{
-			"name": ".NET Core Launch (web)",
+			"name": ".NET Core Launch (web debug)",
 			"type": "coreclr",
 			"request": "launch",
+			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Build Debug",
-			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netstandardapp1.5/Orchard.Web.dll",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/Orchard.Web",
 			"stopAtEntry": false,
@@ -36,10 +37,49 @@
 			}
 		},
 		{
+			"name": ".NET Core Launch (web release)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "Web App: Dotnet Build Release/admin",
+			"program": "${workspaceRoot}/src/Orchard.Web/bin/Release/netcoreapp1.0/Orchard.Web.dll",
+			"args": [],
+			"cwd": "${workspaceRoot}/src/Orchard.Web",
+			"stopAtEntry": false,
+			"launchBrowser": {
+				"enabled": true,
+				"args": "${auto-detect-url}",
+				"windows": {
+					"command": "cmd.exe",
+					"args": "/C start http://localhost:5000"
+				}
+			}
+		},
+		{
 			"name": ".NET Core Attach",
 			"type": "coreclr",
 			"request": "attach",
 			"processId": 0
+		},
+		{
+			"name": ".NET Core Launch (web publish)",
+			"type": "coreclr",
+			"request": "launch",
+			"internalConsoleOptions": "openOnSessionStart",
+			"preLaunchTask": "Web App: Dotnet Publish",
+			//"program": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/publish/Orchard.Web.dll",
+			"program": "${workspaceRoot}/../publish/Orchard.Web.dll",
+			"args": [],
+			//"cwd": "${workspaceRoot}/src/Orchard.Web/bin/Debug/netcoreapp1.0/publish",
+			"cwd": "${workspaceRoot}/../publish",
+			"stopAtEntry": false,
+			"launchBrowser": {
+				"enabled": true,
+				"args": "${auto-detect-url}",
+				"windows": {
+					"command": "cmd.exe",
+					"args": "/C start http://localhost:5000/admin"
+				}
+			}
 		}
 	]
 }

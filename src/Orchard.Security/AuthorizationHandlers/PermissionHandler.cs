@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Orchard.DependencyInjection;
 using Orchard.Security.Permissions;
 
@@ -10,17 +12,18 @@ namespace Orchard.Security.AuthorizationHandlers
     [ScopedComponent(typeof(IAuthorizationHandler))]
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {
-        protected override void Handle(AuthorizationContext context, PermissionRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             if (!(bool)context?.User?.Identity?.IsAuthenticated)
             {
-                return;
+                return Task.CompletedTask;
             }
             else if (context.User.HasClaim(Permission.ClaimType, requirement.Permission.Name))
             {
                 context.Succeed(requirement);
-                return;
             }
+
+            return Task.CompletedTask;
         }
     }
 }

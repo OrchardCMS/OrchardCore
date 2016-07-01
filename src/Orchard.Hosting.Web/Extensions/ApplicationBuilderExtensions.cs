@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +20,7 @@ namespace Orchard.Hosting
 
             // Add diagnostices pages
             // TODO: make this modules from configurations
-            builder.UseRuntimeInfoPage();
+            // builder.UseRuntimeInfoPage(); // removed!
             builder.UseDeveloperExceptionPage();
 
             // Add static files to the request pipeline.
@@ -34,7 +36,10 @@ namespace Orchard.Hosting
             // Load controllers
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
-            foreach (var feature in extensionManager.AvailableFeatures())
+
+            var sw = Stopwatch.StartNew();
+
+            Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
             {
                 try
                 {
@@ -45,7 +50,10 @@ namespace Orchard.Hosting
                 {
                     // TODO: An extension couldn't be loaded, log
                 }
-            }
+            });
+
+            Debug.WriteLine($"Overall time to dynamically compile and load extensions: {sw.Elapsed}");
+
 
             return builder;
         }

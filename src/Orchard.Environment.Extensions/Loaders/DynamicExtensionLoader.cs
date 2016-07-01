@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Extensions.Folders;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -16,20 +14,26 @@ namespace Orchard.Environment.Extensions.Loaders
 
         private readonly IHostEnvironment _hostEnvironment;
         private readonly IOrchardFileSystem _fileSystem;
+        private readonly IExtensionLibraryService _extensionLibraryService;
+        private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
-            IOrchardFileSystem fileSystem)
+            IOrchardFileSystem fileSystem,
+            IExtensionLibraryService extensionLibraryService,
+            ILogger<DynamicExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
+            _extensionLibraryService = extensionLibraryService;
+            _logger = logger;
         }
 
         public string Name => GetType().Name;
 
-        public int Order => 100;
+        public int Order => 50;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
         {
@@ -46,32 +50,37 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(ExtensionDescriptor descriptor)
         {
-            //var probingFolder = _fileSystem.GetDirectoryInfo("bin");
-            //if (!probingFolder.Exists)
-            //{
-            //    probingFolder.Create();
-            //}
+            if (!ExtensionsSearchPaths.Contains(descriptor.Location))
+            {
+                return null;
+            }
 
-            //var location = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
+            try
+            {
+                var assembly = _extensionLibraryService.LoadDynamicExtension(descriptor);
+            
+                if (assembly == null)
+                {
+                    return null;
+                }
 
-            //Process.Start("dotnet", $"build \"{location}\" --output \"{probingFolder}\" --framework netstandard1.5").WaitForExit();
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Loaded referenced dynamic extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                }
 
-            //var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.Combine(probingFolder.FullName, descriptor.Id) + ".dll");
-
-            //if (assembly == null)
-            //{
-            //    return null;
-            //}
-
-            //return new ExtensionEntry
-            //{
-            //    Descriptor = descriptor,
-            //    Assembly = assembly,
-            //    ExportedTypes = assembly.ExportedTypes
-            //};
-
-            return null;
-        }
+                return new ExtensionEntry
+                {
+                    Descriptor = descriptor,
+                    Assembly = assembly,
+                    ExportedTypes = assembly.ExportedTypes
+                };
+            }
+            catch
+            {
+                return null;
+            }
+       }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {

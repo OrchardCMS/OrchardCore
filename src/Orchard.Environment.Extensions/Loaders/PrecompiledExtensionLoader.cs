@@ -55,23 +55,32 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
 
-            var assembly = _extensionLibraryService.LoadExternalAssembly(descriptor);
+            try
+            {
+                var assembly = _extensionLibraryService.LoadPrecompiledExtension(descriptor);
             
-            if (assembly == null)
-                return null;
+                if (assembly == null)
+                {
+                    return null;
+                }
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Loaded referenced precompiled extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                }
+
+                return new ExtensionEntry
+                {
+                    Descriptor = descriptor,
+                    Assembly = assembly,
+                    ExportedTypes = assembly.ExportedTypes
+                };
             }
-
-            return new ExtensionEntry
+            catch
             {
-                Descriptor = descriptor,
-                Assembly = assembly,
-                ExportedTypes = assembly.ExportedTypes
-            };
-        }
+                return null;
+            }
+       }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {
