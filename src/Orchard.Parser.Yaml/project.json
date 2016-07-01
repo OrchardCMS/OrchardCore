@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.Extensions.Configuration": "1.0.0-*",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0-*",
-    "YamlDotNet": "3.8.0"
+    "YamlDotNet": "3.9.0"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
