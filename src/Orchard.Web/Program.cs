@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Orchard.Hosting;
 using Orchard.Web;
+using System.Threading;
 
 namespace Orchard.Console
 {
@@ -21,10 +22,15 @@ namespace Orchard.Console
 
             using (host)
             {
-                host.Run();
-
-                var orchardHost = new OrchardHost(host.Services, System.Console.In, System.Console.Out, args);
-                orchardHost.Run();
+                using (var cts = new CancellationTokenSource())
+                {
+                    host.Run((services) =>
+                    {
+                        var orchardHost = new OrchardHost(services, System.Console.In, System.Console.Out, args);
+                        orchardHost.Run();
+                        cts.Cancel();
+                    }, cts.Token, "Application started. Press Ctrl+C to shut down.");
+                }
             }
         }
     }

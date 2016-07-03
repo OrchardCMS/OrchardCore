@@ -92,7 +92,7 @@ namespace Orchard.Hosting
             while (true)
             {
                 var command = ReadCommand(context);
-                switch (command.ToLowerInvariant())
+                switch (command?.ToLowerInvariant())
                 {
                     case "quit":
                     case "q":
