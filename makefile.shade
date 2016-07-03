@@ -13,7 +13,7 @@ var baseDir='${Directory.GetCurrentDirectory()}'
 var targetDir='${Path.Combine(baseDir, "artifacts")}'
 var buildDir='${Path.Combine(targetDir, "build")}'
 
-#build-modules target='build-test'
+#build-modules target='build-themes'
   @{
       var orchardModulesDir = Path.Combine(baseDir, "src/Orchard.Web/Modules");
       
@@ -33,7 +33,7 @@ var buildDir='${Path.Combine(targetDir, "build")}'
       } 
   }
   
-#build-themes target='build-modules'
+#build-themes target='test-compile'
   @{
       var orchardThemesDir = Path.Combine(baseDir, "src/Orchard.Web/Themes");
       
