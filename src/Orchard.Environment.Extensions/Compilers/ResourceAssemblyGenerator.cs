@@ -68,7 +68,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     Debug.WriteLine(diagnostic.ToString());
                 }
 
-                throw new InvalidOperationException("Error occured while emiting assembly");
+                Debug.WriteLine("Error occured while emiting resource assembly");
             }
 
             return result.Success;

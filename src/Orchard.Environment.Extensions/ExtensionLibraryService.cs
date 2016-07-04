@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
+using Microsoft.DotNet.Tools.Common;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using NuGet.Frameworks;
@@ -221,11 +222,12 @@ namespace Orchard.Environment.Extensions
             var assemblyFolderPath = outputPaths.CompilationOutputPath;
             var libraryExporter = context.CreateExporter(Configuration);
 
-            foreach (var dependency in libraryExporter.GetDependencies())
+            foreach (var dependency in libraryExporter.GetAllExports())
             {
                 var library = dependency.Library as ProjectDescription;
                 var package = dependency.Library as PackageDescription;
 
+                // Check for an unresolved library
                 if (library != null && !library.Resolved)
                 {
                     if (!IsAmbientAssembly(library.Identity.Name))
@@ -242,9 +244,27 @@ namespace Orchard.Environment.Extensions
 
                             PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
                             PopulateProbingFolder(assetResolvedPath);
+
+                            var resourceFileName = library.Identity.Name + ".resources.dll";
+                            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
+
+                            var resourceAssemblies = Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories)
+                                .Union(Directory.GetFiles(_probingFolderPath, resourceFileName, SearchOption.AllDirectories));
+
+                            foreach (var asset in resourceAssemblies)
+                            {
+                                var locale = Directory.GetParent(asset).Name
+                                    .Replace(assemblyFolderName, String.Empty)
+                                    .Replace(ProbingDirectoryName, String.Empty);
+
+                                PopulateBinaryFolder(assemblyFolderPath, asset, locale);
+                                PopulateProbingFolder(asset, locale);
+                                PopulateRuntimeFolder(asset, locale);
+                            }
                         }
                     }
                 }
+                // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
                     foreach (var asset in package.RuntimeAssemblies)
@@ -268,7 +288,28 @@ namespace Orchard.Environment.Extensions
                             }
                         }
                     }
+
+                    if (!IsAmbientAssembly(package.Identity.Name))
+                    {
+                        foreach (var asset in package.ResourceAssemblies)
+                        {
+                            if (asset.Properties.ContainsKey("locale"))
+                            {
+                                var locale = asset.Properties["locale"];
+                                var assetFileName = Path.GetFileName(asset.Path);
+                                var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, locale);
+
+                                if (!String.IsNullOrEmpty(assetResolvedPath))
+                                {
+                                    PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
+                                    PopulateProbingFolder(assetResolvedPath, locale);
+                                    PopulateRuntimeFolder(assetResolvedPath, locale);
+                                }
+                            }
+                        }
+                    }
                 }
+                // Check for a precompiled library
                 else if (library != null && !dependency.RuntimeAssemblyGroups.Any())
                 {
                     if (!IsAmbientAssembly(library.Identity.Name))
@@ -293,6 +334,27 @@ namespace Orchard.Environment.Extensions
 
                             PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
                             PopulateProbingFolder(assetResolvedPath);
+
+                            var compilationOptions = projectContext.ResolveCompilationOptions(Configuration);
+                            var resourceAssemblies = CompilerUtility.GetCultureResources(projectContext.ProjectFile, outputPath, compilationOptions);
+
+                            foreach (var asset in resourceAssemblies)
+                            {
+                                assetFileName = Path.GetFileName(asset.OutputFile);
+                                assetResolvedPath = asset.OutputFile;
+
+                                if (!File.Exists(assetResolvedPath))
+                                {
+                                    assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, asset.Culture);
+                                }
+
+                                if (!String.IsNullOrEmpty(assetResolvedPath))
+                                {
+                                    PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Culture);
+                                    PopulateProbingFolder(assetResolvedPath, asset.Culture);
+                                    PopulateRuntimeFolder(assetResolvedPath, asset.Culture);
+                                }
+                            }
                         }
                     }
                 }
@@ -309,6 +371,21 @@ namespace Orchard.Environment.Extensions
 
                             PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath);
                             PopulateProbingFolder(asset.ResolvedPath);
+                        }
+                    }
+
+                    if (!IsAmbientAssembly(dependency.Library.Identity.Name))
+                    {
+                        foreach (var asset in dependency.ResourceAssemblies)
+                        {
+                            var assetResolvedPath = asset.Asset.ResolvedPath;
+
+                            if (!String.IsNullOrEmpty(assetResolvedPath) && File.Exists(assetResolvedPath))
+                            {
+                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Locale);
+                                PopulateProbingFolder(assetResolvedPath, asset.Locale);
+                                PopulateRuntimeFolder(assetResolvedPath, asset.Locale);
+                            }
                         }
                     }
                 }
@@ -371,10 +448,13 @@ namespace Orchard.Environment.Extensions
                 NuGetFramework.Parse(framework).GetShortFolderName());
         }
 
-        private string ResolveAssemblyPath(string binaryFolderPath, string assemblyName)
+        private string ResolveAssemblyPath(string binaryFolderPath, string assemblyName, string locale = null)
         {
+            binaryFolderPath = !String.IsNullOrEmpty(locale) ? Path.Combine(binaryFolderPath, locale) : binaryFolderPath;
+            var probingFolderPath = !String.IsNullOrEmpty(locale) ? Path.Combine(_probingFolderPath, locale) : _probingFolderPath;
+
             var binaryPath = Path.Combine(binaryFolderPath, assemblyName);
-            var probingPath = Path.Combine(_probingFolderPath, assemblyName);
+            var probingPath = Path.Combine(probingFolderPath, assemblyName);
 
             if (File.Exists(binaryPath))
             {
@@ -396,10 +476,11 @@ namespace Orchard.Environment.Extensions
             return null;
         }
 
-        private void PopulateBinaryFolder(string binaryFolderPath, string assetPath)
+        private void PopulateBinaryFolder(string binaryFolderPath, string assetPath, string locale = null)
         {
-            if (!String.Equals(Path.GetDirectoryName(assetPath), binaryFolderPath, StringComparison.OrdinalIgnoreCase))
+            if (!PathUtility.IsChildOfDirectory(binaryFolderPath, assetPath))
             {
+                binaryFolderPath = !String.IsNullOrEmpty(locale) ? Path.Combine(binaryFolderPath, locale) : binaryFolderPath;
                 var binaryPath = Path.Combine(binaryFolderPath, Path.GetFileName(assetPath));
 
                 if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
@@ -413,9 +494,15 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        private void PopulateProbingFolder(string assetPath)
+        private void PopulateProbingFolder(string assetPath, string locale = null)
         {
-            PopulateBinaryFolder(_probingFolderPath, assetPath);
+            PopulateBinaryFolder(_probingFolderPath, assetPath, locale);
+        }
+
+        private void PopulateRuntimeFolder(string assetPath, string locale = null)
+        {
+            var runtimeDirectory = Path.GetDirectoryName(CSharpExtensionCompiler.EntryAssembly.Location);
+            PopulateBinaryFolder(runtimeDirectory, assetPath, locale);
         }
     }
 }
