@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -11,7 +10,7 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     internal class ResourceAssemblyGenerator
     {
-        public static bool Generate(ResourceSource[] sourceFiles, Stream outputStream, AssemblyInfoOptions metadata, string assemblyName, string[] references)
+        public static bool Generate(ResourceSource[] sourceFiles, Stream outputStream, AssemblyInfoOptions metadata, string assemblyName, string[] references, IList<string> diagnostics)
         {
             if (sourceFiles == null)
             {
@@ -44,7 +43,8 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
                 else
                 {
-                    throw new InvalidOperationException("Generation of resource assemblies from dll not supported");
+                    diagnostics.Add("Generation of resource assemblies from dll not supported");
+                    return false;
                 }
             }
 
@@ -63,12 +63,12 @@ namespace Orchard.Environment.Extensions.Compilers
 
             if (!result.Success)
             {
+                diagnostics.Add("Error occured while emiting resource assembly");
+
                 foreach (var diagnostic in result.Diagnostics)
                 {
-                    Debug.WriteLine(diagnostic.ToString());
+                    diagnostics.Add(diagnostic.ToString());
                 }
-
-                Debug.WriteLine("Error occured while emiting resource assembly");
             }
 
             return result.Success;

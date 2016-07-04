@@ -334,7 +334,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
-            if (!CompilerUtility.GenerateNonCultureResources(context.ProjectFile, resgenFiles))
+            if (!CompilerUtility.GenerateNonCultureResources(context.ProjectFile, resgenFiles, Diagnostics))
             {
                 return _compiledLibraries[context.ProjectName()] = false;
             }
@@ -377,9 +377,14 @@ namespace Orchard.Environment.Extensions.Compilers
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
 
-            Debug.WriteLine(String.Empty);
-
             compilationResult = result.ExitCode == 0;
+
+            if (compilationResult)
+            {
+                compilationResult &= CompilerUtility.GenerateCultureResourceAssemblies(context.ProjectFile, cultureResgenFiles, references, Diagnostics);
+            }
+
+            Debug.WriteLine(String.Empty);
 
             if (compilationResult && Diagnostics.Count <= 0)
             {
@@ -404,11 +409,6 @@ namespace Orchard.Environment.Extensions.Compilers
 
             Debug.WriteLine($"Time elapsed {sw.Elapsed}");
             Debug.WriteLine(String.Empty);
-
-            if (compilationResult)
-            {
-                compilationResult &= CompilerUtility.GenerateCultureResourceAssemblies(context.ProjectFile, cultureResgenFiles, references);
-            }
 
             return _compiledLibraries[context.ProjectName()] = compilationResult;
         }
