@@ -259,7 +259,6 @@ namespace Orchard.Environment.Extensions
 
                                 PopulateBinaryFolder(assemblyFolderPath, asset, locale);
                                 PopulateProbingFolder(asset, locale);
-                                PopulateRuntimeFolder(asset, locale);
                             }
                         }
                     }
@@ -303,7 +302,6 @@ namespace Orchard.Environment.Extensions
                                 {
                                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
                                     PopulateProbingFolder(assetResolvedPath, locale);
-                                    PopulateRuntimeFolder(assetResolvedPath, locale);
                                 }
                             }
                         }
@@ -352,7 +350,6 @@ namespace Orchard.Environment.Extensions
                                 {
                                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Culture);
                                     PopulateProbingFolder(assetResolvedPath, asset.Culture);
-                                    PopulateRuntimeFolder(assetResolvedPath, asset.Culture);
                                 }
                             }
                         }
@@ -384,7 +381,6 @@ namespace Orchard.Environment.Extensions
                             {
                                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Locale);
                                 PopulateProbingFolder(assetResolvedPath, asset.Locale);
-                                PopulateRuntimeFolder(assetResolvedPath, asset.Locale);
                             }
                         }
                     }
@@ -497,12 +493,6 @@ namespace Orchard.Environment.Extensions
         private void PopulateProbingFolder(string assetPath, string locale = null)
         {
             PopulateBinaryFolder(_probingFolderPath, assetPath, locale);
-        }
-
-        private void PopulateRuntimeFolder(string assetPath, string locale = null)
-        {
-            var runtimeDirectory = Path.GetDirectoryName(CSharpExtensionCompiler.EntryAssembly.Location);
-            PopulateBinaryFolder(runtimeDirectory, assetPath, locale);
         }
     }
 }
