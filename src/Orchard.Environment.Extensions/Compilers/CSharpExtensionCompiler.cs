@@ -119,7 +119,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     var transformedResource = resourceFile.GetTransformedFile(intermediateOutputPath);
                     var resourceName = ResourceManifestName.CreateManifestName(
                         Path.GetFileName(resourceFile.ResolvedPath), compilationOptions.OutputName);
-                    resources.Add("\"{transformedResource}\",{resourceName}");
+                    resources.Add($"\"{transformedResource}\",{resourceName}");
                 }
 
                 var library = dependency.Library as ProjectDescription;
