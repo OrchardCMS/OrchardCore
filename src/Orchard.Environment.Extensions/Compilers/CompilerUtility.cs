@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.DotNet.Cli.Compiler.Common;
@@ -44,7 +43,7 @@ namespace Orchard.Environment.Extensions.Compilers
             return GetCultureResourcesFromIncludeEntries(project, outputPath, compilationOptions);
         }
 
-        public static bool GenerateNonCultureResources(Project project, List<CompilerUtility.NonCultureResgenIO> resgenFiles)
+        public static bool GenerateNonCultureResources(Project project, List<CompilerUtility.NonCultureResgenIO> resgenFiles, IList<string> diagnostics)
         {
             foreach (var resgenFile in resgenFiles)
             {
@@ -54,7 +53,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (outputResourceFile.Type != ResourceFileType.Resources)
                     {
-                        Debug.WriteLine("Resource output type not supported");
+                        diagnostics.Add("Resource output type not supported");
                         return false;
                     }
 
@@ -69,7 +68,7 @@ namespace Orchard.Environment.Extensions.Compilers
             return true;
         }
 
-        public static bool GenerateCultureResourceAssemblies(Project project, List<CompilerUtility.CultureResgenIO> cultureResgenFiles, List<string> referencePaths)
+        public static bool GenerateCultureResourceAssemblies(Project project, List<CompilerUtility.CultureResgenIO> cultureResgenFiles, List<string> referencePaths, IList<string> diagnostics)
         {
             foreach (var resgenFile in cultureResgenFiles)
             {
@@ -84,7 +83,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                 if (outputResourceFile.Type != ResourceFileType.Dll)
                 {
-                    Debug.WriteLine("Resource output type not supported");
+                    diagnostics.Add("Resource output type not supported");
                     return false;
                 }
 
@@ -100,7 +99,8 @@ namespace Orchard.Environment.Extensions.Compilers
                         outputStream,
                         metadata,
                         Path.GetFileNameWithoutExtension(outputResourceFile.File.Name),
-                        referencePaths.ToArray());
+                        referencePaths.ToArray(),
+                        diagnostics);
                 }
             }
 
