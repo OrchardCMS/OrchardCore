@@ -59,7 +59,7 @@ namespace Orchard.Environment.Commands.Builtin
         }
         private IEnumerable<CommandDescriptor> GetCommandDescriptors()
         {
-            var commandhandlers = _serviceProvider.GetService<IEnumerable<ICommandHandler>>();
+            var commandhandlers = _serviceProvider.GetServices<ICommandHandler>();
             return commandhandlers.SelectMany(x => _builder.Build(x.GetType()).Commands);
         }
 
