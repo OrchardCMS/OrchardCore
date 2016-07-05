@@ -1,11 +1,11 @@
-﻿using Orchard.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
-    public interface ICommandManager : IDependency
+    public interface ICommandManager
     {
-        void Execute(CommandParameters parameters);
+        Task ExecuteAsync(CommandParameters parameters);
         IEnumerable<CommandDescriptor> GetCommandDescriptors();
     }
 }

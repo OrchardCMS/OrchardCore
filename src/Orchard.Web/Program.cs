@@ -26,9 +26,18 @@ namespace Orchard.Console
                 {
                     host.Run((services) =>
                     {
-                        var orchardHost = new OrchardHost(services, System.Console.In, System.Console.Out, args);
-                        orchardHost.Run();
-                        cts.Cancel();
+                        var orchardHost = new OrchardHost(
+                            services, 
+                            System.Console.In, 
+                            System.Console.Out, 
+                            args);
+
+                        orchardHost
+                            .Run();
+
+                        cts
+                        .Cancel();
+
                     }, cts.Token, "Application started. Press Ctrl+C to shut down.");
                 }
             }

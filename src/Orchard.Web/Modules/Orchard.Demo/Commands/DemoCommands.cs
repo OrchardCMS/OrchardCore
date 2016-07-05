@@ -3,7 +3,7 @@ using Orchard.Environment.Commands;
 
 namespace Orchard.Demo.Commands
 {
-    public class DemoCommands : DefaultOrchardCommandHandler
+    public class DemoCommands : DefaultCommandHandler
     {
         private readonly ILogger _logger;
 

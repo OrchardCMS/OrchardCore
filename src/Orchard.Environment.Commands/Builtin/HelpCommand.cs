@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Orchard.Environment.Commands.Builtin
 {
-    public class HelpCommand : DefaultOrchardCommandHandler
+    public class HelpCommand : DefaultCommandHandler
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
@@ -20,16 +20,16 @@ namespace Orchard.Environment.Commands.Builtin
         [CommandHelp("help commands\r\n\tDisplay help text for all available commands")]
         public void AllCommands()
         {
-            Context.Output.WriteLine(T("List of available commands:"));
-            Context.Output.WriteLine(T("---------------------------"));
-            Context.Output.WriteLine("");
+            Context.Output.WriteLineAsync(T("List of available commands:"));
+            Context.Output.WriteLineAsync(T("---------------------------"));
+            Context.Output.WriteLineAsync();
 
             var descriptors = GetCommandDescriptors().OrderBy(d => d.Names.First());
 
             foreach (var descriptor in descriptors)
             {
-                Context.Output.WriteLine(GetHelpText(descriptor));
-                Context.Output.WriteLine("");
+                Context.Output.WriteLineAsync(GetHelpText(descriptor));
+                Context.Output.WriteLineAsync();
             }
         }
 
@@ -45,14 +45,14 @@ namespace Orchard.Environment.Commands.Builtin
 
             if (!descriptors.Any())
             {
-                Context.Output.WriteLine(T($"Command {command} doesn't exist"));
+                Context.Output.WriteLineAsync(T($"Command {command} doesn't exist"));
             }
             else
             {
                 foreach (var descriptor in descriptors)
                 {
-                    Context.Output.WriteLine(GetHelpText(descriptor));
-                    Context.Output.WriteLine("");
+                    Context.Output.WriteLineAsync(GetHelpText(descriptor));
+                    Context.Output.WriteLineAsync();
                 }
             }
         }
