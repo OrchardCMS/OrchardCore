@@ -33,11 +33,11 @@ namespace Orchard.Hosting
                 serviceProvider, _logger, args);
         }
 
-        public CommandReturnCodes Run()
+        public async Task<CommandReturnCodes> RunAsync()
         {
             try
             {
-                return DoRunAsync().Result;
+                return await DoRunAsync();
             }
             catch (Exception e)
             {

@@ -33,10 +33,10 @@ namespace Orchard.Console
                             args);
 
                         orchardHost
-                            .Run();
+                            .RunAsync()
+                            .Wait();
 
-                        cts
-                        .Cancel();
+                        cts.Cancel();
 
                     }, cts.Token, "Application started. Press Ctrl+C to shut down.");
                 }
