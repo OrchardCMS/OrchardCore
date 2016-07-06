@@ -146,7 +146,7 @@ namespace Orchard.Hosting
             }
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _runningShellTable.Add(context.Settings);
+                _runningShellTable.TryAdd(context.Settings);
             }
         }
 
