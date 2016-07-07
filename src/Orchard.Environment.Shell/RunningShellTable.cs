@@ -12,7 +12,7 @@ namespace Orchard.Environment.Shell
         private ShellSettings _single;
         private ShellSettings _default;
 
-        public bool TryAdd(ShellSettings settings)
+        public void Store(ShellSettings settings)
         {
             _lock.EnterWriteLock();
             try
@@ -33,10 +33,7 @@ namespace Orchard.Environment.Shell
                 }
 
                 var hostAndPrefix = GetHostAndPrefix(settings);
-                if (_shellsByHostAndPrefix.ContainsKey(hostAndPrefix))
-                    return false;
-                _shellsByHostAndPrefix.Add(hostAndPrefix, settings);
-                return true;
+                _shellsByHostAndPrefix[hostAndPrefix] = settings;                
             }            
             finally
             {
@@ -56,22 +53,7 @@ namespace Orchard.Environment.Shell
                 _lock.ExitWriteLock();
             }
         }
-
-        public void Update(ShellSettings settings)
-        {
-            _lock.EnterWriteLock();
-            try
-            {
-                var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix.Remove(hostAndPrefix);
-                _shellsByHostAndPrefix.Add(hostAndPrefix, settings);
-            }
-            finally
-            {
-                _lock.ExitWriteLock();
-            }
-        }
-
+        
         public ShellSettings Match(string host, string appRelativePath)
         {
             _lock.EnterReadLock();
