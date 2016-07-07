@@ -75,7 +75,7 @@ namespace Orchard.Hosting
             ShellContext context;
 
             _shellSettingsManager.SaveSettings(settings);
-            _runningShellTable.Update(settings);
+            _runningShellTable.Store(settings);
             _shellContexts.TryRemove(settings.Name, out context);
             context = CreateShellContext(settings);
             ActivateShell(context);
@@ -146,7 +146,7 @@ namespace Orchard.Hosting
             }
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _runningShellTable.Add(context.Settings);
+                _runningShellTable.Store(context.Settings);
             }
         }
 
