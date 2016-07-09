@@ -6,7 +6,13 @@
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
-    "Orchard.DeferredTasks.Abstractions": "2.0.0-*"
+    "Orchard.DeferredTasks.Abstractions": "2.0.0-*",
+    "System.Private.ServiceModel": "4.1.0",
+
+    // FOR TESTING
+    "System.ServiceModel.Primitives": "4.1.0",
+    "System.Runtime.Serialization.Xml": "4.1.1",
+    "System.ServiceModel.Http": "4.1.0"
   },
   "buildOptions": {
     "debugType": "portable"
