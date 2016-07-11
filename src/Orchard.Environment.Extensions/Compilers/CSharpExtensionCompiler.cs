@@ -162,23 +162,22 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
-                    foreach (var assembly in package.CompileTimeAssemblies)
+                    var runtimeAssets = new HashSet<LockFileItem>(package.RuntimeAssemblies);
+
+                    foreach (var asset in package.CompileTimeAssemblies)
                     {
-                        var fileName = Path.GetFileName(assembly.Path);
+                        var assetFileName = Path.GetFileName(asset.Path);
+                        var isRuntimeAsset = runtimeAssets.Contains(asset);
 
                         // Search in the runtime directory
-                        var path = Path.Combine(runtimeDirectory, fileName);
+                        var path = isRuntimeAsset ? Path.Combine(runtimeDirectory, assetFileName)
+                            : Path.Combine(runtimeDirectory, RefsDirectoryName, assetFileName);
 
                         if (!File.Exists(path))
                         {
-                            // Fallback to the "refs" subfolder
-                            path = Path.Combine(runtimeDirectory, RefsDirectoryName, fileName);
-
-                            if (!File.Exists(path))
-                            {
-                                // Fallback to the project output path or probing folder
-                                path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
-                            }
+                            // Fallback to the project output path or probing folder
+                            var relativeFolderPath = isRuntimeAsset ? String.Empty : RefsDirectoryName;
+                            path = ResolveAssetPath(outputPath, probingFolderPath, assetFileName, relativeFolderPath);
                         }
 
                         if (!String.IsNullOrEmpty(path))
@@ -423,8 +422,16 @@ namespace Orchard.Environment.Extensions.Compilers
             return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
         }
 
-        private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName)
+        private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName, string relativeFolderPath = null)
         {
+            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(binaryFolderPath, relativeFolderPath)
+                : binaryFolderPath;
+
+            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(probingFolderPath, relativeFolderPath)
+                : probingFolderPath;
+
             var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
             var probingPath = Path.Combine(probingFolderPath, assetFileName);
 

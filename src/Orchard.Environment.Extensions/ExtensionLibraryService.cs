@@ -13,6 +13,7 @@ using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
+using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.DotNet.Tools.Common;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
@@ -321,6 +322,24 @@ namespace Orchard.Environment.Extensions
                         }
                     }
 
+                    var runtimeAssets = new HashSet<LockFileItem>(package.RuntimeAssemblies);
+
+                    foreach (var asset in package.CompileTimeAssemblies)
+                    {
+                        var assetFileName = Path.GetFileName(asset.Path);
+
+                        if (!IsAmbientAssembly(assetFileName) && !runtimeAssets.Contains(asset))
+                        {
+                            var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CSharpExtensionCompiler.RefsDirectoryName);
+
+                            if (!String.IsNullOrEmpty(assetResolvedPath))
+                            {
+                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
+                                PopulateProbingFolder(assetResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
+                            }
+                        }
+                    }
+
                     if (!IsAmbientAssembly(package.Identity.Name))
                     {
                         foreach (var asset in package.ResourceAssemblies)
@@ -452,15 +471,25 @@ namespace Orchard.Environment.Extensions
 
         private static IEnumerable<string> GetRuntimeIdentifiers()
         {
-            var candidateRids = RuntimeEnvironmentRidExtensions.GetAllCandidateRuntimeIdentifiers().ToList();
-            var fallbacksRids = DependencyContext.Default?.RuntimeGraph ?? Enumerable.Empty<RuntimeFallbacks>();
-
             var runtimeIds = new List<string>();
-
             // Add runtime-agnostic id
             runtimeIds.Add(String.Empty);
 
+            var candidateRids = new List<string>();
+            var runtimeId = DependencyContext.Default?.Target.Runtime;
+
+            if (string.IsNullOrEmpty(runtimeId))
+            {
+                candidateRids.AddRange(RuntimeEnvironmentRidExtensions.GetAllCandidateRuntimeIdentifiers());
+            }
+            else
+            {
+                candidateRids.Add(runtimeId);
+            }
+
             runtimeIds.AddRange(candidateRids);
+
+            var fallbacksRids = DependencyContext.Default?.RuntimeGraph ?? Enumerable.Empty<RuntimeFallbacks>();
 
             foreach (var rid in candidateRids)
             {

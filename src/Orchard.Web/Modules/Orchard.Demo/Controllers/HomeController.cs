@@ -98,9 +98,6 @@ namespace Orchard.Demo.Controllers
 
         public async Task<ActionResult> Display(int id)
         {
-            // FOR TESTING
-            var test = new System.ServiceModel.EndpointAddress("https://www.google.fr");
-
             var contentItem = await _contentManager.GetAsync(id);
 
             if (contentItem == null)
