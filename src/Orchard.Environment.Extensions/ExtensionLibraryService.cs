@@ -322,7 +322,7 @@ namespace Orchard.Environment.Extensions
                         }
                     }
 
-                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path));
+                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
 
                     foreach (var asset in package.CompileTimeAssemblies)
                     {

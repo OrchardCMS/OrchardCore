@@ -162,7 +162,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
-                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path));
+                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
 
                     foreach (var asset in package.CompileTimeAssemblies)
                     {
