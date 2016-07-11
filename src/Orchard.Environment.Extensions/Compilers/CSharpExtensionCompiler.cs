@@ -162,12 +162,12 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
-                    var runtimeAssets = new HashSet<LockFileItem>(package.RuntimeAssemblies);
+                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path));
 
                     foreach (var asset in package.CompileTimeAssemblies)
                     {
                         var assetFileName = Path.GetFileName(asset.Path);
-                        var isRuntimeAsset = runtimeAssets.Contains(asset);
+                        var isRuntimeAsset = runtimeAssets.Contains(asset.Path);
 
                         // Search in the runtime directory
                         var path = isRuntimeAsset ? Path.Combine(runtimeDirectory, assetFileName)

@@ -322,13 +322,13 @@ namespace Orchard.Environment.Extensions
                         }
                     }
 
-                    var runtimeAssets = new HashSet<LockFileItem>(package.RuntimeAssemblies);
+                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path));
 
                     foreach (var asset in package.CompileTimeAssemblies)
                     {
                         var assetFileName = Path.GetFileName(asset.Path);
 
-                        if (!IsAmbientAssembly(assetFileName) && !runtimeAssets.Contains(asset))
+                        if (!IsAmbientAssembly(assetFileName) && !runtimeAssets.Contains(asset.Path))
                         {
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CSharpExtensionCompiler.RefsDirectoryName);
 
