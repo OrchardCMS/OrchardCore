@@ -377,13 +377,16 @@ namespace Orchard.Environment.Extensions
                                 assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
                             }
 
-                            if (!IsAssemblyLoaded(library.Identity.Name))
+                            if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
-                                LoadFromAssemblyPath(assetResolvedPath);
-                            }
+                                if (!IsAssemblyLoaded(library.Identity.Name))
+                                {
+                                    LoadFromAssemblyPath(assetResolvedPath);
+                                }
 
-                            PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
-                            PopulateProbingFolder(assetResolvedPath);
+                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
+                                PopulateProbingFolder(assetResolvedPath);
+                            }
 
                             var compilationOptions = projectContext.ResolveCompilationOptions(Configuration);
                             var resourceAssemblies = CompilerUtility.GetCultureResources(projectContext.ProjectFile, outputPath, compilationOptions);
