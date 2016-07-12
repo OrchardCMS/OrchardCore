@@ -86,7 +86,8 @@ namespace Orchard.Environment.Extensions
             return new HashSet<string>(DependencyContext.Default.RuntimeLibraries
                 .SelectMany(library => library.RuntimeAssemblyGroups)
                 .SelectMany(assetGroup => assetGroup.AssetPaths)
-                .Select(path => Path.GetFileNameWithoutExtension(path)));
+                .Select(path => Path.GetFileNameWithoutExtension(path)),
+                StringComparer.OrdinalIgnoreCase);
         }
 
         private List<MetadataReference> GetMetadataReferences()
