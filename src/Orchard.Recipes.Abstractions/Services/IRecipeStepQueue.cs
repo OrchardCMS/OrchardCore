@@ -1,10 +1,11 @@
 ﻿using Orchard.Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeStepQueue
     {
-        void Enqueue(string executionId, RecipeStepDescriptor step);
-        RecipeStepDescriptor Dequeue(string executionId);
+        Task EnqueueAsync(string executionId, RecipeStepDescriptor step);
+        Task<RecipeStepDescriptor> DequeueAsync(string executionId);
     }
 }

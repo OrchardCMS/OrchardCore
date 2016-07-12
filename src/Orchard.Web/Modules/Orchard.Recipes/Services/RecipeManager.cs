@@ -40,7 +40,7 @@ namespace Orchard.Recipes.Services
             _logger = logger;
         }
 
-        public Task<string> ExecuteAsync(RecipeDescriptor recipeDescriptor)
+        public async Task<string> ExecuteAsync(RecipeDescriptor recipeDescriptor)
         {
             var executionId = Guid.NewGuid().ToString("n");
 
@@ -53,14 +53,15 @@ namespace Orchard.Recipes.Services
                     x.ExecutionStartAsync(executionId, recipeDescriptor)).Wait();
                 
                 _recipeParser.ProcessRecipe(
-                    _fileSystem.GetFileInfo(recipeDescriptor.Location), (recipe, recipeStep) =>
+                    _fileSystem.GetFileInfo(recipeDescriptor.Location), async (recipe, recipeStep) =>
                 {
-                    ExecuteRecipeStep(executionId, recipe, recipeStep);
+                    await ExecuteRecipeStepAsync(executionId, recipe, recipeStep);
                 });
 
+                await _session.CommitAsync();
+
                 //await _recipeScheduler.ScheduleWork(executionId);
-                return null;
-                //return executionId;
+                return executionId;
             }
             finally
             {
@@ -68,9 +69,9 @@ namespace Orchard.Recipes.Services
             }
         }
 
-        public void ExecuteRecipeStep(string executionId, RecipeDescriptor recipe, RecipeStepDescriptor recipeStep)
+        public async Task ExecuteRecipeStepAsync(string executionId, RecipeDescriptor recipe, RecipeStepDescriptor recipeStep)
         {
-            _recipeStepQueue.Enqueue(executionId, recipeStep);
+            await _recipeStepQueue.EnqueueAsync(executionId, recipeStep);
             _session.Save(new RecipeStepResult
             {
                 RecipeName = recipe.Name,
