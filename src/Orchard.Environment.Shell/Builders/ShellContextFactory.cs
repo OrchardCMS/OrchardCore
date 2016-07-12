@@ -43,9 +43,9 @@ namespace Orchard.Environment.Shell.Builders
                 SerialNumber = -1,
                 Features = new[] {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
-                    new ShellFeature { Name = "Orchard.Recipes" },
                     new ShellFeature { Name = "Orchard.Setup" },
-                },
+                    new ShellFeature { Name = "Orchard.Recipes" }
+                }
             };
 
             return CreateDescribedContext(settings, descriptor);
@@ -78,21 +78,8 @@ namespace Orchard.Environment.Shell.Builders
                 {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
-                    new ShellFeature { Name = "Orchard.Settings" },
                     new ShellFeature { Name = "Orchard.Admin" },
-                    new ShellFeature { Name = "Orchard.Navigation" },
                     new ShellFeature { Name = "Orchard.Themes" },
-                    new ShellFeature { Name = "Orchard.Contents" },
-                    new ShellFeature { Name = "Orchard.ContentTypes" },
-                    new ShellFeature { Name = "Orchard.ContentFields" },
-                    new ShellFeature { Name = "Orchard.Body" },
-                    new ShellFeature { Name = "Orchard.Title" },
-                    new ShellFeature { Name = "Orchard.Lists" },
-                    new ShellFeature { Name = "Orchard.Demo" },
-                    new ShellFeature { Name = "Orchard.DynamicCache" },
-                    new ShellFeature { Name = "Orchard.Roles" },
-                    new ShellFeature { Name = "Orchard.Users" },
-                    new ShellFeature { Name = "TheTheme" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },
                 },

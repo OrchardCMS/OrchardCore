@@ -105,14 +105,15 @@ namespace Orchard.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "Orchard.Hosting" // shortcut for built-in features
+                "Orchard.Hosting",
+                "Orchard.Recipes"// shortcut for built-in features
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             _shellSettings.State = TenantState.Initializing;
-
+            
             var shellSettings = new ShellSettings(_shellSettings);
 
             if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
@@ -198,7 +199,7 @@ namespace Orchard.Setup.Services
 
 
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
-            return Guid.NewGuid().ToString();
+            return executionId;
         }
     }
 }

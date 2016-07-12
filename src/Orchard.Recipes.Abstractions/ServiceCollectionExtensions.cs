@@ -12,5 +12,15 @@ namespace Orchard.Recipes
             serviceCollection.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RecipeHarvestingOptions>, RecipeHarvestingOptionsSetup>());
         }
+
+        public static IServiceCollection AddRecipeExtension(
+            this IServiceCollection services,
+            string fileExtension)
+        {
+            return services.Configure<RecipeHarvestingOptions>(configureOptions: options =>
+            {
+                options.RecipeFileExtensions.Add(fileExtension);
+            });
+        }
     }
 }

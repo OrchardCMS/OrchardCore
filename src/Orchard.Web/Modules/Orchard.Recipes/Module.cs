@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Recipes.Services;
-using System;
 
 namespace Orchard.Recipes
 {
@@ -13,6 +12,7 @@ namespace Orchard.Recipes
         {
             services.AddScoped<IRecipeParser, RecipeParser>();
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+            services.AddScoped<IRecipeManager, RecipeManager>();
 
             services.AddRecipeOptions();
             services.AddRecipeExtension("*.recipe.json");

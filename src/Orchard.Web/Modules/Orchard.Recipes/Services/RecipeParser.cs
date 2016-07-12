@@ -35,7 +35,7 @@ namespace Orchard.Recipes.Services
                 using (JsonTextReader reader = new JsonTextReader(streamReader))
                 {
                     while (reader.Read()) {
-
+                        Console.WriteLine(reader.Value);
 
                     }
                 }
