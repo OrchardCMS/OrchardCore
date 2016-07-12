@@ -13,7 +13,6 @@ using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
-using Microsoft.DotNet.ProjectModel.Graph;
 using Microsoft.DotNet.Tools.Common;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
@@ -84,12 +83,11 @@ namespace Orchard.Environment.Extensions
 
         private HashSet<string> GetApplicationAssemblyNames()
         {
-            var assemblyNames = new HashSet<string>(DependencyContext.Default.GetDefaultAssemblyNames()
-                .Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
-
-            assemblyNames.UnionWith(DependencyContext.Default.RuntimeLibraries.Select(x => x.Name));
-
-            return assemblyNames;
+            return new HashSet<string>(DependencyContext.Default.RuntimeLibraries
+                .SelectMany(library => library.RuntimeAssemblyGroups)
+                .SelectMany(assetGroup => assetGroup.AssetPaths)
+                .Select(path => Path.GetFileNameWithoutExtension(path)),
+                StringComparer.OrdinalIgnoreCase);
         }
 
         private List<MetadataReference> GetMetadataReferences()
