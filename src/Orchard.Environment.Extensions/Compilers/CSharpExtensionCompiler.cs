@@ -19,7 +19,6 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        public const string RefsDirectoryName = "refs";
         private static readonly Object _syncLock = new Object();
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
         private static readonly ConcurrentDictionary<string, bool> _ambientLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
@@ -171,12 +170,12 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         // Search in the runtime directory
                         var path = isRuntimeAsset ? Path.Combine(runtimeDirectory, assetFileName)
-                            : Path.Combine(runtimeDirectory, RefsDirectoryName, assetFileName);
+                            : Path.Combine(runtimeDirectory, CompilerUtility.RefsDirectoryName, assetFileName);
 
                         if (!File.Exists(path))
                         {
                             // Fallback to the project output path or probing folder
-                            var relativeFolderPath = isRuntimeAsset ? String.Empty : RefsDirectoryName;
+                            var relativeFolderPath = isRuntimeAsset ? String.Empty : CompilerUtility.RefsDirectoryName;
                             path = ResolveAssetPath(outputPath, probingFolderPath, assetFileName, relativeFolderPath);
                         }
 
