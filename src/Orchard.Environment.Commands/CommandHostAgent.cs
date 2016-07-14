@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
@@ -29,12 +30,12 @@ namespace Orchard.Environment.Commands
 
         public Localizer T { get; set; }
 
-        public CommandReturnCodes RunSingleCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
+        public async Task<CommandReturnCodes> RunSingleCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
         {
-            return RunCommand(input, output, tenant, args, switches);
+            return await RunCommandAsync(input, output, tenant, args, switches);
         }
 
-        public CommandReturnCodes RunCommand(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
+        public async Task<CommandReturnCodes> RunCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
         {
             try
             {
@@ -52,7 +53,7 @@ namespace Orchard.Environment.Commands
                         Output = output
                     };
 
-                    commandManager.Execute(parameters);
+                    await commandManager.ExecuteAsync(parameters);
                 }
 
                 return CommandReturnCodes.Ok;
@@ -60,7 +61,7 @@ namespace Orchard.Environment.Commands
             catch (OrchardCommandHostRetryException ex)
             {
                 // Special "Retry" return code for our host
-                output.WriteLine(T("{0} (Retrying...)", ex.Message));
+                await output.WriteLineAsync(T($"{ex.Message} (Retrying...)"));
                 return CommandReturnCodes.Retry;
             }
             catch (Exception ex)
@@ -75,16 +76,16 @@ namespace Orchard.Environment.Commands
                     // If this is an exception coming from reflection and there is an innerexception which is the actual one, redirect
                     ex = ex.InnerException;
                 }
-                OutputException(output, T("Error executing command \"{0}\"", string.Join(" ", args)), ex);
+                await OutputExceptionAsync(output, T("Error executing command \"{0}\"", string.Join(" ", args)), ex);
                 return CommandReturnCodes.Fail;
             }
         }
 
-        private void OutputException(TextWriter output, LocalizedString title, Exception exception)
+        private async Task OutputExceptionAsync(TextWriter output, LocalizedString title, Exception exception)
         {
             // Display header
-            output.WriteLine();
-            output.WriteLine(T("{0}", title));
+            await output.WriteLineAsync();
+            await output.WriteLineAsync(T($"{title}"));
 
             // Push exceptions in a stack so we display from inner most to outer most
             var errors = new Stack<Exception>();
@@ -95,32 +96,32 @@ namespace Orchard.Environment.Commands
 
             // Display inner most exception details
             exception = errors.Peek();
-            output.WriteLine(T("--------------------------------------------------------------------------------"));
-            output.WriteLine();
-            output.WriteLine(T("{0}", exception.Message));
-            output.WriteLine();
+            await output.WriteLineAsync(T("--------------------------------------------------------------------------------"));
+            await output.WriteLineAsync();
+            await output.WriteLineAsync(T("{0}", exception.Message));
+            await output.WriteLineAsync();
 
             if (!((exception is OrchardException ||
                 exception is OrchardCoreException) &&
                 exception.InnerException == null))
             {
-                output.WriteLine(T("Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message));
-                output.WriteLine();
-                output.WriteLine(T("Stack Trace:"));
-                output.WriteLine();
+                await output.WriteLineAsync(T("Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message));
+                await output.WriteLineAsync();
+                await output.WriteLineAsync(T("Stack Trace:"));
+                await output.WriteLineAsync();
 
                 // Display exceptions from inner most to outer most
                 foreach (var error in errors)
                 {
-                    output.WriteLine(T("[{0}: {1}]", error.GetType().Name, error.Message));
-                    output.WriteLine(T("{0}", error.StackTrace));
-                    output.WriteLine();
+                    await output.WriteLineAsync(T("[{0}: {1}]", error.GetType().Name, error.Message));
+                    await output.WriteLineAsync(T("{0}", error.StackTrace));
+                    await output.WriteLineAsync();
                 }
             }
 
             // Display footer
-            output.WriteLine("--------------------------------------------------------------------------------");
-            output.WriteLine();
+            await output.WriteLineAsync("--------------------------------------------------------------------------------");
+            await output.WriteLineAsync();
         }
 
         private ShellContext CreateStandaloneEnvironment(string tenant)

@@ -24,7 +24,7 @@ namespace Orchard.Tests.Commands
             Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar3"), descriptor.Commands.Single(d => d.Names.Contains("Foo_Bar")).MethodInfo);
         }
 
-        public class MyCommand : DefaultOrchardCommandHandler
+        public class MyCommand : DefaultCommandHandler
         {
             public void FooBar()
             {

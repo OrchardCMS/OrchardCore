@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
-    public abstract class DefaultOrchardCommandHandler : ICommandHandler
+    public abstract class DefaultCommandHandler : ICommandHandler
     {
-        protected DefaultOrchardCommandHandler()
+        protected DefaultCommandHandler()
         {
             T = NullLocalizer.Instance;
         }
@@ -16,10 +17,10 @@ namespace Orchard.Environment.Commands
         public Localizer T { get; set; }
         public CommandContext Context { get; set; }
 
-        public void Execute(CommandContext context)
+        public async Task ExecuteAsync(CommandContext context)
         {
             SetSwitchValues(context);
-            Invoke(context);
+            await InvokeAsync(context);
         }
 
         private void SetSwitchValues(CommandContext context)
@@ -69,7 +70,7 @@ namespace Orchard.Environment.Commands
         }
 
 
-        private void Invoke(CommandContext context)
+        private async Task InvokeAsync(CommandContext context)
         {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
@@ -83,7 +84,9 @@ namespace Orchard.Environment.Commands
             this.Context = context;
             var result = context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
             if (result is string)
-                context.Output.Write(result);
+            {
+                await context.Output.WriteAsync(result.ToString());
+            }
         }
 
         private static object[] GetInvokeParametersForMethod(MethodInfo methodInfo, IList<string> arguments)

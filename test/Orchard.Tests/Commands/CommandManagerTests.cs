@@ -23,7 +23,7 @@ namespace Orchard.Tests.Commands
         public void ManagerCanRunACommand()
         {
             var context = new CommandParameters { Arguments = new string[] { "FooBar" }, Output = new StringWriter() };
-            _manager.Execute(context);
+            _manager.ExecuteAsync(context);
             Assert.Equal("success!", context.Output.ToString());
         }
 
@@ -31,11 +31,11 @@ namespace Orchard.Tests.Commands
         public void ManagerCanRunACompositeCommand()
         {
             var context = new CommandParameters { Arguments = ("Foo Bar Bleah").Split(' '), Output = new StringWriter() };
-            _manager.Execute(context);
+            _manager.ExecuteAsync(context);
             Assert.Equal("Bleah", context.Output.ToString());
         }
 
-        public class MyCommand : DefaultOrchardCommandHandler
+        public class MyCommand : DefaultCommandHandler
         {
             public string FooBar()
             {
