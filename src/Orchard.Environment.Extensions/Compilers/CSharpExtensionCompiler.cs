@@ -384,13 +384,13 @@ namespace Orchard.Environment.Extensions.Compilers
 
             Debug.WriteLine(String.Empty);
 
-            if (compilationResult && Diagnostics.Count <= 0)
+            if (compilationResult && Diagnostics.Count == 0)
             {
                 Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded.");
                 Debug.WriteLine($"0 Warning(s)");
                 Debug.WriteLine($"0 Error(s)");
             }
-            else if (result.ExitCode == 0 && Diagnostics.Count > 0)
+            else if (compilationResult && Diagnostics.Count > 0)
             {
                 Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded but has warnings.");
                 Debug.WriteLine($"0 Error(s)");

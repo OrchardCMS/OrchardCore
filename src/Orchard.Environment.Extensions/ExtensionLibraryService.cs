@@ -179,32 +179,35 @@ namespace Orchard.Environment.Extensions
             var success = compiler.Compile(context, Configuration, _probingFolderPath);
             var diagnostics = compiler.Diagnostics;
 
-            if (success)
+            if (success && diagnostics.Count == 0)
             {
-                if (_logger.IsEnabled(LogLevel.Information) && !diagnostics.Any())
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                     _logger.LogInformation($"{0} was successfully compiled", context.ProjectName());
+                    _logger.LogInformation($"{0} was successfully compiled", context.ProjectName());
                 }
-                else if (_logger.IsEnabled(LogLevel.Warning))
+            }
+            else if (success && diagnostics.Count > 0)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                     _logger.LogWarning($"{0} was compiled but has warnings", context.ProjectName());
+                    _logger.LogWarning($"{0} was compiled but has warnings", context.ProjectName());
 
-                     foreach (var diagnostic in diagnostics)
-                     {
-                         _logger.LogWarning(diagnostic);
-                     }
+                    foreach (var diagnostic in diagnostics)
+                    {
+                        _logger.LogWarning(diagnostic);
+                    }
                 }
             }
             else
             {
                 if (_logger.IsEnabled(LogLevel.Error))
                 {
-                     _logger.LogError($"{0} compilation failed", context.ProjectName());
+                    _logger.LogError($"{0} compilation failed", context.ProjectName());
 
-                     foreach (var diagnostic in diagnostics)
-                     {
-                         _logger.LogError(diagnostic);
-                     }
+                    foreach (var diagnostic in diagnostics)
+                    {
+                        _logger.LogError(diagnostic);
+                    }
                 }
             }
         }
