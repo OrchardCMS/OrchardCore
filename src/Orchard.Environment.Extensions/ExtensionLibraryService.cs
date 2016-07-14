@@ -60,7 +60,7 @@ namespace Orchard.Environment.Extensions
 
         public Localizer T { get; set; }
 
-        private HashSet<string> ApplicationAssemblyNames()
+        private IEnumerable<string> ApplicationAssemblyNames()
         {
             return LazyInitializer.EnsureInitialized(
                 ref _applicationAssembliesNames,
@@ -515,7 +515,7 @@ namespace Orchard.Environment.Extensions
 
         private bool IsAmbientAssembly(string assemblyName)
         {
-             return ApplicationAssemblyNames().Contains(assemblyName);
+            return ApplicationAssemblyNames().Contains(assemblyName);
         }
 
         private bool IsAssemblyLoaded(string assemblyName)
