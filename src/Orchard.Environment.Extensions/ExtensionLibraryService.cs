@@ -27,7 +27,6 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
-        public const string ReleaseConfiguration = "Release";
         public const string ProbingDirectoryName = "Dependencies";
         public static string Configuration => _configuration.Value;
         private static readonly Lazy<string> _configuration = new Lazy<string>(GetConfiguration);
@@ -35,7 +34,6 @@ namespace Orchard.Environment.Extensions
 
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
-        private readonly IAppDataFolder _appDataFolder;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
@@ -55,15 +53,14 @@ namespace Orchard.Environment.Extensions
         {
             _applicationPartManager = applicationPartManager;
             _fileSystem = fileSystem;
-            _appDataFolder = appDataFolder;
-            _probingFolderPath = _appDataFolder.MapPath(ProbingDirectoryName);
+            _probingFolderPath = appDataFolder.MapPath(ProbingDirectoryName);
             _logger = logger;
             T = NullLocalizer.Instance;
         }
 
         public Localizer T { get; set; }
 
-        private IEnumerable<string> ApplicationAssemblyNames()
+        private HashSet<string> ApplicationAssemblyNames()
         {
             return LazyInitializer.EnsureInitialized(
                 ref _applicationAssembliesNames,
@@ -328,12 +325,12 @@ namespace Orchard.Environment.Extensions
 
                         if (!IsAmbientAssembly(assetFileName) && !runtimeAssets.Contains(asset.Path))
                         {
-                            var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CSharpExtensionCompiler.RefsDirectoryName);
+                            var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CompilerUtility.RefsDirectoryName);
 
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
-                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
-                                PopulateProbingFolder(assetResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
+                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CompilerUtility.RefsDirectoryName);
+                                PopulateProbingFolder(assetResolvedPath, CompilerUtility.RefsDirectoryName);
                             }
                         }
                     }
@@ -342,9 +339,9 @@ namespace Orchard.Environment.Extensions
                     {
                         foreach (var asset in package.ResourceAssemblies)
                         {
-                            if (asset.Properties.ContainsKey("locale"))
+                            string locale;
+                            if (asset.Properties.TryGetValue(CompilerUtility.LocaleLockFilePropertyName, out locale))
                             {
-                                var locale = asset.Properties["locale"];
                                 var assetFileName = Path.GetFileName(asset.Path);
                                 var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, locale);
 
@@ -439,8 +436,8 @@ namespace Orchard.Environment.Extensions
                     {
                         if (!IsAmbientAssembly(asset.Name) && !runtimeAssets.Contains(asset))
                         {
-                            PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
-                            PopulateProbingFolder(asset.ResolvedPath, CSharpExtensionCompiler.RefsDirectoryName);
+                            PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
+                            PopulateProbingFolder(asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
                         }
                     }
 
@@ -466,8 +463,8 @@ namespace Orchard.Environment.Extensions
         private static string GetConfiguration()
         {
             var defines = DependencyContext.Default.CompilationOptions.Defines;
-            return defines?.Contains(ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
-                ? ReleaseConfiguration : Constants.DefaultConfiguration;
+            return defines?.Contains(CompilerUtility.ReleaseConfiguration, StringComparer.OrdinalIgnoreCase) == true
+                ? CompilerUtility.ReleaseConfiguration : CompilerUtility.DefaultConfiguration;
         }
 
         private static IEnumerable<string> GetRuntimeIdentifiers()
@@ -601,9 +598,9 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        private void PopulateProbingFolder(string assetPath, string locale = null)
+        private void PopulateProbingFolder(string assetPath, string relativeFolderPath = null)
         {
-            PopulateBinaryFolder(_probingFolderPath, assetPath, locale);
+            PopulateBinaryFolder(_probingFolderPath, assetPath, relativeFolderPath);
         }
     }
 }
