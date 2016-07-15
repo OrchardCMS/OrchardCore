@@ -32,18 +32,15 @@ namespace Orchard.Environment.Extensions
         private static readonly Lazy<string> _configuration = new Lazy<string>(GetConfiguration);
         private static readonly Object _syncLock = new Object();
 
+        private static HashSet<string> ApplicationAssemblyNames => _applicationAssemblyNames.Value;
+        private static readonly Lazy<HashSet<string>> _applicationAssemblyNames = new Lazy<HashSet<string>>(GetApplicationAssemblyNames);
+        private static readonly ConcurrentDictionary<string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly ApplicationPartManager _applicationPartManager;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
-
-        private readonly ConcurrentDictionary <string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-        private object _applicationAssembliesNamesLock = new object();
-        private bool _applicationAssembliesNamesInitialized;
-        private HashSet<string> _applicationAssembliesNames;
-        private object _metadataReferencesLock = new object();
-        private bool _metadataReferencesInitialized;
-        private List<MetadataReference> _metadataReferences;
 
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
@@ -51,6 +48,7 @@ namespace Orchard.Environment.Extensions
             IAppDataFolder appDataFolder,
             ILogger<ExtensionLibraryService> logger)
         {
+            _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
             _fileSystem = fileSystem;
             _probingFolderPath = appDataFolder.MapPath(ProbingDirectoryName);
@@ -60,25 +58,12 @@ namespace Orchard.Environment.Extensions
 
         public Localizer T { get; set; }
 
-        private IEnumerable<string> ApplicationAssemblyNames()
-        {
-            return LazyInitializer.EnsureInitialized(
-                ref _applicationAssembliesNames,
-                ref _applicationAssembliesNamesInitialized,
-                ref _applicationAssembliesNamesLock,
-                GetApplicationAssemblyNames);
-        }
-
         public IEnumerable<MetadataReference> MetadataReferences()
         {
-            return LazyInitializer.EnsureInitialized(
-                ref _metadataReferences,
-                ref _metadataReferencesInitialized,
-                ref _metadataReferencesLock,
-                GetMetadataReferences);
+            return _metadataReferences.Value;
         }
 
-        private HashSet<string> GetApplicationAssemblyNames()
+        private static HashSet<string> GetApplicationAssemblyNames()
         {
             return new HashSet<string>(DependencyContext.Default.RuntimeLibraries
                 .SelectMany(library => library.RuntimeAssemblyGroups)
@@ -89,7 +74,7 @@ namespace Orchard.Environment.Extensions
 
         private List<MetadataReference> GetMetadataReferences()
         {
-            var assemblyNames = new HashSet<string>(ApplicationAssemblyNames(), StringComparer.OrdinalIgnoreCase);
+            var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
 
             foreach (var applicationPart in _applicationPartManager.ApplicationParts)
@@ -518,7 +503,7 @@ namespace Orchard.Environment.Extensions
 
         private bool IsAmbientAssembly(string assemblyName)
         {
-            return ApplicationAssemblyNames().Contains(assemblyName);
+            return ApplicationAssemblyNames.Contains(assemblyName);
         }
 
         private bool IsAssemblyLoaded(string assemblyName)
