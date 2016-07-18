@@ -19,7 +19,7 @@ namespace Orchard.Environment.Commands.Builtin
         }
 
         [CommandName("help commands")]
-        [CommandHelp("help commands\r\n\tDisplay help text for all available commands")]
+        [CommandHelp("help commands", "\tDisplay help text for all available commands")]
         public async Task AllCommandsAsync()
         {
             await Context.Output.WriteLineAsync(T["List of available commands:"]);
@@ -37,7 +37,7 @@ namespace Orchard.Environment.Commands.Builtin
 
 
         [CommandName("help")]
-        [CommandHelp("help <command>\r\n\tDisplay help text for <command>")]
+        [CommandHelp("help <command>", "\tDisplay help text for <command>")]
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
             string command = string.Join(" ", commandNameStrings);

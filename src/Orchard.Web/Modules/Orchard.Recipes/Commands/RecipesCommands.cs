@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Commands
 {
-    public class RecipesCommands : DefaultOrchardCommandHandler
+    public class RecipesCommands : DefaultCommandHandler
     {
         private readonly IRecipeHarvester _recipeHarvester;
         private readonly IExtensionManager _extensionManager;
@@ -21,29 +21,29 @@ namespace Orchard.Recipes.Commands
             _extensionManager = extensionManager;
         }
 
-        [CommandHelp("recipes harvest <extensionId>\r\n\t" + "Displays a list of available recipes for a specific extension.")]
+        [CommandHelp("recipes harvest <extensionId>", "\tDisplays a list of available recipes for a specific extension.")]
         [CommandName("recipes harvest")]
         public async Task Harvest(string extensionId)
         {
             var recipes = await _recipeHarvester.HarvestRecipesAsync(extensionId);
             if (!recipes.Any())
             {
-                Context.Output.WriteLine(T["No recipes found for extension '{0}'.", extensionId]);
+                await Context.Output.WriteLineAsync(T[$"No recipes found for extension '{extensionId}'."]);
                 return;
             }
 
-            Context.Output.WriteLine(T["List of available recipes"]);
-            Context.Output.WriteLine(T["--------------------------"]);
-            Context.Output.WriteLine();
+            await Context.Output.WriteLineAsync(T["List of available recipes"]);
+            await Context.Output.WriteLineAsync(T["--------------------------"]);
+            await Context.Output.WriteLineAsync();
 
             foreach (var recipe in recipes)
             {
-                Context.Output.WriteLine(T["Recipe: {0}", recipe.Name]);
-                Context.Output.WriteLine(T["  Version:     {0}", recipe.Version]);
-                Context.Output.WriteLine(T["  Tags:        {0}", recipe.Tags]);
-                Context.Output.WriteLine(T["  Description: {0}", recipe.Description]);
-                Context.Output.WriteLine(T["  Author:      {0}", recipe.Author]);
-                Context.Output.WriteLine(T["  Website:     {0}", recipe.WebSite]);
+                await Context.Output.WriteLineAsync(T[$"Recipe: {recipe.Name}"]);
+                await Context.Output.WriteLineAsync(T[$"  Version:     {recipe.Version}"]);
+                await Context.Output.WriteLineAsync(T[$"  Tags:        {recipe.Tags}"]);
+                await Context.Output.WriteLineAsync(T[$"  Description: {recipe.Description}"]);
+                await Context.Output.WriteLineAsync(T[$"  Author:      {recipe.Author}"]);
+                await Context.Output.WriteLineAsync(T[$"  Website:     {recipe.WebSite}"]);
             }
         }
     }
