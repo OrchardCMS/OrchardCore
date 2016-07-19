@@ -142,7 +142,7 @@ namespace Orchard.Environment.Extensions.Folders
 
         private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional)
         {
-            var manifestText = _fileSystem.ReadFile(manifestPath);
+            var manifestText = _fileSystem.ReadFileAsync(manifestPath).Result;
             if (manifestText == null)
             {
                 if (manifestIsOptional)

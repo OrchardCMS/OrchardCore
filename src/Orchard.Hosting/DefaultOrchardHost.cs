@@ -184,12 +184,13 @@ namespace Orchard.Hosting
         /// <summary>
         /// A feature is enabled/disabled, the tenant needs to be restarted
         /// </summary>
-        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
             }
+            return Task.CompletedTask;
         }
     }
 }

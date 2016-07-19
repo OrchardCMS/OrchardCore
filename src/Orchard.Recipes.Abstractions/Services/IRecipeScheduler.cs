@@ -1,7 +1,9 @@
-﻿namespace Orchard.Recipes.Services
+﻿using System.Threading.Tasks;
+
+namespace Orchard.Recipes.Services
 {
     public interface IRecipeScheduler
     {
-        void ScheduleWork(string executionId);
+        Task ScheduleWorkAsync(string executionId);
     }
 }

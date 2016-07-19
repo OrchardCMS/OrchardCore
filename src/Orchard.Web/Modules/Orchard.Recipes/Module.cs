@@ -12,6 +12,8 @@ namespace Orchard.Recipes
         {
             services.AddScoped<IRecipeParser, RecipeParser>();
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+            services.AddScoped<IRecipeStepQueue, RecipeStepQueue>();
+            services.AddScoped<IRecipeScheduler, RecipeScheduler>();
             services.AddScoped<IRecipeManager, RecipeManager>();
 
             services.AddRecipeOptions();

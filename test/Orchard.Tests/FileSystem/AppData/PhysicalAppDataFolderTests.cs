@@ -86,7 +86,7 @@ namespace Orchard.Tests.FileSystem
         public void CreateFileWillCauseDirectoryToBeCreated()
         {
             Assert.False(Directory.Exists(Path.Combine(_tempFolder, "alpha\\omega\\foo")));
-            _appDataFolder.CreateFile("alpha\\omega\\foo\\bar.txt", "quux");
+            _appDataFolder.CreateFileAsync("alpha\\omega\\foo\\bar.txt", "quux").Wait();
             Assert.True(Directory.Exists(Path.Combine(_tempFolder, "alpha\\omega\\foo")));
         }
 
@@ -94,10 +94,10 @@ namespace Orchard.Tests.FileSystem
         [Fact]
         public void FilesCanBeReadBack()
         {
-            _appDataFolder.CreateFile("alpha\\gamma\\foo\\bar.txt", @"
+            _appDataFolder.CreateFileAsync("alpha\\gamma\\foo\\bar.txt", @"
 this is
 a
-test");
+test").Wait();
             var text = File.ReadAllText(_appDataFolder.GetFileInfo("alpha\\gamma\\foo\\bar.txt").PhysicalPath);
             Assert.Equal(@"
 this is
@@ -114,7 +114,7 @@ test", text);
         [Fact]
         public void FileExistsReturnsTrueForExistingFile()
         {
-            _appDataFolder.CreateFile("alpha\\foo\\bar.txt", "");
+            _appDataFolder.CreateFileAsync("alpha\\foo\\bar.txt", "").Wait();
             Assert.True(_appDataFolder.GetFileInfo("alpha\\foo\\bar.txt").Exists);
         }
     }

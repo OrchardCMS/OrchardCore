@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem
 {
@@ -106,13 +107,13 @@ namespace Orchard.FileSystem
             return Path.Combine(paths).Replace(RootPath, string.Empty).Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
         }
 
-        public void CreateFile(string path, string content)
+        public async Task CreateFileAsync(string path, string content)
         {
             using (var stream = CreateFile(path))
             {
                 using (var tw = new StreamWriter(stream))
                 {
-                    tw.Write(content);
+                    await tw.WriteAsync(content);
                 }
             }
         }
@@ -129,10 +130,19 @@ namespace Orchard.FileSystem
             return File.Create(fileInfo.PhysicalPath);
         }
 
-        public string ReadFile(string path)
+        public async Task<string> ReadFileAsync(string path)
         {
             var file = _fileProvider.GetFileInfo(path);
-            return file.Exists ? File.ReadAllText(file.PhysicalPath) : null;
+
+            if (!file.Exists)
+            {
+                return null;
+            }
+
+            using (var reader = File.OpenText(file.PhysicalPath))
+            {
+                return await reader.ReadToEndAsync();
+            }
         }
 
         public Stream OpenFile(string path)

@@ -36,10 +36,10 @@ namespace Orchard.Environment.Shell
 
         public ILogger Logger { get; set; }
 
-        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             // deduce and apply state changes involved
-            var shellState = _stateManager.GetShellStateAsync().Result;
+            var shellState = await _stateManager.GetShellStateAsync();
             foreach (var feature in descriptor.Features)
             {
                 var featureName = feature.Name;
@@ -78,11 +78,11 @@ namespace Orchard.Environment.Shell
 
         private void FireApplyChangesIfNeeded()
         {
-            _deferredTaskEngine.AddTask(context =>
+            _deferredTaskEngine.AddTask(async context =>
             {
                 var stateManager = context.ServiceProvider.GetRequiredService<IShellStateManager>();
                 var shellStateCoordinator = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
-                var shellState = stateManager.GetShellStateAsync().Result;
+                var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
                 {
@@ -104,8 +104,6 @@ namespace Orchard.Environment.Shell
 
                     shellStateCoordinator.ApplyChanges();
                 }
-
-                return Task.CompletedTask;
             });
         }
 

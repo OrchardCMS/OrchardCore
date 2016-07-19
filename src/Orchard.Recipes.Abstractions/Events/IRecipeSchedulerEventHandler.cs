@@ -1,7 +1,9 @@
-﻿namespace Orchard.Recipes.Events
+﻿using System.Threading.Tasks;
+
+namespace Orchard.Recipes.Events
 {
     public interface IRecipeSchedulerEventHandler
     {
-        void ExecuteWork(string executionId);
+        Task ExecuteWorkAsync(string executionId);
     }
 }
