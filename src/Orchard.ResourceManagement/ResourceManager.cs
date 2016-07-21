@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Orchard.ResourceManagement
 {
@@ -20,46 +18,6 @@ namespace Orchard.ResourceManagement
         private ResourceManifest _dynamicManifest;
         private List<string> _headScripts;
         private List<string> _footScripts;
-
-
-        private const string NotIE = "!IE";
-
-        //public static void WriteResource(TextWriter writer, ResourceDefinition resource, string url, string condition, Dictionary<string, string> attributes)
-        //{
-        //    if (!string.IsNullOrEmpty(condition))
-        //    {
-        //        if (condition == NotIE)
-        //        {
-        //            writer.WriteLine("<!--[if " + condition + "]>-->");
-        //        }
-        //        else
-        //        {
-        //            writer.WriteLine("<!--[if " + condition + "]>");
-        //        }
-        //    }
-
-        //    var tagBuilder = GetTagBuilder(resource, url);
-
-        //    if (attributes != null)
-        //    {
-        //        // todo: try null value
-        //        tagBuilder.MergeAttributes(attributes, true);
-        //    }
-
-        //    writer.WriteLine(tagBuilder.ToString());
-
-        //    if (!string.IsNullOrEmpty(condition))
-        //    {
-        //        if (condition == NotIE)
-        //        {
-        //            writer.WriteLine("<!--<![endif]-->");
-        //        }
-        //        else
-        //        {
-        //            writer.WriteLine("<![endif]-->");
-        //        }
-        //    }
-        //}
 
         private readonly IResourceManifestState _resourceManifestState;
 

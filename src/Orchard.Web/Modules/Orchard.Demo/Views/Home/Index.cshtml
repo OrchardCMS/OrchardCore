@@ -14,7 +14,7 @@
 
     @* Injecting custom scripts *@
     <script asp-src="bar.min.js" debug-src="bar.js" at="Head"></script>
-    <script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot"></script>
+    <script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
 
     @* Injecting custom stylesheets *@
     <style asp-src="bar.min.css" debug-src="bar.css"></style>

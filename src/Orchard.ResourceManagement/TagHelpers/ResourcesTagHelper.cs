@@ -81,7 +81,7 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                         first = false;
 
-                        output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
+                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
                     }
 
                     break;
@@ -98,7 +98,7 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                         first = false;
 
-                        output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
+                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
                     }
 
                     break;
@@ -115,7 +115,7 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                         first = false;
 
-                        output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
+                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
                     }
 
                     break;
