@@ -19,21 +19,18 @@ namespace Orchard.ResourceManagement.TagHelpers
         public ResourceType Type { get; set; }
 
         private readonly IResourceManager _resourceManager;
+        private readonly IRequireSettingsProvider _requireSettingsProvider;
 
-        public ResourcesTagHelper(IResourceManager resourceManager)
+        public ResourcesTagHelper(IResourceManager resourceManager, IRequireSettingsProvider requireSettingsProvider)
         {
+            _requireSettingsProvider = requireSettingsProvider;
             _resourceManager = resourceManager;
         }
 
         public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
 
-            var defaultSettings = new RequireSettings
-            {
-                DebugMode = true,
-                CdnMode = false,
-                Culture = "en-US",
-            };
+            var defaultSettings = _requireSettingsProvider.GetDefault();
 
             bool first = true; ;
 

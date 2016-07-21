@@ -281,6 +281,11 @@ namespace Orchard.ResourceManagement
                 tagBuilder.MergeAttributes(Attributes);
             }
 
+            if (settings.Attributes != null)
+            {
+                tagBuilder.MergeAttributes(settings.Attributes);
+            }
+
             if (!String.IsNullOrEmpty(FilePathAttributeName))
             {
                 if (!String.IsNullOrEmpty(url))

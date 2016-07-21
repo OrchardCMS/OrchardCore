@@ -13,7 +13,7 @@
     <script asp-name="foo" at="Head"></script>
 
     @* Injecting custom scripts *@
-    <script asp-src="bar.min.js" debug-src="bar.js" at="Head"></script>
+    <script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
     <script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
 
     @* Injecting custom stylesheets *@

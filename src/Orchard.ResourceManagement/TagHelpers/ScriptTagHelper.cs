@@ -62,6 +62,11 @@ namespace Orchard.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
