@@ -35,13 +35,21 @@ namespace Orchard.ResourceManagement.TagHelpers
                 Culture = "en-US",
             };
 
+            bool first = true; ;
+
             switch (Type)
             {
                 case ResourceType.Meta:
                     foreach (var meta in _resourceManager.GetRegisteredMetas())
                     {
+                        if (!first)
+                        {
+                            output.Content.AppendHtml(Environment.NewLine);
+                        }
+
+                        first = false;
+
                         output.Content.AppendHtml(meta.GetTag());
-                        output.Content.AppendHtml(Environment.NewLine);
                     }
 
                     break;
@@ -49,8 +57,14 @@ namespace Orchard.ResourceManagement.TagHelpers
                 case ResourceType.HeadLink:
                     foreach (var link in _resourceManager.GetRegisteredLinks())
                     {
+                        if (!first)
+                        {
+                            output.Content.AppendHtml(Environment.NewLine);
+                        }
+
+                        first = false;
+
                         output.Content.AppendHtml(link.GetTag());
-                        output.Content.AppendHtml(Environment.NewLine);
                     }
 
                     break;
@@ -60,8 +74,14 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                     foreach (var context in styleSheets)
                     {
+                        if (!first)
+                        {
+                            output.Content.AppendHtml(Environment.NewLine);
+                        }
+
+                        first = false;
+
                         output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
-                        output.Content.AppendHtml(Environment.NewLine);
                     }
 
                     break;
@@ -71,8 +91,14 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                     foreach (var context in headScripts.Where(r => r.Settings.Location == ResourceLocation.Head))
                     {
+                        if (!first)
+                        {
+                            output.Content.AppendHtml(Environment.NewLine);
+                        }
+
+                        first = false;
+
                         output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
-                        output.Content.AppendHtml(Environment.NewLine);
                     }
 
                     break;
@@ -82,8 +108,14 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                     foreach (var context in footScripts.Where(r => r.Settings.Location == ResourceLocation.Foot))
                     {
+                        if (!first)
+                        {
+                            output.Content.AppendHtml(Environment.NewLine);
+                        }
+
+                        first = false;
+
                         output.Content.AppendHtml(context.GetTagBuilder(defaultSettings, "/"));
-                        output.Content.AppendHtml(Environment.NewLine);
                     }
 
                     break;

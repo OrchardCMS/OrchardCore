@@ -1,18 +1,23 @@
 ﻿@using Microsoft.Extensions.DependencyInjection;
-@using Orchard.ResourceManagement;
-
 
 @{
-    var Resources = Context.RequestServices.GetRequiredService<IResourceManager>();
 
-    Resources.AppendMeta(new MetaEntry(/*name*/ "Foo", /*content*/ "Bar"), "");
-    Resources.InlineManifest.DefineScript("baz").SetUrl("baz.min.js", "baz.js"); @* <script name="baz" src="baz.min.js" debug-src="baz.min.js"> *@
-    Resources.InlineManifest.DefineScript("foo").SetUrl("foo.min.js", "foo.js").SetDependencies("baz"); @* <script name="foo" src="foo.min.js" debug-src="foo.min.js" depends-on="baz"> *@
-    Resources.Include("script", "bar.min.js", "bar.js").AtHead(); @* <script src="bar.min.js" debug-src="bar.js" at="Head"> *@
-    Resources.Include("script", "bottom.min.js", "bottom.js").AtFoot();
-    Resources.Include("stylesheet", "bar.min.css", "bar.css");
-    Resources.RegisterResource("script", "foo").AtHead(); @* <script name="foo" at="Head" /> *@
-    Resources.RegisterLink(new LinkEntry() { Title = "Me", Rel = "author" }); @* <link *@
+    @* Adding meta tags *@
+    <meta asp-name="foo" content="bar" />
+
+    @* Inline definition of resources and dependencies *@
+    <script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js"></script>
+    <script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz"></script>
+
+    @* Injecting named resources *@
+    <script asp-name="foo" at="Head"></script>
+
+    @* Injecting custom scripts *@
+    <script asp-src="bar.min.js" debug-src="bar.js" at="Head"></script>
+    <script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot"></script>
+
+    @* Injecting custom stylesheets *@
+    <style asp-src="bar.min.css" debug-src="bar.css"></style>
 }
 
 <div class="jumbotron">

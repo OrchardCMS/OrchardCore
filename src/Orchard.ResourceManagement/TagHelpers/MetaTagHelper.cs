@@ -3,7 +3,7 @@
 namespace Orchard.ResourceManagement.TagHelpers
 {
 
-    [HtmlTargetElement("meta", Attributes = nameof(NameAttributeName))]
+    [HtmlTargetElement("meta", Attributes = NameAttributeName)]
     public class MetaTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
