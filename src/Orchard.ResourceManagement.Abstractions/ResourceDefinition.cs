@@ -262,13 +262,13 @@ namespace Orchard.ResourceManagement
 
             if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {
-                SetAttribute("integrity", CdnIntegrity);
-                SetAttribute("crossorigin", "anonymous");
+                tagBuilder.Attributes["integrity"] = CdnIntegrity;
+                tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
             else if (!String.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
             {
-                SetAttribute("integrity", CdnDebugIntegrity);
-                SetAttribute("crossorigin", "anonymous");
+                tagBuilder.Attributes["integrity"] = CdnDebugIntegrity;
+                tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
 
             if (_resourceAttributes.ContainsKey(Type))
