@@ -11,7 +11,7 @@ namespace Orchard.ResourceManagement
 
         public MetaEntry()
         {
-
+            _builder.TagRenderMode = TagRenderMode.SelfClosing;
         }
 
         public MetaEntry(string name = null, string content = null, string httpEquiv = null, string charset = null)
@@ -117,8 +117,7 @@ namespace Orchard.ResourceManagement
 
         public IHtmlContent GetTag()
         {
-            _builder.TagRenderMode = TagRenderMode.SelfClosing;
-            return new HtmlString(_builder.ToString());
+            return _builder;
         }
     }
 }

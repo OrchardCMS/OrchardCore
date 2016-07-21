@@ -1,5 +1,19 @@
 ﻿@using Microsoft.Extensions.DependencyInjection;
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Orchard.ResourceManagement;
+
+
+@{
+    var Resources = Context.RequestServices.GetRequiredService<IResourceManager>();
+
+    Resources.AppendMeta(new MetaEntry(/*name*/ "Foo", /*content*/ "Bar"), "");
+    Resources.InlineManifest.DefineScript("baz").SetUrl("baz.min.js", "baz.js"); @* <script name="baz" src="baz.min.js" debug-src="baz.min.js"> *@
+    Resources.InlineManifest.DefineScript("foo").SetUrl("foo.min.js", "foo.js").SetDependencies("baz"); @* <script name="foo" src="foo.min.js" debug-src="foo.min.js" depends-on="baz"> *@
+    Resources.Include("script", "bar.min.js", "bar.js").AtHead(); @* <script src="bar.min.js" debug-src="bar.js" at="Head"> *@
+    Resources.Include("script", "bottom.min.js", "bottom.js").AtFoot();
+    Resources.Include("stylesheet", "bar.min.css", "bar.css");
+    Resources.RegisterResource("script", "foo").AtHead(); @* <script name="foo" at="Head" /> *@
+    Resources.RegisterLink(new LinkEntry() { Title = "Me", Rel = "author" }); @* <link *@
+}
 
 <div class="jumbotron">
     <p>This page lets you create a new content item. Type any text, you will be redirected to a view displaying the newly created content item.</p>

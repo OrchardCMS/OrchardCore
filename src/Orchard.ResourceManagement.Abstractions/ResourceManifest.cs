@@ -1,24 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Web;
-using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.ResourceManagement
 {
-    public class ResourceManifest : IResourceManifest
+    public class ResourceManifest
     {
-        private string _basePath;
+        private string _basePath = "";
         private readonly IDictionary<string, IDictionary<string, ResourceDefinition>> _resources = new Dictionary<string, IDictionary<string, ResourceDefinition>>(StringComparer.OrdinalIgnoreCase);
-
-        public virtual Feature Feature { get; set; }
-
-        public virtual string Name
-        {
-            get
-            {
-                return GetType().Name;
-            }
-        }
 
         public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
         {
@@ -52,10 +40,6 @@ namespace Orchard.ResourceManagement
         {
             get
             {
-                if (_basePath == null && Feature != null)
-                {
-                    _basePath = VirtualPathUtility.AppendTrailingSlash(Feature.Descriptor.Extension.Location + "/" + Feature.Descriptor.Extension.Id);
-                }
                 return _basePath;
             }
         }

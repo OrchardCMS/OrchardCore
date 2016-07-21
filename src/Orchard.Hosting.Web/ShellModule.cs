@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data;
 using Orchard.DeferredTasks;
+using Orchard.ResourceManagement;
 
 namespace Orchard.Hosting
 {
@@ -15,6 +16,7 @@ namespace Orchard.Hosting
             serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();
 
             serviceCollection.AddDataAccess();
+            serviceCollection.AddResourceManagement();
         }
     }
 }

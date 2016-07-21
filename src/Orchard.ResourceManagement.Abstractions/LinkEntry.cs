@@ -9,6 +9,11 @@ namespace Orchard.ResourceManagement
 
         public string Condition { get; set; }
 
+        public LinkEntry()
+        {
+            _builder.TagRenderMode = TagRenderMode.SelfClosing;
+        }
+
         public string Rel
         {
             get
@@ -55,15 +60,17 @@ namespace Orchard.ResourceManagement
 
         public IHtmlContent GetTag()
         {
-            _builder.TagRenderMode = TagRenderMode.SelfClosing;
-            string tag = _builder.ToString();
-
             if (!string.IsNullOrEmpty(Condition))
             {
-                return new HtmlString("<!--[if " + Condition + "]>" + tag + "<![endif]-->");
+                var htmlBuilder = new HtmlContentBuilder();
+                htmlBuilder.AppendHtml("<!--[if " + Condition + "]>");
+                htmlBuilder.AppendHtml(_builder);
+                htmlBuilder.AppendHtml("<![endif]-->");
+
+                return htmlBuilder;
             }
 
-            return new HtmlString(tag);
+            return _builder;
         }
 
         public LinkEntry AddAttribute(string name, string value)

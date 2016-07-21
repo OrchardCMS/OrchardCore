@@ -1,29 +1,25 @@
 using System.Collections.Generic;
-using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.ResourceManagement
 {
-    public class ResourceManifestBuilder
+    public class ResourceManifestBuilder : IResourceManifestBuilder
     {
         public ResourceManifestBuilder()
         {
-            ResourceManifests = new HashSet<IResourceManifest>();
+            ResourceManifests = new HashSet<ResourceManifest>();
         }
 
-        public Feature Feature { get; set; }
-
-        internal HashSet<IResourceManifest> ResourceManifests { get; private set; }
+        internal HashSet<ResourceManifest> ResourceManifests { get; private set; }
 
         public ResourceManifest Add()
         {
-            var manifest = new ResourceManifest { Feature = Feature };
-            ResourceManifests.Add(manifest);
-            return manifest;
+            return Add(new ResourceManifest());
         }
 
-        public void Add(IResourceManifest manifest)
+        public ResourceManifest Add(ResourceManifest manifest)
         {
             ResourceManifests.Add(manifest);
+            return manifest;
         }
     }
 }
