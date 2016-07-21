@@ -21,7 +21,9 @@ namespace Orchard.Environment.Extensions.Compilers
     {
         private static readonly Object _syncLock = new Object();
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
-        private static readonly ConcurrentDictionary<string, bool> _ambientLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+        private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
+        private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
@@ -32,6 +34,13 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
+
+        private static HashSet<string> GetAmbientLibraries()
+        {
+            return new HashSet<string>(DependencyContext.Default.CompileLibraries
+                .Where(x => x.Type.Equals(LibraryType.Project.ToString(), StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+        }
 
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
@@ -45,18 +54,10 @@ namespace Orchard.Environment.Extensions.Compilers
 
         internal bool CompileInternal(ProjectContext context, string config, string probingFolderPath)
         {
-            // Mark ambient libraries as compiled
-            if (_ambientLibraries.IsEmpty)
+            // Check if ambient library
+            if (AmbientLibraries.Contains(context.ProjectName()))
             {
-                var libraries = DependencyContext.Default.CompileLibraries
-                    .Where(x => x.Type.Equals(LibraryType.Project.ToString(),
-                    StringComparison.OrdinalIgnoreCase));
-
-                foreach (var library in libraries)
-                {
-                    _ambientLibraries[library.Name] = true;
-                    _compiledLibraries[library.Name] = true;
-                }
+                return true;
             }
 
             bool compilationResult;
@@ -125,7 +126,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 var package = dependency.Library as PackageDescription;
 
                 // Compile other referenced libraries
-                if (library != null  && dependency.CompilationAssemblies.Any())
+                if (library != null && !AmbientLibraries.Contains(library.Identity.Name) && dependency.CompilationAssemblies.Any())
                 {
                     if (!_compiledLibraries.TryGetValue(library.Identity.Name, out compilationResult))
                     {
@@ -210,7 +211,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     }
                 }
                 // Check for an ambient library
-                else if (library != null && _ambientLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                else if (library != null && AmbientLibraries.Contains(library.Identity.Name))
                 {
                     references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
                 }
