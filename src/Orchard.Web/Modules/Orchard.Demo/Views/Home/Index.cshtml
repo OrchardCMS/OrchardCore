@@ -1,29 +1,28 @@
 ﻿@using Microsoft.Extensions.DependencyInjection;
 
-@{
+@* Adding meta tags *@
+<meta asp-name="foo" content="bar" />
+<meta asp-name="foo" content="baz" />
 
-    @* Adding meta tags *@
-    <meta asp-name="foo" content="bar" />
-    <meta asp-name="foo" content="baz" />
+@* Inline definition of resources and dependencies *@
+<script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js"></script>
+<script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz"></script>
 
-    @* Inline definition of resources and dependencies *@
-    <script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js"></script>
-    <script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz"></script>
+@* Injecting named resources *@
+<script asp-name="foo" at="Head"></script>
 
-    @* Injecting named resources *@
-    <script asp-name="foo" at="Head"></script>
+@* Injecting custom scripts urls *@
+<script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
+<script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
 
-    @* Injecting custom scripts *@
-    <script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
-    <script asp-src="bottom.min.js" debug-src="bottom.js" debug="false" at="Foot" condition="!IE"></script>
+@* Injecting custom stylesheets *@
+<style asp-src="bar.min.css" debug-src="bar.css"></style>
 
-    @* Injecting custom stylesheets *@
-    <style asp-src="bar.min.css" debug-src="bar.css"></style>
+@* Adding custom links *@
+<link asp-src="http://example.com/feed" rel="alternate" type="application/rss+xml" />
 
-    @* Adding custom links *@
-    <link asp-src="http://example.com/feed" rel="alternate" type="application/rss+xml" />
-
-}
+@* Adding custom script *@
+<script at="Foot">document.write('some script');</script>
 
 <div class="jumbotron">
     <p>This page lets you create a new content item. Type any text, you will be redirected to a view displaying the newly created content item.</p>

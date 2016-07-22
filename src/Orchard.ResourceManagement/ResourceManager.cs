@@ -5,19 +5,21 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.ResourceManagement
 {
     public class ResourceManager : IResourceManager
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
-        private List<LinkEntry> _links;
-        private Dictionary<string, MetaEntry> _metas;
         private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
         private ResourceManifest _dynamicManifest;
-        private List<string> _headScripts;
-        private List<string> _footScripts;
+
+        private List<LinkEntry> _links;
+        private Dictionary<string, MetaEntry> _metas;
+        private List<IHtmlContent> _headScripts;
+        private List<IHtmlContent> _footScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
 
@@ -115,21 +117,21 @@ namespace Orchard.ResourceManagement
             return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
         }
 
-        public void RegisterHeadScript(string script)
+        public void RegisterHeadScript(IHtmlContent script)
         {
             if (_headScripts == null)
             {
-                _headScripts = new List<string>();
+                _headScripts = new List<IHtmlContent>();
             }
 
             _headScripts.Add(script);
         }
 
-        public void RegisterFootScript(string script)
+        public void RegisterFootScript(IHtmlContent script)
         {
             if (_footScripts == null)
             {
-                _footScripts = new List<string>();
+                _footScripts = new List<IHtmlContent>();
             }
 
             _footScripts.Add(script);
@@ -237,14 +239,14 @@ namespace Orchard.ResourceManagement
             return _metas.Values;
         }
 
-        public IEnumerable<string> GetRegisteredHeadScripts()
+        public IEnumerable<IHtmlContent> GetRegisteredHeadScripts()
         {
-            return _headScripts == null ? Enumerable.Empty<string>() : _headScripts;
+            return _headScripts == null ? Enumerable.Empty<IHtmlContent>() : _headScripts;
         }
 
-        public IEnumerable<string> GetRegisteredFootScripts()
+        public IEnumerable<IHtmlContent> GetRegisteredFootScripts()
         {
-            return _footScripts == null ? Enumerable.Empty<string>() : _footScripts;
+            return _footScripts == null ? Enumerable.Empty<IHtmlContent>() : _footScripts;
         }
 
         public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
@@ -353,6 +355,141 @@ namespace Orchard.ResourceManagement
             }
 
             _metas[index] = meta;
+        }
+
+        public IHtmlContent RenderMeta()
+        {
+            var htmlBuilder = new HtmlContentBuilder();
+
+            var first = true;
+
+            foreach (var meta in this.GetRegisteredMetas())
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(meta.GetTag());
+            }
+
+            return htmlBuilder;
+        }
+
+        public IHtmlContent RenderHeadLink()
+        {
+            var htmlBuilder = new HtmlContentBuilder();
+
+            var first = true;
+
+            foreach (var link in this.GetRegisteredLinks())
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(link.GetTag());
+            }
+
+            return htmlBuilder;
+        }
+
+        public IHtmlContent RenderStylesheet(RequireSettings settings)
+        {
+            var htmlBuilder = new HtmlContentBuilder();
+
+            var first = true;
+
+            var styleSheets = this.GetRequiredResources("stylesheet");
+
+            foreach (var context in styleSheets)
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+            }
+
+            return htmlBuilder;
+        }
+
+        public IHtmlContent RenderHeadScript(RequireSettings settings)
+        {
+            var htmlBuilder = new HtmlContentBuilder();
+
+            var headScripts = this.GetRequiredResources("script");
+
+            var first = true;
+
+            foreach (var context in headScripts.Where(r => r.Settings.Location == ResourceLocation.Head))
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+            }
+
+            foreach (var context in GetRegisteredHeadScripts())
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(context);
+            }
+
+            return htmlBuilder;
+        }
+
+        public IHtmlContent RenderFootScript(RequireSettings settings)
+        {
+            var htmlBuilder = new HtmlContentBuilder();
+
+            var footScripts = this.GetRequiredResources("script");
+
+            var first = true;
+
+            foreach (var context in footScripts.Where(r => r.Settings.Location == ResourceLocation.Foot))
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+            }
+
+            foreach (var context in GetRegisteredFootScripts())
+            {
+                if (!first)
+                {
+                    htmlBuilder.AppendHtml(Environment.NewLine);
+                }
+
+                first = false;
+
+                htmlBuilder.AppendHtml(context);
+            }
+
+            return htmlBuilder;
         }
 
         private class ResourceTypeName : IEquatable<ResourceTypeName>

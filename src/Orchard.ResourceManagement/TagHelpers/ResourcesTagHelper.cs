@@ -10,7 +10,9 @@ namespace Orchard.ResourceManagement.TagHelpers
         HeadLink,
         Stylesheet,
         HeadScript,
-        FootScript
+        FootScript,
+        Header,
+        Footer
     }
 
     [HtmlTargetElement("resources", Attributes = nameof(Type))]
@@ -29,92 +31,39 @@ namespace Orchard.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
         {
-
             var defaultSettings = _requireSettingsProvider.GetDefault();
-
-            bool first = true; ;
 
             switch (Type)
             {
                 case ResourceType.Meta:
-                    foreach (var meta in _resourceManager.GetRegisteredMetas())
-                    {
-                        if (!first)
-                        {
-                            output.Content.AppendHtml(Environment.NewLine);
-                        }
-
-                        first = false;
-
-                        output.Content.AppendHtml(meta.GetTag());
-                    }
-
+                    output.Content.SetHtmlContent(_resourceManager.RenderMeta());
                     break;
 
                 case ResourceType.HeadLink:
-                    foreach (var link in _resourceManager.GetRegisteredLinks())
-                    {
-                        if (!first)
-                        {
-                            output.Content.AppendHtml(Environment.NewLine);
-                        }
-
-                        first = false;
-
-                        output.Content.AppendHtml(link.GetTag());
-                    }
-
+                    output.Content.SetHtmlContent(_resourceManager.RenderHeadLink());
                     break;
 
                 case ResourceType.Stylesheet:
-                    var styleSheets = _resourceManager.GetRequiredResources("stylesheet");
-
-                    foreach (var context in styleSheets)
-                    {
-                        if (!first)
-                        {
-                            output.Content.AppendHtml(Environment.NewLine);
-                        }
-
-                        first = false;
-
-                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
-                    }
-
+                    output.Content.SetHtmlContent(_resourceManager.RenderStylesheet(defaultSettings));
                     break;
 
                 case ResourceType.HeadScript:
-                    var headScripts = _resourceManager.GetRequiredResources("script");
-
-                    foreach (var context in headScripts.Where(r => r.Settings.Location == ResourceLocation.Head))
-                    {
-                        if (!first)
-                        {
-                            output.Content.AppendHtml(Environment.NewLine);
-                        }
-
-                        first = false;
-
-                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
-                    }
-
+                    output.Content.SetHtmlContent(_resourceManager.RenderHeadScript(defaultSettings));
                     break;
 
                 case ResourceType.FootScript:
-                    var footScripts = _resourceManager.GetRequiredResources("script");
+                    output.Content.SetHtmlContent(_resourceManager.RenderFootScript(defaultSettings));
+                    break;
 
-                    foreach (var context in footScripts.Where(r => r.Settings.Location == ResourceLocation.Foot))
-                    {
-                        if (!first)
-                        {
-                            output.Content.AppendHtml(Environment.NewLine);
-                        }
+                case ResourceType.Header:
+                    output.Content.SetHtmlContent(_resourceManager.RenderMeta());
+                    output.Content.SetHtmlContent(_resourceManager.RenderHeadLink());
+                    output.Content.SetHtmlContent(_resourceManager.RenderStylesheet(defaultSettings));
+                    output.Content.SetHtmlContent(_resourceManager.RenderHeadScript(defaultSettings));
+                    break;
 
-                        first = false;
-
-                        output.Content.AppendHtml(context.GetHtmlContent(defaultSettings, "/"));
-                    }
-
+                case ResourceType.Footer:
+                    output.Content.SetHtmlContent(_resourceManager.RenderFootScript(defaultSettings));
                     break;
 
                 default:

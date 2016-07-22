@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Orchard.ResourceManagement.TagHelpers
@@ -6,10 +7,12 @@ namespace Orchard.ResourceManagement.TagHelpers
 
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
+    [HtmlTargetElement("script", Attributes = AtAttributeName)]
     public class ScriptTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string AtAttributeName = "at";
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
@@ -28,6 +31,7 @@ namespace Orchard.ResourceManagement.TagHelpers
         public string DependsOn { get; set; }
         public string Version { get; set; }
 
+        [HtmlAttributeName(AtAttributeName)]
         public ResourceLocation At { get; set; }
 
         private readonly IResourceManager _resourceManager;
@@ -39,10 +43,11 @@ namespace Orchard.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            output.SuppressOutput();
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
-                // Include custom script
+                // Include custom script url
 
                 var setting = _resourceManager.Include("script", Src, DebugSrc);
 
@@ -120,8 +125,31 @@ namespace Orchard.ResourceManagement.TagHelpers
                     definition.SetDependencies(DependsOn.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 }
             }
+            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            {
+                // Custom script content
 
-            output.TagName = null;
+                var childContent = output.GetChildContentAsync().Result;
+
+                var builder = new TagBuilder("script");
+                builder.Attributes.Add("type", "text/javascript");
+                builder.InnerHtml.AppendHtml(childContent);
+                builder.TagRenderMode = TagRenderMode.Normal;
+
+                foreach (var attribute in output.Attributes)
+                {
+                    builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
+                }
+
+                if (At == ResourceLocation.Head)
+                {
+                    _resourceManager.RegisterHeadScript(builder);
+                }
+                else
+                {
+                    _resourceManager.RegisterFootScript(builder);
+                }
+            }
         }
     }
 }

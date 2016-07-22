@@ -1,69 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.ResourceManagement
 {
     public interface IResourceManager
     {
-        IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType);
-        IEnumerable<LinkEntry> GetRegisteredLinks();
-        IEnumerable<MetaEntry> GetRegisteredMetas();
-        IEnumerable<string> GetRegisteredHeadScripts();
-        IEnumerable<string> GetRegisteredFootScripts();
-
         /// <summary>
         /// Returns an inline manifest.
         /// </summary>
         ResourceManifest InlineManifest { get; }
+
+        /// <summary>
+        /// Returns the resource matching the specific settings.
+        /// </summary>
         ResourceDefinition FindResource(RequireSettings settings);
+
+        /// <summary>
+        /// Removes a resource from the registrations.
+        /// </summary>
         void NotRequired(string resourceType, string resourceName);
+
+        /// <summary>
+        /// Registers a specific resource url.
+        /// </summary>
         RequireSettings Include(string resourceType, string resourcePath, string resourceDebugPath);
 
         /// <summary>
         /// Registers a custom url.
         /// </summary>
-        /// <param name="resourceType"></param>
-        /// <param name="resourcePath"></param>
-        /// <param name="resourceDebugPath"></param>
-        /// <param name="relativeFromPath"></param>
-        /// <returns></returns>
         RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath, string relativeFromPath);
 
         /// <summary>
         /// Registers a named resource.
         /// </summary>
-        /// <param name="resourceType"></param>
-        /// <param name="resourceName"></param>
-        /// <returns></returns>
         RequireSettings RegisterResource(string resourceType, string resourceName);
 
         /// <summary>
         /// Registers a custom script tag on at the head.
         /// </summary>
-        /// <param name="script"></param>
-        void RegisterHeadScript(string script);
+        void RegisterHeadScript(IHtmlContent script);
 
         /// <summary>
         /// Registers a custom script tag on at the foot.
         /// </summary>
         /// <param name="script"></param>
-        void RegisterFootScript(string script);
+        void RegisterFootScript(IHtmlContent script);
 
         /// <summary>
         /// Registers a link tag.
         /// </summary>
-        /// <param name="link"></param>
         void RegisterLink(LinkEntry link);
 
         /// <summary>
         /// Registers a meta tag.
         /// </summary>
-        /// <param name="meta"></param>
         void RegisterMeta(MetaEntry meta);
 
         /// <summary>
         /// Appends a value to the current content of a meta tag, separated by a custom separator.
         /// </summary>
         void AppendMeta(MetaEntry meta, string contentSeparator);
+
+        /// <summary>
+        /// Returns the required resources of the specified type.
+        /// </summary>
+        IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType);
+
+        /// <summary>
+        /// Returns the registered link resources.
+        /// </summary>
+        IEnumerable<LinkEntry> GetRegisteredLinks();
+
+        /// <summary>
+        /// Returns the registered meta resources.
+        /// </summary>
+        IEnumerable<MetaEntry> GetRegisteredMetas();
+
+        /// <summary>
+        /// Returns the registered header script resources.
+        /// </summary>
+        IEnumerable<IHtmlContent> GetRegisteredHeadScripts();
+
+        /// <summary>
+        /// Returns the registered footer script resources.
+        /// </summary>
+        IEnumerable<IHtmlContent> GetRegisteredFootScripts();
+
+        /// <summary>
+        /// Renders the registered meta tags.
+        /// </summary>
+        IHtmlContent RenderMeta();
+
+        /// <summary>
+        /// Renders the registered header link tags.
+        /// </summary>
+        IHtmlContent RenderHeadLink();
+
+        /// <summary>
+        /// Renders the registered stylesheets.
+        /// </summary>
+        IHtmlContent RenderStylesheet(RequireSettings settings);
+
+        /// <summary>
+        /// Renders the registered header script tags.
+        /// </summary>
+        IHtmlContent RenderHeadScript(RequireSettings settings);
+
+        /// <summary>
+        /// Renders the registered footer script tags.
+        /// </summary>
+        IHtmlContent RenderFootScript(RequireSettings settings);
     }
 }
