@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+﻿using System;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Orchard.ResourceManagement.TagHelpers
 {
@@ -17,6 +18,8 @@ namespace Orchard.ResourceManagement.TagHelpers
 
         public string Charset { get; set; }
 
+        public string Separator { get; set; }
+
         private readonly IResourceManager _resourceManager;
 
         public MetaTagHelper(IResourceManager resourceManager)
@@ -26,9 +29,20 @@ namespace Orchard.ResourceManagement.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            _resourceManager.AppendMeta(new MetaEntry(Name, Content, HttpEquiv, Charset), "");
+            var metaEntry = new MetaEntry(Name, Content, HttpEquiv, Charset);
 
-            // We don't want any encapsulating tag around the shape
+            foreach (var attribute in output.Attributes)
+            {
+                if (String.Equals(attribute.Name, "name", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                metaEntry.SetAttribute(attribute.Name, attribute.Value.ToString());
+            }
+
+            _resourceManager.AppendMeta(metaEntry, Separator ?? ", ");
+
             output.TagName = null;
         }
     }

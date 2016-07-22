@@ -4,6 +4,7 @@
 
     @* Adding meta tags *@
     <meta asp-name="foo" content="bar" />
+    <meta asp-name="foo" content="baz" />
 
     @* Inline definition of resources and dependencies *@
     <script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js"></script>
@@ -18,6 +19,10 @@
 
     @* Injecting custom stylesheets *@
     <style asp-src="bar.min.css" debug-src="bar.css"></style>
+
+    @* Adding custom links *@
+    <link asp-src="http://example.com/feed" rel="alternate" type="application/rss+xml" />
+
 }
 
 <div class="jumbotron">

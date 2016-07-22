@@ -116,7 +116,6 @@ namespace Orchard.ResourceManagement.TagHelpers
                 }
             }
 
-            // We don't want any encapsulating tag around the shape
             output.TagName = null;
         }
     }
