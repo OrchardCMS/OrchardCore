@@ -128,7 +128,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Compile other referenced libraries
                 if (library != null && !AmbientLibraries.Contains(library.Identity.Name) && dependency.CompilationAssemblies.Any())
                 {
-                    if (!_compiledLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                    if (!_compiledLibraries.ContainsKey(library.Identity.Name))
                     {
                         var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
 

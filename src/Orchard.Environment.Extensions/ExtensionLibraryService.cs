@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.Loader;
-using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -243,6 +242,7 @@ namespace Orchard.Environment.Extensions
 
                                 PopulateBinaryFolder(assemblyFolderPath, asset, locale);
                                 PopulateProbingFolder(asset, locale);
+                                PopulateRuntimeFolder(asset, locale);
                             }
                         }
                     }
@@ -326,6 +326,7 @@ namespace Orchard.Environment.Extensions
                                 {
                                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
                                     PopulateProbingFolder(assetResolvedPath, locale);
+                                    PopulateRuntimeFolder(assetResolvedPath, locale);
                                 }
                             }
                         }
@@ -373,6 +374,7 @@ namespace Orchard.Environment.Extensions
                                 {
                                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Culture);
                                     PopulateProbingFolder(assetResolvedPath, asset.Culture);
+                                    PopulateRuntimeFolder(assetResolvedPath, asset.Culture);
                                 }
                             }
                         }
@@ -421,6 +423,7 @@ namespace Orchard.Environment.Extensions
                             {
                                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Locale);
                                 PopulateProbingFolder(assetResolvedPath, asset.Locale);
+                                PopulateRuntimeFolder(assetResolvedPath, asset.Locale);
                             }
                         }
                     }
@@ -490,8 +493,7 @@ namespace Orchard.Environment.Extensions
 
         private bool IsAssemblyLoaded(string assemblyName)
         {
-            Lazy<Assembly> assembly;
-            return _loadedAssemblies.TryGetValue(assemblyName, out assembly);
+            return _loadedAssemblies.ContainsKey(assemblyName);
         }
 
         private Assembly LoadFromAssemblyPath(string assemblyPath)
@@ -571,6 +573,12 @@ namespace Orchard.Environment.Extensions
         private void PopulateProbingFolder(string assetPath, string relativeFolderPath = null)
         {
             PopulateBinaryFolder(_probingFolderPath, assetPath, relativeFolderPath);
+        }
+
+        private void PopulateRuntimeFolder(string assetPath, string relativeFolderPath = null)
+        {
+            var runtimeDirectory = Path.GetDirectoryName(CSharpExtensionCompiler.EntryAssembly.Location);
+            PopulateBinaryFolder(runtimeDirectory, assetPath, relativeFolderPath);
         }
     }
 }
