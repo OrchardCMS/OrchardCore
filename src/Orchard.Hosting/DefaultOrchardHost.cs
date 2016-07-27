@@ -1,17 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Shell.Models;
+using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
