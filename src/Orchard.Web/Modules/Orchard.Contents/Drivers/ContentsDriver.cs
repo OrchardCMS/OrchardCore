@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Orchard.ContentManagement;
-using Orchard.DisplayManagement.ModelBinding;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.DisplayManagement.Views;
 using Orchard.ContentManagement.MetaData;
-using System.Threading.Tasks;
 using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Views;
 
 namespace Orchard.Contents.Drivers
 {
