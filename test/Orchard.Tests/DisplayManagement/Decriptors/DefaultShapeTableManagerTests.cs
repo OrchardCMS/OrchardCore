@@ -43,7 +43,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
+            serviceCollection.AddLogging();
+            serviceCollection.AddMemoryCache();
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
@@ -249,7 +250,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
-            Assert.Null(result3.Location);
+            Assert.Null(result3);
             Assert.Equal("Main", result4.Location);
             Assert.Empty(result5.Location);
             Assert.Equal("Header:5", result6.Location);
@@ -279,7 +280,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
-            Assert.Null(result3.Location);
+            Assert.Null(result3);
             Assert.Equal("Main", result4.Location);
             Assert.Empty(result5.Location);
             Assert.Equal("Header:5", result6.Location);
@@ -311,7 +312,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 _serviceProvider.GetService<TestShapeProvider>().Discover =
                     builder => builder.Describe("Hello").From(TestFeature())
-                                   .Placement(ShapePlacementParsingStrategy.BuildPredicate(c => true, new KeyValuePair<string, string>("Path", path)), new PlacementInfo { Location = "Match" });
+                                   .Placement(ctx => true, new PlacementInfo { Location = "Match" });
 
                 var manager = _serviceProvider.GetService<IShapeTableManager>();
                 var hello = manager.GetShapeTable(null).Descriptors["Hello"];
