@@ -16,6 +16,7 @@ namespace Orchard.ResourceManagement
         public bool CdnMode { get; set; }
         public ResourceLocation Location { get; set; }
         public string Condition { get; set; }
+        public string Version { get; set; }
         public Action<ResourceDefinition> InlineDefinition { get; set; }
         public Dictionary<string, string> Attributes
         {
@@ -98,6 +99,15 @@ namespace Orchard.ResourceManagement
             return this;
         }
 
+        public RequireSettings UseVersion(string version)
+        {
+            if (!String.IsNullOrEmpty(version))
+            {
+                Version = version;
+            }
+            return this;
+        }
+
         public RequireSettings Define(Action<ResourceDefinition> resourceDefinition)
         {
             if (resourceDefinition != null)
@@ -161,6 +171,7 @@ namespace Orchard.ResourceManagement
                 .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
                 .UseCulture(Culture).UseCulture(other.Culture)
                 .UseCondition(Condition).UseCondition(other.Condition)
+                .UseVersion(Version).UseVersion(other.Version)
                 .Define(InlineDefinition).Define(other.InlineDefinition);
             settings._attributes = MergeAttributes(other);
             return settings;

@@ -168,20 +168,50 @@ namespace Orchard.ResourceManagement
             // using the action.
             var name = settings.Name ?? "";
             var type = settings.Type;
-            var resource = (from p in ResourceManifests
+            ResourceDefinition resource;
+
+            var resources = (from p in ResourceManifests
                             from r in p.GetResources(type)
                             where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            let version = r.Value.Version != null ? new Version(r.Value.Version) : null
-                            orderby version descending
-                            select r.Value).FirstOrDefault();
+                            select r.Value).SelectMany(x => x);
+
+            if(!String.IsNullOrEmpty(settings.Version))
+            {
+                // Specific version, filter
+                var upper = GetUpperBoundVersion(new Version(settings.Version));
+                resources = from r in resources
+                            let version = r.Version != null ? new Version(r.Version) : null
+                            where version < upper
+                            select r;
+            }
+
+            resource = (from r in resources
+                        let version = r.Version != null ? new Version(r.Version) : null
+                        orderby version descending
+                        select r).FirstOrDefault();
+
             if (resource == null && _dynamicManifest != null)
             {
-                resource = (from r in _dynamicManifest.GetResources(type)
+                resources = (from r in _dynamicManifest.GetResources(type)
                             where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            let version = r.Value.Version != null ? new Version(r.Value.Version) : null
+                            select r.Value).SelectMany(x => x);
+
+                if (!String.IsNullOrEmpty(settings.Version))
+                {
+                    // Specific version, filter
+                    var upper = GetUpperBoundVersion(new Version(settings.Version));
+                    resources = from r in resources
+                                let version = r.Version != null ? new Version(r.Version) : null
+                                where version < upper
+                                select r;
+                }
+
+                resource = (from r in resources
+                            let version = r.Version != null ? new Version(r.Version) : null
                             orderby version descending
-                            select r.Value).FirstOrDefault();
+                            select r).FirstOrDefault();
             }
+
             if (resolveInlineDefinitions && resource == null)
             {
                 // Does not seem to exist, but it's possible it is being
@@ -193,6 +223,26 @@ namespace Orchard.ResourceManagement
                 }
             }
             return resource;
+        }
+
+        private Version GetUpperBoundVersion(Version version)
+        {
+            if (version.Build != 0)
+            {
+                return new Version(version.Major, version.Minor, version.Build + 1);
+            }
+
+            if (version.Minor != 0)
+            {
+                return new Version(version.Major, version.Minor + 1, 0);
+            }
+
+            if (version.Major != 0)
+            {
+                return new Version(version.Major + 1, 0, 0);
+            }
+
+            return version;
         }
 
         private bool ResolveInlineDefinitions(string resourceType)
@@ -289,7 +339,10 @@ namespace Orchard.ResourceManagement
             if (resource.Dependencies != null)
             {
                 var dependencies = from d in resource.Dependencies
-                                   select FindResource(new RequireSettings { Type = resource.Type, Name = d });
+                                   let segments = d.Split('-')
+                                   let name = segments[0]
+                                   let version = segments.Length > 1 ? segments[1] : null
+                                   select FindResource(new RequireSettings { Type = resource.Type, Name = name, Version = version });
                 foreach (var dependency in dependencies)
                 {
                     if (dependency == null)

@@ -97,6 +97,11 @@ namespace Orchard.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
+
+                if (!String.IsNullOrEmpty(Version))
+                {
+                    setting.UseVersion(Version);
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
@@ -117,12 +122,17 @@ namespace Orchard.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(DependsOn.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (!String.IsNullOrEmpty(Version))
+                {
+                    definition.SetVersion(Version);
                 }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))

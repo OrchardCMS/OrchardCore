@@ -5,11 +5,15 @@
 <meta asp-name="foo" content="baz" />
 
 @* Inline definition of resources and dependencies *@
-<script asp-name="baz" asp-src="baz.min.js" debug-src="baz.js"></script>
-<script asp-name="foo" asp-src="foo.min.js" debug-src="foo.js" depends-on="baz"></script>
+<script asp-name="blitz" asp-src="blitz.min.js" debug-src="blitz.js"></script>
+<script asp-name="baz" asp-src="baz.min.js?v=1.0" debug-src="baz.js?v=1.0" version="1.0"></script>
+<script asp-name="baz" asp-src="baz.min.js?v=2.0" debug-src="baz.js?v=2.0" version="2.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz-1.0" version="1.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=2.0" debug-src="foo.js?v=2.0" depends-on="baz, blitz" version="2.0"></script>
+<script asp-name="foo" asp-src="foo.min.js?v=3.0" debug-src="foo.js?v=3.0" depends-on="baz" version="3.0"></script>
 
 @* Injecting named resources *@
-<script asp-name="foo" at="Head"></script>
+<script asp-name="foo" version="2.0" at="Head"></script>
 
 @* Injecting custom scripts urls *@
 <script asp-src="bar.min.js" debug-src="bar.js" at="Head" data-foo="bar"></script>
