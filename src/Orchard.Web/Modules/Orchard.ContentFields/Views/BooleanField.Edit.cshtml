@@ -1,0 +1,49 @@
+﻿@model Orchard.ContentFields.ViewModels.EditBooleanFieldViewModel
+@using Orchard.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <label asp-for="Value">@Model.PartFieldDefinition.DisplayName</label>
+    @switch (settings.SelectionMode)
+    {
+        case SelectionMode.Checkbox:
+            <div class="or-checkbox">
+                @*<input asp-for="Value" class="check-box" type="checkbox" />*@
+                <input id="Value" name="Value" type="checkbox" class="check-box" value="true" @if (Model.Value.HasValue && Model.Value.Value) { <text> checked="checked" </text>     } />
+                @*<label class="forcheckbox" for="@(Html.FieldIdFor(m => m.Value))">@T(settings.OnLabel)</label>*@
+            </div>
+            break;
+        case SelectionMode.Radiobutton:
+            @*if (settings.Optional)
+            {
+                <div class="or-radio">
+                    <input type="radio" name="@Html.FieldNameFor(m => m.Value)" id="radio-unknown" value="" @if (!Model.Value.HasValue) { <text> checked="checked" </text>    } />
+                    <label for="radio-unknown" class="forcheckbox">@T(settings.NotSetLabel)</label>
+                </div>
+            }
+            <div class="or-radio">
+                <input type="radio" name="@Html.FieldNameFor(m => m.Value)" id="radio-true" value="true" @if (Model.Value.HasValue && Model.Value.Value) { <text> checked="checked" </text>     } />
+                <label for="radio-true" class="forcheckbox">@T(settings.OnLabel)</label>
+            </div>
+                <div class="or-radio">
+                    <input type="radio" name="@Html.FieldNameFor(m => m.Value)" id="radio-false" value="false" @if (Model.Value.HasValue && !Model.Value.Value) { <text> checked="checked" </text>     } />
+                    <label for="radio-false" class="forcheckbox">@T(settings.OffLabel)</label>
+                </div>*@
+            break;
+        case SelectionMode.Dropdown:
+            @*<select id="@(Html.FieldIdFor(m => m.Value) + "-dropdown")" name="@Html.FieldNameFor(m => m.Value)" class="form-control">
+                @if (settings.Optional)
+                    {
+                    @Html.SelectOption("", !Model.Value.HasValue, T(settings.NotSetLabel).ToString())
+                }
+                @Html.SelectOption("true", (Model.Value.HasValue && Model.Value.Value), T(settings.OnLabel).ToString())
+                @Html.SelectOption("false", (Model.Value.HasValue && !Model.Value.Value), T(settings.OffLabel).ToString())
+            </select>*@
+            break;
+        default:
+            break;
+    }
+    <span class="hint">@settings.Hint</span>
+</fieldset>

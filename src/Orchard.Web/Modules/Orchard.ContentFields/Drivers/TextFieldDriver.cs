@@ -6,14 +6,10 @@ using Orchard.DisplayManagement.Views;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.MetaData.Models;
+using System;
 
 namespace Orchard.ContentFields.Fields
 {
-    public class TextField : ContentField
-    {
-        public string Text { get; set; }
-    }
-
     public class TextFieldDriver : ContentFieldDriver<TextField>
     {
     }
@@ -22,6 +18,11 @@ namespace Orchard.ContentFields.Fields
     {
         public override IDisplayResult Display(TextField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
         {
+            if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
             return Shape<DisplayTextFieldViewModel>("TextField", model =>
             {
                 model.Field = field;
@@ -33,6 +34,11 @@ namespace Orchard.ContentFields.Fields
 
         public override IDisplayResult Edit(TextField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
         {
+            if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
             return Shape<EditTextFieldViewModel>("TextField_Edit", model =>
             {
                 model.Text = field.Text;
@@ -45,6 +51,11 @@ namespace Orchard.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition, IUpdateModel updater)
         {
+            if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
 
             return Edit(field, part, partFieldDefinition);
