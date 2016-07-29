@@ -11,4 +11,10 @@ namespace Orchard.BackgroundTasks
     {
         void DoWork(IServiceProvider serviceProvider, CancellationToken cancellationToken);
     }
+
+    public interface IBackgroundTaskGroup
+    {
+        string Name();
+        TimeSpan Period();
+    }
 }

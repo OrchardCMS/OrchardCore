@@ -29,6 +29,7 @@ namespace Orchard.BackgroundTasks
             ShellSettings shellSettings,
             IApplicationLifetime applicationLifetime,
             IEnumerable<IBackgroundTask> tasks,
+            IEnumerable<IBackgroundTaskGroup> groups,
             ILogger<BackgroundTaskService> logger)
         {
             _shellSettings = shellSettings;
@@ -37,7 +38,7 @@ namespace Orchard.BackgroundTasks
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
             _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Stopped);
             _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWork, x, Timeout.Infinite, Timeout.Infinite));
-            _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
+            _periods = _tasks.Keys.ToDictionary(x => x, x => groups.Where(g => g.Name() == x).FirstOrDefault()?.Period() ?? TimeSpan.FromMinutes(1));
             Logger = logger;
         }
 
