@@ -1,9 +1,8 @@
-﻿using Orchard.DisplayManagement.Descriptors;
+﻿using System.Threading.Tasks;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Zones;
-using System;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement
 {
@@ -36,7 +35,9 @@ namespace Orchard.DisplayManagement
                 {
                     var placementContext = new ShapePlacementContext
                     {
-                        Shape = context.Shape
+                        Shape = context.Shape,
+                        DisplayType = displayType,
+                        Differentiator = differentiator
                     };
 
                     var placement = descriptor.Placement(placementContext);

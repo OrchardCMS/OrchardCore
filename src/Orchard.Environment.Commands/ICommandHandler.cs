@@ -1,9 +1,9 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
-    public interface ICommandHandler : IDependency
+    public interface ICommandHandler
     {
-        void Execute(CommandContext context);
+        Task ExecuteAsync(CommandContext context);
     }
 }

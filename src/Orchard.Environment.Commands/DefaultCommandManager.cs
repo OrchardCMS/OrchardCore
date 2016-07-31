@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
@@ -19,14 +20,14 @@ namespace Orchard.Environment.Commands
 
         public Localizer T { get; set; }
 
-        public void Execute(CommandParameters parameters)
+        public async Task ExecuteAsync(CommandParameters parameters)
         {
             var matches = MatchCommands(parameters);
 
             if (matches.Count() == 1)
             {
                 var match = matches.Single();
-                match.CommandHandler.Execute(match.Context);
+                await match.CommandHandler.ExecuteAsync(match.Context);
             }
             else
             {
@@ -53,10 +54,8 @@ namespace Orchard.Environment.Commands
             foreach (var argCount in Enumerable.Range(1, parameters.Arguments.Count()).Reverse())
             {
                 int count = argCount;
-                var matches = _commandHandlers.SelectMany(h =>
+                return _commandHandlers.SelectMany(h =>
                     MatchCommands(parameters, count, _builder.Build(h.GetType()), h)).ToList();
-                if (matches.Any())
-                    return matches;
             }
 
             return Enumerable.Empty<Match>();

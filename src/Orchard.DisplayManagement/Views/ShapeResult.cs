@@ -42,7 +42,7 @@ namespace Orchard.DisplayManagement.Views
 
         public void Apply(BuildEditorContext context)
         {
-            ApplyImplementation(context, null);
+            ApplyImplementation(context, "Edit");
         }
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
@@ -113,14 +113,20 @@ namespace Orchard.DisplayManagement.Views
                 newShapeMetadata.Wrappers.Clear();
             }
 
-            foreach (var alternate in placement.Alternates)
+            if (placement.Alternates != null)
             {
-                newShapeMetadata.Alternates.Add(alternate);
+                foreach (var alternate in placement.Alternates)
+                {
+                    newShapeMetadata.Alternates.Add(alternate);
+                }
             }
 
-            foreach (var wrapper in placement.Wrappers)
+            if (placement.Wrappers != null)
             {
-                newShapeMetadata.Wrappers.Add(wrapper);
+                foreach (var wrapper in placement.Wrappers)
+                {
+                    newShapeMetadata.Wrappers.Add(wrapper);
+                }
             }
 
             dynamic parentShape = context.Shape;

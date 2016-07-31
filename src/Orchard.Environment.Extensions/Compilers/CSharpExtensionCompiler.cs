@@ -19,10 +19,11 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public class CSharpExtensionCompiler
     {
-        public const string RefsDirectoryName = "refs";
         private static readonly Object _syncLock = new Object();
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
-        private static readonly ConcurrentDictionary<string, bool> _ambientLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+        private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
+        private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
 
@@ -33,6 +34,13 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
+
+        private static HashSet<string> GetAmbientLibraries()
+        {
+            return new HashSet<string>(DependencyContext.Default.CompileLibraries
+                .Where(x => x.Type.Equals(LibraryType.Project.ToString(), StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+        }
 
         public bool Compile(ProjectContext context, string config, string probingFolderPath)
         {
@@ -46,18 +54,10 @@ namespace Orchard.Environment.Extensions.Compilers
 
         internal bool CompileInternal(ProjectContext context, string config, string probingFolderPath)
         {
-            // Mark ambient libraries as compiled
-            if (_ambientLibraries.IsEmpty)
+            // Check if ambient library
+            if (AmbientLibraries.Contains(context.ProjectName()))
             {
-                var libraries = DependencyContext.Default.CompileLibraries
-                    .Where(x => x.Type.Equals(LibraryType.Project.ToString(),
-                    StringComparison.OrdinalIgnoreCase));
-
-                foreach (var library in libraries)
-                {
-                    _ambientLibraries[library.Name] = true;
-                    _compiledLibraries[library.Name] = true;
-                }
+                return true;
             }
 
             bool compilationResult;
@@ -126,9 +126,9 @@ namespace Orchard.Environment.Extensions.Compilers
                 var package = dependency.Library as PackageDescription;
 
                 // Compile other referenced libraries
-                if (library != null  && dependency.CompilationAssemblies.Any())
+                if (library != null && !AmbientLibraries.Contains(library.Identity.Name) && dependency.CompilationAssemblies.Any())
                 {
-                    if (!_compiledLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                    if (!_compiledLibraries.ContainsKey(library.Identity.Name))
                     {
                         var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
 
@@ -162,23 +162,22 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
-                    foreach (var assembly in package.CompileTimeAssemblies)
+                    var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var asset in package.CompileTimeAssemblies)
                     {
-                        var fileName = Path.GetFileName(assembly.Path);
+                        var assetFileName = Path.GetFileName(asset.Path);
+                        var isRuntimeAsset = runtimeAssets.Contains(asset.Path);
 
                         // Search in the runtime directory
-                        var path = Path.Combine(runtimeDirectory, fileName);
+                        var path = isRuntimeAsset ? Path.Combine(runtimeDirectory, assetFileName)
+                            : Path.Combine(runtimeDirectory, CompilerUtility.RefsDirectoryName, assetFileName);
 
                         if (!File.Exists(path))
                         {
-                            // Fallback to the "refs" subfolder
-                            path = Path.Combine(runtimeDirectory, RefsDirectoryName, fileName);
-
-                            if (!File.Exists(path))
-                            {
-                                // Fallback to the project output path or probing folder
-                                path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
-                            }
+                            // Fallback to the project output path or probing folder
+                            var relativeFolderPath = isRuntimeAsset ? String.Empty : CompilerUtility.RefsDirectoryName;
+                            path = ResolveAssetPath(outputPath, probingFolderPath, assetFileName, relativeFolderPath);
                         }
 
                         if (!String.IsNullOrEmpty(path))
@@ -212,7 +211,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     }
                 }
                 // Check for an ambient library
-                else if (library != null && _ambientLibraries.TryGetValue(library.Identity.Name, out compilationResult))
+                else if (library != null && AmbientLibraries.Contains(library.Identity.Name))
                 {
                     references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
                 }
@@ -386,13 +385,13 @@ namespace Orchard.Environment.Extensions.Compilers
 
             Debug.WriteLine(String.Empty);
 
-            if (compilationResult && Diagnostics.Count <= 0)
+            if (compilationResult && Diagnostics.Count == 0)
             {
                 Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded.");
                 Debug.WriteLine($"0 Warning(s)");
                 Debug.WriteLine($"0 Error(s)");
             }
-            else if (result.ExitCode == 0 && Diagnostics.Count > 0)
+            else if (compilationResult && Diagnostics.Count > 0)
             {
                 Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded but has warnings.");
                 Debug.WriteLine($"0 Error(s)");
@@ -423,8 +422,16 @@ namespace Orchard.Environment.Extensions.Compilers
             return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
         }
 
-        private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName)
+        private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName, string relativeFolderPath = null)
         {
+            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(binaryFolderPath, relativeFolderPath)
+                : binaryFolderPath;
+
+            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(probingFolderPath, relativeFolderPath)
+                : probingFolderPath;
+
             var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
             var probingPath = Path.Combine(probingFolderPath, assetFileName);
 

@@ -86,6 +86,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.ContentFields" },
                     new ShellFeature { Name = "Orchard.Body" },
                     new ShellFeature { Name = "Orchard.Title" },
+                    new ShellFeature { Name = "Orchard.Resources" },
                     new ShellFeature { Name = "Orchard.Lists" },
                     new ShellFeature { Name = "Orchard.Demo" },
                     new ShellFeature { Name = "Orchard.DynamicCache" },

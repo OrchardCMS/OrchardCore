@@ -1,24 +1,31 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
-    public class PlacementFile : PlacementNode
+    public class PlacementFile : Dictionary<string, PlacementNode[]>
     {
     }
 
     public class PlacementNode
     {
-        public IEnumerable<PlacementNode> Nodes { get; set; }
-    }
-
-    public class PlacementMatch : PlacementNode
-    {
-        public IDictionary<string, string> Terms { get; set; }
-    }
-
-    public class PlacementShapeLocation : PlacementNode
-    {
-        public string ShapeType { get; set; }
+        [JsonProperty(PropertyName = "place")]
         public string Location { get; set; }
+
+        [JsonProperty(PropertyName = "display-type")]
+        public string DisplayType { get; set; }
+
+        [JsonProperty(PropertyName = "differentiator")]
+        public string Differentiator { get; set; }
+
+        [JsonProperty(PropertyName = "alernates")]
+        public string[] Alternates { get; set; }
+
+        [JsonProperty(PropertyName = "wrappers")]
+        public string[] Wrappers { get; set; }
+
+        [JsonProperty(PropertyName = "shape")]
+        public string ShapeType { get; set; }
+
     }
 }

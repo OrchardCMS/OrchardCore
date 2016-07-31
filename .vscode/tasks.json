@@ -52,7 +52,6 @@
 		},
 		{
 			"taskName": "Web App: Dotnet Publish",
-			//"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web" ]
 			"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web --output ../publish" ]
 		},
 		{

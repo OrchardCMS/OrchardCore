@@ -6,6 +6,8 @@ using Orchard.FileSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -16,19 +18,16 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IFeatureManager _featureManager;
         private readonly IOrchardFileSystem _fileSystem;
-        private readonly IPlacementFileParser _placementFileParser;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IFeatureManager featureManager,
             IOrchardFileSystem fileSystem,
-            IPlacementFileParser placementFileParser,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
             _featureManager = featureManager;
             _fileSystem = fileSystem;
-            _placementFileParser = placementFileParser;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -37,19 +36,29 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
-            
+
         }
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
         {
             var virtualPath = _fileSystem
                 .GetExtensionFileProvider(featureDescriptor.Extension, _logger)
-                .GetFileInfo("Placement.info");
+                .GetFileInfo("placement.json");
 
-            var placementFile = _placementFileParser.Parse(virtualPath);
-            if (placementFile != null)
+            if (virtualPath.Exists)
             {
-                ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                using (var stream = virtualPath.CreateReadStream())
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        using (var jtr = new JsonTextReader(reader))
+                        {
+                            JsonSerializer serializer = new JsonSerializer();
+                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
+                            ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                        }
+                    }
+                }
             }
         }
 
@@ -57,155 +66,75 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
         {
             var feature = new Feature { Descriptor = featureDescriptor };
 
-            // invert the tree into a list of leaves and the stack
-            var entries = DrillDownShapeLocations(placementFile.Nodes, Enumerable.Empty<PlacementMatch>());
-            foreach (var entry in entries)
+            foreach (var entry in placementFile)
             {
-                var shapeLocation = entry.Item1;
-                var matches = entry.Item2;
+                var shapeType = entry.Key;
+                var matches = entry.Value;
 
-                string shapeType;
-                string differentiator;
-                GetShapeType(shapeLocation, out shapeType, out differentiator);
 
-                Func<ShapePlacementContext, bool> predicate = ctx => true;
-                if (differentiator != "")
+                foreach (var filter in entry.Value)
                 {
-                    //predicate = ctx => (ctx.Differentiator ?? "") == differentiator;
+                    var placement = new PlacementInfo();
+                    placement.Location = filter.Location;
+                    placement.Alternates = filter.Alternates;
+                    placement.Wrappers = filter.Wrappers;
+                    placement.ShapeType = filter.ShapeType;
+
+                    builder.Describe(shapeType)
+                        .From(feature)
+                        .Placement(ctx => CheckFilter(ctx, filter), placement);
                 }
-
-                if (matches.Any())
-                {
-                    predicate = matches.SelectMany(match => match.Terms).Aggregate(predicate, BuildPredicate);
-                }
-
-                var placement = new PlacementInfo();
-
-                var segments = shapeLocation.Location.Split(';').Select(s => s.Trim());
-                foreach (var segment in segments)
-                {
-                    if (!segment.Contains('='))
-                    {
-                        placement.Location = segment;
-                    }
-                    else
-                    {
-                        var index = segment.IndexOf('=');
-                        var property = segment.Substring(0, index).ToLower();
-                        var value = segment.Substring(index + 1);
-                        switch (property)
-                        {
-                            case "shape":
-                                placement.ShapeType = value;
-                                break;
-                            case "alternate":
-                                placement.Alternates = new[] { value };
-                                break;
-                            case "wrapper":
-                                placement.Wrappers = new[] { value };
-                                break;
-                        }
-                    }
-                }
-
-                builder.Describe(shapeType)
-                    .From(feature)
-                    .Placement(ctx =>
-                    {
-                        var hit = predicate(ctx);
-                        // generate 'debugging' information to trace which file originated the actual location
-                        if (hit)
-                        {
-                            var virtualPath = featureDescriptor.Extension.Location + "/" + featureDescriptor.Extension.Id + "/Placement.info";
-                            ctx.Source = virtualPath;
-                        }
-                        return hit;
-                    }, placement);
             }
         }
 
-        private void GetShapeType(PlacementShapeLocation shapeLocation, out string shapeType, out string differentiator)
+        public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
         {
-            differentiator = "";
-            shapeType = shapeLocation.ShapeType;
-            var separatorLengh = 2;
-            var separatorIndex = shapeType.LastIndexOf("__");
-
-            var dashIndex = shapeType.LastIndexOf('-');
-            if (dashIndex > separatorIndex)
+            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
             {
-                separatorIndex = dashIndex;
-                separatorLengh = 1;
+                return false;
             }
 
-            if (separatorIndex > 0 && separatorIndex < shapeType.Length - separatorLengh)
+            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
             {
-                differentiator = shapeType.Substring(separatorIndex + separatorLengh);
-                shapeType = shapeType.Substring(0, separatorIndex);
+                return false;
             }
-        }
 
-        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate, KeyValuePair<string, string> term)
-        {
-            // TODO: Externalize the rules with a provider model such that modules can extend all the placement
-            // file can be constructed
+            return true;
 
-            var expression = term.Value;
             //switch (term.Key)
             //{
-                //case "ContentPart":
-                //    return ctx => ctx.Content != null
-                //        && ctx.Content.ContentItem.Has(expression)
-                //        && predicate(ctx);
-                //case "ContentType":
-                //    if (expression.EndsWith("*"))
-                //    {
-                //        var prefix = expression.Substring(0, expression.Length - 1);
-                //        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
-                //    }
-                //    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
-                //case "DisplayType":
-                //    if (expression.EndsWith("*"))
-                //    {
-                //        var prefix = expression.Substring(0, expression.Length - 1);
-                //        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
-                //    }
-                //    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
-                //case "Path":
-                //    throw new Exception("Path Not currently Supported");
-                    //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
-                    //                         ? VirtualPathUtility.ToAppRelative(expression)
-                    //                         : VirtualPathUtility.Combine("~/", expression);
+            //case "ContentPart":
+            //    return ctx => ctx.Content != null
+            //        && ctx.Content.ContentItem.Has(expression)
+            //        && predicate(ctx);
+            //case "ContentType":
+            //    if (expression.EndsWith("*"))
+            //    {
+            //        var prefix = expression.Substring(0, expression.Length - 1);
+            //        return ctx => ((ctx.ContentType ?? "").StartsWith(prefix) || (ctx.Stereotype ?? "").StartsWith(prefix)) && predicate(ctx);
+            //    }
+            //    return ctx => ((ctx.ContentType == expression) || (ctx.Stereotype == expression)) && predicate(ctx);
+            //case "DisplayType":
+            //    if (expression.EndsWith("*"))
+            //    {
+            //        var prefix = expression.Substring(0, expression.Length - 1);
+            //        return ctx => (ctx.DisplayType ?? "").StartsWith(prefix) && predicate(ctx);
+            //    }
+            //    return ctx => (ctx.DisplayType == expression) && predicate(ctx);
+            //case "Path":
+            //    throw new Exception("Path Not currently Supported");
+            //var normalizedPath = VirtualPathUtility.IsAbsolute(expression)
+            //                         ? VirtualPathUtility.ToAppRelative(expression)
+            //                         : VirtualPathUtility.Combine("~/", expression);
 
-                    //if (normalizedPath.EndsWith("*")) {
-                    //    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
-                    //    return ctx => VirtualPathUtility.ToAppRelative(String.IsNullOrEmpty(ctx.Path) ? "/" : ctx.Path).StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && predicate(ctx);
-                    //}
-
-                    //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
-                    //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
+            //if (normalizedPath.EndsWith("*")) {
+            //    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
+            //    return ctx => VirtualPathUtility.ToAppRelative(String.IsNullOrEmpty(ctx.Path) ? "/" : ctx.Path).StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && predicate(ctx);
             //}
-            return predicate;
-        }
 
-
-        private static IEnumerable<Tuple<PlacementShapeLocation, IEnumerable<PlacementMatch>>> DrillDownShapeLocations(
-            IEnumerable<PlacementNode> nodes,
-            IEnumerable<PlacementMatch> path)
-        {
-            // return shape locations nodes in this place
-            foreach (var placementShapeLocation in nodes.OfType<PlacementShapeLocation>())
-            {
-                yield return new Tuple<PlacementShapeLocation, IEnumerable<PlacementMatch>>(placementShapeLocation, path);
-            }
-            // recurse down into match nodes
-            foreach (var placementMatch in nodes.OfType<PlacementMatch>())
-            {
-                foreach (var findShapeLocation in DrillDownShapeLocations(placementMatch.Nodes, path.Concat(new[] { placementMatch })))
-                {
-                    yield return findShapeLocation;
-                }
-            }
+            //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
+            //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
+            //}
         }
 
         private bool FeatureIsTheme(FeatureDescriptor fd)

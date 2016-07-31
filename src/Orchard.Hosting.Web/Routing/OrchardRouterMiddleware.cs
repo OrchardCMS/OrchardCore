@@ -50,13 +50,20 @@ namespace Orchard.Hosting.Web.Routing
                     if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))
                     {
                         pipeline = BuildTenantPipeline(shellSettings, httpContext.RequestServices);
-                        _pipelines.Add(shellSettings.Name, pipeline);
+
+                        if (shellSettings.State == Environment.Shell.Models.TenantState.Running)
+                        {
+                            // TODO: Invalidate the pipeline automatically when the shell context is changed
+                            // such that we can reload the middlewares and the routes. Implement something similar
+                            // to IRunningShellTable but for the pipelines.
+
+                            _pipelines.Add(shellSettings.Name, pipeline);
+                        }
                     }
                 }
             }
 
             await pipeline.Invoke(httpContext);
-
         }
 
         // Build the middleware pipeline for the current tenant
@@ -75,7 +82,7 @@ namespace Orchard.Hosting.Web.Routing
 
             var routeBuilder = new RouteBuilder(appBuilder)
             {
-                DefaultHandler = appBuilder.ApplicationServices.GetRequiredService<MvcRouteHandler>()
+                DefaultHandler = serviceProvider.GetRequiredService<MvcRouteHandler>()
             };
 
             var prefixedRouteBuilder = new PrefixedRouteBuilder(routePrefix, routeBuilder, inlineConstraintResolver);

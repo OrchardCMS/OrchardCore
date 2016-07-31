@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.DotNet.Cli.Compiler.Common;
+using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Resources;
@@ -11,6 +12,11 @@ namespace Orchard.Environment.Extensions.Compilers
 {
     public static class CompilerUtility
     {
+        public const string RefsDirectoryName = "refs";
+        public const string ReleaseConfiguration = "Release";
+        public const string DefaultConfiguration = Constants.DefaultConfiguration;
+        public const string LocaleLockFilePropertyName = "locale";
+
         public static IEnumerable<string> GetCompilationSources(ProjectContext project, CommonCompilerOptions compilerOptions)
         {
             if (compilerOptions.CompileInclude == null)

@@ -33,7 +33,7 @@ namespace Orchard.Environment.Shell
                 }
 
                 var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix.Add(hostAndPrefix, settings);
+                _shellsByHostAndPrefix[hostAndPrefix] = settings;
             }
             finally
             {
@@ -46,22 +46,18 @@ namespace Orchard.Environment.Shell
             _lock.EnterWriteLock();
             try
             {
-                _shellsByHostAndPrefix.Remove(GetHostAndPrefix(settings));
-            }
-            finally
-            {
-                _lock.ExitWriteLock();
-            }
-        }
-
-        public void Update(ShellSettings settings)
-        {
-            _lock.EnterWriteLock();
-            try
-            {
                 var hostAndPrefix = GetHostAndPrefix(settings);
                 _shellsByHostAndPrefix.Remove(hostAndPrefix);
-                _shellsByHostAndPrefix.Add(hostAndPrefix, settings);
+
+                if (_default == settings)
+                {
+                    _default = null;
+                }
+
+                if (_single == settings)
+                {
+                    _single = null;
+                }
             }
             finally
             {

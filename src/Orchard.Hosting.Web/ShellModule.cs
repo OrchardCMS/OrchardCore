@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.BackgroundTasks;
 using Orchard.Data;
 using Orchard.DeferredTasks;
+using Orchard.ResourceManagement;
 
 namespace Orchard.Hosting
 {
@@ -11,10 +13,10 @@ namespace Orchard.Hosting
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<IDeferredTaskEngine, DeferredTaskEngine>();
-            serviceCollection.AddScoped<IDeferredTaskState, HttpContextTaskState>();
-
+            serviceCollection.AddDeferredTasks();
             serviceCollection.AddDataAccess();
+            serviceCollection.AddResourceManagement();
+            serviceCollection.AddBackgroundTasks();
         }
     }
 }
