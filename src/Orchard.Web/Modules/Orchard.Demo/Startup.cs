@@ -46,6 +46,7 @@ namespace Orchard.Demo
         {
             services.AddScoped<ICommandHandler, DemoCommands>();
             services.AddSingleton<IBackgroundTask, TestBackgroundTask>();
+            services.AddSingleton<IBackgroundTaskGroup, TestBackgroundTaskGroup>();
         }
     }
 }
