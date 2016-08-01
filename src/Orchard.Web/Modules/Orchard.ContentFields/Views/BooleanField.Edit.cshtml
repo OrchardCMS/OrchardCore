@@ -7,6 +7,9 @@
 <fieldset class="form-check">
     <label class="form-check-label">
         <input asp-for="Value" type="checkbox" class="form-check-input" checked="@Model.Value" /> @settings.Label
-        <span class="hint">@T["— {0}", settings.Hint]</span>
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@T["— {0}", settings.Hint]</span>
+        }
     </label>
 </fieldset>
