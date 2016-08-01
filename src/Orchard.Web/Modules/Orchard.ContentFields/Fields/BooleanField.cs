@@ -4,6 +4,6 @@ namespace Orchard.ContentFields.Fields
 {
     public class BooleanField : ContentField
     {
-        public bool? Value { get; set; }
+        public bool Value { get; set; }
     }
 }

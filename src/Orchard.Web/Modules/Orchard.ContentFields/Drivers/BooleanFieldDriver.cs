@@ -1,12 +1,11 @@
-﻿using Orchard.ContentManagement;
+﻿using System.Threading.Tasks;
+using Orchard.ContentFields.ViewModels;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Drivers;
-using System.Threading.Tasks;
-using Orchard.DisplayManagement.Views;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.MetaData.Models;
-using System;
+using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentFields.Fields
 {
@@ -18,11 +17,6 @@ namespace Orchard.ContentFields.Fields
     {
         public override IDisplayResult Display(BooleanField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
         {
-            if (!String.Equals("BooleanField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             return Shape<DisplayBooleanFieldViewModel>("BooleanField", model =>
             {
                 model.Field = field;
@@ -34,11 +28,6 @@ namespace Orchard.ContentFields.Fields
 
         public override IDisplayResult Edit(BooleanField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
         {
-            if (!String.Equals("BooleanField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             return Shape<EditBooleanFieldViewModel>("BooleanField_Edit", model =>
             {
                 model.Value = field.Value;
@@ -51,11 +40,6 @@ namespace Orchard.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(BooleanField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition, IUpdateModel updater)
         {
-            if (!String.Equals("BooleanField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
             await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
 
             return Edit(field, part, partFieldDefinition);
