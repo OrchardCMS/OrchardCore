@@ -83,8 +83,8 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
         {
-            return Process(model, (partFieldDefinition, part, fieldName) =>
-                _displayDrivers.InvokeAsync(async contentDisplay => {
+            return Process(model, async (partFieldDefinition, part, fieldName) =>
+                await _displayDrivers.InvokeAsync(async contentDisplay => {
                     var result = await contentDisplay.BuildEditorAsync(fieldName, part, partFieldDefinition, context);
                     if (result != null)
                         result.Apply(context);
@@ -94,8 +94,8 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return Process(model, (partFieldDefinition, part, fieldName) =>
-                _displayDrivers.InvokeAsync(async contentDisplay => {
+            return Process(model, async (partFieldDefinition, part, fieldName) =>
+                await _displayDrivers.InvokeAsync(async contentDisplay => {
                 var result = await contentDisplay.UpdateEditorAsync(fieldName, part, partFieldDefinition, context);
                 if (result != null)
                     result.Apply(context);

@@ -10,10 +10,16 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
     {
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, BuildDisplayContext context)
         {
-            var field = contentPart.Get<TField>(fieldName);
-            if(field != null)
+            if(!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
+               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
-                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
+                return Task.FromResult(default(IDisplayResult));
+            }
+
+            var field = contentPart.Get<TField>(fieldName);
+            if (field != null)
+            {
+                Prefix = partFieldDefinition.PartDefinition.Name + "." + partFieldDefinition.Name;
                 return DisplayAsync(field, contentPart, partFieldDefinition);
             }
 
@@ -22,23 +28,42 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
+                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            {
+                return Task.FromResult(default(IDisplayResult));
+            }
+
             var field = contentPart.Get<TField>(fieldName);
             if (field != null)
             {
-                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
+                Prefix = partFieldDefinition.PartDefinition.Name + "." + partFieldDefinition.Name;
                 return EditAsync(field, contentPart, partFieldDefinition);
             }
 
             return Task.FromResult(default(IDisplayResult));
         }
 
-        Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, UpdateEditorContext context)
+        async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, UpdateEditorContext context)
         {
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
+                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            {
+                return null;
+            }
+
             var field = contentPart.Get<TField>(fieldName);
+
             if (field != null)
             {
-                Prefix = $"{partFieldDefinition.PartDefinition.Name}.{partFieldDefinition.Name}";
-                var result = UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
+                Prefix = partFieldDefinition.PartDefinition.Name + "." + partFieldDefinition.Name;
+                var result = await UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
+
+                if (result == null)
+                {
+                    return null;
+                }
+
                 if (context.Updater.ModelState.IsValid)
                 {
                     contentPart.Weld(fieldName, field);
@@ -47,7 +72,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return result;
             }
 
-            return Task.FromResult(default(IDisplayResult));
+            return null;
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
