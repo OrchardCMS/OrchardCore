@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.DotNet.Cli.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
@@ -52,8 +53,17 @@ namespace Orchard.Hosting
                 }
             });
 
-            Debug.WriteLine($"Overall time to dynamically compile and load extensions: {sw.Elapsed}");
+            var message = $"Overall time to dynamically compile and load extensions: {sw.Elapsed}";
 
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(message);
+            }
+            else
+            {
+                Reporter.Output.WriteLine(message);
+                Reporter.Output.WriteLine();
+            }
 
             return builder;
         }
