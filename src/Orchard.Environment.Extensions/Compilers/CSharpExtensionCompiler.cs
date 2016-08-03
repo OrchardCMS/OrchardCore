@@ -319,7 +319,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                     if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
                     {
-                        Debug.WriteLine($"{context.ProjectName()}: Previously compiled, skipping dynamic compilation.");
+                        PrintMessage($"{context.ProjectName()}: Previously compiled, skipping dynamic compilation.");
                         return _compiledLibraries[context.ProjectName()] = true;
                     }
                 }
@@ -328,7 +328,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     // Write RSP file for the next time
                     File.WriteAllLines(rsp, allArgs);
 
-                    Debug.WriteLine($"{context.ProjectName()}:  Previously compiled, skipping dynamic compilation.");
+                    PrintMessage($"{context.ProjectName()}:  Previously compiled, skipping dynamic compilation.");
                     return _compiledLibraries[context.ProjectName()] = true;
                 }
             }
@@ -338,7 +338,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 return _compiledLibraries[context.ProjectName()] = false;
             }
 
-            Debug.WriteLine(String.Format($"{context.ProjectName()}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
+            PrintMessage(String.Format($"{context.ProjectName()}: Dynamic compiling for {context.TargetFramework.DotNetFrameworkName}"));
 
             // Write the dependencies file
             if (dependencyContext != null)
@@ -383,33 +383,45 @@ namespace Orchard.Environment.Extensions.Compilers
                 compilationResult &= CompilerUtility.GenerateCultureResourceAssemblies(context.ProjectFile, cultureResgenFiles, references, Diagnostics);
             }
 
-            Debug.WriteLine(String.Empty);
+            PrintMessage(String.Empty);
 
             if (compilationResult && Diagnostics.Count == 0)
             {
-                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded.");
-                Debug.WriteLine($"0 Warning(s)");
-                Debug.WriteLine($"0 Error(s)");
+                PrintMessage($"{context.ProjectName()}: Dynamic compilation succeeded.");
+                PrintMessage($"0 Warning(s)");
+                PrintMessage($"0 Error(s)");
             }
             else if (compilationResult && Diagnostics.Count > 0)
             {
-                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation succeeded but has warnings.");
-                Debug.WriteLine($"0 Error(s)");
+                PrintMessage($"{context.ProjectName()}: Dynamic compilation succeeded but has warnings.");
+                PrintMessage($"0 Error(s)");
             }
             else
             {
-                Debug.WriteLine($"{context.ProjectName()}: Dynamic compilation failed.");
+                PrintMessage($"{context.ProjectName()}: Dynamic compilation failed.");
             }
 
             foreach (var diagnostic in Diagnostics)
             {
-                Debug.WriteLine(diagnostic);
+                PrintMessage(diagnostic);
             }
 
-            Debug.WriteLine($"Time elapsed {sw.Elapsed}");
-            Debug.WriteLine(String.Empty);
+            PrintMessage($"Time elapsed {sw.Elapsed}");
+            PrintMessage(String.Empty);
 
             return _compiledLibraries[context.ProjectName()] = compilationResult;
+        }
+
+        private static void PrintMessage(string message)
+        {
+            if (Debugger.IsAttached)
+            {
+                Debug.WriteLine(message);
+            }
+            else
+            {
+                Reporter.Output.WriteLine(message);
+            }
         }
 
         private ProjectContext GetProjectContextFromPath(string projectPath)
