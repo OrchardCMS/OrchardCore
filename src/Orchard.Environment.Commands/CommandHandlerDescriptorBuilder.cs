@@ -52,7 +52,7 @@ namespace Orchard.Environment.Commands
                 return attributes.Cast<CommandNameAttribute>().Single().Commands;
             }
 
-            return new[] { methodInfo.Name.Replace('_', ' ') };
+            return new[] { methodInfo.Name };
         }
     }
 }
