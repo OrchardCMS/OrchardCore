@@ -167,7 +167,7 @@ namespace Orchard.ContentManagement
             record.Settings = model.Settings;
 
             var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(partDefinitionRecord => !model.Parts.Any(part => partDefinitionRecord.Name == part.PartDefinition.Name))
+                .Where(typePartDefinitionRecord => !model.Parts.Any(part => typePartDefinitionRecord.Name == part.Name))
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -177,11 +177,16 @@ namespace Orchard.ContentManagement
 
             foreach (var part in model.Parts)
             {
-                var partName = part.PartDefinition.Name;
-                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.Name == partName);
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => r.Name == part.Name);
                 if (typePartRecord == null)
                 {
-                    typePartRecord = new ContentTypePartDefinitionRecord(part.PartDefinition.Name);
+                    typePartRecord = new ContentTypePartDefinitionRecord
+                    {
+                        PartName = part.PartDefinition.Name,
+                        Name = part.Name,
+                        Settings = part.Settings
+                    };
+
                     record.ContentTypePartDefinitionRecords.Add(typePartRecord);
                 }
                 Apply(part, typePartRecord);
@@ -217,7 +222,7 @@ namespace Orchard.ContentManagement
                 {
                     partFieldRecord = new ContentPartFieldDefinitionRecord
                     {
-                        ContentFieldDefinitionRecord = Acquire(field.FieldDefinition),
+                        FieldName = field.FieldDefinition.Name,
                         Name = field.Name
                     };
                     record.ContentPartFieldDefinitionRecords.Add(partFieldRecord);
@@ -249,10 +254,11 @@ namespace Orchard.ContentManagement
 
         ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source)
         {
-            var partDefinitionRecord = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == source.Name);
+            var partDefinitionRecord = GetContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => x.Name == source.PartName);
 
             return source == null ? null : new ContentTypePartDefinition(
-                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.Name, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
+                source.Name,
+                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, Enumerable.Empty<ContentPartFieldDefinition>(), new Newtonsoft.Json.Linq.JObject()),
                 source.Settings);
         }
 
@@ -267,7 +273,7 @@ namespace Orchard.ContentManagement
         ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
         {
             return source == null ? null : new ContentPartFieldDefinition(
-                Build(source.ContentFieldDefinitionRecord),
+                Build(new ContentFieldDefinitionRecord { Name = source.FieldName }),
                 source.Name,
                 source.Settings
             );

@@ -7,10 +7,13 @@ namespace Orchard.ContentManagement.Metadata.Records
     /// </summary>
     public class ContentPartFieldDefinitionRecord
     {
-        public ContentFieldDefinitionRecord ContentFieldDefinitionRecord { get; set; }
+        /// <summary>
+        /// Gets or set the field name, e.g. BooleanField.
+        /// </summary>
+        public string FieldName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the field.
+        /// Gets or sets the name of the field, e.g. Age.
         /// </summary>
         public string Name { get; set; }
 

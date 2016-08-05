@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.MetaData.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Orchard.ContentManagement.MetaData.Builders
 {
@@ -8,15 +7,19 @@ namespace Orchard.ContentManagement.MetaData.Builders
     {
         protected readonly JObject _settings;
 
+        public ContentTypePartDefinition Current { get; protected set; }
+        public string Name { get; private set; }
+        public string PartName { get; private set; }
+        public string TypeName { get; private set; }
+
         protected ContentTypePartDefinitionBuilder(ContentTypePartDefinition part)
         {
-            Name = part.PartDefinition.Name;
+            Current = part;
+            Name = part.Name;
+            PartName = part.PartDefinition.Name;
             TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default(string);
             _settings = new JObject(part.Settings);
         }
-
-        public string Name { get; private set; }
-        public string TypeName { get; private set; }
 
         public ContentTypePartDefinitionBuilder WithSetting(string name, string value)
         {

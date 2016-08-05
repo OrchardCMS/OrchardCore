@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.MetaData.Models;
-using Newtonsoft.Json.Linq;
 
 namespace Orchard.ContentManagement.MetaData.Builders
 {
@@ -9,6 +8,9 @@ namespace Orchard.ContentManagement.MetaData.Builders
         protected readonly JObject _settings;
 
         public ContentPartFieldDefinition Current { get; private set; }
+        public abstract string Name { get; }
+        public abstract string FieldType { get; }
+        public abstract string PartName { get; }
 
         protected ContentPartFieldDefinitionBuilder(ContentPartFieldDefinition field)
         {
@@ -29,13 +31,8 @@ namespace Orchard.ContentManagement.MetaData.Builders
             return this;
         }
 
-        public abstract string Name { get; }
-        public abstract string FieldType { get; }
-        public abstract string PartName { get; }
-
         public abstract ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition);
         public abstract ContentPartFieldDefinitionBuilder OfType(string fieldType);
-
         public abstract ContentPartFieldDefinition Build();
     }
 }

@@ -14,6 +14,7 @@ namespace Orchard.ContentTypes.Services
         ContentTypeDefinition AddType(string name, string displayName);
         void RemoveType(string name, bool deleteContent);
         void AddPartToType(string partName, string typeName);
+        void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName);
         void RemovePartFromType(string partName, string typeName);
         string GenerateContentTypeNameFromDisplayName(string displayName);
         string GenerateFieldNameFromDisplayName(string partName, string displayName);

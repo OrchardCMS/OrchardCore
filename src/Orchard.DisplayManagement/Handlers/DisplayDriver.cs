@@ -122,22 +122,46 @@ namespace Orchard.DisplayManagement.Handlers
         where TUpdateContext : UpdateEditorContext
     {
 
+        /// <summary>
+        /// Returns a unique prefix based on the model.
+        /// </summary>
         public abstract string GeneratePrefix(TModel model);
+
+        /// <summary>
+        /// Returns <c>true</c> if the model can be handle by the current driver.
+        /// </summary>
+        /// <returns></returns>
+        public abstract bool CanHandleModel(TModel model);
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
+            if(!CanHandleModel(model))
+            {
+                return Task.FromResult<IDisplayResult>(null);
+            }
+
             Prefix = GeneratePrefix(model);
             return DisplayAsync(model, context);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
+            if (!CanHandleModel(model))
+            {
+                return Task.FromResult<IDisplayResult>(null);
+            }
+
             Prefix = GeneratePrefix(model);
             return EditAsync(model, context);
         }
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
+            if (!CanHandleModel(model))
+            {
+                return Task.FromResult<IDisplayResult>(null);
+            }
+
             Prefix = GeneratePrefix(model);
             return UpdateAsync(model, context);
         }

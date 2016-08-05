@@ -138,6 +138,12 @@ namespace Orchard.ContentTypes.Services
             _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }));
         }
 
+        public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
+        {
+            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithReusablePart(name, displayName, description, partName));
+            _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }));
+        }
+
         public void RemovePartFromType(string partName, string typeName)
         {
             _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.RemovePart(partName));

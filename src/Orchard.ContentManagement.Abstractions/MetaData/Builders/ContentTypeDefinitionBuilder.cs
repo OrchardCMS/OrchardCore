@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
 using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.MetaData.Models;
 
 namespace Orchard.ContentManagement.MetaData.Builders
 {
@@ -63,7 +64,7 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
         public ContentTypeDefinitionBuilder RemovePart(string partName)
         {
-            var existingPart = _parts.SingleOrDefault(x => x.PartDefinition.Name == partName);
+            var existingPart = _parts.SingleOrDefault(x => x.Name == partName);
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -76,6 +77,33 @@ namespace Orchard.ContentManagement.MetaData.Builders
             return WithPart(partName, configuration => { });
         }
 
+        public ContentTypeDefinitionBuilder WithReusablePart(string name, string displayName, string description, string partName)
+        {
+            return WithReusablePart(name, new ContentPartDefinition(partName), configuration => {
+                configuration.WithDisplayName(displayName);
+                configuration.WithDescription(description);
+            });
+        }
+
+        public ContentTypeDefinitionBuilder WithReusablePart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
+        {
+            var existingPart = _parts.FirstOrDefault(x => x.PartDefinition.Name == name );
+            if (existingPart != null)
+            {
+                _parts.Remove(existingPart);
+            }
+            else
+            {
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
+                existingPart.ContentTypeDefinition = Current;
+            }
+
+            var configurer = new PartConfigurerImpl(existingPart);
+            configuration(configurer);
+            _parts.Add(configurer.Build());
+            return this;
+        }
+
         public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
         {
             return WithPart(new ContentPartDefinition(partName), configuration);
@@ -83,14 +111,15 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
         public ContentTypeDefinitionBuilder WithPart(ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
-            var existingPart = _parts.SingleOrDefault(x => x.PartDefinition.Name == partDefinition.Name);
+            // The name of the attached part is the same as the part
+            var existingPart = _parts.FirstOrDefault(x => x.PartDefinition.Name == partDefinition.Name);
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(partDefinition, new JObject());
+                existingPart = new ContentTypePartDefinition(partDefinition.Name, partDefinition, new JObject());
                 existingPart.ContentTypeDefinition = Current;
             }
 
@@ -104,8 +133,6 @@ namespace Orchard.ContentManagement.MetaData.Builders
         {
             private readonly ContentPartDefinition _partDefinition;
 
-            public ContentTypePartDefinition Current { get; private set; }
-
             public PartConfigurerImpl(ContentTypePartDefinition part)
                 : base(part)
             {
@@ -115,9 +142,9 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
             public override ContentTypePartDefinition Build()
             {
-                return new ContentTypePartDefinition(_partDefinition, _settings)
+                return new ContentTypePartDefinition(Current.Name, _partDefinition, _settings)
                 {
-                    ContentTypeDefinition = Current.ContentTypeDefinition
+                    ContentTypeDefinition = Current.ContentTypeDefinition,
                 };
             }
         }

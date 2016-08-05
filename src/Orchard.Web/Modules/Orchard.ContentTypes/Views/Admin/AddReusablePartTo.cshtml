@@ -1,0 +1,54 @@
+@model Orchard.ContentTypes.ViewModels.AddReusablePartViewModel
+@{
+    //Style.Require("ContentTypesAdmin");
+
+    int i = 0;
+}
+<h1>@T["Add Part To \"{0}\"", Model.Type.DisplayName]</h1>
+
+@T["Choose the Part to add to this Content Type."]
+
+<form asp-action="AddReusablePartTo">
+    @Html.ValidationSummary()
+    <fieldset class="form-group">
+
+        <fieldset class="form-group">
+            <label for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" autofocus />
+            <span class="hint">@T["Name of the reusable part as it will be displayed in screens."]</span>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the reusable part."]</span>
+        </fieldset>
+
+        <fieldset class="form-group">
+            <label for="Description">@T["Description"]</label>
+            <input asp-for="Description" class="form-control" />
+            <span class="hint">@T["Description of the reusable part."]</span>
+        </fieldset>
+
+        <ul class="list-group">
+            @foreach (var partSelection in Model.PartSelections)
+            {
+                <li class="list-group-item">
+                    <div class="radio">
+                        <label asp-for="PartSelections[i].PartName">
+                            <input asp-for="SelectedPartName" value="@Model.PartSelections[i].PartName" type="radio" />
+                            @partSelection.PartDisplayName
+                        </label>
+                    </div>
+                    <span class="hint">@partSelection.PartDescription</span>
+                </li>
+
+                i++;
+            }
+        </ul>
+    </fieldset>
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+    </fieldset>
+</form>

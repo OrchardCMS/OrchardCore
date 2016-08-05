@@ -16,6 +16,7 @@ namespace Orchard.ContentTypes.Editors
                 var settings = contentPartDefinition.Settings.ToObject<ContentPartSettings>();
 
                 model.Attachable = settings.Attachable;
+                model.Reusable = settings.Reusable;
                 model.Description = settings.Description;
 
                 return Task.CompletedTask;
@@ -29,6 +30,7 @@ namespace Orchard.ContentTypes.Editors
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 context.Builder.Attachable(model.Attachable);
+                context.Builder.Reusable(model.Reusable);
                 context.Builder.WithDescription(model.Description);
             }
 

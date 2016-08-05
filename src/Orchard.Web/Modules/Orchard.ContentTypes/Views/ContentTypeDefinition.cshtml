@@ -45,6 +45,10 @@
     </fieldset>
 
     <fieldset class="form-group">
+        <a asp-route-action="AddReusablePartTo" asp-route-id="@contentTypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Reusable Part"]</a>
+    </fieldset>
+
+    <fieldset class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
     </fieldset>

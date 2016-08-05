@@ -95,7 +95,7 @@ namespace Orchard.ContentTypes.Controllers
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
-                ModelState.AddModelError("DisplayName", S["The Display Name name can't be empty."]);
+                ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
             }
 
             if (String.IsNullOrWhiteSpace(viewModel.Name))
@@ -230,15 +230,50 @@ namespace Orchard.ContentTypes.Controllers
             if (typeViewModel == null)
                 return NotFound();
 
-            var typePartNames = new HashSet<string>(typeViewModel.TypeDefinition.Parts.Select(p => p.PartDefinition.Name));
+            var typePartNames = new HashSet<string>(
+                typeViewModel.TypeDefinition.Parts
+                    .Where(cpd => !cpd.Settings.ToObject<ContentPartSettings>().Reusable)
+                    .Select(p => p.PartDefinition.Name)
+                );
 
             var viewModel = new AddPartsViewModel
             {
                 Type = typeViewModel,
-                PartSelections = _contentDefinitionService.GetParts(false/*metadataPartsOnly*/)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.Settings.ToObject<ContentPartSettings>().Attachable)
+                PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name) &&
+                        cpd.Settings.ToObject<ContentPartSettings>().Attachable &&
+                        !cpd.Settings.ToObject<ContentPartSettings>().Reusable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<ActionResult> AddReusablePartTo(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+            {
+                return Unauthorized();
+            }
+
+            var typeViewModel = _contentDefinitionService.GetType(id);
+
+            if (typeViewModel == null)
+                return NotFound();
+
+            var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
+                    .Where(cpd =>
+                        cpd.Settings.ToObject<ContentPartSettings>().Attachable &&
+                        cpd.Settings.ToObject<ContentPartSettings>().Reusable);
+
+            var viewModel = new AddReusablePartViewModel
+            {
+                Type = typeViewModel,
+                PartSelections = reusableParts
+                    .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
+                    .ToList(),
+                SelectedPartName = reusableParts.FirstOrDefault()?.Name
             };
 
             return View(viewModel);
@@ -275,6 +310,47 @@ namespace Orchard.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
+        [HttpPost, ActionName("AddReusablePartTo")]
+        public async Task<ActionResult> AddReusablePartToPOST(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+                return Unauthorized();
+
+            var typeViewModel = _contentDefinitionService.GetType(id);
+
+            if (typeViewModel == null)
+                return NotFound();
+
+            var viewModel = new AddReusablePartViewModel();
+            if (!await TryUpdateModelAsync(viewModel))
+            {
+                return await AddReusablePartTo(id);
+            }
+
+            if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+            {
+                ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
+            }
+
+            if (String.IsNullOrWhiteSpace(viewModel.Name))
+            {
+                ModelState.AddModelError("Name", S["The Content Type Id can't be empty."]);
+            }
+
+            var partToAdd = viewModel.SelectedPartName;
+
+            _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
+            _notifier.Success(T["The \"{0}\" part has been added.", partToAdd]);
+
+            if (!ModelState.IsValid)
+            {
+                _session.Cancel();
+                return await AddReusablePartTo(id);
+            }
+
+            return RedirectToAction("Edit", new { id });
+        }
+
         public async Task<ActionResult> RemovePartFrom(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -303,7 +379,7 @@ namespace Orchard.ContentTypes.Controllers
             var viewModel = new RemovePartViewModel();
             if (typeViewModel == null
                 || !await TryUpdateModelAsync(viewModel)
-                || !typeViewModel.TypeDefinition.Parts.Any(p => p.PartDefinition.Name == viewModel.Name))
+                || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == viewModel.Name))
                 return NotFound();
 
             _contentDefinitionService.RemovePartFromType(viewModel.Name, typeViewModel.Name);

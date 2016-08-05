@@ -14,12 +14,9 @@ namespace Orchard.ContentManagement.MetaData.Models
         }
 
         public string Name { get; private set; }
-
         public string DisplayName { get; set; }
-
         public ContentFieldDefinition FieldDefinition { get; private set; }
         public JObject Settings { get; private set; }
-
         public ContentPartDefinition PartDefinition { get; set; }
     }
 }

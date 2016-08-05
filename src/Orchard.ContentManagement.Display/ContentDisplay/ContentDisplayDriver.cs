@@ -9,5 +9,10 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
         {
             return "";
         }
+
+        public override bool CanHandleModel(ContentItem model)
+        {
+            return true;
+        }
     }
 }

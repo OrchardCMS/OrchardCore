@@ -66,7 +66,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                     {
                         try
                         {
-                            var result = await displayDriver.BuildDisplayAsync(fieldName, part, contentPartFieldDefinition, context);
+                            var result = await displayDriver.BuildDisplayAsync(fieldName, part, contentPartFieldDefinition, contentTypePartDefinition, context);
                             if (result != null)
                             {
                                 result.Apply(context);
@@ -83,9 +83,9 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
         {
-            return Process(model, async (partFieldDefinition, part, fieldName) =>
+            return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
                 await _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildEditorAsync(fieldName, part, partFieldDefinition, context);
+                    var result = await contentDisplay.BuildEditorAsync(fieldName, part, partFieldDefinition, contentTypePartDefinition, context);
                     if (result != null)
                         result.Apply(context);
                 }, Logger)
@@ -94,16 +94,16 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return Process(model, async (partFieldDefinition, part, fieldName) =>
+            return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
                 await _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.UpdateEditorAsync(fieldName, part, partFieldDefinition, context);
+                var result = await contentDisplay.UpdateEditorAsync(fieldName, part, partFieldDefinition, contentTypePartDefinition, context);
                 if (result != null)
                     result.Apply(context);
                 }, Logger)
             );
         }
 
-        public Task Process(ContentItem contentItem, Func<ContentPartFieldDefinition, ContentPart, string, Task> action)
+        public Task Process(ContentItem contentItem, Func<ContentPartFieldDefinition, ContentTypePartDefinition, ContentPart, string, Task> action)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -136,7 +136,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-                    action(partFieldDefinition, part, fieldName);
+                    action(partFieldDefinition, typePartDefinition, part, fieldName);
                 }
             }
 

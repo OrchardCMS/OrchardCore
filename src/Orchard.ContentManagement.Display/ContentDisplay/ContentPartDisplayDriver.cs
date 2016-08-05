@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Views;
 
@@ -14,6 +13,11 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
         public override string GeneratePrefix(TPart part)
         {
             return typeof(TPart).Name;
+        }
+
+        public override bool CanHandleModel(TPart model)
+        {
+            return true;
         }
 
         Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.BuildDisplayAsync(ContentItem model, BuildDisplayContext context)

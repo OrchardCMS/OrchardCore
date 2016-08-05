@@ -3,10 +3,18 @@
     public class ContentPartSettings
     {
         /// <summary>
-        /// This setting is used to display a Content Part in list of Parts to attach to a Content Type
+        /// Gets or sets whether this part can be manually attached to a content type.
         /// </summary>
         public bool Attachable { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether the part can be attached multiple times to a content type.
+        /// </summary>
+        public bool Reusable { get; set; }
+
+        /// <summary>
+        /// Gest or set the description of the part.
+        /// </summary>
         public string Description { get; set; }
     }
 }

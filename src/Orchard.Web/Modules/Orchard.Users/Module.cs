@@ -29,6 +29,7 @@ namespace Orchard.Users
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            builder.UseIdentity();
             builder
                 .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
                 .UseCookieAuthentication(_options.Cookies.ExternalCookie)
