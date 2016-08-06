@@ -54,8 +54,9 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
-                var partName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = partInfos.ContainsKey(partName) ? partInfos[partName].Factory(contentTypePartDefinition).GetType() : null;
+                var partName = contentTypePartDefinition.Name;
+                var partTypeName = contentTypePartDefinition.PartDefinition.Name;
+                var partType = partInfos.ContainsKey(partTypeName) ? partInfos[partTypeName].Factory(contentTypePartDefinition).GetType() : null;
                 var part = contentItem.Get(partType ?? typeof(ContentPart), partName) as ContentPart;
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
@@ -119,19 +120,21 @@ namespace Orchard.ContentManagement.Display.Coordinators
                     continue;
                 }
 
-                var partName = typePartDefinition.PartDefinition.Name;
                 ContentPartInfo partInfo;
+                ContentPart part;
 
-                ContentPart part = partInfos.TryGetValue(partName, out partInfo)
-                    ? partInfo.Factory(typePartDefinition)
-                    : new ContentPart();
-
-                part = contentItem.Get(part.GetType(), partName) as ContentPart;
-
-                if(part == null)
+                if (partInfos.TryGetValue(typePartDefinition.PartDefinition.Name, out partInfo))
                 {
-                    return Task.CompletedTask;
+                    // It's a well-known part type, bind the data to the model
+                    part = partInfo.Factory(typePartDefinition);
                 }
+                else
+                {
+                    // Generic content part model (custom part)
+                    part = new ContentPart();
+                }
+
+                part = contentItem.GetOrCreate(part.GetType(), () => new ContentPart(), typePartDefinition.Name) as ContentPart;
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {

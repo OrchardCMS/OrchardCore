@@ -34,14 +34,10 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult(default(IDisplayResult));
             }
 
-            var field = contentPart.Get<TField>(fieldName);
-            if (field != null)
-            {
-                Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
-                return EditAsync(field, contentPart, partFieldDefinition);
-            }
+            var field = contentPart.GetOrCreate<TField>(fieldName);
 
-            return Task.FromResult(default(IDisplayResult));
+            Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
+            return EditAsync(field, contentPart, partFieldDefinition);
         }
 
         async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
@@ -52,27 +48,22 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            var field = contentPart.Get<TField>(fieldName);
+            var field = contentPart.GetOrCreate<TField>(fieldName);
 
-            if (field != null)
+            Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
+            var result = await UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
+
+            if (result == null)
             {
-                Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
-                var result = await UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
-
-                if (result == null)
-                {
-                    return null;
-                }
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    contentPart.Weld(fieldName, field);
-                }
-
-                return result;
+                return null;
             }
 
-            return null;
+            if (context.Updater.ModelState.IsValid)
+            {
+                contentPart.Weld(fieldName, field);
+            }
+
+            return result;
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)

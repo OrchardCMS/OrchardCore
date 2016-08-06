@@ -57,7 +57,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildEditorAsync");
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "UpdateEditorAsync");
                 }
             }
         }
