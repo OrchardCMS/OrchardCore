@@ -19,9 +19,6 @@ namespace Orchard.Hosting.Mvc.Razor
             result.Add("/Modules/{2}/Views/{1}/{0}.cshtml");
             result.Add("/Modules/{2}/Views/Shared/{0}.cshtml");
 
-            result.Add("/Core/Orchard.Core/{2}/Views/{1}/{0}.cshtml");
-            result.Add("/Core/Orchard.Core/{2}/Views/Shared/{0}.cshtml");
-
             result.AddRange(viewLocations);
 
             return result;
