@@ -17,7 +17,6 @@ namespace Orchard.Web
 
             services.ConfigureShell("Sites");
 
-            services.AddModuleFolder("Core/Orchard.Core");
             services.AddModuleFolder("Modules");
             services.AddThemeFolder("Themes");
 
