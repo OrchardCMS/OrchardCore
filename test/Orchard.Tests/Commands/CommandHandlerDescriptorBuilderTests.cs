@@ -39,6 +39,7 @@ namespace Orchard.Tests.Commands
             {
             }
 
+            [CommandName("Foo Bar")]
             public void Foo_Bar()
             {
             }

@@ -45,6 +45,7 @@ namespace Orchard.Tests.Commands
                 return "success!";
             }
 
+            [CommandName("Foo Bar")]
             public string Foo_Bar(string bleah)
             {
                 return bleah;
