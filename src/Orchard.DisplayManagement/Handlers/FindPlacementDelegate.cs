@@ -7,8 +7,8 @@ namespace Orchard.DisplayManagement.Handlers
     /// </summary>
     /// <param name="shapeType">The type of the shape to render.</param>
     /// <param name="differentiator">
-    /// A discriminator that differentiates this specific shape to the others of the same type. 
-    /// For instance multiple field shape smight be displayed in different locations even though 
+    /// A discriminator that differentiates this specific shape to the others of the same type.
+    /// For instance multiple field shape smight be displayed in different locations even though
     /// they are of the same type.
     /// </param>
     /// <param name="displayType">The display type the content item owning the shape is rendered with.</param>

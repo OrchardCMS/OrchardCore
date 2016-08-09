@@ -142,8 +142,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public class ShapePlacementContext
     {
-        public dynamic Shape { get; set; }
-
+        public string ShapeType { get; set; }
         public string DisplayType { get; set; }
         public string Differentiator { get; set; }
 

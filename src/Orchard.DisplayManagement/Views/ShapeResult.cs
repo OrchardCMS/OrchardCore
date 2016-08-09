@@ -1,9 +1,9 @@
-﻿using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Handlers;
+using Orchard.DisplayManagement.Shapes;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.DisplayManagement.Views
 {
@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.Views
     {
         private string _defaultLocation;
         private IDictionary<string,string> _otherLocations;
-        private string _differentiator;
+        public string _differentiator;
         private string _prefix;
         private string _cacheId;
         private readonly string _shapeType;
@@ -47,6 +47,11 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
+
+            if (String.IsNullOrEmpty(_differentiator))
+            {
+                _differentiator = _prefix;
+            }
 
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
@@ -158,8 +163,7 @@ namespace Orchard.DisplayManagement.Views
         /// Sets the prefix of the form elements rendered in the shape.
         /// </summary>
         /// <remarks>
-        /// The goal is to isolate each shape in case several ones of the same
-        /// type are rendered in a view.
+        /// The goal is to isolate each shape when edited together.
         /// </remarks>
         public ShapeResult Prefix(string prefix)
         {
@@ -191,7 +195,7 @@ namespace Orchard.DisplayManagement.Views
         }
 
         /// <summary>
-        /// Sets a discriminator that is used to find the location of the shape.
+        /// Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
         /// </summary>
         public ShapeResult Differentiator(string differentiator)
         {

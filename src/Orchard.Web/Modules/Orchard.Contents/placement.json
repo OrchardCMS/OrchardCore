@@ -33,7 +33,20 @@
       "display-type": "SummaryAdmin",
       "place": "Actions:6"
     }
+  ],
+  "TextField_Edit": [
+    {
+      "display-type": "Edit",
+      "differentiator": "BillingAddress.City",
+      "place": "Content:60"
+    },
+    {
+      "display-type": "Edit",
+      "differentiator": "BillingAddress.Street",
+      "place": "Content:50"
+    }
   ]
+
 }
 /*
 

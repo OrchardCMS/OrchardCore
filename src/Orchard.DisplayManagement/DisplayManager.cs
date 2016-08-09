@@ -28,28 +28,31 @@ namespace Orchard.DisplayManagement
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (partShapeType, differentiator, displayType) =>
+            context.FindPlacement = (shapeType, differentiator, displayType) => FindPlacementImpl(shapeTable, shapeType, differentiator, displayType);
+        }
+
+        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType)
+        {
+            ShapeDescriptor descriptor;
+            if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
             {
-                ShapeDescriptor descriptor;
-                if (shapeTable.Descriptors.TryGetValue(partShapeType, out descriptor))
+                var placementContext = new ShapePlacementContext
                 {
-                    var placementContext = new ShapePlacementContext
-                    {
-                        Shape = context.Shape,
-                        DisplayType = displayType,
-                        Differentiator = differentiator
-                    };
+                    ShapeType = shapeType,
+                    DisplayType = displayType,
+                    Differentiator = differentiator
+                };
 
-                    var placement = descriptor.Placement(placementContext);
-                    if (placement != null)
-                    {
-                        placement.Source = placementContext.Source;
-                        return placement;
-                    }
+                var placement = descriptor.Placement(placementContext);
+                if (placement != null)
+                {
+                    placement.Source = placementContext.Source;
+                    return placement;
                 }
+            }
 
-                return null;
-            };
+            return null;
+
         }
 
         protected dynamic CreateContentShape(string actualShapeType)
