@@ -43,7 +43,7 @@ namespace Orchard.Recipes.Services
             try
             {
                 // todo: this callback should be guarded against concurrency by the IProcessingEngine
-                var scheduleMore = _recipeStepExecutor.ExecuteNextStep(executionId);
+                var scheduleMore = await _recipeStepExecutor.ExecuteNextStepAsync(executionId);
                 if (scheduleMore)
                 {
                     _logger.LogInformation("Scheduling next step of recipe.");

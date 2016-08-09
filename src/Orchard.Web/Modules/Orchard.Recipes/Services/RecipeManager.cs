@@ -74,6 +74,8 @@ namespace Orchard.Recipes.Services
             await _recipeStepQueue.EnqueueAsync(executionId, recipeStep);
             _session.Save(new RecipeStepResult
             {
+                ExecutionId = executionId,
+                StepId = recipeStep.Id,
                 RecipeName = recipe.Name,
                 StepName = recipeStep.Name
             });
