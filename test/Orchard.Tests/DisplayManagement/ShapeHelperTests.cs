@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
@@ -20,10 +20,11 @@ namespace Orchard.Tests.DisplayManagement
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
+            serviceCollection.AddLogging();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
+            serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 

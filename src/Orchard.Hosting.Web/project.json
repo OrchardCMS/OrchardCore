@@ -20,7 +20,9 @@
     "Orchard.DeferredTasks": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*" // Such that Razor Views can resolve references
+    "Orchard.Recipes.Abstractions": "2.0.0-*", // Such that Razor Views can resolve references
+    "Orchard.ResourceManagement": "1.0.0-*",
+    "Orchard.BackgroundTasks": "1.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

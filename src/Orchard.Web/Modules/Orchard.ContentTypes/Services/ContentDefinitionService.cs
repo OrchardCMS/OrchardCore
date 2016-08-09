@@ -217,7 +217,7 @@ namespace Orchard.ContentTypes.Services
 
         public IEnumerable<ContentFieldInfo> GetFields()
         {
-            return _contentFieldDrivers.Select(d => d.GetFieldInfo());
+            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null);
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)

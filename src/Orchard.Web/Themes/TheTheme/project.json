@@ -1,8 +1,9 @@
-﻿{
+{
   "dependencies": {
     "Microsoft.AspNetCore.Mvc": "1.0.0-*",
     "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
-    "Orchard.ContentManagement": "2.0.0-*"
+    "Orchard.ContentManagement": "2.0.0-*",
+    "Orchard.ResourceManagement": "1.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

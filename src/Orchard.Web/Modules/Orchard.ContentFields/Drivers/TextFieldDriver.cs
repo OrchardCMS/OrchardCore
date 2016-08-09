@@ -1,19 +1,14 @@
-﻿using Orchard.ContentManagement;
+﻿using System.Threading.Tasks;
+using Orchard.ContentFields.ViewModels;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Drivers;
-using System.Threading.Tasks;
-using Orchard.DisplayManagement.Views;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.MetaData.Models;
+using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentFields.Fields
 {
-    public class TextField : ContentField
-    {
-        public string Text { get; set; }
-    }
-
     public class TextFieldDriver : ContentFieldDriver<TextField>
     {
     }

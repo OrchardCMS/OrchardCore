@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Orchard.ContentFields.Fields;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement.Views;
@@ -11,7 +12,7 @@ namespace Orchard.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(TextField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }
@@ -22,7 +23,7 @@ namespace Orchard.ContentFields.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            if (!String.Equals("TextField", partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(TextField), partFieldDefinition.FieldDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }

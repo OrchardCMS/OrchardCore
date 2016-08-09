@@ -9,5 +9,8 @@
 <fieldset class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName</label>
     <input asp-for="Text" class="form-control" />
-    <span class="hint">@settings.Hint</span>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </fieldset>

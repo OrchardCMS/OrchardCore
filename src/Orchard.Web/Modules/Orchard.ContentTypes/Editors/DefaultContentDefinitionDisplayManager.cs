@@ -119,7 +119,7 @@ namespace Orchard.ContentTypes.Editors
 
                     BindPlacementAsync(fieldContext).Wait();
 
-                    _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger).Wait();
+                    await _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
 
                     contentTypeDefinitionShape.TypeFieldSettings.Add(fieldContext.Shape);
                 }
@@ -162,7 +162,7 @@ namespace Orchard.ContentTypes.Editors
 
                     dynamic partShape = CreateContentShape("ContentTypePartDefinition_Edit");
 
-                    typeBuilder.WithPart(contentTypePartDefinition.PartDefinition.Name, typePartBuilder =>
+                    typeBuilder.WithPart(contentTypePartDefinition.PartDefinition.Name, async typePartBuilder =>
                     {
                         partShape.ContentPart = contentTypePartDefinition;
 
@@ -177,7 +177,7 @@ namespace Orchard.ContentTypes.Editors
 
                         BindPlacementAsync(partContext).Wait();
 
-                        _handlers.InvokeAsync(handler => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), Logger).Wait();
+                        await _handlers.InvokeAsync(handler => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
 
                         contentTypeDefinitionShape.TypePartSettings.Add(partContext.Shape);
                     });
@@ -194,7 +194,7 @@ namespace Orchard.ContentTypes.Editors
                         {
                             dynamic fieldShape = CreateContentShape("ContentPartFieldDefinition_Edit");
 
-                            partBuilder.WithField(contentPartFieldDefinition.Name, partFieldBuilder =>
+                            partBuilder.WithField(contentPartFieldDefinition.Name, async partFieldBuilder =>
                             {
                                 fieldShape.ContentField = contentPartFieldDefinition;
 
@@ -209,7 +209,7 @@ namespace Orchard.ContentTypes.Editors
 
                                 BindPlacementAsync(fieldContext).Wait();
 
-                                _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger).Wait();
+                                await _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
 
                                 contentTypeDefinitionShape.TypeFieldSettings.Add(fieldContext.Shape);
 
@@ -264,14 +264,14 @@ namespace Orchard.ContentTypes.Editors
 
                 BindPlacementAsync(fieldContext).Wait();
 
-                _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger).Wait();
+                await _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
 
                 contentPartDefinitionShape.PartFieldSettings.Add(fieldContext.Shape);
             }
 
             await BindPlacementAsync(partContext);
 
-            await _handlers.InvokeAsync(handler => handler.BuildPartEditorAsync(contentPartDefinition, partContext), Logger);
+            await _handlers.InvokeAsync(async handler => await handler.BuildPartEditorAsync(contentPartDefinition, partContext), Logger);
 
             contentPartDefinitionShape.PartSettings = partShape;
 
@@ -308,7 +308,7 @@ namespace Orchard.ContentTypes.Editors
                 {
                     dynamic fieldShape = CreateContentShape("ContentPartFieldDefinition_Edit");
 
-                    partBuilder.WithField(contentFieldDefinition.Name, partFieldBuilder =>
+                    partBuilder.WithField(contentFieldDefinition.Name, async partFieldBuilder =>
                     {
                         fieldShape.ContentField = contentFieldDefinition;
 
@@ -323,7 +323,7 @@ namespace Orchard.ContentTypes.Editors
 
                         BindPlacementAsync(fieldContext).Wait();
 
-                        _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentFieldDefinition, fieldContext), Logger).Wait();
+                        await _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentFieldDefinition, fieldContext), Logger);
 
                         contentPartDefinitionShape.PartFieldSettings.Add(fieldContext.Shape);
 
@@ -333,7 +333,7 @@ namespace Orchard.ContentTypes.Editors
 
             await BindPlacementAsync(partContext);
 
-            _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger).Wait();
+            await _handlers.InvokeAsync(handler => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), Logger);
 
             contentPartDefinitionShape.PartSettings = partShape;
 

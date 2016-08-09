@@ -36,7 +36,7 @@ namespace Orchard.Recipes.Services
                 {
                     while (reader.Read()) {
                         Console.WriteLine(reader.Value);
-
+                        
                     }
                 }
             }

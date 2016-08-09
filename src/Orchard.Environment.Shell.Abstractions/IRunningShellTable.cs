@@ -2,7 +2,7 @@
 {
     public interface IRunningShellTable
     {
-        void Store(ShellSettings settings);
+        void Add(ShellSettings settings);
         void Remove(ShellSettings settings);
         ShellSettings Match(string host, string appRelativeCurrentExecutionFilePath);
     }
