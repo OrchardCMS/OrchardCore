@@ -12,8 +12,9 @@ namespace Orchard.OpenId
                 .Column<string>("LogoutRedirectUri")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(UserOpenIdTokenIndex), table => table
-                .Column<int>("UserId"));
+            SchemaBuilder.CreateMapIndexTable(nameof(OpenIdTokenIndex), table => table
+                .Column<int>("UserId")
+                .Column<int>("AppId"));
 
             return 1;
         }

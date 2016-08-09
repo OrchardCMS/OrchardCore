@@ -34,8 +34,8 @@ namespace Orchard.OpenId.Services
                 throw new ArgumentException("The token type cannot be null or empty.");
             }
             
-            var token = new OpenIdToken { Type = type };
-            _session.Save(new UserOpenIdToken() {  UserId = user.Id, Token = token });
+            var token = new OpenIdToken { Type = type, UserId = user.Id };
+            _session.Save(token);
 
             return Task.FromResult(token.Id.ToString());
         }
@@ -63,12 +63,9 @@ namespace Orchard.OpenId.Services
                 throw new InvalidOperationException("The application cannot be found in the database.");
             }
 
-            var token = new OpenIdToken { Type = type };
-
-            application.Tokens.Add(token);            
-
-            _session.Save(application);
-            _session.Save(new UserOpenIdToken() { UserId = user.Id, Token = token });
+            var token = new OpenIdToken { Type = type, AppId = application.Id, UserId = user.Id };
+            
+            _session.Save(token);
             
             return token.Id.ToString();
         }
@@ -79,7 +76,7 @@ namespace Orchard.OpenId.Services
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            return (await _session.QueryAsync<UserOpenIdToken, UserOpenIdTokenIndex>(u => u.UserId == user.Id).List()).Select(u=>u.Token.Id.ToString());
+            return (await _session.QueryAsync<OpenIdToken, OpenIdTokenIndex>(u => u.UserId == user.Id).List()).Select(u=>u.Id.ToString());
         }
         #endregion
     }

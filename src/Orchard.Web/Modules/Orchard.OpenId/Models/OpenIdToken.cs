@@ -20,6 +20,16 @@ namespace Orchard.OpenId.Models
         /// Gets or sets the type of the current token.
         /// </summary>
         public string Type { get; set; }
-        
+
+        /// Gets or sets the UserId
+        /// associated with the current token.
+        /// </summary>
+        public int UserId { get; set; }
+
+        /// Gets or sets the OpenIdApplicationId
+        /// associated with the current token.
+        /// </summary>
+        public int AppId { get; set; }
+
     }
 }
