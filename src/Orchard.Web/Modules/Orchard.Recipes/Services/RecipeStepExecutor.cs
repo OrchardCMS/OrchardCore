@@ -35,6 +35,7 @@ namespace Orchard.Recipes.Services
 
             T = localizer;
         }
+
         public IStringLocalizer T { get; }
 
         public async Task<bool> ExecuteNextStepAsync(string executionId)
@@ -46,7 +47,7 @@ namespace Orchard.Recipes.Services
                 _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
                     e.ExecutionCompleteAsync(executionId)).Wait();
 
-                return await Task.FromResult(false);
+                return false;
             }
 
             _logger.LogInformation("Executing recipe step '{0}'.", nextRecipeStep.Name);
@@ -63,19 +64,17 @@ namespace Orchard.Recipes.Services
                 _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
                     e.RecipeStepExecutingAsync(executionId, recipeContext)).Wait();
 
-                foreach (var recipeHandler in _recipeHandlers)
-                {
-                    recipeHandler.ExecuteRecipeStep(recipeContext);
-                }
+                _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
 
-                UpdateStepResultRecord(executionId, nextRecipeStep.RecipeName, nextRecipeStep.Id, isSuccessful: true);
+                UpdateStepResultRecord(executionId, nextRecipeStep.Id, isSuccessful: true);
+
                 _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
                     e.RecipeStepExecutedAsync(executionId, recipeContext)).Wait();
             }
             catch (Exception ex)
             {
-                UpdateStepResultRecord(executionId, nextRecipeStep.RecipeName, nextRecipeStep.Id, isSuccessful: false, errorMessage: ex.Message);
-                _logger.LogError(string.Format("Recipe execution failed because the step '{0}' failed.", nextRecipeStep.Name), ex);
+                UpdateStepResultRecord(executionId, nextRecipeStep.Id, isSuccessful: false, errorMessage: ex.Message);
+                _logger.LogError("Recipe execution failed because the step '{0}' failed.", nextRecipeStep.Name, ex);
                 while (await _recipeStepQueue.DequeueAsync(executionId) != null) ;
                 var message = T["Recipe execution with ID {0} failed because the step '{1}' failed to execute. The following exception was thrown:\n{2}\nRefer to the error logs for more information.", executionId, nextRecipeStep.Name, ex.Message];
                 throw new OrchardCoreException(message);
@@ -92,14 +91,15 @@ namespace Orchard.Recipes.Services
             return true;
         }
 
-        private void UpdateStepResultRecord(string executionId, string stepId, string stepName, bool isSuccessful, string errorMessage = null)
+        private void UpdateStepResultRecord(string executionId, string stepId, bool isSuccessful, string errorMessage = null)
         {
             var stepResultRecord = _session
                 .QueryAsync<RecipeStepResult>()
                 .List()
                 .Result
                 .FirstOrDefault(
-                    record => record.ExecutionId == executionId && record.StepId == stepId && record.StepName == stepName);
+                    record => record.ExecutionId == executionId && 
+                    record.StepId == stepId);
 
             if (stepResultRecord == null)
             {
