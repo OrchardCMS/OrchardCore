@@ -9,6 +9,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
 {
     /// <summary>
     /// Coordinates all implementations of <see cref="IContentDisplayDriver"/> to render a <see cref="ContentItem"/>.
+    /// Drivers return display result objects that have their own logic to alter the rendering of a content item.
     /// </summary>
     public class ContentDisplayCoordinator : IContentDisplayHandler
     {
@@ -38,7 +39,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                 }
             }
         }
@@ -57,7 +58,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildEditorAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildEditorAsync));
                 }
             }
         }
@@ -76,7 +77,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "UpdateEditorAsync");
+                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(UpdateEditorAsync));
                 }
             }
         }

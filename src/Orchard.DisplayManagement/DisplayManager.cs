@@ -28,17 +28,19 @@ namespace Orchard.DisplayManagement
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (shapeType, differentiator, displayType) => FindPlacementImpl(shapeTable, shapeType, differentiator, displayType);
+            context.FindPlacement = (shape, differentiator, displayType) => FindPlacementImpl(shapeTable, shape, differentiator, displayType);
         }
 
-        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType)
+        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, IShape shape, string differentiator, string displayType)
         {
             ShapeDescriptor descriptor;
+            var shapeType = shape.Metadata.Type;
+
             if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
             {
                 var placementContext = new ShapePlacementContext
                 {
-                    ShapeType = shapeType,
+                    Shape = shape,
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };

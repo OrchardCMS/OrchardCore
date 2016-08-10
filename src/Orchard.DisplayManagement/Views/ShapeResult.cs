@@ -54,7 +54,7 @@ namespace Orchard.DisplayManagement.Views
             }
 
             // Look into specific implementations of placements (like placement.info files)
-            var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
+            var placement = context.FindPlacement((IShape) context.Shape, _differentiator, displayType);
 
             // If no placement is found, use the default location
             if (placement == null)
