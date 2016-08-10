@@ -67,7 +67,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
                     {
                         try
                         {
-                            var result = await displayDriver.BuildDisplayAsync(fieldName, part, contentPartFieldDefinition, contentTypePartDefinition, context);
+                            var result = await displayDriver.BuildDisplayAsync(part, contentPartFieldDefinition, contentTypePartDefinition, context);
                             if (result != null)
                             {
                                 result.Apply(context);
@@ -86,7 +86,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
         {
             return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
                 await _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildEditorAsync(fieldName, part, partFieldDefinition, contentTypePartDefinition, context);
+                    var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
                     if (result != null)
                         result.Apply(context);
                 }, Logger)
@@ -97,7 +97,7 @@ namespace Orchard.ContentManagement.Display.Coordinators
         {
             return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
                 await _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.UpdateEditorAsync(fieldName, part, partFieldDefinition, contentTypePartDefinition, context);
+                var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
                 if (result != null)
                     result.Apply(context);
                 }, Logger)

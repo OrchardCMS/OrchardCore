@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
@@ -8,7 +9,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
-        Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
+        Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
             if(!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
@@ -16,17 +17,18 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult(default(IDisplayResult));
             }
 
-            var field = contentPart.Get<TField>(fieldName);
+            var field = contentPart.Get<TField>(partFieldDefinition.Name);
             if (field != null)
             {
                 Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
-                return DisplayAsync(field, contentPart, partFieldDefinition);
+                var fieldDisplayContext = new BuildFieldDisplayContext(contentPart, typePartDefinition, partFieldDefinition, context);
+                return DisplayAsync(field, fieldDisplayContext);
             }
 
             return Task.FromResult(default(IDisplayResult));
         }
 
-        Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
+        Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
             if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                 !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
@@ -34,13 +36,16 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult(default(IDisplayResult));
             }
 
-            var field = contentPart.GetOrCreate<TField>(fieldName);
+            var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
-            return EditAsync(field, contentPart, partFieldDefinition);
+            var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+            // TODO : inject a location from the partFieldSettings (1, 5, ...)
+            fieldEditorContext.PartFieldLocation = $"Content:{Prefix}";
+            return EditAsync(field, fieldEditorContext);
         }
 
-        async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(string fieldName, ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
+        async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
             if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                 !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
@@ -48,10 +53,12 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return null;
             }
 
-            var field = contentPart.GetOrCreate<TField>(fieldName);
+            var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
-            var result = await UpdateAsync(field, contentPart, partFieldDefinition, context.Updater);
+            var updateFieldEditorContext = new UpdateFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+
+            var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);
 
             if (result == null)
             {
@@ -60,38 +67,38 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if (context.Updater.ModelState.IsValid)
             {
-                contentPart.Weld(fieldName, field);
+                contentPart.Weld(partFieldDefinition.Name, field);
             }
 
             return result;
         }
 
-        public virtual Task<IDisplayResult> DisplayAsync(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
+        public virtual Task<IDisplayResult> DisplayAsync(TField field, BuildFieldDisplayContext fieldDisplayContext)
         {
-            return Task.FromResult(Display(field, part, partFieldDefinition));
+            return Task.FromResult(Display(field, fieldDisplayContext));
         }
 
-        public virtual Task<IDisplayResult> EditAsync(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
+        public virtual Task<IDisplayResult> EditAsync(TField field, BuildFieldEditorContext context)
         {
-            return Task.FromResult(Edit(field, part, partFieldDefinition));
+            return Task.FromResult(Edit(field, context));
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition, IUpdateModel updater)
+        public virtual Task<IDisplayResult> UpdateAsync(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            return Task.FromResult(Update(field, part, partFieldDefinition, updater));
+            return Task.FromResult(Update(field, updater, context));
         }
 
-        public virtual IDisplayResult Display(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
-        {
-            return null;
-        }
-
-        public virtual IDisplayResult Edit(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition)
+        public virtual IDisplayResult Display(TField field, BuildFieldDisplayContext fieldDisplayContext)
         {
             return null;
         }
 
-        public virtual IDisplayResult Update(TField field, ContentPart part, ContentPartFieldDefinition partFieldDefinition, IUpdateModel updater)
+        public virtual IDisplayResult Edit(TField field, BuildFieldEditorContext context)
+        {
+            return null;
+        }
+
+        public virtual IDisplayResult Update(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             return null;
         }
