@@ -13,6 +13,8 @@ using Orchard.OpenId.Models;
 using Orchard.Users.Models;
 using Orchard.OpenId.Services;
 using Orchard.FileSystem.AppData;
+using Microsoft.Extensions.Logging;
+using Orchard.Settings;
 
 namespace Orchard.OpenId
 {
@@ -20,19 +22,36 @@ namespace Orchard.OpenId
     {     
         private readonly string _certificateFullPath;
         private const string certificateFileName = "Certificate.pfx";
+        private readonly string tenant;
 
-        public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder)
+        public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder, ILoggerFactory loggerFactory)   
         {
+            tenant = shellSettings.Name;
             _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);            
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var baseUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl ?? tenant;
             builder.UseOpenIddict();
+            builder.UseJwtBearerAuthentication(new JwtBearerOptions()
+            {
+
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+#if DEBUG
+                RequireHttpsMetadata = false,
+#endif
+                Audience = "http://localhost:2918", //In final version it will be baseUrl
+                Authority = "http://localhost:2918" //In final version it will be baseUrl
+            });
         }
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
+            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();
+
             serviceCollection.TryAddScoped<OpenIddict.IOpenIddictApplicationStore<OpenIdApplication>, OpenIdApplicationStore>();
             serviceCollection.TryAddScoped<OpenIddict.IOpenIddictTokenStore<OpenIdToken>, OpenIdTokenStore>();
             serviceCollection.TryAddScoped<OpenIddict.IOpenIddictUserStore<User>, OpenIdUserStore>();
@@ -49,6 +68,7 @@ namespace Orchard.OpenId
             .AllowPasswordFlow()
             .AllowImplicitFlow()
             .AllowRefreshTokenFlow();
+            
 #if DEBUG
             openIddictBuilder.DisableHttpsRequirement()
             .AddEphemeralSigningKey();

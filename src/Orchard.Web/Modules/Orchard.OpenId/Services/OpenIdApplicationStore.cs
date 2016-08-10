@@ -101,7 +101,7 @@ namespace Orchard.OpenId.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return (await _session.GetAsync<OpenIdApplication>(application.Id)).Tokens.Select(o => o.Id.ToString()).AsEnumerable();
+            return (await _session.QueryAsync<OpenIdToken,OpenIdTokenIndex>(t=>t.AppId == application.Id).List()).Select(o => o.Id.ToString()).AsEnumerable();
         }        
     }
 }

@@ -46,11 +46,6 @@ namespace Orchard.OpenId.Models
         public string RedirectUri { get; set; }
 
         /// <summary>
-        /// Gets the list of the tokens associated with this application.
-        /// </summary>
-        public IList<OpenIdToken> Tokens { get; } = new List<OpenIdToken>();
-        
-        /// <summary>
         /// Gets or sets the application type
         /// associated with the current application.        
         /// </summary>
