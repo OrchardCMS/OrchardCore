@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Orchard.Recipes.Services
 {
-    public class RecipeParser : IRecipeParser
+    public class JsonRecipeParser : IRecipeParser
     {
         public RecipeDescriptor ParseRecipe(IFileInfo recipeFile)
         {
@@ -34,9 +34,20 @@ namespace Orchard.Recipes.Services
             {
                 using (JsonTextReader reader = new JsonTextReader(streamReader))
                 {
+                    // Go to Steps, then iterate.
                     while (reader.Read()) {
-                        Console.WriteLine(reader.Value);
-                        
+                        if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
+                        {
+                            // Start Array
+                            Console.WriteLine(reader.Value);
+                            
+                            action(descriptor, new RecipeStepDescriptor
+                            {
+                                RecipeName = descriptor.Name,
+                                Name = "foo",
+                                Step = JToken.Load(reader)
+                            });
+                        }
                     }
                 }
             }

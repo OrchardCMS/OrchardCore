@@ -30,7 +30,7 @@ namespace Orchard.Recipes.Services
             _recipeParser = recipeParser;
 
             _fileMatcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
-            _fileMatcher.AddIncludePatterns(recipeOptions.Value.RecipeFileExtensions);
+            _fileMatcher.AddIncludePatterns(recipeOptions.Value.RecipeFileExtensions.Select(x => x.Key));
 
             T = localizer;
             Logger = logger;
@@ -48,10 +48,10 @@ namespace Orchard.Recipes.Services
 
         public async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string extensionId)
         {
-            var extension = _extensionManager.GetExtension(extensionId);
-            if (extension != null)
+            var descriptor = _extensionManager.GetExtension(extensionId);
+            if (descriptor != null)
             {
-                return await HarvestRecipesAsync(extension);
+                return await HarvestRecipesAsync(descriptor);
             }
 
             Logger.LogError(T["Could not discover recipes because extension '{0}' was not found.", extensionId]);
@@ -65,7 +65,7 @@ namespace Orchard.Recipes.Services
 
             return await recipeFiles.InvokeAsync(recipeFile => {
                 var recipe = _recipeParser.ParseRecipe(recipeFile);
-                recipe.Location = recipeFile.PhysicalPath;
+                recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
                 return Task.FromResult(recipe);
             }, Logger);
         }

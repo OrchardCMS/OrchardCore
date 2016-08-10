@@ -82,6 +82,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Themes" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },
+                    new ShellFeature { Name = "Orchard.Recipes" }
                 },
                 Parameters = new List<ShellParameter>()
             };

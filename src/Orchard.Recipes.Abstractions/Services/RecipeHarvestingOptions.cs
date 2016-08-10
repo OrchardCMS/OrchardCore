@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Orchard.Recipes.Services
 {
     public class RecipeHarvestingOptions
     {
-        public IList<string> RecipeFileExtensions { get; }
-            = new List<string>();
+        public IDictionary<string, Type> RecipeFileExtensions { get; }
+            = new Dictionary<string, Type>();
     }
 }

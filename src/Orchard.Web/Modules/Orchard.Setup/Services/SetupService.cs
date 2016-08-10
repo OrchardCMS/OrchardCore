@@ -7,6 +7,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Events;
 using Orchard.Hosting;
@@ -27,6 +28,7 @@ namespace Orchard.Setup.Services
         private readonly IOrchardHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly IShellContextFactory _shellContextFactory;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -41,6 +43,7 @@ namespace Orchard.Setup.Services
             IOrchardHost orchardHost,
             IShellSettingsManager shellSettingsManager,
             IShellContainerFactory shellContainerFactory,
+            IShellContextFactory shellContextFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
@@ -53,6 +56,7 @@ namespace Orchard.Setup.Services
             _orchardHost = orchardHost;
             _shellSettingsManager = shellSettingsManager;
             _shellContainerFactory = shellContainerFactory;
+            _shellContextFactory = shellContextFactory;
             _compositionStrategy = compositionStrategy;
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
@@ -128,7 +132,12 @@ namespace Orchard.Setup.Services
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
 
-            using (var shellContext = _orchardHost.CreateShellContext(shellSettings))
+            var shellDescriptor = new ShellDescriptor
+            {
+                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
+            };
+
+            using (var shellContext = _shellContextFactory.CreateDescribedContext(shellSettings, shellDescriptor))
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {

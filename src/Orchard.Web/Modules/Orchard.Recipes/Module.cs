@@ -10,7 +10,7 @@ namespace Orchard.Recipes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRecipeParser, RecipeParser>();
+            services.AddScoped<IRecipeParser, JsonRecipeParser>();
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
             services.AddScoped<IRecipeStepQueue, RecipeStepQueue>();
             services.AddScoped<IRecipeScheduler, RecipeScheduler>();
@@ -18,7 +18,7 @@ namespace Orchard.Recipes
             services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
 
             services.AddRecipeOptions();
-            services.AddRecipeExtension("*.recipe.json");
+            services.AddRecipeExtension("*.recipe.json", typeof(JsonRecipeParser));
         }
     }
 }

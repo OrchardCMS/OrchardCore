@@ -61,7 +61,7 @@ namespace Orchard.Tests.Configuration
 
             var fileInfo = new PhysicalFileInfo(new FileInfo(_tempFolderName));
 
-            var parser = new RecipeParser();
+            var parser = new JsonRecipeParser();
             parser.ProcessRecipe(fileInfo, (recipe, step) =>
             {
 

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Orchard.Recipes.Services;
+using System;
 
 namespace Orchard.Recipes
 {
@@ -15,11 +16,12 @@ namespace Orchard.Recipes
 
         public static IServiceCollection AddRecipeExtension(
             this IServiceCollection services,
-            string fileExtension)
+            string fileExtension,
+            Type parser)
         {
             return services.Configure<RecipeHarvestingOptions>(configureOptions: options =>
             {
-                options.RecipeFileExtensions.Add(fileExtension);
+                options.RecipeFileExtensions.Add(fileExtension, parser);
             });
         }
     }
