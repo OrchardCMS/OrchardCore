@@ -27,7 +27,7 @@ namespace Orchard.OpenId
         public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder, ILoggerFactory loggerFactory)   
         {
             tenant = shellSettings.Name;
-            _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);            
+            _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -50,15 +50,14 @@ namespace Orchard.OpenId
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
-            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();
-
-            serviceCollection.TryAddScoped<OpenIddict.IOpenIddictApplicationStore<OpenIdApplication>, OpenIdApplicationStore>();
-            serviceCollection.TryAddScoped<OpenIddict.IOpenIddictTokenStore<OpenIdToken>, OpenIdTokenStore>();
-            serviceCollection.TryAddScoped<OpenIddict.IOpenIddictUserStore<User>, OpenIdUserStore>();
-
+            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();            
             serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
 
             var openIddictBuilder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
+            .AddApplicationStore<OpenIdApplicationStore>()
+            .AddTokenStore<OpenIdTokenStore>()
+            .AddUserStore<OpenIdUserStore>()
+            .AddUserManager<OpenIdUserManager>()
             .UseJsonWebTokens()
             // Enable the token endpoint (required to use the password flow).                        
             .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")

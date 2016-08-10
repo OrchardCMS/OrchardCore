@@ -6,7 +6,7 @@
     "Orchard.Data": "2.0.0-*",
     "Orchard.Users": "2.0.0-*",
     "OpenIddict": "1.0.0-alpha2-*",
-    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0"
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
   },
   "buildOptions": {
     "define": [ "TRACE" ],
