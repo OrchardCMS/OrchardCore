@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.Recipes.Models;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Orchard.Recipes.Services
 {
@@ -38,15 +40,20 @@ namespace Orchard.Recipes.Services
                     while (reader.Read()) {
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                         {
-                            // Start Array
-                            Console.WriteLine(reader.Value);
-                            
-                            action(descriptor, new RecipeStepDescriptor
-                            {
-                                RecipeName = descriptor.Name,
-                                Name = "foo",
-                                Step = JToken.Load(reader)
-                            });
+                            // going to load up all steps in one go, which is not what we want,
+                            // however, we can change to iterate - :)
+                            var token = JToken.Load(reader);
+
+                            int stepId = 0;
+                            foreach (var child in token.Children()) {
+                                action(descriptor, new RecipeStepDescriptor
+                                {
+                                    Id = (stepId++).ToString(CultureInfo.InvariantCulture),
+                                    RecipeName = descriptor.Name,
+                                    Name = child.Value<string>("name"),
+                                    Step = child
+                                });
+                            }
                         }
                     }
                 }

@@ -194,15 +194,7 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
-            var physicalPath = fileInfo.PhysicalPath;
-
-            if (string.IsNullOrEmpty(physicalPath))
-            {
-                return null;
-            }
-
-            return new DirectoryInfo(physicalPath);
+            return new DirectoryInfo(path);
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)

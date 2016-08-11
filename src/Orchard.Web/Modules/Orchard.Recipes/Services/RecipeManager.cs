@@ -60,7 +60,8 @@ namespace Orchard.Recipes.Services
 
                 await _session.CommitAsync();
 
-                //await _recipeScheduler.ScheduleWork(executionId);
+                await _recipeScheduler.ScheduleWorkAsync(executionId);
+
                 return executionId;
             }
             finally
