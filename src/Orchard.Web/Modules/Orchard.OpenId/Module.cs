@@ -64,7 +64,7 @@ namespace Orchard.OpenId
             .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
             .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
             .AllowPasswordFlow()
-            .AllowImplicitFlow()
+            .AllowAuthorizationCodeFlow()
             .AllowRefreshTokenFlow();
             
 #if DEBUG
