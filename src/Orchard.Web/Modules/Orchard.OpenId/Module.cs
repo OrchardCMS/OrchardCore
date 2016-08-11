@@ -1,20 +1,17 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using Orchard.Security;
+using Orchard.FileSystem.AppData;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
-using Orchard.Users.Models;
 using Orchard.OpenId.Services;
-using Orchard.FileSystem.AppData;
-using Microsoft.Extensions.Logging;
+using Orchard.Security;
 using Orchard.Settings;
+using Orchard.Users.Models;
+using System;
 
 namespace Orchard.OpenId
 {
@@ -22,28 +19,31 @@ namespace Orchard.OpenId
     {     
         private readonly string _certificateFullPath;
         private const string certificateFileName = "Certificate.pfx";
-        private readonly string tenant;
-
+        private readonly string tenantUrlPrefix;
+        private readonly string tenantName;
         public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder, ILoggerFactory loggerFactory)   
         {
-            tenant = shellSettings.Name;
+            tenantName = shellSettings.Name;
+            tenantUrlPrefix = string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix) ? "" : "/" + shellSettings.RequestUrlPrefix;
             _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var baseUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl ?? tenant;
+            var baseUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl;
+            baseUrl = baseUrl.EndsWith("/") ? baseUrl.Remove(baseUrl.Length - 1) : baseUrl;
+            var tenantUrl = baseUrl + tenantUrlPrefix;
+
             builder.UseOpenIddict();
             builder.UseJwtBearerAuthentication(new JwtBearerOptions()
             {
-
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
 #if DEBUG
                 RequireHttpsMetadata = false,
 #endif
-                Audience = "http://localhost:2918", //In final version it will be baseUrl
-                Authority = "http://localhost:2918" //In final version it will be baseUrl
+                Audience = tenantUrl,
+                Authority = tenantUrl
             });
         }
 
@@ -52,12 +52,12 @@ namespace Orchard.OpenId
             serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
             serviceCollection.AddScoped<OpenIdTokenIndexProvider>();            
             serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
-
             var openIddictBuilder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
             .AddApplicationStore<OpenIdApplicationStore>()
             .AddTokenStore<OpenIdTokenStore>()
             .AddUserStore<OpenIdUserStore>()
             .AddUserManager<OpenIdUserManager>()
+            //.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(tenantName))
             .UseJsonWebTokens()
             // Enable the token endpoint (required to use the password flow).                        
             .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
