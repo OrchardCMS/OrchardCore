@@ -12,6 +12,7 @@ using Orchard.Security;
 using Orchard.Settings;
 using Orchard.Users.Models;
 using System;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Orchard.OpenId
 {
@@ -22,17 +23,15 @@ namespace Orchard.OpenId
         private readonly string tenantUrlPrefix;
         private readonly string tenantName;
         public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder, ILoggerFactory loggerFactory)   
-        {
+        {            
             tenantName = shellSettings.Name;
-            tenantUrlPrefix = string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix) ? "" : "/" + shellSettings.RequestUrlPrefix;
+            tenantUrlPrefix = shellSettings.RequestUrlPrefix;
             _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var baseUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl;
-            baseUrl = baseUrl.EndsWith("/") ? baseUrl.Remove(baseUrl.Length - 1) : baseUrl;
-            var tenantUrl = baseUrl + tenantUrlPrefix;
+            var tenantUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl + tenantUrlPrefix;
 
             builder.UseOpenIddict();
             builder.UseJwtBearerAuthentication(new JwtBearerOptions()
@@ -57,7 +56,7 @@ namespace Orchard.OpenId
             .AddTokenStore<OpenIdTokenStore>()
             .AddUserStore<OpenIdUserStore>()
             .AddUserManager<OpenIdUserManager>()
-            //.Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(tenantName))
+            .Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(tenantName))
             .UseJsonWebTokens()
             // Enable the token endpoint (required to use the password flow).                        
             .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")

@@ -11,7 +11,8 @@
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Hosting.Web": "2.0.0-*",
     "System.Linq": "4.1.0-*",
-    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0"
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
+    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.0"
   },
   "runtimeOptions": {
     "gcServer": true,
