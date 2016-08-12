@@ -86,9 +86,9 @@ namespace Orchard.Recipes.Services
             }
         }
 
-        private int GetFirstStepIndex(string executionPath)
+        private int GetFirstStepIndex(string executionId)
         {
-            var stepFiles = _appDataFolder.ListFiles(executionPath);
+            var stepFiles = _appDataFolder.ListFiles(_appDataFolder.Combine(_recipeQueueFolder, executionId));
             if (!stepFiles.Any())
             {
                 return -1;

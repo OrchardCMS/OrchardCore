@@ -194,12 +194,19 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            return new DirectoryInfo(path);
+            return new DirectoryInfo(Path.Combine(RootPath, path));
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)
         {
-            return ListFiles(path, new Matcher());
+            var directory = GetDirectoryInfo(path);
+            if (!directory.Exists)
+            {
+                return Enumerable.Empty<IFileInfo>();
+            }
+
+            return Directory.EnumerateFiles(directory.FullName)
+                .Select(result => GetFileInfo(Combine(result)));
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path, Matcher matcher)

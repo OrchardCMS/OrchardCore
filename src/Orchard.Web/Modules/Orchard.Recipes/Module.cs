@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.Recipes.Providers.RecipeHandlers;
 using Orchard.Recipes.Services;
 
 namespace Orchard.Recipes
@@ -16,6 +17,8 @@ namespace Orchard.Recipes
             services.AddScoped<IRecipeScheduler, RecipeScheduler>();
             services.AddScoped<IRecipeManager, RecipeManager>();
             services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
+
+            services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();
 
             services.AddRecipeOptions();
             services.AddRecipeExtension("*.recipe.json", typeof(JsonRecipeParser));

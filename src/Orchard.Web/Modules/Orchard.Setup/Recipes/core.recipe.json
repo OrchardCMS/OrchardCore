@@ -13,7 +13,6 @@
       "disable": [ ],
       "enable": [
         "Orchard.Logging.Console",
-        "Orchard.Hosting",
         "Settings",
         "Dashboard",
         "Navigation",

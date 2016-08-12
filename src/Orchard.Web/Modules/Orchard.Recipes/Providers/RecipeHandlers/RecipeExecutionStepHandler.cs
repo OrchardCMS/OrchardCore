@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +24,7 @@ namespace Orchard.Recipes.Providers.RecipeHandlers
         public void ExecuteRecipeStep(RecipeContext recipeContext)
         {
             var executionStep = _recipeExecutionSteps
-                .FirstOrDefault(x => x.Names.Contains(recipeContext.RecipeStep.Name));
+                .FirstOrDefault(x => x.Names.Contains(recipeContext.RecipeStep.Name, StringComparer.OrdinalIgnoreCase));
 
             if (executionStep != null)
             {
