@@ -1,7 +1,4 @@
-﻿using System;
-using Orchard.ContentManagement.MetaData.Builders;
-using Orchard.ContentManagement.MetaData.Models;
-using Orchard.Utility;
+﻿using Orchard.ContentManagement.MetaData.Builders;
 
 namespace Orchard.ContentManagement.Metadata.Settings
 {
@@ -12,33 +9,9 @@ namespace Orchard.ContentManagement.Metadata.Settings
             return builder.WithSetting(nameof(ContentTypePartSettings.DisplayName), displayName);
         }
 
-        public static string DisplayName(this ContentTypePartDefinition typePart)
-        {
-            var displayName = typePart.Settings.ToObject<ContentTypePartSettings>().DisplayName;
-
-            if (String.IsNullOrEmpty(displayName))
-            {
-                displayName = typePart.PartDefinition.Name.TrimEnd("Part");
-            }
-
-            return displayName;
-        }
-
         public static ContentTypePartDefinitionBuilder WithDescription(this ContentTypePartDefinitionBuilder builder, string description)
         {
             return builder.WithSetting(nameof(ContentTypePartSettings.Description), description);
-        }
-
-        public static string Description(this ContentTypePartDefinition typePart)
-        {
-            var description = typePart.Settings.ToObject<ContentTypePartSettings>().Description;
-
-            if (String.IsNullOrEmpty(description))
-            {
-                description = typePart.PartDefinition.Description();
-            }
-
-            return description;
         }
     }
 }

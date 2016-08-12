@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.ContentManagement.Records;
@@ -38,7 +39,7 @@ namespace Orchard.Lists.Drivers
             _contentManager = contentManager;
         }
 
-        public override IDisplayResult Display(ListPart listPart, IUpdateModel updater)
+        public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
             return Combine(
                 Shape("ListPart_DetailAdmin", async shape =>
@@ -49,7 +50,7 @@ namespace Orchard.Lists.Drivers
 
                     foreach (var contentItem in containedItems)
                     {
-                        containedItemsSummaries.Add(await contentItemDisplayManager.BuildDisplayAsync(contentItem, updater, "SummaryAdmin"));
+                        containedItemsSummaries.Add(await contentItemDisplayManager.BuildDisplayAsync(contentItem, context.Updater, "SummaryAdmin"));
                     }
 
                     shape.ContentItems = containedItemsSummaries;
@@ -66,7 +67,7 @@ namespace Orchard.Lists.Drivers
 
                     foreach (var contentItem in containedItems)
                     {
-                        var itemShape = await contentItemDisplayManager.BuildDisplayAsync(contentItem, updater, "Summary") as IShape;
+                        var itemShape = await contentItemDisplayManager.BuildDisplayAsync(contentItem, context.Updater, "Summary") as IShape;
                         itemShape.Metadata.Alternates.Add("List_Summary__" + listPart.ContentItem.ContentType);
                         containedItemsSummaries.Add(itemShape);
                     }

@@ -9,29 +9,30 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.MetaData.Models;
 using Orchard.DisplayManagement.Handlers;
 
-namespace Orchard.ContentManagement.Display.Coordinators
+namespace Orchard.ContentManagement.Display
 {
     /// <summary>
-    /// Provides a concrete implementation of a display coordinator managing <see cref="IContentDisplayDriver"/>
-    /// implementations.
+    /// Provides a concrete implementation of a display handler coordinating <see cref="IContentFieldDisplayDriver"/>
+    /// and <see cref="IContentPartDisplayDriver"/> instances.
     /// </summary>
-    public class ContentFieldDisplayCoordinator : IContentDisplayHandler
+    public class ContentPartDisplayCoordinator : IContentDisplayHandler
     {
-        private readonly IEnumerable<IContentFieldDisplayDriver> _displayDrivers;
+        private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
+        private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger<ContentDisplayCoordinator> _logger;
         private readonly IEnumerable<IContentPartDriver> _contentPartDrivers;
 
-        public ContentFieldDisplayCoordinator(
+        public ContentPartDisplayCoordinator(
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentFieldDisplayDriver> displayDrivers,
+            IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
+            IEnumerable<IContentPartDisplayDriver> partDisplayDrivers,
             IEnumerable<IContentPartDriver> partDrivers,
-            ILogger<ContentDisplayCoordinator> logger)
+            ILogger<ContentPartDisplayCoordinator> logger)
         {
             _contentPartDrivers = partDrivers;
-            _logger = logger;
             _contentDefinitionManager = contentDefinitionManager;
-            _displayDrivers = displayDrivers;
+            _fieldDisplayDrivers = fieldDisplayDrivers;
+            _partDisplayDrivers = partDisplayDrivers;
             Logger = logger;
         }
 
@@ -40,8 +41,6 @@ namespace Orchard.ContentManagement.Display.Coordinators
         public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
             // Optimized implementation for display
-
-            // For each field on the content item, invoke all IContentFieldDisplayDriver instances
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -59,11 +58,25 @@ namespace Orchard.ContentManagement.Display.Coordinators
                 var partType = partInfos.ContainsKey(partTypeName) ? partInfos[partTypeName].Factory(contentTypePartDefinition).GetType() : null;
                 var part = contentItem.Get(partType ?? typeof(ContentPart), partName) as ContentPart;
 
+                foreach (var displayDriver in _partDisplayDrivers)
+                {
+                    try
+                    {
+                        var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                        if (result != null)
+                        {
+                            result.Apply(context);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, "BuildDisplayAsync");
+                    }
+                }
+
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
-                    var fieldName = contentPartFieldDefinition.Name;
-
-                    foreach (var displayDriver in _displayDrivers)
+                    foreach (var displayDriver in _fieldDisplayDrivers)
                     {
                         try
                         {
@@ -84,27 +97,44 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
         public Task BuildEditorAsync(ContentItem model, BuildEditorContext context)
         {
-            return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
-                await _displayDrivers.InvokeAsync(async contentDisplay => {
-                    var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
-                    if (result != null)
-                        result.Apply(context);
-                }, Logger)
-            );
+            return Process(model,
+                async (partFieldDefinition, contentTypePartDefinition, part) =>
+                    await _fieldDisplayDrivers.InvokeAsync(async contentDisplay => {
+                        var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
+                        if (result != null)
+                            result.Apply(context);
+                    }, Logger),
+                async (contentTypePartDefinition, part) =>
+                    await _partDisplayDrivers.InvokeAsync(async contentDisplay => {
+                        var result = await contentDisplay.BuildEditorAsync(part, contentTypePartDefinition, context);
+                        if (result != null)
+                            result.Apply(context);
+                    }, Logger)
+                );
         }
 
         public Task UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
         {
-            return Process(model, async (partFieldDefinition, contentTypePartDefinition, part, fieldName) =>
-                await _displayDrivers.InvokeAsync(async contentDisplay => {
-                var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
-                if (result != null)
-                    result.Apply(context);
-                }, Logger)
-            );
+            return Process(model,
+                async (partFieldDefinition, contentTypePartDefinition, part) =>
+                    await _fieldDisplayDrivers.InvokeAsync(async contentDisplay => {
+                    var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, contentTypePartDefinition, context);
+                    if (result != null)
+                        result.Apply(context);
+                    }, Logger),
+                async (contentTypePartDefinition, part) =>
+                    await _partDisplayDrivers.InvokeAsync(async contentDisplay => {
+                        var result = await contentDisplay.UpdateEditorAsync(part, contentTypePartDefinition, context);
+                        if (result != null)
+                            result.Apply(context);
+                    }, Logger)
+                );
         }
 
-        public Task Process(ContentItem contentItem, Func<ContentPartFieldDefinition, ContentTypePartDefinition, ContentPart, string, Task> action)
+        public Task Process(ContentItem contentItem,
+            Func<ContentPartFieldDefinition, ContentTypePartDefinition, ContentPart, Task> processField,
+            Func<ContentTypePartDefinition, ContentPart, Task> processPart
+            )
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -136,10 +166,12 @@ namespace Orchard.ContentManagement.Display.Coordinators
 
                 part = contentItem.GetOrCreate(part.GetType(), () => new ContentPart(), typePartDefinition.Name) as ContentPart;
 
+                processPart(typePartDefinition, part);
+
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
-                    action(partFieldDefinition, typePartDefinition, part, fieldName);
+                    processField(partFieldDefinition, typePartDefinition, part);
                 }
             }
 

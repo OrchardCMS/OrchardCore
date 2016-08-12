@@ -1,0 +1,9 @@
+﻿@using Orchard.ContentManagement.MetaData.Models
+
+@{
+    ContentTypePartDefinition typePartDefinition = Model.TypePartDefinition;
+}
+<fieldset class="form-group">
+    @typePartDefinition.DisplayName()
+    <span class="hint">@typePartDefinition.Description()</span>
+</fieldset>

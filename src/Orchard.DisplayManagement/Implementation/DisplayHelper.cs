@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Html;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -29,13 +30,31 @@ namespace Orchard.DisplayManagement.Implementation
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            try
+            {
+                result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            }
+            catch (AggregateException ae)
+            {
+                // Unwrap the aggregate exception
+                throw ae.GetBaseException();
+            }
+
             return true;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            try
+            {
+                result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            }
+            catch (AggregateException ae)
+            {
+                // Unwrap the aggregate exception
+                throw ae.GetBaseException();
+            }
+
             return true;
         }
 

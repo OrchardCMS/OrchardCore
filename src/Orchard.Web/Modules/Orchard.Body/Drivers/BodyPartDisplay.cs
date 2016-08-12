@@ -9,7 +9,7 @@ namespace Orchard.Body.Drivers
 {
     public class BodyPartDisplay : ContentPartDisplayDriver<BodyPart>
     {
-        public override IDisplayResult Display(BodyPart bodyPart, IUpdateModel updater)
+        public override IDisplayResult Display(BodyPart bodyPart)
         {
             return Combine(
                 Shape("BodyPart", bodyPart)
@@ -20,7 +20,7 @@ namespace Orchard.Body.Drivers
 
         }
 
-        public override IDisplayResult Edit(BodyPart bodyPart, IUpdateModel updater)
+        public override IDisplayResult Edit(BodyPart bodyPart)
         {
             return Shape<BodyPartViewModel>("BodyPart_Edit", model =>
             {
@@ -28,14 +28,14 @@ namespace Orchard.Body.Drivers
                 model.BodyPart = bodyPart;
 
                 return Task.CompletedTask;
-            }).Location("Content:10");
+            }).Location("Content:BodyPart");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Body);
 
-            return Edit(model, updater);
+            return Edit(model);
         }
     }
 }
