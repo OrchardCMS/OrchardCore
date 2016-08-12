@@ -110,6 +110,7 @@ namespace Orchard.Setup.Services
             string[] hardcoded =
             {
                 "Orchard.Hosting",
+                "Orchard.Modules",
                 "Orchard.Recipes"// shortcut for built-in features
             };
 
