@@ -114,6 +114,7 @@ namespace Orchard.Recipes.Services
             stepResultRecord.ErrorMessage = errorMessage;
 
             _session.Save(stepResultRecord);
+            _session.CommitAsync().Wait();
         }
     }
 }

@@ -88,7 +88,7 @@ namespace Orchard.Recipes.Services
 
         private int GetFirstStepIndex(string executionId)
         {
-            var stepFiles = _appDataFolder.ListFiles(_appDataFolder.Combine(_recipeQueueFolder, executionId));
+            var stepFiles = _appDataFolder.ListFiles(Path.Combine(_recipeQueueFolder, executionId));
             if (!stepFiles.Any())
             {
                 return -1;
@@ -98,10 +98,10 @@ namespace Orchard.Recipes.Services
             return currentSteps[0];
         }
 
-        private int GetLastStepIndex(string executionPath)
+        private int GetLastStepIndex(string executionId)
         {
             int lastIndex = -1;
-            var stepFiles = _appDataFolder.ListFiles(executionPath);
+            var stepFiles = _appDataFolder.ListFiles(Path.Combine(_recipeQueueFolder, executionId));
             // we always have only a handful of steps.
             foreach (var stepFile in stepFiles)
             {

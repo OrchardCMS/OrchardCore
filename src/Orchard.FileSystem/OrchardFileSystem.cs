@@ -35,32 +35,30 @@ namespace Orchard.FileSystem
             get; private set;
         }
 
-        private void MakeDestinationFileNameAvailable(string destinationFileName)
+        private void MakeDestinationFileNameAvailable(IFileInfo fileInfo)
         {
-            var directory = GetDirectoryInfo(destinationFileName);
+            var destinationFileName = fileInfo.PhysicalPath;
+            bool isDirectory = Directory.Exists(destinationFileName);
             // Try deleting the destination first
             try
             {
-                if (directory.Exists)
-                {
-                    directory.Delete();
-                }
+                if (isDirectory)
+                    Directory.Delete(destinationFileName);
+                else
+                    File.Delete(destinationFileName);
             }
             catch
             {
                 // We land here if the file is in use, for example. Let's move on.
             }
 
-            if (GetDirectoryInfo(destinationFileName).Exists)
+            if (isDirectory && Directory.Exists(destinationFileName))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
-                }
+                _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
                 return;
             }
             // If destination doesn't exist, we are good
-            if (!GetFileInfo(destinationFileName).Exists)
+            if (!File.Exists(destinationFileName))
                 return;
 
             // Try renaming destination to a unique filename
@@ -157,9 +155,9 @@ namespace Orchard.FileSystem
                 _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
             }
 
-            var destinationFileName = GetFileInfo(destinationPath).PhysicalPath;
+            var destinationFileName = GetFileInfo(destinationPath);
             MakeDestinationFileNameAvailable(destinationFileName);
-            File.Copy(sourceFileName, destinationFileName, true);
+            File.Copy(sourceFileName, destinationFileName.PhysicalPath, true);
         }
 
         public void DeleteFile(string path)
@@ -169,7 +167,7 @@ namespace Orchard.FileSystem
                 _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
             }
 
-            MakeDestinationFileNameAvailable(GetFileInfo(path).PhysicalPath);
+            MakeDestinationFileNameAvailable(GetFileInfo(path));
         }
 
         public void CreateDirectory(string path)
@@ -194,7 +192,7 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            return new DirectoryInfo(Path.Combine(RootPath, path));
+            return new DirectoryInfo(Path.Combine(RootPath, Combine(path)));
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)
