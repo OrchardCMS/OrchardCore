@@ -11,6 +11,7 @@ using Orchard.Security;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Orchard.Users
 {
@@ -34,7 +35,7 @@ namespace Orchard.Users
                 .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
                 .UseCookieAuthentication(_options.Cookies.ExternalCookie)
                 .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
-                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
+                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)                
                 ;
         }
 
@@ -61,13 +62,19 @@ namespace Orchard.Users
 
             serviceCollection.TryAddScoped<IUserStore<User>, UserStore>();
 
+            var dataProtectionProvider = DataProtectionProvider.Create(_tenantName);
             serviceCollection.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
                 options.Cookies.ApplicationCookie.LoginPath = new PathString("/Orchard.Users/Account/Login/");
                 options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
+                options.Cookies.ApplicationCookie.DataProtectionProvider = dataProtectionProvider;
+                options.Cookies.ExternalCookie.DataProtectionProvider = dataProtectionProvider;
+                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = dataProtectionProvider;
+                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = dataProtectionProvider;                
             });
+            
 
             serviceCollection.AddScoped<UserIndexProvider>();
         }
