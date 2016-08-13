@@ -146,7 +146,22 @@ namespace Orchard.DisplayManagement.Views
 
             foreach(var zone in zones)
             {
-                parentShape = parentShape.Zones[zone];
+                if(parentShape == null)
+                {
+                    break;
+                }
+
+                var zoneProperty = parentShape.Zones;
+                if (zoneProperty != null)
+                {
+                    // parentShape is a ZoneHolding
+                    parentShape = zoneProperty[zone];
+                }
+                else
+                {
+                    // try to access it as a member
+                    parentShape = parentShape[zone];
+                }
             }
 
             if (String.IsNullOrEmpty(position))

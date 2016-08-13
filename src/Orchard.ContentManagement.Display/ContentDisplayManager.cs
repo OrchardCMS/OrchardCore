@@ -138,9 +138,6 @@ namespace Orchard.ContentManagement.Display
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
 
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
-
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 

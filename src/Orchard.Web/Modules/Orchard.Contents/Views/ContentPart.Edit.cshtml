@@ -1,0 +1,19 @@
+﻿@using Orchard.ContentManagement.MetaData.Models
+
+@{
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var description = typePartDefinition.Description();
+}
+
+<h5>
+    @typePartDefinition.DisplayName()
+
+    @if (!String.IsNullOrEmpty(description))
+    {
+        <span class="hint">@T["— {0}", description]</span>
+    }
+</h5>
+@foreach(var shape in Model)
+{
+    @Display(shape)
+}

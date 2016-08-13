@@ -1,6 +1,5 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.ModelBinding;
-using System;
 
 namespace Orchard.DisplayManagement.Handlers
 {
@@ -24,9 +23,9 @@ namespace Orchard.DisplayManagement.Handlers
         public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
 
-        private PlacementInfo FindDefaultPlacement(IShape shape, string differentiator, string defaultLocation)
+        private static PlacementInfo FindDefaultPlacement(IShape shape, string differentiator, string displayType)
         {
-            return new PlacementInfo { Location = defaultLocation, Source = String.Empty };
+            return null;
         }
     }
 }

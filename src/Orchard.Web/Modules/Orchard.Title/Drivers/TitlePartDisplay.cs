@@ -27,7 +27,7 @@ namespace Orchard.Title.Drivers
                 model.TitlePart = titlePart;
 
                 return Task.CompletedTask;
-            }).Location("Content:5");
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)

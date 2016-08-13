@@ -33,8 +33,7 @@ namespace Orchard.ContentFields.Fields
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location(context.PartFieldLocation);
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)

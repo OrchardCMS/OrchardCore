@@ -12,6 +12,13 @@
             </div>
         }
     </div>
+    <div class="edit-item-parts">
+        @if (Model.Parts != null)
+        {
+            @Display(Model.Parts)
+        }
+    </div>
+
     <div class="edit-item-secondary group">
         @if (Model.Actions != null)
         {

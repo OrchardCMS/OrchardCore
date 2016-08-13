@@ -28,7 +28,7 @@ namespace Orchard.Body.Drivers
                 model.BodyPart = bodyPart;
 
                 return Task.CompletedTask;
-            }).Location("Content:BodyPart");
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)
