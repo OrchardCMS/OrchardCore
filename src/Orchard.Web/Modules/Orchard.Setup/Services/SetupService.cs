@@ -173,24 +173,6 @@ namespace Orchard.Setup.Services
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
-
-                    // Invoke modules to react to the setup event
-                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
-                        context.SiteName,
-                        context.AdminUsername,
-                        context.AdminEmail,
-                        context.AdminPassword,
-                        context.DatabaseProvider,
-                        context.DatabaseConnectionString,
-                        context.DatabaseTablePrefix)
-                    );
-                    
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
                 }
             }
 
@@ -206,7 +188,17 @@ namespace Orchard.Setup.Services
             var recipe = context.Recipe;
             var executionId = await recipeManager.ExecuteAsync(recipe);
 
-
+            // Invoke modules to react to the setup event
+            var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+            await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
+                context.SiteName,
+                context.AdminUsername,
+                context.AdminEmail,
+                context.AdminPassword,
+                context.DatabaseProvider,
+                context.DatabaseConnectionString,
+                context.DatabaseTablePrefix)
+            );
 
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return executionId;
