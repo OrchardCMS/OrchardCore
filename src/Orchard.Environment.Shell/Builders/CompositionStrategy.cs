@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.DotNet.ProjectModel;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
