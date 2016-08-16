@@ -9,18 +9,15 @@ namespace Orchard.Environment.Shell.Builders
 {
     public class ShellContextFactory : IShellContextFactory
     {
-        private readonly IShellDescriptorCache _shellDescriptorCache;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly ILogger _logger;
 
         public ShellContextFactory(
-            IShellDescriptorCache shellDescriptorCache,
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
             ILogger<ShellContextFactory> logger)
         {
-            _shellDescriptorCache = shellDescriptorCache;
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
             _logger = logger;
@@ -33,17 +30,7 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var knownDescriptor = _shellDescriptorCache.Fetch(settings.Name);
-            if (knownDescriptor == null)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("No descriptor cached. Starting with minimum components.");
-                }
-                knownDescriptor = MinimumShellDescriptor();
-            }
-
-            var describedContext = CreateDescribedContext(settings, knownDescriptor);
+            var describedContext = CreateDescribedContext(settings, MinimumShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.CreateServiceScope())
@@ -52,11 +39,8 @@ namespace Orchard.Environment.Shell.Builders
                 currentDescriptor = shellDescriptorManager.GetShellDescriptorAsync().Result;
             }
 
-            if (currentDescriptor != null && knownDescriptor.SerialNumber != currentDescriptor.SerialNumber)
+            if (currentDescriptor != null)
             {
-                _logger.LogInformation("Newer descriptor obtained. Rebuilding shell container.");
-
-                _shellDescriptorCache.Store(settings.Name, currentDescriptor);
                 return CreateDescribedContext(settings, currentDescriptor);
             }
 
