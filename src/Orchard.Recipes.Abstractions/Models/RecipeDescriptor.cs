@@ -11,8 +11,8 @@ namespace Orchard.Recipes.Models
         public string Version { get; set; }
         public bool IsSetupRecipe { get; set; }
         public DateTime? ExportUtc { get; set; }
-        public string Category { get; set; }
-        public string Tags { get; set; }
+        public string[] Categories { get; set; }
+        public string[] Tags { get; set; }
 
         public string Location { get; set; }
     }

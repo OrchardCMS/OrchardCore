@@ -40,7 +40,7 @@ namespace Orchard.Recipes.Commands
             {
                 await Context.Output.WriteLineAsync(T[$"Recipe: {recipe.Name}"]);
                 await Context.Output.WriteLineAsync(T[$"  Version:     {recipe.Version}"]);
-                await Context.Output.WriteLineAsync(T[$"  Tags:        {recipe.Tags}"]);
+                await Context.Output.WriteLineAsync(T[$"  Tags:        {string.Join(",", recipe.Tags)}"]);
                 await Context.Output.WriteLineAsync(T[$"  Description: {recipe.Description}"]);
                 await Context.Output.WriteLineAsync(T[$"  Author:      {recipe.Author}"]);
                 await Context.Output.WriteLineAsync(T[$"  Website:     {recipe.WebSite}"]);

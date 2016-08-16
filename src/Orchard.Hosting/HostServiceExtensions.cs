@@ -31,8 +31,6 @@ namespace Orchard.Hosting
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {
-                    services.AddSingleton<IShellDescriptorCache, ShellDescriptorCache>();
-
                     services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
 
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
