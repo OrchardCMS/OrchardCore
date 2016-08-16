@@ -122,7 +122,7 @@ namespace Orchard.FileSystem
 
             if (!fileInfo.Exists)
             {
-                CreateDirectory(Path.GetDirectoryName(fileInfo.PhysicalPath));
+                CreateDirectory(Path.GetDirectoryName(path));
             }
 
             return File.Create(fileInfo.PhysicalPath);
@@ -215,9 +215,8 @@ namespace Orchard.FileSystem
                 return Enumerable.Empty<IFileInfo>();
             }
 
-            return matcher.Execute(new DirectoryInfoWrapper(directory))
-                    .Files
-                    .Select(result => GetFileInfo(Combine(directory.FullName, result.Path)));
+            return new DirectoryInfoWrapper(directory).EnumerateFileSystemInfos()
+                    .Select(result => GetFileInfo(Combine(directory.FullName, result.Name)));
         }
 
         public IEnumerable<DirectoryInfo> ListDirectories(string path)
