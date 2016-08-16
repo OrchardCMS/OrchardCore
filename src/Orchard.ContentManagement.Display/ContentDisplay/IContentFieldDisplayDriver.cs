@@ -1,8 +1,8 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Orchard.ContentManagement.MetaData.Models;
+using Orchard.DependencyInjection;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Views;
-using System.Threading.Tasks;
-using Orchard.ContentManagement.MetaData.Models;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {

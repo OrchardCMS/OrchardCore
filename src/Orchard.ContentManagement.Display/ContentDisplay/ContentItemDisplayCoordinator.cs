@@ -9,7 +9,6 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Zones;
 
 namespace Orchard.ContentManagement.Display
 {
@@ -240,7 +239,9 @@ namespace Orchard.ContentManagement.Display
                 {
                     var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
                     if (result != null)
+                    {
                         result.Apply(context);
+                    }
                 }, Logger);
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
@@ -250,7 +251,9 @@ namespace Orchard.ContentManagement.Display
                     {
                         var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
                         if (result != null)
+                        {
                             result.Apply(context);
+                        }
                     }, Logger);
                 }
             }

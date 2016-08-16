@@ -11,7 +11,7 @@ namespace Orchard.ContentTypes.Editors
     {
         public override string GeneratePrefix(ContentPartFieldDefinition model)
         {
-            return $"{model.Name}.{model.Name}";
+            return $"{model.PartDefinition.Name}.{model.Name}";
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

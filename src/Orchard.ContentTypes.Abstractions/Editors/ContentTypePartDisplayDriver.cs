@@ -16,12 +16,4 @@ namespace Orchard.ContentTypes.Editors
             return true;
         }
     }
-
-    public abstract class ContentTypePartDisplayDriver<TPart> : ContentTypePartDisplayDriver
-    {
-        public override bool CanHandleModel(ContentTypePartDefinition model)
-        {
-            return String.Equals("ListPart", model.PartDefinition.Name, StringComparison.Ordinal);
-        }
-    }
 }

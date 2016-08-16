@@ -1,5 +1,4 @@
-﻿using System;
-using Orchard.DisplayManagement.Handlers;
+﻿using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {

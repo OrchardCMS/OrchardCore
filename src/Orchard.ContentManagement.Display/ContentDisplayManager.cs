@@ -16,7 +16,7 @@ namespace Orchard.ContentManagement.Display
 {
     /// <summary>
     /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render
-    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayDriver"/>
+    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayHandler"/>
     /// implementation. The resulting shapes are targetting the stereotype of the content item
     /// to display.
     /// </summary>
