@@ -1,6 +1,6 @@
 ﻿using Orchard.ContentFields.Fields;
 using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.ContentFields.ViewModels

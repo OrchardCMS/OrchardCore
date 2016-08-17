@@ -1,4 +1,4 @@
-﻿@using Orchard.ContentManagement.MetaData.Models;
+﻿@using Orchard.ContentManagement.Metadata.Models;
 @using Orchard.ContentManagement.Metadata.Settings;
 
 @{
@@ -7,22 +7,7 @@
     var description = contentTypePartDefinition.Description();
 }
 
-<h3 data-toggle="collapse" data-target="#collapseExample-@contentTypePartDefinition.PartDefinition.Name">@contentTypePartDefinition.DisplayName()
-    @if (!String.IsNullOrEmpty(description))
-    {
-        <span class="hint">@T["— {0}", description]</span>
-    }
-</h3>
-
-<div>
+@if(Model.Content != null)
+{
     @Display(Model.Content)
-
-    @if (contentPartSettings.Attachable)
-    {
-        <fieldset class="form-group">
-            <a asp-route-action="RemovePartFrom" asp-route-id="@contentTypePartDefinition.ContentTypeDefinition.Name" asp-route-name="@contentTypePartDefinition.Name" class="btn btn-warning btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>
-        </fieldset>
-    }
-</div>
-
-
+}

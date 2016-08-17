@@ -36,7 +36,7 @@
                 <li class="list-group-item">
                     <div class="radio">
                         <label asp-for="PartSelections[i].PartName">
-                            <input asp-for="SelectedPartName" value="@Model.PartSelections[i].PartName" type="radio" />
+                            <input asp-for="SelectedPartName" id="@Html.IdFor(m => m.PartSelections[i].PartName)" value="@Model.PartSelections[i].PartName" type="radio" />
                             @partSelection.PartDisplayName
                         </label>
                     </div>
@@ -52,3 +52,30 @@
         <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
     </fieldset>
 </form>
+
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function(){
+        var $name = $("#@Html.IdFor(m => m.Name)");
+        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
+
+        var nameAltered;
+        $name.keypress(function() {
+            nameAltered = true;
+        });
+
+        var compute = function() {
+            // stop processing automatically if altered by the user
+            if(nameAltered) {
+                return true;
+            }
+
+            $name.val(getTechnicalName($displayName.val()));
+        };
+
+        $displayName.keyup(compute);
+        $displayName.blur(compute);
+    })
+//]]>
+</script>

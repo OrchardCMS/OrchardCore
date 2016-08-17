@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Orchard.ContentFields.Fields;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement.Views;
 

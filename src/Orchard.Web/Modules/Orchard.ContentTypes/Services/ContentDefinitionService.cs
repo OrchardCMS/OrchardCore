@@ -6,7 +6,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
@@ -140,7 +140,12 @@ namespace Orchard.ContentTypes.Services
 
         public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
         {
-            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithReusablePart(name, displayName, description, partName));
+            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithPart(name, partName, cfg =>
+            {
+                cfg.WithDisplayName(displayName);
+                cfg.WithDescription(description);
+            }));
+
             _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }));
         }
 
@@ -223,7 +228,7 @@ namespace Orchard.ContentTypes.Services
 
         public IEnumerable<ContentFieldInfo> GetFields()
         {
-            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null);
+            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null).OrderBy(x => x.FieldTypeName).ToList();
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
@@ -260,13 +265,27 @@ namespace Orchard.ContentTypes.Services
             }));
         }
 
-        public void AlterField(EditPartViewModel partViewModel, EditFieldNameViewModel fieldViewModel)
+        public void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
         {
             _contentDefinitionManager.AlterPartDefinition(partViewModel.Name, partBuilder =>
             {
                 partBuilder.WithField(fieldViewModel.Name, fieldBuilder =>
                 {
                     fieldBuilder.WithDisplayName(fieldViewModel.DisplayName);
+                });
+            });
+        }
+
+        public void AlterTypePart(EditTypePartViewModel typePartViewModel)
+        {
+            var typeDefinition = typePartViewModel.TypePartDefinition.ContentTypeDefinition;
+
+            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            {
+                type.WithPart(typePartViewModel.Name, typePartViewModel.TypePartDefinition.PartDefinition, part =>
+                {
+                    part.WithDisplayName(typePartViewModel.DisplayName);
+                    part.WithDescription(typePartViewModel.Description);
                 });
             });
         }

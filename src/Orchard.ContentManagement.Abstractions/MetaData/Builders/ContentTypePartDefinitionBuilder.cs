@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.MetaData.Builders
+namespace Orchard.ContentManagement.Metadata.Builders
 {
     public abstract class ContentTypePartDefinitionBuilder
     {

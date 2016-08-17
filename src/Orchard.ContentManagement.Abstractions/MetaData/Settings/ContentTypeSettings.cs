@@ -1,4 +1,4 @@
-﻿namespace Orchard.ContentManagement.MetaData.Settings
+﻿namespace Orchard.ContentManagement.Metadata.Settings
 {
     public class ContentTypeSettings
     {

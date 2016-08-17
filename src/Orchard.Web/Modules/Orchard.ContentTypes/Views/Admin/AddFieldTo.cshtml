@@ -1,11 +1,13 @@
 @using Orchard.Utility
+@using Orchard.ContentManagement.Metadata.Models;
+
 @model Orchard.ContentTypes.ViewModels.AddFieldViewModel
 @{
     //Style.Require("ContentTypesAdmin");
 }
 
 
-<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName])</h1>
+<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
 
 <form asp-action="AddFieldTo">
     @Html.ValidationSummary()
@@ -33,16 +35,11 @@
     </fieldset>
 </form>
 
-@*@using(Script.Foot()){
-<script type="text/javascript">
+<script at="Foot" type="text/javascript">
 //<![CDATA[
     $(function(){
-        var $name = $("#@Html.FieldIdFor(m=>m.Name)");
-        var $displayName = $("#@Html.FieldIdFor(m=>m.DisplayName)");
-        var partName = "@Model.Part.Name";
-
-        var jsonUrl = "@Url.Action("FieldName", "Admin", new RouteValueDictionary { {"Area","Orchard.ContentTypes"} } )";
-        var version = 0;
+        var $name = $("#@Html.IdFor(m => m.Name)");
+        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
 
         var nameAltered;
         $name.keypress(function() {
@@ -55,27 +52,11 @@
                 return true;
             }
 
-            $.post(jsonUrl, {
-                    partName: partName,
-                    displayName: $displayName.val(),
-                    version: ++version,
-                    __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val()
-                },
-                function(data) {
-                    if(version == data.version) {
-                        $name.val(data.result);
-                    }
-                },
-                "json"
-            );
+            $name.val(getTechnicalName($displayName.val()));
         };
-
-        //pull technical name input from tab order
-        $name.attr("tabindex", -1);
 
         $displayName.keyup(compute);
         $displayName.blur(compute);
     })
 //]]>
 </script>
-}*@

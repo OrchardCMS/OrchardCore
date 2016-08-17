@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.Contents.ViewModels
 {

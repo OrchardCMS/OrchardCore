@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DependencyInjection;
@@ -28,6 +28,9 @@ namespace Orchard.ContentTypes.Services
         void AddFieldToPart(string fieldName, string fieldTypeName, string partName);
         void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName);
         void RemoveFieldFromPart(string fieldName, string partName);
-        void AlterField(EditPartViewModel partViewModel, EditFieldNameViewModel fieldViewModel);
+        void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
+
+        void AlterTypePart(EditTypePartViewModel partViewModel);
+
     }
 }

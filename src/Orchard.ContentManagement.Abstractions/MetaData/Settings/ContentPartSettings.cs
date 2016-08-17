@@ -13,6 +13,11 @@
         public bool Reusable { get; set; }
 
         /// <summary>
+        /// Gets or sets the displayed name of the part.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
         /// Gest or set the description of the part.
         /// </summary>
         public string Description { get; set; }

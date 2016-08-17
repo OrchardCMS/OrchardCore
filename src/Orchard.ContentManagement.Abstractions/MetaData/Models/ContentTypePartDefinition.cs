@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Orchard.ContentManagement.MetaData.Models
+namespace Orchard.ContentManagement.Metadata.Models
 {
     public class ContentTypePartDefinition
     {

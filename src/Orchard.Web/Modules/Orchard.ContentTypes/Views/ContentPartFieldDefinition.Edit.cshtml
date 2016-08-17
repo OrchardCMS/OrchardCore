@@ -1,19 +1,14 @@
-@using Orchard.ContentManagement.MetaData.Models;
-@using Orchard.ContentManagement.Metadata.Settings;
-@using Orchard.Utility;
+@using Orchard.ContentManagement.Metadata.Models;
 
 @{
     ContentPartFieldDefinition contentPartFieldDefinition = Model.ContentField;
 }
 
 
-<fieldset class="form-group">
-<h3>@contentPartFieldDefinition.DisplayName</h3>
+@if (Model.Content != null)
+{
+    <fieldset class="form-group">
+        @Display(Model.Content)
+    </fieldset>
+}
 
-@Display(Model.Content)
-
-</fieldset>
-
-<fieldset class="form-group">
-    <a asp-route-action="RemoveFieldFrom" asp-route-id="@contentPartFieldDefinition.PartDefinition.Name" asp-route-name="@contentPartFieldDefinition.FieldDefinition.Name" class="btn btn-warning btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove Field"]</a>
-</fieldset>

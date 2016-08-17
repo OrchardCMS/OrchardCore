@@ -1,9 +1,7 @@
 ﻿using System;
 using Orchard.ContentManagement.Metadata.Settings;
-using Orchard.ContentManagement.MetaData.Models;
-using Orchard.Utility;
 
-namespace Orchard.ContentManagement.MetaData.Models
+namespace Orchard.ContentManagement.Metadata.Models
 {
     public static class ContentTypePartExtensions
     {
@@ -13,7 +11,7 @@ namespace Orchard.ContentManagement.MetaData.Models
 
             if (String.IsNullOrEmpty(displayName))
             {
-                displayName = typePart.PartDefinition.Name.TrimEnd("Part");
+                displayName = typePart.PartDefinition.DisplayName();
             }
 
             return displayName;

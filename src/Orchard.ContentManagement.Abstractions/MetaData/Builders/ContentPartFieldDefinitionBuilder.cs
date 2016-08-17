@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.MetaData.Builders
+namespace Orchard.ContentManagement.Metadata.Builders
 {
     public abstract class ContentPartFieldDefinitionBuilder
     {
@@ -22,12 +22,6 @@ namespace Orchard.ContentManagement.MetaData.Builders
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
-            return this;
-        }
-
-        public ContentPartFieldDefinitionBuilder WithDisplayName(string displayName)
-        {
-            Current.DisplayName = displayName;
             return this;
         }
 

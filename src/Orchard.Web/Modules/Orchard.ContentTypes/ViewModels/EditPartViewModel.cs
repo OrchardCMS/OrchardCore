@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.Utility;
 
 namespace Orchard.ContentTypes.ViewModels
@@ -20,7 +20,6 @@ namespace Orchard.ContentTypes.ViewModels
             PartDefinition = contentPartDefinition;
         }
 
-        public string Prefix { get { return "PartDefinition"; } }
         public string Name { get; set; }
 
         private string _displayName;
@@ -42,5 +41,8 @@ namespace Orchard.ContentTypes.ViewModels
 
         [BindNever]
         public ContentPartDefinition PartDefinition { get; private set; }
+
+        [BindNever]
+        public dynamic Editor { get; set; }
     }
 }

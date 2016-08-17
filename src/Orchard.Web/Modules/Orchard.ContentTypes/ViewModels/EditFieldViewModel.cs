@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentTypes.ViewModels
 {
-    public class EditFieldNameViewModel
+    public class EditFieldViewModel
     {
         /// <summary>
         /// The technical name of the field
@@ -14,5 +16,11 @@ namespace Orchard.ContentTypes.ViewModels
         /// </summary>
         [Required]
         public string DisplayName { get; set; }
+
+        [BindNever]
+        public ContentPartFieldDefinition PartFieldDefinition { get; set; }
+
+        [BindNever]
+        public dynamic Editor { get; set; }
     }
 }

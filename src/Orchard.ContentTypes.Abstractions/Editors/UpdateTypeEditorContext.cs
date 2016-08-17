@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.MetaData.Builders;
+﻿using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 

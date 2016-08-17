@@ -1,5 +1,5 @@
 using System;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentTypes.Editors

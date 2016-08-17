@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;

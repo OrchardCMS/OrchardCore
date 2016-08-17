@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Builders;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Builders;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Microsoft.Extensions.Logging;
 using YesSql.Core.Services;

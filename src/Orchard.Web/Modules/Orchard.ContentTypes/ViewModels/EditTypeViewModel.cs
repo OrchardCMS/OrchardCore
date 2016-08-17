@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.MetaData.Models;
+﻿using Orchard.ContentManagement.Metadata.Models;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 

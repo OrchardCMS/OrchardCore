@@ -1,5 +1,5 @@
 ﻿@model Orchard.ContentFields.ViewModels.EditTextFieldViewModel
-
+@using Orchard.ContentManagement.Metadata.Models
 @using Orchard.ContentFields.Settings;
 
 @{
@@ -7,7 +7,7 @@
 }
 
 <fieldset class="form-group">
-    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName</label>
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
     <input asp-for="Text" class="form-control" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {

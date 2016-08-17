@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.Environment.Navigation;
 using System;
 using System.Linq;

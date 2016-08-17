@@ -8,8 +8,7 @@
   },
   {
     "inputs": [
-      "Assets/js/admin.js",
-      "Assets/js/navigation.js",
+      "Assets/js/*.js",
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/*.js"
     ],
     "output": "Scripts/TheAdmin.js"

@@ -8,7 +8,7 @@ using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
