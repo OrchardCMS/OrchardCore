@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
@@ -50,13 +50,14 @@ namespace Orchard.Tests.DisplayManagement
 
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
+            serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
+            serviceCollection.AddLogging();
 
             serviceCollection.AddSingleton(_defaultShapeTable);
 
