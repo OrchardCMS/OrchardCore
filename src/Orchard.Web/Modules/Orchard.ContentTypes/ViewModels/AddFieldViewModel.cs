@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orchard.ContentTypes.ViewModels
 {
@@ -25,6 +26,7 @@ namespace Orchard.ContentTypes.ViewModels
         /// <summary>
         /// The selected field type
         /// </summary>
+        [Required]
         public string FieldTypeName { get; set; }
 
         /// <summary>
@@ -37,6 +39,6 @@ namespace Orchard.ContentTypes.ViewModels
         /// List of the available Field types
         /// </summary>
         [BindNever]
-        public IEnumerable<ContentFieldInfo> Fields { get; set; }
+        public List<ContentFieldInfo> Fields { get; set; }
     }
 }

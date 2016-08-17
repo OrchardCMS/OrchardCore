@@ -497,7 +497,7 @@ namespace Orchard.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partDefinition,
-                Fields = _contentDefinitionService.GetFields()
+                Fields = _contentDefinitionService.GetFields().ToList()
             };
 
             return View(viewModel);
@@ -553,7 +553,7 @@ namespace Orchard.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 viewModel.Part = partDefinition;
-                viewModel.Fields = _contentDefinitionService.GetFields();
+                viewModel.Fields = _contentDefinitionService.GetFields().ToList();
 
                 _session.Cancel();
 

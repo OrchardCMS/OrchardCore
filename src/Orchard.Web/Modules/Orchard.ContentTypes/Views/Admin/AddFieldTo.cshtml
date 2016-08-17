@@ -24,15 +24,25 @@
     </fieldset>
 
     <fieldset class="form-group">
-        <div class="row col-sm-3">
-            <label asp-for="FieldTypeName">@T["Field Type"]</label>
-            @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly() }), "FieldTypeName", "DisplayName"), new { @class = "form-control" })
-        </div>
-    </fieldset>
+        <label for="DisplayName">@T["Field Type"]</label>
+        <ul class="list-group">
+            @for (var i = 0; i < Model.Fields.Count; i++)
+            {
+                <li class="list-group-item">
+                    <div class="radio">
+                        <label asp-for="Fields[i].FieldTypeName">
+                            <input type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].FieldTypeName)" value="@Model.Fields[i].FieldTypeName" />
+                            @Model.Fields[i].FieldTypeName.CamelFriendly()
+                        </label>
+                    </div>
+                </li>
+            }
+        </ul>
 
-    <fieldset class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-    </fieldset>
+        </fieldset>
+        <fieldset class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        </fieldset>
 </form>
 
 <script at="Foot" type="text/javascript">
