@@ -1,17 +1,15 @@
 @model Orchard.ContentTypes.ViewModels.AddReusablePartViewModel
 @{
-    //Style.Require("ContentTypesAdmin");
-
     int i = 0;
 }
-<h1>@T["Add Part To \"{0}\"", Model.Type.DisplayName]</h1>
-
-@T["Choose the Part to add to this Content Type."]
+<h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()
     <fieldset class="form-group">
 
+    @if (Model.PartSelections.Any())
+    {
         <fieldset class="form-group">
             <label for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
@@ -46,9 +44,18 @@
                 i++;
             }
         </ul>
+    }
+    else
+    {
+        <p class="alert alert-warning">@T["There are no available named parts."]</p>
+    }
+
     </fieldset>
     <fieldset class="form-group">
+    @if (Model.PartSelections.Any())
+    {
         <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    }
         <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
     </fieldset>
 </form>

@@ -188,7 +188,16 @@ namespace Orchard.ContentTypes.Services
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(name);
 
             if (contentPartDefinition == null)
-                return null;
+            {
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
+
+                if(contentTypeDefinition == null)
+                {
+                    return null;
+                }
+
+                contentPartDefinition = new ContentPartDefinition(name);
+            }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
 
@@ -238,11 +247,22 @@ namespace Orchard.ContentTypes.Services
 
         public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
         {
-            fieldName = fieldName.ToSafeName();
-            if (string.IsNullOrEmpty(fieldName))
+            if (String.IsNullOrEmpty(fieldName))
             {
-                throw new OrchardException(T("Fields must have a name containing no spaces or symbols."));
+                throw new ArgumentException(nameof(fieldName));
             }
+
+            var partDefinition = _contentDefinitionManager.GetPartDefinition(partName);
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(partName);
+
+            // If the type exists ensure it has its own part
+            if (typeDefinition != null)
+            {
+                _contentDefinitionManager.AlterTypeDefinition(partName, builder => builder.WithPart(partName));
+            }
+
+            fieldName = fieldName.ToSafeName();
+
             _contentDefinitionManager.AlterPartDefinition(partName,
                 partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 

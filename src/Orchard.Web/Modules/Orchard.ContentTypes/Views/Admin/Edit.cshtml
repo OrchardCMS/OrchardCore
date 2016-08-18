@@ -6,7 +6,6 @@
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
 
     var orderedParts = Model.TypeDefinition.Parts
-        .Where(x => x != typePart)
         .Select(part => new { Part = part, Order = int.Parse(part.Settings["Position"]?.ToString() ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
@@ -35,7 +34,7 @@
             {
                 <li class="list-group-item">
                     @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
-                    <div class="pull-xs-right">
+                    <div class="pull-md-right">
                         <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                         <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                     </div>
@@ -57,14 +56,22 @@
                 <li class="list-group-item">
                     @part.DisplayName()
 
-                    @if (!String.IsNullOrEmpty(part.Description()))
+                    @if (part != typePart)
                     {
-                        <span class="hint">@T["— {0}", part.Description()]</span>
+                        @if (!String.IsNullOrEmpty(part.Description()))
+                        {
+                            <span class="hint">@T["— {0}", part.Description()]</span>
+                        }
+
+                        <div class="pull-md-right">
+                            <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                            <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                        </div>
                     }
-                    <div class="pull-xs-right">
-                        <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                        <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
-                    </div>
+                    else
+                    {
+                        <span class="hint">@T["— Contains the fields for the current type"]</span>
+                    }
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
                 </li>
             }

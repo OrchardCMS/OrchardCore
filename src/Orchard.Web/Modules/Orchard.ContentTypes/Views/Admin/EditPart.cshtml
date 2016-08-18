@@ -41,7 +41,7 @@
                 {
                     <li class="list-group-item">
                         @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
-                        <div class="pull-xs-right">
+                        <div class="pull-md-right">
                             <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                             <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                         </div>

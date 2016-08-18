@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.Metadata.Models;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentTypes.ViewModels
 {

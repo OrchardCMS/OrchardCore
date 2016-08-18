@@ -135,24 +135,6 @@ namespace Orchard.ContentTypes.Controllers
             return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
         }
 
-        public ActionResult ContentTypeName(string displayName, int version)
-        {
-            return Json(new
-            {
-                result = _contentDefinitionService.GenerateContentTypeNameFromDisplayName(displayName),
-                version = version
-            });
-        }
-
-        public ActionResult FieldName(string partName, string displayName, int version)
-        {
-            return Json(new
-            {
-                result = _contentDefinitionService.GenerateFieldNameFromDisplayName(partName, displayName),
-                version = version
-            });
-        }
-
         public async Task<ActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -499,16 +481,16 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partDefinition = _contentDefinitionManager.GetPartDefinition(id);
+            var partViewModel = _contentDefinitionService.GetPart(id);
 
-            if (partDefinition == null)
+            if (partViewModel == null)
             {
                 return NotFound();
             }
 
             var viewModel = new AddFieldViewModel
             {
-                Part = partDefinition,
+                Part = partViewModel.PartDefinition,
                 Fields = _contentDefinitionService.GetFields().ToList()
             };
 
@@ -521,12 +503,14 @@ namespace Orchard.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
-            var partDefinition = _contentDefinitionManager.GetPartDefinition(id);
+            var partViewModel = _contentDefinitionService.GetPart(id);
 
-            if (partDefinition == null)
+            if (partViewModel == null)
             {
                 return NotFound();
             }
+
+            var partDefinition = partViewModel.PartDefinition;
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
 
@@ -682,32 +666,33 @@ namespace Orchard.ContentTypes.Controllers
         }
 
         [HttpPost, ActionName("RemoveFieldFrom")]
-        public async Task<ActionResult> RemoveFieldFromPOST(string id)
+        public async Task<ActionResult> RemoveFieldFromPOST(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
 
             var partViewModel = _contentDefinitionService.GetPart(id);
 
-            var viewModel = new RemoveFieldViewModel();
-            if (partViewModel == null
-                || !await TryUpdateModelAsync(viewModel)
-                || !partViewModel.PartDefinition.Fields.Any(p => p.Name == viewModel.Name))
-                return NotFound();
-
-            _contentDefinitionService.RemoveFieldFromPart(viewModel.Name, partViewModel.Name);
-
-            if (!ModelState.IsValid)
+            if (partViewModel == null)
             {
-                _session.Cancel();
-                viewModel.Part = partViewModel;
-                return View(viewModel);
+                return NotFound();
             }
 
-            _notifier.Success(T["The \"{0}\" field has been removed.", viewModel.Name]);
+            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
+
+            if (field == null)
+            {
+                return NotFound();
+            }
+
+            _contentDefinitionService.RemoveFieldFromPart(name, partViewModel.Name);
+
+            _notifier.Success(T["The \"{0}\" field has been removed.", field.DisplayName()]);
 
             if (_contentDefinitionService.GetType(id) != null)
+            {
                 return RedirectToAction("Edit", new { id });
+            }
 
             return RedirectToAction("EditPart", new { id });
         }
