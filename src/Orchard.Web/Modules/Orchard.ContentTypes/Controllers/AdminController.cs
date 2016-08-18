@@ -19,6 +19,7 @@ using Orchard.Environment.Shell;
 using Orchard.Mvc;
 using Orchard.Utility;
 using YesSql.Core.Services;
+using System.Reflection;
 
 namespace Orchard.ContentTypes.Controllers
 {
@@ -164,14 +165,14 @@ namespace Orchard.ContentTypes.Controllers
                 return NotFound();
             }
 
-            //var shape = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(contentTypeDefinition, this);
+            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, this);
 
             return View(typeViewModel);
         }
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Save")]
-        public async Task<ActionResult> EditPOST(string id)
+        public async Task<ActionResult> EditPOST(string id, EditTypeViewModel viewModel)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
@@ -183,20 +184,29 @@ namespace Orchard.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var shape = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
+            viewModel.Settings = contentTypeDefinition.Settings;
+            viewModel.TypeDefinition = contentTypeDefinition;
+            viewModel.DisplayName = contentTypeDefinition.DisplayName;
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
 
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
-                return View(shape);
+
+                HackModelState(nameof(EditTypeViewModel.OrderedFieldNames));
+                HackModelState(nameof(EditTypeViewModel.OrderedPartNames));
+
+                return View(viewModel);
             }
             else
             {
+                var ownedPartDefinition = _contentDefinitionManager.GetPartDefinition(contentTypeDefinition.Name);
+                _contentDefinitionService.AlterPartFieldsOrder(ownedPartDefinition, viewModel.OrderedFieldNames);
+                _contentDefinitionService.AlterTypePartsOrder(contentTypeDefinition, viewModel.OrderedPartNames);
                 _notifier.Success(T["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
-            return View(shape);
-
+            return RedirectToAction("Edit", new { id });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -436,7 +446,7 @@ namespace Orchard.ContentTypes.Controllers
 
         [HttpPost, ActionName("EditPart")]
         [FormValueRequired("submit.Save")]
-        public async Task<ActionResult> EditPartPOST(string id)
+        public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
                 return Unauthorized();
@@ -454,13 +464,15 @@ namespace Orchard.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
+                return View(viewModel);
             }
             else
             {
+                _contentDefinitionService.AlterPartFieldsOrder(contentPartDefinition, orderedFieldNames);
                 _notifier.Success(T["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
-            return View(viewModel);
+            return RedirectToAction("EditPart", new { id });
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -806,5 +818,14 @@ namespace Orchard.ContentTypes.Controllers
         }
 
         #endregion
+
+        private void HackModelState(string key)
+        {
+            // TODO: Remove this once https://github.com/aspnet/Mvc/issues/4989 has shipped
+            var modelStateEntry = ModelState[key];
+            var nodeType = modelStateEntry.GetType();
+            nodeType.GetMethod("GetNode").Invoke(modelStateEntry, new object[] { new Microsoft.Extensions.Primitives.StringSegment("--!!f-a-k-e"), true });
+            ((System.Collections.IList)nodeType.GetProperty("ChildNodes").GetValue(modelStateEntry)).Clear();
+        }
     }
 }

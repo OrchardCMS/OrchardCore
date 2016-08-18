@@ -21,11 +21,17 @@ namespace Orchard.ContentTypes.ViewModels
 
         public string Name { get; set; }
         public string DisplayName { get; set; }
+        public string[] OrderedFieldNames { get; set; }
+        public string[] OrderedPartNames { get; set; }
 
         [BindNever]
         public JObject Settings { get; set; }
 
         [BindNever]
-        public ContentTypeDefinition TypeDefinition { get; private set; }
+        public ContentTypeDefinition TypeDefinition { get; set; }
+
+        [BindNever]
+        public dynamic Editor { get; set; }
+
     }
 }

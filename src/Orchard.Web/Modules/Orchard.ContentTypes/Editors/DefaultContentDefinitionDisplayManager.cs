@@ -53,77 +53,20 @@ namespace Orchard.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentTypeDefinition));
             }
 
-            var contentTypeDefinitionShape = _shapeFactory.Create<ContentTypeDefinitionViewModel>("ContentTypeDefinition");
+            dynamic contentTypeDefinitionShape = CreateContentShape("ContentTypeDefinition_Edit");
             contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
 
-            dynamic typeShape = CreateContentShape("ContentTypeDefinition_Edit");
-
             var typeContext = new BuildEditorContext(
-                typeShape,
+                contentTypeDefinitionShape,
                 groupId,
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
             );
 
-            foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
-            {
-                // Don't show the type's private part as it can't be removed or configured
-                if (String.Equals(contentTypePartDefinition.PartDefinition.Name, contentTypeDefinition.Name, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                dynamic partShape = CreateContentShape("ContentTypePartDefinition_Edit");
-                partShape.ContentPart = contentTypePartDefinition;
-
-                var partContext = new BuildEditorContext(
-                    partShape,
-                    groupId,
-                    _shapeFactory,
-                    _layoutAccessor.GetLayout(),
-                    updater
-                );
-
-                await BindPlacementAsync(partContext);
-
-                await _handlers.InvokeAsync(handler => handler.BuildTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
-
-                contentTypeDefinitionShape.TypePartSettings.Add(partContext.Shape);
-            }
-
             await BindPlacementAsync(typeContext);
 
             await _handlers.InvokeAsync(handler => handler.BuildTypeEditorAsync(contentTypeDefinition, typeContext), Logger);
-
-            contentTypeDefinitionShape.TypeSettings = typeShape;
-
-            // Global fields
-
-            var globalPartDefinition = _contentDefinitionManager.GetPartDefinition(contentTypeDefinition.Name);
-
-            if (globalPartDefinition != null && globalPartDefinition.Fields.Any())
-            {
-                foreach (var contentPartFieldDefinition in globalPartDefinition.Fields)
-                {
-                    dynamic fieldShape = CreateContentShape("ContentPartFieldDefinition_Edit");
-                    fieldShape.ContentField = contentPartFieldDefinition;
-
-                    var fieldContext = new BuildEditorContext(
-                        fieldShape,
-                        groupId,
-                        _shapeFactory,
-                        _layoutAccessor.GetLayout(),
-                        updater
-                    );
-
-                    BindPlacementAsync(fieldContext).Wait();
-
-                    await _handlers.InvokeAsync(handler => handler.BuildPartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
-
-                    contentTypeDefinitionShape.TypeFieldSettings.Add(fieldContext.Shape);
-                }
-            }
 
             return contentTypeDefinitionShape;
         }
@@ -135,94 +78,23 @@ namespace Orchard.ContentTypes.Editors
                 throw new ArgumentNullException(nameof(contentTypeDefinition));
             }
 
-            var contentTypeDefinitionShape = _shapeFactory.Create<ContentTypeDefinitionViewModel>("ContentTypeDefinition");
+            dynamic contentTypeDefinitionShape = CreateContentShape("ContentTypeDefinition_Edit");
+            contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, typeBuilder =>
             {
-                contentTypeDefinitionShape.ContentTypeDefinition = contentTypeDefinition;
-
-                dynamic typeShape = CreateContentShape("ContentTypeDefinition_Edit");
-
                 var typeContext = new UpdateTypeEditorContext(
                     typeBuilder,
-                    typeShape,
+                    contentTypeDefinitionShape,
                     groupId,
                     _shapeFactory,
                     _layoutAccessor.GetLayout(),
                     updater
                 );
 
-                foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
-                {
-                // Don't show the type's private part as it can't be removed or configured
-                if (String.Equals(contentTypePartDefinition.PartDefinition.Name, contentTypeDefinition.Name, StringComparison.Ordinal))
-                    {
-                        continue;
-                    }
-
-                    dynamic partShape = CreateContentShape("ContentTypePartDefinition_Edit");
-
-                    typeBuilder.WithPart(contentTypePartDefinition.PartDefinition.Name, async typePartBuilder =>
-                    {
-                        partShape.ContentPart = contentTypePartDefinition;
-
-                        var partContext = new UpdateTypePartEditorContext(
-                            typePartBuilder,
-                            partShape,
-                            groupId,
-                            _shapeFactory,
-                            _layoutAccessor.GetLayout(),
-                            updater
-                        );
-
-                        BindPlacementAsync(partContext).Wait();
-
-                        await _handlers.InvokeAsync(handler => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), Logger);
-
-                        contentTypeDefinitionShape.TypePartSettings.Add(partContext.Shape);
-                    });
-                }
-
-            // Global fields
-            var globalPartDefinition = _contentDefinitionManager.GetPartDefinition(contentTypeDefinition.Name);
-
-                if (globalPartDefinition != null && globalPartDefinition.Fields.Any())
-                {
-                    _contentDefinitionManager.AlterPartDefinition(globalPartDefinition.Name, partBuilder =>
-                    {
-                        foreach (var contentPartFieldDefinition in globalPartDefinition.Fields)
-                        {
-                            dynamic fieldShape = CreateContentShape("ContentPartFieldDefinition_Edit");
-
-                            partBuilder.WithField(contentPartFieldDefinition.Name, async partFieldBuilder =>
-                            {
-                                fieldShape.ContentField = contentPartFieldDefinition;
-
-                                var fieldContext = new UpdatePartFieldEditorContext(
-                                    partFieldBuilder,
-                                    fieldShape,
-                                    groupId,
-                                    _shapeFactory,
-                                    _layoutAccessor.GetLayout(),
-                                    updater
-                                );
-
-                                BindPlacementAsync(fieldContext).Wait();
-
-                                await _handlers.InvokeAsync(handler => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), Logger);
-
-                                contentTypeDefinitionShape.TypeFieldSettings.Add(fieldContext.Shape);
-
-                            });
-                        }
-                    });
-                }
-
                 BindPlacementAsync(typeContext).Wait();
 
                 _handlers.InvokeAsync(handler => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), Logger).Wait();
-
-                contentTypeDefinitionShape.TypeSettings = typeShape;
 
             });
 

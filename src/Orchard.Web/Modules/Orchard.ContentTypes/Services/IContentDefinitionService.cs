@@ -32,5 +32,7 @@ namespace Orchard.ContentTypes.Services
 
         void AlterTypePart(EditTypePartViewModel partViewModel);
 
+        void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames);
+        void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames);
     }
 }

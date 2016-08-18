@@ -290,6 +290,36 @@ namespace Orchard.ContentTypes.Services
             });
         }
 
+        public void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames)
+        {
+            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            {
+                for (var i = 0; i < partNames.Length; i++)
+                {
+                    var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
+                    type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
+                    {
+                        part.WithSetting("Position", i.ToString());
+                    });
+                }
+            });
+        }
+
+        public void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames)
+        {
+            _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, type =>
+            {
+                for (var i = 0; i < fieldNames.Length; i++)
+                {
+                    var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
+                    type.WithField(fieldNames[i], field =>
+                    {
+                        field.WithSetting("Position", i.ToString());
+                    });
+                }
+            });
+        }
+
         public string GenerateContentTypeNameFromDisplayName(string displayName)
         {
             displayName = displayName.ToSafeName();

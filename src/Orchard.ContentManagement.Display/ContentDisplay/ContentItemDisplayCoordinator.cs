@@ -163,10 +163,11 @@ namespace Orchard.ContentManagement.Display
                 typePartShape.ContentPart = part;
                 typePartShape.ContentTypePartDefinition = typePartDefinition;
 
-                partsShape.Add(typePartShape); // TODO: Add location from settings
+                var partPosition = typePartDefinition.Settings["Position"]?.ToString() ?? "before";
+
+                partsShape.Add(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
 
-                // TODO: Add location from settings
                 context.FindPlacement = (shape, differentiator, displayType) => new PlacementInfo { Location = $"Parts.{typePartDefinition.Name}" };
 
                 await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
@@ -181,6 +182,10 @@ namespace Orchard.ContentManagement.Display
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
+
+                    var fieldPosition = partFieldDefinition.Settings["Position"]?.ToString() ?? "before";
+                    context.FindPlacement = (shape, differentiator, displayType) => new PlacementInfo { Location = $"Parts.{typePartDefinition.Name}:{fieldPosition}" };
+
                     await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
                     {
                         var result = await contentDisplay.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);

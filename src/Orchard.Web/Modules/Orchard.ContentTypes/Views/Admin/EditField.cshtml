@@ -11,15 +11,19 @@
 <form asp-action="EditField">
     @Html.ValidationSummary()
     <fieldset class="form-group">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
-        <input asp-for="DisplayName" autofocus class="form-control" />
-        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        <div class="row col-xs-6 ">
+            <label asp-for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" autofocus class="form-control" />
+            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        </div>
     </fieldset>
 
     <fieldset class="form-group">
-        <label asp-for="Name">@T["Technical Name"]</label>
-        <input asp-for="Name" class="form-control" disabled />
-        <span class="hint">@T["Technical name of the field."]</span>
+        <div class="row col-xs-3 ">
+            <label asp-for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" disabled />
+            <span class="hint">@T["Technical name of the field."]</span>
+        </div>
     </fieldset>
 
     @Display(Model.Editor)
