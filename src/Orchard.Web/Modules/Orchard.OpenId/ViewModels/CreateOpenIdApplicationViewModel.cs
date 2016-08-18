@@ -35,8 +35,14 @@ namespace Orchard.OpenId.ViewModels
         [DataType(DataType.Password)]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
+        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+    }
+    
+    public class RoleEntry
+    {
+        public string Name { get; set; }
+        public bool Selected { get; set; }
     }
 
-    
 
 }

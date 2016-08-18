@@ -12,6 +12,7 @@ namespace Orchard.OpenId.ViewModels
     {
         [HiddenInput]
         public string Id { get; set; }
+
         [Required]
         public string ClientId { get; set; }
 
@@ -29,6 +30,8 @@ namespace Orchard.OpenId.ViewModels
         public ClientType Type { get; set; }
 
         public bool SkipConsent { get; set; }
+        
+        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
     }
 
     

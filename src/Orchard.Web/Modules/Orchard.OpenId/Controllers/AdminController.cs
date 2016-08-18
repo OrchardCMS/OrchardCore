@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using YesSql.Core.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.OpenId.Services;
+using Orchard.Security;
+using Orchard.Roles.Services;
+using System.Collections.Generic;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -26,14 +29,15 @@ namespace Orchard.OpenId.Controllers
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly IRoleManager _roleManager;
 
         public AdminController(
-            IAuthorizationService authorizationService,
-            //ISession session,
-            IStringLocalizer<AdminController> stringLocalizer,
-            ISiteService siteService,
             IShapeFactory shapeFactory,
-            IOpenIdApplicationManager applicationManager
+            ISiteService siteService,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IAuthorizationService authorizationService,
+            IOpenIdApplicationManager applicationManager,
+            IRoleManager roleManager
             )
         {
             _shapeFactory = shapeFactory;
@@ -41,6 +45,7 @@ namespace Orchard.OpenId.Controllers
             T = stringLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
+            _roleManager = roleManager;
         }
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
@@ -77,6 +82,8 @@ namespace Orchard.OpenId.Controllers
             if (app == null)
                 return NotFound();
 
+            var roles = await _roleManager.GetRolesAsync();
+
             var model = new EditOpenIdApplicationViewModel() {
                 Id = id,
                 DisplayName = app.DisplayName,
@@ -84,13 +91,13 @@ namespace Orchard.OpenId.Controllers
                 LogoutRedirectUri = app.LogoutRedirectUri,
                 ClientId = app.ClientId,
                 Type = app.Type,
-                SkipConsent = app.SkipConsent     
+                SkipConsent = app.SkipConsent,
+                RoleEntries = roles.Roles.Select(r => new RoleEntry() { Name = r.RoleName, Selected = app.RoleNames.Contains(r.RoleName) }).ToList()
             };
-
-
+            
             return View(model);
         }
-
+        
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -112,6 +119,9 @@ namespace Orchard.OpenId.Controllers
                 app.ClientId = model.ClientId;
                 app.Type = model.Type;
                 app.SkipConsent = model.SkipConsent;
+                app.RoleNames = new List<string>();
+                if (app.Type == ClientType.Confidential)
+                    app.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
                 
                 await _applicationManager.CreateAsync(app);
                 if (returnUrl == null)                
@@ -132,8 +142,16 @@ namespace Orchard.OpenId.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
 
+            var roles = await _roleManager.GetRolesAsync();
+
+            var model = new CreateOpenIdApplicationViewModel()
+            {
+                RoleEntries = roles.Roles.Select(r => new RoleEntry() { Name = r.RoleName }).ToList()
+            };
+
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -147,7 +165,12 @@ namespace Orchard.OpenId.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var openIdApp = new OpenIdApplication { DisplayName = model.DisplayName, RedirectUri = model.RedirectUri, LogoutRedirectUri = model.LogoutRedirectUri, ClientId = model.ClientId, ClientSecret = Crypto.HashPassword(model.Password), Type = model.Type, SkipConsent = model.SkipConsent };
+                var roleNames = new List<string>();
+                if (model.Type == ClientType.Confidential)
+                    roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+
+                var openIdApp = new OpenIdApplication { DisplayName = model.DisplayName, RedirectUri = model.RedirectUri, LogoutRedirectUri = model.LogoutRedirectUri, ClientId = model.ClientId, ClientSecret = Crypto.HashPassword(model.Password), Type = model.Type, SkipConsent = model.SkipConsent, RoleNames = roleNames };
+                
                 await _applicationManager.CreateAsync(openIdApp);
                 if (returnUrl == null)
                     return RedirectToAction("Index");
