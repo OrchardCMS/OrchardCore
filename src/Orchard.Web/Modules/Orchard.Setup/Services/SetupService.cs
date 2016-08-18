@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Orchard.Data.Migration;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
@@ -194,19 +195,39 @@ namespace Orchard.Setup.Services
                 }
             }
 
-            shellSettings.State = TenantState.Running;
-            _orchardHost.UpdateShellSettings(shellSettings);
             return executionId;
         }
 
-        private async Task<string> CreateTenantDataAsync(IServiceScope scope, SetupContext context, ShellContext shellContext)
+        private async Task<string> CreateTenantDataAsync(IServiceScope scope, 
+            SetupContext context, 
+            ShellContext shellContext)
         {
             var recipeManager = scope.ServiceProvider.GetService<IRecipeManager>();
 
             var recipe = context.Recipe;
             var executionId = await recipeManager.ExecuteAsync(recipe);
 
+            // Once the recipe has finished executing, we need to update the shell state to "Running", so add a recipe step that does exactly that.
+            var recipeStepQueue = scope.ServiceProvider.GetService<IRecipeStepQueue>();
+            var activateShellStep = new RecipeStepDescriptor
+            {
+                Id = Guid.NewGuid().ToString("N"),
+                RecipeName = recipe.Name,
+                Name = "ActivateShell",
+                Step = new JProperty("name", "ActivateShell")
+            };
 
+            await recipeStepQueue.EnqueueAsync(executionId, activateShellStep);
+ 
+            var session = scope.ServiceProvider.GetService<YesSql.Core.Services.ISession>();
+
+            session.Save(new RecipeStepResult
+            {
+                ExecutionId = executionId,
+                StepId = activateShellStep.Id,
+                RecipeName = recipe.Name,
+                StepName = activateShellStep.Name
+            });
 
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return executionId;
