@@ -6,11 +6,11 @@ namespace Orchard.OpenId
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageOpenIdApplications = new Permission("ManageOpenIdApplications", "Managing Open Id Applications");
-
+        
         public IEnumerable<Permission> GetPermissions()
         {
             return new[] {
-                ManageOpenIdApplications,
+                ManageOpenIdApplications
             };
         }
 
@@ -20,7 +20,7 @@ namespace Orchard.OpenId
                 new PermissionStereotype {
                     Name = "Administrator",
                     Permissions = new[] { ManageOpenIdApplications }
-                },
+                }
             };
         }
 

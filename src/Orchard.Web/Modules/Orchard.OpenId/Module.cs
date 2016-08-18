@@ -51,19 +51,20 @@ namespace Orchard.OpenId
             serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
             serviceCollection.AddScoped<OpenIdTokenIndexProvider>();            
             serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
+            serviceCollection.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
             var openIddictBuilder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
             .AddApplicationStore<OpenIdApplicationStore>()
             .AddTokenStore<OpenIdTokenStore>()
             .AddUserStore<OpenIdUserStore>()
             .AddUserManager<OpenIdUserManager>()
             .Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(tenantName))
-            .UseJsonWebTokens()
-            // Enable the token endpoint (required to use the password flow).                        
+            .UseJsonWebTokens()            
             .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
             .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
             .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
             .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
             .AllowPasswordFlow()
+            .AllowClientCredentialsFlow()
             .AllowAuthorizationCodeFlow()
             .AllowRefreshTokenFlow();
             

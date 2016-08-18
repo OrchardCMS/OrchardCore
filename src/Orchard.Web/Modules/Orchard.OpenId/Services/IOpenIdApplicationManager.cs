@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.OpenId.Models;
+using System.Security.Claims;
 
 namespace Orchard.OpenId.Services
 {
@@ -17,5 +18,7 @@ namespace Orchard.OpenId.Services
         Task<bool> ValidateSecretAsync(OpenIdApplication application, string secret);
         Task<IEnumerable<OpenIdApplication>> GetAppsAsync(int skip, int pageSize);
         Task<int> GetCount();
+        Task<IList<string>> GetRolesAsync(OpenIdApplication application);
+        Task<ClaimsIdentity> CreateIdentityAsync(OpenIdApplication application, IEnumerable<string> scopes);        
     }
 }

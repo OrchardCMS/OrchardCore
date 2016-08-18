@@ -56,6 +56,11 @@ namespace Orchard.OpenId.Models
         /// the user after log in.
         /// </summary>
         public bool SkipConsent { get; set; }
+
+        /// <summary>
+        /// Gets or sets the RoleNames assined to the app.
+        /// </summary>
+        public List<string> RoleNames { get; set; } = new List<string>();
     }
 
     public enum ClientType

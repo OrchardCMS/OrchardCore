@@ -34,8 +34,7 @@ namespace Orchard.OpenId.Services
                 {
                     foreach (var claim in await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(role)))
                     {
-                        identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.IdentityToken);
-                        identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken);
+                        identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.IdentityToken, OpenIdConnectConstants.Destinations.AccessToken);
                     }                   
                 }
             }

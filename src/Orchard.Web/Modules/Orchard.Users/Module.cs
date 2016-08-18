@@ -20,23 +20,27 @@ namespace Orchard.Users
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
         private readonly IdentityOptions _options;
+        private readonly IDataProtector _dataProtector;
 
-        public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options)
+        public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options, IDataProtectionProvider dataProtectionProvider)
         {
             _options = options.Value;
             _tenantName = shellSettings.Name;
             _tenantPrefix = shellSettings.RequestUrlPrefix;
+            _dataProtector = dataProtectionProvider.CreateProtector(_tenantName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             builder.UseIdentity();
-            builder
-                .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
-                .UseCookieAuthentication(_options.Cookies.ExternalCookie)
-                .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
-                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)                
-                ;
+            //We use builder.UseIdentity() instead of commented lines to avoid an unexpected exception. 
+            //More info: https://github.com/OrchardCMS/Orchard2/issues/192
+            //builder
+            //    .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
+            //    .UseCookieAuthentication(_options.Cookies.ExternalCookie)
+            //    .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
+            //    .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)                
+            //    ;
         }
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
@@ -62,17 +66,16 @@ namespace Orchard.Users
 
             serviceCollection.TryAddScoped<IUserStore<User>, UserStore>();
 
-            var dataProtectionProvider = DataProtectionProvider.Create(_tenantName);
             serviceCollection.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
                 options.Cookies.ApplicationCookie.LoginPath = new PathString("/Orchard.Users/Account/Login/");
                 options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
-                options.Cookies.ApplicationCookie.DataProtectionProvider = dataProtectionProvider;
-                options.Cookies.ExternalCookie.DataProtectionProvider = dataProtectionProvider;
-                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = dataProtectionProvider;
-                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = dataProtectionProvider;                
+                options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtector;
+                options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtector;
+                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtector;
+                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtector;                
             });
             
 

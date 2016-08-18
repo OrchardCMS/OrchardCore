@@ -10,7 +10,7 @@ using OpenIddict;
 
 namespace Orchard.OpenId.Services
 {
-    public class OpenIdApplicationStore : OpenIddict.IOpenIddictApplicationStore<OpenIdApplication>
+    public class OpenIdApplicationStore : IOpenIdApplicationStore
     {
         private readonly ISession _session;
 
@@ -102,6 +102,17 @@ namespace Orchard.OpenId.Services
             }
 
             return (await _session.QueryAsync<OpenIdToken,OpenIdTokenIndex>(t=>t.AppId == application.Id).List()).Select(o => o.Id.ToString()).AsEnumerable();
-        }        
+        }
+        public Task<IList<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.FromResult<IList<string>>(application.RoleNames);
+        }
     }
 }

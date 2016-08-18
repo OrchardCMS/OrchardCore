@@ -28,11 +28,15 @@ namespace Orchard.Demo.Controllers
             return new ObjectResult(contentItem);
         }
 
+        [Authorize]
         public async Task<IActionResult> GetAuthorizedById([FromServices] IContentManager contentManager, int id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+                return Unauthorized();
+
             var contentItem = await contentManager.GetAsync(id);
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
                 return Unauthorized();
 
             if (contentItem == null)
