@@ -15,13 +15,13 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
     {
         Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            if (!string.Equals(typeof(TPart).Name, typePartDefinition.PartDefinition.Name) &&
-                typeof(TPart) != typeof(ContentPart))
+            var part = contentPart as TPart;
+
+            if (part == null)
             {
-                return Task.FromResult(default(IDisplayResult));
+                return null;
             }
 
-            var part = contentPart.ContentItem.Get<TPart>(typePartDefinition.Name);
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
             return DisplayAsync(part, buildDisplayContext);
@@ -29,13 +29,13 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
-            if (!string.Equals(typeof(TPart).Name, typePartDefinition.PartDefinition.Name) &&
-                typeof(TPart) != typeof(ContentPart))
+            var part = contentPart as TPart;
+
+            if (part == null)
             {
-                return Task.FromResult(default(IDisplayResult));
+                return null;
             }
 
-            var part = contentPart.ContentItem.GetOrCreate<TPart>(typePartDefinition.Name);
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
             return EditAsync(part, buildEditorContext);
@@ -43,16 +43,28 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
         Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
-            if (!string.Equals(typeof(TPart).Name, typePartDefinition.PartDefinition.Name) &&
-                typeof(TPart) != typeof(ContentPart))
+            var part = contentPart as TPart;
+
+            if(part == null)
             {
-                return Task.FromResult(default(IDisplayResult));
+                return null;
             }
 
-            var part = contentPart.ContentItem.GetOrCreate<TPart>(typePartDefinition.Name);
             var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
-            return UpdateAsync(part, context.Updater, updateEditorContext);
+            var result = UpdateAsync(part, context.Updater, updateEditorContext);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                part.ContentItem.Weld(typePartDefinition.Name, part);
+            }
+
+            return result;
         }
 
         public virtual Task<IDisplayResult> DisplayAsync(TPart part, BuildPartDisplayContext context)

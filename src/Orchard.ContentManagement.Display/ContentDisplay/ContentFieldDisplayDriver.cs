@@ -40,8 +40,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
             var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
-            // TODO : inject a location from the partFieldSettings (1, 5, ...)
-            fieldEditorContext.PartFieldLocation = $"Content:{Prefix}";
+
             return EditAsync(field, fieldEditorContext);
         }
 

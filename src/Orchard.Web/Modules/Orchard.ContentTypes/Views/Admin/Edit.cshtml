@@ -11,7 +11,7 @@
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
 
-    var orderedFields = typePart.PartDefinition.Fields
+    var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.Settings["Position"]?.ToString() ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field);

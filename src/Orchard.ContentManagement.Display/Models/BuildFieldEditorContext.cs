@@ -16,6 +16,5 @@ namespace Orchard.ContentManagement.Display.Models
         public ContentPart ContentPart { get; }
         public ContentTypePartDefinition TypePartDefinition { get; }
         public ContentPartFieldDefinition PartFieldDefinition { get; }
-        public string PartFieldLocation { get; set; }
     }
 }

@@ -249,6 +249,9 @@ namespace Orchard.ContentManagement.Display
                     }
                 }, Logger);
 
+                // Extract the element a second time as it has been replaced by the part drivers
+                part = contentItem.Get(part.GetType(), typePartDefinition.Name) as ContentPart;
+
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
