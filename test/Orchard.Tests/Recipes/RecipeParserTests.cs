@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.FileProviders.Physical;
+﻿using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
+using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Orchard.Tests.Configuration
@@ -10,20 +14,12 @@ namespace Orchard.Tests.Configuration
     {
         private string _tempFolderName;
 
+        private IFileInfo _fileInfo;
+
         public RecipeParserTests()
         {
             _tempFolderName = Path.GetTempFileName();
-            File.Delete(_tempFolderName);
-        }
 
-        public void Dispose()
-        {
-            File.Delete(_tempFolderName);
-        }
-
-        [Fact]
-        public void Foo()
-        {
             var json = @"{" +
 "  \"name\": \"core\"," +
 "  \"description\": \"core descriptor.\"," +
@@ -46,10 +42,19 @@ namespace Orchard.Tests.Configuration
 "}";
             File.WriteAllText(_tempFolderName, json);
 
-            var fileInfo = new PhysicalFileInfo(new FileInfo(_tempFolderName));
+            _fileInfo = new PhysicalFileInfo(new FileInfo(_tempFolderName));
+        }
 
+        public void Dispose()
+        {
+            File.Delete(_tempFolderName);
+        }
+
+        [Fact]
+        public void ShouldParseRecipeDescriptor()
+        {
             var parser = new JsonRecipeParser();
-            var descriptor = parser.ParseRecipe(fileInfo);
+            var descriptor = parser.ParseRecipe(_fileInfo);
             Assert.Equal("core", descriptor.Name);
             Assert.Equal("core descriptor.", descriptor.Description);
             Assert.Equal("The Orchard Team", descriptor.Author);
@@ -58,6 +63,20 @@ namespace Orchard.Tests.Configuration
             Assert.Equal(true, descriptor.IsSetupRecipe);
             Assert.Equal("default", descriptor.Categories[0]);
             Assert.Equal("developer", descriptor.Tags[0]);
+        }
+
+        [Fact]
+        public void ProcessingRecipeShouldYieldUniqueIdsForSteps()
+        {
+            var recipeParser = new JsonRecipeParser();
+
+            List<RecipeStepDescriptor> recipeSteps = new List<RecipeStepDescriptor>();
+            recipeParser.ProcessRecipe(_fileInfo, (descripor, stepDescriptor) => {
+                recipeSteps.Add(stepDescriptor);
+            });
+
+            // Assert that each step has a unique ID.
+            Assert.True(recipeSteps.GroupBy(x => x.Id).All(y => y.Count() == 1));
         }
     }
 }

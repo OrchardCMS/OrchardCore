@@ -8,7 +8,7 @@ namespace Orchard.Recipes.Services
     public abstract class RecipeExecutionStep : IRecipeExecutionStep
     {
         private readonly ILogger _logger;
-        private readonly IStringLocalizer T;
+        protected readonly IStringLocalizer T;
 
         public RecipeExecutionStep(ILoggerFactory loggerFactory,
             IStringLocalizer stringLocalizer)

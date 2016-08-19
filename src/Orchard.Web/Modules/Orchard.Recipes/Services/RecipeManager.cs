@@ -51,14 +51,8 @@ namespace Orchard.Recipes.Services
             {
                 _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(x => 
                     x.ExecutionStartAsync(executionId, recipeDescriptor)).Wait();
-                
-                _recipeParser.ProcessRecipe(
-                    _fileSystem.GetFileInfo(recipeDescriptor.Location), async (recipe, recipeStep) =>
-                {
-                    await ExecuteRecipeStepAsync(executionId, recipe, recipeStep);
-                });
 
-                await _session.CommitAsync();
+                await EnqueueAsync(executionId, recipeDescriptor);
 
                 await _recipeScheduler.ScheduleWorkAsync(executionId);
 
@@ -68,6 +62,31 @@ namespace Orchard.Recipes.Services
             {
                 _executionIds.SetState(null);
             }
+        }
+
+        public async Task EnqueueAsync(RecipeDescriptor recipeDescriptor) {
+            var executionId = Guid.NewGuid().ToString("n");
+
+            _executionIds.SetState(executionId);
+            try
+            {
+                await EnqueueAsync(executionId, recipeDescriptor);
+            }
+            finally
+            {
+                _executionIds.SetState(null);
+            }
+        }
+
+        public async Task EnqueueAsync(string executionId, RecipeDescriptor recipeDescriptor)
+        {
+            _recipeParser.ProcessRecipe(
+                _fileSystem.GetFileInfo(recipeDescriptor.Location), async (recipe, recipeStep) =>
+                {
+                    await ExecuteRecipeStepAsync(executionId, recipe, recipeStep);
+                });
+
+            await _session.CommitAsync();
         }
 
         public async Task ExecuteRecipeStepAsync(string executionId, RecipeDescriptor recipe, RecipeStepDescriptor recipeStep)
