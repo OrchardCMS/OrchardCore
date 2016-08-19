@@ -16,21 +16,19 @@ namespace Orchard.Recipes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IOrchardFileSystem _fileSystem;
-        private readonly IRecipeParser _recipeParser;
-        private readonly Matcher _fileMatcher;
+        private readonly IEnumerable<IRecipeParser> _recipeParsers;
+        private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public RecipeHarvester(IExtensionManager extensionManager,
             IOrchardFileSystem fileSystem,
-            IRecipeParser recipeParser,
+            IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
             ILogger<RecipeHarvester> logger) {
             _extensionManager = extensionManager;
             _fileSystem = fileSystem;
-            _recipeParser = recipeParser;
-
-            _fileMatcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
-            _fileMatcher.AddIncludePatterns(recipeOptions.Value.RecipeFileExtensions.Select(x => x.Key));
+            _recipeParsers = recipeParsers;
+            _recipeOptions = recipeOptions;
 
             T = localizer;
             Logger = logger;
@@ -61,13 +59,27 @@ namespace Orchard.Recipes.Services
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(ExtensionDescriptor extension)
         {
             var recipeLocation = _fileSystem.Combine(extension.Location, extension.Id, "Recipes");
-            var recipeFiles = _fileSystem.ListFiles(recipeLocation, _fileMatcher);
 
-            return await recipeFiles.InvokeAsync(recipeFile => {
-                var recipe = _recipeParser.ParseRecipe(recipeFile);
-                recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
-                return Task.FromResult(recipe);
-            }, Logger);
+            var recipeOptions = _recipeOptions.Value;
+
+            List<RecipeDescriptor> recipeDescriptors = new List<RecipeDescriptor>();
+
+            foreach(var recipeFileExtension in recipeOptions.RecipeFileExtensions)
+            {
+                var fileMatcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
+                fileMatcher.AddInclude(recipeFileExtension.Key);
+
+                var recipeFiles = _fileSystem.ListFiles(recipeLocation, fileMatcher);
+
+                recipeDescriptors.AddRange(await recipeFiles.InvokeAsync(recipeFile => {
+                    var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
+                    var recipe = recipeParser.ParseRecipe(recipeFile);
+                    recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
+                    return Task.FromResult(recipe);
+                }, Logger));
+            }
+
+            return recipeDescriptors;
         }
     }
 }
