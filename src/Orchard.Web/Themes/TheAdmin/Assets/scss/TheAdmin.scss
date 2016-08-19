@@ -240,6 +240,22 @@ label .field-validation-error::before {
     content: "\f292";
 }
 
+
+// Pager
+// ------------------------------
+
+ul.pager {
+    @extend .pagination;
+}
+
+ul.pager li {
+    @extend .page-item;
+}
+
+ul.pager li a {
+    @extend .page-link;
+}
+
 // Sortable
 // ------------------------------
 

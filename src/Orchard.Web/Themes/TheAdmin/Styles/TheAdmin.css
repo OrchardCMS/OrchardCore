@@ -3359,36 +3359,36 @@ input[type="button"].btn-block {
   .breadcrumb-item.active {
     color: #818a91; }
 
-.pagination {
+.pagination, ul.pager {
   display: inline-block;
   padding-left: 0;
   margin-top: 1rem;
   margin-bottom: 1rem;
   border-radius: 0.25rem; }
 
-.page-item {
+.page-item, ul.pager li {
   display: inline; }
-  .page-item:first-child .page-link {
+  .page-item:first-child .page-link, ul.pager li:first-child .page-link, .page-item:first-child ul.pager li a, ul.pager li .page-item:first-child a, ul.pager li:first-child a {
     margin-left: 0;
     border-bottom-left-radius: 0.25rem;
     border-top-left-radius: 0.25rem; }
-  .page-item:last-child .page-link {
+  .page-item:last-child .page-link, ul.pager li:last-child .page-link, .page-item:last-child ul.pager li a, ul.pager li .page-item:last-child a, ul.pager li:last-child a {
     border-bottom-right-radius: 0.25rem;
     border-top-right-radius: 0.25rem; }
-  .page-item.active .page-link, .page-item.active .page-link:focus, .page-item.active .page-link:hover {
+  .page-item.active .page-link, ul.pager li.active .page-link, .page-item.active ul.pager li a, ul.pager li .page-item.active a, ul.pager li.active a, .page-item.active .page-link:focus, ul.pager li.active .page-link:focus, .page-item.active ul.pager li a:focus, ul.pager li .page-item.active a:focus, ul.pager li.active a:focus, .page-item.active .page-link:hover, ul.pager li.active .page-link:hover, .page-item.active ul.pager li a:hover, ul.pager li .page-item.active a:hover, ul.pager li.active a:hover {
     z-index: 2;
     color: #fff;
     cursor: default;
     background-color: #0275d8;
     border-color: #0275d8; }
-  .page-item.disabled .page-link, .page-item.disabled .page-link:focus, .page-item.disabled .page-link:hover {
+  .page-item.disabled .page-link, ul.pager li.disabled .page-link, .page-item.disabled ul.pager li a, ul.pager li .page-item.disabled a, ul.pager li.disabled a, .page-item.disabled .page-link:focus, ul.pager li.disabled .page-link:focus, .page-item.disabled ul.pager li a:focus, ul.pager li .page-item.disabled a:focus, ul.pager li.disabled a:focus, .page-item.disabled .page-link:hover, ul.pager li.disabled .page-link:hover, .page-item.disabled ul.pager li a:hover, ul.pager li .page-item.disabled a:hover, ul.pager li.disabled a:hover {
     color: #818a91;
     pointer-events: none;
     cursor: not-allowed;
     background-color: #fff;
     border-color: #ddd; }
 
-.page-link {
+.page-link, ul.pager li a {
   position: relative;
   float: left;
   padding: 0.5rem 0.75rem;
@@ -3397,32 +3397,32 @@ input[type="button"].btn-block {
   text-decoration: none;
   background-color: #fff;
   border: 1px solid #ddd; }
-  .page-link:focus, .page-link:hover {
+  .page-link:focus, ul.pager li a:focus, .page-link:hover, ul.pager li a:hover {
     color: #014c8c;
     background-color: #eceeef;
     border-color: #ddd; }
 
-.pagination-lg .page-link {
+.pagination-lg .page-link, .pagination-lg ul.pager li a, ul.pager li .pagination-lg a {
   padding: 0.75rem 1.5rem;
   font-size: 1.25rem; }
 
-.pagination-lg .page-item:first-child .page-link {
+.pagination-lg .page-item:first-child .page-link, .pagination-lg ul.pager li:first-child .page-link, ul.pager .pagination-lg li:first-child .page-link, .pagination-lg .page-item:first-child ul.pager li a, ul.pager li .pagination-lg .page-item:first-child a, .pagination-lg ul.pager li:first-child a, ul.pager .pagination-lg li:first-child a {
   border-bottom-left-radius: 0.3rem;
   border-top-left-radius: 0.3rem; }
 
-.pagination-lg .page-item:last-child .page-link {
+.pagination-lg .page-item:last-child .page-link, .pagination-lg ul.pager li:last-child .page-link, ul.pager .pagination-lg li:last-child .page-link, .pagination-lg .page-item:last-child ul.pager li a, ul.pager li .pagination-lg .page-item:last-child a, .pagination-lg ul.pager li:last-child a, ul.pager .pagination-lg li:last-child a {
   border-bottom-right-radius: 0.3rem;
   border-top-right-radius: 0.3rem; }
 
-.pagination-sm .page-link {
+.pagination-sm .page-link, .pagination-sm ul.pager li a, ul.pager li .pagination-sm a {
   padding: 0.275rem 0.75rem;
   font-size: 0.875rem; }
 
-.pagination-sm .page-item:first-child .page-link {
+.pagination-sm .page-item:first-child .page-link, .pagination-sm ul.pager li:first-child .page-link, ul.pager .pagination-sm li:first-child .page-link, .pagination-sm .page-item:first-child ul.pager li a, ul.pager li .pagination-sm .page-item:first-child a, .pagination-sm ul.pager li:first-child a, ul.pager .pagination-sm li:first-child a {
   border-bottom-left-radius: 0.2rem;
   border-top-left-radius: 0.2rem; }
 
-.pagination-sm .page-item:last-child .page-link {
+.pagination-sm .page-item:last-child .page-link, .pagination-sm ul.pager li:last-child .page-link, ul.pager .pagination-sm li:last-child .page-link, .pagination-sm .page-item:last-child ul.pager li a, ul.pager li .pagination-sm .page-item:last-child a, .pagination-sm ul.pager li:last-child a, ul.pager .pagination-sm li:last-child a {
   border-bottom-right-radius: 0.2rem;
   border-top-right-radius: 0.2rem; }
 

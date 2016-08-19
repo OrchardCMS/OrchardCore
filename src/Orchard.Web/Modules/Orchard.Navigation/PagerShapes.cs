@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.Navigation
 {
@@ -36,8 +37,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_Gap")
@@ -45,8 +48,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         pager.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_First")
@@ -54,8 +59,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_Previous")
@@ -63,8 +70,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_Next")
@@ -72,8 +81,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_Last")
@@ -81,8 +92,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_CurrentPage")
@@ -90,8 +103,10 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape.Pager;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
+                    }
                 });
 
             builder.Describe("Pager_Links")
@@ -99,13 +114,15 @@ namespace Orchard.Navigation
                 {
                     var pager = displaying.Shape;
                     string pagerId = pager.PagerId;
-                    if (!String.IsNullOrWhiteSpace(pagerId))
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
+                    }
                 });
         }
 
         [Shape]
-        public IHtmlContent Pager_Links(dynamic Shape, dynamic Display, dynamic New,
+        public IHtmlContent Pager_Links(Shape Shape, dynamic Display, dynamic New,
             IHtmlHelper Html,
             int Page,
             int PageSize,
@@ -151,7 +168,7 @@ namespace Orchard.Navigation
             }
 
             // specific cross-requests route data can be passed to the shape directly (e.g., Orchard.Users)
-            var shapeRoute = (object)Shape.RouteData;
+            var shapeRoute = (object) ((dynamic)Shape).RouteData;
 
             if (shapeRoute != null)
             {
@@ -247,7 +264,7 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager(dynamic Shape, dynamic Display)
+        public IHtmlContent Pager(Shape Shape, dynamic Display)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Links";
@@ -255,7 +272,7 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_First(dynamic Shape, dynamic Display)
+        public IHtmlContent Pager_First(Shape Shape, dynamic Display)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
@@ -263,7 +280,7 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_Previous(dynamic Shape, dynamic Display)
+        public IHtmlContent Pager_Previous(Shape Shape, dynamic Display)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
@@ -271,15 +288,16 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_CurrentPage(IHtmlHelper Html, dynamic Display, object Value)
+        public IHtmlContent Pager_CurrentPage(Shape Shape, dynamic Display)
         {
-            var tagBuilder = new TagBuilder("span");
-            tagBuilder.InnerHtml.AppendHtml(Display(Value));
-            return tagBuilder;
+            Shape.Metadata.Alternates.Clear();
+            Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("active");
+            return Display(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_Next(dynamic Shape, dynamic Display)
+        public IHtmlContent Pager_Next(Shape Shape, dynamic Display)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
@@ -287,7 +305,7 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_Last(dynamic Shape, dynamic Display)
+        public IHtmlContent Pager_Last(Shape Shape, dynamic Display)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
@@ -295,7 +313,7 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_Link(IHtmlHelper Html, dynamic Shape, dynamic Display, object Value)
+        public IHtmlContent Pager_Link(IHtmlHelper Html, Shape Shape, dynamic Display, object Value)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "ActionLink";
@@ -303,9 +321,9 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent ActionLink(UrlHelper Url, dynamic Shape, object Value)
+        public IHtmlContent ActionLink(UrlHelper Url, Shape Shape, object Value)
         {
-            var RouteValues = (object)Shape.RouteValues;
+            var RouteValues = (object) ((dynamic)Shape).RouteValues;
             RouteValueDictionary rvd;
             if (RouteValues == null)
             {
@@ -322,18 +340,19 @@ namespace Orchard.Navigation
             IDictionary<string, string> attributes = Shape.Attributes;
             attributes["href"] = action;
             string id = Shape.Id;
-            var tag = Orchard.DisplayManagement.Shapes.Shape.GetTagBuilder("a", id, classes, attributes);
+            var tag = Shape.GetTagBuilder("a", id, classes, attributes);
 
             tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
             return tag;
         }
 
         [Shape]
-        public IHtmlContent Pager_Gap(IHtmlHelper Html, dynamic Display, object Value)
+        public IHtmlContent Pager_Gap(Shape Shape, dynamic Display)
         {
-            var tagBuilder = new TagBuilder("span");
-            tagBuilder.InnerHtml.AppendHtml(Display(Value));
-            return tagBuilder;
+            Shape.Metadata.Alternates.Clear();
+            Shape.Metadata.Type = "Pager_Link";
+            ((dynamic)Shape).Tag.AddCssClass("disabled");
+            return Display(Shape);
         }
 
         private string EncodeAlternateElement(string alternateElement)
