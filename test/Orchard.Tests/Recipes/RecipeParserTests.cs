@@ -37,6 +37,14 @@ namespace Orchard.Tests.Configuration
 "        \"Orchard.Logging.Console\"," +
 "        \"Orchard.Hosting\"" +
 "      ]" +
+"    }," +
+"    {" +
+"      \"name\": \"feature2\"," +
+"      \"disable\": [ ]," +
+"      \"enable\": [" +
+"        \"Orchard.Logging.Console\"," +
+"        \"Orchard.Hosting\"" +
+"      ]" +
 "    }" +
 "  ]" +
 "}";

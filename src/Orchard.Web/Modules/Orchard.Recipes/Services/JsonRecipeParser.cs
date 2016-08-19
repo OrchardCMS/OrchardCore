@@ -40,19 +40,21 @@ namespace Orchard.Recipes.Services
                     while (reader.Read()) {
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                         {
-                            // going to load up all steps in one go, which is not what we want,
-                            // however, we can change to iterate - :)
-                            var token = JToken.Load(reader);
-                            
+
                             int stepId = 0;
-                            foreach (var child in token.Children()) {
-                                action(descriptor, new RecipeStepDescriptor
+                            while (reader.Read() && reader.Depth > 1)
+                            {
+                                if (reader.Depth == 2)
                                 {
-                                    Id = (stepId++).ToString(CultureInfo.InvariantCulture),
-                                    RecipeName = descriptor.Name,
-                                    Name = child.Value<string>("name"),
-                                    Step = child
-                                });
+                                    var child = JToken.Load(reader);
+                                    action(descriptor, new RecipeStepDescriptor
+                                    {
+                                        Id = (stepId++).ToString(CultureInfo.InvariantCulture),
+                                        RecipeName = descriptor.Name,
+                                        Name = child.Value<string>("name"),
+                                        Step = child
+                                    });
+                                }
                             }
                         }
                     }
