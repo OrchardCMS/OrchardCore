@@ -24,7 +24,7 @@ namespace Orchard.Tests.FileSystem
         {
             _tempFolder = Path.GetTempFileName();
             File.Delete(_tempFolder);
-            Directory.CreateDirectory(_tempFolder);
+            Directory.CreateDirectory(_tempFolder); 
              _appDataFolder = CreateAppDataFolder(_tempFolder);
 
             string alpha1 = String.Format("App_Data{0}alpha{0}beta.txt",Path.DirectorySeparatorChar);
