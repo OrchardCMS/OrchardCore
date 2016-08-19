@@ -1,20 +1,16 @@
-﻿using Orchard.Hosting.Parameters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security;
 
-namespace Orchard.Hosting.HostContext
+namespace Orchard.Environment.Commands.Parameters
 {
     public class CommandParametersParser : ICommandParametersParser
     {
         [SecurityCritical]
         public CommandParameters Parse(IEnumerable<string> args)
         {
-            var result = new CommandParameters
-            {
-                Arguments = new List<string>(),
-                Switches = new Dictionary<string, string>()
-            };
+            var arguments = new List<string>();
+            var switches = new Dictionary<string, string>();
 
             foreach (var arg in args)
             {
@@ -30,15 +26,19 @@ namespace Orchard.Hosting.HostContext
                         throw new ArgumentException(string.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
                     }
 
-                    result.Switches.Add(switchName, switchValue);
+                    switches.Add(switchName, switchValue);
                 }
                 else
                 {
-                    result.Arguments.Add(arg);
+                    arguments.Add(arg);
                 }
             }
 
-            return result;
+            return new CommandParameters
+            {
+                Arguments = arguments,
+                Switches = switches
+            };
         }
     }
 }

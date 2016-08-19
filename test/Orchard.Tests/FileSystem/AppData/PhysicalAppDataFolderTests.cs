@@ -122,7 +122,7 @@ test", text);
         [Fact]
         public void FileExistsReturnsTrueForExistingFile()
         {
-            _appDataFolder.CreateFileAsync(String.Format("alpha{0}foo{0}bar.txt",Path.DirectorySeparatorChar)).Wait();
+            _appDataFolder.CreateFile(String.Format("alpha{0}foo{0}bar.txt",Path.DirectorySeparatorChar));
             Assert.True(_appDataFolder.GetFileInfo(String.Format("alpha{0}foo{0}bar.txt",Path.DirectorySeparatorChar)).Exists);
         }
     }

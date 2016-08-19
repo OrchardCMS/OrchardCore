@@ -1,4 +1,4 @@
-﻿using Orchard.Hosting.Parameters;
+﻿using Orchard.Environment.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Orchard.Tests.Hosting.Console
 {
-    public class CommandLineParseTests
+    public class CommandParserTests
     {
         [Fact]
         public void ParserUnderstandsSimpleArguments()
@@ -16,7 +16,7 @@ namespace Orchard.Tests.Hosting.Console
             // => a
             // => b
             // => cdef
-            var result = new CommandLineParser().Parse("a b cdef").ToList();
+            var result = new CommandParser().Parse("a b cdef").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("a", result[0]);
@@ -31,7 +31,7 @@ namespace Orchard.Tests.Hosting.Console
             // => a
             // => b
             // => cdef
-            var result = new CommandLineParser().Parse("  a    b    cdef   ").ToList();
+            var result = new CommandParser().Parse("  a    b    cdef   ").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("a", result[0]);
@@ -46,7 +46,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => a b cdef
-            var result = new CommandLineParser().Parse("feature enable \"a b cdef\"").ToList();
+            var result = new CommandParser().Parse("feature enable \"a b cdef\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -61,7 +61,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => /foo:a b cdef
-            var result = new CommandLineParser().Parse("feature enable /foo:\"a b cdef\"").ToList();
+            var result = new CommandParser().Parse("feature enable /foo:\"a b cdef\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -78,7 +78,7 @@ namespace Orchard.Tests.Hosting.Console
             // => "a
             // => b
             // => cdef"
-            var result = new CommandLineParser().Parse("feature enable \\\"a b cdef\\\"").ToList();
+            var result = new CommandParser().Parse("feature enable \\\"a b cdef\\\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(5, result.Count);
             Assert.Equal("feature", result[0]);
@@ -95,7 +95,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => \\a
-            var result = new CommandLineParser().Parse("feature enable \\\\a").ToList();
+            var result = new CommandParser().Parse("feature enable \\\\a").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -110,7 +110,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => \a
-            var result = new CommandLineParser().Parse("feature enable \\a").ToList();
+            var result = new CommandParser().Parse("feature enable \\a").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -125,7 +125,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => \
-            var result = new CommandLineParser().Parse("feature enable \\").ToList();
+            var result = new CommandParser().Parse("feature enable \\").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -140,7 +140,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => b\
-            var result = new CommandLineParser().Parse("feature enable b\\").ToList();
+            var result = new CommandParser().Parse("feature enable b\\").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -155,7 +155,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => <empty arg>
-            var result = new CommandLineParser().Parse("feature enable \"\"").ToList();
+            var result = new CommandParser().Parse("feature enable \"\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -170,7 +170,7 @@ namespace Orchard.Tests.Hosting.Console
             // => feature
             // => enable
             // => <empty arg>
-            var result = new CommandLineParser().Parse("feature enable \"").ToList();
+            var result = new CommandParser().Parse("feature enable \"").ToList();
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
             Assert.Equal("feature", result[0]);
@@ -183,7 +183,7 @@ namespace Orchard.Tests.Hosting.Console
         {
             // "
             // => <empty arg>
-            var result = new CommandLineParser().Parse("\"").ToList();
+            var result = new CommandParser().Parse("\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(1, result.Count);
             Assert.Equal("", result[0]);
@@ -193,7 +193,7 @@ namespace Orchard.Tests.Hosting.Console
         {
             // ""
             // => <empty arg>
-            var result = new CommandLineParser().Parse("\"\"").ToList();
+            var result = new CommandParser().Parse("\"\"").ToList();
             Assert.NotNull(result);
             Assert.Equal(1, result.Count);
             Assert.Equal("", result[0]);

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Orchard.Environment.Commands;
 using System.IO;
 using Xunit;

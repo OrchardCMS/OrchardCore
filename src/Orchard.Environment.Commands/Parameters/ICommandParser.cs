@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Security;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Orchard.Hosting.Parameters
+namespace Orchard.Environment.Commands.Parameters
 {
-    public interface ICommandLineParser
+    public interface ICommandParser
     {
         IEnumerable<string> Parse(string commandLine);
     }
 
-    public class CommandLineParser : ICommandLineParser
+    public class CommandParser : ICommandParser
     {
         [SecurityCritical]
         public IEnumerable<string> Parse(string commandLine)

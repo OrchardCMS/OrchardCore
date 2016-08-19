@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Hosting.Parameters;
+using Orchard.Environment.Commands.Parameters;
 
 namespace Orchard.Hosting.ResponseFiles
 {
@@ -31,7 +31,7 @@ namespace Orchard.Hosting.ResponseFiles
                         Filename = filename,
                         LineText = lineText,
                         LineNumber = i,
-                        Args = new CommandLineParser().Parse(lineText).ToArray()
+                        Args = new CommandParser().Parse(lineText).ToArray()
                     };
                 }
             }
