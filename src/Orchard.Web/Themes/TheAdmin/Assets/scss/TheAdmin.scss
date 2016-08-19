@@ -52,23 +52,30 @@ $left-navigation-expand-width: 15em;
 // -----------------------------
 
 .hint {
-    @extend small, .text-muted;
+    @extend .small, .form-text, .text-muted;
 }
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
+    padding-bottom:0;
 }
 
 .field-validation-error {
-    @extend small, .text-muted;
-    color: $brand-danger;
+    @extend small, .form-control-feedback;
+}
+
+.input-validation-error {
+    @extend .form-control-danger;
+}
+
+.has-validation-error {
+    @extend .has-danger;
 }
 
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
 }
-
 
 .button {
     @extend .btn, .btn-primary;
