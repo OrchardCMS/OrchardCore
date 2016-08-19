@@ -204,6 +204,10 @@ namespace Orchard.ContentManagement.Display
             if (contentTypeDefinition == null)
                 return;
 
+            dynamic contentShape = context.Shape;
+            dynamic partsShape = context.ShapeFactory.Create("Zone", Arguments.Empty);
+            contentShape.Zones["Parts"] = partsShape;
+
             foreach (var displayDriver in _displayDrivers)
             {
                 try
@@ -240,6 +244,18 @@ namespace Orchard.ContentManagement.Display
 
                 part = contentItem.GetOrCreate(part.GetType(), () => new ContentPart(), typePartDefinition.Name) as ContentPart;
 
+                // Create a custom shape to render all the part shapes into it
+                dynamic typePartShape = context.ShapeFactory.Create("ContentPart_Edit", Arguments.Empty);
+                typePartShape.ContentPart = part;
+                typePartShape.ContentTypePartDefinition = typePartDefinition;
+
+                var partPosition = typePartDefinition.Settings["Position"]?.ToString() ?? "before";
+
+                partsShape.Add(typePartShape, partPosition);
+                partsShape[typePartDefinition.Name] = typePartShape;
+
+                context.FindPlacement = (shape, differentiator, displayType) => new PlacementInfo { Location = $"Parts.{typePartDefinition.Name}" };
+
                 await _partDisplayDrivers.InvokeAsync(async contentDisplay =>
                 {
                     var result = await contentDisplay.UpdateEditorAsync(part, typePartDefinition, context);
@@ -249,12 +265,13 @@ namespace Orchard.ContentManagement.Display
                     }
                 }, Logger);
 
-                // Extract the element a second time as it has been replaced by the part drivers
-                part = contentItem.Get(part.GetType(), typePartDefinition.Name) as ContentPart;
-
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
                     var fieldName = partFieldDefinition.Name;
+
+                    var fieldPosition = partFieldDefinition.Settings["Position"]?.ToString() ?? "before";
+                    context.FindPlacement = (shape, differentiator, displayType) => new PlacementInfo { Location = $"Parts.{typePartDefinition.Name}:{fieldPosition}" };
+
                     await _fieldDisplayDrivers.InvokeAsync(async contentDisplay =>
                     {
                         var result = await contentDisplay.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
