@@ -8,37 +8,37 @@
 <form asp-action="AddFieldTo">
     @Html.ValidationSummary()
     <fieldset class="form-group">
-        <label for="DisplayName">@T["Display Name"]</label>
-        <input asp-for="DisplayName" class="form-control" autofocus />
-        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        <div class="row col-md">
+            <label for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" autofocus />
+            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
+        </div>
     </fieldset>
 
     <fieldset class="form-group">
-        <label for="Name">@T["Technical Name"]</label>
-        <input asp-for="Name" class="form-control" />
-        <span class="hint">@T["Technical name of the field."]</span>
+        <div class="row col-sm">
+            <label for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the field."]</span>
+        </div>
     </fieldset>
 
     <fieldset class="form-group">
         <label for="DisplayName">@T["Field Type"]</label>
-        <ul class="list-group">
-            @for (var i = 0; i < Model.Fields.Count; i++)
-            {
-                <li class="list-group-item">
-                    <div class="radio">
-                        <label asp-for="Fields[i].FieldTypeName">
-                            <input type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].FieldTypeName)" value="@Model.Fields[i].FieldTypeName" />
-                            @Model.Fields[i].FieldTypeName.CamelFriendly()
-                        </label>
-                    </div>
-                </li>
-            }
-        </ul>
+        @for (var i = 0; i < Model.Fields.Count; i++)
+        {
+            <div class="radio">
+                <label asp-for="Fields[i].FieldTypeName">
+                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].FieldTypeName)" value="@Model.Fields[i].FieldTypeName" />
+                    @Model.Fields[i].FieldTypeName.CamelFriendly()
+                </label>
+            </div>
+        }
+    </fieldset>
 
-        </fieldset>
-        <fieldset class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        </fieldset>
+    <fieldset class="form-group">
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    </fieldset>
 </form>
 
 <script at="Foot" type="text/javascript">
