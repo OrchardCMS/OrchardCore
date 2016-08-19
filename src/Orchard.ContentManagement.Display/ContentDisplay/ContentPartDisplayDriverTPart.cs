@@ -19,7 +19,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if (part == null)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
@@ -33,7 +33,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if (part == null)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
@@ -47,7 +47,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if(part == null)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
@@ -56,7 +56,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if (result == null)
             {
-                return null;
+                return Task.FromResult<IDisplayResult>(null);
             }
 
             if (context.Updater.ModelState.IsValid)
