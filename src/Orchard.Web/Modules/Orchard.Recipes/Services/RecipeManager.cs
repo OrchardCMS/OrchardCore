@@ -64,7 +64,8 @@ namespace Orchard.Recipes.Services
             }
         }
 
-        public async Task EnqueueAsync(RecipeDescriptor recipeDescriptor) {
+        public async Task EnqueueAsync(RecipeDescriptor recipeDescriptor)
+        {
             var executionId = Guid.NewGuid().ToString("n");
 
             _executionIds.SetState(executionId);

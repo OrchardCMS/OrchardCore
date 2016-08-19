@@ -82,7 +82,8 @@ namespace Orchard.Recipes.Providers.Executors
             public InternalStepValue[] Values { get; set; }
         }
 
-        private class InternalStepValue {
+        private class InternalStepValue
+        {
             public string ExecutionId { get; set; }
             public string Name { get; set; }
         }

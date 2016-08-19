@@ -78,5 +78,7 @@ namespace Orchard.Tests.Configuration
             // Assert that each step has a unique ID.
             Assert.True(recipeSteps.GroupBy(x => x.Id).All(y => y.Count() == 1));
         }
+
+
     }
 }
