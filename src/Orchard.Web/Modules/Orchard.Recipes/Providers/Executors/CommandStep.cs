@@ -42,6 +42,8 @@ namespace Orchard.Recipes.Providers.Executors
                 var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
 
                 _commandManager.ExecuteAsync(commandParameters);
+
+                Logger.LogInformation("Executed command: {0}", command);
             }
         }
 
