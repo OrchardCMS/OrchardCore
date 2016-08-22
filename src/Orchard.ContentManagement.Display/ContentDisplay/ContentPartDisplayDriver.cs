@@ -1,61 +1,83 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Orchard.ContentManagement.Display.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
     /// <summary>
-    /// Any concrete implementation of this class can provide shapes for any content item which has a specific Part.
+    /// Any concrete implementation of this class can provide shapes for any part of a content item.
     /// </summary>
-    /// <typeparam name="TPart"></typeparam>
-    public abstract class ContentPartDisplayDriver<TPart> : DisplayDriver<TPart, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IContentDisplayDriver where TPart : ContentPart, new()
+    public abstract class ContentPartDisplayDriver : DisplayDriverBase, IContentPartDisplayDriver
     {
-        public override string GeneratePrefix(TPart part)
+        Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            return typeof(TPart).Name;
+            var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
+
+            return DisplayAsync(contentPart, buildDisplayContext);
         }
 
-        Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.BuildDisplayAsync(ContentItem model, BuildDisplayContext context)
+        Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
-            var part = model.As<TPart>();
-            if(part != null)
-            {
-                Prefix = GeneratePrefix(part);
-                return DisplayAsync(part, context.Updater);
-            }
+            var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
-            return Task.FromResult<IDisplayResult>(null);
+            return EditAsync(contentPart, buildEditorContext);
         }
 
-        Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.BuildEditorAsync(ContentItem model, BuildEditorContext context)
+        Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
-            var part = model.As<TPart>();
-            if (part != null)
-            {
-                Prefix = GeneratePrefix(part);
-                return EditAsync(part, context.Updater);
-            }
+            var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
-            return Task.FromResult<IDisplayResult>(null);
+            return UpdateAsync(contentPart, context.Updater, updateEditorContext);
         }
 
-        Task<IDisplayResult> IDisplayDriver<ContentItem, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>.UpdateEditorAsync(ContentItem model, UpdateEditorContext context)
+        public virtual Task<IDisplayResult> DisplayAsync(ContentPart part, BuildPartDisplayContext context)
         {
-            var part = model.As<TPart>();
-            if (part != null)
-            {
-                Prefix = GeneratePrefix(part);
-                var result = UpdateAsync(part, context.Updater);
-                if (context.Updater.ModelState.IsValid)
-                {
-                    model.Weld(typeof(TPart).Name, part);
-                }
-                return result;
-            }
+            return Task.FromResult(Display(part, context));
+        }
 
+        public virtual IDisplayResult Display(ContentPart part, BuildPartDisplayContext context)
+        {
+            return Display(part);
+        }
+
+        public virtual IDisplayResult Display(ContentPart part)
+        {
+            return null;
+        }
+
+        public virtual Task<IDisplayResult> EditAsync(ContentPart part, BuildPartEditorContext context)
+        {
+            return Task.FromResult(Edit(part, context));
+        }
+
+        public virtual IDisplayResult Edit(ContentPart part, BuildPartEditorContext context)
+        {
+            return Edit(part);
+        }
+
+        public virtual IDisplayResult Edit(ContentPart part)
+        {
+            return null;
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(ContentPart part, IUpdateModel updater, UpdatePartEditorContext context)
+        {
+            return UpdateAsync(part, context);
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(ContentPart part, BuildPartEditorContext context)
+        {
+            return UpdateAsync(part, context.Updater);
+        }
+
+        public virtual Task<IDisplayResult> UpdateAsync(ContentPart part, IUpdateModel updater)
+        {
             return Task.FromResult<IDisplayResult>(null);
         }
 
     }
+
 }

@@ -1,31 +1,39 @@
 @using Orchard.Utility
+@using Orchard.ContentManagement.Metadata.Models;
+
 @model Orchard.ContentTypes.ViewModels.AddFieldViewModel
-@{
-    //Style.Require("ContentTypesAdmin");
-}
 
-
-<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName])</h1>
+<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
 
 <form asp-action="AddFieldTo">
     @Html.ValidationSummary()
     <fieldset class="form-group">
-        <label for="DisplayName">@T["Display Name"]</label>
-        <input asp-for="DisplayName" class="form-control" autofocus />
-        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <label for="Name">@T["Technical Name"]</label>
-        <input asp-for="Name" class="form-control" />
-        <span class="hint">@T["Technical name of the field."]</span>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <div class="row col-sm-3">
-            <label asp-for="FieldTypeName">@T["Field Type"]</label>
-            @Html.DropDownListFor(m => m.FieldTypeName, new SelectList(Model.Fields.Select(x => new { x.FieldTypeName, DisplayName = x.FieldTypeName.CamelFriendly() }), "FieldTypeName", "DisplayName"), new { @class = "form-control" })
+        <div class="row col-md">
+            <label for="DisplayName">@T["Display Name"]</label>
+            <input asp-for="DisplayName" class="form-control" autofocus />
+            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <div class="row col-sm">
+            <label for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span class="hint">@T["Technical name of the field."]</span>
+        </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+        <label for="DisplayName">@T["Field Type"]</label>
+        @for (var i = 0; i < Model.Fields.Count; i++)
+        {
+            <div class="radio">
+                <label asp-for="Fields[i].FieldTypeName">
+                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].FieldTypeName)" value="@Model.Fields[i].FieldTypeName" />
+                    @Model.Fields[i].FieldTypeName.CamelFriendly()
+                </label>
+            </div>
+        }
     </fieldset>
 
     <fieldset class="form-group">
@@ -33,16 +41,11 @@
     </fieldset>
 </form>
 
-@*@using(Script.Foot()){
-<script type="text/javascript">
+<script at="Foot" type="text/javascript">
 //<![CDATA[
     $(function(){
-        var $name = $("#@Html.FieldIdFor(m=>m.Name)");
-        var $displayName = $("#@Html.FieldIdFor(m=>m.DisplayName)");
-        var partName = "@Model.Part.Name";
-
-        var jsonUrl = "@Url.Action("FieldName", "Admin", new RouteValueDictionary { {"Area","Orchard.ContentTypes"} } )";
-        var version = 0;
+        var $name = $("#@Html.IdFor(m => m.Name)");
+        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
 
         var nameAltered;
         $name.keypress(function() {
@@ -55,27 +58,11 @@
                 return true;
             }
 
-            $.post(jsonUrl, {
-                    partName: partName,
-                    displayName: $displayName.val(),
-                    version: ++version,
-                    __RequestVerificationToken: $("input[name=__RequestVerificationToken]").val()
-                },
-                function(data) {
-                    if(version == data.version) {
-                        $name.val(data.result);
-                    }
-                },
-                "json"
-            );
+            $name.val(getTechnicalName($displayName.val()));
         };
-
-        //pull technical name input from tab order
-        $name.attr("tabindex", -1);
 
         $displayName.keyup(compute);
         $displayName.blur(compute);
     })
 //]]>
 </script>
-}*@

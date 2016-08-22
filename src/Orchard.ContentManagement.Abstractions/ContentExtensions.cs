@@ -12,7 +12,7 @@ namespace Orchard.ContentManagement
             return content == null ? false : content.ContentItem.Has<T>();
         }
 
-        public static T As<T>(this IContent content) where T : IContent
+        public static T As<T>(this IContent content) where T : ContentElement
         {
             return content == null ? default(T) : content.ContentItem.Get<T>();
         }
@@ -22,7 +22,7 @@ namespace Orchard.ContentManagement
             return content == null ? false : content.ContentItem.Has(typeof(T).Name);
         }
 
-        public static T Get<T>(this ContentElement content) where T : IContent
+        public static T Get<T>(this ContentElement content) where T : ContentElement
         {
             return content == null ? default(T) : content.Get<T>(typeof(T).Name);
         }
@@ -44,7 +44,7 @@ namespace Orchard.ContentManagement
             content.Weld(property.GetType().Name, property);
         }
 
-        public static IEnumerable<T> AsPart<T>(this IEnumerable<ContentItem> items) where T : IContent
+        public static IEnumerable<T> AsPart<T>(this IEnumerable<ContentItem> items) where T : ContentElement
         {
             return items == null ? null : items.Where(item => item.Is<T>()).Select(item => item.As<T>());
         }

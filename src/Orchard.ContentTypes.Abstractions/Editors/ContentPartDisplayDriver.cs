@@ -1,4 +1,4 @@
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentTypes.Editors
@@ -8,6 +8,11 @@ namespace Orchard.ContentTypes.Editors
         public override string GeneratePrefix(ContentPartDefinition model)
         {
             return model.Name;
+        }
+
+        public override bool CanHandleModel(ContentPartDefinition model)
+        {
+            return true;
         }
     }
 }

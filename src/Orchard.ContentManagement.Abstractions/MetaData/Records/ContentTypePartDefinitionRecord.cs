@@ -7,15 +7,15 @@ namespace Orchard.ContentManagement.Metadata.Records
     /// </summary>
     public class ContentTypePartDefinitionRecord
     {
-        public ContentTypePartDefinitionRecord(string name)
-        {
-            Name = name;
-        }
+        /// <summary>
+        /// Gets or sets the part name.
+        /// </summary>
+        public string PartName { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the part.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the settings of the part for this type.

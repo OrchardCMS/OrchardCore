@@ -1,5 +1,4 @@
-﻿using System;
-using Orchard.DisplayManagement.Handlers;
+﻿using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {
@@ -8,6 +7,11 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
         public override string GeneratePrefix(ContentItem model)
         {
             return "";
+        }
+
+        public override bool CanHandleModel(ContentItem model)
+        {
+            return true;
         }
     }
 }

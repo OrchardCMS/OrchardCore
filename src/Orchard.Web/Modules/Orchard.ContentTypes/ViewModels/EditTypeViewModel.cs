@@ -1,6 +1,6 @@
-﻿using Orchard.ContentManagement.MetaData.Models;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentTypes.ViewModels
 {
@@ -21,11 +21,17 @@ namespace Orchard.ContentTypes.ViewModels
 
         public string Name { get; set; }
         public string DisplayName { get; set; }
+        public string[] OrderedFieldNames { get; set; }
+        public string[] OrderedPartNames { get; set; }
 
         [BindNever]
         public JObject Settings { get; set; }
 
         [BindNever]
-        public ContentTypeDefinition TypeDefinition { get; private set; }
+        public ContentTypeDefinition TypeDefinition { get; set; }
+
+        [BindNever]
+        public dynamic Editor { get; set; }
+
     }
 }

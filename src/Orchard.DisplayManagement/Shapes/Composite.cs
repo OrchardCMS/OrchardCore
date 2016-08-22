@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Shapes
             return TrySetMemberImpl(binder.Name, value);
         }
 
-        protected bool TrySetMemberImpl(string name, object value)
+        protected virtual bool TrySetMemberImpl(string name, object value)
         {
             _props[name] = value;
             return true;

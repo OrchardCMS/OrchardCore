@@ -1,6 +1,5 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.ModelBinding;
-using System;
 
 namespace Orchard.DisplayManagement.Handlers
 {
@@ -16,7 +15,7 @@ namespace Orchard.DisplayManagement.Handlers
             Updater = updater;
         }
 
-        public dynamic Shape { get; private set; }
+        public IShape Shape { get; private set; }
         public IShapeFactory ShapeFactory { get; private set; }
         public dynamic New => ShapeFactory;
         public IShape Layout { get; set; }
@@ -24,9 +23,9 @@ namespace Orchard.DisplayManagement.Handlers
         public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
 
-        private PlacementInfo FindDefaultPlacement(string partType, string differentiator, string defaultLocation)
+        private static PlacementInfo FindDefaultPlacement(IShape shape, string differentiator, string displayType)
         {
-            return new PlacementInfo { Location = defaultLocation, Source = String.Empty };
+            return null;
         }
     }
 }

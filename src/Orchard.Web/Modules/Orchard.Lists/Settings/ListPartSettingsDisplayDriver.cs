@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Orchard.Lists.Models;
 using Orchard.ContentTypes.Editors;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Views;
 using Orchard.DisplayManagement.ModelBinding;
 

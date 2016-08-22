@@ -63,14 +63,6 @@ namespace Orchard.DisplayManagement.Shapes
                 itemTagName = string.IsNullOrEmpty(ItemTag) ? "li" : ItemTag;
             }
 
-            var itemContents = new List<IHtmlContent>();
-            // Give the item shape the possibility to alter its container tag
-            // by rendering them before rendering the containing list.
-
-            foreach (var item in items)
-            {
-                itemContents.Add(Display(item));
-            }
 
             var index = 0;
             foreach (var item in items)
@@ -92,7 +84,11 @@ namespace Orchard.DisplayManagement.Shapes
                     item.Tag = itemTag;
                 }
 
-                itemTag.InnerHtml.AppendHtml(itemContents[index]);
+                // Give the item shape the possibility to alter its container tag
+                // by rendering them before rendering the containing list.
+                var itemContent = Display(item);
+
+                itemTag.InnerHtml.AppendHtml(itemContent);
                 listTag.InnerHtml.AppendHtml(itemTag);
 
                 ++index;

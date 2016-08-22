@@ -41,26 +41,53 @@ namespace Orchard.ContentManagement
         /// <summary>
         /// Projects the content to a custom type.
         /// </summary>
-        public T Get<T>(string name)
+        public T Get<T>(string name) where T : ContentElement
         {
             JToken value;
             if (Data.TryGetValue(name, out value))
             {
                 var obj = value as JObject;
-                if (value == null)
+                if (obj == null)
                 {
                     return default(T);
                 }
 
                 var result = obj.ToObject<T>();
-                var contentElement = result as ContentElement;
-                contentElement.Data = obj;
-                contentElement.ContentItem = ((IContent)this).ContentItem;
+                result.Data = obj;
+                result.ContentItem = ((IContent)this).ContentItem;
 
                 return result;
             }
 
             return default(T);
+        }
+
+        public T GetOrCreate<T>(string name) where T : ContentElement, new()
+        {
+            JToken value;
+            T contentElement = default(T);
+
+            if (Data.TryGetValue(name, out value))
+            {
+                var obj = value as JObject;
+                if (obj == null)
+                {
+                    return default(T);
+                }
+
+                contentElement = obj.ToObject<T>();
+                contentElement.Data = obj;
+            }
+            else
+            {
+                contentElement = new T();
+                contentElement.Data = new JObject();
+                Data[name] = contentElement.Data;
+            }
+
+            contentElement.ContentItem = ((IContent)this).ContentItem;
+
+            return contentElement;
         }
 
         public ContentElement Get(Type t, string name)
@@ -69,13 +96,12 @@ namespace Orchard.ContentManagement
             if (Data.TryGetValue(name, out value))
             {
                 var obj = value as JObject;
-                if (value == null)
+                if (obj == null)
                 {
                     return null;
                 }
 
-                var result = obj.ToObject(t);
-                var contentElement = result as ContentElement;
+                var contentElement = obj.ToObject(t) as ContentElement;
                 contentElement.Data = obj;
                 contentElement.ContentItem = ((IContent)this).ContentItem;
 
@@ -83,6 +109,33 @@ namespace Orchard.ContentManagement
             }
 
             return null;
+        }
+
+        public ContentElement GetOrCreate(Type t, Func<ContentElement> factory, string name)
+        {
+            JToken value;
+            ContentElement contentElement;
+
+            if (Data.TryGetValue(name, out value))
+            {
+                var obj = value as JObject;
+                if (obj == null)
+                {
+                    return null;
+                }
+
+                contentElement = obj.ToObject(t) as ContentElement;
+                contentElement.Data = obj;
+            }
+            else
+            {
+                contentElement = factory();
+                contentElement.Data = new JObject();
+                Data[name] = contentElement.Data;
+            }
+
+            contentElement.ContentItem = ((IContent)this).ContentItem;
+            return contentElement;
         }
 
         /// <summary>
@@ -94,7 +147,7 @@ namespace Orchard.ContentManagement
             if (Data.TryGetValue(name, out value))
             {
                 var obj = value as JObject;
-                if (value == null)
+                if (obj == null)
                 {
                     return null;
                 }

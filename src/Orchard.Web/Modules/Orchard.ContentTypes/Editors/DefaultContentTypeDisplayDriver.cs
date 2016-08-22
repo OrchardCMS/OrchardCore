@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentTypes.Editors;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.DisplayManagement.Views;

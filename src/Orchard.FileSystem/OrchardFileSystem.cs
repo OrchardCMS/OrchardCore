@@ -215,8 +215,9 @@ namespace Orchard.FileSystem
                 return Enumerable.Empty<IFileInfo>();
             }
 
-            return new DirectoryInfoWrapper(directory).EnumerateFileSystemInfos()
-                    .Select(result => GetFileInfo(Combine(directory.FullName, result.Name)));
+            return matcher.Execute(new DirectoryInfoWrapper(directory))
+                .Files
+                .Select(result => GetFileInfo(Combine(directory.FullName, result.Path)));
         }
 
         public IEnumerable<DirectoryInfo> ListDirectories(string path)

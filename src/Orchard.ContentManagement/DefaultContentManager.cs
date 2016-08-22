@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Builders;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Builders;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Microsoft.Extensions.Logging;
 using YesSql.Core.Services;
@@ -135,6 +135,7 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
+                // Loaded whatever is the latest as it will be cloned
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x =>
@@ -144,7 +145,7 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsPublished)
             {
-                // If the published version is requested and is already loaded, we can 
+                // If the published version is requested and is already loaded, we can
                 // return it right away
                 if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
@@ -187,13 +188,16 @@ namespace Orchard.ContentManagement
                 contentItem = recalled;
             }
 
-            // When draft is required and latest is published a new version is added
-            if (options.IsDraftRequired && contentItem.Published)
+            if (options.IsDraftRequired)
             {
-                // Save the previous version
-                _session.Save(contentItem);
+                // When draft is required and latest is published a new version is added
+                if (contentItem.Published)
+                {
+                    // Save the previous version
+                    _session.Save(contentItem);
 
-                contentItem = await BuildNewVersionAsync(contentItem);
+                    contentItem = await BuildNewVersionAsync(contentItem);
+                }
 
                 // Save the new version
                 _session.Save(contentItem);
@@ -387,8 +391,8 @@ namespace Orchard.ContentManagement
         public virtual async Task RemoveAsync(ContentItem contentItem)
         {
             var activeVersions = await _session.QueryAsync<ContentItem, ContentItemIndex>()
-                .Where(x => 
-                    x.ContentItemId == contentItem.ContentItemId && 
+                .Where(x =>
+                    x.ContentItemId == contentItem.ContentItemId &&
                     (x.Published || x.Latest)).List();
 
             var context = new RemoveContentContext(contentItem);
