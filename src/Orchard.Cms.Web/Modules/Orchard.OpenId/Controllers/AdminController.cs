@@ -1,0 +1,251 @@
+﻿using CryptoHelper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Notify;
+using Orchard.Navigation;
+using Orchard.OpenId.Models;
+using Orchard.OpenId.Services;
+using Orchard.OpenId.ViewModels;
+using Orchard.Security.Services;
+using Orchard.Settings;
+using Orchard.Users.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Orchard.OpenId.Controllers
+{
+    public class AdminController : Controller
+    {
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IStringLocalizer<AdminController> T;
+        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly ISiteService _siteService;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly IRoleProvider _roleProvider;
+        private readonly INotifier _notifier;
+        private readonly IOpenIdService _openIdService;
+        
+        public AdminController(
+            IShapeFactory shapeFactory,
+            ISiteService siteService,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IAuthorizationService authorizationService,
+            IOpenIdApplicationManager applicationManager,
+            IRoleProvider roleProvider,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier,
+            IOpenIdService openIdService)
+        {
+            _shapeFactory = shapeFactory;
+            _siteService = siteService;
+            T = stringLocalizer;
+            H = htmlLocalizer;
+            _authorizationService = authorizationService;
+            _applicationManager = applicationManager;
+            _roleProvider = roleProvider;
+            _notifier = notifier;
+            _openIdService = openIdService;
+        }
+        
+        public async Task<ActionResult> Index(PagerParameters pagerParameters)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+            
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+            var results = await _applicationManager.GetAppsAsync(pager.GetStartIndex(),pager.PageSize);
+
+            var pagerShape = _shapeFactory.Create("Pager", new { TotalItemCount = await _applicationManager.GetCount()});
+
+            var model = new OpenIdApplicationsIndexViewModel
+            {
+                Applications = results
+                    .Select(x => new OpenIdApplicationEntry { Application = x })
+                    .ToList(),
+                Pager = pagerShape
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string id, string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+            
+            var app = await _applicationManager.FindByIdAsync(id);
+            if (app == null)
+                return NotFound();
+
+            var roles = await _roleProvider.GetRoleNamesAsync();
+            var model = new EditOpenIdApplicationViewModel()
+            {
+                RoleEntries = roles.Select(r => new RoleEntry() { Name = r }).ToList()
+            };
+
+            model.Id = id;
+            model.DisplayName = app.DisplayName;
+            model.RedirectUri = app.RedirectUri;
+            model.LogoutRedirectUri = app.LogoutRedirectUri;
+            model.ClientId = app.ClientId;
+            model.Type = app.Type;
+            model.SkipConsent = app.SkipConsent;
+            model.RoleEntries.ForEach(r=> r.Selected = app.RoleNames.Contains(r.Name));
+            model.AllowAuthorizationCodeFlow = app.AllowAuthorizationCodeFlow;
+            model.AllowClientCredentialsFlow = app.AllowClientCredentialsFlow;
+            model.AllowImplicitFlow = app.AllowImplicitFlow;
+            model.AllowPasswordFlow = app.AllowPasswordFlow;
+            model.AllowRefreshTokenFlow = app.AllowRefreshTokenFlow;
+
+            ViewData["OpenIdSettings"] = openIdSettings;
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditOpenIdApplicationViewModel model, string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+                if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                    _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+
+                ViewData["OpenIdSettings"] = openIdSettings;
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(model);
+            }
+
+            var app = await _applicationManager.FindByIdAsync(model.Id);
+            if (app == null)
+                return NotFound();
+
+            app.DisplayName = model.DisplayName;
+            app.RedirectUri = model.RedirectUri;
+            app.LogoutRedirectUri = model.LogoutRedirectUri;
+            app.ClientId = model.ClientId;
+            app.Type = model.Type;
+            app.SkipConsent = model.SkipConsent;
+            app.RoleNames = new List<string>();
+            if (app.Type == ClientType.Confidential)
+                app.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+            app.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            app.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            app.AllowImplicitFlow = model.AllowImplicitFlow;
+            app.AllowPasswordFlow = model.AllowPasswordFlow;
+            app.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+            app.AllowHybridFlow = model.AllowHybridFlow;
+
+            await _applicationManager.CreateAsync(app);
+            if (returnUrl == null)
+                return RedirectToAction("Index");
+            else
+                return LocalRedirect(returnUrl);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create(string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+
+            var roles = await _roleProvider.GetRoleNamesAsync();
+
+            var model = new CreateOpenIdApplicationViewModel()
+            {
+                RoleEntries = roles.Select(r => new RoleEntry() { Name = r }).ToList()
+            };
+
+            ViewData["OpenIdSettings"] = openIdSettings;
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateOpenIdApplicationViewModel model, string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            if (!ModelState.IsValid)
+            {
+                var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+                if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                    _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+
+                ViewData["OpenIdSettings"] = openIdSettings;
+                ViewData["ReturnUrl"] = returnUrl;
+                return View("Create", model);
+            }
+
+            var roleNames = new List<string>();
+            if (model.Type == ClientType.Confidential)
+                roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+
+            var openIdApp = new OpenIdApplication
+            {
+                DisplayName = model.DisplayName,
+                RedirectUri = model.RedirectUri,
+                LogoutRedirectUri = model.LogoutRedirectUri,
+                ClientId = model.ClientId,
+                ClientSecret = Crypto.HashPassword(model.ClientSecret),
+                Type = model.Type,
+                SkipConsent = model.SkipConsent,
+                RoleNames = roleNames,
+                AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
+                AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+                AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowPasswordFlow = model.AllowPasswordFlow,
+                AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowHybridFlow = model.AllowHybridFlow
+            };
+
+            await _applicationManager.CreateAsync(openIdApp);
+            if (returnUrl == null)
+                return RedirectToAction("Index");
+            else
+                return LocalRedirect(returnUrl);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            var application = await _applicationManager.FindByIdAsync(id);
+
+            if (application == null)
+            {
+                return NotFound();
+            }
+
+            await _applicationManager.DeleteAsync(application);
+            
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

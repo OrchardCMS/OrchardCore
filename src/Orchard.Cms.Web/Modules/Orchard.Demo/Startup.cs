@@ -12,6 +12,7 @@ using Orchard.Demo.Services;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Navigation;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Demo
 {
@@ -55,6 +56,7 @@ namespace Orchard.Demo
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 }
