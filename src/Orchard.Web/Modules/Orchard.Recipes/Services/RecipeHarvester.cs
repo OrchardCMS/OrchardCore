@@ -73,9 +73,11 @@ namespace Orchard.Recipes.Services
 
                 recipeDescriptors.AddRange(await recipeFiles.InvokeAsync(recipeFile => {
                     var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
-                    var recipe = recipeParser.ParseRecipe(recipeFile);
-                    recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
-                    return Task.FromResult(recipe);
+                    using (var stream = recipeFile.CreateReadStream()) {
+                        var recipe = recipeParser.ParseRecipe(stream);
+                        recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
+                        return Task.FromResult(recipe);
+                    }
                 }, Logger));
             }
 

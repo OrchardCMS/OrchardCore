@@ -26,11 +26,14 @@ namespace Orchard.Recipes.Services
         {
             return await Task.Run(() =>
             {
-                _recipeParser.ProcessRecipe(
-                    _fileSystem.GetFileInfo(recipeDescriptor.Location), async (recipe, recipeStep) =>
-                    {
-                        await _recipeStepQueue.EnqueueAsync(executionId, recipeStep);
-                    });
+                using (var stream = _fileSystem.GetFileInfo(recipeDescriptor.Location).CreateReadStream()) {
+                    _recipeParser.ProcessRecipe(
+                        stream
+                        , async (recipe, recipeStep) =>
+                        {
+                            await _recipeStepQueue.EnqueueAsync(executionId, recipeStep);
+                        });
+                }
 
                 return executionId;
             });

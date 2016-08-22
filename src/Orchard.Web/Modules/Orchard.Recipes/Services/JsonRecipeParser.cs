@@ -11,11 +11,11 @@ namespace Orchard.Recipes.Services
 {
     public class JsonRecipeParser : IRecipeParser
     {
-        public RecipeDescriptor ParseRecipe(IFileInfo recipeFile)
+        public RecipeDescriptor ParseRecipe(Stream recipeStream)
         {
             var serializer = new JsonSerializer();
 
-            using (StreamReader streamReader = new StreamReader(recipeFile.CreateReadStream()))
+            using (StreamReader streamReader = new StreamReader(recipeStream))
             {
                 using (JsonTextReader reader = new JsonTextReader(streamReader))
                 {
@@ -25,14 +25,17 @@ namespace Orchard.Recipes.Services
         }
 
         public void ProcessRecipe(
-            IFileInfo recipeFile, 
+            Stream recipeStream, 
             Action<RecipeDescriptor, RecipeStepDescriptor> action)
         {
-            var descriptor = ParseRecipe(recipeFile);
+            Stream recipeStreamCopy = new MemoryStream();
+            recipeStream.CopyTo(recipeStreamCopy);
+
+            var descriptor = ParseRecipe(recipeStreamCopy);
 
             var serializer = new JsonSerializer();
 
-            using (StreamReader streamReader = new StreamReader(recipeFile.CreateReadStream()))
+            using (StreamReader streamReader = new StreamReader(recipeStream))
             {
                 using (JsonTextReader reader = new JsonTextReader(streamReader))
                 {
@@ -40,7 +43,6 @@ namespace Orchard.Recipes.Services
                     while (reader.Read()) {
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                         {
-
                             int stepId = 0;
                             while (reader.Read() && reader.Depth > 1)
                             {

@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Recipes.Models;
 using System;
+using System.IO;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeParser
     {
-        RecipeDescriptor ParseRecipe(IFileInfo recipeFile);
+        RecipeDescriptor ParseRecipe(Stream recipeStream);
         void ProcessRecipe(
-            IFileInfo recipeFile,
+            Stream recipeStream,
             Action<RecipeDescriptor, RecipeStepDescriptor> action);
     }
 }

@@ -56,7 +56,7 @@ namespace Orchard.Recipes.Services
                 StepId = recipeStep.Id,
                 Step = recipeStep
             });
-
+            
             _session.Save(new RecipeStepResult
             {
                 ExecutionId = executionId,
