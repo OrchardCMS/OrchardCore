@@ -1,8 +1,8 @@
 ﻿@using Orchard.Setup.Controllers
 @model Orchard.Setup.ViewModels.SetupViewModel
 @{
-    var groupedRecipes = Model.Recipes.Where(x => !string.IsNullOrWhiteSpace(x.Category)).GroupBy(x => x.Category);
-    var unspecifiedCategoryRecipes = Model.Recipes.Where(x => string.IsNullOrWhiteSpace(x.Category)).ToList();
+    var groupedRecipes = Model.Recipes.Where(x => x.Categories.Any()).GroupBy(x => x.Categories);
+    var unspecifiedCategoryRecipes = Model.Recipes.Where(x => !x.Categories.Any()).ToList();
     var groupCount = groupedRecipes.Count() + unspecifiedCategoryRecipes.Count;
 }
 <html>

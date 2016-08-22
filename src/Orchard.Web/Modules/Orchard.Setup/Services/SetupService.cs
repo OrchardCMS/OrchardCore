@@ -201,7 +201,6 @@ namespace Orchard.Setup.Services
 
             var recipe = context.Recipe;
             var executionId = await recipeManager.EnqueueAsync(recipe);
-            await recipeManager.ExecuteAsync(executionId);
 
             // Once the recipe has finished executing, we need to update the shell state to "Running", so add a recipe step that does exactly that.
             var recipeStepQueue = scope.ServiceProvider.GetService<IRecipeStepQueue>();
