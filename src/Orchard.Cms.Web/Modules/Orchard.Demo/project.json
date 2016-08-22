@@ -9,7 +9,8 @@
     "Orchard.DeferredTasks.Abstractions": "2.0.0-*",
     "Orchard.ResourceManagement": "2.0.0-*",
     "Orchard.ResourceManagement.Abstractions": "2.0.0-*",
-    "Orchard.BackgroundTasks.Abstractions": "2.0.0-*"
+    "Orchard.BackgroundTasks.Abstractions": "2.0.0-*",
+    "Orchard.Contents": "1.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"
