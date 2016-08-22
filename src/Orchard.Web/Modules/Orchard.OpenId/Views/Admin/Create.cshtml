@@ -1,0 +1,91 @@
+﻿@model CreateOpenIdApplicationViewModel
+@using Orchard.OpenId.ViewModels;
+@using Orchard.OpenId.Models;
+
+<form asp-controller="Admin" asp-action="Create" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+    @Html.AntiForgeryToken()
+    <h4>@T["Create OpenId Application"]</h4>
+    <hr />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="ClientId" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="ClientId" class="form-control" />
+            <span asp-validation-for="ClientId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="DisplayName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="DisplayName" class="form-control" />
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="RedirectUri" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="RedirectUri" class="form-control" />
+            <span asp-validation-for="RedirectUri" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="LogoutRedirectUri" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="LogoutRedirectUri" class="form-control" />
+            <span asp-validation-for="LogoutRedirectUri" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Type" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select asp-for="Type" class="form-control">
+                <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
+                <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
+            </select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+    </div>
+    @{
+        var rolesClass = Model.Type == ClientType.Public ? "form-group hidden" : "form-group";
+    }
+    <div class=@rolesClass id="RoleGroup" name="RoleGroup">
+        <label class="col-md-2 control-label">@T["Roles"]</label>
+        <div class="col-md-10">
+            <ul class="list-group">
+                @for (var i = 0; i < Model.RoleEntries.Count; i++)
+                {
+                    <li class="list-group-item">
+                        <input asp-for="RoleEntries[i].Selected" type="checkbox">
+                        <input asp-for="RoleEntries[i].Name" type="hidden">
+                        @Model.RoleEntries[i].Name
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-default">@T["Submit"]</button>
+        </div>
+    </div>        
+</form>
+@*at="Foot"*@
+<script>
+    $("#Type").change(function () {
+        $("#RoleGroup").toggle("slow");
+    });
+</script>
