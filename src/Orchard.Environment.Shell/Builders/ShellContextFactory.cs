@@ -92,6 +92,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.DynamicCache" },
                     new ShellFeature { Name = "Orchard.Roles" },
                     new ShellFeature { Name = "Orchard.Users" },
+                    new ShellFeature { Name = "Orchard.OpenId" },
                     new ShellFeature { Name = "TheTheme" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },

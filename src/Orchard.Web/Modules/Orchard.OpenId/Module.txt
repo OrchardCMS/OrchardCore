@@ -1,0 +1,9 @@
+﻿Name: OpenId
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: The OpenId module enables authentication of external apps through Open Id.
+FeatureDescription: OpenId apps management and authentication.
+Category: Core
