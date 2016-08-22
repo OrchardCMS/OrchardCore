@@ -1,0 +1,30 @@
+﻿@model OpenIdApplicationsIndexViewModel
+@using Orchard.OpenId.ViewModels;
+
+<h1>@RenderTitleSegments(T["OpenId Applications"])</h1>
+
+<nav class="admin-toolbar">
+    <div class="nav navbar-nav">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Application"]</a>
+    </div>
+</nav>
+
+@using (Html.BeginForm())
+{
+    <ul class="list-group">
+        @foreach (var entry in Model.Applications)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="related pull-xs-right">
+                        <a asp-action="Edit" asp-route-id="@entry.Application.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                    </div>
+                </div>
+
+                @entry.Application.DisplayName
+            </li>
+        }
+    </ul>
+}
+
+@Display(Model.Pager)

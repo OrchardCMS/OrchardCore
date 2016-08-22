@@ -95,6 +95,7 @@ namespace Orchard.Environment.Shell.Builders
                     new ShellFeature { Name = "Orchard.Hosting" },
                     new ShellFeature { Name = "Orchard.Admin" },
                     new ShellFeature { Name = "Orchard.Themes" },
+                    new ShellFeature { Name = "Orchard.OpenId" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },
                     new ShellFeature { Name = "Orchard.Recipes" }
