@@ -14,16 +14,24 @@ namespace Orchard.Recipes
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IRecipeParser, JsonRecipeParser>();
+
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
-            services.AddScoped<IRecipeStepQueue, RecipeStepQueue>();
-            services.AddScoped<IRecipeScheduler, RecipeScheduler>();
+
             services.AddScoped<IRecipeManager, RecipeManager>();
-            services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
+            {
+                services.AddScoped<IRecipeQueue, RecipeQueue>();
+                services.AddScoped<IRecipeExecutor, RecipeExecutor>();
+                {
+                    services.AddScoped<IRecipeParser, JsonRecipeParser>();
+                    services.AddScoped<IRecipeStepQueue, RecipeStepQueue>();
+                    services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
+                }
+            }
 
             services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();
 
             services.AddScoped<IRecipeExecutionStep, ActivateShellStep>();
-            services.AddScoped<IRecipeExecutionStep, CommandStep>().AddCommands(); // Should I do .AddCommands() here? (ngm)
+            services.AddScoped<IRecipeExecutionStep, CommandStep>();
 
             services.AddRecipeOptions();
             services.AddRecipeExtension("*.recipe.json", typeof(JsonRecipeParser));

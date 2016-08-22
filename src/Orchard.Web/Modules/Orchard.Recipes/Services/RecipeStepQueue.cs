@@ -1,116 +1,80 @@
 ﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using Orchard.FileSystem.AppData;
 using Orchard.Recipes.Models;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.Recipes.Services
 {
     public class RecipeStepQueue : IRecipeStepQueue
     {
-        private readonly string _recipeQueueFolder = "RecipeQueue" + Path.DirectorySeparatorChar;
-
-        private readonly IAppDataFolder _appDataFolder;
+        private readonly ISession _session;
         private readonly ILogger _logger;
 
-        public RecipeStepQueue(IAppDataFolder appDataFolder,
+        public RecipeStepQueue(ISession session,
             ILogger<RecipeStepQueue> logger)
         {
-            _appDataFolder = appDataFolder;
+            _session = session;
             _logger = logger;
         }
 
         public async Task<RecipeStepDescriptor> DequeueAsync(string executionId)
         {
             _logger.LogInformation("Dequeuing recipe steps.");
-            var executionFolderPath = _appDataFolder.Combine(_recipeQueueFolder, executionId);
-            if (!_appDataFolder.DirectoryExists(executionFolderPath))
+
+            var recipeSteps = await _session
+                .QueryAsync<RecipeStepResult>()
+                .List();
+
+            var recipeStep = recipeSteps
+                .FirstOrDefault(x => x.ExecutionId == executionId &&
+                                    !x.IsCompleted);
+
+            if (recipeStep == null)
             {
                 return null;
             }
 
-            RecipeStepDescriptor recipeStep = null;
-            int stepIndex = GetFirstStepIndex(executionId);
+            var recipeExecutionStepDescriptors = await _session
+                .QueryAsync<RecipeStepExecutionDescriptor>()
+                .List();
 
-            if (stepIndex >= 0)
-            {
-                var stepPath = _appDataFolder.Combine(_recipeQueueFolder, executionId, stepIndex.ToString());
-                
-                var stepElement = JObject.Parse(await _appDataFolder.ReadFileAsync(stepPath));
-                var stepName = stepElement.Value<string>("name");
-                var recipeName = stepElement.Value<string>("recipename");
-                var stepId = stepElement.Value<string>("id");
+            var recipeExecutionStepDescriptor = recipeExecutionStepDescriptors
+                .First(x => x.ExecutionId == recipeStep.ExecutionId &&
+                                     x.StepId == recipeStep.StepId);
 
-                _logger.LogInformation("Dequeuing recipe step '{0}'.", stepName);
-                recipeStep = new RecipeStepDescriptor
-                {
-                    Id = stepId,
-                    RecipeName = recipeName,
-                    Name = stepName,
-                    Step = stepElement["step"]
-                };
-                _appDataFolder.DeleteFile(stepPath);
-            }
-
-            if (stepIndex < 0)
-            {
-                _appDataFolder.DeleteFile(executionFolderPath);
-            }
-
-            return recipeStep;
+            return recipeExecutionStepDescriptor.Step;
         }
 
         public async Task EnqueueAsync(string executionId, RecipeStepDescriptor recipeStep)
         {
             _logger.LogInformation("Enqueuing recipe step '{0}'.", recipeStep.Name);
-            var recipeStepElement = new JObject();
-            recipeStepElement.Add(new JProperty("id", recipeStep.Id));
-            recipeStepElement.Add(new JProperty("recipename", recipeStep.RecipeName));
-            recipeStepElement.Add(new JProperty("name", recipeStep.Name));
-            recipeStepElement.Add(new JProperty("step", recipeStep.Step));
 
-            if (_appDataFolder.DirectoryExists(_appDataFolder.Combine(_recipeQueueFolder, executionId)))
+            _session.Save(new RecipeStepExecutionDescriptor
             {
-                int stepIndex = GetLastStepIndex(executionId) + 1;
-                await _appDataFolder.CreateFileAsync(
-                    _appDataFolder.Combine(_recipeQueueFolder, executionId, stepIndex.ToString()),
-                    recipeStepElement.ToString());
-            }
-            else
+                ExecutionId = executionId,
+                StepId = recipeStep.Id,
+                Step = recipeStep
+            });
+
+            _session.Save(new RecipeStepResult
             {
-                await _appDataFolder.CreateFileAsync(
-                    _appDataFolder.Combine(_recipeQueueFolder, executionId, "0"),
-                    recipeStepElement.ToString());
-            }
+                ExecutionId = executionId,
+                StepId = recipeStep.Id,
+                RecipeName = recipeStep.RecipeName,
+                StepName = recipeStep.Name
+            });
+
+            await _session.CommitAsync();
+
+            _logger.LogInformation("Enqueued recipe step '{0}'.", recipeStep.Name);
         }
+    }
 
-        private int GetFirstStepIndex(string executionId)
-        {
-            var stepFiles = _appDataFolder.ListFiles(Path.Combine(_recipeQueueFolder, executionId));
-            if (!stepFiles.Any())
-            {
-                return -1;
-            }
-            var currentSteps = stepFiles.Select(stepFile => int.Parse(stepFile.Name.Substring(stepFile.Name.LastIndexOf('/') + 1))).ToList();
-            currentSteps.Sort();
-            return currentSteps[0];
-        }
-
-        private int GetLastStepIndex(string executionId)
-        {
-            int lastIndex = -1;
-            var stepFiles = _appDataFolder.ListFiles(Path.Combine(_recipeQueueFolder, executionId));
-            // we always have only a handful of steps.
-            foreach (var stepFile in stepFiles)
-            {
-                int stepOrder = int.Parse(stepFile.Name.Substring(stepFile.Name.LastIndexOf('/') + 1));
-                if (stepOrder > lastIndex)
-                    lastIndex = stepOrder;
-            }
-
-            return lastIndex;
-        }
+    public class RecipeStepExecutionDescriptor
+    {
+        public string ExecutionId { get; set; }
+        public string StepId { get; set; }
+        public RecipeStepDescriptor Step { get; set; }
     }
 }

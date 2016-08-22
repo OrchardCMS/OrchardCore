@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
-    public interface IRecipeManager
+    public interface IRecipeQueue
     {
-        Task ExecuteAsync(string executionId);
-        Task<string> EnqueueAsync(RecipeDescriptor recipeDescriptor);
         Task<string> EnqueueAsync(string executionId, RecipeDescriptor recipeDescriptor);
     }
 }

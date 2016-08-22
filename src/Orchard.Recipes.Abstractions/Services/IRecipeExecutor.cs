@@ -1,9 +1,10 @@
 ﻿using Orchard.Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeExecutor
     {
-        string Execute(RecipeDescriptor recipe);
+        Task ExecuteAsync(string executionId);
     }
 }

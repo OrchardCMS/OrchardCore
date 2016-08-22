@@ -6,7 +6,7 @@ namespace Orchard.Recipes.Events
 {
     public interface IRecipeExecuteEventHandler : IEventHandler
     {
-        Task ExecutionStartAsync(string executionId, RecipeDescriptor recipe);
+        Task ExecutionStartAsync(string executionId);
         Task RecipeStepExecutingAsync(string executionId, RecipeContext context);
         Task RecipeStepExecutedAsync(string executionId, RecipeContext context);
         Task ExecutionCompleteAsync(string executionId);

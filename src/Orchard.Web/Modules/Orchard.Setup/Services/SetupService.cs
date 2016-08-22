@@ -192,14 +192,16 @@ namespace Orchard.Setup.Services
             return executionId;
         }
 
-        private async Task<string> CreateTenantDataAsync(IServiceScope scope, 
+        private async Task<string> CreateTenantDataAsync(
+            IServiceScope scope, 
             SetupContext context, 
             ShellContext shellContext)
         {
             var recipeManager = scope.ServiceProvider.GetService<IRecipeManager>();
 
             var recipe = context.Recipe;
-            var executionId = await recipeManager.ExecuteAsync(recipe);
+            var executionId = await recipeManager.EnqueueAsync(recipe);
+            await recipeManager.ExecuteAsync(executionId);
 
             // Once the recipe has finished executing, we need to update the shell state to "Running", so add a recipe step that does exactly that.
             var recipeStepQueue = scope.ServiceProvider.GetService<IRecipeStepQueue>();
@@ -212,16 +214,7 @@ namespace Orchard.Setup.Services
             };
 
             await recipeStepQueue.EnqueueAsync(executionId, activateShellStep);
- 
-            var session = scope.ServiceProvider.GetService<YesSql.Core.Services.ISession>();
-
-            session.Save(new RecipeStepResult
-            {
-                ExecutionId = executionId,
-                StepId = activateShellStep.Id,
-                RecipeName = recipe.Name,
-                StepName = activateShellStep.Name
-            });
+            await recipeManager.ExecuteAsync(executionId);
 
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return executionId;

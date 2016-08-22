@@ -44,8 +44,6 @@ namespace Orchard.Recipes.Services
             if (nextRecipeStep == null)
             {
                 _logger.LogInformation("No more recipe steps left to execute.");
-                _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
-                    e.ExecutionCompleteAsync(executionId)).Wait();
 
                 return false;
             }
@@ -59,62 +57,36 @@ namespace Orchard.Recipes.Services
                 ExecutionId = executionId
             };
 
-            try
-            {
-                _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
-                    e.RecipeStepExecutingAsync(executionId, recipeContext)).Wait();
+            _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
+                e.RecipeStepExecutingAsync(executionId, recipeContext));
 
-                _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
+            _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
 
-                UpdateStepResultRecord(executionId, nextRecipeStep.Id, isSuccessful: true);
+            await UpdateStepResultRecordAsync(recipeContext);
 
-                _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(e =>
-                    e.RecipeStepExecutedAsync(executionId, recipeContext)).Wait();
-            }
-            catch (Exception ex)
-            {
-                UpdateStepResultRecord(executionId, nextRecipeStep.Id, isSuccessful: false, errorMessage: ex.Message);
-                _logger.LogError("Recipe execution failed because the step '{0}' failed.", nextRecipeStep.Name, ex);
-                while (await _recipeStepQueue.DequeueAsync(executionId) != null) ;
-                var message = T["Recipe execution with ID {0} failed because the step '{1}' failed to execute. The following exception was thrown:\n{2}\nRefer to the error logs for more information.", executionId, nextRecipeStep.Name, ex.Message];
-                throw new OrchardCoreException(message);
-            }
-
-            if (!recipeContext.Executed)
-            {
-                _logger.LogError("Recipe execution failed because no matching handler for recipe step '{0}' was found.", recipeContext.RecipeStep.Name);
-                while (await _recipeStepQueue.DequeueAsync(executionId) != null) ;
-                var message = T["Recipe execution with ID {0} failed because no matching handler for recipe step '{1}' was found. Refer to the error logs for more information.", executionId, nextRecipeStep.Name];
-                throw new OrchardCoreException(message);
-            }
+            _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
+                e.RecipeStepExecutedAsync(executionId, recipeContext));
 
             return true;
         }
 
-        private void UpdateStepResultRecord(string executionId, string stepId, bool isSuccessful, string errorMessage = null)
+        private async Task UpdateStepResultRecordAsync(RecipeContext recipeContext)
         {
-            var stepResultRecord = _session
+            var stepResults = await _session
                 .QueryAsync<RecipeStepResult>()
-                .List()
-                .Result
-                .FirstOrDefault(
-                    record => record.ExecutionId == executionId && 
-                    record.StepId == stepId);
+                .List();
 
-            if (stepResultRecord == null)
-            {
-                // No step result record was created when scheduling the step, so simply ignore.
-                // The only reason where one would not create such a record would be Setup,
-                // when no database exists to store the record but still wants to schedule a recipe step (such as the "StopViewsBackgroundCompilationStep").
-                return;
-            }
+            var stepResultRecord = stepResults
+                .First(record => 
+                    record.ExecutionId == recipeContext.ExecutionId &&
+                    record.StepId == recipeContext.RecipeStep.Id);
 
             stepResultRecord.IsCompleted = true;
-            stepResultRecord.IsSuccessful = isSuccessful;
-            stepResultRecord.ErrorMessage = errorMessage;
+            //stepResultRecord.IsSuccessful = true;
+            //stepResultRecord.ErrorMessage = string.Empty;
 
             _session.Save(stepResultRecord);
-            _session.CommitAsync().Wait();
+            await _session.CommitAsync();
         }
     }
 }

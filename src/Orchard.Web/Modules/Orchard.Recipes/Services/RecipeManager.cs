@@ -12,94 +12,39 @@ namespace Orchard.Recipes.Services
 {
     public class RecipeManager : IRecipeManager
     {
-        private readonly IRecipeStepQueue _recipeStepQueue;
-        private readonly IRecipeScheduler _recipeScheduler;
-        private readonly IRecipeParser _recipeParser;
-        private readonly IOrchardFileSystem _fileSystem;
-        private readonly IEventBus _eventBus;
-        private readonly ISession _session;
+        private readonly IRecipeExecutor _recipeExecutor;
+        private readonly IRecipeQueue _recipeQueue;
+
         private readonly ILogger _logger;
 
-        private readonly ContextState<string> _executionIds = new ContextState<string>("executionid");
-
         public RecipeManager(
-            IRecipeStepQueue recipeStepQueue,
-            IRecipeScheduler recipeScheduler,
-            IRecipeParser recipeParser,
-            IOrchardFileSystem fileSystem,
-            IEventBus eventBus,
-            ISession session,
+            IRecipeExecutor recipeExecutor,
+            IRecipeQueue recipeQueue,
             ILogger<RecipeManager> logger)
         {
-            _recipeStepQueue = recipeStepQueue;
-            _recipeScheduler = recipeScheduler;
-            _recipeParser = recipeParser;
-            _fileSystem = fileSystem;
-            _eventBus = eventBus;
-            _session = session;
+            _recipeExecutor = recipeExecutor;
+            _recipeQueue = recipeQueue;
+
             _logger = logger;
         }
 
-        public async Task<string> ExecuteAsync(RecipeDescriptor recipeDescriptor)
+        public async Task ExecuteAsync(string executionId)
+        {
+            // todo (ngm) check if recipe enqueued
+
+            await _recipeExecutor.ExecuteAsync(executionId);
+        }
+
+        public async Task<string> EnqueueAsync(RecipeDescriptor recipeDescriptor)
         {
             var executionId = Guid.NewGuid().ToString("n");
 
-            _executionIds.SetState(executionId);
-
-            _logger.LogInformation("Executing recipe '{0}'.", recipeDescriptor.Name);
-            try
-            {
-                _eventBus.NotifyAsync<IRecipeExecuteEventHandler>(x => 
-                    x.ExecutionStartAsync(executionId, recipeDescriptor)).Wait();
-
-                await EnqueueAsync(executionId, recipeDescriptor);
-
-                await _recipeScheduler.ScheduleWorkAsync(executionId);
-
-                return executionId;
-            }
-            finally
-            {
-                _executionIds.SetState(null);
-            }
+            return await EnqueueAsync(executionId, recipeDescriptor);
         }
 
-        public async Task EnqueueAsync(RecipeDescriptor recipeDescriptor)
+        public async Task<string> EnqueueAsync(string executionId, RecipeDescriptor recipeDescriptor)
         {
-            var executionId = Guid.NewGuid().ToString("n");
-
-            _executionIds.SetState(executionId);
-            try
-            {
-                await EnqueueAsync(executionId, recipeDescriptor);
-            }
-            finally
-            {
-                _executionIds.SetState(null);
-            }
-        }
-
-        public async Task EnqueueAsync(string executionId, RecipeDescriptor recipeDescriptor)
-        {
-            _recipeParser.ProcessRecipe(
-                _fileSystem.GetFileInfo(recipeDescriptor.Location), async (recipe, recipeStep) =>
-                {
-                    await ExecuteRecipeStepAsync(executionId, recipe, recipeStep);
-                });
-
-            await _session.CommitAsync();
-        }
-
-        public async Task ExecuteRecipeStepAsync(string executionId, RecipeDescriptor recipe, RecipeStepDescriptor recipeStep)
-        {
-            await _recipeStepQueue.EnqueueAsync(executionId, recipeStep);
-            _session.Save(new RecipeStepResult
-            {
-                ExecutionId = executionId,
-                StepId = recipeStep.Id,
-                RecipeName = recipe.Name,
-                StepName = recipeStep.Name
-            });
+            return await _recipeQueue.EnqueueAsync(executionId, recipeDescriptor);
         }
     }
 }
