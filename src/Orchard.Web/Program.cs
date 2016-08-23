@@ -1,8 +1,8 @@
 ﻿using System.IO;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Orchard.Hosting;
 using Orchard.Web;
-using System.Threading;
 
 namespace Orchard.Console
 {
@@ -16,7 +16,6 @@ namespace Orchard.Console
                 .UseIISIntegration()
                 .UseKestrel()
                 .UseContentRoot(currentDirectory)
-                .UseWebRoot(currentDirectory)
                 .UseStartup<Startup>()
                 .Build();
 
@@ -27,9 +26,9 @@ namespace Orchard.Console
                     host.Run((services) =>
                     {
                         var orchardHost = new OrchardHost(
-                            services, 
-                            System.Console.In, 
-                            System.Console.Out, 
+                            services,
+                            System.Console.In,
+                            System.Console.Out,
                             args);
 
                         orchardHost

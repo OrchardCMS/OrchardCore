@@ -1,53 +1,86 @@
 ﻿@using Orchard.Setup.Controllers
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @model Orchard.Setup.ViewModels.SetupViewModel
-<html>
-<head>
-    <title>Get Started</title>
-</head>
-<body>
-    @using (Html.BeginForm())
-    {
-        Model.DatabaseProvider = "SqlConnection";
 
-        <h2>Please answer a few questions to configure your site.</h2>
-        <fieldset class="site">
-            <div>
-                <label for="SiteName">What is the name of your site?</label>
-                @Html.TextBoxFor(svm => svm.SiteName, new { autofocus = "autofocus" })
-            </div>
-            <div>
-                <label for="DatabaseProvider">What type of database to use?</label>
-                @Html.TextBoxFor(svm => svm.DatabaseProvider)
-            </div>
-            <div>
-                <label for="ConnectionString">Connection string</label>
-                @Html.TextBoxFor(svm => svm.ConnectionString)
-            </div>
-            <div>
-                <label for="TablePrefix">Table Prefix</label>
-                @Html.TextBoxFor(svm => svm.TablePrefix)
-            </div>
-            <div>
-                <label for="AdminUserName">Super user</label>
-                @Html.TextBoxFor(svm => svm.AdminUserName)
-            </div>
-            <div>
-                <label for="AdminUserName">Super user email</label>
-                @Html.TextBoxFor(svm => svm.AdminEmail)
-            </div>
-            <div>
-                <label for="Password">Password</label>
-                @Html.PasswordFor(svm => svm.Password)
-            </div>
-            <div>
-                <label for="Password">Password Confirmation</label>
-                @Html.PasswordFor(svm => svm.PasswordConfirmation)
-            </div>
-        </fieldset>
+<form asp-action="Index">
 
-        <fieldset>
-            <button class="primaryAction setupButton" type="submit">Finish Setup</button>
-        </fieldset>
-    }
-</body>
-</html>
+    <div class="jumbotron">
+        <h1>SETUP</h1>
+        <p class="lead">@T["Please answer a few questions to configure your site."]</p>
+    </div>
+
+    <fieldset class="form-group" asp-validation-class-for="SiteName">
+        <div class="row col-md-6">
+            <label asp-for="SiteName">@T["What is the name of your site?"]</label>
+            <span asp-validation-for="SiteName" class="text-danger">@T["This site name is required."]</span>
+            <input asp-for="SiteName" class="form-control" autofocus />
+            <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
+        </div>
+    </fieldset>
+
+    <h6>
+        Database
+        <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
+    </h6>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+            <select asp-for="DatabaseProvider" class="form-control">
+                @foreach (var provider in Model.DatabaseProviders)
+                {
+                <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+            <input asp-for="TablePrefix" class="form-control" />
+        </div>
+    </div>
+
+    <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
+        <div class="form-group col-xs-12">
+            <label asp-for="ConnectionString">@T["Connection string"]</label>
+            <span asp-validation-for="ConnectionString" class="text-danger"></span>
+            <input asp-for="ConnectionString" class="form-control" />
+            <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
+        </div>
+    </fieldset>
+
+    <h6>
+        Super User
+        <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
+    </h6>
+    <div class="row">
+        <div class="form-group col-md-6" asp-validation-class-for="AdminUserName">
+            <label asp-for="AdminUserName">@T["User name"]</label>
+            <span asp-validation-for="AdminUserName" class="text-danger">@T["The user name is required."]</span>
+            <input asp-for="AdminUserName" class="form-control" />
+        </div>
+        <div class="form-group col-md-6" asp-validation-class-for="AdminEmail">
+            <label for="AdminEmail">@T["Email"]</label>
+            <span asp-validation-for="AdminEmail" class="text-danger">@T["The email is invalid."]</span>
+            <input asp-for="AdminEmail" class="form-control" type="email"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-6" asp-validation-class-for="Password">
+            <label asp-for="Password">@T["Password"]</label>
+            <span asp-validation-for="Password" class="text-danger">@T["The password is required."]</span>
+            <input asp-for="Password" type="password" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
+            <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
+            <span asp-validation-for="PasswordConfirmation" class="text-danger">@T["The password confirmation is required."]</span>
+            <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+        </div>
+    </div>
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Finish Setup"]</button>
+        </div>
+    </fieldset>
+</form>

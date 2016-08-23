@@ -2,9 +2,9 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/scss/TheAdmin.scss"
+      "Assets/scss/setup.scss"
     ],
-    "output": "Styles/TheAdmin.css"
+    "output": "Styles/setup.css"
   },
   {
     "inputs": [
@@ -13,6 +13,6 @@
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
     ],
-    "output": "Scripts/TheAdmin.js"
+    "output": "Scripts/setup.js"
   }
 ]

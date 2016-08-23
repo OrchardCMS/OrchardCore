@@ -1,8 +1,5 @@
 // Custom variables
 
-$font-family-sans-serif: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-family-monospace: Consolas, Menlo, Monaco, "Courier New", monospace;
-
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
@@ -79,6 +76,10 @@ label .field-validation-error::before {
 
 .button {
     @extend .btn, .btn-primary;
+}
+
+.field-validation-valid {
+    display: none;
 }
 
 // Toolbar
