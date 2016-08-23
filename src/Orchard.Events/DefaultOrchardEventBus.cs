@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Reflection;
-using System.Linq.Expressions;
-using System.Linq;
+using System.Threading.Tasks;
 using Orchard.DependencyInjection;
 
 namespace Orchard.Events
@@ -70,7 +68,21 @@ namespace Orchard.Events
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 var parameterName = methodParameters[i].Name;
-                parameters[i] = arguments[parameterName];
+
+                // If the requested parameter is not present in the original call, just set null
+                object value = null;
+                if (!arguments.TryGetValue(parameterName, out value))
+                {
+                    var parameterType = methodParameters[i].ParameterType;
+                    if (parameterType.GetTypeInfo().IsValueType)
+                    {
+                        value = Activator.CreateInstance(parameterType);
+                    }
+
+                    value = null;
+                }
+
+                parameters[i] = value;
             }
 
             var result = methodInfo.Invoke(service, parameters) as Task;
