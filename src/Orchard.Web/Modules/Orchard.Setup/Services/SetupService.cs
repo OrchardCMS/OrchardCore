@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using Orchard.Data.Migration;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
@@ -15,7 +14,6 @@ using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -189,6 +187,9 @@ namespace Orchard.Setup.Services
                 }
             }
 
+            shellSettings.State = TenantState.Running;
+            _orchardHost.UpdateShellSettings(shellSettings);
+
             return executionId;
         }
 
@@ -200,20 +201,7 @@ namespace Orchard.Setup.Services
             var recipeManager = scope.ServiceProvider.GetService<IRecipeManager>();
 
             var recipe = context.Recipe;
-            var executionId = await recipeManager.EnqueueAsync(recipe);
-
-            // Once the recipe has finished executing, we need to update the shell state to "Running", so add a recipe step that does exactly that.
-            var recipeStepQueue = scope.ServiceProvider.GetService<IRecipeStepQueue>();
-            var activateShellStep = new RecipeStepDescriptor
-            {
-                Id = Guid.NewGuid().ToString("N"),
-                RecipeName = recipe.Name,
-                Name = "ActivateShell",
-                Step = new JProperty("name", "ActivateShell")
-            };
-
-            await recipeStepQueue.EnqueueAsync(executionId, activateShellStep);
-            await recipeManager.ExecuteAsync(executionId);
+            var executionId = await recipeManager.ExecuteAsync(recipe);
 
             // Must mark state as Running - otherwise standalone enviro is created "for setup"
             return executionId;

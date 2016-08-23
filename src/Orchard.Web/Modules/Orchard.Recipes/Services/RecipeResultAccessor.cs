@@ -15,7 +15,7 @@ namespace Orchard.Recipes.Services
         public async Task<RecipeResult> GetResultAsync(string executionId)
         {
             return await _session
-                .QueryAsync<RecipeResult, RecipeByExecutionIdIndex>(x => x.ExecutionId == executionId)
+                .QueryAsync<RecipeResult, RecipeResultIndex>(x => x.ExecutionId == executionId)
                 .FirstOrDefault();
         }
     }

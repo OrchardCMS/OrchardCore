@@ -6,6 +6,7 @@ using Orchard.FileSystem;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
@@ -48,12 +49,33 @@ namespace Orchard.Recipes.Services
                 {
                     using (var stream = _fileSystem.GetFileInfo(recipeDescriptor.Location).CreateReadStream())
                     {
+                        RecipeResult result = new RecipeResult {
+                            ExecutionId = executionId
+                        };
+                        List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
+                        _recipeParser.ProcessRecipe(
+                            stream
+                            , (recipe, recipeStep) =>
+                            {
+                                // TODO, create Result prior to run
+                                stepResults.Add(new RecipeStepResult
+                                {
+                                    ExecutionId = executionId,
+                                    RecipeName = recipeDescriptor.Name,
+                                    StepId = recipeStep.Id,
+                                    StepName = recipeStep.Name
+                                });
+                            });
+                        result.Steps = stepResults;
+                        _session.Save(result);
+                    }
+
+                    using (var stream = _fileSystem.GetFileInfo(recipeDescriptor.Location).CreateReadStream())
+                    {
                         _recipeParser.ProcessRecipe(
                             stream
                             , async (recipe, recipeStep) =>
                             {
-                                // TODO, create Result prior to run
-
                                 await _recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
                             });
                     }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Modules.Recipes.Executors;
-using Orchard.Recipes.Services;
+using Orchard.Recipes;
 
 namespace Orchard.Modules
 {
@@ -11,7 +11,7 @@ namespace Orchard.Modules
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRecipeExecutionStep, FeatureStep>();
+            services.AddRecipeExecutionStep<FeatureStep>();
         }
     }
 }

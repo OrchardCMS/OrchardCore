@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using System;
@@ -12,18 +13,21 @@ namespace Orchard.Recipes.Providers.RecipeHandlers
     /// </summary>
     public class RecipeExecutionStepHandler : IRecipeHandler
     {
-        private readonly IEnumerable<IRecipeExecutionStep> _recipeExecutionSteps;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
-        public RecipeExecutionStepHandler(IEnumerable<IRecipeExecutionStep> recipeExecutionSteps,
+        public RecipeExecutionStepHandler(
+            IServiceProvider serviceProvider,
             ILogger<RecipeExecutionStepHandler> logger)
         {
-            _recipeExecutionSteps = recipeExecutionSteps;
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
         public void ExecuteRecipeStep(RecipeContext recipeContext)
         {
-            var executionStep = _recipeExecutionSteps
+            var recipeExecutionSteps = _serviceProvider.GetServices<IRecipeExecutionStep>();
+
+            var executionStep = recipeExecutionSteps
                 .FirstOrDefault(x => x.Names.Contains(recipeContext.RecipeStep.Name, StringComparer.OrdinalIgnoreCase));
 
             if (executionStep != null)

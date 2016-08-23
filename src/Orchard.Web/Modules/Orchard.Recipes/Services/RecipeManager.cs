@@ -28,5 +28,12 @@ namespace Orchard.Recipes.Services
 
             return executionId;
         }
+
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor)
+        {
+            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor);
+
+            return executionId;
+        }
     }
 }

@@ -29,8 +29,8 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();
 
-            services.AddRecipeExecutionStep<ActivateShellStep>();
             services.AddRecipeExecutionStep<CommandStep>();
+            services.AddRecipeExecutionStep<RecipesStep>();
 
             services.AddRecipeOptions();
             services.AddRecipeExtension<JsonRecipeParser>("*.recipe.json");

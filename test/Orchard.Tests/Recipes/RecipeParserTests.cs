@@ -62,7 +62,7 @@ namespace Orchard.Tests.Configuration
         public void ShouldParseRecipeDescriptor()
         {
             var parser = new JsonRecipeParser();
-            var descriptor = parser.ParseRecipe(_fileInfo);
+            var descriptor = parser.ParseRecipe(_fileInfo.CreateReadStream());
             Assert.Equal("core", descriptor.Name);
             Assert.Equal("core descriptor.", descriptor.Description);
             Assert.Equal("The Orchard Team", descriptor.Author);
@@ -79,7 +79,7 @@ namespace Orchard.Tests.Configuration
             var recipeParser = new JsonRecipeParser();
 
             List<RecipeStepDescriptor> recipeSteps = new List<RecipeStepDescriptor>();
-            recipeParser.ProcessRecipe(_fileInfo, (descripor, stepDescriptor) => {
+            recipeParser.ProcessRecipe(_fileInfo.CreateReadStream(), (descripor, stepDescriptor) => {
                 recipeSteps.Add(stepDescriptor);
             });
 

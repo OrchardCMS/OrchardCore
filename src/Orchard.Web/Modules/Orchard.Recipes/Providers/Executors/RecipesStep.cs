@@ -55,7 +55,7 @@ namespace Orchard.Recipes.Providers.Executors
                         throw new Exception(string.Format("No recipe named '{0}' was found in extension '{1}'.", recipe.Name, recipe.ExecutionId));
                     }
 
-                    _recipeManager.EnqueueAsync(context.ExecutionId, recipes[recipe.Name]).Wait();
+                    _recipeManager.ExecuteAsync(context.ExecutionId, recipes[recipe.Name]).Wait();
                 }
                 catch
                 {
