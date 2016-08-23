@@ -13,5 +13,6 @@ namespace Orchard.Setup.Services
         public string DatabaseTablePrefix { get; set; }
         public IEnumerable<string> EnabledFeatures { get; set; }
         public string Recipe { get; set; }
+        public IDictionary<string, string> Errors { get; set; }
     }
 }

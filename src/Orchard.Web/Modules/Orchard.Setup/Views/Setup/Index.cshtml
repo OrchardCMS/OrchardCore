@@ -32,8 +32,9 @@
                 }
             </select>
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
             <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+            <span asp-validation-for="TablePrefix" class="text-danger"></span>
             <input asp-for="TablePrefix" class="form-control" />
         </div>
     </div>
@@ -67,13 +68,13 @@
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Password">
             <label asp-for="Password">@T["Password"]</label>
-            <span asp-validation-for="Password" class="text-danger">@T["The password is required."]</span>
+            <span asp-validation-for="Password" class="text-danger"></span>
             <input asp-for="Password" type="password" class="form-control" />
         </div>
 
         <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
             <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <span asp-validation-for="PasswordConfirmation" class="text-danger">@T["The password confirmation is required."]</span>
+            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             <input asp-for="PasswordConfirmation" type="password" class="form-control" />
         </div>
     </div>

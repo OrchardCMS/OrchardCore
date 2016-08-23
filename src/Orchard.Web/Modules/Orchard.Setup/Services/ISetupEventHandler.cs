@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Orchard.Events;
 
 namespace Orchard.Setup.Services
@@ -15,6 +16,8 @@ namespace Orchard.Setup.Services
             string password,
             string dbProvider,
             string dbConnectionString,
-            string dbTablePrefix);
+            string dbTablePrefix,
+            Action<string, string> reportError
+            );
     }
 }

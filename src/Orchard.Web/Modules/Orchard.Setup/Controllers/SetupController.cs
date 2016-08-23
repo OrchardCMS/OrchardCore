@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Orchard.Environment.Shell;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Controllers
 {
@@ -54,6 +55,16 @@ namespace Orchard.Setup.Controllers
                 ModelState.AddModelError("ConnectionString", T["The connection string is mandatory for this provider"]);
             }
 
+            if (String.IsNullOrEmpty(model.Password))
+            {
+                ModelState.AddModelError(nameof(model.Password), T["The password is required"]);
+            }
+
+            if (model.Password != model.PasswordConfirmation)
+            {
+                ModelState.AddModelError(nameof(model.PasswordConfirmation), T["The password confirmation doesn't match the password."]);
+            }
+
             if (!ModelState.IsValid)
             {
                 return IndexViewResult(model);
@@ -68,10 +79,22 @@ namespace Orchard.Setup.Controllers
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.AdminUserName,
                 AdminEmail = model.AdminEmail,
-                AdminPassword = model.Password
+                AdminPassword = model.Password,
+                Errors = new Dictionary<string, string>()
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
+
+            // Check if a component in the Setup failed
+            if (setupContext.Errors.Any())
+            {
+                foreach (var error in setupContext.Errors)
+                {
+                    ModelState.AddModelError(error.Key, error.Value);
+                }
+
+                return IndexViewResult(model);
+            }
 
             var urlPrefix = "";
             if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))

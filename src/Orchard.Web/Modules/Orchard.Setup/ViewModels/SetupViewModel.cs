@@ -24,13 +24,10 @@ namespace Orchard.Setup.ViewModels
         [EmailAddress]
         public string AdminEmail { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
-        [Compare("Password")]
         public string PasswordConfirmation { get; set; }
 
         public IEnumerable<DatabaseProviderEntry> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProviderEntry>();

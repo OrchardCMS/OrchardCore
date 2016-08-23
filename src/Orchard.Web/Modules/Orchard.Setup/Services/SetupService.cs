@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration;
 using Orchard.DeferredTasks;
@@ -113,7 +114,20 @@ namespace Orchard.Setup.Services
                     executionId = CreateTenantData(context, shellContext);
 
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
-                    await store.InitializeAsync();
+
+                    try
+                    {
+                        await store.InitializeAsync();
+                    }
+                    catch
+                    {
+                        // Tables already exist or database was not found
+
+                        // The issue is that the user creation needs the tables to be present,
+                        // if the user information is not valid, the next POST will try to recreate the
+                        // tables. The tables should be rollbacked if one of the steps is invalid,
+                        // unless the recipe is executing?
+                    }
 
                     // Create the "minimum shell descriptor"
                     await scope
@@ -124,7 +138,7 @@ namespace Orchard.Setup.Services
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
 
-                   // Apply all migrations for the newly initialized tenant
+                    // Apply all migrations for the newly initialized tenant
                     var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
                     await dataMigrationManager.UpdateAllFeaturesAsync();
 
@@ -136,6 +150,13 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
 
+                    bool hasErrors = false;
+
+                    Action<string, string> reportError = (key, message) => {
+                        hasErrors = true;
+                        context.Errors[key] = message;
+                    };
+
                     // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
                     await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
@@ -145,8 +166,18 @@ namespace Orchard.Setup.Services
                         context.AdminPassword,
                         context.DatabaseProvider,
                         context.DatabaseConnectionString,
-                        context.DatabaseTablePrefix)
-                    );
+                        context.DatabaseTablePrefix,
+                        reportError
+                    ));
+
+                    if (hasErrors)
+                    {
+                        // TODO: check why the tables creation is not reverted
+                        var session = scope.ServiceProvider.GetService<YesSql.Core.Services.ISession>();
+                        session.Cancel();
+
+                        return executionId;
+                    }
 
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
