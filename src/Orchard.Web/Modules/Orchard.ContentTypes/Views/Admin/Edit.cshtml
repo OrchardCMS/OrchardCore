@@ -53,12 +53,12 @@
         <ul class="list-group sortable" id="parts">
             @foreach (var part in orderedParts)
             {
-                <li class="list-group-item">
+                <li class="list-group-item @(part == typePart ? " bg-faded" : null)" >
                     @part.DisplayName()
 
                     @if (part != typePart)
                     {
-                        @if (!String.IsNullOrEmpty(part.Description()))
+                    @if (!String.IsNullOrEmpty(part.Description()))
                         {
                             <span class="hint">@T["— {0}", part.Description()]</span>
                         }

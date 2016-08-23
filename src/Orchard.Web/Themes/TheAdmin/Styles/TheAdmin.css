@@ -1516,7 +1516,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 .form-group {
   margin-bottom: 1rem; }
 
-.form-text, .hint {
+.form-text {
   display: block;
   margin-top: 0.25rem; }
 

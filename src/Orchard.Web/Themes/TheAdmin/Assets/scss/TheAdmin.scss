@@ -49,7 +49,7 @@ $left-navigation-expand-width: 15em;
 // -----------------------------
 
 .hint {
-    @extend .small, .form-text, .text-muted;
+    @extend .small, .text-muted;
 }
 
 .validation-summary-errors {
