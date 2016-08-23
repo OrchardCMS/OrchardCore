@@ -29,11 +29,11 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();
 
-            services.AddScoped<IRecipeExecutionStep, ActivateShellStep>();
-            services.AddScoped<IRecipeExecutionStep, CommandStep>();
+            services.AddRecipeExecutionStep<ActivateShellStep>();
+            services.AddRecipeExecutionStep<CommandStep>();
 
             services.AddRecipeOptions();
-            services.AddRecipeExtension("*.recipe.json", typeof(JsonRecipeParser));
+            services.AddRecipeExtension<JsonRecipeParser>("*.recipe.json");
         }
     }
 }
