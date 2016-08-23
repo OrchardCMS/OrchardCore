@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using Orchard.Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeStepExecutor
     {
-        Task<bool> ExecuteNextStepAsync(string executionId);
+        Task ExecuteAsync(string executionId, RecipeStepDescriptor recipeStep);
     }
 }

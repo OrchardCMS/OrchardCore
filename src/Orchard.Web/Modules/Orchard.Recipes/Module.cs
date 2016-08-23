@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Commands;
 using Orchard.Recipes.Providers.Executors;
 using Orchard.Recipes.Providers.RecipeHandlers;
 using Orchard.Recipes.Services;
@@ -19,14 +18,14 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeManager, RecipeManager>();
             {
-                services.AddScoped<IRecipeQueue, RecipeQueue>();
                 services.AddScoped<IRecipeExecutor, RecipeExecutor>();
                 {
                     services.AddScoped<IRecipeParser, JsonRecipeParser>();
-                    services.AddScoped<IRecipeStepQueue, RecipeStepQueue>();
                     services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
                 }
             }
+
+            services.AddScoped<IRecipeResultAccessor, RecipeResultAccessor>();
 
             services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();
 

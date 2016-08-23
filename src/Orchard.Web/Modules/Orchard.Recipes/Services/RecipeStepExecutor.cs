@@ -13,21 +13,18 @@ namespace Orchard.Recipes.Services
 {
     public class RecipeStepExecutor : IRecipeStepExecutor
     {
-        private readonly IRecipeStepQueue _recipeStepQueue;
         private readonly IEnumerable<IRecipeHandler> _recipeHandlers;
         private readonly IEventBus _eventBus;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
         public RecipeStepExecutor(
-            IRecipeStepQueue recipeStepQueue,
             IEnumerable<IRecipeHandler> recipeHandlers,
             IEventBus eventBus,
             ISession session,
             ILogger<RecipeStepExecutor> logger,
             IStringLocalizer<RecipeStepExecutor> localizer)
         {
-            _recipeStepQueue = recipeStepQueue;
             _recipeHandlers = recipeHandlers;
             _eventBus = eventBus;
             _session = session;
@@ -38,21 +35,13 @@ namespace Orchard.Recipes.Services
 
         public IStringLocalizer T { get; }
 
-        public async Task<bool> ExecuteNextStepAsync(string executionId)
+        public async Task ExecuteAsync(string executionId, RecipeStepDescriptor recipeStep)
         {
-            var nextRecipeStep = await _recipeStepQueue.DequeueAsync(executionId);
-            if (nextRecipeStep == null)
-            {
-                _logger.LogInformation("No more recipe steps left to execute.");
-
-                return false;
-            }
-
-            _logger.LogInformation("Executing recipe step '{0}'.", nextRecipeStep.Name);
+            _logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
 
             var recipeContext = new RecipeContext
             {
-                RecipeStep = nextRecipeStep,
+                RecipeStep = recipeStep,
                 Executed = false,
                 ExecutionId = executionId
             };
@@ -60,33 +49,47 @@ namespace Orchard.Recipes.Services
             _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
                 e.RecipeStepExecutingAsync(executionId, recipeContext));
 
-            _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
+            try
+            {
+                _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
 
-            await UpdateStepResultRecordAsync(recipeContext);
+                await UpdateStepResultRecordAsync(recipeContext, true);
 
-            _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
-                e.RecipeStepExecutedAsync(executionId, recipeContext));
+                _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
+                    e.RecipeStepExecutedAsync(executionId, recipeContext));
+            }
+            catch (Exception ex)
+            {
+                await UpdateStepResultRecordAsync(recipeContext, true, ex);
 
-            return true;
+                throw;
+            }
+
         }
 
-        private async Task UpdateStepResultRecordAsync(RecipeContext recipeContext)
+        private async Task UpdateStepResultRecordAsync(
+            RecipeContext recipeContext,
+            bool IsSuccessful,
+            Exception exception = null)
         {
             var stepResults = await _session
-                .QueryAsync<RecipeStepResult>()
+                .QueryAsync<RecipeResult>()
                 .List();
 
-            var stepResultRecord = stepResults
+            var recipeResult = stepResults
                 .First(record => 
-                    record.ExecutionId == recipeContext.ExecutionId &&
-                    record.StepId == recipeContext.RecipeStep.Id);
+                    record.ExecutionId == recipeContext.ExecutionId);
 
-            stepResultRecord.IsCompleted = true;
-            //stepResultRecord.IsSuccessful = true;
-            //stepResultRecord.ErrorMessage = string.Empty;
+            var recipeStepResult = recipeResult
+                .Steps
+                .First(step => 
+                    step.StepId == recipeContext.RecipeStep.Id);
 
-            _session.Save(stepResultRecord);
-            await _session.CommitAsync();
+            recipeStepResult.IsCompleted = true;
+            recipeStepResult.IsSuccessful = IsSuccessful;
+            recipeStepResult.ErrorMessage = exception?.ToString();
+
+            _session.Save(recipeResult);
         }
     }
 }
