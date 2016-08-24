@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Events;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Recipes.Services
@@ -46,8 +46,7 @@ namespace Orchard.Recipes.Services
                 ExecutionId = executionId
             };
 
-            _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
-                e.RecipeStepExecutingAsync(executionId, recipeContext));
+            _eventBus.Notify<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
 
             try
             {
@@ -55,8 +54,7 @@ namespace Orchard.Recipes.Services
 
                 await UpdateStepResultRecordAsync(recipeContext, true);
 
-                _eventBus.Notify<IRecipeExecuteEventHandler>(e =>
-                    e.RecipeStepExecutedAsync(executionId, recipeContext));
+                _eventBus.Notify<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
             }
             catch (Exception ex)
             {
@@ -77,13 +75,11 @@ namespace Orchard.Recipes.Services
                 .List();
 
             var recipeResult = stepResults
-                .First(record => 
-                    record.ExecutionId == recipeContext.ExecutionId);
+                .First(record => record.ExecutionId == recipeContext.ExecutionId);
 
             var recipeStepResult = recipeResult
                 .Steps
-                .First(step => 
-                    step.StepId == recipeContext.RecipeStep.Id);
+                .First(step => step.StepId == recipeContext.RecipeStep.Id);
 
             recipeStepResult.IsCompleted = true;
             recipeStepResult.IsSuccessful = IsSuccessful;

@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Orchard.Recipes.Models;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Orchard.Recipes.Models;
 
 namespace Orchard.Recipes.Services
 {
@@ -18,20 +19,20 @@ namespace Orchard.Recipes.Services
             return serializer.Deserialize<RecipeDescriptor>(reader);
         }
 
-        public void ProcessRecipe(
+        public Task ProcessRecipeAsync(
             Stream recipeStream,
-            Action<RecipeDescriptor, RecipeStepDescriptor> stepAction)
+            Func<RecipeDescriptor, RecipeStepDescriptor, Task> stepActionAsync)
         {
             var descriptor = ParseRecipe(recipeStream);
 
             recipeStream.Position = 0;
-            ParseSteps(recipeStream, descriptor, stepAction);
+            return ParseStepsAsync(recipeStream, descriptor, stepActionAsync);
         }
 
-        private void ParseSteps(
+        private async Task ParseStepsAsync(
             Stream stream,
             RecipeDescriptor descriptor,
-            Action<RecipeDescriptor, RecipeStepDescriptor> stepAction)
+            Func<RecipeDescriptor, RecipeStepDescriptor, Task> stepActionAsync)
         {
             var serializer = new JsonSerializer();
 
@@ -49,7 +50,7 @@ namespace Orchard.Recipes.Services
                         if (reader.Depth == 2)
                         {
                             var child = JToken.Load(reader);
-                            stepAction(descriptor, new RecipeStepDescriptor
+                            await stepActionAsync(descriptor, new RecipeStepDescriptor
                             {
                                 Id = (stepId++).ToString(CultureInfo.InvariantCulture),
                                 RecipeName = descriptor.Name,

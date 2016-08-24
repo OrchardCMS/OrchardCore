@@ -16,9 +16,9 @@
     "Orchard.Parser.Yaml": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
     "Orchard.DeferredTasks": "2.0.0-*",
-    "YesSql.Core": "2.0.0-alpha-9027",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1013",
-    "YesSql.Storage.LightningDB": "1.0.0-alpha-1010"
+    "YesSql.Core": "2.0.0-*",
+    "YesSql.Storage.Sql": "1.0.0-*",
+    "YesSql.Storage.LightningDB": "1.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

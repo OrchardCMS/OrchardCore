@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
+using System;
 
 namespace Orchard.Setup.Services
 {
@@ -111,7 +112,7 @@ namespace Orchard.Setup.Services
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             _shellSettings.State = TenantState.Initializing;
-            
+
             var shellSettings = new ShellSettings(_shellSettings);
 
             if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
@@ -178,7 +179,7 @@ namespace Orchard.Setup.Services
                         context.DatabaseConnectionString,
                         context.DatabaseTablePrefix)
                     );
-                    
+
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
@@ -194,16 +195,26 @@ namespace Orchard.Setup.Services
         }
 
         private async Task<string> CreateTenantDataAsync(
-            IServiceScope scope, 
-            SetupContext context, 
+            IServiceScope scope,
+            SetupContext context,
             ShellContext shellContext)
         {
-            var recipeManager = scope.ServiceProvider.GetService<IRecipeManager>();
+            var executionId = Guid.NewGuid().ToString("n");
 
-            var recipe = context.Recipe;
-            var executionId = await recipeManager.ExecuteAsync(recipe);
+            // Create a new scope for the recipe thread to prevent race issues with other scoped
+            // services from the request.
+            using (var recipeScope = shellContext.CreateServiceScope())
+            {
+                var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
-            // Must mark state as Running - otherwise standalone enviro is created "for setup"
+                // Right now we run the recipe in the same thread, later use polling from the setup screen
+                // to query the current execution.
+                //await Task.Run(async () =>
+                //{
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
+                //});
+            }
+
             return executionId;
         }
     }

@@ -16,13 +16,10 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
 
-            services.AddScoped<IRecipeManager, RecipeManager>();
+            services.AddScoped<IRecipeExecutor, RecipeExecutor>();
             {
-                services.AddScoped<IRecipeExecutor, RecipeExecutor>();
-                {
-                    services.AddScoped<IRecipeParser, JsonRecipeParser>();
-                    services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
-                }
+                services.AddScoped<IRecipeParser, JsonRecipeParser>();
+                services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
             }
 
             services.AddScoped<IRecipeResultAccessor, RecipeResultAccessor>();

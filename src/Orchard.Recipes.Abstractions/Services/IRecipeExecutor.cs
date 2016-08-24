@@ -5,6 +5,6 @@ namespace Orchard.Recipes.Services
 {
     public interface IRecipeExecutor
     {
-        Task ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor);
+        Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor);
     }
 }

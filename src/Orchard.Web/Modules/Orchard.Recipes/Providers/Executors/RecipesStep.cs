@@ -1,21 +1,21 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.Recipes.Providers.Executors
 {
     public class RecipesStep : RecipeExecutionStep
     {
         private readonly IRecipeHarvester _recipeHarvester;
-        private readonly IRecipeManager _recipeManager;
+        private readonly IRecipeExecutor _recipeManager;
 
         public RecipesStep(
             IRecipeHarvester recipeHarvester,
-            IRecipeManager recipeManager,
+            IRecipeExecutor recipeManager,
             ILoggerFactory logger,
             IStringLocalizer<RecipesStep> localizer) : base(logger, localizer)
         {
@@ -32,14 +32,15 @@ namespace Orchard.Recipes.Providers.Executors
             "recipes": [
                 { "executionid": "Orchard.Setup", name="Core" }
             ]
-         } 
+         }
         */
         public override void Execute(RecipeExecutionContext context)
         {
             var step = context.RecipeStep.Step.ToObject<InternalStep>();
             var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
 
-            foreach (var recipe in step.Values) {
+            foreach (var recipe in step.Values)
+            {
                 Logger.LogInformation("Executing recipe '{0}' in extension '{1}'.", recipe.Name, recipe.ExecutionId);
 
                 try

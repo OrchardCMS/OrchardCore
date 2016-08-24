@@ -2,14 +2,15 @@
 using Orchard.Recipes.Models;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeParser
     {
         RecipeDescriptor ParseRecipe(Stream recipeStream);
-        void ProcessRecipe(
+        Task ProcessRecipeAsync(
             Stream recipeStream,
-            Action<RecipeDescriptor, RecipeStepDescriptor> action);
+            Func<RecipeDescriptor, RecipeStepDescriptor, Task> action);
     }
 }

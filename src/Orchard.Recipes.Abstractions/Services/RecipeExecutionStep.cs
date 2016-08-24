@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
-using System.Collections.Generic;
 
 namespace Orchard.Recipes.Services
 {
