@@ -160,7 +160,7 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
 
-                    executionId = await CreateTenantDataAsync(scope, context, shellContext);
+                    executionId = await CreateTenantDataAsync(context, shellContext);
 
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
@@ -195,7 +195,6 @@ namespace Orchard.Setup.Services
         }
 
         private async Task<string> CreateTenantDataAsync(
-            IServiceScope scope,
             SetupContext context,
             ShellContext shellContext)
         {
@@ -205,7 +204,7 @@ namespace Orchard.Setup.Services
             // services from the request.
             using (var recipeScope = shellContext.CreateServiceScope())
             {
-                var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
+                var recipeExecutor = recipeScope.ServiceProvider.GetService<IRecipeExecutor>();
 
                 // Right now we run the recipe in the same thread, later use polling from the setup screen
                 // to query the current execution.

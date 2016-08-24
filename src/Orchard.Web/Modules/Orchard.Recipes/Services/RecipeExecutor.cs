@@ -46,7 +46,7 @@ namespace Orchard.Recipes.Services
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor)
         {
-            _eventBus.Notify<IRecipeEventHandler>(x => x.RecipeExecutingAsync(executionId, recipeDescriptor));
+            await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.RecipeExecutingAsync(executionId, recipeDescriptor));
 
             try
             {
@@ -85,13 +85,13 @@ namespace Orchard.Recipes.Services
                     });
                 }
 
-                _eventBus.Notify<IRecipeEventHandler>(x => x.RecipeExecutedAsync(executionId, recipeDescriptor));
+                await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.RecipeExecutedAsync(executionId, recipeDescriptor));
 
                 return executionId;
             }
             catch (Exception)
             {
-                _eventBus.Notify<IRecipeEventHandler>(x => x.ExecutionFailedAsync(executionId, recipeDescriptor));
+                await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.ExecutionFailedAsync(executionId, recipeDescriptor));
 
                 throw;
             }

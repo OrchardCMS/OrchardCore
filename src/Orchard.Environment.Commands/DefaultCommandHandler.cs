@@ -17,10 +17,10 @@ namespace Orchard.Environment.Commands
         public IStringLocalizer T { get; set; }
         public CommandContext Context { get; set; }
 
-        public async Task ExecuteAsync(CommandContext context)
+        public Task ExecuteAsync(CommandContext context)
         {
             SetSwitchValues(context);
-            await InvokeAsync(context);
+            return InvokeAsync(context);
         }
 
         private void SetSwitchValues(CommandContext context)

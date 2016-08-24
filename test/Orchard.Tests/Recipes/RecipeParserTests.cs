@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Orchard.Tests.Configuration
 {
@@ -74,13 +75,14 @@ namespace Orchard.Tests.Configuration
         }
 
         [Fact]
-        public void ProcessingRecipeShouldYieldUniqueIdsForSteps()
+        public async Task ProcessingRecipeShouldYieldUniqueIdsForSteps()
         {
             var recipeParser = new JsonRecipeParser();
 
             List<RecipeStepDescriptor> recipeSteps = new List<RecipeStepDescriptor>();
-            recipeParser.ProcessRecipe(_fileInfo.CreateReadStream(), (descripor, stepDescriptor) => {
+            await recipeParser.ProcessRecipeAsync(_fileInfo.CreateReadStream(), (descripor, stepDescriptor) => {
                 recipeSteps.Add(stepDescriptor);
+                return Task.CompletedTask;
             });
 
             // Assert that each step has a unique ID.

@@ -46,23 +46,13 @@ namespace Orchard.Recipes.Services
                 ExecutionId = executionId
             };
 
-            _eventBus.Notify<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
+            await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
 
-            try
-            {
-                _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
+            _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
 
-                await UpdateStepResultRecordAsync(recipeContext, true);
+            await UpdateStepResultRecordAsync(recipeContext, true);
 
-                _eventBus.Notify<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
-            }
-            catch (Exception ex)
-            {
-                await UpdateStepResultRecordAsync(recipeContext, true, ex);
-
-                throw;
-            }
-
+            await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
         }
 
         private async Task UpdateStepResultRecordAsync(
@@ -70,6 +60,8 @@ namespace Orchard.Recipes.Services
             bool IsSuccessful,
             Exception exception = null)
         {
+            // TODO: bad pattern, use an index
+
             var stepResults = await _session
                 .QueryAsync<RecipeResult>()
                 .List();
