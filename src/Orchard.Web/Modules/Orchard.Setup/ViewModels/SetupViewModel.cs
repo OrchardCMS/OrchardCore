@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Orchard.Recipes.Models;
 using Orchard.Setup.Annotations;
 
 namespace Orchard.Setup.ViewModels
@@ -31,6 +32,10 @@ namespace Orchard.Setup.ViewModels
         public string PasswordConfirmation { get; set; }
 
         public IEnumerable<DatabaseProviderEntry> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProviderEntry>();
+
+        public IEnumerable<RecipeDescriptor> Recipes { get; set; }
+
+        public string RecipeName { get; set; }
     }
 
     public class DatabaseProviderEntry

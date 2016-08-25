@@ -1,4 +1,5 @@
-﻿using Orchard.Environment.Commands;
+﻿using Microsoft.Extensions.Localization;
+using Orchard.Environment.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -201,6 +202,8 @@ namespace Orchard.Tests.Commands
 
     public class StubCommandHandler : DefaultCommandHandler
     {
+        public StubCommandHandler() : base(null) { }
+
         [OrchardSwitch]
         public bool Verbose { get; set; }
 

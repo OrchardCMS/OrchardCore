@@ -12,17 +12,18 @@ namespace Orchard.Environment.Commands.Builtin
         private readonly IServiceProvider _serviceProvider;
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
 
-        public HelpCommand(IServiceProvider serviceProvider)
+        public HelpCommand(IServiceProvider serviceProvider,
+            IStringLocalizer<HelpCommand> localizer) : base (localizer)
         {
             _serviceProvider = serviceProvider;
         }
 
         [CommandName("help commands")]
-        [CommandHelp("help commands\r\n\tDisplay help text for all available commands")]
+        [CommandHelp("help commands", "\tDisplay help text for all available commands")]
         public async Task AllCommandsAsync()
         {
-            await Context.Output.WriteLineAsync(T("List of available commands:"));
-            await Context.Output.WriteLineAsync(T("---------------------------"));
+            await Context.Output.WriteLineAsync(T["List of available commands:"]);
+            await Context.Output.WriteLineAsync(T["---------------------------"]);
             await Context.Output.WriteLineAsync();
 
             var descriptors = GetCommandDescriptors().OrderBy(d => d.Names.First());
@@ -36,7 +37,7 @@ namespace Orchard.Environment.Commands.Builtin
 
 
         [CommandName("help")]
-        [CommandHelp("help <command>\r\n\tDisplay help text for <command>")]
+        [CommandHelp("help <command>", "\tDisplay help text for <command>")]
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
             string command = string.Join(" ", commandNameStrings);
@@ -46,7 +47,7 @@ namespace Orchard.Environment.Commands.Builtin
 
             if (!descriptors.Any())
             {
-                await Context.Output.WriteLineAsync(T($"Command {command} doesn't exist"));
+                await Context.Output.WriteLineAsync(T[$"Command {command} doesn't exist"]);
             }
             else
             {
@@ -67,10 +68,10 @@ namespace Orchard.Environment.Commands.Builtin
         {
             if (string.IsNullOrEmpty(descriptor.HelpText))
             {
-                return T($"{descriptor.MethodInfo.DeclaringType?.FullName}.{descriptor.MethodInfo.Name}: no help text");
+                return T[$"{descriptor.MethodInfo.DeclaringType?.FullName}.{descriptor.MethodInfo.Name}: no help text"];
             }
 
-            return T(descriptor.HelpText);
+            return T[descriptor.HelpText];
         }
     }
 }

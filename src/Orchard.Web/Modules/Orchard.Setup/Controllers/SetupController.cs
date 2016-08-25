@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Shell;
+using Orchard.Recipes.Models;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
 using YesSql.Core.Services;
@@ -30,23 +31,22 @@ namespace Orchard.Setup.Controllers
 
         public IStringLocalizer T { get; set; }
 
-        private ActionResult IndexViewResult(SetupViewModel model)
+        public async Task<ActionResult> Index()
         {
-            return View(model);
-        }
-
-        public ActionResult Index()
-        {
-            return IndexViewResult(new SetupViewModel
+            var model = new SetupViewModel
             {
-                DatabaseProviders = GetDatabaseProviders()
-            });
+                DatabaseProviders = GetDatabaseProviders(),
+                Recipes = await _setupService.GetSetupRecipesAsync()
+            };
+
+            return View(model);
         }
 
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
             model.DatabaseProviders = GetDatabaseProviders();
+            model.Recipes = await _setupService.GetSetupRecipesAsync();
 
             var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
@@ -65,9 +65,16 @@ namespace Orchard.Setup.Controllers
                 ModelState.AddModelError(nameof(model.PasswordConfirmation), T["The password confirmation doesn't match the password."]);
             }
 
+            RecipeDescriptor selectedRecipe = null;
+
+            if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            {
+                ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+            }
+
             if (!ModelState.IsValid)
             {
-                return IndexViewResult(model);
+                return View(model);
             }
 
             var setupContext = new SetupContext
@@ -80,7 +87,8 @@ namespace Orchard.Setup.Controllers
                 AdminUsername = model.AdminUserName,
                 AdminEmail = model.AdminEmail,
                 AdminPassword = model.Password,
-                Errors = new Dictionary<string, string>()
+                Errors = new Dictionary<string, string>(),
+                Recipe = selectedRecipe
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
@@ -93,7 +101,7 @@ namespace Orchard.Setup.Controllers
                     ModelState.AddModelError(error.Key, error.Value);
                 }
 
-                return IndexViewResult(model);
+                return View(model);
             }
 
             var urlPrefix = "";

@@ -1,7 +1,6 @@
-﻿using Orchard.Hosting.Parameters;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Orchard.Hosting.HostContext
+namespace Orchard.Environment.Commands.Parameters
 {
     public interface ICommandParametersParser
     {

@@ -56,16 +56,20 @@ namespace Orchard.Roles
             foreach (var roleName in rolesToExamine)
             {
                 var role = await _roleManager.GetRoleByNameAsync(roleName);
-                var permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
 
-                foreach (var permission in permissions)
+                if (role != null)
                 {
-                    string permissionName = permission.ClaimValue;
+                    var permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
 
-                    if (grantingNames.Contains(permissionName))
+                    foreach (var permission in permissions)
                     {
-                        context.Succeed(requirement);
-                        return;
+                        string permissionName = permission.ClaimValue;
+
+                        if (grantingNames.Contains(permissionName))
+                        {
+                            context.Succeed(requirement);
+                            return;
+                        }
                     }
                 }
             }

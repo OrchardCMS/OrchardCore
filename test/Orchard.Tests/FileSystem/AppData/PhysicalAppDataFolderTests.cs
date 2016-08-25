@@ -24,7 +24,7 @@ namespace Orchard.Tests.FileSystem
         {
             _tempFolder = Path.GetTempFileName();
             File.Delete(_tempFolder);
-            Directory.CreateDirectory(_tempFolder);
+            Directory.CreateDirectory(_tempFolder); 
              _appDataFolder = CreateAppDataFolder(_tempFolder);
 
             string alpha1 = String.Format("App_Data{0}alpha{0}beta.txt",Path.DirectorySeparatorChar);
@@ -92,7 +92,7 @@ namespace Orchard.Tests.FileSystem
         public void CreateFileWillCauseDirectoryToBeCreated()
         {
             Assert.False(Directory.Exists(Path.Combine(_tempFolder, String.Format("App_Data{0}alpha{0}omega{0}foo",Path.DirectorySeparatorChar))));
-            _appDataFolder.CreateFile(String.Format("alpha{0}omega{0}foo{0}bar.txt",Path.DirectorySeparatorChar),"quux");
+            _appDataFolder.CreateFileAsync(String.Format("alpha{0}omega{0}foo{0}bar.txt",Path.DirectorySeparatorChar),"quux").Wait();
             Assert.True(Directory.Exists(Path.Combine(_tempFolder, String.Format("App_Data{0}alpha{0}omega{0}foo",
                                                                         Path.DirectorySeparatorChar))));
         }
@@ -101,10 +101,10 @@ namespace Orchard.Tests.FileSystem
         [Fact]
         public void FilesCanBeReadBack()
         {
-            _appDataFolder.CreateFile(String.Format("alpha{0}gamma{0}foo{0}bar.txt",Path.DirectorySeparatorChar), @"
+            _appDataFolder.CreateFileAsync(String.Format("alpha{0}gamma{0}foo{0}bar.txt",Path.DirectorySeparatorChar), @"
 this is
 a
-test");
+test").Wait();
             var text = File.ReadAllText(_appDataFolder.GetFileInfo(String.Format("alpha{0}gamma{0}foo{0}bar.txt",
                                                         Path.DirectorySeparatorChar)).PhysicalPath);
             Assert.Equal(@"

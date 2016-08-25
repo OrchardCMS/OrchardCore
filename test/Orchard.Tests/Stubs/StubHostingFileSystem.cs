@@ -4,6 +4,7 @@ using Orchard.FileSystem;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.Tests.Stubs
 {
@@ -31,7 +32,7 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public void CreateFile(string path, string content)
+        public Task CreateFileAsync(string path, string content)
         {
             throw new NotImplementedException();
         }
@@ -81,7 +82,7 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public string ReadFile(string path)
+        public Task<string> ReadFileAsync(string path)
         {
             throw new NotImplementedException();
         }

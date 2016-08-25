@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem
 {
@@ -25,7 +26,7 @@ namespace Orchard.FileSystem
         /// <param name="path">The path and name of the file to create.</param>
         /// <param name="content">The content to write in the created file.</param>
         /// <remarks>If the folder doesn't exist, it will be created.</remarks>
-        void CreateFile(string path, string content);
+        Task CreateFileAsync(string path, string content);
 
         /// <summary>
         /// Creates or overwrites the file in the specified path.
@@ -42,7 +43,7 @@ namespace Orchard.FileSystem
         /// </summary>
         /// <param name="path">The path and name of the file to read.</param>
         /// <returns>A string containing all lines of the file, or <code>null</code> if the file doesn't exist.</returns>
-        string ReadFile(string path);
+        Task<string> ReadFileAsync(string path);
 
         /// <summary>
         /// Open an existing file for reading.

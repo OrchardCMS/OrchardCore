@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem.AppData
 {
@@ -45,9 +46,9 @@ namespace Orchard.FileSystem.AppData
             return _fileSystem.Combine(paths);
         }
 
-        public void CreateFile(string path, string content)
+        public async Task CreateFileAsync(string path, string content)
         {
-            _fileSystem.CreateFile(path, content);
+            await _fileSystem.CreateFileAsync(path, content);
         }
 
         public Stream CreateFile(string path)
@@ -55,9 +56,9 @@ namespace Orchard.FileSystem.AppData
             return _fileSystem.CreateFile(path);
         }
 
-        public string ReadFile(string path)
+        public async Task<string> ReadFileAsync(string path)
         {
-            return _fileSystem.ReadFile(path);
+            return await _fileSystem.ReadFileAsync(path);
         }
 
         public Stream OpenFile(string path)

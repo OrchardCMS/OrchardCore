@@ -1,19 +1,16 @@
-﻿using System.Xml.Linq;
+﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Recipes.Models;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
     public interface IRecipeParser
     {
-        Recipe ParseRecipe(XDocument recipeDocument);
-    }
-
-    public static class RecipeParserExtensions
-    {
-        public static Recipe ParseRecipe(this IRecipeParser recipeParser, string recipeText)
-        {
-            var recipeDocument = XDocument.Parse(recipeText, LoadOptions.PreserveWhitespace);
-            return recipeParser.ParseRecipe(recipeDocument);
-        }
+        RecipeDescriptor ParseRecipe(Stream recipeStream);
+        Task ProcessRecipeAsync(
+            Stream recipeStream,
+            Func<RecipeDescriptor, RecipeStepDescriptor, Task> action);
     }
 }

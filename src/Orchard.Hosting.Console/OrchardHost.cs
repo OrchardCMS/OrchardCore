@@ -1,6 +1,6 @@
 ﻿using Orchard.Environment.Commands;
 using Orchard.Hosting.HostContext;
-using Orchard.Hosting.Parameters;
+using Orchard.Environment.Commands.Parameters;
 using System;
 using System.IO;
 using System.Linq;
@@ -143,7 +143,7 @@ namespace Orchard.Hosting
 
         private async Task<CommandReturnCodes> RunCommandInSessionAsync(CommandHostContext context, string command)
         {
-            var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandLineParser().Parse(command)));
+            var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandParser().Parse(command)));
             return await context.CommandHost.RunCommandAsync(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
         }
 

@@ -7,4 +7,3 @@ OrchardVersion: 2.0.x
 Description: Content Fields module adds common content fields to be used with your custom types.
 Dependencies: Orchard.ContentTypes
 Category: Content
-

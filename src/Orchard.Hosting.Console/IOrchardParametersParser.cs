@@ -1,4 +1,5 @@
-﻿using Orchard.Hosting.Parameters;
+﻿using Orchard.Environment.Commands;
+using Orchard.Environment.Commands.Parameters;
 
 namespace Orchard.Hosting
 {
