@@ -44,7 +44,7 @@ namespace Orchard.Hosting
             // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
             {
-                ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
+                ShellContext shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 using (var scope = shellContext.CreateServiceScope())
                 {

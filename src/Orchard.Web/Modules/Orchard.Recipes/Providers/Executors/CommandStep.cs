@@ -31,7 +31,7 @@ namespace Orchard.Recipes.Providers.Executors
 
         public override string Name { get { return "Command"; } }
 
-        public override void Execute(RecipeExecutionContext context)
+        public override Task ExecuteAsync(RecipeExecutionContext context)
         {
             var step = context.RecipeStep.Step.ToObject<InternalStep>();
 
@@ -45,6 +45,8 @@ namespace Orchard.Recipes.Providers.Executors
 
                 Logger.LogInformation("Executed command: {0}", command);
             }
+
+            return Task.CompletedTask;
         }
 
         private class InternalStep

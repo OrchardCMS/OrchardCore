@@ -103,9 +103,9 @@ namespace Orchard.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "Orchard.Hosting",
+                "Orchard.Hosting", // shortcut for built-in features
                 "Orchard.Modules",
-                "Orchard.Recipes"// shortcut for built-in features
+                "Orchard.Recipes"
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
@@ -143,12 +143,11 @@ namespace Orchard.Setup.Services
                     await scope
                         .ServiceProvider
                         .GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(
-                            0,
+                        .UpdateShellDescriptorAsync(0,
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
 
-                   // Apply all migrations for the newly initialized tenant
+                    // Apply all migrations for the newly initialized tenant
                     var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
                     await dataMigrationManager.UpdateAllFeaturesAsync();
 
@@ -159,15 +158,41 @@ namespace Orchard.Setup.Services
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
+                }
 
-                    executionId = await CreateTenantDataAsync(context, shellContext);
+                _orchardHost.UpdateShellSettings(shellSettings);
 
+                executionId = Guid.NewGuid().ToString("n");
+
+                // Create a new scope for the recipe thread to prevent race issues with other scoped
+                // services from the request.
+                using (var scope = shellContext.CreateServiceScope())
+                {
+                    var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
+
+                    // Right now we run the recipe in the same thread, later use polling from the setup screen
+                    // to query the current execution.
+                    //await Task.Run(async () =>
+                    //{
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
+                    //});
+
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    // The recipe might have added some deferred tasks to process
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
+                }
+            }
 
+            // Reloading the shell context as the recipe  has probably updated its features
+            using (var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings))
+            {
+                using (var scope = shellContext.CreateServiceScope())
+                {
                     // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
                     await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
@@ -180,39 +205,20 @@ namespace Orchard.Setup.Services
                         context.DatabaseTablePrefix)
                     );
 
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
                     {
                         var taskContext = new DeferredTaskContext(scope.ServiceProvider);
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
                 }
+
+                // Update the shell state
+                shellSettings.State = TenantState.Running;
+                _orchardHost.UpdateShellSettings(shellSettings);
             }
 
-            shellSettings.State = TenantState.Running;
-            _orchardHost.UpdateShellSettings(shellSettings);
-
-            return executionId;
-        }
-
-        private async Task<string> CreateTenantDataAsync(
-            SetupContext context,
-            ShellContext shellContext)
-        {
-            var executionId = Guid.NewGuid().ToString("n");
-
-            // Create a new scope for the recipe thread to prevent race issues with other scoped
-            // services from the request.
-            using (var recipeScope = shellContext.CreateServiceScope())
-            {
-                var recipeExecutor = recipeScope.ServiceProvider.GetService<IRecipeExecutor>();
-
-                // Right now we run the recipe in the same thread, later use polling from the setup screen
-                // to query the current execution.
-                //await Task.Run(async () =>
-                //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
-                //});
-            }
 
             return executionId;
         }

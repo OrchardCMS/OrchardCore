@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using Orchard.Environment.Extensions.Features;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Localization;
 
 namespace Orchard.Modules.Recipes.Executors
 {
@@ -26,7 +27,7 @@ namespace Orchard.Modules.Recipes.Executors
             get { return "Feature"; }
         }
 
-        public override void Execute(RecipeExecutionContext recipeContext)
+        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
@@ -49,13 +50,22 @@ namespace Orchard.Modules.Recipes.Executors
 
             if (step.Disable.Any())
             {
-                Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
-                _featureManager.DisableFeaturesAsync(step.Disable, true);
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
+                }
+
+                await _featureManager.DisableFeaturesAsync(step.Disable, true);
             }
+
             if (step.Enable.Any())
             {
-                Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
-                _featureManager.EnableFeaturesAsync(step.Enable, true);
+                if (Logger.IsEnabled(LogLevel.Information))
+                {
+                    Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
+                }
+
+                await _featureManager.EnableFeaturesAsync(step.Enable, true);
             }
         }
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.Recipes.Providers.RecipeHandlers
 {
@@ -23,7 +23,7 @@ namespace Orchard.Recipes.Providers.RecipeHandlers
             _logger = logger;
         }
 
-        public void ExecuteRecipeStep(RecipeContext recipeContext)
+        public async Task ExecuteRecipeStepAsync(RecipeContext recipeContext)
         {
             var recipeExecutionSteps = _serviceProvider.GetServices<IRecipeExecutionStep>();
 
@@ -38,9 +38,18 @@ namespace Orchard.Recipes.Providers.RecipeHandlers
                     RecipeStep = recipeContext.RecipeStep
                 };
 
-                _logger.LogInformation("Executing recipe step '{0}'.", recipeContext.RecipeStep.Name);
-                executionStep.Execute(recipeExecutionContext);
-                _logger.LogInformation("Finished executing recipe step '{0}'.", recipeContext.RecipeStep.Name);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Executing recipe step '{0}'.", recipeContext.RecipeStep.Name);
+                }
+
+                await executionStep.ExecuteAsync(recipeExecutionContext);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation("Finished executing recipe step '{0}'.", recipeContext.RecipeStep.Name);
+                }
+
                 recipeContext.Executed = true;
             }
         }

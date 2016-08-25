@@ -48,36 +48,38 @@ namespace Orchard.Recipes.Services
 
             await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
 
-            _recipeHandlers.Invoke(rh => rh.ExecuteRecipeStep(recipeContext), _logger);
+            await _recipeHandlers.InvokeAsync(rh => rh.ExecuteRecipeStepAsync(recipeContext), _logger);
 
             await UpdateStepResultRecordAsync(recipeContext, true);
 
             await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
         }
 
-        private async Task UpdateStepResultRecordAsync(
+        private Task UpdateStepResultRecordAsync(
             RecipeContext recipeContext,
             bool IsSuccessful,
             Exception exception = null)
         {
             // TODO: bad pattern, use an index
 
-            var stepResults = await _session
-                .QueryAsync<RecipeResult>()
-                .List();
+            //var stepResults = await _session
+            //    .QueryAsync<RecipeResult>()
+            //    .List();
 
-            var recipeResult = stepResults
-                .First(record => record.ExecutionId == recipeContext.ExecutionId);
+            //var recipeResult = stepResults
+            //    .First(record => record.ExecutionId == recipeContext.ExecutionId);
 
-            var recipeStepResult = recipeResult
-                .Steps
-                .First(step => step.StepId == recipeContext.RecipeStep.Id);
+            //var recipeStepResult = recipeResult
+            //    .Steps
+            //    .First(step => step.StepId == recipeContext.RecipeStep.Id);
 
-            recipeStepResult.IsCompleted = true;
-            recipeStepResult.IsSuccessful = IsSuccessful;
-            recipeStepResult.ErrorMessage = exception?.ToString();
+            //recipeStepResult.IsCompleted = true;
+            //recipeStepResult.IsSuccessful = IsSuccessful;
+            //recipeStepResult.ErrorMessage = exception?.ToString();
 
-            _session.Save(recipeResult);
+            //_session.Save(recipeResult);
+
+            return Task.CompletedTask;
         }
     }
 }

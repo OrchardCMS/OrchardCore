@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Orchard.Environment.Shell;
 using Orchard.Events;
 using Orchard.FileSystem;
+using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
 using YesSql.Core.Services;
@@ -16,26 +19,29 @@ namespace Orchard.Recipes.Services
     {
         private readonly IEventBus _eventBus;
         private readonly ISession _session;
-        private readonly IRecipeStepExecutor _recipeStepExecutor;
         private readonly IRecipeParser _recipeParser;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ILogger _logger;
+        private readonly ShellSettings _shellSettings;
+        private readonly IOrchardHost _orchardHost;
 
         public RecipeExecutor(
             IEventBus eventBus,
             ISession session,
-            IRecipeStepExecutor recipeStepExecutor,
             IRecipeParser recipeParser,
             IOrchardFileSystem fileSystem,
             IApplicationLifetime applicationLifetime,
+            ShellSettings shellSettings,
+            IOrchardHost orchardHost,
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {
+            _orchardHost = orchardHost;
+            _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
             _eventBus = eventBus;
             _session = session;
-            _recipeStepExecutor = recipeStepExecutor;
             _recipeParser = recipeParser;
             _fileSystem = fileSystem;
             _logger = logger;
@@ -74,14 +80,20 @@ namespace Orchard.Recipes.Services
 
                 using (var stream = _fileSystem.GetFileInfo(recipeDescriptor.Location).CreateReadStream())
                 {
-                    await _recipeParser.ProcessRecipeAsync(stream, (recipe, recipeStep) =>
+                    await _recipeParser.ProcessRecipeAsync(stream, async (recipe, recipeStep) =>
                     {
-                        if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                        var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+                        using (var scope = shellContext.CreateServiceScope())
                         {
-                            throw new OrchardException(T["Recipe cancelled, application is restarting"]);
-                        }
+                            var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
 
-                        return _recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                            {
+                                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
+                            }
+
+                            await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                        }
                     });
                 }
 

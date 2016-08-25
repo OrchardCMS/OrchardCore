@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
@@ -34,7 +35,7 @@ namespace Orchard.Recipes.Providers.Executors
             ]
          }
         */
-        public override void Execute(RecipeExecutionContext context)
+        public override async Task ExecuteAsync(RecipeExecutionContext context)
         {
             var step = context.RecipeStep.Step.ToObject<InternalStep>();
             var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
@@ -56,7 +57,7 @@ namespace Orchard.Recipes.Providers.Executors
                         throw new Exception(string.Format("No recipe named '{0}' was found in extension '{1}'.", recipe.Name, recipe.ExecutionId));
                     }
 
-                    _recipeManager.ExecuteAsync(context.ExecutionId, recipes[recipe.Name]).Wait();
+                    await _recipeManager.ExecuteAsync(context.ExecutionId, recipes[recipe.Name]);
                 }
                 catch
                 {

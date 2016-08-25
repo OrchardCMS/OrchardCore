@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Events;
 using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell.Descriptor.Settings
@@ -28,9 +28,9 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             _logger = logger;
         }
 
-        public async Task<ShellDescriptor> GetShellDescriptorAsync()
+        public Task<ShellDescriptor> GetShellDescriptorAsync()
         {
-            return await _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
+            return _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
         }
 
         public async Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
