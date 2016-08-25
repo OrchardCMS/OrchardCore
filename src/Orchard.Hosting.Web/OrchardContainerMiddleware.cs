@@ -58,8 +58,8 @@ namespace Orchard.Hosting
                             if (!shellContext.IsActivated)
                             {
                                 var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                                eventBus.Notify<IOrchardShellEvents>(x => x.ActivatingAsync());
-                                eventBus.Notify<IOrchardShellEvents>(x => x.ActivatedAsync());
+                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync()).Wait();
+                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
 
                                 shellContext.IsActivated = true;
                             }

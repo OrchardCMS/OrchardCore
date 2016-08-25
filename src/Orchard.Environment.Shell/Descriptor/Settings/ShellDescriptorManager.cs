@@ -93,7 +93,7 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
 
             _session.Save(shellDescriptorRecord);
 
-            _eventBus.Notify<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptorRecord, _shellSettings.Name));
+            await _eventBus.NotifyAsync<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptorRecord, _shellSettings.Name));
         }
     }
 }
