@@ -189,10 +189,14 @@ namespace Orchard.Setup.Services
             }
 
             // Reloading the shell context as the recipe  has probably updated its features
-            using (var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings))
+            using (var shellContext = _orchardHost.CreateShellContext(shellSettings))
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
+                    // Apply all migrations for the newly initialized tenant
+                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
+                    await dataMigrationManager.UpdateAllFeaturesAsync();
+
                     // Invoke modules to react to the setup event
                     var eventBus = scope.ServiceProvider.GetService<IEventBus>();
                     await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
