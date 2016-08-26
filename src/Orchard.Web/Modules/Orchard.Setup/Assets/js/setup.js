@@ -6,8 +6,6 @@
         toggleConnectionString();
     });
 
-    refreshDescription();
-
     // Refresh the description hide the connection string when a provider is selected
     $("#recipes div a").on('click', function () {
         refreshDescription($(this));

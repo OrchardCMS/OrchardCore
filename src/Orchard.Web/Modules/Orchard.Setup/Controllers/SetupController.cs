@@ -34,11 +34,7 @@ namespace Orchard.Setup.Controllers
         public async Task<ActionResult> Index()
         {
             var recipes = await _setupService.GetSetupRecipesAsync();
-            var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default"));
-            if (defaultRecipe == null)
-            {
-                defaultRecipe = recipes.FirstOrDefault();
-            }
+            var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.First();
 
             var model = new SetupViewModel
             {

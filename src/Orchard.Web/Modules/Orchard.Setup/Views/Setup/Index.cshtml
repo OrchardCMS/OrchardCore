@@ -2,7 +2,7 @@
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @model Orchard.Setup.ViewModels.SetupViewModel
 @{
-    var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName);
+    var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
 }
 
 <form asp-action="Index">
@@ -22,7 +22,7 @@
             </div>
         </fieldset>
         <fieldset class="form-group col-md-6">
-            <input type="hidden" asp-for="RecipeName" value="@defaultRecipe.Name" />
+            <input type="hidden" asp-for="RecipeName" />
             <nav>
                 <div asp-validation-class-for="RecipeName">
                     <label asp-for="SiteName">@T["Recipe"]</label>
