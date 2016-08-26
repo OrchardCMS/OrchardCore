@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration;
 using Orchard.DeferredTasks;
@@ -12,14 +15,9 @@ using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Events;
 using Orchard.Hosting;
-using Orchard.Hosting.ShellBuilders;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using YesSql.Core.Services;
-using System;
 
 namespace Orchard.Setup.Services
 {
@@ -58,11 +56,6 @@ namespace Orchard.Setup.Services
             _runningShellTable = runningShellTable;
             _recipeHarvester = recipeHarvester;
             _logger = logger;
-        }
-
-        public ShellSettings Prime()
-        {
-            return _shellSettings;
         }
 
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()

@@ -8,7 +8,6 @@ namespace Orchard.Setup.Services
 {
     public interface ISetupService : IDependency
     {
-        ShellSettings Prime();
         Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync();
         Task<string> SetupAsync(SetupContext context);
     }
