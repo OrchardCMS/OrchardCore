@@ -70,6 +70,9 @@ namespace Orchard.Users
             });
 
             serviceCollection.AddScoped<UserIndexProvider>();
+
+            serviceCollection.AddScoped<SetupEventHandler>();
+            serviceCollection.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
         }
     }
 }

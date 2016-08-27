@@ -6,7 +6,8 @@
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
-    "Orchard.DisplayManagement": "2.0.0-*"
+    "Orchard.DisplayManagement": "2.0.0-*",
+    "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

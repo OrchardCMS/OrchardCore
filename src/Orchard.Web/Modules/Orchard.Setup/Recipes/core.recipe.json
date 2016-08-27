@@ -11,7 +11,7 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [ ],
+      "disable": [],
       "enable": [
         "Orchard.Logging.Console",
         "Orchard.Settings",
@@ -33,6 +33,11 @@
         "TheAdmin",
         "SafeMode"
       ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheTheme"
     }
   ]
 }
