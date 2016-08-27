@@ -205,12 +205,6 @@ namespace Orchard.Hosting
                 return Task.CompletedTask;
             }
 
-            // Don't restart when tenant is in setup
-            if (context.Settings.State != TenantState.Running)
-            {
-                return Task.CompletedTask;
-            }
-
             if (_shellContexts.TryRemove(tenant, out context))
             {
                 context.Dispose();

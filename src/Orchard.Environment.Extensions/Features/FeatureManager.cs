@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Localization;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions.Features
 {

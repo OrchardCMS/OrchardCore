@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Orchard.Data.Migration
 {
-    public interface IDataMigrationManager : IDependency
+    public interface IDataMigrationManager
     {
         /// <summary>
         /// Returns the features which have at least one Data Migration class with a corresponding Upgrade method to be called

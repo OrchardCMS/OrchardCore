@@ -25,7 +25,9 @@ namespace Orchard.Hosting
         {
             services.AddSingleton<IClock, Clock>();
 
-            services.AddSingleton<IOrchardHost, DefaultOrchardHost>();
+            services.AddSingleton<DefaultOrchardHost>();
+            services.AddSingleton<IOrchardHost>(sp => sp.GetRequiredService<DefaultOrchardHost>());
+            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<DefaultOrchardHost>());
             {
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 

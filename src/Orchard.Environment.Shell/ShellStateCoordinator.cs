@@ -3,34 +3,27 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.State;
-using Orchard.Events;
 
 namespace Orchard.Environment.Shell
 {
+    // This class is registered automatically as transient as it is an event handler
     public class ShellStateCoordinator : IShellDescriptorManagerEventHandler
     {
         private readonly ShellSettings _settings;
         private readonly IShellStateManager _stateManager;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IEventBus _eventBus;
         private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public ShellStateCoordinator(
             ShellSettings settings,
             IShellStateManager stateManager,
-            IExtensionManager extensionManager,
-            IEventBus eventBus,
             IDeferredTaskEngine deferredTaskEngine,
             ILogger<ShellStateCoordinator> logger)
         {
             _deferredTaskEngine = deferredTaskEngine;
             _settings = settings;
             _stateManager = stateManager;
-            _extensionManager = extensionManager;
-            _eventBus = eventBus;
             Logger = logger;
         }
 

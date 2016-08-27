@@ -43,6 +43,7 @@ namespace Orchard.Environment.Shell.Builders
             services.AddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.AddScoped<IShellStateManager, ShellStateManager>();
             services.AddScoped<ShellStateCoordinator>();
+            services.AddScoped<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellStateCoordinator>());
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
@@ -227,8 +228,12 @@ namespace Orchard.Environment.Shell.Builders
                 tenantServiceCollection.AddScoped<ISession>(serviceProvider => store.CreateSession());
             }
 
+            // add already instanciated services like DefaultOrchardHost
+            var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
+
             // Register event handlers on the event bus
             var eventHandlers = tenantServiceCollection
+                .Union(applicationServiceDescriptors)
                 .Select(x => x.ImplementationType)
                 .Distinct()
                 .Where(t => t != null && typeof(IEventHandler).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
@@ -236,12 +241,10 @@ namespace Orchard.Environment.Shell.Builders
 
             foreach (var handlerClass in eventHandlers)
             {
-                tenantServiceCollection.AddScoped(handlerClass);
-
                 // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to
                 // the event bus.
 
-                foreach (var i in handlerClass.GetInterfaces().Where(t => typeof(IEventHandler).IsAssignableFrom(t)))
+                foreach (var i in handlerClass.GetInterfaces().Where(t => t != typeof(IEventHandler) && typeof(IEventHandler).IsAssignableFrom(t)))
                 {
                     tenantServiceCollection.AddScoped(i, serviceProvider =>
                     {

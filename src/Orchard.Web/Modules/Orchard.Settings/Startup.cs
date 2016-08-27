@@ -1,0 +1,17 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.Settings.Services;
+
+namespace Orchard.Settings
+{
+    /// <summary>
+    /// These services are registered on the tenant service collection
+    /// </summary>
+    public class Startup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<SetupEventHandler>();
+            services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+        }
+    }
+}
