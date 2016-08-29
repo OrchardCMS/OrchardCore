@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Orchard.DependencyInjection;
 using Orchard.Lists.Indexes;
 
 namespace Orchard.Lists

@@ -38,6 +38,14 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheTheme"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Index",
+        "Controller": "Home",
+        "Area": "Orchard.Demo"
+      }
     }
   ]
 }

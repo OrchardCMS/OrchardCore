@@ -85,6 +85,15 @@ namespace Orchard.Recipes.Services
                         var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
                         using (var scope = shellContext.CreateServiceScope())
                         {
+                            if (!shellContext.IsActivated)
+                            {
+                                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
+                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+
+                                shellContext.IsActivated = true;
+                            }
+
                             var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
 
                             if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)

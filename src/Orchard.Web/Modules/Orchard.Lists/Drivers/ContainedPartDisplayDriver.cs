@@ -36,7 +36,7 @@ namespace Orchard.Lists.Drivers
             }
 
             var viewModel = new EditContainedPartViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
             {
                 // We are editing a content item that needs to be added to a container
                 // so we render the container id as part of the form
@@ -61,7 +61,7 @@ namespace Orchard.Lists.Drivers
         {
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)))
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
             {
                 model.Weld<ContainedPart>();
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);

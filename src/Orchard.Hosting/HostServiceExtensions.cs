@@ -1,12 +1,10 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor;
 using Orchard.FileSystem;
 using Orchard.Hosting.Services;
 using Orchard.Services;
-using System;
 
 namespace Orchard.Hosting
 {

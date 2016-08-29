@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.Recipes;
+using Orchard.Settings.Recipes;
 using Orchard.Settings.Services;
 
 namespace Orchard.Settings
@@ -12,6 +14,8 @@ namespace Orchard.Settings
         {
             services.AddScoped<SetupEventHandler>();
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+
+            services.AddRecipeExecutionStep<SettingsStep>();
         }
     }
 }

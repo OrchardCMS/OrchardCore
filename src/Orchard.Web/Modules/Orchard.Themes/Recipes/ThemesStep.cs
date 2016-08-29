@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Admin;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using Orchard.Themes.Services;
@@ -13,7 +11,6 @@ namespace Orchard.Themes.Recipes
 {
     public class ThemesStep : RecipeExecutionStep
     {
-        private readonly IFeatureManager _featureManager;
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
 

@@ -1,4 +1,6 @@
-﻿using Orchard.ContentManagement;
+﻿using System;
+using Microsoft.AspNetCore.Routing;
+using Orchard.ContentManagement;
 
 namespace Orchard.Settings
 {
@@ -17,5 +19,6 @@ namespace Orchard.Settings
         public string SuperUser { get; set; }
         public string TimeZone { get; set; }
         public bool UseCdn { get; set; }
+        public RouteValueDictionary HomeRoute { get; set; }
     }
 }

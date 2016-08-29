@@ -1,4 +1,6 @@
-﻿namespace Orchard.Settings
+﻿using Microsoft.AspNetCore.Routing;
+
+namespace Orchard.Settings
 {
     public interface ISite
     {
@@ -15,5 +17,7 @@
         int MaxPageSize { get; set; }
         int MaxPagedCount { get; set; }
         string BaseUrl { get; set; }
+        RouteValueDictionary HomeRoute { get; set; }
     }
+
 }
