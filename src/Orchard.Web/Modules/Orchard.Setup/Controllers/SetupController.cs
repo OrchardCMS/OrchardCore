@@ -4,31 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
-using Orchard.Settings;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
-using Orchard.Hosting;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Controllers
 {
     public class SetupController : Controller
     {
-        private const string DefaultRecipe = "Default";
-
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
-        private readonly IOrchardHost _orchardHost;
+        private const string DefaultRecipe = "Default";
 
         public SetupController(
             ISetupService setupService,
             ShellSettings shellSettings,
-            IOrchardHost orchardHost,
             IStringLocalizer<SetupController> t)
         {
-            _orchardHost = orchardHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
 
@@ -120,19 +114,7 @@ namespace Orchard.Setup.Controllers
                 urlPrefix = _shellSettings.RequestUrlPrefix + "/";
             }
 
-            var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
-            {
-                var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                var site = await siteService.GetSiteSettingsAsync();
-
-                var action = site.HomeRoute["action"].ToString();
-                var controller = site.HomeRoute["controller"].ToString();
-
-                var url = Url.Action(action, controller, site.HomeRoute);
-
-                return Redirect(url);
-            }
+            return Redirect("~/" + urlPrefix);
         }
 
         private IEnumerable<DatabaseProviderEntry> GetDatabaseProviders()

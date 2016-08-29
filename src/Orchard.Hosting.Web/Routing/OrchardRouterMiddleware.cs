@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
+using Orchard.Hosting.Routing;
 using Orchard.Routes;
 
 namespace Orchard.Hosting.Web.Routing
@@ -111,6 +112,9 @@ namespace Orchard.Hosting.Web.Routing
                 null,
                 inlineConstraintResolver)
             );
+
+            // Add home page route
+            routeBuilder.Routes.Add(new HomePageRoute(routeBuilder, inlineConstraintResolver));
 
             var router = prefixedRouteBuilder.Build();
 
