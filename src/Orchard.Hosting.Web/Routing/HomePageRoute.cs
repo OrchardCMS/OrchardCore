@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Settings;
@@ -23,9 +24,9 @@ namespace Orchard.Hosting.Routing
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            foreach (var key in siteSettings.HomeRoute.Keys)
+            foreach (var entry in siteSettings.HomeRoute)
             {
-                context.RouteData.Values[key] = siteSettings.HomeRoute[key];
+                context.RouteData.Values[entry.Key] = entry.Value;
             }
 
             _tokens = siteSettings.HomeRoute;
@@ -35,17 +36,34 @@ namespace Orchard.Hosting.Routing
 
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
-            var result = base.GetVirtualPath(context);
+            object value;
 
             // Return null if it doesn't match the home route values
-            foreach (var key in _tokens.Keys)
+            foreach (var entry in _tokens)
             {
-                object value;
-                if (!context.Values.TryGetValue(key, out value) || value.ToString() != _tokens[key].ToString())
+                if (String.Equals(entry.Key, "area", StringComparison.OrdinalIgnoreCase))
                 {
-                    return null;
+                    if (!context.AmbientValues.TryGetValue("area", out value) || !String.Equals(value.ToString(), _tokens["area"].ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    if (!context.Values.TryGetValue(entry.Key, out value) || !String.Equals(value.ToString(), entry.Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return null;
+                    }
                 }
             }
+
+            // Remove the values that should not be rendered in the query string
+            foreach(var key in _tokens.Keys)
+            {
+                context.Values.Remove(key);
+            }
+
+            var result = base.GetVirtualPath(context);
 
             return result;
         }
