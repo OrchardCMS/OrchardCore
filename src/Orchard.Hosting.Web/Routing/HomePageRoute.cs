@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Settings;
@@ -12,23 +9,45 @@ namespace Orchard.Hosting.Routing
     {
         private readonly IRouteBuilder _routeBuilder;
 
-        public HomePageRoute(IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
-            : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
+        private RouteValueDictionary _tokens;
+        private readonly ISiteService _siteService;
+
+        public HomePageRoute(string prefix, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+            : base(routeBuilder.DefaultHandler, prefix ?? "", inlineConstraintResolver)
         {
+            _siteService = routeBuilder.ServiceProvider.GetRequiredService<ISiteService>();
             _routeBuilder = routeBuilder;
         }
 
         protected override async Task OnRouteMatched(RouteContext context)
         {
-            var serviceProvider = _routeBuilder.ServiceProvider;
-            var siteService = serviceProvider.GetService<ISiteService>();
-            var siteSettings = await siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            context.RouteData.Values["area"] = siteSettings.HomeRoute["area"];
-            context.RouteData.Values["controller"] = siteSettings.HomeRoute["controller"];
-            context.RouteData.Values["action"] = siteSettings.HomeRoute["action"];
+            foreach (var key in siteSettings.HomeRoute.Keys)
+            {
+                context.RouteData.Values[key] = siteSettings.HomeRoute[key];
+            }
+
+            _tokens = siteSettings.HomeRoute;
 
             await base.OnRouteMatched(context);
+        }
+
+        public override VirtualPathData GetVirtualPath(VirtualPathContext context)
+        {
+            var result = base.GetVirtualPath(context);
+
+            // Return null if it doesn't match the home route values
+            foreach (var key in _tokens.Keys)
+            {
+                object value;
+                if (!context.Values.TryGetValue(key, out value) || value.ToString() != _tokens[key].ToString())
+                {
+                    return null;
+                }
+            }
+
+            return result;
         }
     }
 }

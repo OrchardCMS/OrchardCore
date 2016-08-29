@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.Routing;
 using Orchard.Routes;
+using Orchard.Settings;
 
 namespace Orchard.Hosting.Web.Routing
 {
@@ -114,7 +115,7 @@ namespace Orchard.Hosting.Web.Routing
             );
 
             // Add home page route
-            routeBuilder.Routes.Add(new HomePageRoute(routeBuilder, inlineConstraintResolver));
+            routeBuilder.Routes.Add(new HomePageRoute(shellSettings.RequestUrlPrefix, routeBuilder, inlineConstraintResolver));
 
             var router = prefixedRouteBuilder.Build();
 
