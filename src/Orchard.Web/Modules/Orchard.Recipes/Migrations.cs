@@ -8,7 +8,7 @@ namespace Orchard.Recipes
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable(nameof(RecipeResultIndex), table => table
-                .Column<int>("ExecutionId")
+                .Column<string>("ExecutionId")
             );
 
             return 1;
