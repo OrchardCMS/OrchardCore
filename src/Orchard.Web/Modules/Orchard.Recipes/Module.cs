@@ -12,8 +12,6 @@ namespace Orchard.Recipes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRecipeParser, JsonRecipeParser>();
-
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
 
             services.AddScoped<IRecipeExecutor, RecipeExecutor>();
