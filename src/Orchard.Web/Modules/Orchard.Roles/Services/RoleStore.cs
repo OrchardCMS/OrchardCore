@@ -5,21 +5,67 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
+using Orchard.Environment.Cache.Abstractions;
+using Orchard.Roles.Models;
 using Orchard.Security;
+using Orchard.Security.Services;
+using YesSql.Core.Services;
 
 namespace Orchard.Roles.Services
 {
-    public class RoleStore : IRoleClaimStore<Role>
+    public class RoleStore : IRoleClaimStore<Role>, IRoleProvider
     {
-        private readonly IRoleManager _roleManager;
+        private const string Key = "RolesManager.Roles";
 
-        public RoleStore(IRoleManager roleManager)
+        private readonly ISession _session;
+        private RolesDocument _roles;
+        private readonly ISignal _signal;
+        private readonly IMemoryCache _memoryCache;
+
+        public RoleStore(ISession session, IMemoryCache memoryCache, ISignal signal)
         {
-            _roleManager = roleManager;
+            _memoryCache = memoryCache;
+            _signal = signal;
+            _session = session;
         }
 
         public void Dispose()
         {
+        }
+
+        public async Task<RolesDocument> GetRolesAsync()
+        {
+            return await _memoryCache.GetOrCreateAsync(Key, async (entry) =>
+            {
+                _roles = await _session.QueryAsync<RolesDocument>().FirstOrDefault();
+
+                if (_roles == null)
+                {
+                    _roles = new RolesDocument();
+                    UpdateRoles();
+                }
+
+                entry.ExpirationTokens.Add(_signal.GetToken(Key));
+
+                return _roles;
+            });
+        }
+
+        public void UpdateRoles()
+        {
+            if (_roles != null)
+            {
+                _roles.Serial++;
+                _session.Save(_roles);
+                _signal.SignalToken(Key);
+            }
+        }
+
+        public async Task<IEnumerable<string>> GetRoleNamesAsync()
+        {
+            var roles = await GetRolesAsync();
+            return roles.Roles.Select(x => x.RoleName).OrderBy(x => x).ToList();
         }
 
         #region IRoleStore<Role>
@@ -32,9 +78,9 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await _roleManager.GetRolesAsync();
+            var roles = await GetRolesAsync();
             roles.Roles.Add(role);
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return IdentityResult.Success;
         }
@@ -48,9 +94,9 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            var roles = await _roleManager.GetRolesAsync();
+            var roles = await GetRolesAsync();
             roles.Roles.Remove(role);
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return IdentityResult.Success;
         }
@@ -64,7 +110,7 @@ namespace Orchard.Roles.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var roles = await _roleManager.GetRolesAsync();
+            var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName.ToUpperInvariant() == normalizedRoleName);
             return role;
         }
@@ -127,7 +173,7 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleName = roleName;
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return Task.CompletedTask;
         }
@@ -141,7 +187,7 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return Task.FromResult(IdentityResult.Success);
         }
@@ -162,7 +208,7 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value } );
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return Task.CompletedTask;
         }
@@ -190,7 +236,7 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
-            _roleManager.UpdateRoles();
+            UpdateRoles();
 
             return Task.CompletedTask;
         }

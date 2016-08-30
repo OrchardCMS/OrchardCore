@@ -4,14 +4,15 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Extensions;
-using Orchard.Roles.Services;
 using Orchard.Roles.ViewModels;
 using Orchard.Security;
 using Orchard.Security.Permissions;
+using Orchard.Security.Services;
 using Orchard.Settings;
 using YesSql.Core.Services;
 
@@ -24,9 +25,10 @@ namespace Orchard.Roles.Controllers
         private readonly IStringLocalizer T;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IRoleManager _roleManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IRoleProvider _roleProvider;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -35,10 +37,12 @@ namespace Orchard.Roles.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IRoleManager roleManager,
+            RoleManager<Role> roleManager,
+            IRoleProvider roleProvider,
             IEnumerable<IPermissionProvider> permissionProviders
             )
         {
+            _roleProvider = roleProvider;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
@@ -56,11 +60,11 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var roles = await _roleManager.GetRolesAsync();
+            var roles = await _roleProvider.GetRoleNamesAsync();
 
             var model = new RolesViewModel
             {
-                RoleEntries = roles.Roles.Select(BuildRoleEntry).ToList()
+                RoleEntries = roles.Select(BuildRoleEntry).ToList()
             };
 
             return View(model);
@@ -73,7 +77,7 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = await _roleManager.GetRoleByNameAsync(id);
+            var role = await _roleManager.FindByNameAsync(id);
             if (role == null)
             {
                 return NotFound();
@@ -91,11 +95,11 @@ namespace Orchard.Roles.Controllers
             return View(model);
         }
 
-        private RoleEntry BuildRoleEntry(Role role)
+        private RoleEntry BuildRoleEntry(string name)
         {
             return new RoleEntry
             {
-                Name = role.RoleName,
+                Name = name,
                 Selected = false
             };
         }

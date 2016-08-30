@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Admin
 {
@@ -12,6 +13,7 @@ namespace Orchard.Admin
         {
             serviceCollection.AddScoped<IFilterMetadata, AdminFilter>();
             serviceCollection.AddScoped<IFilterMetadata, AdminMenuFilter>();
+            serviceCollection.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

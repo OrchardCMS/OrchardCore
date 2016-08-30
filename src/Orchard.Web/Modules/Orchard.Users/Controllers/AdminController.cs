@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
 using Orchard.Navigation;
+using Orchard.Security;
+using Orchard.Security.Services;
 using Orchard.Settings;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
@@ -23,16 +25,22 @@ namespace Orchard.Users.Controllers
         private readonly IStringLocalizer T;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly IRoleProvider _roleProvider;
 
         public AdminController(
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<User> userManager,
+            RoleManager<Role> roleManager,
+            IRoleProvider roleProvider,
             IStringLocalizer<AdminController> stringLocalizer,
             ISiteService siteService,
             IShapeFactory shapeFactory
             )
         {
+            _roleProvider = roleProvider;
+            _roleManager = roleManager;
             _shapeFactory = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
@@ -116,6 +124,19 @@ namespace Orchard.Users.Controllers
             };
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roles = roleNames.Select(x => new RoleEntry { Role = x }).ToArray();
+
+            var model = new EditUserViewModel
+            {
+                Roles = roles
+            };
+
+            return View("Edit", model);
         }
     }
 }

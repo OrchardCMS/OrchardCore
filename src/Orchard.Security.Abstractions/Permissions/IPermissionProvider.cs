@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Orchard.Security.Permissions
 {
@@ -7,7 +6,7 @@ namespace Orchard.Security.Permissions
     /// Implemented by modules to enumerate the types of permissions
     /// the which may be granted
     /// </summary>
-    public interface IPermissionProvider : IDependency
+    public interface IPermissionProvider
     {
         IEnumerable<Permission> GetPermissions();
         IEnumerable<PermissionStereotype> GetDefaultStereotypes();

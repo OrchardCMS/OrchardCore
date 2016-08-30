@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
@@ -12,12 +14,12 @@ namespace Orchard.Roles.Services
 {
     public class RoleUpdater : IFeatureEventHandler
     {
-        private readonly IRoleManager _roleManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public RoleUpdater(
-            IRoleManager roleManager,
+            RoleManager<Role> roleManager,
             IEnumerable<IPermissionProvider> permissionProviders,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<RoleUpdater> logger)
@@ -91,7 +93,7 @@ namespace Orchard.Roles.Services
                 {
 
                     // turn those stereotypes into roles
-                    var role = await _roleManager.GetRoleByNameAsync(stereotype.Name);
+                    var role = await _roleManager.FindByNameAsync(stereotype.Name);
                     if (role == null)
                     {
                         if (Logger.IsEnabled(LogLevel.Information))
@@ -99,7 +101,8 @@ namespace Orchard.Roles.Services
                             Logger.LogInformation($"Defining new role {stereotype.Name} for permission stereotype");
                         }
 
-                        role = await _roleManager.CreateRoleAsync(stereotype.Name);
+                        role = new Role { RoleName = stereotype.Name };
+                        await _roleManager.CreateAsync(role);
                     }
 
                     // and merge the stereotypical permissions into that role
@@ -109,7 +112,6 @@ namespace Orchard.Roles.Services
                     var distinctPermissionNames = currentPermissionNames
                         .Union(stereotypePermissionNames)
                         .Distinct();
-
 
                     // update role if set of permissions has increased
                     var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);
@@ -123,13 +125,11 @@ namespace Orchard.Roles.Services
                                 Logger.LogInformation("Default role {0} granted permission {1}", stereotype.Name, permissionName);
                             }
 
-                            role.RoleClaims.Add(new RoleClaim() { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
+                            await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
                         }
                     }
                 }
             }
-
-            _roleManager.UpdateRoles();
         }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Contents
 {
@@ -13,6 +14,7 @@ namespace Orchard.Contents
         {
             serviceCollection.AddContentManagement();
             serviceCollection.AddContentManagementDisplay();
+            serviceCollection.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

@@ -2,7 +2,7 @@
 
 namespace Orchard.Security
 {
-    public class AuthorizationServiceModule : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Security;
+using Orchard.Security.Permissions;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
@@ -73,6 +74,8 @@ namespace Orchard.Users
 
             serviceCollection.AddScoped<SetupEventHandler>();
             serviceCollection.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+
+            serviceCollection.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 }

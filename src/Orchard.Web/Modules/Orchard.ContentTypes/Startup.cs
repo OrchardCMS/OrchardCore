@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Security.Permissions;
 
 namespace Orchard.ContentTypes
 {
@@ -9,6 +10,7 @@ namespace Orchard.ContentTypes
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

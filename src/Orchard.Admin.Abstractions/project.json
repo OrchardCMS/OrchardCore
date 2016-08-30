@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Security": "2.0.0-*"
+    "Orchard.Security.Abstractions": "1.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

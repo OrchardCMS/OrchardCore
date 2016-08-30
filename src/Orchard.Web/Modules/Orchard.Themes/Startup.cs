@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Recipes;
+using Orchard.Security.Permissions;
 using Orchard.Themes.Recipes;
 
 namespace Orchard.Themes
@@ -12,6 +13,7 @@ namespace Orchard.Themes
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddRecipeExecutionStep<ThemesStep>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 }
