@@ -16,6 +16,7 @@ namespace Orchard.Settings
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
 
             services.AddRecipeExecutionStep<SettingsStep>();
+            services.AddScoped<ISiteService, SiteService>()
         }
     }
 }

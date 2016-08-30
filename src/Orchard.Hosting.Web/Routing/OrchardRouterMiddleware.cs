@@ -114,8 +114,14 @@ namespace Orchard.Hosting.Web.Routing
                 inlineConstraintResolver)
             );
 
-            // Add home page route
-            routeBuilder.Routes.Add(new HomePageRoute(shellSettings.RequestUrlPrefix, routeBuilder, inlineConstraintResolver));
+            var siteService = routeBuilder.ServiceProvider.GetService<ISiteService>();
+
+            // ISiteService might not be registered during Setup
+            if (siteService != null)
+            {
+                // Add home page route
+                routeBuilder.Routes.Add(new HomePageRoute(shellSettings.RequestUrlPrefix, siteService, routeBuilder, inlineConstraintResolver));
+            }
 
             var router = prefixedRouteBuilder.Build();
 

@@ -13,10 +13,10 @@ namespace Orchard.Hosting.Routing
         private RouteValueDictionary _tokens;
         private readonly ISiteService _siteService;
 
-        public HomePageRoute(string prefix, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+        public HomePageRoute(string prefix, ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
             : base(routeBuilder.DefaultHandler, prefix ?? "", inlineConstraintResolver)
         {
-            _siteService = routeBuilder.ServiceProvider.GetRequiredService<ISiteService>();
+            _siteService = siteService;
             _routeBuilder = routeBuilder;
         }
 
