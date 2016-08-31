@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
 using Orchard.Events;
 using Orchard.FileSystem;
@@ -102,6 +103,21 @@ namespace Orchard.Recipes.Services
                             }
 
                             await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                        }
+
+                        // The recipe execution might have invalidated the shell by enabling new features,
+                        // so the deferred tasks need to run on an updated shell context if necessary.
+                        shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+                        using (var scope = shellContext.CreateServiceScope())
+                        {
+                            var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                            // The recipe might have added some deferred tasks to process
+                            if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                            {
+                                var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                                await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                            }
                         }
                     });
                 }

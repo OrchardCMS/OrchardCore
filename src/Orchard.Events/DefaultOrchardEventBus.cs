@@ -3,14 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Events
 {
     /// <summary>
     /// Registrations are shared accross all EventBus instances for a single tenant
     /// </summary>
-    public interface IEventBusState : ISingletonDependency
+    public interface IEventBusState
     {
         ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>> Subscribers { get; }
 

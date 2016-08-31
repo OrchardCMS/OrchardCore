@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.State;
@@ -10,7 +9,7 @@ using Orchard.Events;
 
 namespace Orchard.Environment.Shell
 {
-    public interface IShellStateUpdater : IDependency
+    public interface IShellStateUpdater
     {
         void ApplyChanges();
     }

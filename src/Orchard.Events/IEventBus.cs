@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using System.Reflection;
 
 namespace Orchard.Events
 {
-    public interface IEventBus : IDependency
+    public interface IEventBus
     {
         Task NotifyAsync(string message, IDictionary<string, object> arguments);
         void Subscribe(string message, Func<IServiceProvider, IDictionary<string, object>, Task> action);

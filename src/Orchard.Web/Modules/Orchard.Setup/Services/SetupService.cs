@@ -183,14 +183,6 @@ namespace Orchard.Setup.Services
                     await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
                     //});
 
-                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                    // The recipe might have added some deferred tasks to process
-                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                    {
-                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                    }
                 }
             }
 

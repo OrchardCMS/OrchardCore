@@ -191,7 +191,7 @@ namespace Orchard.Hosting
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogDebug("A tenant needs to be restarted {0}", tenant);
+                _logger.LogInformation("A tenant needs to be restarted {0}", tenant);
             }
 
             if (_shellContexts == null)
@@ -200,7 +200,7 @@ namespace Orchard.Hosting
             }
 
             ShellContext context;
-            if(!_shellContexts.TryGetValue(tenant, out context))
+            if (!_shellContexts.TryGetValue(tenant, out context))
             {
                 return Task.CompletedTask;
             }

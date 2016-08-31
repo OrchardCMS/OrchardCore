@@ -74,7 +74,7 @@ namespace Orchard.Environment.Shell
             _deferredTaskEngine.AddTask(async context =>
             {
                 var stateManager = context.ServiceProvider.GetRequiredService<IShellStateManager>();
-                var shellStateCoordinator = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
+                var shellStateUpdater = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
                 var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
@@ -95,7 +95,7 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for shell '{0}'", _settings.Name);
                     }
 
-                    shellStateCoordinator.ApplyChanges();
+                    shellStateUpdater.ApplyChanges();
                 }
             });
         }
