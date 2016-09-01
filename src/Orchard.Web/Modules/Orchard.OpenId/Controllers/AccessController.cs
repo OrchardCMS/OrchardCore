@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
@@ -32,18 +31,26 @@ namespace Orchard.OpenId.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost]
+        [HttpPost, Produces("application/json")]
         public Task<IActionResult> Token()
         {
             var request = HttpContext.GetOpenIdConnectRequest();
 
             if (request.IsPasswordGrantType())
+            {
                 return ExchangePasswordGrantType(request);
+            }
             else if (request.IsClientCredentialsGrantType())
+            {
                 return ExchangeClientCredentialsGrantType(request);
+            }
             else
             {
-                return Task.FromResult(BadRequest() as IActionResult);
+                return Task.FromResult<IActionResult>(BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
+                    ErrorDescription = "The specified grant type is not supported."
+                }));
             }
         }
 
