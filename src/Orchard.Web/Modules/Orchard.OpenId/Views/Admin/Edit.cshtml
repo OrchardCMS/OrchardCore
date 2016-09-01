@@ -1,12 +1,9 @@
 ﻿@model EditOpenIdApplicationViewModel
 @using Orchard.OpenId.ViewModels;
 @using Orchard.OpenId.Models;
-@using Orchard.OpenId.Models;
-
-
 
 <form asp-controller="Admin" asp-action="Edit" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    @Html.AntiForgeryToken()
+
     <h4>@T["Edit OpenId Application"]</h4>
     <hr />
     <input type="hidden" asp-for="Id" />
