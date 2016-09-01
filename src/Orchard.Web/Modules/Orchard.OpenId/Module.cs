@@ -17,23 +17,32 @@ using Microsoft.AspNetCore.DataProtection;
 namespace Orchard.OpenId
 {
     public class Startup : StartupBase
-    {     
+    {
+        private const string CertificateFileName = "Certificate.pfx";
+
         private readonly string _certificateFullPath;
-        private const string certificateFileName = "Certificate.pfx";
-        private readonly string tenantUrlPrefix;
-        private readonly string tenantName;
-        public Startup(ShellSettings shellSettings, IAppDataFolder appDataFolder, ILoggerFactory loggerFactory)   
-        {            
-            tenantName = shellSettings.Name;
-            tenantUrlPrefix = shellSettings.RequestUrlPrefix;
-            _certificateFullPath = appDataFolder.Combine(shellSettings.Name, certificateFileName);
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly string _tenantUrlPrefix;
+        private readonly string _tenantName;
+
+        public Startup(
+            ShellSettings shellSettings,
+            IAppDataFolder appDataFolder,
+            ILoggerFactory loggerFactory,
+            IDataProtectionProvider dataProtectionProvider)   
+        {
+            _tenantName = shellSettings.Name;
+            _tenantUrlPrefix = shellSettings.RequestUrlPrefix;
+            _certificateFullPath = appDataFolder.Combine(shellSettings.Name, CertificateFileName);
+            _dataProtectionProvider = dataProtectionProvider.CreateProtector(_tenantName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var tenantUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl + tenantUrlPrefix;
+            var tenantUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl + _tenantUrlPrefix;
 
             builder.UseOpenIddict();
+
             builder.UseJwtBearerAuthentication(new JwtBearerOptions()
             {
                 AutomaticAuthenticate = true,
@@ -52,37 +61,41 @@ namespace Orchard.OpenId
             serviceCollection.AddScoped<OpenIdTokenIndexProvider>();            
             serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
             serviceCollection.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
-            var openIddictBuilder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
-            .AddApplicationStore<OpenIdApplicationStore>()
-            .AddTokenStore<OpenIdTokenStore>()
-            .AddUserStore<OpenIdUserStore>()
-            .AddUserManager<OpenIdUserManager>()
-            .Configure(options => options.DataProtectionProvider = DataProtectionProvider.Create(tenantName))
-            .UseJsonWebTokens()            
-            .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
-            .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
-            .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
-            .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
-            .AllowPasswordFlow()
-            .AllowClientCredentialsFlow()
-            .AllowAuthorizationCodeFlow()
-            .AllowRefreshTokenFlow();
-            
+
+            var builder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
+                .AddApplicationStore<OpenIdApplicationStore>()
+                .AddTokenStore<OpenIdTokenStore>()
+                .AddUserStore<OpenIdUserStore>()
+                .AddUserManager<OpenIdUserManager>()
+
+                .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
+                .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
+                .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
+                .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
+
+                .AllowPasswordFlow()
+                .AllowClientCredentialsFlow()
+                .AllowAuthorizationCodeFlow()
+                .AllowRefreshTokenFlow()
+
+                .UseDataProtectionProvider(_dataProtectionProvider)
+                .UseJsonWebTokens();
+
 #if DEBUG
-            openIddictBuilder.DisableHttpsRequirement()
-            .AddEphemeralSigningKey();
+            builder.DisableHttpsRequirement()
+                .AddEphemeralSigningKey();
 #else
             // On production, using a X.509 certificate stored in the machine store is recommended.
             // You can generate a self-signed certificate using Pluralsight's self-cert utility:
             // https://s3.amazonaws.com/pluralsight-free/keith-brown/samples/SelfCert.zip
-            
+
             if (File.Exists(_certificateFullPath))
             {
                 using (FileStream stream = File.Open(_certificateFullPath, FileMode.Open))
                 {
                     //I need a password for opening the certificate ¿should I store this password in clear text on db? in the mean time I use a fixed password
-                    openIddictBuilder.AddSigningCertificate(stream,"password");
-                }                
+                    builder.AddSigningCertificate(stream, "password");
+                }
             }
 #endif
         }
