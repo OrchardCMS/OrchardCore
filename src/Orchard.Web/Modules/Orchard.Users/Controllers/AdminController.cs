@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Notify;
 using Orchard.Navigation;
 using Orchard.Security;
 using Orchard.Security.Services;
@@ -23,10 +27,12 @@ namespace Orchard.Users.Controllers
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer T;
+        private readonly IHtmlLocalizer TH;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly RoleManager<Role> _roleManager;
         private readonly IRoleProvider _roleProvider;
+        private readonly INotifier _notifier;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -35,15 +41,19 @@ namespace Orchard.Users.Controllers
             RoleManager<Role> roleManager,
             IRoleProvider roleProvider,
             IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             ISiteService siteService,
-            IShapeFactory shapeFactory
+            IShapeFactory shapeFactory,
+            INotifier notifier
             )
         {
+            _notifier = notifier;
             _roleProvider = roleProvider;
             _roleManager = roleManager;
             _shapeFactory = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
+            TH = htmlLocalizer;
             _authorizationService = authorizationService;
             _session = session;
             _userManager = userManager;
@@ -128,15 +138,193 @@ namespace Orchard.Users.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
-            var roles = roleNames.Select(x => new RoleEntry { Role = x }).ToArray();
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
 
-            var model = new EditUserViewModel
+            var roleNames = await GetRoleNamesAsync();
+            var roles = roleNames.Select(x => new RoleViewModel { Role = x }).ToArray();
+
+            var model = new CreateUserViewModel
             {
                 Roles = roles
             };
 
-            return View("Edit", model);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateUserViewModel model)
+        {
+            CleanViewModel(model);
+
+            if (await _userManager.FindByNameAsync(model.UserName) != null)
+            {
+                ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+            }
+
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
+            {
+                ModelState.AddModelError(string.Empty, T["The email is already used."]);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
+                var user = new User { UserName = model.UserName, Email = model.Email, RoleNames = roleNames };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    _notifier.Success(TH["User created successfully"]);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _session.Cancel();
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
+            var currentUser = await _userManager.FindByIdAsync(id);
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var roleNames = await GetRoleNamesAsync();
+            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = currentUser.RoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+
+            var model = new EditUserViewModel
+            {
+                Id = currentUser.Id,
+                Email = currentUser.Email,
+                UserName = currentUser.UserName,
+                Roles = roles
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
+            CleanViewModel(model);
+
+            var currentUser = await _userManager.FindByIdAsync(model.Id.ToString());
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            if ((await _userManager.FindByNameAsync(model.UserName))?.Id != currentUser.Id)
+            {
+                ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+            }
+
+            if ((await _userManager.FindByEmailAsync(model.Email))?.Id != currentUser.Id)
+            {
+                ModelState.AddModelError(string.Empty, T["The email is already used."]);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
+                currentUser.RoleNames = roleNames;
+                currentUser.UserName = model.UserName;
+                currentUser.Email = model.Email;
+
+                var result = await _userManager.UpdateAsync(currentUser);
+                if (result.Succeeded)
+                {
+                    _notifier.Success(TH["User updated successfully"]);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _session.Cancel();
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, T[error.Description]);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Unauthorized();
+            }
+
+            var currentUser = await _userManager.FindByIdAsync(id);
+
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(currentUser);
+
+            if (result.Succeeded)
+            {
+                _notifier.Success(TH["User deleted successfully"]);
+            }
+            else
+            {
+                _session.Cancel();
+
+                _notifier.Error(TH["Could not delete the user"]);
+
+                foreach (var error in result.Errors)
+                {
+                    _notifier.Error(TH[error.Description]);
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IEnumerable<string>> GetRoleNamesAsync()
+        {
+            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public void CleanViewModel(CreateUserViewModel model)
+        {
+            model.UserName = model.UserName?.Trim();
+            model.Email = model.Email?.Trim();
+        }
+
+        public void CleanViewModel(EditUserViewModel model)
+        {
+            model.UserName = model.UserName?.Trim();
+            model.Email = model.Email?.Trim();
         }
     }
 }
