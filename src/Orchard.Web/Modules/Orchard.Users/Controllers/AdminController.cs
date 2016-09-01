@@ -29,7 +29,7 @@ namespace Orchard.Users.Controllers
         private readonly IStringLocalizer T;
         private readonly IHtmlLocalizer TH;
         private readonly ISiteService _siteService;
-        private readonly IShapeFactory _shapeFactory;
+        private readonly dynamic New;
         private readonly RoleManager<Role> _roleManager;
         private readonly IRoleProvider _roleProvider;
         private readonly INotifier _notifier;
@@ -50,7 +50,7 @@ namespace Orchard.Users.Controllers
             _notifier = notifier;
             _roleProvider = roleProvider;
             _roleManager = roleManager;
-            _shapeFactory = shapeFactory;
+            New = shapeFactory;
             _siteService = siteService;
             T = stringLocalizer;
             TH = htmlLocalizer;
@@ -94,7 +94,6 @@ namespace Orchard.Users.Controllers
                 users = users.Where(u => u.NormalizedUserName.Contains(options.Search) || u.NormalizedEmail.Contains(options.Search));
             }
 
-
             switch (options.Order)
             {
                 case UsersOrder.Name:
@@ -111,6 +110,8 @@ namespace Orchard.Users.Controllers
                     break;
             }
 
+            var count = await users.Count();
+
             var results = await users
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
@@ -122,7 +123,7 @@ namespace Orchard.Users.Controllers
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
 
-            var pagerShape = _shapeFactory.Create("Pager", new { TotalItemCount = await users.Count(), RouteData = routeData });
+            var pagerShape = New.Pager(pager).TotalItemCount(count).RouteData(routeData);
 
             var model = new UsersIndexViewModel
             {
