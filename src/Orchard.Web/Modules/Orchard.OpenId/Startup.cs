@@ -29,7 +29,7 @@ namespace Orchard.OpenId
             ShellSettings shellSettings,
             IAppDataFolder appDataFolder,
             ILoggerFactory loggerFactory,
-            IDataProtectionProvider dataProtectionProvider)   
+            IDataProtectionProvider dataProtectionProvider)
         {
             _tenantName = shellSettings.Name;
             _tenantUrlPrefix = shellSettings.RequestUrlPrefix;
@@ -58,7 +58,7 @@ namespace Orchard.OpenId
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
-            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();            
+            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();
             serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
             serviceCollection.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
 
