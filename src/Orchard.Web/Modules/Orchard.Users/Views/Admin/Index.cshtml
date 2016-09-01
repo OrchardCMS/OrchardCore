@@ -37,8 +37,8 @@
                 @Html.SelectOption(Model.Options.Order, UsersOrder.LastLoginUtc, T("Last Login Time").ToString())
             </select>*@
 
-            <form asp-action="Index" method="post" class="form-inline pull-xs-right">
-                <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            <form asp-action="Index" method="get" class="form-inline pull-xs-right">
+                <input id="search-box" asp-for="Options.Search" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
                 <button type="submit" class="btn btn-secondary">@T["Search"]</button>
             </form>
     </div>
