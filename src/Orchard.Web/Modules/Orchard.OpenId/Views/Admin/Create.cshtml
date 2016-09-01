@@ -3,7 +3,7 @@
 @using Orchard.OpenId.Models;
 
 <form asp-controller="Admin" asp-action="Create" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    @Html.AntiForgeryToken()
+
     <h4>@T["Create OpenId Application"]</h4>
     <hr />
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -81,7 +81,7 @@
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-default">@T["Submit"]</button>
         </div>
-    </div>        
+    </div>
 </form>
 @*at="Foot"*@
 <script>
