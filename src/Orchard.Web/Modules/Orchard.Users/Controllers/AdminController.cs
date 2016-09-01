@@ -159,14 +159,17 @@ namespace Orchard.Users.Controllers
         {
             CleanViewModel(model);
 
-            if (await _userManager.FindByNameAsync(model.UserName) != null)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, T["The user name is already used."]);
-            }
+                if (await _userManager.FindByNameAsync(model.UserName) != null)
+                {
+                    ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                }
 
-            if (await _userManager.FindByEmailAsync(model.Email) != null)
-            {
-                ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                if (await _userManager.FindByEmailAsync(model.Email) != null)
+                {
+                    ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                }
             }
 
             if (ModelState.IsValid)
@@ -237,14 +240,17 @@ namespace Orchard.Users.Controllers
                 return NotFound();
             }
 
-            if ((await _userManager.FindByNameAsync(model.UserName))?.Id != currentUser.Id)
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError(string.Empty, T["The user name is already used."]);
-            }
+                if ((await _userManager.FindByNameAsync(model.UserName))?.Id != currentUser.Id)
+                {
+                    ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                }
 
-            if ((await _userManager.FindByEmailAsync(model.Email))?.Id != currentUser.Id)
-            {
-                ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                if ((await _userManager.FindByEmailAsync(model.Email))?.Id != currentUser.Id)
+                {
+                    ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                }
             }
 
             if (ModelState.IsValid)
