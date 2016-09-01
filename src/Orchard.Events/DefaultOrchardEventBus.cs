@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Reflection;
-using System.Linq.Expressions;
-using System.Linq;
-using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.Events
 {
     /// <summary>
     /// Registrations are shared accross all EventBus instances for a single tenant
     /// </summary>
-    public interface IEventBusState : ISingletonDependency
+    public interface IEventBusState
     {
         ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>> Subscribers { get; }
 
@@ -70,7 +67,21 @@ namespace Orchard.Events
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 var parameterName = methodParameters[i].Name;
-                parameters[i] = arguments[parameterName];
+
+                // If the requested parameter is not present in the original call, just set null
+                object value = null;
+                if (!arguments.TryGetValue(parameterName, out value))
+                {
+                    var parameterType = methodParameters[i].ParameterType;
+                    if (parameterType.GetTypeInfo().IsValueType)
+                    {
+                        value = Activator.CreateInstance(parameterType);
+                    }
+
+                    value = null;
+                }
+
+                parameters[i] = value;
             }
 
             var result = methodInfo.Invoke(service, parameters) as Task;

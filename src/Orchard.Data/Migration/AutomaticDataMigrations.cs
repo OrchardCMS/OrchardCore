@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -10,26 +12,29 @@ namespace Orchard.Data.Migration
     /// </summary>
     public class AutomaticDataMigrations : IOrchardShellEvents
     {
-        private readonly IDataMigrationManager _dataMigrationManager;
-        private readonly IFeatureManager _featureManager;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public AutomaticDataMigrations(
-            IDataMigrationManager dataMigrationManager,
-            IFeatureManager featureManager,
+            IServiceProvider serviceProvider,
             ShellSettings shellSettings,
             ILogger<AutomaticDataMigrations> logger)
         {
-            _dataMigrationManager = dataMigrationManager;
-            _featureManager = featureManager;
+            _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;
             _logger = logger;
         }
 
         public Task ActivatedAsync()
         {
-            return _dataMigrationManager.UpdateAllFeaturesAsync();
+            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            {
+                var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
+                return dataMigrationManager.UpdateAllFeaturesAsync();
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task ActivatingAsync()

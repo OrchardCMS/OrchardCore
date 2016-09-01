@@ -142,13 +142,18 @@ namespace Orchard.ResourceManagement.TagHelpers
                 var childContent = output.GetChildContentAsync().Result;
 
                 var builder = new TagBuilder("script");
-                builder.Attributes.Add("type", "text/javascript");
                 builder.InnerHtml.AppendHtml(childContent);
                 builder.TagRenderMode = TagRenderMode.Normal;
 
                 foreach (var attribute in output.Attributes)
                 {
                     builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
+                }
+
+                // If no type was specified, define a default one
+                if (!builder.Attributes.ContainsKey("type"))
+                {
+                    builder.Attributes.Add("type", "text/javascript");
                 }
 
                 if (At == ResourceLocation.Head)

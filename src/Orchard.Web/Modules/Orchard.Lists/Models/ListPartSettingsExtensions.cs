@@ -1,4 +1,4 @@
-using Orchard.ContentManagement.MetaData.Builders;
+using Orchard.ContentManagement.Metadata.Builders;
 
 namespace Orchard.Lists.Models
 {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
 using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.MetaData.Builders
+namespace Orchard.ContentManagement.Metadata.Builders
 {
     public class ContentTypeDefinitionBuilder
     {
@@ -63,7 +64,7 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
         public ContentTypeDefinitionBuilder RemovePart(string partName)
         {
-            var existingPart = _parts.SingleOrDefault(x => x.PartDefinition.Name == partName);
+            var existingPart = _parts.SingleOrDefault(x => x.Name == partName);
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -76,21 +77,31 @@ namespace Orchard.ContentManagement.MetaData.Builders
             return WithPart(partName, configuration => { });
         }
 
-        public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName)
         {
-            return WithPart(new ContentPartDefinition(partName), configuration);
+            return WithPart(name, new ContentPartDefinition(partName), configuration => { });
         }
 
-        public ContentTypeDefinitionBuilder WithPart(ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
         {
-            var existingPart = _parts.SingleOrDefault(x => x.PartDefinition.Name == partDefinition.Name);
+            return WithPart(name, new ContentPartDefinition(partName), configuration);
+        }
+
+        public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
+        {
+            return WithPart(partName, new ContentPartDefinition(partName), configuration);
+        }
+
+        public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
+        {
+            var existingPart = _parts.FirstOrDefault(x => x.Name == name );
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(partDefinition, new JObject());
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
                 existingPart.ContentTypeDefinition = Current;
             }
 
@@ -104,8 +115,6 @@ namespace Orchard.ContentManagement.MetaData.Builders
         {
             private readonly ContentPartDefinition _partDefinition;
 
-            public ContentTypePartDefinition Current { get; private set; }
-
             public PartConfigurerImpl(ContentTypePartDefinition part)
                 : base(part)
             {
@@ -115,9 +124,9 @@ namespace Orchard.ContentManagement.MetaData.Builders
 
             public override ContentTypePartDefinition Build()
             {
-                return new ContentTypePartDefinition(_partDefinition, _settings)
+                return new ContentTypePartDefinition(Current.Name, _partDefinition, _settings)
                 {
-                    ContentTypeDefinition = Current.ContentTypeDefinition
+                    ContentTypeDefinition = Current.ContentTypeDefinition,
                 };
             }
         }

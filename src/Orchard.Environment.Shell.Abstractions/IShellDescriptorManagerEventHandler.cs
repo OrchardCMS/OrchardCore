@@ -1,5 +1,6 @@
 ﻿using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Events;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
@@ -11,6 +12,6 @@ namespace Orchard.Environment.Shell
         /// <summary>
         /// Triggered whenever a shell descriptor has changed.
         /// </summary>
-        void Changed(ShellDescriptor descriptor, string tenant);
+        Task Changed(ShellDescriptor descriptor, string tenant);
     }
 }

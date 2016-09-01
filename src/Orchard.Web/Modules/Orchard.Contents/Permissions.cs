@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Orchard.Security.Permissions;
 
-namespace Orchard.Contents {
-    public class Permissions : IPermissionProvider {
+namespace Orchard.Contents
+{
+    public class Permissions : IPermissionProvider
+    {
 
         // Note - in code you should demand PublishContent, EditContent, or DeleteContent
         // Do not demand the "Own" variations - those are applied automatically when you demand the main ones
@@ -21,7 +23,8 @@ namespace Orchard.Contents {
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
-        public IEnumerable<Permission> GetPermissions() {
+        public IEnumerable<Permission> GetPermissions()
+        {
             return new[] {
                 EditOwnContent,
                 EditContent,
@@ -36,7 +39,8 @@ namespace Orchard.Contents {
             };
         }
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes() {
+        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        {
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",

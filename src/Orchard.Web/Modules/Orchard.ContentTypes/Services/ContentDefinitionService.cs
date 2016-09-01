@@ -6,7 +6,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
@@ -138,6 +138,17 @@ namespace Orchard.ContentTypes.Services
             _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }));
         }
 
+        public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
+        {
+            _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.WithPart(name, partName, cfg =>
+            {
+                cfg.WithDisplayName(displayName);
+                cfg.WithDescription(description);
+            }));
+
+            _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartAttached(new ContentPartAttachedContext { ContentTypeName = typeName, ContentPartName = partName }));
+        }
+
         public void RemovePartFromType(string partName, string typeName)
         {
             _contentDefinitionManager.AlterTypeDefinition(typeName, typeBuilder => typeBuilder.RemovePart(partName));
@@ -177,7 +188,16 @@ namespace Orchard.ContentTypes.Services
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(name);
 
             if (contentPartDefinition == null)
-                return null;
+            {
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(name);
+
+                if(contentTypeDefinition == null)
+                {
+                    return null;
+                }
+
+                contentPartDefinition = new ContentPartDefinition(name);
+            }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
 
@@ -217,7 +237,7 @@ namespace Orchard.ContentTypes.Services
 
         public IEnumerable<ContentFieldInfo> GetFields()
         {
-            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null);
+            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null).OrderBy(x => x.FieldTypeName).ToList();
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
@@ -227,11 +247,22 @@ namespace Orchard.ContentTypes.Services
 
         public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
         {
-            fieldName = fieldName.ToSafeName();
-            if (string.IsNullOrEmpty(fieldName))
+            if (String.IsNullOrEmpty(fieldName))
             {
-                throw new OrchardException(T("Fields must have a name containing no spaces or symbols."));
+                throw new ArgumentException(nameof(fieldName));
             }
+
+            var partDefinition = _contentDefinitionManager.GetPartDefinition(partName);
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(partName);
+
+            // If the type exists ensure it has its own part
+            if (typeDefinition != null)
+            {
+                _contentDefinitionManager.AlterTypeDefinition(partName, builder => builder.WithPart(partName));
+            }
+
+            fieldName = fieldName.ToSafeName();
+
             _contentDefinitionManager.AlterPartDefinition(partName,
                 partBuilder => partBuilder.WithField(fieldName, fieldBuilder => fieldBuilder.OfType(fieldTypeName).WithDisplayName(displayName)));
 
@@ -254,7 +285,7 @@ namespace Orchard.ContentTypes.Services
             }));
         }
 
-        public void AlterField(EditPartViewModel partViewModel, EditFieldNameViewModel fieldViewModel)
+        public void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
         {
             _contentDefinitionManager.AlterPartDefinition(partViewModel.Name, partBuilder =>
             {
@@ -262,6 +293,50 @@ namespace Orchard.ContentTypes.Services
                 {
                     fieldBuilder.WithDisplayName(fieldViewModel.DisplayName);
                 });
+            });
+        }
+
+        public void AlterTypePart(EditTypePartViewModel typePartViewModel)
+        {
+            var typeDefinition = typePartViewModel.TypePartDefinition.ContentTypeDefinition;
+
+            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            {
+                type.WithPart(typePartViewModel.Name, typePartViewModel.TypePartDefinition.PartDefinition, part =>
+                {
+                    part.WithDisplayName(typePartViewModel.DisplayName);
+                    part.WithDescription(typePartViewModel.Description);
+                });
+            });
+        }
+
+        public void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames)
+        {
+            _contentDefinitionManager.AlterTypeDefinition(typeDefinition.Name, type =>
+            {
+                for (var i = 0; i < partNames.Length; i++)
+                {
+                    var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
+                    type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
+                    {
+                        part.WithSetting("Position", i.ToString());
+                    });
+                }
+            });
+        }
+
+        public void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames)
+        {
+            _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, type =>
+            {
+                for (var i = 0; i < fieldNames.Length; i++)
+                {
+                    var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
+                    type.WithField(fieldNames[i], field =>
+                    {
+                        field.WithSetting("Position", i.ToString());
+                    });
+                }
             });
         }
 

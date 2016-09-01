@@ -1,10 +1,10 @@
-using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.Recipes.Services
 {
     public class UpdateRecipeExecutionStepContext
     {
-        public XDocument RecipeDocument { get; set; }
-        public XElement Step { get; set; }
+        public JObject RecipeDocument { get; set; }
+        public JObject Step { get; set; }
     }
 }

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Orchard.DependencyInjection;
-using Orchard.Roles.Services;
 using Orchard.Security;
 using Orchard.Security.Permissions;
 
@@ -14,12 +14,11 @@ namespace Orchard.Roles
     /// <summary>
     /// This authorization handler ensures that implied permissions are checked.
     /// </summary>
-    [ScopedComponent(typeof(IAuthorizationHandler))]
     public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
     {
-        private readonly IRoleManager _roleManager;
+        private readonly RoleManager<Role> _roleManager;
 
-        public RolesPermissionsHandler(IRoleManager roleManager)
+        public RolesPermissionsHandler(RoleManager<Role> roleManager)
         {
             _roleManager = roleManager;
         }
@@ -55,17 +54,21 @@ namespace Orchard.Roles
 
             foreach (var roleName in rolesToExamine)
             {
-                var role = await _roleManager.GetRoleByNameAsync(roleName);
-                var permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
+                var role = await _roleManager.FindByNameAsync(roleName);
 
-                foreach (var permission in permissions)
+                if (role != null)
                 {
-                    string permissionName = permission.ClaimValue;
+                    var permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
 
-                    if (grantingNames.Contains(permissionName))
+                    foreach (var permission in permissions)
                     {
-                        context.Succeed(requirement);
-                        return;
+                        string permissionName = permission.ClaimValue;
+
+                        if (grantingNames.Contains(permissionName))
+                        {
+                            context.Succeed(requirement);
+                            return;
+                        }
                     }
                 }
             }

@@ -12,7 +12,6 @@ namespace Orchard.Settings.Services
     /// <summary>
     /// Implements <see cref="ISiteService"/> by storing the site as a Content Item.
     /// </summary>
-    [ScopedComponent(typeof(ISiteService))]
     public class SiteService : ISiteService
     {
         private readonly IContentManager _contentManager;

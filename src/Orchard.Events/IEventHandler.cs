@@ -1,8 +1,6 @@
-﻿using Orchard.DependencyInjection;
-
-namespace Orchard.Events
+﻿namespace Orchard.Events
 {
-    public interface IEventHandler : IDependency
+    public interface IEventHandler
     {
     }
 }

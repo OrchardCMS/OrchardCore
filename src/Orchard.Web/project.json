@@ -2,10 +2,10 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-*",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-*",
+      "version": "1.0.0",
       "type": "platform"
     },
     "Orchard.Hosting.Console": "2.0.0-*",
@@ -15,8 +15,9 @@
     "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.0"
   },
   "runtimeOptions": {
-    "gcServer": true,
-    "gcConcurrent": true
+    "configProperties": {
+      "System.GC.Server": true
+    }
   },
   "buildOptions": {
     "emitEntryPoint": true,
@@ -71,14 +72,15 @@
       "themes",
       "views",
       "_ViewStart.cshtml",
+      "wwwroot",
       "web.config"
     ],
     "exclude": [
       "**/obj"
     ],
-    "includeFiles": [ ],
-    "excludeFiles": [ ],
-    "builtIns": [ ],
+    "includeFiles": [],
+    "excludeFiles": [],
+    "builtIns": [],
     "mappings": {
       "csc.dll": "Tools/csc.dll"
     }

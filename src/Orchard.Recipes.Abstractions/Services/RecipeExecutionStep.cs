@@ -1,14 +1,15 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
-using System.Collections.Generic;
 
 namespace Orchard.Recipes.Services
 {
     public abstract class RecipeExecutionStep : IRecipeExecutionStep
     {
         private readonly ILogger _logger;
-        private readonly IStringLocalizer T;
+        protected readonly IStringLocalizer T;
 
         public RecipeExecutionStep(ILoggerFactory loggerFactory,
             IStringLocalizer stringLocalizer)
@@ -45,16 +46,6 @@ namespace Orchard.Recipes.Services
             get { return _logger; }
         }
 
-        public virtual dynamic BuildEditor(dynamic shapeFactory)
-        {
-            return null;
-        }
-
-        public virtual dynamic UpdateEditor(dynamic shapeFactory)
-        {
-            return null;
-        }
-
         public virtual void Configure(RecipeExecutionStepConfigurationContext context)
         {
         }
@@ -63,6 +54,6 @@ namespace Orchard.Recipes.Services
         {
         }
 
-        public abstract void Execute(RecipeExecutionContext context);
+        public abstract Task ExecuteAsync(RecipeExecutionContext context);
     }
 }

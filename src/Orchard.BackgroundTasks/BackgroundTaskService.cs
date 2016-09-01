@@ -57,7 +57,7 @@ namespace Orchard.BackgroundTasks
         {
             // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
             // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
-            ShellContext shellContext = _orchardHost.GetShellContext(_shellSettings);
+            ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
 
             var groupName = group as string ?? "";
 

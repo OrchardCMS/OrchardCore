@@ -1,10 +1,9 @@
 ﻿using Orchard.DisplayManagement.Shapes;
-using Orchard.DependencyInjection;
 using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Implementation
 {
-    public interface IShapeDisplayEvents : IDependency
+    public interface IShapeDisplayEvents
     {
         void Displaying(ShapeDisplayingContext context);
         void Displayed(ShapeDisplayedContext context);

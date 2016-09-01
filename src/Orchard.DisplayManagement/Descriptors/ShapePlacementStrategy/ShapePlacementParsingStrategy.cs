@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.IO;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using System.IO;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {

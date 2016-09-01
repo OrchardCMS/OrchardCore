@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
@@ -16,7 +16,7 @@ namespace Orchard.ContentManagement.Display
 {
     /// <summary>
     /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render
-    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayDriver"/>
+    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayHandler"/>
     /// implementation. The resulting shapes are targetting the stereotype of the content item
     /// to display.
     /// </summary>
@@ -137,9 +137,6 @@ namespace Orchard.ContentManagement.Display
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
-
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);

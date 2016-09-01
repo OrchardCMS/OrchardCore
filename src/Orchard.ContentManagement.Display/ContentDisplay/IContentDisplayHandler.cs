@@ -1,6 +1,6 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Orchard.DependencyInjection;
 using Orchard.DisplayManagement.Handlers;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display.ContentDisplay
 {

@@ -1,22 +1,25 @@
-﻿using System.Linq;
-using Orchard.ContentManagement.MetaData.Models;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement.Metadata.Models;
 
-namespace Orchard.ContentManagement.MetaData.Builders
+namespace Orchard.ContentManagement.Metadata.Builders
 {
     public abstract class ContentTypePartDefinitionBuilder
     {
         protected readonly JObject _settings;
 
+        public ContentTypePartDefinition Current { get; protected set; }
+        public string Name { get; private set; }
+        public string PartName { get; private set; }
+        public string TypeName { get; private set; }
+
         protected ContentTypePartDefinitionBuilder(ContentTypePartDefinition part)
         {
-            Name = part.PartDefinition.Name;
+            Current = part;
+            Name = part.Name;
+            PartName = part.PartDefinition.Name;
             TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default(string);
             _settings = new JObject(part.Settings);
         }
-
-        public string Name { get; private set; }
-        public string TypeName { get; private set; }
 
         public ContentTypePartDefinitionBuilder WithSetting(string name, string value)
         {

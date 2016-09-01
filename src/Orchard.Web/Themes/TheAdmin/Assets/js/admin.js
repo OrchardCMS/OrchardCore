@@ -64,3 +64,30 @@ $(function () {
         });
     }
 });
+
+function getTechnicalName(name){
+    var result = "", c;
+
+    if (!name || name.length == 0) {
+        return "";
+    }
+
+    name = removeDiacritics(name);
+
+    for (i = 0; i < name.length; i++) {
+        c = name[i];
+        if (isLetter(c) || (isNumber(c) && index > 0)) {
+            result += c;
+        }
+    }
+
+    return result;
+}
+
+function isLetter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function isNumber(str) {
+    return str.length === 1 && str.match(/[0-9]/i);
+}

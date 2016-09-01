@@ -3,6 +3,6 @@
     public class RecipeExecutionContext
     {
         public string ExecutionId { get; set; }
-        public RecipeStep RecipeStep { get; set; }
+        public RecipeStepDescriptor RecipeStep { get; set; }
     }
 }

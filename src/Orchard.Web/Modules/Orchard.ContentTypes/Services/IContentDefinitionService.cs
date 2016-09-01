@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.ContentManagement.MetaData.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DependencyInjection;
@@ -14,6 +14,7 @@ namespace Orchard.ContentTypes.Services
         ContentTypeDefinition AddType(string name, string displayName);
         void RemoveType(string name, bool deleteContent);
         void AddPartToType(string partName, string typeName);
+        void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName);
         void RemovePartFromType(string partName, string typeName);
         string GenerateContentTypeNameFromDisplayName(string displayName);
         string GenerateFieldNameFromDisplayName(string partName, string displayName);
@@ -27,6 +28,11 @@ namespace Orchard.ContentTypes.Services
         void AddFieldToPart(string fieldName, string fieldTypeName, string partName);
         void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName);
         void RemoveFieldFromPart(string fieldName, string partName);
-        void AlterField(EditPartViewModel partViewModel, EditFieldNameViewModel fieldViewModel);
+        void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel);
+
+        void AlterTypePart(EditTypePartViewModel partViewModel);
+
+        void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames);
+        void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames);
     }
 }

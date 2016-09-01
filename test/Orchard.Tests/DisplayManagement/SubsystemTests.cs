@@ -62,7 +62,7 @@ namespace Orchard.Tests.DisplayManagement
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
-            serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
+            serviceCollection.AddScoped<ILogger<DefaultShapeTableManager>, NullLogger<DefaultShapeTableManager>>();
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();

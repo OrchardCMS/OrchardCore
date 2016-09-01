@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.MetaData.Models;
+﻿using Orchard.ContentManagement.Metadata.Models;
 using System;
 
 namespace Orchard.ContentManagement.MetaData

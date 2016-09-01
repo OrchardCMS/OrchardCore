@@ -1,6 +1,5 @@
-using Orchard.DependencyInjection;
-using Orchard.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.ContentManagement.Display
 {

@@ -63,9 +63,14 @@ namespace Orchard.Hosting
             return _shellContexts;
         }
 
-        public ShellContext GetShellContext(ShellSettings settings)
+        public ShellContext GetOrCreateShellContext(ShellSettings settings)
         {
-            return _shellContexts[settings.Name];
+            return _shellContexts.GetOrAdd(settings.Name, tenant =>
+            {
+                var shellContext = CreateShellContext(settings);
+                ActivateShell(shellContext);
+                return shellContext;
+            });
         }
 
         public void UpdateShellSettings(ShellSettings settings)
@@ -74,9 +79,11 @@ namespace Orchard.Hosting
 
             _shellSettingsManager.SaveSettings(settings);
             _runningShellTable.Remove(settings);
-            _shellContexts.TryRemove(settings.Name, out context);
-            context = CreateShellContext(settings);
-            ActivateShell(context);
+            if (_shellContexts.TryRemove(settings.Name, out context))
+            {
+                context.Dispose();
+            }
+            GetOrCreateShellContext(settings);
         }
 
         void CreateAndActivateShells()
@@ -106,8 +113,7 @@ namespace Orchard.Hosting
                 {
                     try
                     {
-                        var context = CreateShellContext(settings);
-                        ActivateShell(context);
+                        GetOrCreateShellContext(settings);
                     }
                     catch (Exception ex)
                     {
@@ -148,7 +154,6 @@ namespace Orchard.Hosting
             }
         }
 
-
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
@@ -182,12 +187,30 @@ namespace Orchard.Hosting
         /// <summary>
         /// A feature is enabled/disabled, the tenant needs to be restarted
         /// </summary>
-        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
-            if (_logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogDebug("Something changed! ARGH! for tenant {0}", tenant);
+                _logger.LogInformation("A tenant needs to be restarted {0}", tenant);
             }
+
+            if (_shellContexts == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            ShellContext context;
+            if (!_shellContexts.TryGetValue(tenant, out context))
+            {
+                return Task.CompletedTask;
+            }
+
+            if (_shellContexts.TryRemove(tenant, out context))
+            {
+                context.Dispose();
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

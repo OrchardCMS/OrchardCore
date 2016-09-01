@@ -61,22 +61,25 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 _logger.LogInformation("Start discovering shapes");
             }
-            var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() });
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result;
-            var activeExtensions = Once(activeFeatures);
+            var harvesterInfos = _harvesters
+                .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
+                .ToList();
+
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
+            var activeExtensions = Once(activeFeatures).ToList();
+
+            var matcher = new Matcher();
+            foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
+            {
+                matcher.AddInclude(string.Format("*.{0}", extension));
+            }
 
             var hits = activeExtensions.Select(extensionDescriptor =>
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Start discovering candidate views filenames");
-                }
-
-                var matcher = new Matcher();
-                foreach(var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
-                {
-                    matcher.AddInclude(string.Format("*.{0}", extension));
                 }
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>

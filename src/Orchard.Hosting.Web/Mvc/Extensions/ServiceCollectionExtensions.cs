@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.ModelBinding;
@@ -23,6 +24,7 @@ namespace Orchard.Hosting.Mvc
                 .AddMvcCore(options =>
                 {
                     options.Filters.Add(new ModelBinderAccessorFilter());
+                    options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
                     options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
                 })
                 .AddViews()

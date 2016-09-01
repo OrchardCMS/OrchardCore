@@ -1,9 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0-*",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",

@@ -2,21 +2,22 @@
 using System.Linq;
 using Orchard.DisplayManagement.Shapes;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Zones
 {
     /// <summary>
     /// Provides the behavior of shapes that have a Zones property.
     /// Examples include Layout and Item
-    /// 
+    ///
     /// * Returns a fake parent object for zones
-    /// Foo.Zones 
-    /// 
-    /// * 
-    /// Foo.Zones.Alpha : 
-    /// Foo.Zones["Alpha"] 
+    /// Foo.Zones
+    ///
+    /// *
+    /// Foo.Zones.Alpha :
+    /// Foo.Zones["Alpha"]
     /// Foo.Alpha :same
-    /// 
+    ///
     /// </summary>
     public class ZoneHolding : Shape
     {
@@ -55,7 +56,6 @@ namespace Orchard.DisplayManagement.Zones
 
             return true;
         }
-
     }
 
     /// <remarks>
@@ -93,6 +93,12 @@ namespace Orchard.DisplayManagement.Zones
         }
 
 
+        protected override bool TrySetMemberImpl(string name, object value)
+        {
+            ((dynamic)_parent)[name] = value;
+            return true;
+        }
+
         public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
         {
 
@@ -105,12 +111,24 @@ namespace Orchard.DisplayManagement.Zones
 
             return base.TryGetIndex(binder, indexes, out result);
         }
+
+        public override bool TrySetIndex(System.Dynamic.SetIndexBinder binder, object[] indexes, object value)
+        {
+            if (indexes.Count() == 1)
+            {
+                var key = Convert.ToString(indexes.First());
+
+                return TrySetMemberImpl(key, value);
+            }
+
+            return base.TrySetIndex(binder, indexes, value);
+        }
     }
 
     /// <remarks>
     /// InterfaceProxyBehavior()
     /// NilBehavior() => return Nil on GetMember and GetIndex in all cases
-    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name)  => when a zone (Shape) is 
+    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name)  => when a zone (Shape) is
     /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil
     /// </remarks>
     public class ZoneOnDemand : Shape

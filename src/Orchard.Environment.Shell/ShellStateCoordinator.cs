@@ -3,43 +3,36 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.State;
-using Orchard.Events;
 
 namespace Orchard.Environment.Shell
 {
+    // This class is registered automatically as transient as it is an event handler
     public class ShellStateCoordinator : IShellDescriptorManagerEventHandler
     {
         private readonly ShellSettings _settings;
         private readonly IShellStateManager _stateManager;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IEventBus _eventBus;
         private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public ShellStateCoordinator(
             ShellSettings settings,
             IShellStateManager stateManager,
-            IExtensionManager extensionManager,
-            IEventBus eventBus,
             IDeferredTaskEngine deferredTaskEngine,
             ILogger<ShellStateCoordinator> logger)
         {
             _deferredTaskEngine = deferredTaskEngine;
             _settings = settings;
             _stateManager = stateManager;
-            _extensionManager = extensionManager;
-            _eventBus = eventBus;
             Logger = logger;
         }
 
         public ILogger Logger { get; set; }
 
-        void IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
+        async Task IShellDescriptorManagerEventHandler.Changed(ShellDescriptor descriptor, string tenant)
         {
             // deduce and apply state changes involved
-            var shellState = _stateManager.GetShellStateAsync().Result;
+            var shellState = await _stateManager.GetShellStateAsync();
             foreach (var feature in descriptor.Features)
             {
                 var featureName = feature.Name;
@@ -78,11 +71,11 @@ namespace Orchard.Environment.Shell
 
         private void FireApplyChangesIfNeeded()
         {
-            _deferredTaskEngine.AddTask(context =>
+            _deferredTaskEngine.AddTask(async context =>
             {
                 var stateManager = context.ServiceProvider.GetRequiredService<IShellStateManager>();
-                var shellStateCoordinator = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
-                var shellState = stateManager.GetShellStateAsync().Result;
+                var shellStateUpdater = context.ServiceProvider.GetRequiredService<IShellStateUpdater>();
+                var shellState = await stateManager.GetShellStateAsync();
 
                 while (shellState.Features.Any(FeatureIsChanging))
                 {
@@ -102,10 +95,8 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for shell '{0}'", _settings.Name);
                     }
 
-                    shellStateCoordinator.ApplyChanges();
+                    shellStateUpdater.ApplyChanges();
                 }
-
-                return Task.CompletedTask;
             });
         }
 

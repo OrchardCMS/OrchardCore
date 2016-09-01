@@ -9,7 +9,7 @@ namespace Orchard.Title.Drivers
 {
     public class TitlePartDisplay : ContentPartDisplayDriver<TitlePart>
     {
-        public override IDisplayResult Display(TitlePart titlePart, IUpdateModel updater)
+        public override IDisplayResult Display(TitlePart titlePart)
         {
             return Combine(
                 Shape("TitlePart", titlePart)
@@ -19,7 +19,7 @@ namespace Orchard.Title.Drivers
             );
         }
 
-        public override IDisplayResult Edit(TitlePart titlePart, IUpdateModel updater)
+        public override IDisplayResult Edit(TitlePart titlePart)
         {
             return Shape<TitlePartViewModel>("TitlePart_Edit", model =>
             {
@@ -27,14 +27,14 @@ namespace Orchard.Title.Drivers
                 model.TitlePart = titlePart;
 
                 return Task.CompletedTask;
-            }).Location("Content:5");
+            });
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Title);
 
-            return Edit(model, updater);
+            return Edit(model);
         }
     }
 }

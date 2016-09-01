@@ -1,11 +1,10 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
 using Orchard.FileSystem;
 using Orchard.Hosting.Services;
 using Orchard.Services;
-using System;
 
 namespace Orchard.Hosting
 {
@@ -24,16 +23,15 @@ namespace Orchard.Hosting
         {
             services.AddSingleton<IClock, Clock>();
 
-            services.AddSingleton<IOrchardHost, DefaultOrchardHost>();
+            services.AddSingleton<DefaultOrchardHost>();
+            services.AddSingleton<IOrchardHost>(sp => sp.GetRequiredService<DefaultOrchardHost>());
+            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<DefaultOrchardHost>());
             {
                 services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {
                     services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
-                    {
-                        //services.AddSingleton<IOrchardLibraryManager, OrchardLibraryManager>();
-                    }
 
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }

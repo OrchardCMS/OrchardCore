@@ -1,4 +1,5 @@
 ﻿using Orchard.Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
@@ -7,6 +8,6 @@ namespace Orchard.Recipes.Services
     /// </summary>
     public interface IRecipeResultAccessor
     {
-        RecipeResult GetResult(string executionId);
+        Task<RecipeResult> GetResultAsync(string executionId);
     }
 }

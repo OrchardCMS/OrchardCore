@@ -1,8 +1,5 @@
 // Custom variables
 
-$font-family-sans-serif: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-family-monospace: Consolas, Menlo, Monaco, "Courier New", monospace;
-
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
@@ -26,7 +23,7 @@ $left-navigation-expand-width: 15em;
 
     .ta-left-sidebar {
         @extend .bg-faded;
-        @extend .hidden-xs-down;
+        @extend .hidden-sm-down;
         width: $left-navigation-width;
         height: 100%;
         z-index: 1;
@@ -41,7 +38,7 @@ $left-navigation-expand-width: 15em;
         border-left: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
         .ta-content {
             margin-left: $left-navigation-width + $left-navigation-expand-width;
         }
@@ -52,16 +49,24 @@ $left-navigation-expand-width: 15em;
 // -----------------------------
 
 .hint {
-    @extend small, .text-muted;
+    @extend .small, .text-muted;
 }
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
+    padding-bottom:0;
 }
 
 .field-validation-error {
-    @extend small, .text-muted;
-    color: $brand-danger;
+    @extend small, .form-control-feedback;
+}
+
+.input-validation-error {
+    @extend .form-control-danger;
+}
+
+.has-validation-error {
+    @extend .has-danger;
 }
 
 // When the validation message in inside the label, add a separator
@@ -69,9 +74,12 @@ label .field-validation-error::before {
     content: "- ";
 }
 
-
 .button {
     @extend .btn, .btn-primary;
+}
+
+.field-validation-valid {
+    display: none;
 }
 
 // Toolbar
@@ -162,7 +170,7 @@ label .field-validation-error::before {
         height: 100%;
         font-size: 1.4em;
     }
-    
+
     // Second level menu
     .menu-admin > li {
         ul {
@@ -179,10 +187,10 @@ label .field-validation-error::before {
             top: $top-nav-height;
             left: $left-navigation-width;
             height: 100%;
-            
+
             li {
                 list-style-type:none;
-                // common style properties for all 
+                // common style properties for all
                 // second level menu links
 
                 a {
@@ -199,7 +207,7 @@ label .field-validation-error::before {
                     font-weight: normal;
                     text-decoration: none;
                 }
-                
+
                 :first-child {
                     // clears the border (inherited)
                     border-top: none;
@@ -240,3 +248,48 @@ label .field-validation-error::before {
     content: "\f292";
 }
 
+
+// Pager
+// ------------------------------
+
+ul.pager {
+    @extend .pagination;
+}
+
+ul.pager li {
+    @extend .page-item;
+}
+
+ul.pager li a {
+    @extend .page-link;
+}
+
+// Sortable
+// ------------------------------
+
+.list-group.sortable li {
+    cursor: move;
+}
+
+// Responsive sizes
+// Creates mixins to target all breakpoints
+// ------------------------------
+.col-xs {
+    @extend .col-xs-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
+}
+
+.col-sm {
+    @extend .col-xs-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
+}
+
+.col-md {
+    @extend .col-xs-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
+}
+
+.col-lg {
+    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
+}
+
+.col-xl {
+    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xs-12;
+}

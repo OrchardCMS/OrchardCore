@@ -43,6 +43,7 @@ namespace Orchard.Environment.Shell.Builders
             services.AddScoped<IShellStateUpdater, ShellStateUpdater>();
             services.AddScoped<IShellStateManager, ShellStateManager>();
             services.AddScoped<ShellStateCoordinator>();
+            services.AddScoped<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellStateCoordinator>());
         }
 
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
@@ -165,6 +166,8 @@ namespace Orchard.Environment.Shell.Builders
                 service.ConfigureServices(tenantServiceCollection);
             }
 
+            (moduleServiceProvider as IDisposable).Dispose();
+
             // Configuring data access
 
             var indexes = tenantServiceCollection
@@ -227,8 +230,12 @@ namespace Orchard.Environment.Shell.Builders
                 tenantServiceCollection.AddScoped<ISession>(serviceProvider => store.CreateSession());
             }
 
+            // add already instanciated services like DefaultOrchardHost
+            var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);
+
             // Register event handlers on the event bus
             var eventHandlers = tenantServiceCollection
+                .Union(applicationServiceDescriptors)
                 .Select(x => x.ImplementationType)
                 .Distinct()
                 .Where(t => t != null && typeof(IEventHandler).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
@@ -236,12 +243,10 @@ namespace Orchard.Environment.Shell.Builders
 
             foreach (var handlerClass in eventHandlers)
             {
-                tenantServiceCollection.AddScoped(handlerClass);
-
                 // Register dynamic proxies to intercept direct calls if an IEventHandler is resolved, dispatching the call to
                 // the event bus.
 
-                foreach (var i in handlerClass.GetInterfaces().Where(t => typeof(IEventHandler).IsAssignableFrom(t)))
+                foreach (var i in handlerClass.GetInterfaces().Where(t => t != typeof(IEventHandler) && typeof(IEventHandler).IsAssignableFrom(t)))
                 {
                     tenantServiceCollection.AddScoped(i, serviceProvider =>
                     {
@@ -253,23 +258,28 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
-            var eventBusState = shellServiceProvider.GetService<IEventBusState>();
-
-            // Register any IEventHandler method in the event bus
-            foreach (var handlerClass in eventHandlers)
+            using (var scope = shellServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                foreach (var handlerInterface in handlerClass.GetInterfaces().Where(x => typeof(IEventHandler).IsAssignableFrom(x) && typeof(IEventHandler) != x))
-                {
-                    foreach (var interfaceMethod in handlerInterface.GetMethods())
-                    {
-                        if (_logger.IsEnabled(LogLevel.Debug))
-                        {
-                            _logger.LogDebug($"{handlerClass.Name}/{handlerInterface.Name}.{interfaceMethod.Name}");
-                        }
+                var eventBusState = scope.ServiceProvider.GetService<IEventBusState>();
 
-                        //var classMethod = handlerClass.GetMethods().Where(x => x.Name == interfaceMethod.Name && x.GetParameters().Length == interfaceMethod.GetParameters().Length).FirstOrDefault();
-                        Func<IServiceProvider, IDictionary<string, object>, Task> d = (sp, parameters) => DefaultOrchardEventBus.Invoke(sp, parameters, interfaceMethod, handlerClass);
-                        eventBusState.Add(handlerInterface.Name + "." + interfaceMethod.Name, d);
+                // Register any IEventHandler method in the event bus
+                foreach (var handlerClass in eventHandlers)
+                {
+                    foreach (var handlerInterface in handlerClass.GetInterfaces().Where(x => typeof(IEventHandler).IsAssignableFrom(x) && typeof(IEventHandler) != x))
+                    {
+                        foreach (var interfaceMethod in handlerInterface.GetMethods())
+                        {
+                            if (_logger.IsEnabled(LogLevel.Debug))
+                            {
+                                _logger.LogDebug($"{handlerClass.Name}/{handlerInterface.Name}.{interfaceMethod.Name}");
+                            }
+
+                            //var classMethod = handlerClass.GetMethods().Where(x => x.Name == interfaceMethod.Name && x.GetParameters().Length == interfaceMethod.GetParameters().Length).FirstOrDefault();
+                            Func<IServiceProvider, IDictionary<string, object>, Task> d = (sp, parameters) => DefaultOrchardEventBus.Invoke(sp, parameters, interfaceMethod, handlerClass);
+                            var messageName = $"{handlerInterface.Name}.{interfaceMethod.Name}";
+                            var className = handlerClass.FullName;
+                            eventBusState.Add(messageName, d);
+                        }
                     }
                 }
             }
