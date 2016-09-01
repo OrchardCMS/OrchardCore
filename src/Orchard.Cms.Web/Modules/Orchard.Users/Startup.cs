@@ -29,14 +29,14 @@ namespace Orchard.Users
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
         private readonly IdentityOptions _options;
-        private readonly IDataProtector _dataProtector;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options, IDataProtectionProvider dataProtectionProvider)
         {
             _options = options.Value;
             _tenantName = shellSettings.Name;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
-            _dataProtector = dataProtectionProvider.CreateProtector(_tenantName);
+            _dataProtectionProvider = dataProtectionProvider.CreateProtector(_tenantName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -89,10 +89,10 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
                 options.Cookies.ApplicationCookie.LoginPath = "/" + LoginPath;
                 options.Cookies.ApplicationCookie.AccessDeniedPath = "/" + LoginPath;
-                options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtector;
-                options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtector;
-                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtector;
-                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtector;                
+                options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtectionProvider;
+                options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtectionProvider;
+                options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtectionProvider;
+                options.Cookies.TwoFactorUserIdCookie.DataProtectionProvider = _dataProtectionProvider;                
             });
             
 
