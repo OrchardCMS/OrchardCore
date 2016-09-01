@@ -4,7 +4,7 @@
 <h1>@RenderTitleSegments(T["Create User"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-for-action="Create" method="post">
+<form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="UserName">
         <label asp-for="UserName">@T["User name"]</label>
         <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
