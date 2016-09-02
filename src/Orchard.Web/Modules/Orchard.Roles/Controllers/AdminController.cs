@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Roles.ViewModels;
 using Orchard.Security;
@@ -29,19 +31,25 @@ namespace Orchard.Roles.Controllers
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleProvider _roleProvider;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<AdminController> TH;
 
         public AdminController(
             IAuthorizationService authorizationService,
             ITypeFeatureProvider typeFeatureProvider,
             ISession session,
             IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             ISiteService siteService,
             IShapeFactory shapeFactory,
             RoleManager<Role> roleManager,
             IRoleProvider roleProvider,
+            INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
             )
         {
+            TH = htmlLocalizer;
+            _notifier = notifier;
             _roleProvider = roleProvider;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
@@ -83,16 +91,54 @@ namespace Orchard.Roles.Controllers
                 return NotFound();
             }
 
+            var installedPermissions = GetInstalledPermissions();
+            var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
             var model = new EditRoleViewModel
             {
                 Role = role,
                 Name = role.RoleName,
-                EffectivePermissions = await GetEffectivePermissions(role),
-                RoleCategoryPermissions = GetInstalledPermissions(),
+                EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
+                RoleCategoryPermissions = installedPermissions
             };
 
-
             return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Edit))]
+        public async Task<IActionResult> EditPost(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Unauthorized();
+            }
+
+            var role = await _roleManager.FindByNameAsync(id);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            // Save
+            List<RoleClaim> rolePermissions = new List<RoleClaim>();
+            foreach (string key in Request.Form.Keys)
+            {
+                if (key.StartsWith("Checkbox.") && Request.Form[key] == "true")
+                {
+                    string permissionName = key.Substring("Checkbox.".Length);
+                    rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
+                }
+            }
+
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(rolePermissions);
+
+            await _roleManager.UpdateAsync(role);
+
+            _notifier.Success(TH["Role updated successfully."]);
+
+            return RedirectToAction(nameof(Index));
         }
 
         private RoleEntry BuildRoleEntry(string name)
@@ -132,7 +178,7 @@ namespace Orchard.Roles.Controllers
             return installedPermissions;
         }
 
-        private async Task<IEnumerable<string>> GetEffectivePermissions(Role role)
+        private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
         {
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
@@ -141,19 +187,17 @@ namespace Orchard.Roles.Controllers
                 role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null)
             );
 
-            var permissionClaims = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
-
             var result = new List<string>();
 
-            foreach(var permission in permissionClaims)
+            foreach(var permission in allPermissions)
             {
-                if (await _authorizationService.AuthorizeAsync(fakeUser, new Permission(permission.ClaimValue)))
+                if (await _authorizationService.AuthorizeAsync(fakeUser, permission))
                 {
-                    result.Add(permission.ClaimValue);
+                    result.Add(permission.Name);
                 }
             }
 
-            return result.Distinct();
+            return result;
         }
     }
 }
