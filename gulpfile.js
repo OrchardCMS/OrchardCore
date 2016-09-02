@@ -137,8 +137,12 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
             throw "Input file '" + inputPath + "' is not of a valid type for output file '" + assetGroup.outputPath + "'.";
     });
     var generateSourceMaps = assetGroup.hasOwnProperty("generateSourceMaps") ? assetGroup.generateSourceMaps : true;
+    var containsLessOrScss = assetGroup.inputPaths.some(function (inputPath) {
+        var ext = path.extname(inputPath).toLowerCase();
+        return ext === ".less" || ext === ".scss";
+    });
     // Source maps are useless if neither concatenating nor transforming.
-    if ((!doConcat || assetGroup.inputPaths.length < 2) && !assetGroup.inputPaths.some(function (inputPath) { return path.extname(inputPath).toLowerCase() === ".less"; }))
+    if ((!doConcat || assetGroup.inputPaths.length < 2) && !containsLessOrScss)
         generateSourceMaps = false;
     var minifiedStream = gulp.src(assetGroup.inputPaths) // Minified output, source mapping completely disabled.
         .pipe(gulpif(!doRebuild,
