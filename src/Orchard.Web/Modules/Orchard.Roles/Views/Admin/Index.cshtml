@@ -7,41 +7,22 @@
 
         <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
 
-        <!-- Single button -->
-        <div class="btn-group">
-            <button id="actions" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Actions"]
-            </button>
-            <div class="dropdown-menu" aria-labelledby="actions">
-                <a class="dropdown-item" href="#">@T["Approve"]</a>
-                <a class="dropdown-item" href="#">@T["Disable"]</a>
-                <a class="dropdown-item" href="#">@T["Send challenge E-mail"]</a>
-                <a class="dropdown-item" href="#">@T["Delete"]</a>
-            </div>
-        </div>
-
-
-        <form asp-action="Index" method="post" class="form-inline pull-xs-right">
+        <form asp-action="Index" method="post" class="form-inline pull-xs-right" autocomplete="off">
             <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-            <button type="submit" class="btn btn-secondary">@T["Search"]</button>
         </form>
     </div>
 </nav>
 
-@using (Html.BeginForm())
-{
-    <ul class="list-group">
-        <li class="list-group-item">
-            <input id="all" type="checkbox">
-        </li>
+<form asp-action="Index">
+    <ul id="roles" class="list-group">
 
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
-            <li class="list-group-item">
+            <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
                 <div class="properties">
                     <div class="pull-xs-right">
-                        <a class="btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
-                        <a class="btn btn-secondary btn-sm" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
+                        <a class="delete btn btn-danger btn-sm" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
                 </div>
 
@@ -51,4 +32,35 @@
             </li>
         }
     </ul>
-}
+</form>
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On Enter, edit the role if there is a single one
+        searchBox.keypress(function (event) {
+            if (event.which == 13) {
+
+                // Edit the role if there is a single filtered element
+                var visible = $('#roles > li:visible');
+                if (visible.length == 1) {
+                    window.location = visible.find('.edit').attr('href');
+                }
+                return false;
+            }
+        });
+
+        // On each keypress filter the list of roles
+        searchBox.keyup(function (event) {
+            var search = $(this).val().toLowerCase();
+            $('#roles > li').each(function () {
+                var role = $(this).data('role').toLowerCase();
+                var found = role.indexOf(search) > -1;
+                $(this).toggle(found);
+            });
+        });
+    })
+//]]>
+</script>
