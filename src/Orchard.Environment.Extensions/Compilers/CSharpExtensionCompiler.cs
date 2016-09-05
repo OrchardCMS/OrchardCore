@@ -210,10 +210,12 @@ namespace Orchard.Environment.Extensions.Compilers
                         }
                     }
                 }
-                // Check for an ambient library
+                // Check for a resolved but ambient library (compiled e.g by VS)
                 else if (library != null && AmbientLibraries.Contains(library.Identity.Name))
                 {
-                    references.AddRange(dependency.CompilationAssemblies.Select(r => Path.Combine(runtimeDirectory, r.FileName)));
+                    // Search in the regular project bin folder, fallback to the runtime directory
+                    references.AddRange(dependency.CompilationAssemblies.Select(r => File.Exists(r.ResolvedPath)
+                        ? r.ResolvedPath : Path.Combine(runtimeDirectory, r.FileName)));
                 }
                 else
                 {
@@ -317,7 +319,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     var prevInputs = new HashSet<string>(File.ReadAllLines(rsp));
                     var newInputs = new HashSet<string>(allArgs);
 
-                    if (!prevInputs.Except(newInputs).Any() && ! newInputs.Except(prevInputs).Any())
+                    if (!prevInputs.Except(newInputs).Any() && !newInputs.Except(prevInputs).Any())
                     {
                         PrintMessage($"{context.ProjectName()}: Previously compiled, skipping dynamic compilation.");
                         return _compiledLibraries[context.ProjectName()] = true;
