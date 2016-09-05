@@ -58,13 +58,13 @@ namespace Orchard.Recipes.Services
             await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
         }
 
-        private Task UpdateStepResultRecordAsync(
+        private async Task UpdateStepResultRecordAsync(
             RecipeContext recipeContext,
             bool IsSuccessful,
             Exception exception = null)
         {
-            var recipeResult = _recipeResultAccessor
-                .GetResultAsync(recipeContext.ExecutionId).Result;
+            var recipeResult = await _recipeResultAccessor
+                .GetResultAsync(recipeContext.ExecutionId);
 
             var recipeStepResult = recipeResult
                 .Steps
@@ -75,8 +75,6 @@ namespace Orchard.Recipes.Services
             recipeStepResult.ErrorMessage = exception?.ToString();
 
             _session.Save(recipeResult);
-
-            return Task.CompletedTask;
         }
     }
 }
