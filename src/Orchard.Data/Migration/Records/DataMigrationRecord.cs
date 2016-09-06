@@ -14,7 +14,7 @@ namespace Orchard.Data.Migration.Records
 
     public class DataMigration
     {
-        public virtual string DataMigrationClass { get; set; }
-        public virtual int? Version { get; set; }
+        public string DataMigrationClass { get; set; }
+        public int? Version { get; set; }
     }
 }
