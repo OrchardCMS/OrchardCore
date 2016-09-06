@@ -78,6 +78,91 @@ namespace Orchard.Roles.Controllers
             return View(model);
         }
 
+
+        public async Task<IActionResult> Create()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Unauthorized();
+            }
+
+            var model = new CreateRoleViewModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateRoleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.RoleName = model.RoleName.Trim();
+
+                if (await _roleManager.FindByNameAsync(model.RoleName) != null)
+                {
+                    ModelState.AddModelError(string.Empty, T["The role is already used."]);
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var role = new Role { RoleName = model.RoleName };
+                var result = await _roleManager.CreateAsync(role);
+                if (result.Succeeded)
+                {
+                    _notifier.Success(TH["Role created successfully"]);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _session.Cancel();
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))
+            {
+                return Unauthorized();
+            }
+
+            var currentRole = await _roleManager.FindByIdAsync(id);
+
+            if (currentRole == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _roleManager.DeleteAsync(currentRole);
+
+            if (result.Succeeded)
+            {
+                _notifier.Success(TH["Role deleted successfully"]);
+            }
+            else
+            {
+                _session.Cancel();
+
+                _notifier.Error(TH["Could not delete this role"]);
+
+                foreach (var error in result.Errors)
+                {
+                    _notifier.Error(TH[error.Description]);
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRoles))

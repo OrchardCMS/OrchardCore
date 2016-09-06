@@ -94,6 +94,12 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
+            if (String.Equals(role.NormalizedRoleName, "ANONYMOUS") ||
+                String.Equals(role.NormalizedRoleName, "AUTHENTICATED"))
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "Can't delete system roles." });
+            }
+
             var roles = await GetRolesAsync();
             roles.Roles.Remove(role);
             UpdateRoles();
@@ -101,9 +107,13 @@ namespace Orchard.Roles.Services
             return IdentityResult.Success;
         }
 
-        public Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            return FindByNameAsync(roleId, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var roles = await GetRolesAsync();
+            var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
+            return role;
         }
 
         public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
@@ -111,7 +121,7 @@ namespace Orchard.Roles.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             var roles = await GetRolesAsync();
-            var role = roles.Roles.FirstOrDefault(x => x.RoleName.ToUpperInvariant() == normalizedRoleName);
+            var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
             return role;
         }
 
@@ -124,7 +134,7 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            return Task.FromResult(role.RoleName.ToUpperInvariant());
+            return Task.FromResult(role.NormalizedRoleName);
         }
 
         public Task<string> GetRoleIdAsync(Role role, CancellationToken cancellationToken)
@@ -159,6 +169,9 @@ namespace Orchard.Roles.Services
             {
                 throw new ArgumentNullException(nameof(role));
             }
+
+            role.NormalizedRoleName = normalizedName;
+            UpdateRoles();
 
             return Task.CompletedTask;
         }

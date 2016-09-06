@@ -22,11 +22,11 @@
                 <div class="properties">
                     <div class="pull-xs-right">
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                        <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
                 </div>
 
-                <input asp-for="RoleEntries[i].Selected" type="checkbox">
+                @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
 
                 @Model.RoleEntries[i].Name
             </li>
