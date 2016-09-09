@@ -371,6 +371,46 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
+            // Locate the csc.dll
+            var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
+
+            // Automatically generate csc.dll
+            if (!File.Exists(cscDllPath))
+            {
+                lock (_syncLock)
+                {
+                    if (!File.Exists(cscDllPath))
+                    {
+                        var cscLibrary = DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups
+                        .Any(g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
+
+                        var cscRelativePath = cscLibrary?.NativeLibraryGroups.Where(g => g.Runtime == "any")
+                            .SelectMany(g => g.AssetPaths).Where(p => p.Contains("csc.exe")).FirstOrDefault();
+
+                        if (!String.IsNullOrEmpty(cscRelativePath))
+                        {
+                            var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
+
+                            if (!File.Exists(cscExePath))
+                            {
+                                var nugetPackagesRoot = context.PackagesDirectory;
+
+                                if (!String.IsNullOrEmpty(nugetPackagesRoot))
+                                {
+                                    var cscPackagePath = Path.Combine(nugetPackagesRoot, cscLibrary.Name);
+                                    cscExePath = Path.Combine(cscPackagePath, cscLibrary.Version, cscRelativePath);
+
+                                    if (File.Exists(cscExePath))
+                                    {
+                                        File.Copy(cscExePath, cscDllPath, true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Execute CSC!
             var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
                 .WorkingDirectory(runtimeDirectory)

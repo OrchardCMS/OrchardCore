@@ -21,12 +21,6 @@
     "emitEntryPoint": true,
     "debugType": "portable",
     "preserveCompilationContext": true,
-    "copyToOutput": {
-      "include": [ "Tools" ],
-      "mappings": {
-        "csc.dll": "Tools/csc.dll"
-      }
-    },
     "compile": {
       "exclude": [
         "wwwroot",
