@@ -371,10 +371,10 @@ namespace Orchard.Environment.Extensions.Compilers
                 }
             }
 
-            // Locate the csc.dll
+            // Locate csc.dll
             var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
 
-            // Automatically generate csc.dll
+            // Automatically create csc.dll
             if (!File.Exists(cscDllPath))
             {
                 lock (_syncLock)
@@ -382,29 +382,26 @@ namespace Orchard.Environment.Extensions.Compilers
                     if (!File.Exists(cscDllPath))
                     {
                         var cscLibrary = DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups
-                        .Any(g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
+                            .Any(g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
 
                         var cscRelativePath = cscLibrary?.NativeLibraryGroups.Where(g => g.Runtime == "any")
                             .SelectMany(g => g.AssetPaths).Where(p => p.Contains("csc.exe")).FirstOrDefault();
 
                         if (!String.IsNullOrEmpty(cscRelativePath))
                         {
+                            // Search in the runtime directory
                             var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
 
-                            if (!File.Exists(cscExePath))
+                            // Fallback to the packages storage
+                            if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
                             {
-                                var nugetPackagesRoot = context.PackagesDirectory;
+                                var cscPackagePath = Path.Combine(context.PackagesDirectory, cscLibrary.Name);
+                                cscExePath = Path.Combine(cscPackagePath, cscLibrary.Version, cscRelativePath);
+                            }
 
-                                if (!String.IsNullOrEmpty(nugetPackagesRoot))
-                                {
-                                    var cscPackagePath = Path.Combine(nugetPackagesRoot, cscLibrary.Name);
-                                    cscExePath = Path.Combine(cscPackagePath, cscLibrary.Version, cscRelativePath);
-
-                                    if (File.Exists(cscExePath))
-                                    {
-                                        File.Copy(cscExePath, cscDllPath, true);
-                                    }
-                                }
+                            if (File.Exists(cscExePath))
+                            {
+                                File.Copy(cscExePath, cscDllPath, true);
                             }
                         }
                     }
