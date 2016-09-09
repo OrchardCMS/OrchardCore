@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,8 +13,6 @@ using Orchard.OpenId.Services;
 using Orchard.Security;
 using Orchard.Settings;
 using Orchard.Users.Models;
-using System;
-using Microsoft.AspNetCore.DataProtection;
 
 namespace Orchard.OpenId
 {
@@ -55,14 +55,14 @@ namespace Orchard.OpenId
             });
         }
 
-        public override void ConfigureServices(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection services)
         {
-            serviceCollection.AddScoped<OpenIdApplicationIndexProvider>();
-            serviceCollection.AddScoped<OpenIdTokenIndexProvider>();
-            serviceCollection.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
-            serviceCollection.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
+            services.AddScoped<OpenIdApplicationIndexProvider>();
+            services.AddScoped<OpenIdTokenIndexProvider>();
+            services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
+            services.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
 
-            var builder = serviceCollection.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
+            var builder = services.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
                 .AddApplicationStore<OpenIdApplicationStore>()
                 .AddTokenStore<OpenIdTokenStore>()
                 .AddUserStore<OpenIdUserStore>()
