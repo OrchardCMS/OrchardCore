@@ -26,6 +26,8 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
+        private static readonly Lazy<LibraryAsset> _cscLibraryAsset = new Lazy<LibraryAsset>(GetCscLibraryAsset);
+        private static LibraryAsset CscLibraryAsset => _cscLibraryAsset.Value;
 
         public CSharpExtensionCompiler ()
         {
@@ -34,6 +36,20 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
+
+        private static LibraryAsset GetCscLibraryAsset()
+        {
+            var library = DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
+                g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
+
+            var relativePath = library?.NativeLibraryGroups.Where(g => g.Runtime == "any").SelectMany(
+                g => g.AssetPaths).Where(p => p.Contains("csc.exe")).FirstOrDefault() ?? String.Empty;
+
+            // Will be fully resolved at compile time with the packages directory of a project context
+            var resolvedPath = Path.Combine(library?.Name ?? String.Empty, library?.Version ?? String.Empty, relativePath);
+
+            return new LibraryAsset(library?.Name ?? String.Empty, relativePath, resolvedPath);
+        }
 
         private static HashSet<string> GetAmbientLibraries()
         {
@@ -367,43 +383,36 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 lock (_syncLock)
                 {
-                    File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                    if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
+                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+                    {
+                        File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                    }
                 }
             }
 
-            // Locate csc.dll
+            // Locate csc.dll and the csc.exe asset
             var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
 
+            // Search in the runtime directory
+            var cscExePath = Path.Combine(runtimeDirectory, CscLibraryAsset.RelativePath);
+
+            // Fallback to the packages storage
+            if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
+            {
+                cscExePath = Path.Combine(context.PackagesDirectory, CscLibraryAsset.ResolvedPath);
+            }
+
             // Automatically create csc.dll
-            if (!File.Exists(cscDllPath))
+            if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
+               || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscDllPath))
+                    if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
+                       || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
                     {
-                        var cscLibrary = DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups
-                            .Any(g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
-
-                        var cscRelativePath = cscLibrary?.NativeLibraryGroups.Where(g => g.Runtime == "any")
-                            .SelectMany(g => g.AssetPaths).Where(p => p.Contains("csc.exe")).FirstOrDefault();
-
-                        if (!String.IsNullOrEmpty(cscRelativePath))
-                        {
-                            // Search in the runtime directory
-                            var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
-
-                            // Fallback to the packages storage
-                            if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
-                            {
-                                var cscPackagePath = Path.Combine(context.PackagesDirectory, cscLibrary.Name);
-                                cscExePath = Path.Combine(cscPackagePath, cscLibrary.Version, cscRelativePath);
-                            }
-
-                            if (File.Exists(cscExePath))
-                            {
-                                File.Copy(cscExePath, cscDllPath, true);
-                            }
-                        }
+                        File.Copy(cscExePath, cscDllPath, true);
                     }
                 }
             }
