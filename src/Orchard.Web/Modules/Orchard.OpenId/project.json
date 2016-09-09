@@ -1,14 +1,13 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
-    "Orchard.Users": "2.0.0-*",
-    "OpenIddict": "1.0.0-alpha2-*",
-    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
-    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.0",
     "Orchard.Roles": "2.0.0-*",
+    "Orchard.Users": "2.0.0-*",
+    "OpenIddict": "1.0.0-alpha2-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
