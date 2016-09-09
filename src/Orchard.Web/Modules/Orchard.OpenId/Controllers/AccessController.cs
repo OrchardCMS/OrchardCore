@@ -1,4 +1,6 @@
-﻿using AspNet.Security.OpenIdConnect.Extensions;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
+using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -6,11 +8,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OpenIddict;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -19,47 +20,56 @@ namespace Orchard.OpenId.Controllers
     {
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly OpenIddict.OpenIddictUserManager<User> _userManager;
+        private readonly OpenIddictUserManager<User> _userManager;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             SignInManager<User> signInManager,
-            OpenIddict.OpenIddictUserManager<User> userManager)
+            OpenIddictUserManager<User> userManager)
         {
             _applicationManager = applicationManager;
             _signInManager = signInManager;
             _userManager = userManager;
         }
 
-        [HttpPost, Produces("application/json")]
-        public Task<IActionResult> Token()
+        [HttpPost, IgnoreAntiforgeryToken]
+        [Produces("application/json")]
+        public async Task<IActionResult> Token()
         {
+            // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
+            // the global antiforgery token validation policy applied by Orchard.Hosting.Web,
+            // which is required for this stateless OAuth2/OIDC token endpoint to work correctly.
+            // To prevent effective CSRF/session fixation attacks, this action MUST NOT
+            // return an authentication cookie or try to establish an ASP.NET Core session.
             var request = HttpContext.GetOpenIdConnectRequest();
 
             if (request.IsPasswordGrantType())
             {
-                return ExchangePasswordGrantType(request);
+                return await ExchangePasswordGrantType(request);
             }
             else if (request.IsClientCredentialsGrantType())
             {
-                return ExchangeClientCredentialsGrantType(request);
+                return await ExchangeClientCredentialsGrantType(request);
             }
-            else
+
+            return BadRequest(new OpenIdConnectResponse
             {
-                return Task.FromResult<IActionResult>(BadRequest(new OpenIdConnectResponse
-                {
-                    Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
-                    ErrorDescription = "The specified grant type is not supported."
-                }));
-            }
+                Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
+                ErrorDescription = "The specified grant type is not supported."
+            });
         }
 
         private async Task<IActionResult> ExchangeClientCredentialsGrantType(OpenIdConnectRequest request)
         {
+            // Note: client authentication is always enforced by OpenIddict before this action is invoked.
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
-            if (application == null || !await _applicationManager.ValidateSecretAsync(application, request.ClientSecret))
+            if (application == null)
             {
-                return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = "The client application is unknown."
+                });
             }
 
             var identity = await _applicationManager.CreateIdentityAsync(application, request.GetScopes());
@@ -81,7 +91,41 @@ namespace Orchard.OpenId.Controllers
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
-                return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "The username/password couple is invalid."
+                });
+            }
+
+            // Ensure the user is allowed to sign in.
+            if (!await _signInManager.CanSignInAsync(user))
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "The specified user is not allowed to sign in."
+                });
+            }
+
+            // Reject the token request if two-factor authentication has been enabled by the user.
+            if (_userManager.SupportsUserTwoFactor && await _userManager.GetTwoFactorEnabledAsync(user))
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "The specified user is not allowed to sign in."
+                });
+            }
+
+            // Ensure the user is not already locked out.
+            if (_userManager.SupportsUserLockout && await _userManager.IsLockedOutAsync(user))
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "The username/password couple is invalid."
+                });
             }
 
             // Ensure the password is valid.
@@ -92,7 +136,11 @@ namespace Orchard.OpenId.Controllers
                     await _userManager.AccessFailedAsync(user);
                 }
 
-                return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                    ErrorDescription = "The username/password couple is invalid."
+                });
             }
 
             if (_userManager.SupportsUserLockout)
@@ -130,7 +178,9 @@ namespace Orchard.OpenId.Controllers
             }
 
             if (application.SkipConsent)
-                return await IssueAccessIdentityTokens();
+            {
+                return await IssueAccessIdentityTokens(request);
+            }
 
             return View(new AuthorizeViewModel
             {
@@ -143,14 +193,13 @@ namespace Orchard.OpenId.Controllers
         [Authorize, HttpPost, ValidateAntiForgeryToken]
         public Task<IActionResult> Accept()
         {
-            return IssueAccessIdentityTokens();
-        }
-
-        private async Task<IActionResult> IssueAccessIdentityTokens()
-        {
-            // Extract the authorization request from the ASP.NET environment.
             var request = HttpContext.GetOpenIdConnectRequest();
 
+            return IssueAccessIdentityTokens(request);
+        }
+
+        private async Task<IActionResult> IssueAccessIdentityTokens(OpenIdConnectRequest request)
+        {
             // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
