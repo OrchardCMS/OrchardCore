@@ -67,7 +67,7 @@ namespace Orchard.Recipes.Services
 
                 var parsersForFileExtension = _recipeOptions
                     .RecipeFileExtensions
-                    .Where(rfx => rfx.Key == Path.GetExtension(fileInfo.PhysicalPath));
+                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(fileInfo.PhysicalPath));
 
                 using (var stream = fileInfo.CreateReadStream())
                 {
