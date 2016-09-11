@@ -376,8 +376,8 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 lock (_syncLock)
                 {
-                    if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
-                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+                    if (!File.Exists(cscRuntimeConfigPath)
+                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath))
                     {
                         File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
                     }
@@ -400,12 +400,12 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Automatically create csc.dll
             if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
-               || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
+                || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
             {
                 lock (_syncLock)
                 {
-                    if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
-                       || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
+                    if (!File.Exists(cscDllPath)
+                        || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath))
                     {
                         File.Copy(cscExePath, cscDllPath, true);
                     }
