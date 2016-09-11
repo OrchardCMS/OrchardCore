@@ -23,11 +23,8 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
 
         private static RuntimeLibrary CscLibrary => _cscLibrary.Value;
-        private static string CscRelativePath => _cscRelativePath.Value;
         private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
-
         private static readonly Lazy<RuntimeLibrary> _cscLibrary = new Lazy<RuntimeLibrary>(GetCscLibrary);
-        private static readonly Lazy<string> _cscRelativePath = new Lazy<string>(GetCscRelativePath);
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
@@ -43,13 +40,8 @@ namespace Orchard.Environment.Extensions.Compilers
         private static RuntimeLibrary GetCscLibrary()
         {
             return DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
-                g => g.Runtime == "any" && g.AssetPaths.Any(p => p.Contains("csc.exe")))).FirstOrDefault();
-        }
-
-        private static string GetCscRelativePath()
-        {
-            return CscLibrary?.NativeLibraryGroups.Where(g => g.Runtime == "any").SelectMany(
-                g => g.AssetPaths).Where(p => p.Contains("csc.exe")).FirstOrDefault() ?? String.Empty;
+                g => g.Runtime.Equals("any", StringComparison.OrdinalIgnoreCase) && g.AssetPaths.Any(
+                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0))).FirstOrDefault();
         }
 
         private static HashSet<string> GetAmbientLibraries()
@@ -396,13 +388,14 @@ namespace Orchard.Environment.Extensions.Compilers
             var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
 
             // Search in the runtime directory
-            var cscExePath = Path.Combine(runtimeDirectory, CscRelativePath);
+            var cscRelativePath = Path.Combine("runtimes", "any", "native", "csc.exe");
+            var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
 
             // Fallback to the packages storage
             if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
             {
                 cscExePath = Path.Combine(context.PackagesDirectory, CscLibrary?.Name ?? String.Empty,
-                    CscLibrary?.Version ?? String.Empty, CscRelativePath);
+                    CscLibrary?.Version ?? String.Empty, cscRelativePath);
             }
 
             // Automatically create csc.dll
