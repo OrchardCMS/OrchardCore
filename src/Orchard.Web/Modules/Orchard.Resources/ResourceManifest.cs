@@ -16,7 +16,7 @@ namespace Orchard.Resources
             manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
-                .SetUrl("bootstrap.js")
+                .SetUrl("/Orchard.Resources/Scripts/bootstrap.min.js", "/Orchard.Resources/Scripts/bootstrap.js")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
                 .SetCdnIntegrity("sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS")
                 ;
