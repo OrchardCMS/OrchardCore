@@ -4,7 +4,7 @@
     "inputs": [
       "Assets/scss/TheAdmin.scss"
     ],
-    "output": "Styles/TheAdmin.css"
+    "output": "Content/Styles/TheAdmin.css"
   },
   {
     "inputs": [
@@ -13,6 +13,6 @@
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
     ],
-    "output": "Scripts/TheAdmin.js"
+    "output": "Content/Scripts/TheAdmin.js"
   }
 ]

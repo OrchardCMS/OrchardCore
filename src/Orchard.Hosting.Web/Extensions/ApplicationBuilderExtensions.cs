@@ -37,7 +37,7 @@ namespace Orchard.Hosting
             // TODO: configure the location and parameters (max-age) per module.
             foreach(var extension in extensionManager.AvailableExtensions())
             {
-                var contentPath = Path.Combine(hostingEnvironment.ContentRootPath, extension.Location, extension.Id, "wwwroot");
+                var contentPath = Path.Combine(hostingEnvironment.ContentRootPath, extension.Location, extension.Id, "Content");
                 if (Directory.Exists(contentPath))
                 {
                     builder.UseStaticFiles(new StaticFileOptions()

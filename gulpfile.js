@@ -106,7 +106,8 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.outputPath = path.resolve(path.join(assetGroup.basePath, assetGroup.output));
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
-    assetGroup.webroot = path.join("./src/Orchard.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
+    // Uncomment to copy assets to wwwroot
+    //assetGroup.webroot = path.join("./src/Orchard.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
 }
 
 function createAssetGroupTask(assetGroup, doRebuild) {
@@ -171,7 +172,8 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         }))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        // Uncomment to copy assets to wwwroot
+        //.pipe(gulp.dest(assetGroup.webroot));
     var devStream = gulp.src(assetGroup.inputPaths) // Non-minified output, with source mapping
         .pipe(gulpif(!doRebuild,
             gulpif(doConcat,
@@ -195,7 +197,8 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        // Uncomment to copy assets to wwwroot
+        //.pipe(gulp.dest(assetGroup.webroot));
     return merge([minifiedStream, devStream]);
 }
 
@@ -233,12 +236,14 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
             "*/\n\n"))
         .pipe(gulpif(generateSourceMaps, sourcemaps.write()))
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot))
+        // Uncomment to copy assets to wwwroot
+        //.pipe(gulp.dest(assetGroup.webroot))
         .pipe(uglify())
         .pipe(rename({
             suffix: ".min"
         }))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir))
-        .pipe(gulp.dest(assetGroup.webroot));
+        // Uncomment to copy assets to wwwroot
+        //.pipe(gulp.dest(assetGroup.webroot));
 }

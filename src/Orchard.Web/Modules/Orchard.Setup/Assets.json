@@ -4,7 +4,7 @@
     "inputs": [
       "Assets/scss/setup.scss"
     ],
-    "output": "Styles/setup.css"
+    "output": "Content/Styles/setup.css"
   },
   {
     "inputs": [
@@ -13,6 +13,6 @@
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
     ],
-    "output": "Scripts/setup.js"
+    "output": "Content/Scripts/setup.js"
   }
 ]

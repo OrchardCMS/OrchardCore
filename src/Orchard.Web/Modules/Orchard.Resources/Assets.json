@@ -1,7 +1,7 @@
 ﻿[
   {
     "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
-    "output": "Styles/bootstrap.css"
+    "output": "Content/Styles/bootstrap.css"
   },
   {
     "inputs": [
@@ -17,6 +17,6 @@
       "Assets/Bootstrap/Js/tooltip.js",
       "Assets/Bootstrap/Js/util.js"
     ],
-    "output": "Scripts/bootstrap.js"
+    "output": "Content/Scripts/bootstrap.js"
   }
 ]
