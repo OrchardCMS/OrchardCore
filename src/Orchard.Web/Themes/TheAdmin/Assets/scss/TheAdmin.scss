@@ -27,7 +27,8 @@ $left-navigation-expand-width: 15em;
         width: $left-navigation-width;
         height: 100%;
         z-index: 1;
-        position: absolute;
+        position: fixed;
+        top: $top-nav-height;
     }
 
     .ta-content {
@@ -117,134 +118,204 @@ label .field-validation-error::before {
 // Navigation
 // ------------------------------
 
-.ta-left-sidebar nav {
+.ta-left-sidebar .menu-admin {
     @extend .bg-faded;
-    position: fixed;
-    top: $top-nav-height;
-    left: 0;
-    height: 100%;
+    left:0;
     list-style-type: none;
     margin: 0;
     padding: 0;
     z-index: 10;
     overflow: hidden;
-    /*box-shadow: 2px 0 18px rgba(0, 0, 0, 0.26);*/
+}
 
-    .menu-admin {
-        @extend .nav;
+.menu-admin input[type=checkbox],
+.menu-admin input[type=radio] {
+	/* hide native checkbox */
+	position: absolute;
+	opacity: 0;
+}
+.menu-admin ul label, .menu-admin ul a {
+	position: relative;
+	display: block;
+    margin: 0;
+}
 
-        li {
-            @extend .nav-item;
-        }
-    }
-    // When a root link is hovered, highlight it
-    .menu-admin > li:hover > a {
-        @extend .bg-inverse;
-    }
-    // Add a top border to the first root link
-    .menu-admin > li:first-child > a {
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    // Top menu links are just showing the icons, and are square
-    .menu-admin > li > a {
-        @extend .nav-link;
-        text-indent: -500em;
-        display: block;
-        height: $left-navigation-width;
-        width: $left-navigation-width;
-        line-height: $left-navigation-width;
-        text-align: center;
-        position: relative;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: background 0.1s ease-in-out;
-    }
+.menu-admin > li > ul label,
+.menu-admin > li > ul a {
+	position: relative;
+	display: block;
+	padding: 0.5em;
+    margin: 0;
+	font-size: 1rem;
+}
 
-    .menu-admin > li > a:before {
-        font-family: FontAwesome;
-        speak: none;
-        text-indent: 0em;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        font-size: 1.4em;
-    }
+.menu-admin {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
 
-    // Second level menu
-    .menu-admin > li {
-        ul {
-            margin:0;
-            padding-left:1em;
-        }
+.menu-admin ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
 
-        > ul {
-            width: 0;
-            overflow: hidden;
-            z-index: 5;
-            transition: all 0.1s ease-in-out;
-            position: fixed;
-            top: $top-nav-height;
-            left: $left-navigation-width;
-            height: 100%;
+.menu-admin li {
+    padding: 0;
+    margin: 0;
+    line-height: 1rem;
+}
 
-            li {
-                list-style-type:none;
-                // common style properties for all
-                // second level menu links
+.menu-admin a:hover,
+.menu-admin label:hover {
+    cursor: pointer;
+}
 
-                a {
-                    @extend .nav-link;
-                    display: block;
-                    height: 2em;
-                    text-indent: 0em;
-                    line-height: 2em;
-                    text-align: center;
-                    position: relative;
-                    transition: background 0.1s ease-in-out;
-                    border: none;
-                    font-size: 1rem;
-                    font-weight: normal;
-                    text-decoration: none;
-                }
+.menu-admin > li a,
+.menu-admin > li a:hover,
+.menu-admin > li a:active,
+.menu-admin > li a:visited {
+    color: $gray-dark;
+    text-decoration: none;
+}
 
-                :first-child {
-                    // clears the border (inherited)
-                    border-top: none;
-                }
+.menu-admin > li > ul {
+    position: fixed;
+    top: $top-nav-height;
+    left: $left-navigation-width;
+    height: 100%;
+    width: $left-navigation-expand-width;
+}
 
-            }
-        }
-    }
+.menu-admin > li > ul a.active,
+.menu-admin > li > ul a:active,
+.menu-admin > li > ul a:focus {
+    @extend .bg-faded;
+    color: $gray-dark;
+}
 
-    .menu-admin > li > ul.open {
-        width: $left-navigation-expand-width;
-        height: 100%;
-        display: block;
+.menu-admin > li > ul a:hover,
+.menu-admin > li > ul label:hover {
+    background-color: $tag-default-bg;
+    color: $tag-link-hover-color;
+}
 
-        a {
-            text-align: left;
-        }
+.menu-admin ul label::before {
+  /* arrow icon */
+  content: "\f0da";
+  font-family: "FontAwesome";
+  padding-right: 0.5em;
+}
+
+.menu-admin ul input[type=checkbox]:checked + label::before {
+  /* rotate icon */
+  content: "\f0d7";
+}
+
+$navigation-gap: 1em;
+.menu-admin ul > li {
+    /*padding-left: $navigation-gap;*/
+}
+
+.menu-admin ul > li > ul > li > a  {
+    padding-left: 2*$navigation-gap;
+}
+
+.menu-admin ul > li > ul > li > ul > li > a  {
+    padding-left: 3*$navigation-gap;
+}
+
+.menu-admin ul > li > ul > li > ul > li > ul > li > a {
+    padding-left: 4*$navigation-gap;
+}
+
+ul.menu-admin ul {
+	/* by default hide all sub menus */
+	display: none;
+}
+
+.menu-admin input[type=checkbox]:checked + label + ul,
+.menu-admin input[type=checkbox]:checked + label:nth-of-type(n) + ul,
+.menu-admin input[type=radio]:checked + label + ul,
+.menu-admin input[type=radio]:checked + label:nth-of-type(n) + ul {
+	/* use label:nth-of-type(n) to fix a bug on safari (<= 8.0.8) with multiple adjacent-sibling selectors*/
+	/* show children when item is checked */
+	display: block;
+}
+
+.menu-admin > li > label > span {
+    top: 2em;
+    position: relative;
+    text-align: center;
+    display: block;
+    padding-top: 1em;
+    font-size: 0.8em;
+}
+
+.menu-admin > li > label {
+    margin:0;
+}
+
+// Top menu links are just showing the icons, and are square
+.menu-admin > li > label {
+    display: block;
+    height: $left-navigation-width;
+    width: $left-navigation-width;
+    position: relative;
+    transition: background 0.1s ease-in-out;
+}
+
+// When a root link is hovered, highlight it
+.menu-admin > li:hover {
+    > label::before,
+    > label > span {
+    color: $brand-primary;
     }
 }
 
-.menu-admin > li.content > a:before {
+.menu-admin > li > label::before {
+    color: $gray-dark;
+    font-size: 2em;
+    font-family: "FontAwesome";
+    display:block;
+    position: relative;
+    text-align: center;
+    top: 0.7em;
+    left:0;
+    padding: 0;
+    margin:0;
+}
+
+// Add a top border to the first root link
+.menu-admin > li:first-child > label {
+    /*border-top: 1px solid rgba(0, 0, 0, 0.05);*/
+}
+
+// Icons
+
+.menu-admin > li.content > a::before,
+.menu-admin > li.content > label::before {
     content: "\f187";
 }
 
-.menu-admin > li.new > a:before {
+.menu-admin > li.new > a::before,
+.menu-admin > li.new > label::before {
     content: "\f044";
 }
 
-.menu-admin > li.content-definition > a:before {
+.menu-admin > li.content-definition > a::before,
+.menu-admin > li.content-definition > label::before {
     content: "\f1b2";
 }
 
-.menu-admin > li.themes > a:before {
+.menu-admin > li.themes > a::before,
+.menu-admin > li.themes > label::before {
     content: "\f083";
 }
 
-.menu-admin > li.demo > a:before {
+.menu-admin > li.demo > a::before,
+.menu-admin > li.demo > label::before {
     content: "\f292";
 }
 
