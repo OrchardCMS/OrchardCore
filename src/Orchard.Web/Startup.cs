@@ -6,6 +6,7 @@ using Orchard.Environment.Shell;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc;
 using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Orchard.Web
 {
@@ -28,9 +29,9 @@ namespace Orchard.Web
             return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder builder, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder builder, IHostingEnvironment hostingEnvrionmnent, ILoggerFactory loggerFactory)
         {
-            builder.ConfigureWebHost(loggerFactory);
+            builder.ConfigureWebHost(hostingEnvrionmnent, loggerFactory);
         }
     }
 }
