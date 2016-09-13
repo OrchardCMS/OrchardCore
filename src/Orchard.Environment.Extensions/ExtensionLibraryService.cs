@@ -563,8 +563,11 @@ namespace Orchard.Environment.Extensions
                 {
                     lock (_syncLock)
                     {
-                        Directory.CreateDirectory(binaryFolderPath);
-                        File.Copy(assetPath, binaryPath, true);
+                        if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
+                        {
+                            Directory.CreateDirectory(binaryFolderPath);
+                            File.Copy(assetPath, binaryPath, true);
+                        }
                     }
                 }
             }
