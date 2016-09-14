@@ -2,90 +2,76 @@
 @using Orchard.OpenId.ViewModels;
 @using Orchard.OpenId.Models;
 
-<form asp-controller="Admin" asp-action="Create" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+<h1>@RenderTitleSegments(T["Create OpenId Application"])</h1>
 
-    <h4>@T["Create OpenId Application"]</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label asp-for="ClientId" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="ClientId" class="form-control" />
-            <span asp-validation-for="ClientId" class="text-danger"></span>
-        </div>
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post">
+    <div class="form-group" asp-validation-class-for="ClientId">
+        <label asp-for="ClientId">@T["Client Id"]</label>
+        <span asp-validation-for="ClientId" class="text-danger">@T["The Client Id is required."]</span>
+        <input asp-for="ClientId" class="form-control" autofocus />
+    </div>
+    <div class="form-group" asp-validation-class-for="DisplayName">
+        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
+        <input asp-for="DisplayName" class="form-control" autofocus />
+    </div>
+    <div class="form-group" asp-validation-class-for="RedirectUri">
+        <label asp-for="RedirectUri">@T["Redirect URI"]</label>
+        <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect URI is required."]</span>
+        <input asp-for="RedirectUri" class="form-control" autofocus />
+    </div>
+    <div class="form-group" asp-validation-class-for="LogoutRedirectUri">
+        <label asp-for="LogoutRedirectUri">@T["Logout Redirect URI"]</label>
+        <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect URI is required."]</span>
+        <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
+    </div>
+    <div class="form-group" asp-validation-class-for="Password">
+        <label asp-for="Password">@T["Password"]</label>
+        <span asp-validation-for="Password" class="text-danger">@T["The Password is required."]</span>
+        <input asp-for="Password" class="form-control" autofocus />
+    </div>
+    <div class="form-group" asp-validation-class-for="ConfirmPassword">
+        <label asp-for="ConfirmPassword">@T["Confirm Password"]</label>
+        <span asp-validation-for="Password" class="text-danger">@T["The Confirm Password is required."]</span>
+        <input asp-for="ConfirmPassword" class="form-control" autofocus />
     </div>
     <div class="form-group">
-        <label asp-for="DisplayName" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="DisplayName" class="form-control" />
-            <span asp-validation-for="DisplayName" class="text-danger"></span>
-        </div>
+        <label asp-for="Type">@T["Type"]</label>                
+        <select asp-for="Type" class="form-control">
+            <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
+            <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
+        </select>        
     </div>
-    <div class="form-group">
-        <label asp-for="RedirectUri" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="RedirectUri" class="form-control" />
-            <span asp-validation-for="RedirectUri" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="LogoutRedirectUri" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="LogoutRedirectUri" class="form-control" />
-            <span asp-validation-for="LogoutRedirectUri" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="ConfirmPassword" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-    </div>
-    <div class="form-group">
-        <label asp-for="Type" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <select asp-for="Type" class="form-control">
-                <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
-                <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
-            </select>
-            <span asp-validation-for="Type" class="text-danger"></span>
-        </div>
-    </div>
+    
     @{
-        var rolesClass = Model.Type == ClientType.Public ? "form-group hidden" : "form-group";
+        var classes = Model.Type == ClientType.Public ? "form-group collapse" : "form-group";
     }
-    <div class=@rolesClass id="RoleGroup" name="RoleGroup">
-        <label class="col-md-2 control-label">@T["Roles"]</label>
-        <div class="col-md-10">
-            <ul class="list-group">
-                @for (var i = 0; i < Model.RoleEntries.Count; i++)
-                {
-                    <li class="list-group-item">
-                        <input asp-for="RoleEntries[i].Selected" type="checkbox">
-                        <input asp-for="RoleEntries[i].Name" type="hidden">
-                        @Model.RoleEntries[i].Name
-                    </li>
-                }
-            </ul>
-        </div>
+    <div class="@classes"  id="RoleGroup" name="RoleGroup">
+        <h6>@T["Roles"]</h6>
+        @for (var i = 0; i < Model.RoleEntries.Count; i++)
+        {
+            <div class="form-check">
+                <label class="form-check-label" asp-for="RoleEntries[i].Selected">
+
+                    <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
+                    <input type="hidden" asp-for="RoleEntries[i].Name" />
+                    @Model.RoleEntries[i].Name
+                </label>
+            </div>            
+        }        
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">@T["Submit"]</button>
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
         </div>
-    </div>
+    </fieldset>
 </form>
-@*at="Foot"*@
-<script>
+<script at="Foot" type="text/javascript">
+//<![CDATA[
     $("#Type").change(function () {
         $("#RoleGroup").toggle("slow");
     });
+//]]>
 </script>
