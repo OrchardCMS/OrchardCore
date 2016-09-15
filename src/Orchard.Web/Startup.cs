@@ -1,13 +1,11 @@
+using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Folders;
-using Orchard.Environment.Shell;
-using Orchard.Hosting;
-using Orchard.Hosting.Mvc;
-using System;
-using Microsoft.AspNetCore.Hosting;
 using Orchard.DisplayManagement;
+using Orchard.Environment.Extensions.Folders;
+using Orchard.Hosting;
 
 namespace Orchard.Web
 {
@@ -15,25 +13,17 @@ namespace Orchard.Web
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddWebHost();
-
-            services.ConfigureShell("Sites");
-
-            services.AddModuleFolder("Modules");
+            services.AddOrchardTheming();
             services.AddThemeFolder("Themes");
 
-            services.AddOrchardTheming();
-            services.AddOrchardMvc();
-
-            // Save the list of service definitions
-            services.AddSingleton(_ => services);
+            services.AddOrchard();
 
             return services.BuildServiceProvider();
         }
 
-        public void Configure(IApplicationBuilder builder, IHostingEnvironment hostingEnvrionmnent, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            builder.ConfigureWebHost(hostingEnvrionmnent, loggerFactory);
+            app.UserOrchard(env, loggerFactory);
         }
     }
 }
