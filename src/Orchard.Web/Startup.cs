@@ -7,6 +7,7 @@ using Orchard.Hosting;
 using Orchard.Hosting.Mvc;
 using System;
 using Microsoft.AspNetCore.Hosting;
+using Orchard.DisplayManagement;
 
 namespace Orchard.Web
 {
@@ -21,6 +22,7 @@ namespace Orchard.Web
             services.AddModuleFolder("Modules");
             services.AddThemeFolder("Themes");
 
+            services.AddOrchardTheming();
             services.AddOrchardMvc();
 
             // Save the list of service definitions

@@ -34,7 +34,6 @@ namespace Orchard.Hosting.Mvc
 
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
-            services.AddTransient<IMvcRazorHost, TagHelperMvcRazorHost>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
