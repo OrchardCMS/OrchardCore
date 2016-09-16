@@ -70,12 +70,10 @@
     "exclude": [
       "**/obj"
     ],
-    "includeFiles": [],
-    "excludeFiles": [],
-    "builtIns": [],
-    "mappings": {
-      "csc.dll": "Tools/csc.dll"
-    }
+    "includeFiles": [ "" ],
+    "excludeFiles": [ "" ],
+    "builtIns": [ "" ],
+    "mappings": { }
   },
   "commands": {
     "web": ""
