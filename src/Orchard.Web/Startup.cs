@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Extensions.Folders;
-using Orchard.Hosting;
 
 namespace Orchard.Web
 {

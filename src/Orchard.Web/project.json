@@ -8,8 +8,7 @@
       "version": "1.0.0",
       "type": "platform"
     },
-    "Orchard.Hosting.Console": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
+    "Orchard": "1.0.0",
     "System.Linq": "4.1.0-*"
   },
   "runtimeOptions": {
