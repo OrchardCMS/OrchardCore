@@ -27,6 +27,7 @@ namespace Orchard.Hosting.Mvc
                     options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
                     options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
                 })
+                .AddAuthorization()
                 .AddViews()
                 .AddViewLocalization()
                 .AddRazorViewEngine()
