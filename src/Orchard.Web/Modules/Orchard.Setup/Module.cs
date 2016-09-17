@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Hosting;
+using Orchard.Setup.Services;
 
 namespace Orchard.Setup
 {
@@ -10,7 +11,10 @@ namespace Orchard.Setup
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
-            new ShellModule().ConfigureServices(serviceCollection);
+            serviceCollection.AddScoped<ISetupService, SetupService>();
+
+            new ShellModule()
+                .ConfigureServices(serviceCollection);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
