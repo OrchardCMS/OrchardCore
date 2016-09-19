@@ -15,7 +15,7 @@ using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
-    [Authorize]
+    [Authorize, ValidateAntiForgeryToken]
     public class AccessController : Controller
     {
         private readonly IOpenIdApplicationManager _applicationManager;
@@ -32,7 +32,8 @@ namespace Orchard.OpenId.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost, IgnoreAntiforgeryToken]
+        [AllowAnonymous, HttpPost]
+        [IgnoreAntiforgeryToken]
         [Produces("application/json")]
         public async Task<IActionResult> Token()
         {
@@ -162,7 +163,7 @@ namespace Orchard.OpenId.Controllers
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        [Authorize, HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Authorize()
         {
             var request = HttpContext.GetOpenIdConnectRequest();
@@ -190,7 +191,7 @@ namespace Orchard.OpenId.Controllers
             });
         }
 
-        [Authorize, HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public Task<IActionResult> Accept()
         {
             var request = HttpContext.GetOpenIdConnectRequest();
@@ -228,7 +229,7 @@ namespace Orchard.OpenId.Controllers
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        [Authorize, HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public IActionResult Deny()
         {
             // Notify OpenIddict that the authorization grant has been denied by the resource owner
@@ -236,7 +237,7 @@ namespace Orchard.OpenId.Controllers
             return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
-        [HttpGet]
+        [AllowAnonymous, HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -244,6 +245,6 @@ namespace Orchard.OpenId.Controllers
             // Returning a SignOutResult will ask OpenIddict to redirect the user agent
             // to the post_logout_redirect_uri specified by the client application.
             return SignOut(OpenIdConnectServerDefaults.AuthenticationScheme);
-        }        
+        }
     }
 }
