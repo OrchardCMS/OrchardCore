@@ -1,15 +1,16 @@
-# Orchard 2 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
+# Orchard 2
 
 Orchard 2 is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) in [ASP.NET Core](http://www.asp.net/vnext). You can check out the [Orchard 2 presentation from the last Orchard Harvest](https://www.youtube.com/watch?v=TK6a_HfD0O8) to get an introductory overview of its features and goals.
 
 [![Join the chat at https://gitter.im/OrchardCMS/Orchard2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/Orchard2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
 
 ## Build Status
 
 | Build server| Platform       | Status                                                                                                                                                                  |
 |-------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AppVeyor    | Windows        | [![AppVeyor](https://ci.appveyor.com/api/projects/status/ccmxpn9l3q377jhg/branch/master?svg=true)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master) |
-| Travis      | Linux / OS X   | [![Travis](https://travis-ci.org/alexbocharov/Orchard2.svg?branch=master)](https://travis-ci.org/alexbocharov/Orchard2)                                                 |
+| AppVeyor    | Windows        | [![Build status](https://ci.appveyor.com/api/projects/status/ilx2dx9wvmm2cjdp/branch/master?svg=true)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master) |
+| Travis      | Linux / OS X   | [![Build Status](https://travis-ci.org/OrchardCMS/Orchard2.svg?branch=master)](https://travis-ci.org/OrchardCMS/Orchard2)                                                 |
 | MyGet       | Windows        | [![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)              |
 
 ## Orchard CMS
