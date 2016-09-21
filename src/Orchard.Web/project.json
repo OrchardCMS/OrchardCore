@@ -8,7 +8,7 @@
       "version": "1.0.0",
       "type": "platform"
     },
-    "Orchard": "1.0.0",
+    "Orchard.Cms": "1.0.0",
     "System.Linq": "4.1.0-*"
   },
   "runtimeOptions": {

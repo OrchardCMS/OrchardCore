@@ -7,7 +7,7 @@ namespace Orchard.DisplayManagement
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddOrchardTheming(this IServiceCollection services)
+        public static IServiceCollection AddTheming(this IServiceCollection services)
         {
             services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
 

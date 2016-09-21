@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement;
-using Orchard.Environment.Extensions.Folders;
+using Orchard.Cms;
 
 namespace Orchard.Web
 {
@@ -12,17 +11,14 @@ namespace Orchard.Web
     {
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardTheming();
-            services.AddThemeFolder("Themes");
-
-            services.AddOrchard();
+            services.AddOrchardCms();
 
             return services.BuildServiceProvider();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UserOrchard(env, loggerFactory);
+            app.UseOrchardCms(env, loggerFactory);
         }
     }
 }
