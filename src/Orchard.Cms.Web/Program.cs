@@ -3,7 +3,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Orchard.Hosting;
 
-namespace Orchard.Web
+namespace Orchard.Cms.Web
 {
     public class Program
     {
