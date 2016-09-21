@@ -38,7 +38,7 @@ namespace Orchard.Parser.Yaml
 
             if (!fileInfo.Directory.Exists)
             {
-                fileInfo.Create();
+                Directory.CreateDirectory(fileInfo.Directory.FullName);
             }
             
             // TODO: Revisit to make fully atomic.
@@ -57,7 +57,10 @@ namespace Orchard.Parser.Yaml
 
                 // The operation should be atomic because we don't want a corrupted config file
                 // So we roll back if the operation fails
-                fileInfo.Delete();
+                if (File.Exists(Source.Path))
+                {
+                    File.Delete(Source.Path);
+                }
 
                 // Rethrow the exception
                 throw;
