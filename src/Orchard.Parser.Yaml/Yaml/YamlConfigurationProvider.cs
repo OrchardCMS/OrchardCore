@@ -23,7 +23,7 @@ namespace Orchard.Parser.Yaml
             }
             catch (InvalidCastException e)
             {
-                throw new FormatException("FormatError_YAMLparseError", e);
+                throw new FormatException("FormatError_YAMLarseError", e);
             }
         }
 
@@ -34,13 +34,9 @@ namespace Orchard.Parser.Yaml
                 File.Delete(Source.Path);
             }
 
-            var fileInfo = new FileInfo(Source.Path);
+            if (!new FileInfo(Source.Path).Directory.Exists)
+                Directory.CreateDirectory(new FileInfo(Source.Path).Directory.FullName);
 
-            if (!fileInfo.Directory.Exists)
-            {
-                fileInfo.Create();
-            }
-            
             // TODO: Revisit to make fully atomic.
             // https://github.com/aspnet/Configuration/pull/147/files
 
@@ -57,7 +53,10 @@ namespace Orchard.Parser.Yaml
 
                 // The operation should be atomic because we don't want a corrupted config file
                 // So we roll back if the operation fails
-                fileInfo.Delete();
+                if (File.Exists(Source.Path))
+                {
+                    File.Delete(Source.Path);
+                }
 
                 // Rethrow the exception
                 throw;
