@@ -1,9 +1,14 @@
-@model Orchard.Lists.Models.ListPartSettings
+@model Orchard.Lists.ViewModels.ListPartSettingsViewModel
 
 <fieldset class="form-group">
-    <div class="row col-xs-4">
+    <div class="row col-sm">
         <label asp-for="ContainedContentType">@T["Contained Content Type"]</label>
-        <input asp-for="ContainedContentType" type="text" class="form-control">
-        <span class="hint">@T["The content type that this list can contain, e.g. BlogPost for a Blog."]</span>
+        <select asp-for="ContainedContentType" class="form-control">
+            @foreach (var contentType in Model.ContentTypes.AllKeys)
+            {
+                <option value="@contentType">@Model.ContentTypes[contentType]</option>
+            }
+        </select>
+        <span class="hint">@T["The content type that this list can contain, e.g. Blog Post for a Blog."]</span>
     </div>
 </fieldset>
