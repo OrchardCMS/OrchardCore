@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -20,12 +22,19 @@ namespace Orchard.Hosting.Mvc
     {
         public static IServiceCollection AddOrchardMvc(this IServiceCollection services)
         {
+            return AddOrchardMvc(services, null);
+        }
+
+        public static IServiceCollection AddOrchardMvc(this IServiceCollection services, Action<MvcOptions> setupAction)
+        {
             services
                 .AddMvcCore(options =>
                 {
                     options.Filters.Add(new ModelBinderAccessorFilter());
                     options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
                     options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                    setupAction?.Invoke(options);
                 })
                 .AddViews()
                 .AddViewLocalization()
