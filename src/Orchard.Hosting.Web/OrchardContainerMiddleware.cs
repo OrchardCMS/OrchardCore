@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Hosting.ShellBuilders;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Orchard.DeferredTasks;
+using Orchard.Environment.Shell;
 using Orchard.Events;
+using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
@@ -38,11 +38,13 @@ namespace Orchard.Hosting
 
             var shellSetting = _runningShellTable.Match(httpContext);
 
+            // Register the shell settings as a custom feature.
+            httpContext.Features[typeof(ShellSettings)] = shellSetting;
+
             // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
             {
-                ShellContext shellContext = _orchardHost.GetShellContext(shellSetting);
-                httpContext.ApplicationServices = shellContext.ServiceProvider;
+                ShellContext shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 using (var scope = shellContext.CreateServiceScope())
                 {
@@ -65,6 +67,17 @@ namespace Orchard.Hosting
                     }
 
                     await _next.Invoke(httpContext);
+                }
+
+                using (var scope = shellContext.CreateServiceScope())
+                {
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var context = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(context);
+                    }
                 }
             }
         }

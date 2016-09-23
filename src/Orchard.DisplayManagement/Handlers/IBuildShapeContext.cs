@@ -6,7 +6,7 @@
     /// </summary>
     public interface IBuildShapeContext
     {
-        dynamic Shape { get; }
+        IShape Shape { get; }
         IShapeFactory ShapeFactory { get; }
         dynamic New { get; }
         IShape Layout { get; set; }

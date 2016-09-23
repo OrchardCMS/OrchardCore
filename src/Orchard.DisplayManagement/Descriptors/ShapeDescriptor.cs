@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Orchard.DisplayManagement.Implementation;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors

@@ -1,29 +1,36 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Orchard.Environment.Shell.Builders
 {
     public class CompositionStrategy : ICompositionStrategy
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly ILibraryManager _libraryManager;
         private readonly ILogger _logger;
+        private readonly IHostingEnvironment _environment;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        public CompositionStrategy(IExtensionManager extensionManager,
-            ILibraryManager libraryManager,
+        private bool _builtinFeatureRegistered;
+
+        public CompositionStrategy(
+            IHostingEnvironment environment,
+            IExtensionManager extensionManager,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<CompositionStrategy> logger)
         {
+            _typeFeatureProvider = typeFeatureProvider;
+            _environment = environment;
             _extensionManager = extensionManager;
-            _libraryManager = libraryManager;
             _logger = logger;
         }
 
@@ -37,8 +44,16 @@ namespace Orchard.Environment.Shell.Builders
             var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
 
+            // Requiring "Orchard.Hosting" is a shortcut for adding all referenced
+            // assemblies as features.
+            // TODO: Remove once all services are registered explicitly, so that the container factory
+            // doesn't need to inspect ExportedTypes for the core assemblies. We can then also remove
+            // some references from Orchard.Hosting.Web.
+
             if (descriptor.Features.Any(feature => feature.Name == "Orchard.Hosting"))
+            {
                 features = BuiltinFeatures().Concat(features);
+            }
 
             var excludedTypes = GetExcludedTypes(features);
 
@@ -46,11 +61,29 @@ namespace Orchard.Environment.Shell.Builders
             var dependencies = BuildBlueprint(features, IsDependency, (t, f) => BuildDependency(t, f, descriptor),
                 excludedTypes);
 
+            var uniqueDependencies = new Dictionary<Type, DependencyBlueprint>();
+
+            foreach(var dependency in dependencies)
+            {
+                if(!uniqueDependencies.ContainsKey(dependency.Type))
+                {
+                    uniqueDependencies.Add(dependency.Type, dependency);
+                }
+            }
+
+            foreach (var dependency in modules)
+            {
+                if (!uniqueDependencies.ContainsKey(dependency.Type))
+                {
+                    uniqueDependencies.Add(dependency.Type, dependency);
+                }
+            }
+
             var result = new ShellBlueprint
             {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = dependencies.Concat(modules).ToArray()
+                Dependencies = uniqueDependencies.Values
             };
 
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -83,30 +116,52 @@ namespace Orchard.Environment.Shell.Builders
 
         private IEnumerable<Feature> BuiltinFeatures()
         {
-            var additionalLibraries = _libraryManager
-                .GetLibraries()
-                .Where(x => x.Name.StartsWith("Orchard"))
-                .Select(x => Assembly.Load(new AssemblyName(x.Name)));
+            var additionalLibraries = DependencyContext.Default
+                .RuntimeLibraries
+                .Where(x => x.Name.StartsWith("Orchard"));
+
+            var features = new List<Feature>();
 
             foreach (var additonalLib in additionalLibraries)
             {
-                yield return new Feature
+                var assembly = Assembly.Load(new AssemblyName(additonalLib.Name));
+
+                var feature = new Feature
                 {
                     Descriptor = new FeatureDescriptor
                     {
-                        Id = additonalLib.GetName().Name,
+                        Id = additonalLib.Name,
                         Extension = new ExtensionDescriptor
                         {
-                            Id = additonalLib.GetName().Name
+                            Id = additonalLib.Name
                         }
                     },
                     ExportedTypes =
-                        additonalLib.ExportedTypes
+                        assembly.ExportedTypes
                             .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
                             //.Except(new[] { typeof(DefaultOrchardHost) })
                             .ToArray()
                 };
+
+                features.Add(feature);
+
+                // Register built-in features in the type provider
+
+                // TODO: Prevent this code from adding the services from modules as it's already added
+                // by the extension loader.
+
+                if (!_builtinFeatureRegistered)
+                {
+                    foreach (var type in feature.ExportedTypes)
+                    {
+                        _typeFeatureProvider.TryAdd(type, feature);
+                    }
+                }
             }
+
+            _builtinFeatureRegistered = true;
+
+            return features;
         }
 
         private static IEnumerable<T> BuildBlueprint<T>(
@@ -126,7 +181,7 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsModule(Type type)
         {
-            return typeof(IModule).IsAssignableFrom(type);
+            return typeof(IStartup).IsAssignableFrom(type);
         }
 
         private static DependencyBlueprint BuildModule(Type type, Feature feature)
@@ -141,7 +196,7 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsDependency(Type type)
         {
-            return 
+            return
                 typeof(IDependency).IsAssignableFrom(type) ||
                 type.GetTypeInfo().GetCustomAttribute<ServiceScopeAttribute>() != null;
         }

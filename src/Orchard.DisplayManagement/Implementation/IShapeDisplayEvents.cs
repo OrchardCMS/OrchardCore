@@ -1,10 +1,9 @@
 ﻿using Orchard.DisplayManagement.Shapes;
-using Orchard.DependencyInjection;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Implementation
 {
-    public interface IShapeDisplayEvents : IDependency
+    public interface IShapeDisplayEvents
     {
         void Displaying(ShapeDisplayingContext context);
         void Displayed(ShapeDisplayedContext context);
@@ -15,6 +14,7 @@ namespace Orchard.DisplayManagement.Implementation
         public dynamic Shape { get; set; }
         public ShapeMetadata ShapeMetadata { get; set; }
         public IHtmlContent ChildContent { get; set; }
+        public DisplayContext DisplayContext { get; set; }
     }
 
     public class ShapeDisplayedContext
@@ -22,6 +22,7 @@ namespace Orchard.DisplayManagement.Implementation
         public dynamic Shape { get; set; }
         public ShapeMetadata ShapeMetadata { get; set; }
         public IHtmlContent ChildContent { get; set; }
+        public DisplayContext DisplayContext { get; set; }
     }
 
     public abstract class ShapeDisplayEvents : IShapeDisplayEvents

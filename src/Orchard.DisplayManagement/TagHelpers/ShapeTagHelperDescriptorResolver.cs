@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNet.Razor.Runtime.TagHelpers;
-using Microsoft.AspNet.Razor.Compilation.TagHelpers;
+using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
+using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.TagHelpers
@@ -15,12 +15,13 @@ namespace Orchard.DisplayManagement.TagHelpers
     {
         private static readonly Type ShapeTagHelperType = typeof(ShapeTagHelper);
         private readonly IHttpContextAccessor _httpContextAccessor;
-         
+
         public ShapeTagHelperDescriptorResolver(
             TagHelperTypeResolver typeResolver,
+            TagHelperDescriptorFactory descriptorFactory,
             IHttpContextAccessor httpContextAccessor
             )
-            : base(typeResolver, designTime: false)
+            : base(typeResolver, descriptorFactory)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -38,7 +39,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             var shapeTableManager = serviceProvider.GetService<IShapeTableManager>();
 
             // During Setup, shapeTableManager is null
-            if(shapeTableManager == null)
+            if (shapeTableManager == null)
             {
                 return descriptors;
             }
@@ -47,7 +48,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             foreach (var shape in shapeTableManager.GetShapeTable(null).Descriptors)
             {
                 // Don't add the shape tag if another provider already described it
-                if(descriptors.Any(x => String.Equals(x.TagName, shape.Key, StringComparison.OrdinalIgnoreCase)))
+                if (descriptors.Any(x => string.Equals(x.TagName, shape.Key, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
@@ -60,10 +61,10 @@ namespace Orchard.DisplayManagement.TagHelpers
                         TypeName = ShapeTagHelperType.FullName,
                         AssemblyName = ShapeTagHelperType.GetTypeInfo().Assembly.GetName().Name,
                         Attributes = Enumerable.Empty<TagHelperAttributeDescriptor>(),
-                        RequiredAttributes = Enumerable.Empty<string>(),
+                        RequiredAttributes = Enumerable.Empty<TagHelperRequiredAttributeDescriptor>()
                     });
             }
-            
+
             return descriptors.Concat(shapeTagDescriptors);
         }
     }

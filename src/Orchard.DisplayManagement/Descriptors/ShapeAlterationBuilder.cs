@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Models;
-using Microsoft.AspNet.Html.Abstractions;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -142,7 +142,9 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public class ShapePlacementContext
     {
-        public dynamic Shape { get; set; }
+        public IShape Shape { get; set; }
+        public string DisplayType { get; set; }
+        public string Differentiator { get; set; }
 
         /// <summary>
         /// Debug information explaining where the final placement is coming from.

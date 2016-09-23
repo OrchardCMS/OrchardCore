@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Commands
 {
@@ -19,14 +20,14 @@ namespace Orchard.Environment.Commands
 
         public Localizer T { get; set; }
 
-        public void Execute(CommandParameters parameters)
+        public async Task ExecuteAsync(CommandParameters parameters)
         {
-            var matches = MatchCommands(parameters);
+            var matches = MatchCommands(parameters) ?? Enumerable.Empty<Match>();
 
             if (matches.Count() == 1)
             {
                 var match = matches.Single();
-                match.CommandHandler.Execute(match.Context);
+                await match.CommandHandler.ExecuteAsync(match.Context);
             }
             else
             {
@@ -49,17 +50,10 @@ namespace Orchard.Environment.Commands
 
         private IEnumerable<Match> MatchCommands(CommandParameters parameters)
         {
-            // Command names are matched with as many arguments as possible, in decreasing order
-            foreach (var argCount in Enumerable.Range(1, parameters.Arguments.Count()).Reverse())
-            {
-                int count = argCount;
-                var matches = _commandHandlers.SelectMany(h =>
-                    MatchCommands(parameters, count, _builder.Build(h.GetType()), h)).ToList();
-                if (matches.Any())
-                    return matches;
-            }
-
-            return Enumerable.Empty<Match>();
+            // Commands are matched with arguments. first argument 
+            // is the command others are arguments to the command.
+            return _commandHandlers.SelectMany(h =>
+                    MatchCommands(parameters, parameters.Arguments.Count(), _builder.Build(h.GetType()), h)).ToList();
         }
 
         private static IEnumerable<Match> MatchCommands(CommandParameters parameters, int argCount, CommandHandlerDescriptor descriptor, ICommandHandler handler)
@@ -69,13 +63,21 @@ namespace Orchard.Environment.Commands
                 foreach (var name in commandDescriptor.Names)
                 {
                     var names = name.Split(' ');
+                    // We check here number of arguments a command can recieve against
+                    // arguments provided for the command to identify the correct command
+                    // and avoid matching multiple commands.
+                    if(commandDescriptor.MethodInfo.GetParameters().Length == argCount - names.Count())
+                    {
+                        names = parameters.Arguments.ToArray();
+                    }
+
                     if (parameters.Arguments.Take(argCount).SequenceEqual(names, StringComparer.OrdinalIgnoreCase))
                     {
                         yield return new Match
                         {
                             Context = new CommandContext
                             {
-                                Arguments = parameters.Arguments.Skip(names.Count()),
+                                Arguments = parameters.Arguments.Skip(name.Split(' ').Count()),
                                 Command = string.Join(" ", names),
                                 CommandDescriptor = commandDescriptor,
                                 Input = parameters.Input,

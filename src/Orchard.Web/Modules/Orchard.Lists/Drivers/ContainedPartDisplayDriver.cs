@@ -1,12 +1,11 @@
-﻿using Orchard.ContentManagement;
+﻿using System.Threading.Tasks;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Lists.Models;
-using System;
-using System.Threading.Tasks;
-using YesSql.Core.Services;
-using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Lists.ViewModels;
+using YesSql.Core.Services;
 
 namespace Orchard.Lists.Drivers
 {
@@ -14,15 +13,12 @@ namespace Orchard.Lists.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly IServiceProvider _serviceProvider;
 
         public ContainedPartDisplayDriver(
             IContentManager contentManager,
-            ISession session,
-            IServiceProvider serviceProvider
+            ISession session
             )
         {
-            _serviceProvider = serviceProvider;
             _session = session;
             _contentManager = contentManager;
         }
@@ -40,7 +36,7 @@ namespace Orchard.Lists.Drivers
             }
 
             var viewModel = new EditContainedPartViewModel();
-            if ( await updater.TryUpdateModelAsync(viewModel, "ListPart"))
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
             {
                 // We are editing a content item that needs to be added to a container
                 // so we render the container id as part of the form
@@ -60,11 +56,12 @@ namespace Orchard.Lists.Drivers
             })
             .Location("Content");
         }
+
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, "ListPart"))
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
             {
                 model.Weld<ContainedPart>();
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);

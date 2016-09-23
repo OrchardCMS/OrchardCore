@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.WebEncoders;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Caching.Distributed;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.DynamicCache.Services
 {
@@ -176,7 +175,7 @@ namespace Orchard.DynamicCache.Services
                 result.Append(content.Substring(end, content.Length - end));
                 content = result.ToString();
             }
-            
+
             return true;
         }
 

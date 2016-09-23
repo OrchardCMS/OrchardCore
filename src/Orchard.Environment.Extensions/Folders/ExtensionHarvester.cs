@@ -59,12 +59,19 @@ namespace Orchard.Environment.Extensions.Folders
 
         private List<ExtensionDescriptor> AvailableExtensionsInFolder(string path, string extensionType, string manifestName, bool manifestIsOptional)
         {
+            var localList = new List<ExtensionDescriptor>();
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return localList;
+            }
+
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Start looking for extensions in '{0}'...", path);
             }
+
             var subfolders = _fileSystem.ListDirectories(path);
-            var localList = new List<ExtensionDescriptor>();
             foreach (var subfolder in subfolders)
             {
                 var extensionId = subfolder.Name;
@@ -135,7 +142,7 @@ namespace Orchard.Environment.Extensions.Folders
 
         private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional)
         {
-            var manifestText = _fileSystem.ReadFile(manifestPath);
+            var manifestText = _fileSystem.ReadFileAsync(manifestPath).Result;
             if (manifestText == null)
             {
                 if (manifestIsOptional)

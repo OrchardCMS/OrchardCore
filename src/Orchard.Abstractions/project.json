@@ -1,25 +1,30 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc.Core": "6.0.0-rc1-final",
-    "Microsoft.Extensions.Localization.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.0.0",
+    "Microsoft.Extensions.DependencyModel": "1.0.0",
+    "Microsoft.Extensions.Localization.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Orchard.Validation": "2.0.0-*"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
+    "debugType": "portable",
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
       "dependencies": {
-        "System.Globalization.Extensions": "4.0.1-*",
-        "System.Text.RegularExpressions": "4.0.11-*"
+        "NETStandard.Library": "1.6.0-*"
       }
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   }

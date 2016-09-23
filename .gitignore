@@ -172,8 +172,9 @@ log.xml
 profiling/
 *.orig
 .vs/
-.vscode/
-
+#.vscode/
+.build/
+.testPublish/
 
 nuget.exe
 .nuget/

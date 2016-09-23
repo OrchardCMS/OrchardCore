@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Orchard.FileSystem;
 
@@ -13,9 +13,7 @@ namespace Orchard.Environment.Extensions.FileSystem
         {
             var root = parentFileSystem.GetDirectoryInfo(subPath).FullName;
 
-            return new OrchardFileSystem(root,
-                new PhysicalFileProvider(root),
-                logger);
+            return new OrchardFileSystem(root, new PhysicalFileProvider(root), logger);
         }
     }
 }

@@ -2,13 +2,13 @@
 using System.Linq;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Localization;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Extensions.WebEncoders;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;
+using System.Text.Encodings.Web;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -62,8 +62,12 @@ namespace Orchard.DisplayManagement.Implementation
             var displayingContext = new ShapeDisplayingContext
             {
                 Shape = shape,
-                ShapeMetadata = shapeMetadata
+                ShapeMetadata = shapeMetadata,
+                DisplayContext = context
             };
+
+            // Use the same prefix as the shape
+            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix;
 
             // Evaluate global Shape Display Events
             _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayingContext), _logger);
@@ -124,6 +128,7 @@ namespace Orchard.DisplayManagement.Implementation
                 Shape = shape,
                 ShapeMetadata = shape.Metadata,
                 ChildContent = shape.Metadata.ChildContent,
+                DisplayContext = context
             };
 
             _shapeDisplayEvents.Invoke(sde =>
@@ -214,7 +219,7 @@ namespace Orchard.DisplayManagement.Implementation
             if (result != null)
                 return result;
 
-            return new HtmlString(HtmlEncoder.Default.HtmlEncode(value.ToString()));
+            return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
 
         static async Task<IHtmlContent> ProcessAsync(ShapeBinding shapeBinding, IShape shape, DisplayContext context)

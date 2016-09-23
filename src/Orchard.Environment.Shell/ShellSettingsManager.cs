@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Orchard.FileSystem.AppData;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
@@ -80,8 +80,11 @@ namespace Orchard.Environment.Shell
                     shellSettings.Name, 
                     string.Format(SettingsFileNameFormat, "txt")));
 
-            var configurationProvider = 
-                new YamlConfigurationProvider(tenantPath, false);
+            var configurationProvider = new YamlConfigurationProvider(new YamlConfigurationSource
+            {
+                Path = tenantPath,
+                Optional = false
+            });
 
             foreach (var key in shellSettings.Keys)
             {

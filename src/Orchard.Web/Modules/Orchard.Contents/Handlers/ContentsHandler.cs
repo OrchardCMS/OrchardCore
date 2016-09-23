@@ -1,5 +1,5 @@
 ﻿using Orchard.ContentManagement.Handlers;
-using Microsoft.AspNet.Routing;
+using Microsoft.AspNetCore.Routing;
 
 namespace Orchard.Contents.Handlers
 {

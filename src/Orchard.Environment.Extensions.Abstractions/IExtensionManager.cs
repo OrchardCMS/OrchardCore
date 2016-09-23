@@ -30,6 +30,11 @@ namespace Orchard.Environment.Extensions
         ExtensionDescriptor GetExtension(string id);
 
         /// <summary>
+        /// Loads an extension and its assembly.
+        /// </summary>
+        ExtensionEntry LoadExtension(ExtensionDescriptor descriptor);
+
+        /// <summary>
         /// Loads the assembly of the specified features and their types.
         /// </summary>
         IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors);

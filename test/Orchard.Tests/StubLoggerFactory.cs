@@ -9,18 +9,16 @@ namespace Orchard.Tests
         {
             get
             {
-                throw new NotImplementedException();
+                return LogLevel.Critical;
             }
 
             set
             {
-                throw new NotImplementedException();
             }
         }
 
         public void AddProvider(ILoggerProvider provider)
         {
-            throw new NotImplementedException();
         }
 
         public ILogger CreateLogger(string categoryName)
@@ -30,24 +28,30 @@ namespace Orchard.Tests
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 
     public class NullLogger : ILogger
     {
-        public IDisposable BeginScopeImpl(object state)
+        public IDisposable BeginScope<TState>(TState state)
         {
-            throw new NotImplementedException();
+            return new FakeScope();
         }
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+        }
+
+        private class FakeScope : IDisposable
+        {
+            public void Dispose()
+            {
+            }
         }
     }
 

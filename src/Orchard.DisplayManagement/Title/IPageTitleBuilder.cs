@@ -1,4 +1,6 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Html;
+using Orchard.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Title
 {
@@ -12,19 +14,19 @@ namespace Orchard.DisplayManagement.Title
         /// <summary>
         /// Adds a segment to the title.
         /// </summary>
-        /// <param name="segment">A string to add at the specific location in the title.</param>
-        void AddSegment(string segment, string position = "0");
+        /// <param name="segment">A segments to add at the specific location in the title.</param>
+        void AddSegment(IHtmlContent segment, string position = "0");
 
         /// <summary>
         /// Adds some segments to the title.
         /// </summary>
-        /// <param name="segments">A set of strings to add at the specific location inthe title.</param>
-        void AddSegments(string[] segments, string position = "0");
+        /// <param name="segments">A set of segments to add at the specific location inthe title.</param>
+        void AddSegments(IEnumerable<IHtmlContent> segments, string position = "0");
 
         /// <summary>
         /// Concatenates every title segments using the separator defined in settings.
         /// </summary>
         /// <returns>A string representing the aggregate title for the current page.</returns>
-        string GenerateTitle();
+        IHtmlContent GenerateTitle();
     }
 }

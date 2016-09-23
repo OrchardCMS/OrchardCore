@@ -1,19 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc.Razor;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Razor
 {
-    public abstract class RazorPage<TModel> : Microsoft.AspNet.Mvc.Razor.RazorPage<TModel>
+    public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>
     {
         private dynamic _displayHelper;
         private IShapeFactory _shapeFactory;
@@ -35,6 +34,17 @@ namespace Orchard.DisplayManagement.Razor
             }
         }
 
+        /// <summary>
+        /// Gets a dynamic shape factory to create new shapes.
+        /// </summary>
+        /// <example>
+        /// Usage:
+        /// <code>
+        /// New.MyShape()
+        /// New.MyShape(A: 1, B: "Some text")
+        /// New.MyShape().A(1).B("Some text")
+        /// </code>
+        /// </example>
         public dynamic New
         {
             get
@@ -44,6 +54,9 @@ namespace Orchard.DisplayManagement.Razor
             }
         }
 
+        /// <summary>
+        /// Gets an <see cref="IShapeFactory"/> to create new shapes.
+        /// </summary>
         public IShapeFactory Factory
         {
             get
@@ -53,6 +66,10 @@ namespace Orchard.DisplayManagement.Razor
             }
         }
 
+        /// <summary>
+        /// Renders a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
         public IHtmlContent Display(dynamic shape)
         {
             EnsureDisplayHelper();
@@ -100,6 +117,10 @@ namespace Orchard.DisplayManagement.Razor
         }
 
         private IViewLocalizer _t;
+
+        /// <summary>
+        /// The <see cref="IViewLocalizer"/> instance for the current view.
+        /// </summary>
         public IViewLocalizer T
         {
             get
@@ -107,29 +128,65 @@ namespace Orchard.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = ViewContext.HttpContext.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((ICanHasViewContext)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
                 }
 
                 return _t;
             }
         }
 
-        public string RenderTitleSegments(string segment = "", string position = "0")
+        /// <summary>
+        /// Renders the title segments.
+        /// </summary>
+        /// <returns>And <see cref="IHtmlContent"/> representing the title.</returns>
+        public IHtmlContent RenderTitleSegments()
         {
-            if (!String.IsNullOrWhiteSpace(segment))
-            {
-                Title.AddSegment(segment, position);
-            }
-
             return Title.GenerateTitle();
         }
 
-        protected HelperResult RenderLayoutBody()
+        public IHtmlContent RenderTitleSegments(string segment, string position = "0")
+        {
+            return RenderTitleSegments(new HtmlString(HtmlEncoder.Encode(segment)), position);
+        }
+
+        /// <summary>
+        /// Adds a segment to the title and returns all segments.
+        /// </summary>
+        /// <param name="segment">The segment to add to the title.</param>
+        /// <param name="position">Optional. The position of the segment in the title.</param>
+        /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
+        public IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0")
+        {
+            Title.AddSegment(segment);
+            return RenderTitleSegments();
+        }
+
+        /// <summary>
+        /// Adds some segments to the title and returns all segments.
+        /// </summary>
+        /// <param name="segments">The segments to add to the title.</param>
+        /// <param name="position">Optional. The position of the segments in the title.</param>
+        /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
+        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0")
+        {
+            Title.AddSegments(segments);
+            return RenderTitleSegments();
+        }
+
+        /// <summary>
+        /// Renders the content zone of the layout.
+        /// </summary>
+        protected IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;
         }
 
+        /// <summary>
+        /// Creates a <see cref="TagBuilder"/> to render a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <returns>A new <see cref="TagBuilder"/>.</returns>
         protected TagBuilder Tag(dynamic shape)
         {
             return Shape.GetTagBuilder(shape);
@@ -142,9 +199,16 @@ namespace Orchard.DisplayManagement.Razor
 
         protected new IHtmlContent RenderBody()
         {
+            // Overrides the base RenderBody method to render the Layout's Content zone instead.
+
             return Display(ThemeLayout.Content);
         }
 
+        /// <summary>
+        /// Renders a zone from the layout.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
+        /// <param name="required">Whether the zone is required or not.</param>
         public new Task<IHtmlContent> RenderSectionAsync(string name, bool required)
         {
             if (name == null)

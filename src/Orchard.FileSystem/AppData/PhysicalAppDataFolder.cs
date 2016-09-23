@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem.AppData
 {
@@ -12,7 +13,7 @@ namespace Orchard.FileSystem.AppData
         private readonly ILogger _logger;
 
         private static string InternalRootPath = "App_Data";
-        
+
         public PhysicalAppDataFolder(
             IOrchardFileSystem parentFileSystem,
             ILogger<PhysicalAppDataFolder> logger)
@@ -26,16 +27,14 @@ namespace Orchard.FileSystem.AppData
 
             var root = parentFileSystem.GetDirectoryInfo(InternalRootPath).FullName;
 
-            _fileSystem = new OrchardFileSystem(root,
-                new PhysicalFileProvider(root),
-                _logger);
+            _fileSystem = new OrchardFileSystem(root, new PhysicalFileProvider(root), _logger);
         }
 
         public string RootPath
         {
             get
             {
-                return Path.Combine(_fileSystem.RootPath, InternalRootPath);
+                return _fileSystem.RootPath;
             }
         }
 
@@ -47,9 +46,9 @@ namespace Orchard.FileSystem.AppData
             return _fileSystem.Combine(paths);
         }
 
-        public void CreateFile(string path, string content)
+        public async Task CreateFileAsync(string path, string content)
         {
-            _fileSystem.CreateFile(path, content);
+            await _fileSystem.CreateFileAsync(path, content);
         }
 
         public Stream CreateFile(string path)
@@ -57,9 +56,9 @@ namespace Orchard.FileSystem.AppData
             return _fileSystem.CreateFile(path);
         }
 
-        public string ReadFile(string path)
+        public async Task<string> ReadFileAsync(string path)
         {
-            return _fileSystem.ReadFile(path);
+            return await _fileSystem.ReadFileAsync(path);
         }
 
         public Stream OpenFile(string path)

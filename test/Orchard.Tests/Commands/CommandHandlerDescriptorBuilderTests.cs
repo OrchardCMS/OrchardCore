@@ -2,6 +2,7 @@
 using System.Linq;
 using Xunit;
 using System.Reflection;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Tests.Commands
 {
@@ -24,8 +25,11 @@ namespace Orchard.Tests.Commands
             Assert.Equal(typeof(MyCommand).GetMethod("Foo_Bar3"), descriptor.Commands.Single(d => d.Names.Contains("Foo_Bar")).MethodInfo);
         }
 
-        public class MyCommand : DefaultOrchardCommandHandler
+        public class MyCommand : DefaultCommandHandler
         {
+            public MyCommand() : base(null) {
+            }
+
             public void FooBar()
             {
             }
@@ -35,6 +39,7 @@ namespace Orchard.Tests.Commands
             {
             }
 
+            [CommandName("Foo Bar")]
             public void Foo_Bar()
             {
             }

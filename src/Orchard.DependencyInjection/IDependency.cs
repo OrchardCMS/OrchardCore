@@ -37,7 +37,7 @@ namespace Orchard.DependencyInjection
     }
 
     /// <summary>
-    /// Attribute for compmonents that are instantiated per unit of work (i.e. web request).
+    /// Attribute for components that are instantiated per unit of work (i.e. web request).
     /// </summary>
     public class ScopedComponentAttribute: ServiceScopeAttribute
     {
@@ -52,7 +52,7 @@ namespace Orchard.DependencyInjection
     }
 
     /// <summary>
-    /// Attribute for compmonents that are instantiated per shell/tenant.
+    /// Attribute for components that are instantiated per shell/tenant.
     /// </summary>
     public class SingletonComponentAttribute : ServiceScopeAttribute
     {
@@ -67,7 +67,7 @@ namespace Orchard.DependencyInjection
     }
 
     /// <summary>
-    /// Attribute for compmonents that are instantiated per usage.
+    /// Attribute for components that are instantiated per usage.
     /// </summary>
     public class TransientComponentAttribute : ServiceScopeAttribute
     {

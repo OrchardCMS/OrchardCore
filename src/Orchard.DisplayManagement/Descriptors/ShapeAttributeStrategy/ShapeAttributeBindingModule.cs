@@ -2,18 +2,18 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
-using Microsoft.AspNet.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Orchard.DisplayManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
-    public class ShapeAttributeBindingModule : IModule
+    public class ShapeAttributeBindingModule : StartupBase
     {
         /// <summary>
         /// This module looks for any method of IShapeTableProvider implementations
         /// that has the <see cref="ShapeAttribute"/>.
         /// </summary>
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
             // Copy the collection as we are about to change it
             ServiceDescriptor[] serviceDescriptors = new ServiceDescriptor[serviceCollection.Count];
@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                         hasShapes = true;
                         // PERF: Analyze the impact of an important number of instances
                         // in the service collection
-                        serviceCollection.AddInstance(
+                        serviceCollection.AddSingleton(
                             new ShapeAttributeOccurrence(customAttribute,
                             method,
                             serviceType));

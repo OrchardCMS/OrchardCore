@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Core.Settings.Services;
+using Orchard.Settings;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using System;
 using System.Threading.Tasks;
+using Orchard.ContentManagement;
 
 namespace Orchard.Themes.Services
 {
@@ -41,7 +42,7 @@ namespace Orchard.Themes.Services
         public async Task SetSiteThemeAsync(string themeName)
         {
             var site = await _siteService.GetSiteSettingsAsync();
-            site.ContentItem.Content.CurrentThemeName = themeName;
+            (site as IContent).ContentItem.Content.CurrentThemeName = themeName;
             _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
@@ -52,7 +53,7 @@ namespace Orchard.Themes.Services
             if (!_memoryCache.TryGetValue(CacheKey, out themeName))
             {
                 var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)site.ContentItem.Content.CurrentThemeName;
+                themeName = (string)(site as IContent).ContentItem.Content.CurrentThemeName;
                 _memoryCache.Set(CacheKey, themeName);
             }
 

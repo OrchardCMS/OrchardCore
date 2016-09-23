@@ -2,7 +2,7 @@
 //using Microsoft.Extensions.Logging;
 //using Orchard.ContentManagement.Metadata;
 //using Orchard.ContentManagement.MetaData;
-//using Orchard.ContentManagement.MetaData.Builders;
+//using Orchard.ContentManagement.Metadata.Builders;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;

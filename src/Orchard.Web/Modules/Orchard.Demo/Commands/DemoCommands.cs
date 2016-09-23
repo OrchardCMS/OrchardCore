@@ -1,13 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Commands;
 
 namespace Orchard.Demo.Commands
 {
-    public class DemoCommands : DefaultOrchardCommandHandler
+    public class DemoCommands : DefaultCommandHandler
     {
         private readonly ILogger _logger;
 
-        public DemoCommands(ILogger<DemoCommands> logger)
+        public DemoCommands(ILogger<DemoCommands> logger,
+            IStringLocalizer<DemoCommands> localizer) : base(localizer)
         {
             _logger = logger;
         }

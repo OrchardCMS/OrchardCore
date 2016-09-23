@@ -2,7 +2,7 @@
 //using System.Linq;
 //using System.Collections.Generic;
 //using Orchard.ContentManagement.MetaData;
-//using Orchard.ContentManagement.MetaData.Models;
+//using Orchard.ContentManagement.Metadata.Models;
 //using Orchard.Contents.Settings;
 //using Orchard.Environment.Extensions.Models;
 //using Orchard.Security.Permissions;

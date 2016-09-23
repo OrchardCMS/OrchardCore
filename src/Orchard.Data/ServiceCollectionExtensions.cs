@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Data.Migration;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Data
 {
@@ -6,7 +8,10 @@ namespace Orchard.Data
     {
         public static IServiceCollection AddDataAccess(this IServiceCollection services)
         {
-            services.AddScoped<IOrchardDataAssemblyProvider, OrchardDataAssemblyProvider>();
+            services.AddScoped<IDataMigrationManager, DataMigrationManager>();
+
+            services.AddScoped<AutomaticDataMigrations>();
+            services.AddScoped<IOrchardShellEvents>(sp => sp.GetRequiredService<AutomaticDataMigrations>());
 
             return services;
         }

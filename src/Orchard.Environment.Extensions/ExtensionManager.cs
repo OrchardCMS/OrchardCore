@@ -9,7 +9,7 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.Utility;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Utility;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Orchard.Environment.Extensions
 {
@@ -18,18 +18,22 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionLocator _extensionLocator;
         private readonly IEnumerable<IExtensionLoader> _loaders;
         private readonly ILogger _logger;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private List<ExtensionDescriptor> _availableExtensions;
         private List<FeatureDescriptor> _availableFeatures;
 
         private Dictionary<string, Feature> _features = new Dictionary<string, Feature>();
+        private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
         public Localizer T { get; set; }
 
         public ExtensionManager(
             IExtensionLocator extensionLocator,
             IEnumerable<IExtensionLoader> loaders,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger)
         {
+            _typeFeatureProvider = typeFeatureProvider;
             _extensionLocator = extensionLocator;
             _loaders = loaders.OrderBy(x => x.Order).ToArray();
             _logger = logger;
@@ -101,6 +105,39 @@ namespace Orchard.Environment.Extensions
                    item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
         }
 
+        public ExtensionEntry LoadExtension(ExtensionDescriptor extensionDescriptor)
+        {
+            // Results are cached so that there is no mismatch when loading an assembly twice.
+            // Otherwise the same types would not match.
+
+            try
+            {
+                return _extensions.GetOrAdd(extensionDescriptor.Id, id =>
+                {
+                    foreach (var loader in _loaders)
+                    {
+                        ExtensionEntry entry = loader.Load(extensionDescriptor);
+                        if (entry != null)
+                        {
+                            return entry;
+                        }
+                    }
+
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionDescriptor.Id);
+                    }
+
+                    return null;
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format("Error loading extension '{0}'", extensionDescriptor.Id), ex);
+                throw new OrchardException(T("Error while loading extension '{0}'.", extensionDescriptor.Id), ex);
+            }
+        }
+
         public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
         {
             if (_logger.IsEnabled(LogLevel.Information))
@@ -142,16 +179,7 @@ namespace Orchard.Environment.Extensions
                 var featureId = featureDescriptor.Id;
                 var extensionId = extensionDescriptor.Id;
 
-                ExtensionEntry extensionEntry;
-                try
-                {
-                    extensionEntry = BuildEntry(extensionDescriptor);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(string.Format("Error loading extension '{0}'", extensionId), ex);
-                    throw new OrchardException(T("Error while loading extension '{0}'.", extensionId), ex);
-                }
+                var extensionEntry = LoadExtension(extensionDescriptor);
 
                 Feature feature;
                 if (extensionEntry == null)
@@ -186,6 +214,12 @@ namespace Orchard.Environment.Extensions
                     ExportedTypes = featureTypes
                 };
 
+                foreach (var type in feature.ExportedTypes)
+                {
+                    _typeFeatureProvider.TryAdd(type, feature);
+                }
+
+
                 _features.Add(featureDescriptor.Id, feature);
                 return feature;
             }
@@ -200,20 +234,5 @@ namespace Orchard.Environment.Extensions
             return extensionId;
         }
 
-        private ExtensionEntry BuildEntry(ExtensionDescriptor descriptor)
-        {
-            foreach (var loader in _loaders)
-            {
-                ExtensionEntry entry = loader.Load(descriptor);
-                if (entry != null)
-                    return entry;
-            }
-
-            if (_logger.IsEnabled(LogLevel.Warning))
-            {
-                _logger.LogWarning("No suitable loader found for extension \"{0}\"", descriptor.Id);
-            }
-            return null;
-        }
     }
 }

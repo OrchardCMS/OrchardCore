@@ -1,30 +1,35 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Html.Abstractions": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Orchard.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "System.Reflection.Extensions": "4.0.1-*"
+    "System.Reflection.Extensions": "4.0.1-*",
+    "System.Diagnostics.TraceSource": "4.0.0-*",
+    "Castle.Core": "4.0.0-alpha001"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
+    "debugType": "portable",
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": {
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
       "dependencies": {
-        "System.Collections.Specialized": "4.0.1-*",
-        "System.Threading.Tasks.Parallel": "4.0.1-*",
-        "System.Linq.Expressions": "4.0.11-*"
+        "NETStandard.Library": "1.6.0-*"
       }
     }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Brochard"
   }

@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 
 namespace Orchard.Data.Migration
 {
-    public interface IDataMigrationManager : IDependency
+    public interface IDataMigrationManager
     {
-        /// <summary>
-        /// Whether a feature has already been installed, i.e. one of its Data Migration class has already been processed
-        /// </summary>
-        bool IsFeatureAlreadyInstalled(string feature);
-
         /// <summary>
         /// Returns the features which have at least one Data Migration class with a corresponding Upgrade method to be called
         /// </summary>
-        Task<IEnumerable<string>> GetFeaturesThatNeedUpdate();
+        Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync();
+
+        /// <summary>
+        /// Run all migrations that need to be updated.
+        /// </summary>
+        Task UpdateAllFeaturesAsync();
 
         /// <summary>
         /// Updates the database to the latest version for the specified feature

@@ -13,6 +13,21 @@ namespace Orchard.ContentTypes.ViewModels
         public List<PartSelectionViewModel> PartSelections { get; set; }
     }
 
+    public class AddReusablePartViewModel
+    {
+        public AddReusablePartViewModel()
+        {
+            PartSelections = new List<PartSelectionViewModel>();
+        }
+
+        public EditTypeViewModel Type { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
+        public List<PartSelectionViewModel> PartSelections { get; set; }
+        public string SelectedPartName { get; set; }
+    }
+
     public class PartSelectionViewModel
     {
         public string PartName { get; set; }

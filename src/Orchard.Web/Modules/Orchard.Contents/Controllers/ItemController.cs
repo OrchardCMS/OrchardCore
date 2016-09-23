@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.DisplayManagement.ModelBinding;
@@ -36,12 +36,12 @@ namespace Orchard.Contents.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
@@ -55,7 +55,7 @@ namespace Orchard.Contents.Controllers
         {
             if (id == 0)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var versionOptions = VersionOptions.Latest;
@@ -69,12 +69,12 @@ namespace Orchard.Contents.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);

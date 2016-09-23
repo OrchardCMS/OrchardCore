@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.FileSystem
 {
@@ -15,13 +16,13 @@ namespace Orchard.FileSystem
         private readonly IFileProvider _fileProvider;
         private readonly ILogger _logger;
 
-        public OrchardFileSystem(string rootPath,
+        public OrchardFileSystem(
+            string rootPath,
             IFileProvider fileProvider,
             ILogger logger)
         {
             _fileProvider = fileProvider;
             _logger = logger;
-
             RootPath = rootPath;
 
             T = NullLocalizer.Instance;
@@ -34,32 +35,30 @@ namespace Orchard.FileSystem
             get; private set;
         }
 
-        private void MakeDestinationFileNameAvailable(string destinationFileName)
+        private void MakeDestinationFileNameAvailable(IFileInfo fileInfo)
         {
-            var directory = GetDirectoryInfo(destinationFileName);
+            var destinationFileName = fileInfo.PhysicalPath;
+            bool isDirectory = Directory.Exists(destinationFileName);
             // Try deleting the destination first
             try
             {
-                if (directory.Exists)
-                {
-                    directory.Delete();
-                }
+                if (isDirectory)
+                    Directory.Delete(destinationFileName);
+                else
+                    File.Delete(destinationFileName);
             }
             catch
             {
                 // We land here if the file is in use, for example. Let's move on.
             }
 
-            if (GetDirectoryInfo(destinationFileName).Exists)
+            if (isDirectory && Directory.Exists(destinationFileName))
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
-                }
+                _logger.LogWarning("Could not delete recipe execution folder {0} under \"App_Data\" folder", destinationFileName);
                 return;
             }
             // If destination doesn't exist, we are good
-            if (!GetFileInfo(destinationFileName).Exists)
+            if (!File.Exists(destinationFileName))
                 return;
 
             // Try renaming destination to a unique filename
@@ -99,20 +98,20 @@ namespace Orchard.FileSystem
         }
 
         /// <summary>
-        /// Combine a set of paths in to a signle path
+        /// Combine a set of paths in to a single path
         /// </summary>
         public string Combine(params string[] paths)
         {
             return Path.Combine(paths).Replace(RootPath, string.Empty).Replace(Path.DirectorySeparatorChar, '/').TrimStart('/');
         }
 
-        public void CreateFile(string path, string content)
+        public async Task CreateFileAsync(string path, string content)
         {
             using (var stream = CreateFile(path))
             {
                 using (var tw = new StreamWriter(stream))
                 {
-                    tw.Write(content);
+                    await tw.WriteAsync(content);
                 }
             }
         }
@@ -123,16 +122,25 @@ namespace Orchard.FileSystem
 
             if (!fileInfo.Exists)
             {
-                CreateDirectory(Path.GetDirectoryName(fileInfo.PhysicalPath));
+                CreateDirectory(Path.GetDirectoryName(path));
             }
-            
+
             return File.Create(fileInfo.PhysicalPath);
         }
 
-        public string ReadFile(string path)
+        public async Task<string> ReadFileAsync(string path)
         {
             var file = _fileProvider.GetFileInfo(path);
-            return file.Exists ? File.ReadAllText(file.PhysicalPath) : null;
+
+            if (!file.Exists)
+            {
+                return null;
+            }
+
+            using (var reader = File.OpenText(file.PhysicalPath))
+            {
+                return await reader.ReadToEndAsync();
+            }
         }
 
         public Stream OpenFile(string path)
@@ -147,9 +155,9 @@ namespace Orchard.FileSystem
                 _logger.LogInformation("Storing file \"{0}\" as \"{1}\" in \"App_Data\" folder", sourceFileName, destinationPath);
             }
 
-            var destinationFileName = GetFileInfo(destinationPath).PhysicalPath;
+            var destinationFileName = GetFileInfo(destinationPath);
             MakeDestinationFileNameAvailable(destinationFileName);
-            File.Copy(sourceFileName, destinationFileName, true);
+            File.Copy(sourceFileName, destinationFileName.PhysicalPath, true);
         }
 
         public void DeleteFile(string path)
@@ -159,7 +167,7 @@ namespace Orchard.FileSystem
                 _logger.LogInformation("Deleting file \"{0}\" from \"App_Data\" folder", path);
             }
 
-            MakeDestinationFileNameAvailable(GetFileInfo(path).PhysicalPath);
+            MakeDestinationFileNameAvailable(GetFileInfo(path));
         }
 
         public void CreateDirectory(string path)
@@ -184,12 +192,19 @@ namespace Orchard.FileSystem
 
         public DirectoryInfo GetDirectoryInfo(string path)
         {
-            return new DirectoryInfo(_fileProvider.GetFileInfo(path).PhysicalPath);
+            return new DirectoryInfo(Path.Combine(RootPath, Combine(path)));
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path)
         {
-            return ListFiles(path, new Matcher());
+            var directory = GetDirectoryInfo(path);
+            if (!directory.Exists)
+            {
+                return Enumerable.Empty<IFileInfo>();
+            }
+
+            return Directory.EnumerateFiles(directory.FullName)
+                .Select(result => GetFileInfo(Combine(result)));
         }
 
         public IEnumerable<IFileInfo> ListFiles(string path, Matcher matcher)
@@ -199,10 +214,10 @@ namespace Orchard.FileSystem
             {
                 return Enumerable.Empty<IFileInfo>();
             }
-            
+
             return matcher.Execute(new DirectoryInfoWrapper(directory))
-                    .Files
-                    .Select(result => GetFileInfo(Combine(directory.FullName, result.Path)));
+                .Files
+                .Select(result => GetFileInfo(Combine(directory.FullName, result.Path)));
         }
 
         public IEnumerable<DirectoryInfo> ListDirectories(string path)
@@ -213,7 +228,7 @@ namespace Orchard.FileSystem
             {
                 return Enumerable.Empty<DirectoryInfo>();
             }
-            
+
             return directory.EnumerateDirectories();
         }
     }

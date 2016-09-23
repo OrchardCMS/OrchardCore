@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNet.Mvc;
-using Orchard.Core.Dashboard;
-using Orchard.DisplayManagement.Admin;
+﻿using Microsoft.AspNetCore.Mvc;
+using Orchard.Admin;
 using Orchard.Themes.Models;
 using Orchard.Themes.Services;
 using System.Threading.Tasks;
 
-namespace Orchard.Demo.Controllers
+namespace Orchard.Themes.Controllers
 {
     [Admin]
     public class AdminController : Controller

@@ -1,29 +1,43 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNet.Mvc.Abstractions": "6.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-*",
-    "Microsoft.Extensions.Configuration.Xml": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.OptionsModel": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Abstractions": "1.0.0",
+    "Microsoft.Data.Sqlite": "1.0.0-*",
+    "Microsoft.DotNet.ProjectModel": "1.0.0-rc3-003121",
+    "Microsoft.DotNet.ProjectModel.Loader": "1.0.0-preview2-003121",
+    "Microsoft.Extensions.Configuration.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.Xml": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Options": "1.0.0",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*",
-    "YesSql.Core": "2.0.0-alpha-9022",
-    "YesSql.Storage.Sql": "1.0.0-alpha-1007",
-    "YesSql.Storage.LightningDB": "1.0.0-alpha-1004"
+    "Orchard.DeferredTasks": "2.0.0-*",
+    "YesSql.Core": "2.0.0-*",
+    "YesSql.Storage.Sql": "1.0.0-*",
+    "YesSql.Storage.LightningDB": "1.0.0-*"
   },
-  "compilationOptions": {
+  "buildOptions": {
     "define": [ "TRACE" ],
+    "debugType": "portable",
     "warningsAsErrors": true
   },
   "frameworks": {
-    "dnxcore50": { }
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.6.0-*",
+        "System.Reflection.TypeExtensions": "4.1.0-*",
+      }
+    }
   },
-  "repository": {
+  "packOptions": {
     "type": "git",
     "url": "https://github.com/OrchardCMS/Orchard2"
   }

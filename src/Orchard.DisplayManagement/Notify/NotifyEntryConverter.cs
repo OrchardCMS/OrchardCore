@@ -1,13 +1,22 @@
-﻿using Microsoft.AspNet.Mvc.Rendering;
+﻿using System;
+using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text;
+using System.IO;
+using Microsoft.AspNetCore.Html;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Reflection;
 
 namespace Orchard.DisplayManagement.Notify
 {
     public class NotifyEntryConverter : JsonConverter
     {
+        private readonly HtmlEncoder _htmlEncoder;
+
+        public NotifyEntryConverter(HtmlEncoder htmlEncoder)
+        {
+            _htmlEncoder = htmlEncoder;
+        }
 
         public override bool CanConvert(Type objectType)
         {
@@ -41,9 +50,16 @@ namespace Orchard.DisplayManagement.Notify
 
             var o = new JObject();
 
+            // Serialize the message as it's an IHtmlContent
+            var stringBuilder = new StringBuilder();
+            using (var stringWriter = new StringWriter(stringBuilder))
+            {
+                notifyEntry.Message.WriteTo(stringWriter, _htmlEncoder);
+            }
+
             // Write all well-known properties
             o.Add(new JProperty(nameof(NotifyEntry.Type), notifyEntry.Type.ToString()));
-            o.Add(new JProperty(nameof(NotifyEntry.Message), notifyEntry.Message.ToString()));
+            o.Add(new JProperty(nameof(NotifyEntry.Message), stringBuilder.ToString()));
 
             o.WriteTo(writer);
         }

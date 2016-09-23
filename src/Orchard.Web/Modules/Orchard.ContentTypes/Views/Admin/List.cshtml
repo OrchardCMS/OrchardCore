@@ -1,17 +1,10 @@
 @model Orchard.ContentTypes.ViewModels.ListContentTypesViewModel
-@{
-    //Style.Require("ContentTypesAdmin");
-    //Script.Require("jQuery");
-    //Script.Include("admin-contenttypes.js");
-
-    ;
-}
 
 <h1>@RenderTitleSegments(T["Content Types"])</h1>
 
 <nav class="admin-toolbar">
     <div class="nav navbar-nav">
-        
+
         <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Create new type"]</a>
         <div class="pull-xs-right">
             <input id="search-box" class="form-control" type="text" placeholder="@T["Filter"]" autofocus="autofocus">

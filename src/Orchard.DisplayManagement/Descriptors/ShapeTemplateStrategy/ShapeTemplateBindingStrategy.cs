@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Infrastructure;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Mvc.ViewFeatures;
-using Microsoft.AspNet.Mvc.ViewFeatures.Internal;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
@@ -19,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -27,7 +27,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IOptions<MvcViewOptions> _viewEngine;
-        private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
@@ -37,7 +36,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IFeatureManager featureManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
-            IActionContextAccessor actionContextAccessor,
             IOrchardFileSystem fileSystem,
             ILogger<DefaultShapeTableManager> logger)
         {
@@ -45,7 +43,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _featureManager = featureManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
-            _actionContextAccessor = actionContextAccessor;
             _fileSystem = fileSystem;
             _logger = logger;
         }
@@ -64,22 +61,25 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 _logger.LogInformation("Start discovering shapes");
             }
-            var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() });
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result;
-            var activeExtensions = Once(activeFeatures);
+            var harvesterInfos = _harvesters
+                .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
+                .ToList();
+
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
+            var activeExtensions = Once(activeFeatures).ToList();
+
+            var matcher = new Matcher();
+            foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
+            {
+                matcher.AddInclude(string.Format("*.{0}", extension));
+            }
 
             var hits = activeExtensions.Select(extensionDescriptor =>
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Start discovering candidate views filenames");
-                }
-
-                var matcher = new Matcher();
-                foreach(var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
-                {
-                    matcher.AddInclude(string.Format("*.{0}", extension));
                 }
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
@@ -180,10 +180,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
         {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindPartialView(_actionContextAccessor.ActionContext, path);
+            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(context.ViewContext, path, isMainPage: false);
             if (viewEngineResult.Success)
             {
-                using (var writer = new StringCollectionTextWriter(context.ViewContext.Writer.Encoding))
+                var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
+                var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
+                using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
                 {
                     // Forcing synchronous behavior so users don't have to await templates.
                     var view = viewEngineResult.View;
@@ -191,7 +193,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     {
                         var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
                         await viewEngineResult.View.RenderAsync(viewContext);
-                        return writer.Content;
+                        return viewBuffer;
                     }
                 }
             }
@@ -203,7 +205,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
-            var contextable = newHelper as ICanHasViewContext;
+            var contextable = newHelper as IViewContextAware;
             if (contextable != null)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);

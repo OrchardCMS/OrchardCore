@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Castle.DynamicProxy;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Shapes;
-using System.Reflection;
 using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.DisplayManagement.Implementation
@@ -13,6 +14,8 @@ namespace Orchard.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeFactoryEvents> _events;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
+
+        private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
@@ -32,6 +35,54 @@ namespace Orchard.DisplayManagement.Implementation
             return true;
         }
 
+        private class ShapeImplementation : IShape, IPositioned
+        {
+            public ShapeImplementation(string type)
+            {
+                Metadata.Type = type;
+            }
+
+            public ShapeMetadata Metadata { get; } = new ShapeMetadata();
+
+            public string Position
+            {
+                get
+                {
+                    return Metadata.Position;
+                }
+
+                set
+                {
+                    Metadata.Position = value;
+                }
+            }
+        }
+
+        public T Create<T>(string shapeType) where T : class
+        {
+            return (T)Create(typeof(T), shapeType);
+        }
+
+        public object Create(Type baseType, string shapeType)
+        {
+            IShape shape;
+
+            // Don't generate a proxy for shape types
+            if (typeof(IShape).IsAssignableFrom(baseType))
+            {
+                shape = Activator.CreateInstance(baseType) as IShape;
+                shape.Metadata.Type = shapeType;
+            }
+            else
+            {
+                var options = new ProxyGenerationOptions();
+                options.AddMixinInstance(new ShapeImplementation(shapeType));
+                shape = ProxyGenerator.CreateClassProxy(baseType, options) as IShape;
+            }
+
+            return shape;
+        }
+
         public IShape Create(string shapeType)
         {
             return Create(shapeType, Arguments.Empty, () => new Shape());
@@ -42,12 +93,7 @@ namespace Orchard.DisplayManagement.Implementation
             return Create(shapeType, parameters, () => new Shape());
         }
 
-        public T Create<T>() where T : Shape, new()
-        {
-            return (T)Create(typeof(T).Name, Arguments.Empty, () => new T());
-        }
-
-        public T Create<T>(T obj) where T : Shape
+        public T Create<T>(T obj) where T : class
         {
             return (T)Create(typeof(T).Name, Arguments.Empty, () => obj);
         }
@@ -122,7 +168,7 @@ namespace Orchard.DisplayManagement.Implementation
             createdContext.Shape.Metadata.Type = shapeType;
 
             // Concatenate wrappers if there are any
-            if (shapeDescriptor != null && 
+            if (shapeDescriptor != null &&
                 shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
             {
                 shapeMetadata.Wrappers = shapeMetadata.Wrappers.Concat(shapeDescriptor.Wrappers).ToList();
@@ -165,4 +211,5 @@ namespace Orchard.DisplayManagement.Implementation
             return createdContext.Shape;
         }
     }
+
 }

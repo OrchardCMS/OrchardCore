@@ -19,7 +19,7 @@ namespace Orchard.Parser.Yaml
 
             var yamlConfig = new YamlStream();
             yamlConfig.Load(new StreamReader(stream));
-
+            
             var mapping =
                 (YamlMappingNode)yamlConfig.Documents[0].RootNode;
 
@@ -41,20 +41,28 @@ namespace Orchard.Parser.Yaml
             foreach (var entry in yamlNode.Children)
             {
                 if (entry is YamlMappingNode)
+                {
                     VisitYamlMappingNode((YamlMappingNode)entry);
+                }
             }
         }
 
         private void VisitYamlNode(KeyValuePair<YamlNode, YamlNode> node)
         {
             if (node.Value is YamlScalarNode)
+            {
                 VisitYamlScalarNode((YamlScalarNode)node.Key, (YamlScalarNode)node.Value);
+            }
 
             if (node.Value is YamlMappingNode)
+            {
                 VisitYamlMappingNode((YamlScalarNode)node.Key, (YamlMappingNode)node.Value);
+            }
 
             if (node.Value is YamlSequenceNode)
+            {
                 VisitYamlSequenceNode((YamlScalarNode)node.Key, (YamlSequenceNode)node.Value);
+            }
         }
 
         private void VisitYamlMappingNode(YamlScalarNode yamlNodeKey, YamlMappingNode yamlNodeValue)
@@ -91,13 +99,13 @@ namespace Orchard.Parser.Yaml
         private void EnterContext(string context)
         {
             _context.Push(context);
-            _currentPath = string.Join(Constants.KeyDelimiter, _context.Reverse());
+            _currentPath = string.Join(ConfigurationPath.KeyDelimiter, _context.Reverse());
         }
 
         private void ExitContext()
         {
             _context.Pop();
-            _currentPath = string.Join(Constants.KeyDelimiter, _context.Reverse());
+            _currentPath = string.Join(ConfigurationPath.KeyDelimiter, _context.Reverse());
         }
     }
 }

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
@@ -14,16 +14,20 @@ namespace Orchard.Environment
         {
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
-                services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
+                //services.AddSingleton<IExtensionAssemblyLoader, ExtensionAssemblyLoader>();
 
+                services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
                 services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
 
                 services.TryAddEnumerable(
                     ServiceDescriptor.Transient<IConfigureOptions<ExtensionHarvestingOptions>, ExtensionHarvestingOptionsSetup>());
                 services.AddSingleton<IExtensionLocator, ExtensionLocator>();
 
-                services.AddSingleton<IExtensionLoader, CoreExtensionLoader>();
+                services.AddSingleton<IExtensionLoader, AmbientExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
+                services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
+
+                services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
 
             return services;

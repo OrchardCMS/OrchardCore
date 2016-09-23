@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Handlers;
 using Orchard.Demo.Models;
 using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
@@ -11,8 +13,7 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache.Abstractions;
 using Orchard.Events;
-using System;
-using System.Threading.Tasks;
+using Orchard.DeferredTasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Demo.Controllers
@@ -27,6 +28,7 @@ namespace Orchard.Demo.Controllers
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
         private readonly IContentItemDisplayManager _contentDisplay;
+        private readonly IDeferredTaskEngine _deferredTaskEngine;
 
         public HomeController(
             ITestDependency testDependency,
@@ -37,8 +39,10 @@ namespace Orchard.Demo.Controllers
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
-            IContentItemDisplayManager contentDisplay)
+            IContentItemDisplayManager contentDisplay,
+            IDeferredTaskEngine processingQueue)
         {
+            _deferredTaskEngine = processingQueue;
             _session = session;
             _testDependency = testDependency;
             _contentManager = contentManager;
@@ -63,7 +67,7 @@ namespace Orchard.Demo.Controllers
             var contentItem = _contentManager.New("Foo");
 
             // Dynamic syntax
-            contentItem.Content.TestContentPartA.Line = text;
+            contentItem.Content.TestContentPartA.Line = text + "blah";
 
             // Explicit syntax
             var testPart = contentItem.As<TestContentPartA>();
@@ -72,7 +76,7 @@ namespace Orchard.Demo.Controllers
 
             // "Alter" syntax
             contentItem.Alter<TestContentPartA>(x => x.Line = text);
-             
+
             _contentManager.Create(contentItem);
 
             _logger.LogInformation("This is some log");
@@ -98,7 +102,7 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             return View(contentItem);
@@ -111,13 +115,13 @@ namespace Orchard.Demo.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var shape = Shape
                 .Foo()
                 .Line(contentItem.As<TestContentPartA>().Line);
-            
+
             return View(shape);
         }
 
@@ -140,6 +144,18 @@ namespace Orchard.Demo.Controllers
         public ActionResult IndexError()
         {
             throw new Exception("ERROR!!!!");
+        }
+
+        public string CreateTask()
+        {
+            _deferredTaskEngine.AddTask(context =>
+            {
+                var logger = context.ServiceProvider.GetService<ILogger<HomeController>>();
+                logger.LogError("Task deferred successfully");
+                return Task.CompletedTask;
+            });
+
+            return "Check for logs";
         }
 
         private DisplayContext CreateDisplayContext(Shape shape)

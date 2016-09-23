@@ -1,9 +1,8 @@
-﻿using Orchard.DisplayManagement.Descriptors;
+﻿using System.Threading.Tasks;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Zones;
-using System;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement
 {
@@ -29,26 +28,33 @@ namespace Orchard.DisplayManagement
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (partShapeType, differentiator, displayType) =>
+            context.FindPlacement = (shape, differentiator, displayType) => FindPlacementImpl(shapeTable, shape, differentiator, displayType);
+        }
+
+        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, IShape shape, string differentiator, string displayType)
+        {
+            ShapeDescriptor descriptor;
+            var shapeType = shape.Metadata.Type;
+
+            if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
             {
-                ShapeDescriptor descriptor;
-                if (shapeTable.Descriptors.TryGetValue(partShapeType, out descriptor))
+                var placementContext = new ShapePlacementContext
                 {
-                    var placementContext = new ShapePlacementContext
-                    {
-                        Shape = context.Shape
-                    };
+                    Shape = shape,
+                    DisplayType = displayType,
+                    Differentiator = differentiator
+                };
 
-                    var placement = descriptor.Placement(placementContext);
-                    if (placement != null)
-                    {
-                        placement.Source = placementContext.Source;
-                        return placement;
-                    }
+                var placement = descriptor.Placement(placementContext);
+                if (placement != null)
+                {
+                    placement.Source = placementContext.Source;
+                    return placement;
                 }
+            }
 
-                return null;
-            };
+            return null;
+
         }
 
         protected dynamic CreateContentShape(string actualShapeType)

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Reflection;
-using System.Linq.Expressions;
-using System.Linq;
-using Orchard.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace Orchard.Events
 {
     /// <summary>
-    /// Registrations are share accross all EventBus instances for a single tenant
+    /// Registrations are shared accross all EventBus instances for a single tenant
     /// </summary>
-    public interface IEventBusState : ISingletonDependency
+    public interface IEventBusState
     {
         ConcurrentDictionary<string, ConcurrentBag<Func<IServiceProvider, IDictionary<string, object>, Task>>> Subscribers { get; }
 
@@ -62,40 +59,29 @@ namespace Orchard.Events
             _state.Add(message, action);
         }
 
-        public async Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventHandler) where TEventHandler : IEventHandler
-        {
-            var expression = eventHandler.Body as MethodCallExpression;
-
-            if (expression == null)
-            {
-                throw new ArgumentException("Only method calls are allowed in NotifyAsync");
-            }
-
-            var interfaceName = expression.Method.DeclaringType.Name;
-            var methodName = expression.Method.Name;
-            var messageName = $"{interfaceName}.{methodName}";
-
-            var data = expression.Method
-                .GetParameters()
-                .Select((parameter, index) => new
-                {
-                    parameter.Name,
-                    Value = GetValue(parameter, expression.Arguments[index])
-                })
-                .ToDictionary(kv => kv.Name, kv => kv.Value);
-
-            await NotifyAsync(messageName, data);
-        }
-
         public static Task Invoke(IServiceProvider serviceProvider, IDictionary<string, object> arguments, MethodInfo methodInfo, Type handlerClass)
         {
             var service = serviceProvider.GetService(handlerClass);
-            var parameters = new object[arguments.Count];
             var methodParameters = methodInfo.GetParameters();
+            var parameters = new object[methodParameters.Length];
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 var parameterName = methodParameters[i].Name;
-                parameters[i] = arguments[parameterName];
+
+                // If the requested parameter is not present in the original call, just set null
+                object value = null;
+                if (!arguments.TryGetValue(parameterName, out value))
+                {
+                    var parameterType = methodParameters[i].ParameterType;
+                    if (parameterType.GetTypeInfo().IsValueType)
+                    {
+                        value = Activator.CreateInstance(parameterType);
+                    }
+
+                    value = null;
+                }
+
+                parameters[i] = value;
             }
 
             var result = methodInfo.Invoke(service, parameters) as Task;
@@ -114,17 +100,6 @@ namespace Orchard.Events
             var proxyType = genericDispatchProxyCreateMethod.Invoke(null, null) as INotifyProxy;
 
             return proxyType;
-        }
-
-        private object GetValue(ParameterInfo parameterInfo, Expression member)
-        {
-            var objectMember = Expression.Convert(member, parameterInfo.ParameterType);
-
-            var getterLambda = Expression.Lambda<Func<object>>(objectMember);
-
-            var getter = getterLambda.Compile();
-
-            return getter();
         }
     }
 

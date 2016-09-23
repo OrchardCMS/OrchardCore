@@ -28,9 +28,4 @@ namespace Orchard.Environment.Shell.Descriptor
             IEnumerable<ShellFeature> enabledFeatures,
             IEnumerable<ShellParameter> parameters);
     }
-
-    public interface IShellDescriptorManagerEventHandler : IEventHandler
-    {
-        void Changed(ShellDescriptor descriptor, string tenant);
-    }
 }

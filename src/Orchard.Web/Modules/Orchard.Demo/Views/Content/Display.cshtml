@@ -2,7 +2,7 @@
 @using Orchard.ContentManagement;
 @inject IContentManager ContentManager;
 
-@{ 
+@{
     ContentItem contentItem = Model.ContentItem;
     var displayText = ContentManager.GetItemMetadata(contentItem).DisplayText;
 }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
-using System;
 using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Builders
@@ -30,11 +29,24 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
-            
-            var knownDescriptor = MinimumShellDescriptor();
-            return CreateDescribedContext(settings, knownDescriptor);
+
+            var describedContext = CreateDescribedContext(settings, MinimumShellDescriptor());
+
+            ShellDescriptor currentDescriptor;
+            using (var scope = describedContext.CreateServiceScope())
+            {
+                var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
+                currentDescriptor = shellDescriptorManager.GetShellDescriptorAsync().Result;
+            }
+
+            if (currentDescriptor != null)
+            {
+                return CreateDescribedContext(settings, currentDescriptor);
+            }
+
+            return describedContext;
         }
-        
+
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -47,7 +59,8 @@ namespace Orchard.Environment.Shell.Builders
                 Features = new[] {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Setup" },
-                },
+                    new ShellFeature { Name = "Orchard.Recipes" }
+                }
             };
 
             return CreateDescribedContext(settings, descriptor);
@@ -76,22 +89,15 @@ namespace Orchard.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new[] {
+                Features = new[]
+                {
                     new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Hosting" },
-                    new ShellFeature { Name = "Settings" },
-                    new ShellFeature { Name = "Dashboard" },
-                    new ShellFeature { Name = "Title" },
-                    new ShellFeature { Name = "Navigation" },
+                    new ShellFeature { Name = "Orchard.Admin" },
                     new ShellFeature { Name = "Orchard.Themes" },
-                    new ShellFeature { Name = "Orchard.Contents" },
-                    new ShellFeature { Name = "Orchard.Lists" },
-                    new ShellFeature { Name = "Orchard.ContentTypes" },
-                    new ShellFeature { Name = "Orchard.Demo" },
-                    new ShellFeature { Name = "Orchard.DynamicCache" },
-                    new ShellFeature { Name = "TheTheme" },
                     new ShellFeature { Name = "TheAdmin" },
                     new ShellFeature { Name = "SafeMode" },
+                    new ShellFeature { Name = "Orchard.Recipes" }
                 },
                 Parameters = new List<ShellParameter>()
             };

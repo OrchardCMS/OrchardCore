@@ -1,65 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
 namespace Orchard.Parser.Yaml
 {
-    public class YamlConfigurationProvider : ConfigurationProvider
+    public class YamlConfigurationProvider : FileConfigurationProvider
     {
         public const char Separator = ':';
         public const string EmptyValue = "null";
         public const char ThemesSeparator = ';';
 
-        public YamlConfigurationProvider(string path)
-            : this(path, optional: false)
+        public YamlConfigurationProvider(FileConfigurationSource source) : base(source)
         {
         }
 
-        public YamlConfigurationProvider(string path, bool optional)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentException("Invalid Filepath", nameof(path));
-            }
-
-            Optional = optional;
-            Path = path;
-        }
-
-        /// <summary>
-        /// Gets a value that determines if this instance of <see cref="YamlConfigurationProvider"/> is optional.
-        /// </summary>
-        public bool Optional { get; }
-
-        /// <summary>
-        /// The absolute path of the file backing this instance of <see cref="YamlConfigurationProvider"/>.
-        /// </summary>
-        public string Path { get; }
-
-        public override void Load()
-        {
-            if (!File.Exists(Path))
-            {
-                if (Optional)
-                {
-                    Data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                }
-                else
-                {
-                    throw new FileNotFoundException(string.Format("File not found: ", Path), Path);
-                }
-            }
-            else
-            {
-                using (var stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
-                {
-                    Load(stream);
-                }
-            }
-        }
-
-        public void Load(Stream stream)
+        public override void Load(Stream stream)
         {
             YamlConfigurationFileParser parser = new YamlConfigurationFileParser();
             try
@@ -68,24 +23,28 @@ namespace Orchard.Parser.Yaml
             }
             catch (InvalidCastException e)
             {
-                throw new FormatException("FormatError_YAMLarseError", e);
+                throw new FormatException("FormatError_YAMLparseError", e);
             }
         }
 
         public virtual void Commit()
         {
-            if (File.Exists(Path))
+            if (File.Exists(Source.Path))
             {
-                File.Delete(Path);
+                File.Delete(Source.Path);
             }
 
-            if (!new FileInfo(Path).Directory.Exists)
-                Directory.CreateDirectory(new FileInfo(Path).Directory.FullName);
+            var fileInfo = new FileInfo(Source.Path);
 
+            if (!fileInfo.Directory.Exists)
+            {
+                Directory.CreateDirectory(fileInfo.Directory.FullName);
+            }
+            
             // TODO: Revisit to make fully atomic.
             // https://github.com/aspnet/Configuration/pull/147/files
 
-            var newConfigFileStream = new FileStream(Path, FileMode.CreateNew);
+            var newConfigFileStream = new FileStream(Source.Path, FileMode.CreateNew);
 
             try
             {
@@ -98,9 +57,9 @@ namespace Orchard.Parser.Yaml
 
                 // The operation should be atomic because we don't want a corrupted config file
                 // So we roll back if the operation fails
-                if (File.Exists(Path))
+                if (File.Exists(Source.Path))
                 {
-                    File.Delete(Path);
+                    File.Delete(Source.Path);
                 }
 
                 // Rethrow the exception

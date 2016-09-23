@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -12,14 +12,14 @@ using System;
 using Xunit;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
 using System.IO;
-using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
 
 namespace Orchard.Tests.DisplayManagement
 {
@@ -34,7 +34,7 @@ namespace Orchard.Tests.DisplayManagement
                 return null;
             }
 
-            public Task NotifyAsync<TEventHandler>(Expression<Action<TEventHandler>> eventNotifier) where TEventHandler : IEventHandler
+            public Task NotifyAsync<TEventHandler>(Expression<Func<TEventHandler, Task>> eventNotifier) where TEventHandler : IEventHandler
             {
                 return null;
             }
@@ -62,7 +62,7 @@ namespace Orchard.Tests.DisplayManagement
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
-            serviceCollection.AddScoped<ILoggerFactory, StubLoggerFactory>();
+            serviceCollection.AddScoped<ILogger<DefaultShapeTableManager>, NullLogger<DefaultShapeTableManager>>();
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
@@ -72,14 +72,11 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddInstance<ITypeFeatureProvider>(
-                new TypeFeatureProvider(new Dictionary<Type, Feature>() {
-                    { typeof(SimpleShapes), testFeature }
-                }));
+            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
-            serviceCollection.AddInstance(new SimpleShapes());
+            serviceCollection.AddSingleton(new SimpleShapes());
 
-            new ShapeAttributeBindingModule().Configure(serviceCollection);
+            new ShapeAttributeBindingModule().ConfigureServices(serviceCollection);
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }

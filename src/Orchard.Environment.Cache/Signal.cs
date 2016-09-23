@@ -11,7 +11,7 @@ namespace Orchard.Environment.Cache
     public class Signal : ISignal
     {
         private readonly ConcurrentDictionary<string, ChangeTokenInfo> _changeTokens;
-            
+
         public Signal()
         {
             _changeTokens = new ConcurrentDictionary<string, ChangeTokenInfo>();

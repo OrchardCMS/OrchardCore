@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Localization;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -32,7 +32,7 @@ namespace Orchard.Environment.Extensions.Features
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
             _logger = logger;
-            
+
             T = NullLocalizer.Instance;
         }
 
@@ -106,7 +106,7 @@ namespace Orchard.Environment.Extensions.Features
                 }
 
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
-                    shellDescriptor.SerialNumber, 
+                    shellDescriptor.SerialNumber,
                     enabledFeatures,
                     shellDescriptor.Parameters);
             }
@@ -119,9 +119,9 @@ namespace Orchard.Environment.Extensions.Features
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <returns>An enumeration with the disabled feature IDs.</returns>
-        public async Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds)
+        public Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds)
         {
-            return await DisableFeaturesAsync(featureIds, false);
+            return DisableFeaturesAsync(featureIds, false);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Orchard.Environment.Extensions.Features
                 }
 
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
-                    shellDescriptor.SerialNumber, 
+                    shellDescriptor.SerialNumber,
                     enabledFeatures,
                     shellDescriptor.Parameters);
             }

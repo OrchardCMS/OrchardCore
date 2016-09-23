@@ -7,6 +7,8 @@ using Orchard.Logging;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Hosting.Extensions
 {
@@ -17,12 +19,13 @@ namespace Orchard.Hosting.Extensions
             IServiceProvider serviceProvider)
         {
             /* TODO (ngm): Abstract this logger stuff outta here! */
-            var loader = serviceProvider.GetRequiredService<IExtensionLoader>();
             var manager = serviceProvider.GetRequiredService<IExtensionManager>();
 
             var descriptor = manager.GetExtension("Orchard.Logging.Console");
-            var entry = loader.Load(descriptor);
-            var loggingInitiatorTypes = entry
+
+            var extension = manager.LoadExtension(descriptor);
+
+            var loggingInitiatorTypes = extension
                 .Assembly
                 .ExportedTypes
                 .Where(et => typeof(ILoggingInitiator).IsAssignableFrom(et));

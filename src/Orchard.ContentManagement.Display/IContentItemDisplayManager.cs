@@ -1,6 +1,5 @@
-using Orchard.DependencyInjection;
-using Orchard.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.ContentManagement.Display
 {
@@ -8,7 +7,7 @@ namespace Orchard.ContentManagement.Display
     /// Describe services responsible for displaying a content item. The result dynamic objects
     /// are the Shape to render a <see cref="ContentItem"/>.
     /// </summary>
-    public interface IContentItemDisplayManager : ITransientDependency
+    public interface IContentItemDisplayManager
     {
         Task<dynamic> BuildDisplayAsync(ContentItem content, IUpdateModel updater, string displayType = "", string groupId = "");
         Task<dynamic> BuildEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "");

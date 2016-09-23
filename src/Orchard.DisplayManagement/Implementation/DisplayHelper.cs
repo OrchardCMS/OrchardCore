@@ -2,11 +2,12 @@
 using System.Dynamic;
 using System.Linq;
 using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.AspNet.Html.Abstractions;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
 using System.IO;
-using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -29,13 +30,31 @@ namespace Orchard.DisplayManagement.Implementation
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            try
+            {
+                result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            }
+            catch (AggregateException ae)
+            {
+                // Unwrap the aggregate exception
+                throw ae.GetBaseException();
+            }
+
             return true;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            try
+            {
+                result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
+            }
+            catch (AggregateException ae)
+            {
+                // Unwrap the aggregate exception
+                throw ae.GetBaseException();
+            }
+
             return true;
         }
 
@@ -53,30 +72,16 @@ namespace Orchard.DisplayManagement.Implementation
 
             if (parameters.Positional.Any())
             {
-                return new Combined(await ShapeExecuteAsync(parameters.Positional));
+                var htmlContents = await ShapeExecuteAsync(parameters.Positional);
+                var htmlContentBuilder = new HtmlContentBuilder();
+                foreach (var htmlContent in htmlContents)
+                {
+                    htmlContentBuilder.AppendHtml(htmlContent);
+                }
             }
 
             // zero args - no display to execute
             return null;
-        }
-
-        // TODO: Replace with HtmlContentBuilder once available in MVC 6 rc2
-        public class Combined : IHtmlContent
-        {
-            private readonly IEnumerable<IHtmlContent> _fragments;
-
-            public Combined(IEnumerable<IHtmlContent> fragments)
-            {
-                _fragments = fragments;
-            }
-
-            public void WriteTo(TextWriter writer, IHtmlEncoder encoder)
-            {
-                foreach (var fragment in _fragments)
-                {
-                    fragment.WriteTo(writer, encoder);
-                }
-            }
         }
 
         private Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)

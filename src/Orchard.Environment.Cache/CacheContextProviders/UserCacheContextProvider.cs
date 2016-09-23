@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Orchard.Environment.Cache.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -21,9 +21,9 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             if (contexts.Any(ctx => String.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
-                if (httpContext.User == null)
+                if (httpContext.User.Identity.IsAuthenticated)
                 {
-                    entries.Add(new CacheContextEntry("user", "anonymous"));
+                    entries.Add(new CacheContextEntry("user", ""));
                 }
                 else
                 {

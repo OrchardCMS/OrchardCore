@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNet.Authorization;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Mvc.Localization;
-using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Models;
-using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.ContentManagement.Metadata.Models;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.Records;
 using Orchard.Contents.Services;
 using Orchard.Contents.ViewModels;
-using Orchard.Core.Settings.Services;
+using Orchard.Settings;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
@@ -92,12 +92,12 @@ namespace Orchard.Contents.Controllers
                     break;
             }
 
-            
+
             if (!string.IsNullOrEmpty(model.TypeName))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
                 if (contentTypeDefinition == null)
-                    return HttpNotFound();
+                    return NotFound();
 
                 model.TypeDisplayName = contentTypeDefinition.ToString();
 
@@ -245,7 +245,7 @@ namespace Orchard.Contents.Controllers
         //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't publish selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
-        //                        return new HttpUnauthorizedResult();
+        //                        return Unauthorized();
         //                    }
 
         //                    _contentManager.Publish(item);
@@ -258,7 +258,7 @@ namespace Orchard.Contents.Controllers
         //                    if (!await _authorizationService.Authorize(User, Permissions.PublishContent, item, T("Couldn't unpublish selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
-        //                        return new HttpUnauthorizedResult();
+        //                        return Unauthorized();
         //                    }
 
         //                    _contentManager.Unpublish(item);
@@ -271,7 +271,7 @@ namespace Orchard.Contents.Controllers
         //                    if (!await _authorizationService.Authorize(User, Permissions.DeleteContent, item, T("Couldn't remove selected content.")))
         //                    {
         //                        _transactionManager.Cancel();
-        //                        return new HttpUnauthorizedResult();
+        //                        return Unauthorized();
         //                    }
 
         //                    _contentManager.Remove(item);
@@ -297,14 +297,14 @@ namespace Orchard.Contents.Controllers
         {
             if (String.IsNullOrWhiteSpace(id))
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             var contentItem = _contentManager.New(id);
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
@@ -337,7 +337,7 @@ namespace Orchard.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             return await CreatePOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
@@ -349,7 +349,7 @@ namespace Orchard.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             _contentManager.Create(contentItem, VersionOptions.Draft);
@@ -367,8 +367,8 @@ namespace Orchard.Contents.Controllers
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T.Html("Your content has been created.")
-                : T.Html("Your {0} has been created.", typeDefinition.DisplayName));
+                ? T["Your content has been created."]
+                : T["Your {0} has been created.", typeDefinition.DisplayName]);
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
@@ -385,12 +385,12 @@ namespace Orchard.Contents.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "DetailAdmin");
@@ -403,11 +403,11 @@ namespace Orchard.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
 
             if (contentItem == null)
-                return HttpNotFound();
+                return NotFound();
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this);
@@ -435,11 +435,11 @@ namespace Orchard.Contents.Controllers
             var content = await _contentManager.GetAsync(id, VersionOptions.Latest);
 
             if (content == null)
-                return HttpNotFound();
+                return NotFound();
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             return await EditPOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
@@ -451,16 +451,16 @@ namespace Orchard.Contents.Controllers
 
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
-            string previousRoute = null;
-            //if (contentItem.Has<IAliasAspect>() && 
+            //string previousRoute = null;
+            //if (contentItem.Has<IAliasAspect>() &&
             //    !string.IsNullOrWhiteSpace(returnUrl)
             //    && Request.IsLocalUrl(returnUrl)
             //    // only if the original returnUrl is the content itself
@@ -489,8 +489,8 @@ namespace Orchard.Contents.Controllers
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T.Html("Your content has been saved.")
-                : T.Html("Your {0} has been saved.", typeDefinition.DisplayName));
+                ? T["Your content has been saved."]
+                : T["Your {0} has been saved.", typeDefinition.DisplayName]);
 
             if (returnUrl == null)
             {
@@ -508,10 +508,10 @@ namespace Orchard.Contents.Controllers
         //    var contentItem = _contentManager.GetLatest(id);
 
         //    if (contentItem == null)
-        //        return HttpNotFound();
+        //        return NotFound();
 
         //    if (!await _authorizationService.Authorize(User, Permissions.EditContent, contentItem, T("Couldn't clone content")))
-        //        return new HttpUnauthorizedResult();
+        //        return Unauthorized();
 
         //    try
         //    {
@@ -535,7 +535,7 @@ namespace Orchard.Contents.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             if (contentItem != null)
@@ -545,8 +545,8 @@ namespace Orchard.Contents.Controllers
                 await _contentManager.RemoveAsync(contentItem);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T.Html("That content has been removed.")
-                    : T.Html("That {0} has been removed.", typeDefinition.DisplayName));
+                    ? T["That content has been removed."]
+                    : T["That {0} has been removed.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -558,12 +558,12 @@ namespace Orchard.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             await _contentManager.PublishAsync(contentItem);
@@ -572,11 +572,11 @@ namespace Orchard.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T.Html("That content has been published."));
+                _notifier.Success(T["That content has been published."]);
             }
             else
             {
-                _notifier.Success(T.Html("That {0} has been published.", typeDefinition.DisplayName));
+                _notifier.Success(T["That {0} has been published.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
@@ -588,12 +588,12 @@ namespace Orchard.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
             if (contentItem == null)
             {
-                return HttpNotFound();
+                return NotFound();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
             {
-                return new HttpUnauthorizedResult();
+                return Unauthorized();
             }
 
             await _contentManager.UnpublishAsync(contentItem);
@@ -602,11 +602,11 @@ namespace Orchard.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T.Html("That content has been unpublished."));
+                _notifier.Success(T["That content has been unpublished."]);
             }
             else
             {
-                _notifier.Success(T.Html("That {0} has been unpublished.", typeDefinition.DisplayName));
+                _notifier.Success(T["That {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");

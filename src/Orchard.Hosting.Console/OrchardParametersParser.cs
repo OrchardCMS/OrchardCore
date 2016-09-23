@@ -1,4 +1,5 @@
-﻿using Orchard.Hosting.Parameters;
+﻿using Orchard.Environment.Commands;
+using Orchard.Environment.Commands.Parameters;
 using System;
 using System.Collections.Generic;
 using System.Security;

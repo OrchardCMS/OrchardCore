@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration.Records;
-using Orchard.Environment.Extensions;
-using Orchard.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration.Records;
+using Orchard.Environment.Extensions;
+using Orchard.Localization;
 using YesSql.Core.Services;
 
 namespace Orchard.Data.Migration
@@ -61,7 +61,7 @@ namespace Orchard.Data.Migration
             return _dataMigrationRecord;
         }
 
-        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdate()
+        public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync()
         {
             var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations
                 .ToDictionary(r => r.DataMigrationClass);
@@ -76,14 +76,6 @@ namespace Orchard.Data.Migration
             });
 
             return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Descriptor.Id).ToList();
-        }
-
-        /// <summary>
-        /// Whether a feature has already been installed, i.e. one of its Data Migration class has already been processed
-        /// </summary>
-        public bool IsFeatureAlreadyInstalled(string feature)
-        {
-            return GetDataMigrations(feature).Any(dataMigration => GetDataMigrationRecordAsync(dataMigration).Result != null);
         }
 
         public async Task Uninstall(string feature)
@@ -326,6 +318,28 @@ namespace Orchard.Data.Migration
             }
 
             return null;
+        }
+
+        public async Task UpdateAllFeaturesAsync()
+        {
+            var featuresThatNeedUpdate = await GetFeaturesThatNeedUpdateAsync();
+
+            foreach (var feature in featuresThatNeedUpdate)
+            {
+                try
+                {
+                    await UpdateAsync(feature);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.IsFatal())
+                    {
+                        throw;
+                    }
+
+                    _logger.LogError("Could not run migrations automatically on " + feature, ex);
+                }
+            }
         }
     }
 }

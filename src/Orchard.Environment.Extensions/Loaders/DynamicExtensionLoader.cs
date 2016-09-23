@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
-using Orchard.DependencyInjection;
-using Orchard.Environment.Extensions.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Folders;
-using Microsoft.Extensions.OptionsModel;
-using Microsoft.Extensions.PlatformAbstractions;
+using Orchard.Environment.Extensions.Models;
 using Orchard.FileSystem;
 
 namespace Orchard.Environment.Extensions.Loaders
@@ -16,30 +13,27 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly string[] ExtensionsSearchPaths;
 
         private readonly IHostEnvironment _hostEnvironment;
-        private readonly IAssemblyLoaderContainer _loaderContainer;
-        private readonly IExtensionAssemblyLoader _extensionAssemblyLoader;
         private readonly IOrchardFileSystem _fileSystem;
+        private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
             IHostEnvironment hostEnvironment,
-            IAssemblyLoaderContainer container,
-            IExtensionAssemblyLoader extensionAssemblyLoader,
             IOrchardFileSystem fileSystem,
+            IExtensionLibraryService extensionLibraryService,
             ILogger<DynamicExtensionLoader> logger)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.ModuleLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
+            ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
             _hostEnvironment = hostEnvironment;
-            _loaderContainer = container;
-            _extensionAssemblyLoader = extensionAssemblyLoader;
             _fileSystem = fileSystem;
+            _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
 
         public string Name => GetType().Name;
 
-        public int Order => 100;
+        public int Order => 50;
 
         public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
         {
@@ -61,32 +55,32 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
 
-            var directory = _fileSystem.GetDirectoryInfo(descriptor.Location);
-
-            using (_loaderContainer.AddLoader(_extensionAssemblyLoader.WithPath(directory.FullName)))
+            try
             {
-                try
+                var assembly = _extensionLibraryService.LoadDynamicExtension(descriptor);
+            
+                if (assembly == null)
                 {
-                    var assembly = Assembly.Load(new AssemblyName(descriptor.Id));
+                    return null;
+                }
 
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("Loaded referenced extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
-                    }
-                    return new ExtensionEntry
-                    {
-                        Descriptor = descriptor,
-                        Assembly = assembly,
-                        ExportedTypes = assembly.ExportedTypes
-                    };
-                }
-                catch (System.Exception ex)
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogError(string.Format("Error trying to load extension {0}", descriptor.Id), ex);
-                    throw;
+                    _logger.LogInformation("Loaded referenced dynamic extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
                 }
+
+                return new ExtensionEntry
+                {
+                    Descriptor = descriptor,
+                    Assembly = assembly,
+                    ExportedTypes = assembly.ExportedTypes
+                };
             }
-        }
+            catch
+            {
+                return null;
+            }
+       }
 
         public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
         {

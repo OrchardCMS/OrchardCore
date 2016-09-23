@@ -1,48 +1,55 @@
 ﻿using System;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using Orchard.Parser.Yaml;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace Orchard.Parser
 {
     public static class YamlConfigurationExtensions
     {
-        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder configuration, string path)
+        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder builder, string path)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            return AddYamlFile(configuration, path, optional: false);
+            return AddYamlFile(builder, provider: null, path: path, optional: false, reloadOnChange: false);
         }
 
-        public static IConfigurationBuilder AddYamlFile(
-            this IConfigurationBuilder configurationBuilder,
-            string path,
-            bool optional)
+        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder builder, string path, bool optional)
         {
-            if (configurationBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(configurationBuilder));
-            }
+            return AddYamlFile(builder, provider: null, path: path, optional: optional, reloadOnChange: false);
+        }
 
+        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder builder, string path, bool optional, bool reloadOnChange)
+        {
+            return AddYamlFile(builder, provider: null, path: path, optional: optional, reloadOnChange: reloadOnChange);
+        }
+
+        public static IConfigurationBuilder AddYamlFile(this IConfigurationBuilder builder, IFileProvider provider, string path, bool optional, bool reloadOnChange)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
             if (string.IsNullOrEmpty(path))
             {
                 throw new ArgumentException("InvalidFilePath", nameof(path));
             }
 
-            var fullPath = Path.Combine(configurationBuilder.GetBasePath(), path);
-
-            if (!optional && !File.Exists(fullPath))
+            if (provider == null && Path.IsPathRooted(path))
             {
-                throw new FileNotFoundException("FormatError_FileNotFound(fullPath)", fullPath);
+                provider = new PhysicalFileProvider(Path.GetDirectoryName(path));
+                path = Path.GetFileName(path);
             }
-
-            configurationBuilder.Add(new YamlConfigurationProvider(fullPath, optional: optional));
-            return configurationBuilder;
+            var source = new YamlConfigurationSource
+            {
+                FileProvider = provider,
+                Path = path,
+                Optional = optional,
+                ReloadOnChange = reloadOnChange
+            };
+            builder.Add(source);
+            return builder;
         }
-
+        
         public static string Get(this IConfigurationProvider provider, string key)
         {
             string value;

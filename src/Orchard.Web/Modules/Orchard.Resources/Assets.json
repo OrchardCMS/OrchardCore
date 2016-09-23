@@ -1,22 +1,12 @@
 ﻿[
   {
     "inputs": [ "Assets/Bootstrap/scss/bootstrap.scss" ],
-    "output": "Styles/bootstrap.css"
+    "output": "Content/Styles/bootstrap.css"
   },
   {
     "inputs": [
-      "Assets/Bootstrap/Js/alert.js",
-      "Assets/Bootstrap/Js/button.js",
-      "Assets/Bootstrap/Js/carousel.js",
-      "Assets/Bootstrap/Js/collapse.js",
-      "Assets/Bootstrap/Js/dropdown.js",
-      "Assets/Bootstrap/Js/modal.js",
-      "Assets/Bootstrap/Js/popover.js",
-      "Assets/Bootstrap/Js/scrollspy.js",
-      "Assets/Bootstrap/Js/tab.js",
-      "Assets/Bootstrap/Js/tooltip.js",
-      "Assets/Bootstrap/Js/util.js"
+      "Assets/Bootstrap/Js/bootstrap.js"
     ],
-    "output": "Scripts/bootstrap.js"
+    "output": "Content/Scripts/bootstrap.js"
   }
 ]

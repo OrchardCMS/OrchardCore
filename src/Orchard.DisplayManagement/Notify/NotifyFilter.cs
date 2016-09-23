@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Orchard.DependencyInjection;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Orchard.DisplayManagement.Layout;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using Orchard.Environment.Shell;
-using Microsoft.AspNet.DataProtection;
+using Microsoft.AspNetCore.DataProtection;
 using System.Net;
+using System.Text.Encodings.Web;
 
 namespace Orchard.DisplayManagement.Notify
 {
@@ -28,6 +29,7 @@ namespace Orchard.DisplayManagement.Notify
         private IList<NotifyEntry> _existingEntries;
         private bool _shouldDeleteCookie;
         private string _tenantPath;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public NotifyFilter(
             IHttpContextAccessor httpContextAccessor,
@@ -35,8 +37,10 @@ namespace Orchard.DisplayManagement.Notify
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
             ShellSettings shellSettings,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            HtmlEncoder htmlEncoder)
         {
+            _htmlEncoder = htmlEncoder;
             _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
 
@@ -84,11 +88,11 @@ namespace Orchard.DisplayManagement.Notify
             if (!messageEntries.Any() && !_existingEntries.Any())
             {
                 return;
-            }            
+            }
 
-            // Assign values to the Items collection instead of TempData and 
+            // Assign values to the Items collection instead of TempData and
             // combine any existing entries added by the previous request with new ones.
-            
+
             _existingEntries = messageEntries.Concat(_existingEntries).ToList();
 
             // Result is not a view, so assume a redirect and assign values to TemData.
@@ -117,7 +121,7 @@ namespace Orchard.DisplayManagement.Notify
             {
                 return;
             }
-             
+
             var messagesZone = _layoutAccessor.GetLayout().Zones["Messages"];
             foreach (var messageEntry in messageEntries)
             {
@@ -137,7 +141,7 @@ namespace Orchard.DisplayManagement.Notify
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
             var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter());
+            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
 
             try
             {
@@ -154,7 +158,7 @@ namespace Orchard.DisplayManagement.Notify
         private NotifyEntry[] DeserializeNotifyEntries(string value)
         {
             var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter());
+            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
 
             try
             {

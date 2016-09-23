@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Environment.Commands;
+﻿using Orchard.Environment.Commands;
 using Orchard.Hosting.HostContext;
-using Orchard.Hosting.Parameters;
+using Orchard.Environment.Commands.Parameters;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Hosting
 {
@@ -32,11 +32,11 @@ namespace Orchard.Hosting
                 serviceProvider, _logger, args);
         }
 
-        public CommandReturnCodes Run()
+        public async Task<CommandReturnCodes> RunAsync()
         {
             try
             {
-                return DoRun();
+                return await DoRunAsync();
             }
             catch (Exception e)
             {
@@ -49,12 +49,12 @@ namespace Orchard.Hosting
             }
         }
 
-        private CommandReturnCodes DoRun()
+        private async Task<CommandReturnCodes> DoRunAsync()
         {
             var context = CommandHostContext();
             if (context.DisplayUsageHelp)
             {
-                DisplayUsageHelp();
+                await DisplayUsageHelpAsync();
                 return CommandReturnCodes.Ok;
             }
             if (context.StartSessionResult == CommandReturnCodes.Fail)
@@ -69,7 +69,7 @@ namespace Orchard.Hosting
             //else if (context.Arguments.ResponseFiles.Any())
             //    result = ExecuteResponseFiles(context);
             //else {
-            result = ExecuteInteractive(context);
+            result = await ExecuteInteractiveAsync(context);
             //}
 
             _commandHostContextProvider.Shutdown(context);
@@ -81,18 +81,18 @@ namespace Orchard.Hosting
             return _commandHostContextProvider.CreateContext();
         }
 
-        private CommandReturnCodes ExecuteSingleCommand(CommandHostContext context)
+        private async Task<CommandReturnCodes> ExecuteSingleCommandAsync(CommandHostContext context)
         {
-            return context.CommandHost.RunCommand(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
+            return await context.CommandHost.RunCommandAsync(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
         }
-
-        public CommandReturnCodes ExecuteInteractive(CommandHostContext context)
+        
+        public async Task<CommandReturnCodes> ExecuteInteractiveAsync(CommandHostContext context)
         {
-            _output.WriteLine("Type \"?\" for help, \"exit\" to exit, \"cls\" to clear screen");
+            await _output.WriteLineAsync("Type \"?\" for help, \"exit\" to exit, \"cls\" to clear screen");
             while (true)
             {
-                var command = ReadCommand(context);
-                switch (command.ToLowerInvariant())
+                var command = await ReadCommandAsync(context);
+                switch (command?.ToLowerInvariant())
                 {
                     case "quit":
                     case "q":
@@ -101,156 +101,160 @@ namespace Orchard.Hosting
                         return 0;
                     case "help":
                     case "?":
-                        DisplayInteractiveHelp();
+                        await DisplayInteractiveHelpAsync();
                         break;
                     case "cls":
-                        //System.Console.Clear();
+                        System.Console.Clear();
                         break;
                     default:
-                        context = RunCommand(context, command);
+                        context = await RunCommandAsync(context, command);
                         break;
                 }
             }
         }
 
-        private string ReadCommand(CommandHostContext context)
+        private async Task<string> ReadCommandAsync(CommandHostContext context)
         {
-            _output.WriteLine();
-            _output.Write("orchard> ");
-            return _input.ReadLine();
+            await _output.WriteLineAsync();
+            await _output.WriteAsync("orchard> ");
+            return await _input.ReadLineAsync();
         }
 
-        private CommandHostContext RunCommand(CommandHostContext context, string command)
+        private async Task<CommandHostContext> RunCommandAsync(CommandHostContext context, string command)
         {
             if (string.IsNullOrWhiteSpace(command))
+            {
                 return context;
+            }
 
-            CommandReturnCodes result = RunCommandInSession(context, command);
+            CommandReturnCodes result = await RunCommandInSessionAsync(context, command);
             if (result == context.RetryResult)
             {
                 _commandHostContextProvider.Shutdown(context);
                 context = CommandHostContext();
-                result = RunCommandInSession(context, command);
+                result = await RunCommandInSessionAsync(context, command);
                 if (result != CommandReturnCodes.Ok)
-                    _output.WriteLine("Command returned non-zero result: {0}", result);
+                {
+                    await _output.WriteLineAsync($"Command returned non-zero result: {result}");
+                }
             }
             return context;
         }
 
-        private CommandReturnCodes RunCommandInSession(CommandHostContext context, string command)
+        private async Task<CommandReturnCodes> RunCommandInSessionAsync(CommandHostContext context, string command)
         {
-            var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandLineParser().Parse(command)));
-            return context.CommandHost.RunCommand(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
+            var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandParser().Parse(command)));
+            return await context.CommandHost.RunCommandAsync(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
         }
 
-        private void DisplayInteractiveHelp()
+        private async Task DisplayInteractiveHelpAsync()
         {
-            _output.WriteLine("The Orchard command interpreter supports running a few built-in commands");
-            _output.WriteLine("as well as specific commands from enabled features of an Orchard installation.");
-            _output.WriteLine("");
-            _output.WriteLine("The general syntax of commands is");
-            _output.WriteLine("");
-            _output.WriteLine("   <command-name> [arg1] ... [argn] [/switch1[:value1]] ... [/switchn[:valuen]]");
-            _output.WriteLine("");
-            _output.WriteLine("   <command-name>");
-            _output.WriteLine("       Specifies the command to execute (the command name can be multiple words separated by spaces");
-            _output.WriteLine("");
-            _output.WriteLine("   [arg1] ... [argn]");
-            _output.WriteLine("       Specifies additional arguments for the command");
-            _output.WriteLine("");
-            _output.WriteLine("   [/switch1[:value1]] ... [/switchn[:valuen]]");
-            _output.WriteLine("       Specifies switches to apply to the command. Available switches generally ");
-            _output.WriteLine("       depend on the command executed, with the exception of a few built-in ones.");
-            _output.WriteLine("");
-            _output.WriteLine("   Built-in commands");
-            _output.WriteLine("   =================");
-            _output.WriteLine("");
-            _output.WriteLine("   help|h|?");
-            _output.WriteLine("       Displays this message");
-            _output.WriteLine("");
-            _output.WriteLine("   exit|quit|e|q");
-            _output.WriteLine("       Terminates the interactive session");
-            _output.WriteLine("");
-            _output.WriteLine("   cls");
-            _output.WriteLine("       Clears the console screen");
-            _output.WriteLine("");
-            _output.WriteLine("   help commands");
-            _output.WriteLine("       Displays the list of available commands");
-            _output.WriteLine("");
-            _output.WriteLine("   help <command-name>");
-            _output.WriteLine("       Display help for a given command");
-            _output.WriteLine("");
-            _output.WriteLine("   Built-in switches");
-            _output.WriteLine("   =================");
-            _output.WriteLine("");
-            _output.WriteLine("   /Verbose");
-            _output.WriteLine("   /v");
-            _output.WriteLine("       Turns on verbose output");
-            _output.WriteLine("");
-            _output.WriteLine("   /Tenant:tenant-name");
-            _output.WriteLine("   /t:tenant-name");
-            _output.WriteLine("       Specifies which tenant to run the command into. \"Default\" tenant by default.");
-            _output.WriteLine("");
+            await _output.WriteLineAsync("The Orchard command interpreter supports running a few built-in commands");
+            await _output.WriteLineAsync("as well as specific commands from enabled features of an Orchard installation.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("The general syntax of commands is");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   <command-name> [arg1] ... [argn] [/switch1[:value1]] ... [/switchn[:valuen]]");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   <command-name>");
+            await _output.WriteLineAsync("       Specifies the command to execute (the command name can be multiple words separated by spaces");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   [arg1] ... [argn]");
+            await _output.WriteLineAsync("       Specifies additional arguments for the command");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   [/switch1[:value1]] ... [/switchn[:valuen]]");
+            await _output.WriteLineAsync("       Specifies switches to apply to the command. Available switches generally ");
+            await _output.WriteLineAsync("       depend on the command executed, with the exception of a few built-in ones.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   Built-in commands");
+            await _output.WriteLineAsync("   =================");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   help|h|?");
+            await _output.WriteLineAsync("       Displays this message");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   exit|quit|e|q");
+            await _output.WriteLineAsync("       Terminates the interactive session");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   cls");
+            await _output.WriteLineAsync("       Clears the console screen");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   help commands");
+            await _output.WriteLineAsync("       Displays the list of available commands");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   help <command-name>");
+            await _output.WriteLineAsync("       Display help for a given command");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   Built-in switches");
+            await _output.WriteLineAsync("   =================");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /Verbose");
+            await _output.WriteLineAsync("   /v");
+            await _output.WriteLineAsync("       Turns on verbose output");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /Tenant:tenant-name");
+            await _output.WriteLineAsync("   /t:tenant-name");
+            await _output.WriteLineAsync("       Specifies which tenant to run the command into. \"Default\" tenant by default.");
+            await _output.WriteLineAsync();
         }
 
-        private void DisplayUsageHelp()
+        private async Task DisplayUsageHelpAsync()
         {
-            _output.WriteLine("Executes Orchard commands from a Orchard installation directory.");
-            _output.WriteLine("");
-            _output.WriteLine("Usage:");
-            _output.WriteLine("   orchard.exe");
-            _output.WriteLine("       Starts the Orchard command interpreter");
-            _output.WriteLine("");
-            _output.WriteLine("   orchard.exe <command-name> [arg1] ... [argn] [/switch1[:value1]] ... [/switchn[:valuen]]");
-            _output.WriteLine("       Executes a single command");
-            _output.WriteLine("");
-            _output.WriteLine("   orchard.exe @response-file1 ... [@response-filen] [/switch1[:value1]] ... [/switchn[:valuen]]");
-            _output.WriteLine("       Executes multiples commands from response files");
-            _output.WriteLine("");
-            _output.WriteLine(" where");
-            _output.WriteLine("");
-            _output.WriteLine("   <command-name>");
-            _output.WriteLine("       Specifies the command to execute (the command name can be multiple words separated by spaces");
-            _output.WriteLine("");
-            _output.WriteLine("   [arg1] ... [argn]");
-            _output.WriteLine("       Specify additional arguments for the command");
-            _output.WriteLine("");
-            _output.WriteLine("   [/switch1[:value1]] ... [/switchn[:valuen]]");
-            _output.WriteLine("       Specify switches to apply to the command. Available switches generally ");
-            _output.WriteLine("       depend on the command executed, with the exception of a few built-in ones.");
-            _output.WriteLine("");
-            _output.WriteLine("   [@response-file1] ... [@response-filen]");
-            _output.WriteLine("       Specify one or more response files to be used for reading commands and switches.");
-            _output.WriteLine("       A response file is a text file that contains one line per command to execute.");
-            _output.WriteLine("");
-            _output.WriteLine("   Built-in commands");
-            _output.WriteLine("   =================");
-            _output.WriteLine("");
-            _output.WriteLine("   help commands");
-            _output.WriteLine("       Display the list of available commands.");
-            _output.WriteLine("");
-            _output.WriteLine("   help <command-name>");
-            _output.WriteLine("       Display help for a given command.");
-            _output.WriteLine("");
-            _output.WriteLine("   Built-in switches");
-            _output.WriteLine("   =================");
-            _output.WriteLine("");
-            _output.WriteLine("   /WorkingDirectory:<physical-path>");
-            _output.WriteLine("   /wd:<physical-path>");
-            _output.WriteLine("       Specifies the orchard installation directory. The current directory is the default.");
-            _output.WriteLine("");
-            _output.WriteLine("   /Verbose");
-            _output.WriteLine("   /v");
-            _output.WriteLine("       Turn on verbose output");
-            _output.WriteLine("");
-            _output.WriteLine("   /VirtualPath:<virtual-path>");
-            _output.WriteLine("   /vp:<virtual-path>");
-            _output.WriteLine("       Virtual path to pass to the WebHost. Empty (i.e. root path) by default.");
-            _output.WriteLine("");
-            _output.WriteLine("   /Tenant:tenant-name");
-            _output.WriteLine("   /t:tenant-name");
-            _output.WriteLine("       Specifies which tenant to run the command into. \"Default\" tenant by default.");
-            _output.WriteLine("");
+            await _output.WriteLineAsync("Executes Orchard commands from a Orchard installation directory.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("Usage:");
+            await _output.WriteLineAsync("   orchard.exe");
+            await _output.WriteLineAsync("       Starts the Orchard command interpreter");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   orchard.exe <command-name> [arg1] ... [argn] [/switch1[:value1]] ... [/switchn[:valuen]]");
+            await _output.WriteLineAsync("       Executes a single command");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   orchard.exe @response-file1 ... [@response-filen] [/switch1[:value1]] ... [/switchn[:valuen]]");
+            await _output.WriteLineAsync("       Executes multiples commands from response files");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync(" where");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   <command-name>");
+            await _output.WriteLineAsync("       Specifies the command to execute (the command name can be multiple words separated by spaces");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   [arg1] ... [argn]");
+            await _output.WriteLineAsync("       Specify additional arguments for the command");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   [/switch1[:value1]] ... [/switchn[:valuen]]");
+            await _output.WriteLineAsync("       Specify switches to apply to the command. Available switches generally ");
+            await _output.WriteLineAsync("       depend on the command executed, with the exception of a few built-in ones.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   [@response-file1] ... [@response-filen]");
+            await _output.WriteLineAsync("       Specify one or more response files to be used for reading commands and switches.");
+            await _output.WriteLineAsync("       A response file is a text file that contains one line per command to execute.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   Built-in commands");
+            await _output.WriteLineAsync("   =================");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   help commands");
+            await _output.WriteLineAsync("       Display the list of available commands.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   help <command-name>");
+            await _output.WriteLineAsync("       Display help for a given command.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   Built-in switches");
+            await _output.WriteLineAsync("   =================");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /WorkingDirectory:<physical-path>");
+            await _output.WriteLineAsync("   /wd:<physical-path>");
+            await _output.WriteLineAsync("       Specifies the orchard installation directory. The current directory is the default.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /Verbose");
+            await _output.WriteLineAsync("   /v");
+            await _output.WriteLineAsync("       Turn on verbose output");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /VirtualPath:<virtual-path>");
+            await _output.WriteLineAsync("   /vp:<virtual-path>");
+            await _output.WriteLineAsync("       Virtual path to pass to the WebHost. Empty (i.e. root path) by default.");
+            await _output.WriteLineAsync();
+            await _output.WriteLineAsync("   /Tenant:tenant-name");
+            await _output.WriteLineAsync("   /t:tenant-name");
+            await _output.WriteLineAsync("       Specifies which tenant to run the command into. \"Default\" tenant by default.");
+            await _output.WriteLineAsync();
         }
     }
 }

@@ -1,33 +1,40 @@
-﻿using Microsoft.AspNet.Mvc.ModelBinding;
+﻿using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Internal;
 
 namespace Orchard.Hosting.Mvc.ModelBinding
 {
     public class CheckMarkModelBinder : IModelBinder
     {
-        public Task<ModelBindingResult> BindModelAsync(ModelBindingContext bindingContext)
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            if(bindingContext.ModelType == typeof(bool))
+            if (bindingContext == null)
+            {
+                throw new ArgumentNullException(nameof(bindingContext));
+            }
+
+            if (bindingContext.ModelType == typeof(bool))
             {
                 var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
                 if (valueProviderResult == ValueProviderResult.None)
                 {
-                    return ModelBindingResult.NoResultAsync;
+                    return Task.CompletedTask;
                 }
 
                 bindingContext.ModelState.SetModelValue(bindingContext.ModelName, valueProviderResult);
 
                 if (valueProviderResult.Values == "✓")
                 {
-                    return ModelBindingResult.SuccessAsync(bindingContext.ModelName, true);
+                    bindingContext.Result = ModelBindingResult.Success(bindingContext.ModelName);
                 }
-                else if(valueProviderResult.Values == "✗")
+                else if (valueProviderResult.Values == "✗")
                 {
-                    return ModelBindingResult.SuccessAsync(bindingContext.ModelName, false);
+                    bindingContext.Result = ModelBindingResult.Failed();
                 }
             }
 
-            return ModelBindingResult.NoResultAsync;
+            return TaskCache.CompletedTask;
         }
     }
 }

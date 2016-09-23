@@ -1,0 +1,63 @@
+{
+	"version": "0.1.0",
+  	"linux": { "command": "sh", "args": ["-c"] },
+  	"osx": { "command": "sh", "args": ["-c"] },
+  	"windows": { "command": "cmd", "args": ["/C"] },
+	"isShellCommand": true,
+	"showOutput": "always",
+	"suppressTaskName": true,
+	"tasks": [
+		{
+			"taskName": "Dotnet Restore",
+			"args": [ "dotnet restore" ]
+		},
+		{
+			"taskName": "Dotnet Restore Force",
+			"args": [ "dotnet restore --no-cache" ]
+		},
+		{
+			"taskName": "Solution: Dotnet Build Debug",
+			"args": [ "dotnet build src/**/project.json -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Solution: Dotnet Rebuild Debug",
+			"args": [ "dotnet build src/**/project.json --no-incremental -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Solution: Dotnet Build Release",
+			"args": [ "dotnet build src/**/project.json -c Release" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Build Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Debug" ],
+			"isBuildCommand": true,
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Rebuild Debug",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web --no-incremental -c Debug" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Build Release",
+			"args": [ "dotnet build ${workspaceRoot}/src/Orchard.Web -c Release" ],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"taskName": "Web App: Dotnet Run",
+			"args": [ "cd ${workspaceRoot}/src/orchard.web & dotnet run" ]
+		},
+		{
+			"taskName": "Web App: Dotnet Publish",
+			"args": [ "dotnet publish ${workspaceRoot}/src/Orchard.Web --output ../publish" ]
+		},
+		{
+			"taskName": "Gulp Build",
+			"args": [ "gulp build" ],
+			"problemMatcher": "$gulp-tsc"
+		}
+	]
+}

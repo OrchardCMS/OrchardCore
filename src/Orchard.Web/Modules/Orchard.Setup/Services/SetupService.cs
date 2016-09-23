@@ -1,69 +1,81 @@
-using Orchard.Hosting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Http;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Hosting.ShellBuilders;
-using YesSql.Core.Services;
+using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration;
+using Orchard.DeferredTasks;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Shell.Models;
+using Orchard.Events;
+using Orchard.Hosting;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
+using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
 {
-    public class SetupService : Component, ISetupService
+    public class SetupService : ISetupService
     {
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IShellContainerFactory _shellContainerFactory;
+        private readonly IShellContextFactory _shellContextFactory;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IRunningShellTable _runningShellTable;
-        private readonly IRunningShellRouterTable _runningShellRouterTable;
+        private readonly IRecipeHarvester _recipeHarvester;
         private readonly ILogger _logger;
+
+        private IReadOnlyList<RecipeDescriptor> _recipes;
 
         public SetupService(
             ShellSettings shellSettings,
             IOrchardHost orchardHost,
-            IShellSettingsManager shellSettingsManager,
-            IShellContainerFactory shellContainerFactory,
+            IShellContextFactory shellContextFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
-            IRunningShellRouterTable runningShellRouterTable,
-            ILogger<SetupService> logger)
+            IRecipeHarvester recipeHarvester,
+            ILogger<SetupService> logger
+            )
         {
             _shellSettings = shellSettings;
             _orchardHost = orchardHost;
-            _shellSettingsManager = shellSettingsManager;
-            _shellContainerFactory = shellContainerFactory;
+            _shellContextFactory = shellContextFactory;
             _compositionStrategy = compositionStrategy;
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
             _runningShellTable = runningShellTable;
-            _runningShellRouterTable = runningShellRouterTable;
+            _recipeHarvester = recipeHarvester;
             _logger = logger;
         }
 
-        public ShellSettings Prime()
+        public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
-            return _shellSettings;
+            if (_recipes == null)
+            {
+                _recipes = (await _recipeHarvester.HarvestRecipesAsync())
+                    .Where(recipe => recipe.IsSetupRecipe)
+                    .ToList();
+            }
+
+            return _recipes;
         }
 
-        public string Setup(SetupContext context)
+        public async Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return SetupInternal(context);
+                return await SetupInternalAsync(context);
             }
             catch
             {
@@ -72,7 +84,7 @@ namespace Orchard.Setup.Services
             }
         }
 
-        public string SetupInternal(SetupContext context)
+        public async Task<string> SetupInternalAsync(SetupContext context)
         {
             string executionId;
 
@@ -82,12 +94,12 @@ namespace Orchard.Setup.Services
             }
 
             // Features to enable for Setup
-            string[] hardcoded = {
-                // Framework
-                "Orchard.Hosting",
-                // Core
-                "Settings"
-                };
+            string[] hardcoded =
+            {
+                "Orchard.Hosting", // shortcut for built-in features
+                "Orchard.Modules",
+                "Orchard.Recipes"
+            };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
@@ -103,43 +115,131 @@ namespace Orchard.Setup.Services
                 shellSettings.TablePrefix = context.DatabaseTablePrefix;
             }
 
-            // TODO: Add Encryption Settings in
-
             // Creating a standalone environment based on a "minimum shell descriptor".
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
 
-            using (var environment = _orchardHost.CreateShellContext(shellSettings))
+            var shellDescriptor = new ShellDescriptor
             {
-                using (var scope = environment.CreateServiceScope())
-                {
-                    executionId = CreateTenantData(context, environment);
+                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
+            };
 
+            using (var shellContext = _shellContextFactory.CreateDescribedContext(shellSettings, shellDescriptor))
+            {
+                using (var scope = shellContext.CreateServiceScope())
+                {
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
-                    store.InitializeAsync();
-                    
+
+                    try
+                    {
+                        await store.InitializeAsync();
+                    }
+                    catch
+                    {
+                        // Tables already exist or database was not found
+
+                        // The issue is that the user creation needs the tables to be present,
+                        // if the user information is not valid, the next POST will try to recreate the
+                        // tables. The tables should be rollbacked if one of the steps is invalid,
+                        // unless the recipe is executing?
+                    }
+
                     // Create the "minimum shell descriptor"
-                    scope
+                    await scope
                         .ServiceProvider
                         .GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(
-                            0,
-                            environment.Blueprint.Descriptor.Features,
-                            environment.Blueprint.Descriptor.Parameters).Wait();
+                        .UpdateShellDescriptorAsync(0,
+                            shellContext.Blueprint.Descriptor.Features,
+                            shellContext.Blueprint.Descriptor.Parameters);
+
+                    // Apply all migrations for the newly initialized tenant
+                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
+                    await dataMigrationManager.UpdateAllFeaturesAsync();
+
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                    }
+                }
+
+                _orchardHost.UpdateShellSettings(shellSettings);
+
+                executionId = Guid.NewGuid().ToString("n");
+
+                // Create a new scope for the recipe thread to prevent race issues with other scoped
+                // services from the request.
+                using (var scope = shellContext.CreateServiceScope())
+                {
+                    var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
+
+                    // Right now we run the recipe in the same thread, later use polling from the setup screen
+                    // to query the current execution.
+                    //await Task.Run(async () =>
+                    //{
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
+                    //});
+
                 }
             }
 
-            shellSettings.State = TenantState.Running;
-            _runningShellRouterTable.Remove(shellSettings.Name);
-            _orchardHost.UpdateShellSettings(shellSettings);
-            return executionId;
-        }
+            // Reloading the shell context as the recipe  has probably updated its features
+            using (var shellContext = _orchardHost.CreateShellContext(shellSettings))
+            {
+                using (var scope = shellContext.CreateServiceScope())
+                {
+                    // Apply all migrations for the newly initialized tenant
+                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
+                    await dataMigrationManager.UpdateAllFeaturesAsync();
 
-        private string CreateTenantData(SetupContext context, ShellContext shellContext)
-        {
-            // Must mark state as Running - otherwise standalone enviro is created "for setup"
-            return Guid.NewGuid().ToString();
+                    bool hasErrors = false;
+
+                    Action<string, string> reportError = (key, message) => {
+                        hasErrors = true;
+                        context.Errors[key] = message;
+                    };
+
+                    // Invoke modules to react to the setup event
+                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                    await eventBus.NotifyAsync<ISetupEventHandler>(x => x.Setup(
+                        context.SiteName,
+                        context.AdminUsername,
+                        context.AdminEmail,
+                        context.AdminPassword,
+                        context.DatabaseProvider,
+                        context.DatabaseConnectionString,
+                        context.DatabaseTablePrefix,
+                        reportError
+                    ));
+
+                    if (hasErrors)
+                    {
+                        // TODO: check why the tables creation is not reverted
+                        var session = scope.ServiceProvider.GetService<YesSql.Core.Services.ISession>();
+                        session.Cancel();
+
+                        return executionId;
+                    }
+
+                    var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                    if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                    {
+                        var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                        await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                    }
+                }
+
+                // Update the shell state
+                shellSettings.State = TenantState.Running;
+                _orchardHost.UpdateShellSettings(shellSettings);
+            }
+
+
+            return executionId;
         }
     }
 }

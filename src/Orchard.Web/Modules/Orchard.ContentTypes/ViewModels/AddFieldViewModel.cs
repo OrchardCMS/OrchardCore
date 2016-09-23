@@ -1,5 +1,7 @@
-﻿using Orchard.ContentManagement.MetaData;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Metadata.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Orchard.ContentTypes.ViewModels
@@ -14,13 +16,11 @@ namespace Orchard.ContentTypes.ViewModels
         /// <summary>
         /// The technical name of the field
         /// </summary>
-        [Required]
         public string Name { get; set; }
 
         /// <summary>
         /// The display name of the field
         /// </summary>
-        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -32,11 +32,13 @@ namespace Orchard.ContentTypes.ViewModels
         /// <summary>
         /// The part to add the field to
         /// </summary>
-        public EditPartViewModel Part { get; set; }
+        [BindNever]
+        public ContentPartDefinition Part { get; set; }
 
         /// <summary>
         /// List of the available Field types
         /// </summary>
-        public IEnumerable<ContentFieldInfo> Fields { get; set; }
+        [BindNever]
+        public List<ContentFieldInfo> Fields { get; set; }
     }
 }

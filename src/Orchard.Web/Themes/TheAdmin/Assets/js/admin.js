@@ -1,4 +1,8 @@
-﻿$(document).ready(function () {
+﻿function getConfirmRemoveMessage() {
+    return $('#confirmRemoveMessage').data('value');
+}
+
+$(document).ready(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled in base.js
         if ($(this).filter("[itemprop~='UnsafeUrl']").length == 1) {
@@ -8,17 +12,17 @@
         // use a custom message if its set in data-message
         var dataMessage = $(this).data('message');
         if (dataMessage === undefined) {
-            dataMessage = confirmRemoveMessage;
+            dataMessage = getConfirmRemoveMessage();
         }
 
         return confirm(dataMessage);
     });
 });
 
-$(document).ready(function () {
+$(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
-        $("body").on("click", "a[itemprop~=UnsafeUrl], a[data-unsafe-url]", function () {
+        $("body").on("click", "a[itemprop~='UnsafeUrl'], a[data-unsafe-url]", function () {
             var _this = $(this);
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
@@ -46,7 +50,7 @@ $(document).ready(function () {
                 // use a custom message if its set in data-message
                 var dataMessage = _this.data('message');
                 if (dataMessage === undefined) {
-                    dataMessage = confirmRemoveMessage;
+                    dataMessage = getConfirmRemoveMessage();
                 }
 
                 if (!confirm(dataMessage)) {
@@ -60,3 +64,30 @@ $(document).ready(function () {
         });
     }
 });
+
+function getTechnicalName(name){
+    var result = "", c;
+
+    if (!name || name.length == 0) {
+        return "";
+    }
+
+    name = removeDiacritics(name);
+
+    for (i = 0; i < name.length; i++) {
+        c = name[i];
+        if (isLetter(c) || (isNumber(c) && index > 0)) {
+            result += c;
+        }
+    }
+
+    return result;
+}
+
+function isLetter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function isNumber(str) {
+    return str.length === 1 && str.match(/[0-9]/i);
+}

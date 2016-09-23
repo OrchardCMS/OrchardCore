@@ -1,27 +1,22 @@
-﻿using Microsoft.AspNet.Routing;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Orchard.BackgroundTasks;
 using Orchard.Data;
-using Orchard.DependencyInjection;
-using Orchard.Environment.Shell;
-using Orchard.FileSystem;
-using Orchard.Hosting.FileSystem;
-using Orchard.Hosting.Mvc.Routing;
-using Orchard.Hosting.Routing.Routes;
+using Orchard.DeferredTasks;
+using Orchard.ResourceManagement;
 
 namespace Orchard.Hosting
 {
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
-    public class ShellModule : IModule
+    public class ShellModule : StartupBase
     {
-        public void Configure(IServiceCollection serviceCollection)
+        public override void ConfigureServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddDeferredTasks();
             serviceCollection.AddDataAccess();
-
-            serviceCollection.AddScoped<IOrchardShellEvents, OrchardShell>();
-            serviceCollection.AddSingleton<IRunningShellRouterTable, DefaultRunningShellRouterTable>();
-            serviceCollection.AddSingleton<IRouteBuilder, DefaultShellRouteBuilder>();
+            serviceCollection.AddResourceManagement();
+            serviceCollection.AddBackgroundTasks();
         }
     }
 }

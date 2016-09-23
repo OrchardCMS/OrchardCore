@@ -1,9 +1,9 @@
-﻿using Orchard.DisplayManagement.Handlers;
-using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Handlers;
+using Orchard.DisplayManagement.Shapes;
+using Orchard.Environment.Cache.Abstractions;
 
 namespace Orchard.DisplayManagement.Views
 {
@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.Views
     {
         private string _defaultLocation;
         private IDictionary<string,string> _otherLocations;
-        private string _differentiator;
+        public string _differentiator;
         private string _prefix;
         private string _cacheId;
         private readonly string _shapeType;
@@ -42,14 +42,19 @@ namespace Orchard.DisplayManagement.Views
 
         public void Apply(BuildEditorContext context)
         {
-            ApplyImplementation(context, null);
+            ApplyImplementation(context, "Edit");
         }
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
-            
+
+            if (String.IsNullOrEmpty(_differentiator))
+            {
+                _differentiator = _prefix;
+            }
+
             // Look into specific implementations of placements (like placement.info files)
-            var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
+            var placement = context.FindPlacement((IShape) context.Shape, _differentiator, displayType);
 
             // If no placement is found, use the default location
             if (placement == null)
@@ -85,7 +90,7 @@ namespace Orchard.DisplayManagement.Views
             {
                 return;
             }
-            
+
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
             newShapeMetadata.DisplayType = displayType;
@@ -113,14 +118,20 @@ namespace Orchard.DisplayManagement.Views
                 newShapeMetadata.Wrappers.Clear();
             }
 
-            foreach (var alternate in placement.Alternates)
+            if (placement.Alternates != null)
             {
-                newShapeMetadata.Alternates.Add(alternate);
+                foreach (var alternate in placement.Alternates)
+                {
+                    newShapeMetadata.Alternates.Add(alternate);
+                }
             }
 
-            foreach (var wrapper in placement.Wrappers)
+            if (placement.Wrappers != null)
             {
-                newShapeMetadata.Wrappers.Add(wrapper);
+                foreach (var wrapper in placement.Wrappers)
+                {
+                    newShapeMetadata.Wrappers.Add(wrapper);
+                }
             }
 
             dynamic parentShape = context.Shape;
@@ -135,7 +146,22 @@ namespace Orchard.DisplayManagement.Views
 
             foreach(var zone in zones)
             {
-                parentShape = parentShape.Zones[zone];
+                if(parentShape == null)
+                {
+                    break;
+                }
+
+                var zoneProperty = parentShape.Zones;
+                if (zoneProperty != null)
+                {
+                    // parentShape is a ZoneHolding
+                    parentShape = zoneProperty[zone];
+                }
+                else
+                {
+                    // try to access it as a member
+                    parentShape = parentShape[zone];
+                }
             }
 
             if (String.IsNullOrEmpty(position))
@@ -147,13 +173,12 @@ namespace Orchard.DisplayManagement.Views
                 parentShape.Add(newShape, position);
             }
         }
-        
+
         /// <summary>
         /// Sets the prefix of the form elements rendered in the shape.
         /// </summary>
         /// <remarks>
-        /// The goal is to isolate each shape in case several ones of the same
-        /// type are rendered in a view.
+        /// The goal is to isolate each shape when edited together.
         /// </remarks>
         public ShapeResult Prefix(string prefix)
         {
@@ -185,7 +210,7 @@ namespace Orchard.DisplayManagement.Views
         }
 
         /// <summary>
-        /// Sets a discriminator that is used to find the location of the shape.
+        /// Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
         /// </summary>
         public ShapeResult Differentiator(string differentiator)
         {

@@ -45,6 +45,11 @@ namespace Orchard.Tests.Stubs
                    item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
         }
 
+        public ExtensionEntry LoadExtension(ExtensionDescriptor descriptor)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
         {
             throw new NotImplementedException();

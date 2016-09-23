@@ -1,27 +1,26 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.MetaData.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Theming;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Display
 {
     /// <summary>
     /// The default implementation of <see cref="IContentItemDisplayManager"/>. It is used to render
-    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayDriver"/> 
+    /// <see cref="ContentItem"/> objects by leveraging any <see cref="IContentDisplayHandler"/>
     /// implementation. The resulting shapes are targetting the stereotype of the content item
     /// to display.
     /// </summary>
-    public class DefaultContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
+    public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
     {
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
@@ -30,13 +29,13 @@ namespace Orchard.ContentManagement.Display
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
 
-        public DefaultContentItemDisplayManager(
+        public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
-            ILogger<DefaultContentItemDisplayManager> logger,
+            ILogger<ContentItemDisplayManager> logger,
             ILayoutAccessor layoutAccessor
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
@@ -76,10 +75,10 @@ namespace Orchard.ContentManagement.Display
             itemShape.Metadata.DisplayType = actualDisplayType;
 
             var context = new BuildDisplayContext(
-                itemShape, 
-                actualDisplayType, 
-                groupId, 
-                _shapeFactory, 
+                itemShape,
+                actualDisplayType,
+                groupId,
+                _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
             );
@@ -101,7 +100,7 @@ namespace Orchard.ContentManagement.Display
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
-            
+
             var actualShapeType = stereotype ?? "Content" + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
@@ -111,8 +110,8 @@ namespace Orchard.ContentManagement.Display
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new BuildEditorContext(
-                itemShape, 
-                groupId, 
+                itemShape,
+                groupId,
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -121,7 +120,7 @@ namespace Orchard.ContentManagement.Display
             await BindPlacementAsync(context);
 
             await _handlers.InvokeAsync(handler => handler.BuildEditorAsync(contentItem, context), Logger);
-            
+
             return context.Shape;
         }
 
@@ -139,17 +138,14 @@ namespace Orchard.ContentManagement.Display
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
 
-            var theme = await _themeManager.GetThemeAsync();
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
-
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new UpdateEditorContext(
-                itemShape, 
-                groupInfoId, 
+                itemShape,
+                groupInfoId,
                 _shapeFactory,
-                _layoutAccessor.GetLayout(), 
+                _layoutAccessor.GetLayout(),
                 updater
             );
 

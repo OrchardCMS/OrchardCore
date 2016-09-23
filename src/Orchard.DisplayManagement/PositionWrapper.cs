@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNet.Html.Abstractions;
-using Microsoft.AspNet.Mvc.Rendering;
-using Microsoft.Extensions.WebEncoders;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Orchard.DisplayManagement
 {
     public class PositionWrapper : IHtmlContent, IPositioned
     {
         private IHtmlContent _value;
-        public string Position { get; private set; }
+        public string Position { get; set; }
 
         public PositionWrapper(IHtmlContent value, string position)
         {
@@ -18,11 +18,11 @@ namespace Orchard.DisplayManagement
 
         public PositionWrapper(string value, string position)
         {
-            _value = new HtmlString(HtmlEncoder.Default.HtmlEncode(value));
+            _value = new HtmlString(HtmlEncoder.Default.Encode(value));
             Position = position;
         }
 
-        public void WriteTo(TextWriter writer, IHtmlEncoder encoder)
+        public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             _value.WriteTo(writer, encoder);
         }

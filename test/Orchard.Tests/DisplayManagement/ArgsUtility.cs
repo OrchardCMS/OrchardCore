@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Orchard.DisplayManagement;
 using System.Collections.Generic;
 using System.Linq;
