@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.Environment.Shell
 {
@@ -6,11 +7,13 @@ namespace Orchard.Environment.Shell
     {
         public static IServiceCollection ConfigureShell(
             this IServiceCollection services,
-            string shellLocation)
+            IFileProvider contentRootFileProvider,
+            string shellContainerLocation)
         {
             return services.Configure<ShellOptions>(options =>
             {
-                options.Location = shellLocation;
+                options.ContentRootFileProvider = contentRootFileProvider;
+                options.ShellContainerLocation = shellContainerLocation;
             });
         }
     }

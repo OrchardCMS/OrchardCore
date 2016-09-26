@@ -5,29 +5,31 @@ namespace Orchard.Environment.Shell
 {
     public class ShellOptions
     {
-        public string Location { get; set; }
+        public IFileProvider ContentRootFileProvider { get; set; }
 
-        public IFileInfo Shell {
-            get {
-                return AppDataFileProvider.GetFileInfo(Location);
-            }
-        }
+        public string ShellContainerLocation { private get; set; }
 
-        public IDirectoryContents ShellSettings
+        public IFileInfo ShellHostContainer
         {
             get
             {
-                return AppDataFileProvider.GetDirectoryContents(Location);
+                return ContentRootFileProvider.GetFileInfo("app_data");
             }
         }
 
-        private IFileProvider AppDataFileProvider
+        public IFileInfo ShellContainer
         {
             get
             {
-                return
-                    new PhysicalFileProvider(
-                        Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "app_data");
+                return ContentRootFileProvider.GetFileInfo(Path.Combine("app_data", ShellContainerLocation));
+            }
+        }
+
+        public IDirectoryContents Shells
+        {
+            get
+            {
+                return ContentRootFileProvider.GetDirectoryContents(Path.Combine("app_data", ShellContainer.Name));
             }
         }
     }
