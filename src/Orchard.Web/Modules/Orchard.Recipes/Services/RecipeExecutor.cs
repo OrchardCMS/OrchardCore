@@ -63,13 +63,11 @@ namespace Orchard.Recipes.Services
 
             try
             {
-                var fileInfo = _fileSystem.GetFileInfo(recipeDescriptor.Location);
-
                 var parsersForFileExtension = _recipeOptions
                     .RecipeFileExtensions
-                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(fileInfo.PhysicalPath));
+                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(recipeDescriptor.RecipeFileInfo.PhysicalPath));
 
-                using (var stream = fileInfo.CreateReadStream())
+                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
                     RecipeResult result = new RecipeResult { ExecutionId = executionId };
                     List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
@@ -96,7 +94,7 @@ namespace Orchard.Recipes.Services
                     _session.Save(result);
                 }
 
-                using (var stream = fileInfo.CreateReadStream())
+                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
                     foreach (var parserForFileExtension in parsersForFileExtension)
                     {

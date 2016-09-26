@@ -75,7 +75,7 @@ namespace Orchard.Recipes.Services
                     var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
                     using (var stream = recipeFile.CreateReadStream()) {
                         var recipe = recipeParser.ParseRecipe(stream);
-                        recipe.Location = recipeFile.PhysicalPath.Replace(_fileSystem.RootPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar);
+                        recipe.RecipeFileInfo = recipeFile;
                         return Task.FromResult(recipe);
                     }
                 }, Logger));
