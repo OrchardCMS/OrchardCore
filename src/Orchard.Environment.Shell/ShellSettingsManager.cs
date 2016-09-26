@@ -1,31 +1,26 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.FileSystem.AppData;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
 using Orchard.Validation;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Orchard.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
-        private readonly IAppDataFolder _appDataFolder;
-        //private readonly ICache _cache;
         private readonly IOptions<ShellOptions> _optionsAccessor;
         private readonly ILogger _logger;
 
         private const string SettingsFileNameFormat = "Settings.{0}";
 
-        public ShellSettingsManager(IAppDataFolder appDataFolder,
-            //ICache cache,
+        public ShellSettingsManager(
             IOptions<ShellOptions> optionsAccessor,
             ILogger<ShellSettingsManager> logger)
         {
-            _appDataFolder = appDataFolder;
-            //_cache = cache;
             _optionsAccessor = optionsAccessor;
             _logger = logger;
         }
@@ -34,7 +29,7 @@ namespace Orchard.Environment.Shell
         {
             var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenant in _appDataFolder.ListDirectories(_optionsAccessor.Value.Location))
+            foreach (var tenant in _optionsAccessor.Value.ShellSettings)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -42,12 +37,12 @@ namespace Orchard.Environment.Shell
                 }
                 var configurationContainer =
                     new ConfigurationBuilder()
-                        .SetBasePath(_appDataFolder.RootPath)
-                        .AddJsonFile(_appDataFolder.Combine(tenant.FullName, string.Format(SettingsFileNameFormat, "json")),
+                        .SetBasePath(tenant.PhysicalPath)
+                        .AddJsonFile(string.Format(SettingsFileNameFormat, "json"),
                             true)
-                        .AddXmlFile(_appDataFolder.Combine(tenant.FullName, string.Format(SettingsFileNameFormat, "xml")),
+                        .AddXmlFile(string.Format(SettingsFileNameFormat, "xml"),
                             true)
-                        .AddYamlFile(_appDataFolder.Combine(tenant.FullName, string.Format(SettingsFileNameFormat, "txt")),
+                        .AddYamlFile(string.Format(SettingsFileNameFormat, "txt"),
                             false);
 
                 var config = configurationContainer.Build();
@@ -74,11 +69,12 @@ namespace Orchard.Environment.Shell
             {
                 _logger.LogInformation("Saving ShellSettings for tenant '{0}'", shellSettings.Name);
             }
-            var tenantPath = _appDataFolder.MapPath(
-                _appDataFolder.Combine(
-                    _optionsAccessor.Value.Location, 
+
+            var tenantPath = 
+                Path.Combine(
+                    _optionsAccessor.Value.Shell.PhysicalPath, 
                     shellSettings.Name, 
-                    string.Format(SettingsFileNameFormat, "txt")));
+                    string.Format(SettingsFileNameFormat, "txt"));
 
             var configurationProvider = new YamlConfigurationProvider(new YamlConfigurationSource
             {

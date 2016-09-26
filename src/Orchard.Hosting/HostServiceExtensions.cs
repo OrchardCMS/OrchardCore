@@ -13,7 +13,6 @@ namespace Orchard.Hosting
         public static IServiceCollection AddHost(
             this IServiceCollection services, Action<IServiceCollection> additionalDependencies)
         {
-            services.AddFileSystems();
             additionalDependencies(services);
 
             return services;

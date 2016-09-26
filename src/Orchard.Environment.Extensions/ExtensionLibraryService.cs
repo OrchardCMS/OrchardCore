@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Runtime.Loader;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
@@ -15,12 +8,20 @@ using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.Tools.Common;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Shell;
 using Orchard.FileSystem;
-using Orchard.FileSystem.AppData;
 using Orchard.Localization;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions
 {
@@ -44,13 +45,13 @@ namespace Orchard.Environment.Extensions
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
             IOrchardFileSystem fileSystem,
-            IAppDataFolder appDataFolder,
+            IOptions<ShellOptions> shellOptionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
             _fileSystem = fileSystem;
-            _probingFolderPath = appDataFolder.MapPath(ProbingDirectoryName);
+            _probingFolderPath = Path.Combine(shellOptionsAccessor.Value.Shell.PhysicalPath, ProbingDirectoryName);
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -167,14 +168,14 @@ namespace Orchard.Environment.Extensions
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation($"{0} was successfully compiled", context.ProjectName());
+                    _logger.LogInformation("{0} was successfully compiled", context.ProjectName());
                 }
             }
             else if (success && diagnostics.Count > 0)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning($"{0} was compiled but has warnings", context.ProjectName());
+                    _logger.LogWarning("{0} was compiled but has warnings", context.ProjectName());
 
                     foreach (var diagnostic in diagnostics)
                     {
