@@ -12,20 +12,17 @@ namespace Orchard.Environment.Extensions.Loaders
     {
         private readonly string[] ExtensionsSearchPaths;
 
-        private readonly IHostEnvironment _hostEnvironment;
         private readonly IOrchardFileSystem _fileSystem;
         private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
-            IHostEnvironment hostEnvironment,
             IOrchardFileSystem fileSystem,
             IExtensionLibraryService extensionLibraryService,
             ILogger<DynamicExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
-            _hostEnvironment = hostEnvironment;
             _fileSystem = fileSystem;
             _extensionLibraryService = extensionLibraryService;
             _logger = logger;

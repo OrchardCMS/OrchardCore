@@ -26,7 +26,6 @@ namespace Orchard.Hosting
                 internalServices.AddExtensionManager();
                 internalServices.AddCommands();
 
-                internalServices.AddSingleton<IHostEnvironment, WebHostEnvironment>();
                 internalServices.AddSingleton<IOrchardFileSystem, HostedFileSystem>();
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             });
