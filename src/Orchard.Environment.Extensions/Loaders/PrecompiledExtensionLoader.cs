@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -12,18 +11,15 @@ namespace Orchard.Environment.Extensions.Loaders
     {
         private readonly string[] ExtensionsSearchPaths;
 
-        private readonly IOrchardFileSystem _fileSystem;
         private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
         public PrecompiledExtensionLoader(
             IOptions<ExtensionHarvestingOptions> optionsAccessor,
-            IOrchardFileSystem fileSystem,
             IExtensionLibraryService extensionLibraryService,
             ILogger<PrecompiledExtensionLoader> logger)
         {
             ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
-            _fileSystem = fileSystem;
             _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
