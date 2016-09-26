@@ -25,7 +25,6 @@ namespace Orchard.Recipes.Services
         private readonly ISession _session;
         private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly RecipeHarvestingOptions _recipeOptions;
-        private readonly IOrchardFileSystem _fileSystem;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ILogger _logger;
         private readonly ShellSettings _shellSettings;
@@ -36,7 +35,6 @@ namespace Orchard.Recipes.Services
             ISession session,
             IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
-            IOrchardFileSystem fileSystem,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IOrchardHost orchardHost,
@@ -50,7 +48,6 @@ namespace Orchard.Recipes.Services
             _session = session;
             _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions.Value;
-            _fileSystem = fileSystem;
             _logger = logger;
             T = localizer;
         }
