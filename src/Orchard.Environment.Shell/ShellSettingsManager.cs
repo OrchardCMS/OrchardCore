@@ -29,7 +29,7 @@ namespace Orchard.Environment.Shell
         {
             var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenant in _optionsAccessor.Value.ShellSettings)
+            foreach (var tenant in _optionsAccessor.Value.Shells)
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -72,7 +72,7 @@ namespace Orchard.Environment.Shell
 
             var tenantPath = 
                 Path.Combine(
-                    _optionsAccessor.Value.Shell.PhysicalPath, 
+                    _optionsAccessor.Value.ShellContainer.PhysicalPath, 
                     shellSettings.Name, 
                     string.Format(SettingsFileNameFormat, "txt"));
 

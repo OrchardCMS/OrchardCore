@@ -51,7 +51,7 @@ namespace Orchard.Environment.Extensions
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
             _fileSystem = fileSystem;
-            _probingFolderPath = Path.Combine(shellOptionsAccessor.Value.Shell.PhysicalPath, ProbingDirectoryName);
+            _probingFolderPath = Path.Combine(shellOptionsAccessor.Value.ShellHostContainer.PhysicalPath, ProbingDirectoryName);
             _logger = logger;
             T = NullLocalizer.Instance;
         }

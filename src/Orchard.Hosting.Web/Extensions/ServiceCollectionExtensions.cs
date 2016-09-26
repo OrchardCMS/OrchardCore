@@ -36,7 +36,10 @@ namespace Orchard.Hosting
         {
             services.AddWebHost();
 
-            services.ConfigureShell("Sites");
+            var hostingEnvironment = services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
+            services.ConfigureShell(
+                hostingEnvironment.ContentRootFileProvider,
+                "Sites");
 
             services.AddOrchardMvc();
             services.AddModuleFolder("Modules");
