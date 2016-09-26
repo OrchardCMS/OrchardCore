@@ -38,7 +38,7 @@ namespace Orchard.Environment.Extensions
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly ApplicationPartManager _applicationPartManager;
-        private readonly IOrchardFileSystem _fileSystem;
+        private readonly ShellOptions _shellOptions;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
@@ -50,8 +50,8 @@ namespace Orchard.Environment.Extensions
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
-            _fileSystem = fileSystem;
-            _probingFolderPath = Path.Combine(shellOptionsAccessor.Value.ShellHostContainer.PhysicalPath, ProbingDirectoryName);
+            _shellOptions = shellOptionsAccessor.Value;
+            _probingFolderPath = Path.Combine(_shellOptions.ShellHostContainer.PhysicalPath, ProbingDirectoryName);
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -148,8 +148,11 @@ namespace Orchard.Environment.Extensions
 
         internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
         {
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            return GetProjectContextFromPath(extensionPath);
+            var fileInfo = _shellOptions
+                .ContentRootFileProvider
+                .GetFileInfo(Path.Combine(descriptor.Location, descriptor.Id));
+
+            return GetProjectContextFromPath(fileInfo.PhysicalPath);
         }
 
         internal ProjectContext GetProjectContextFromPath(string projectPath)

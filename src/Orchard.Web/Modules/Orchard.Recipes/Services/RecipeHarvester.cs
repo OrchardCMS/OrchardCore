@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
+using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,18 +17,18 @@ namespace Orchard.Recipes.Services
     public class RecipeHarvester : IRecipeHarvester
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly IOrchardFileSystem _fileSystem;
+        private readonly IOptions<ShellOptions> _shellOptions;
         private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public RecipeHarvester(IExtensionManager extensionManager,
-            IOrchardFileSystem fileSystem,
+            IOptions<ShellOptions> shellOptionsAccessor,
             IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
             ILogger<RecipeHarvester> logger) {
             _extensionManager = extensionManager;
-            _fileSystem = fileSystem;
+            _shellOptions = shellOptionsAccessor;
             _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions;
 
@@ -58,7 +60,12 @@ namespace Orchard.Recipes.Services
 
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(ExtensionDescriptor extension)
         {
-            var recipeLocation = _fileSystem.Combine(extension.Location, extension.Id, "Recipes");
+            var shellOptions = _shellOptions.Value;
+
+            var folderSubPath = Path.Combine(extension.Location, extension.Id, "Recipes");
+            var recipeContainerFileInfo = shellOptions
+                .ContentRootFileProvider
+                .GetFileInfo(folderSubPath);
 
             var recipeOptions = _recipeOptions.Value;
 
@@ -66,19 +73,31 @@ namespace Orchard.Recipes.Services
 
             foreach(var recipeFileExtension in recipeOptions.RecipeFileExtensions)
             {
-                var fileMatcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
-                fileMatcher.AddInclude(recipeFileExtension.Key);
+                var matcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
+                matcher.AddInclude(recipeFileExtension.Key);
 
-                var recipeFiles = _fileSystem.ListFiles(recipeLocation, fileMatcher);
+                var matches = matcher
+                    .Execute(new DirectoryInfoWrapper(new DirectoryInfo(recipeContainerFileInfo.PhysicalPath)))
+                    .Files;
 
-                recipeDescriptors.AddRange(await recipeFiles.InvokeAsync(recipeFile => {
-                    var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
-                    using (var stream = recipeFile.CreateReadStream()) {
-                        var recipe = recipeParser.ParseRecipe(stream);
-                        recipe.RecipeFileInfo = recipeFile;
-                        return Task.FromResult(recipe);
-                    }
-                }, Logger));
+                if (matches.Any())
+                {
+                    var result = matches
+                        .Select(match => shellOptions
+                            .ContentRootFileProvider
+                            .GetFileInfo(Path.Combine(folderSubPath, match.Path))).ToArray();
+
+                    recipeDescriptors.AddRange(await result.InvokeAsync(recipeFile =>
+                    {
+                        var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
+                        using (var stream = recipeFile.CreateReadStream())
+                        {
+                            var recipe = recipeParser.ParseRecipe(stream);
+                            recipe.RecipeFileInfo = recipeFile;
+                            return Task.FromResult(recipe);
+                        }
+                    }, Logger));
+                }
             }
 
             return recipeDescriptors;
