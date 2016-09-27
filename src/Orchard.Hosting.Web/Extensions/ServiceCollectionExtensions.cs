@@ -7,8 +7,6 @@ using Orchard.Environment;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell;
-using Orchard.FileSystem;
-using Orchard.Hosting.FileSystem;
 using Orchard.Hosting.Mvc;
 
 namespace Orchard.Hosting
@@ -26,7 +24,6 @@ namespace Orchard.Hosting
                 internalServices.AddExtensionManager();
                 internalServices.AddCommands();
 
-                internalServices.AddSingleton<IOrchardFileSystem, HostedFileSystem>();
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             });
         }
