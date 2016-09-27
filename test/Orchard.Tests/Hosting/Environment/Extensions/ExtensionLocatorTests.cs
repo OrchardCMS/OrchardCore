@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Xunit;
+using Orchard.Tests.Stubs;
 
 namespace Orchard.Tests.Hosting.Environment.Extensions
 {
@@ -42,9 +43,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Trait("Category", "ExtensionLocator")]
         public void IdsFromFoldersWithModuleTxtShouldBeListed()
         {
-            var harvester = new ExtensionHarvester(new OrchardFileSystem(" ",
-                                                        new PhysicalFileProvider("/"),
-                                                        new NullLogger<OrchardFileSystem>()),
+            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
                                                         new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -64,9 +63,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument()
         {
-            var harvester = new ExtensionHarvester(new OrchardFileSystem(" ",
-                                                        new PhysicalFileProvider("/"),
-                                                        new NullLogger<OrchardFileSystem>()), 
+            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
                                                         new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -82,9 +79,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven()
         {
-            var harvester = new ExtensionHarvester(new OrchardFileSystem(" ",
-                                                        new PhysicalFileProvider("/"),
-                                                        new NullLogger<OrchardFileSystem>()), 
+            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
                                                         new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
@@ -104,9 +99,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
         [Fact]
         public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven()
         {
-            var harvester = new ExtensionHarvester(new OrchardFileSystem(" ",
-                                                        new PhysicalFileProvider("/"),
-                                                        new NullLogger<OrchardFileSystem>()), 
+            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
                                                         new NullLogger<ExtensionHarvester>());
             var options = new ExtensionHarvestingOptions();
             options.ExtensionLocationExpanders.Add(ModuleFolder(_tempFolderName));
