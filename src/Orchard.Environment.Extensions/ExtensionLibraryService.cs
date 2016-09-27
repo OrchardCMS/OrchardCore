@@ -13,7 +13,6 @@ using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell;
-using Orchard.FileSystem;
 using Orchard.Localization;
 using System;
 using System.Collections.Concurrent;
@@ -44,7 +43,6 @@ namespace Orchard.Environment.Extensions
 
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
-            IOrchardFileSystem fileSystem,
             IOptions<ShellOptions> shellOptionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
