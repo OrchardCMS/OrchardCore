@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
@@ -37,19 +38,18 @@ namespace Orchard.Environment.Extensions
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly ApplicationPartManager _applicationPartManager;
-        private readonly ShellOptions _shellOptions;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
-            IOptions<ShellOptions> shellOptionsAccessor,
+            IHostingEnvironment hostingEnvironment,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
-            _shellOptions = shellOptionsAccessor.Value;
-            _probingFolderPath = Path.Combine(_shellOptions.ShellHostContainer.PhysicalPath, ProbingDirectoryName);
+            _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(ProbingDirectoryName).PhysicalPath;
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -146,7 +146,7 @@ namespace Orchard.Environment.Extensions
 
         internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
         {
-            var fileInfo = _shellOptions
+            var fileInfo = _hostingEnvironment
                 .ContentRootFileProvider
                 .GetFileInfo(Path.Combine(descriptor.Location, descriptor.Id));
 

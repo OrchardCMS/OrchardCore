@@ -5,7 +5,7 @@ namespace Orchard.Environment.Shell
 {
     public class ShellOptions
     {
-        public IFileProvider ContentRootFileProvider { get; set; }
+        public IFileProvider ContentRootFileProvider { private get; set; }
 
         public string ShellContainerLocation { private get; set; }
 
