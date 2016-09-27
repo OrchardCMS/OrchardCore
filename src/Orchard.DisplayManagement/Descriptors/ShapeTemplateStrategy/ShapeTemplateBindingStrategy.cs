@@ -19,6 +19,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Hosting;
+using Orchard.Environment.Extensions.FileSystem;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -28,6 +30,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IOrchardFileSystem _fileSystem;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
 
@@ -37,6 +40,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IOrchardFileSystem fileSystem,
+            IHostingEnvironment hostingEnvironment,
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
@@ -44,6 +48,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _fileSystem = fileSystem;
+            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
         }
 
@@ -84,11 +89,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
+                    var location = _hostingEnvironment
+                        .GetExtensionFileInfo(extensionDescriptor, subPath);
+
+
+
+
                     var basePath = _fileSystem.Combine(extensionDescriptor.Location, extensionDescriptor.Id);
                     var virtualPath = _fileSystem.Combine(basePath, subPath);
                     var files = _fileSystem.ListFiles(virtualPath, matcher).ToReadOnlyCollection();
 
-                    return new { harvesterInfo.harvester, basePath, subPath, virtualPath, files };
+                    return new { harvesterInfo.harvester, subPath, virtualPath, files };
                 })).ToList();
 
                 if (_logger.IsEnabled(LogLevel.Information))
