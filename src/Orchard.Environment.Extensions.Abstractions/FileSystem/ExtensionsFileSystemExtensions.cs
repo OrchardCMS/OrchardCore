@@ -1,20 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
+using System.IO;
 
 namespace Orchard.Environment.Extensions.FileSystem
 {
     public static class ExtensionsFileSystemExtensions
     {
-        public static IOrchardFileSystem GetExtensionFileProvider(
-            this IOrchardFileSystem parentFileSystem,
+        public static IFileInfo GetExtensionFileInfo(
+            this IHostingEnvironment parentFileSystem,
             ExtensionDescriptor extensionDescriptor,
-            ILogger logger)
+            string subPath)
         {
-            var subPath = parentFileSystem.Combine(extensionDescriptor.Location, extensionDescriptor.Id);
-
-            return parentFileSystem
-                .GetSubPathFileProvider(subPath, logger);
+            return parentFileSystem.ContentRootFileProvider.GetFileInfo(
+                Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id, subPath));
         }
     }
 }
