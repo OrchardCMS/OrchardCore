@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using Orchard.Localization;
-using Orchard.Environment.Extensions.Models;
-using Microsoft.Extensions.Logging;
-using Orchard.FileSystem;
-using Orchard.Utility;
-using Microsoft.Extensions.Options;
-using Orchard.Environment.Shell;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Localization;
+using Orchard.Utility;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions.Folders
 {

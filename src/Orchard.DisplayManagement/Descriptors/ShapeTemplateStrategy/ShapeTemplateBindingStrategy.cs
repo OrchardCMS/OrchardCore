@@ -1,27 +1,24 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
-using Orchard.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.Hosting;
-using Orchard.Environment.Extensions.FileSystem;
-using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {

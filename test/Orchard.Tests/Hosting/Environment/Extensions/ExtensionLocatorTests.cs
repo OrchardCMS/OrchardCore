@@ -1,14 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
-using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
+using Orchard.Tests.Stubs;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Xunit;
-using Orchard.Tests.Stubs;
 
 namespace Orchard.Tests.Hosting.Environment.Extensions
 {
