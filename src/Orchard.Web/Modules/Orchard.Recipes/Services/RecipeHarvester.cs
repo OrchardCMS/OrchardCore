@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.FileSystemGlobbing;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using System.Collections.Generic;
 using System.IO;
@@ -17,18 +17,18 @@ namespace Orchard.Recipes.Services
     public class RecipeHarvester : IRecipeHarvester
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly IOptions<ShellOptions> _shellOptions;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public RecipeHarvester(IExtensionManager extensionManager,
-            IOptions<ShellOptions> shellOptionsAccessor,
+            IHostingEnvironment hostingEnvironment,
             IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
             ILogger<RecipeHarvester> logger) {
             _extensionManager = extensionManager;
-            _shellOptions = shellOptionsAccessor;
+            _hostingEnvironment = hostingEnvironment;
             _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions;
 
@@ -60,10 +60,8 @@ namespace Orchard.Recipes.Services
 
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(ExtensionDescriptor extension)
         {
-            var shellOptions = _shellOptions.Value;
-
             var folderSubPath = Path.Combine(extension.Location, extension.Id, "Recipes");
-            var recipeContainerFileInfo = shellOptions
+            var recipeContainerFileInfo = _hostingEnvironment
                 .ContentRootFileProvider
                 .GetFileInfo(folderSubPath);
 
@@ -83,7 +81,7 @@ namespace Orchard.Recipes.Services
                 if (matches.Any())
                 {
                     var result = matches
-                        .Select(match => shellOptions
+                        .Select(match => _hostingEnvironment
                             .ContentRootFileProvider
                             .GetFileInfo(Path.Combine(folderSubPath, match.Path))).ToArray();
 
