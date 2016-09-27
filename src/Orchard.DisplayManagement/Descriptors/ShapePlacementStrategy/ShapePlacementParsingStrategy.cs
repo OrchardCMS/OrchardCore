@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -15,17 +15,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     public class ShapePlacementParsingStrategy : IShapeTableProvider
     {
         private readonly IFeatureManager _featureManager;
-        private readonly IOrchardFileSystem _fileSystem;
+        private readonly IHostingEnvironment _hostingEnviroment;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IFeatureManager featureManager,
-            IOrchardFileSystem fileSystem,
+            IHostingEnvironment hostingEnviroment,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
             _featureManager = featureManager;
-            _fileSystem = fileSystem;
+            _hostingEnviroment = hostingEnviroment;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -39,13 +39,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
         {
-            var virtualPath = _fileSystem
-                .GetExtensionFileProvider(featureDescriptor.Extension, _logger)
-                .GetFileInfo("placement.json");
+            var virtualFileInfo = _hostingEnviroment
+                .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
-            if (virtualPath.Exists)
+            if (virtualFileInfo.Exists)
             {
-                using (var stream = virtualPath.CreateReadStream())
+                using (var stream = virtualFileInfo.CreateReadStream())
                 {
                     using (var reader = new StreamReader(stream))
                     {
