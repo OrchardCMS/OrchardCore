@@ -223,7 +223,6 @@ namespace Orchard.Environment.Extensions.Compilers
                                 var path = Path.Combine(fallbackBinPath, relativeFolderPath, assetFileName);
                                 assetResolvedPath = File.Exists(path) ? path : null;
                             }
-
                         }
 
                         if (!String.IsNullOrEmpty(assetResolvedPath))

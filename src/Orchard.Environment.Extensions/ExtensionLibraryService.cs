@@ -127,7 +127,6 @@ namespace Orchard.Environment.Extensions
             }
             else
             {
-
                 LoadPrecompiledModule(descriptor);
             }
 
