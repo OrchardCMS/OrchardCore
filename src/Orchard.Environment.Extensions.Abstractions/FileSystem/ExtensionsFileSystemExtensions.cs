@@ -9,6 +9,14 @@ namespace Orchard.Environment.Extensions.FileSystem
     {
         public static IFileInfo GetExtensionFileInfo(
             this IHostingEnvironment parentFileSystem,
+            ExtensionDescriptor extensionDescriptor)
+        {
+            return parentFileSystem.ContentRootFileProvider.GetFileInfo(
+                Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id));
+        }
+
+        public static IFileInfo GetExtensionFileInfo(
+            this IHostingEnvironment parentFileSystem,
             ExtensionDescriptor extensionDescriptor,
             string subPath)
         {

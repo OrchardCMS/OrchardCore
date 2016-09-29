@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
+using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell;
 using Orchard.Localization;
@@ -147,8 +148,7 @@ namespace Orchard.Environment.Extensions
         internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
         {
             var fileInfo = _hostingEnvironment
-                .ContentRootFileProvider
-                .GetFileInfo(Path.Combine(descriptor.Location, descriptor.Id));
+                .GetExtensionFileInfo(descriptor);
 
             return GetProjectContextFromPath(fileInfo.PhysicalPath);
         }
