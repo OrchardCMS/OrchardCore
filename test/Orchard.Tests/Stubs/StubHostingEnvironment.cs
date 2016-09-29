@@ -2,87 +2,26 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace Orchard.Tests.Stubs
 {
     public class StubHostingEnvironment : IHostingEnvironment
     {
-        public string ApplicationName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        public string EnvironmentName { get; set; } = "Stub";
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string ApplicationName { get; set; }
 
-        public IFileProvider ContentRootFileProvider
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        public string WebRootPath { get; set; }
+           = Directory.GetCurrentDirectory();
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IFileProvider WebRootFileProvider { get; set; }
+            = new PhysicalFileProvider(Directory.GetCurrentDirectory());
 
-        public string ContentRootPath
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        public string ContentRootPath { get; set; }
+           = Directory.GetCurrentDirectory();
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string EnvironmentName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IFileProvider WebRootFileProvider
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string WebRootPath
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public IFileProvider ContentRootFileProvider { get; set; }
+            = new PhysicalFileProvider(Directory.GetCurrentDirectory());
     }
 }
