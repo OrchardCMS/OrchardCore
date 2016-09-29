@@ -50,6 +50,7 @@ namespace Orchard.Environment.Extensions
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
+            _hostingEnvironment = hostingEnvironment;
             _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(ProbingDirectoryName).PhysicalPath;
             _logger = logger;
             T = NullLocalizer.Instance;
