@@ -46,12 +46,13 @@ namespace Orchard.Environment.Extensions
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
             IHostingEnvironment hostingEnvironment,
+            IOptions<ShellOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
             _hostingEnvironment = hostingEnvironment;
-            _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(ProbingDirectoryName).PhysicalPath;
+            _probingFolderPath = optionsAccessor.Value.GetFileInfoFromShellHostContainer(ProbingDirectoryName).PhysicalPath;
             _logger = logger;
             T = NullLocalizer.Instance;
         }

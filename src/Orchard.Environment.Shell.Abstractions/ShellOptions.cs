@@ -32,5 +32,10 @@ namespace Orchard.Environment.Shell
                 return ContentRootFileProvider.GetDirectoryContents(Path.Combine("app_data", ShellContainer.Name));
             }
         }
+
+        public IFileInfo GetFileInfoFromShellHostContainer(string subPath)
+        {
+            return ContentRootFileProvider.GetFileInfo(Path.Combine("app_data", subPath));
+        }
     }
 }
