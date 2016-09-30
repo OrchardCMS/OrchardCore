@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
 using System.IO;
 using System.Text.Encodings.Web;
+using Microsoft.Extensions.Caching.Memory;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.Tests.DisplayManagement
 {
@@ -63,6 +65,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
             serviceCollection.AddScoped<ILogger<DefaultShapeTableManager>, NullLogger<DefaultShapeTableManager>>();
+            serviceCollection.AddScoped<ILogger<DefaultIHtmlDisplay>, NullLogger<DefaultIHtmlDisplay>>();
             serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
@@ -73,6 +76,12 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            serviceCollection.AddSingleton<IThemeManager>(x =>
+                new MockThemeManager(testFeature.Descriptor.Extension)
+            
+            );
+
+            serviceCollection.AddSingleton<IMemoryCache>(x => new MemoryCache(new MemoryCacheOptions()));
 
             serviceCollection.AddSingleton(new SimpleShapes());
 
