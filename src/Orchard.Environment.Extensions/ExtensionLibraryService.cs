@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
@@ -509,8 +508,8 @@ namespace Orchard.Environment.Extensions
 
         internal void LoadPrecompiledModule(ExtensionDescriptor descriptor)
         {
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            var assemblyFolderPath = Path.Combine(extensionPath, Constants.BinDirectoryName);
+            var fileInfo = _hostingEnvironment.GetExtensionFileInfo(descriptor);
+            var assemblyFolderPath = Path.Combine(fileInfo.PhysicalPath, Constants.BinDirectoryName);
             var assemblyPath = Path.Combine(assemblyFolderPath, CompilerUtility.GetAssemblyFileName(descriptor.Id));
 
             // default runtime assemblies: "bin/{assembly}.dll"
