@@ -2,7 +2,6 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
-using Orchard.FileSystem;
 using Orchard.Hosting.Services;
 using Orchard.Services;
 
@@ -13,7 +12,6 @@ namespace Orchard.Hosting
         public static IServiceCollection AddHost(
             this IServiceCollection services, Action<IServiceCollection> additionalDependencies)
         {
-            services.AddFileSystems();
             additionalDependencies(services);
 
             return services;

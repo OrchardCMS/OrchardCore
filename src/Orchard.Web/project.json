@@ -2,17 +2,16 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
+    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.NETCore.App": {
       "version": "1.0.0",
       "type": "platform"
     },
-    "Orchard.Hosting.Console": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
-    "System.Linq": "4.1.0-*",
-    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
-    "Microsoft.AspNetCore.DataProtection.Extensions": "1.0.0"
+    "Orchard": "1.0.0",
+    "System.Linq": "4.1.0-*"
   },
   "runtimeOptions": {
     "configProperties": {
@@ -23,12 +22,6 @@
     "emitEntryPoint": true,
     "debugType": "portable",
     "preserveCompilationContext": true,
-    "copyToOutput": {
-      "include": [ "Tools" ],
-      "mappings": {
-        "csc.dll": "Tools/csc.dll"
-      }
-    },
     "compile": {
       "exclude": [
         "wwwroot",
@@ -78,12 +71,10 @@
     "exclude": [
       "**/obj"
     ],
-    "includeFiles": [],
-    "excludeFiles": [],
-    "builtIns": [],
-    "mappings": {
-      "csc.dll": "Tools/csc.dll"
-    }
+    "includeFiles": [ "" ],
+    "excludeFiles": [ "" ],
+    "builtIns": [ "" ],
+    "mappings": { }
   },
   "commands": {
     "web": ""

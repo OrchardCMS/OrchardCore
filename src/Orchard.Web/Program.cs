@@ -2,20 +2,17 @@
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Orchard.Hosting;
-using Orchard.Web;
 
-namespace Orchard.Console
+namespace Orchard.Web
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
-
             var host = new WebHostBuilder()
                 .UseIISIntegration()
                 .UseKestrel()
-                .UseContentRoot(currentDirectory)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
 

@@ -65,7 +65,7 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId();
+            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId("contentitem");
 
             Handlers.Invoke(handler => handler.Activated(context2), _logger);
 

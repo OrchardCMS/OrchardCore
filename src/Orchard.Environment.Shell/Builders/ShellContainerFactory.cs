@@ -176,51 +176,48 @@ namespace Orchard.Environment.Shell.Builders
                 .Distinct()
                 .ToArray();
 
+
             if (settings.DatabaseProvider != null)
             {
-                var store = new Store(cfg =>
+                IConnectionFactory connectionFactory = null;
+
+                switch (settings.DatabaseProvider)
                 {
-                    IConnectionFactory connectionFactory = null;
+                    case "SqlConnection":
+                        connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
+                        break;
+                    case "SqliteConnection":
+                        connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
+                        break;
+                    default:
+                        throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
+                }
 
-                    switch (settings.DatabaseProvider)
-                    {
-                        case "SqlConnection":
-                            connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
-                            break;
-                        case "SqliteConnection":
-                            connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                            break;
-                        default:
-                            throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
-                    }
+                var configuration = new Configuration
+                {
+                    ConnectionFactory = connectionFactory,
+                    IsolationLevel = IsolationLevel.ReadUncommitted
+                };
 
-                    cfg.ConnectionFactory = connectionFactory;
-                    cfg.IsolationLevel = IsolationLevel.ReadUncommitted;
+                if (!string.IsNullOrWhiteSpace(settings.TablePrefix))
+                {
+                    configuration.TablePrefix = settings.TablePrefix + "_";
+                }
 
-                    if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
-                    {
-                        cfg.TablePrefix = settings.TablePrefix + "_";
-                    }
 #if SQL
-                    var sqlFactory = new SqlDocumentStorageFactory(connectionFactory);
-                    sqlFactory.IsolationLevel = IsolationLevel.ReadUncommitted;
-                    sqlFactory.ConnectionFactory = connectionFactory;
-                    if (!String.IsNullOrWhiteSpace(settings.TablePrefix))
-                    {
-                        sqlFactory.TablePrefix = settings.TablePrefix + "_";
-                    }
-                    cfg.DocumentStorageFactory = sqlFactory;
+                var sqlFactory = new SqlDocumentStorageFactory();
+                if (!string.IsNullOrWhiteSpace(settings.TablePrefix))
+                {
+                    sqlFactory.TablePrefix = settings.TablePrefix + "_";
+                }
+                configuration.DocumentStorageFactory = sqlFactory;
 #else
                         var storageFactory = new LightningDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
                         cfg.DocumentStorageFactory = storageFactory;
 #endif
 
-
-                    //cfg.RunDefaultMigration();
-                }
-                );
-
-                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, "contentitem", store.Configuration.TablePrefix);
+                var store = new Store(configuration);
+                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, store.Configuration.TablePrefix);
 
                 store.RegisterIndexes(indexes);
 

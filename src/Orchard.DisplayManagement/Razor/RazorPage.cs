@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.Shapes;
-using System;
-using System.Threading.Tasks;
 using Orchard.DisplayManagement.Title;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Razor
 {

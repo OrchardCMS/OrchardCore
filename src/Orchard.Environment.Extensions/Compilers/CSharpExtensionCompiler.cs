@@ -22,7 +22,9 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly Object _syncLock = new Object();
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
 
+        private static RuntimeLibrary CscLibrary => _cscLibrary.Value;
         private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
+        private static readonly Lazy<RuntimeLibrary> _cscLibrary = new Lazy<RuntimeLibrary>(GetCscLibrary);
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
@@ -34,6 +36,13 @@ namespace Orchard.Environment.Extensions.Compilers
 
         public static Assembly EntryAssembly => _entryAssembly.Value;
         public IList<string> Diagnostics { get; private set; }
+
+        private static RuntimeLibrary GetCscLibrary()
+        {
+            return DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
+                g => g.Runtime.Equals("any", StringComparison.OrdinalIgnoreCase) && g.AssetPaths.Any(
+                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0))).FirstOrDefault();
+        }
 
         private static HashSet<string> GetAmbientLibraries()
         {
@@ -367,7 +376,39 @@ namespace Orchard.Environment.Extensions.Compilers
             {
                 lock (_syncLock)
                 {
-                    File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                    if (!File.Exists(cscRuntimeConfigPath)
+                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath))
+                    {
+                        File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
+                    }
+                }
+            }
+
+            // Locate csc.dll and the csc.exe asset
+            var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
+
+            // Search in the runtime directory
+            var cscRelativePath = Path.Combine("runtimes", "any", "native", "csc.exe");
+            var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
+
+            // Fallback to the packages storage
+            if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
+            {
+                cscExePath = Path.Combine(context.PackagesDirectory, CscLibrary?.Name ?? String.Empty,
+                    CscLibrary?.Version ?? String.Empty, cscRelativePath);
+            }
+
+            // Automatically create csc.dll
+            if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
+                || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
+            {
+                lock (_syncLock)
+                {
+                    if (!File.Exists(cscDllPath)
+                        || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath))
+                    {
+                        File.Copy(cscExePath, cscDllPath, true);
+                    }
                 }
             }
 

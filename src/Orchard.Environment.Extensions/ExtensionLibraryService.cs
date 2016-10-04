@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Runtime.Loader;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
@@ -15,12 +9,20 @@ using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.Tools.Common;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
+using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
-using Orchard.FileSystem;
-using Orchard.FileSystem.AppData;
+using Orchard.Environment.Shell;
 using Orchard.Localization;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions
 {
@@ -37,20 +39,20 @@ namespace Orchard.Environment.Extensions
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly ApplicationPartManager _applicationPartManager;
-        private readonly IOrchardFileSystem _fileSystem;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
-            IOrchardFileSystem fileSystem,
-            IAppDataFolder appDataFolder,
+            IHostingEnvironment hostingEnvironment,
+            IOptions<ShellOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
-            _fileSystem = fileSystem;
-            _probingFolderPath = appDataFolder.MapPath(ProbingDirectoryName);
+            _hostingEnvironment = hostingEnvironment;
+            _probingFolderPath = optionsAccessor.Value.GetFileInfoFromShellHostContainer(ProbingDirectoryName).PhysicalPath;
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -147,8 +149,10 @@ namespace Orchard.Environment.Extensions
 
         internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
         {
-            var extensionPath = Path.Combine(_fileSystem.RootPath, descriptor.Location, descriptor.Id);
-            return GetProjectContextFromPath(extensionPath);
+            var fileInfo = _hostingEnvironment
+                .GetExtensionFileInfo(descriptor);
+
+            return GetProjectContextFromPath(fileInfo.PhysicalPath);
         }
 
         internal ProjectContext GetProjectContextFromPath(string projectPath)
@@ -167,14 +171,14 @@ namespace Orchard.Environment.Extensions
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation($"{0} was successfully compiled", context.ProjectName());
+                    _logger.LogInformation("{0} was successfully compiled", context.ProjectName());
                 }
             }
             else if (success && diagnostics.Count > 0)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning($"{0} was compiled but has warnings", context.ProjectName());
+                    _logger.LogWarning("{0} was compiled but has warnings", context.ProjectName());
 
                     foreach (var diagnostic in diagnostics)
                     {
@@ -563,8 +567,11 @@ namespace Orchard.Environment.Extensions
                 {
                     lock (_syncLock)
                     {
-                        Directory.CreateDirectory(binaryFolderPath);
-                        File.Copy(assetPath, binaryPath, true);
+                        if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
+                        {
+                            Directory.CreateDirectory(binaryFolderPath);
+                            File.Copy(assetPath, binaryPath, true);
+                        }
                     }
                 }
             }
