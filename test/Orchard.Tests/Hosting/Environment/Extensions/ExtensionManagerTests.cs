@@ -26,7 +26,7 @@ namespace Orchard.Tests.Hosting.Environment.Extensions
             var manager = new ExtensionManager(folders, new[] { new StubLoaders() }, new TypeFeatureProvider(), new NullLogger<ExtensionManager>());
 
             var available = manager.AvailableExtensions();
-
+        
             Assert.Equal(4, available.Count());
             Assert.True(available.Any(x => x.Id == "foo"));
         }
