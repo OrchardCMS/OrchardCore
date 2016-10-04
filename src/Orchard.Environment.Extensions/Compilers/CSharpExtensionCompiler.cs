@@ -641,15 +641,16 @@ namespace Orchard.Environment.Extensions.Compilers
                 commonArgs.Add("-t:library");
             }
 
+            // Here, force debugType to portable
             if (string.IsNullOrEmpty(options.DebugType))
             {
-                commonArgs.Add(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                commonArgs.Add(false /*RuntimeInformation.IsOSPlatform(OSPlatform.Windows)*/
                     ? "-debug:full"
                     : "-debug:portable");
             }
             else
             {
-                commonArgs.Add(options.DebugType == "portable"
+                commonArgs.Add(true /*options.DebugType == "portable"*/
                     ? "-debug:portable"
                     : "-debug:full");
             }

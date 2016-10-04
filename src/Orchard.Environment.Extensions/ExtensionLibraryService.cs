@@ -1,5 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
@@ -16,13 +22,6 @@ using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Localization;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions
 {
@@ -38,19 +37,16 @@ namespace Orchard.Environment.Extensions
         private static readonly ConcurrentDictionary<string, Lazy<Assembly>> _loadedAssemblies = new ConcurrentDictionary<string, Lazy<Assembly>>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
-        private readonly ApplicationPartManager _applicationPartManager;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
         public ExtensionLibraryService(
-            ApplicationPartManager applicationPartManager,
             IHostingEnvironment hostingEnvironment,
             IOptions<ExtensionProbingOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
-            _applicationPartManager = applicationPartManager;
             _hostingEnvironment = hostingEnvironment;
             _probingDirectoryName = optionsAccessor.Value.DependencyProbingDirectoryName;
             _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(Path.Combine(optionsAccessor.Value.RootProbingName, _probingDirectoryName)).PhysicalPath;
