@@ -36,6 +36,11 @@ namespace Orchard.Hosting.Routing
 
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
+            if (_tokens == null)
+            {
+                return null;
+            }
+
             object value;
 
             // Return null if it doesn't match the home route values
