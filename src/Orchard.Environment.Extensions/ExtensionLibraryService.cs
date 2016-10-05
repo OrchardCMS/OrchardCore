@@ -14,7 +14,6 @@ using NuGet.Frameworks;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell;
 using Orchard.Localization;
 using System;
 using System.Collections.Concurrent;
@@ -28,7 +27,7 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionLibraryService : IExtensionLibraryService
     {
-        public const string ProbingDirectoryName = "Dependencies";
+        private readonly string _probingDirectoryName;
         public static string Configuration => _configuration.Value;
         private static readonly Lazy<string> _configuration = new Lazy<string>(GetConfiguration);
         private static readonly Object _syncLock = new Object();
@@ -46,13 +45,14 @@ namespace Orchard.Environment.Extensions
         public ExtensionLibraryService(
             ApplicationPartManager applicationPartManager,
             IHostingEnvironment hostingEnvironment,
-            IOptions<ShellOptions> optionsAccessor,
+            IOptions<ExtensionProbingOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _applicationPartManager = applicationPartManager;
             _hostingEnvironment = hostingEnvironment;
-            _probingFolderPath = optionsAccessor.Value.GetFileInfoFromShellHostContainer(ProbingDirectoryName).PhysicalPath;
+            _probingDirectoryName = optionsAccessor.Value.DependencyProbingDirectoryName;
+            _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(Path.Combine(optionsAccessor.Value.RootProbingName, _probingDirectoryName)).PhysicalPath;
             _logger = logger;
             T = NullLocalizer.Instance;
         }
@@ -242,7 +242,7 @@ namespace Orchard.Environment.Extensions
                             {
                                 var locale = Directory.GetParent(asset).Name
                                     .Replace(assemblyFolderName, String.Empty)
-                                    .Replace(ProbingDirectoryName, String.Empty);
+                                    .Replace(_probingDirectoryName, String.Empty);
 
                                 PopulateBinaryFolder(assemblyFolderPath, asset, locale);
                                 PopulateProbingFolder(asset, locale);

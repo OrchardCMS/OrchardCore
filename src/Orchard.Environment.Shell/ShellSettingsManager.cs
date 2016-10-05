@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -6,21 +7,23 @@ using Orchard.Parser.Yaml;
 using Orchard.Validation;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Orchard.Environment.Shell
 {
     public class ShellSettingsManager : IShellSettingsManager
     {
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IOptions<ShellOptions> _optionsAccessor;
         private readonly ILogger _logger;
 
         private const string SettingsFileNameFormat = "Settings.{0}";
 
         public ShellSettingsManager(
+            IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> optionsAccessor,
             ILogger<ShellSettingsManager> logger)
         {
+            _hostingEnvironment = hostingEnvironment;
             _optionsAccessor = optionsAccessor;
             _logger = logger;
         }
@@ -29,7 +32,11 @@ namespace Orchard.Environment.Shell
         {
             var shellSettings = new List<ShellSettings>();
 
-            foreach (var tenant in _optionsAccessor.Value.Shells)
+            foreach (var tenant in 
+                _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(
+                    Path.Combine(
+                        _optionsAccessor.Value.ShellsRootContainerName, 
+                        _optionsAccessor.Value.ShellsContainerName)))
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
@@ -72,7 +79,9 @@ namespace Orchard.Environment.Shell
 
             var tenantPath = 
                 Path.Combine(
-                    _optionsAccessor.Value.ShellContainer.PhysicalPath, 
+                    _hostingEnvironment.ContentRootPath,
+                    _optionsAccessor.Value.ShellsRootContainerName,
+                    _optionsAccessor.Value.ShellsContainerName, 
                     shellSettings.Name, 
                     string.Format(SettingsFileNameFormat, "txt"));
 
