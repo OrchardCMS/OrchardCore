@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.Localization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Theming;
-using System.Threading.Tasks;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Theming;
+using Orchard.Localization;
 
 namespace Orchard.DisplayManagement.Implementation
 {

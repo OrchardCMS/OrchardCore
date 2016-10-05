@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.ContentManagement.Cache;
-using Orchard.ContentManagement.Metadata;
+using Orchard.ContentManagement.Drivers.Coordinators;
+using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
+using YesSql.Core.Indexes;
 
 namespace Orchard.ContentManagement
 {
@@ -17,8 +19,10 @@ namespace Orchard.ContentManagement
             services.TryAddScoped<IContentDefinitionManager, ContentDefinitionManager>();
             services.TryAddScoped<IContentManager, DefaultContentManager>();
             services.TryAddScoped<IContentManagerSession, DefaultContentManagerSession>();
-            services.AddScoped<ContentItemIndexProvider>();
+            services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentHandler, UpdateContentsHandler>();
+            services.AddScoped<IContentHandler, ContentPartCoordinator>();
 
             return services;
         }

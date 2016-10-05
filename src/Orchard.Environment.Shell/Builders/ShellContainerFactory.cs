@@ -1,21 +1,16 @@
-﻿#define SQL
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
-using YesSql.Core.Indexes;
-using YesSql.Core.Services;
-using YesSql.Storage.Sql;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -25,23 +20,26 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
-            IServiceCollection applicationServices)
+            IServiceCollection applicationServices,
+            IHostingEnvironment hostingEnvironment)
         {
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
+            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
         }
 
         public void AddCoreServices(IServiceCollection services)
         {
-            services.AddScoped<IShellStateUpdater, ShellStateUpdater>();
-            services.AddScoped<IShellStateManager, ShellStateManager>();
+            services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
+            services.TryAddScoped<IShellStateManager, NullShellStateManager>();
             services.AddScoped<ShellStateCoordinator>();
             services.AddScoped<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellStateCoordinator>());
         }
@@ -58,90 +56,11 @@ namespace Orchard.Environment.Shell.Builders
 
             // Sure this is right?
             tenantServiceCollection.AddSingleton(_loggerFactory);
-
-            foreach (var dependency in blueprint.Dependencies)
-            {
-                foreach (var interfaceType in dependency.Type.GetInterfaces())
-                {
-                    // GetInterfaces returns the full hierarchy of interfaces
-                    if (interfaceType == typeof(ISingletonDependency) ||
-                        interfaceType == typeof(ITransientDependency) ||
-                        interfaceType == typeof(IDependency) ||
-                        !typeof(IDependency).IsAssignableFrom(interfaceType))
-                    {
-                        continue;
-                    }
-
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, interfaceType);
-                    }
-
-                    if (typeof(ISingletonDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddSingleton(interfaceType, dependency.Type);
-                    }
-                    else if (typeof(ITransientDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddTransient(interfaceType, dependency.Type);
-                    }
-                    else if (typeof(IDependency).IsAssignableFrom(interfaceType))
-                    {
-                        tenantServiceCollection.AddScoped(interfaceType, dependency.Type);
-                    }
-                }
-            }
-
-            // Register components
-            foreach (var dependency in blueprint.Dependencies)
-            {
-                var serviceComponentAttribute = dependency.Type.GetTypeInfo().GetCustomAttribute<ServiceScopeAttribute>();
-                if (serviceComponentAttribute != null)
-                {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Type: {0}, Interface Type: {1}", dependency.Type, serviceComponentAttribute.ServiceType);
-                    }
-
-                    serviceComponentAttribute.Register(tenantServiceCollection, dependency.Type);
-                }
-            }
-
+            
             // Configure event handlers, they are not part of the blueprint, so they have
             // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
             tenantServiceCollection.AddSingleton<IEventBusState, EventBusState>();
-
-            //// Apply custom options for the tenant
-            //var options = blueprint
-            //.Dependencies
-            //.Where(x => typeof(IConfigure).IsAssignableFrom(x.Type))
-            //.Select(x => x.Type).ToArray();
-
-            //// TODO: Group all options by type and reuse the same configuration object
-            //// such that multiple feature can update the same configuration object.
-
-            //foreach (var type in options)
-            //{
-            //    var optionType = type
-            //        .GetInterfaces()
-            //        .Where(x => typeof(IConfigure).IsAssignableFrom(x))
-            //        .FirstOrDefault()
-            //        .GetGenericArguments()
-            //        .FirstOrDefault();
-
-            //    if(optionType == null)
-            //    {
-            //        // Ignore non-generic implementation
-            //        continue;
-            //    }
-
-            //    var optionObject = Activator.CreateInstance(optionType);
-            //    var configureMethod = type.GetMethod("Configure");
-            //    var optionHost = Activator.CreateInstance(type);
-            //    configureMethod.Invoke(optionHost, new[] { optionObject });
-            //    tenantServiceCollection.ConfigureOptions(optionObject);
-            //}
 
             // Execute IStartup registrations
 
@@ -149,11 +68,16 @@ namespace Orchard.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(t.Type)))
             {
-                moduleServiceCollection.AddSingleton(typeof(IStartup), dependency.Type);
-                tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Type);
+                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
+                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
             }
+
+            // Add a default configuration if none has been provided
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            moduleServiceCollection.TryAddSingleton(configuration);
+            tenantServiceCollection.TryAddSingleton(configuration);
 
             // Make shell settings available to the modules
             moduleServiceCollection.AddSingleton(settings);
@@ -161,71 +85,12 @@ namespace Orchard.Environment.Shell.Builders
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Let any module add custom service descriptors to the tenant
-            foreach (var service in moduleServiceProvider.GetServices<IStartup>())
+            foreach (var service in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Mvc.Modules.IStartup>())
             {
                 service.ConfigureServices(tenantServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
-
-            // Configuring data access
-
-            var indexes = tenantServiceCollection
-                .Select(x => x.ImplementationType)
-                .Where(t => t != null && typeof(IIndexProvider).IsAssignableFrom(t) && t.GetTypeInfo().IsClass)
-                .Distinct()
-                .ToArray();
-
-
-            if (settings.DatabaseProvider != null)
-            {
-                IConnectionFactory connectionFactory = null;
-
-                switch (settings.DatabaseProvider)
-                {
-                    case "SqlConnection":
-                        connectionFactory = new DbConnectionFactory<SqlConnection>(settings.ConnectionString);
-                        break;
-                    case "SqliteConnection":
-                        connectionFactory = new DbConnectionFactory<SqliteConnection>(settings.ConnectionString);
-                        break;
-                    default:
-                        throw new ArgumentException("Unknown database provider: " + settings.DatabaseProvider);
-                }
-
-                var configuration = new Configuration
-                {
-                    ConnectionFactory = connectionFactory,
-                    IsolationLevel = IsolationLevel.ReadUncommitted
-                };
-
-                if (!string.IsNullOrWhiteSpace(settings.TablePrefix))
-                {
-                    configuration.TablePrefix = settings.TablePrefix + "_";
-                }
-
-#if SQL
-                var sqlFactory = new SqlDocumentStorageFactory();
-                if (!string.IsNullOrWhiteSpace(settings.TablePrefix))
-                {
-                    sqlFactory.TablePrefix = settings.TablePrefix + "_";
-                }
-                configuration.DocumentStorageFactory = sqlFactory;
-#else
-                        var storageFactory = new LightningDocumentStorageFactory(Path.Combine(_appDataFolderRoot.RootFolder, "Sites", settings.Name, "Documents"));
-                        cfg.DocumentStorageFactory = storageFactory;
-#endif
-
-                var store = new Store(configuration);
-                var idGenerator = new LinearBlockIdGenerator(store.Configuration.ConnectionFactory, 20, store.Configuration.TablePrefix);
-
-                store.RegisterIndexes(indexes);
-
-                tenantServiceCollection.AddSingleton<IStore>(store);
-                tenantServiceCollection.AddSingleton<LinearBlockIdGenerator>(idGenerator);
-
-                tenantServiceCollection.AddScoped<ISession>(serviceProvider => store.CreateSession());
-            }
 
             // add already instanciated services like DefaultOrchardHost
             var applicationServiceDescriptors = _applicationServices.Where(x => x.Lifetime == ServiceLifetime.Singleton);

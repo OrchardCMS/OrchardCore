@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Primitives;
 using Orchard.DependencyInjection;
 
-namespace Orchard.Environment.Cache.Abstractions
+namespace Orchard.Environment.Cache
 {
-    public interface ISignal : ISingletonDependency
+    public interface ISignal
     {
         IChangeToken GetToken(string key);
 

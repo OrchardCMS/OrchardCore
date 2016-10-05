@@ -11,5 +11,7 @@ namespace Orchard.DeferredTasks
             services.TryAddScoped<IDeferredTaskState, HttpContextTaskState>();
             return services;
         }
+
+
     }
 }

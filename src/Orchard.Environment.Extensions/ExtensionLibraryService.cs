@@ -78,12 +78,11 @@ namespace Orchard.Environment.Extensions
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
 
-            foreach (var applicationPart in _applicationPartManager.ApplicationParts)
+            foreach (var assemblyName in _loadedAssemblies.Keys)
             {
-                var assembly = applicationPart as AssemblyPart;
-                if (assembly != null && assemblyNames.Add(assembly.Assembly.GetName().Name))
+                if (assemblyNames.Add(assemblyName))
                 {
-                    var metadataReference = MetadataReference.CreateFromFile(assembly.Assembly.Location);
+                    var metadataReference = MetadataReference.CreateFromFile(_loadedAssemblies[assemblyName].Value.Location);
                     metadataReferences.Add(metadataReference);
                 }
             }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Orchard.Environment.Cache.Abstractions;
 using System.Collections.Concurrent;
 using System.Threading;
 

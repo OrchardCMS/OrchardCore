@@ -4,7 +4,7 @@
     "Microsoft.AspNetCore.Html.Abstractions": "1.0.0",
     "Microsoft.AspNetCore.Mvc.DataAnnotations": "1.0.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.0",
-    "Orchard.Abstractions": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",

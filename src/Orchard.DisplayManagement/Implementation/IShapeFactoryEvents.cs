@@ -1,10 +1,9 @@
-﻿using Orchard.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Implementation
 {
-    public interface IShapeFactoryEvents : IDependency
+    public interface IShapeFactoryEvents
     {
         void Creating(ShapeCreatingContext context);
         void Created(ShapeCreatedContext context);

@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.DependencyInjection;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
-using Orchard.DisplayManagement.Layout;
-using Microsoft.AspNetCore.Http;
-using System.Text;
-using Orchard.Environment.Shell;
-using Microsoft.AspNetCore.DataProtection;
 using System.Net;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json;
+using Orchard.DisplayManagement.Layout;
+using Orchard.Environment.Shell;
 
 namespace Orchard.DisplayManagement.Notify
 {
-    [ScopedComponent(typeof(IFilterMetadata))]
     public class NotifyFilter : IActionFilter, IResultFilter
     {
         public const string CookiePrefix = "orch_notify";

@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DependencyInjection;
 using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.ContentTypes.Editors
 {
-    public interface IContentDefinitionDisplayManager : IDependency
+    public interface IContentDefinitionDisplayManager
     {
         Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition definition, IUpdateModel updater, string groupId = "");
         Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition definition, IUpdateModel updater, string groupId = "");

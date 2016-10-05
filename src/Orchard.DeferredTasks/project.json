@@ -5,6 +5,7 @@
     "Microsoft.Extensions.DependencyModel": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Orchard.DeferredTasks.Abstractions": "2.0.0-*",
+    "Orchard.Hosting": "2.0.0-*",
     "Orchard.Validation": "2.0.0-*"
   },
   "buildOptions": {

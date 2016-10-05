@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DependencyInjection;
 using Orchard.DisplayManagement.Handlers;
 
 namespace Orchard.ContentTypes.Editors
 {
-    public interface IContentDefinitionDisplayHandler : IDependency
+    public interface IContentDefinitionDisplayHandler
     {
         Task BuildTypeEditorAsync(ContentTypeDefinition definition, BuildEditorContext context);
         Task UpdateTypeEditorAsync(ContentTypeDefinition definition, UpdateTypeEditorContext context);

@@ -1,15 +1,13 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Events;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Environment.Shell.Descriptor
 {
     /// <summary>
     /// Service resolved out of the shell container. Primarily used by host.
     /// </summary>
-    public interface IShellDescriptorManager : IDependency
+    public interface IShellDescriptorManager
     {
         /// <summary>
         /// Uses shell-specific database or other resources to return
