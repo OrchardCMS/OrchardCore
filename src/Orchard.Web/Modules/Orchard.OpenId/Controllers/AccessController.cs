@@ -4,11 +4,11 @@ using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict;
+using OpenIddict.Mvc;
 using Orchard.Mvc;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
@@ -36,14 +36,14 @@ namespace Orchard.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token()
+        public async Task<IActionResult> Token(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by Orchard.Hosting.Web,
             // which is required for this stateless OAuth2/OIDC token endpoint to work correctly.
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT
             // return an authentication cookie or try to establish an ASP.NET Core session.
-            var request = HttpContext.GetOpenIdConnectRequest();
 
             if (request.IsPasswordGrantType())
             {
@@ -165,10 +165,9 @@ namespace Orchard.OpenId.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Authorize()
+        public async Task<IActionResult> Authorize(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
         {
-            var request = HttpContext.GetOpenIdConnectRequest();
-
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
             {
@@ -194,10 +193,9 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Accept")]
-        public Task<IActionResult> Accept()
+        public Task<IActionResult> Accept(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
         {
-            var request = HttpContext.GetOpenIdConnectRequest();
-
             return IssueAccessIdentityTokens(request);
         }
 
