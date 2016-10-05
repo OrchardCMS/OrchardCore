@@ -34,6 +34,11 @@ namespace Orchard.HomeRoute
 
         public override VirtualPathData GetVirtualPath(VirtualPathContext context)
         {
+            if (_tokens == null)
+            {
+                return null;
+            }
+
             object value;
 
             var tokens = GetHomeRouteValuesAsync().GetAwaiter().GetResult();
