@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Orchard.Events;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
-using YesSql.Core.Services;
 
 namespace Orchard.Recipes.Services
 {
@@ -15,22 +14,19 @@ namespace Orchard.Recipes.Services
     {
         private readonly IEnumerable<IRecipeHandler> _recipeHandlers;
         private readonly IEventBus _eventBus;
-        private readonly IRecipeResultAccessor _recipeResultAccessor;
-        private readonly ISession _session;
         private readonly ILogger _logger;
+        private readonly IRecipeStore _recipeStore;
 
         public RecipeStepExecutor(
             IEnumerable<IRecipeHandler> recipeHandlers,
             IEventBus eventBus,
-            IRecipeResultAccessor recipeResultAccessor,
-            ISession session,
+            IRecipeStore recipeStore,
             ILogger<RecipeStepExecutor> logger,
             IStringLocalizer<RecipeStepExecutor> localizer)
         {
             _recipeHandlers = recipeHandlers;
             _eventBus = eventBus;
-            _recipeResultAccessor = recipeResultAccessor;
-            _session = session;
+            _recipeStore = recipeStore;
             _logger = logger;
 
             T = localizer;
@@ -63,18 +59,21 @@ namespace Orchard.Recipes.Services
             bool IsSuccessful,
             Exception exception = null)
         {
-            var recipeResult = await _recipeResultAccessor
-                .GetResultAsync(recipeContext.ExecutionId);
+            var recipeResult = await _recipeStore.FindByExecutionIdAsync(recipeContext.ExecutionId);
 
-            var recipeStepResult = recipeResult
-                .Steps
-                .First(step => step.StepId == recipeContext.RecipeStep.Id);
+            if (recipeResult != null)
+            {
+                var recipeStepResult = recipeResult.Steps.FirstOrDefault(step => step.StepId == recipeContext.RecipeStep.Id);
 
-            recipeStepResult.IsCompleted = true;
-            recipeStepResult.IsSuccessful = IsSuccessful;
-            recipeStepResult.ErrorMessage = exception?.ToString();
+                if (recipeStepResult != null)
+                {
+                    recipeStepResult.IsCompleted = true;
+                    recipeStepResult.IsSuccessful = IsSuccessful;
+                    recipeStepResult.ErrorMessage = exception?.ToString();
 
-            _session.Save(recipeResult);
+                    await _recipeStore.UpdateAsync(recipeResult);
+                }
+            }
         }
     }
 }

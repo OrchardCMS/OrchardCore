@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
-namespace Orchard.Recipes.Providers.Executors
+namespace Orchard.Recipes.RecipeSteps
 {
     public class RecipesStep : RecipeExecutionStep
     {

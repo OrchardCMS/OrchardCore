@@ -5,7 +5,7 @@
     "Orchard.Data": "2.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Modules": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Implementations": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

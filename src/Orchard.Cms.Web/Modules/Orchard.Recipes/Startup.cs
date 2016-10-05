@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data.Migration;
 using Orchard.Recipes.Models;
-using Orchard.Recipes.Providers.Executors;
-using Orchard.Recipes.Providers.RecipeHandlers;
+using Orchard.Recipes.RecipeHandlers;
+using Orchard.Recipes.RecipeSteps;
 using Orchard.Recipes.Services;
 using YesSql.Core.Indexes;
 
@@ -16,15 +16,10 @@ namespace Orchard.Recipes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IRecipeHarvester, RecipeHarvester>();
+            services.AddRecipes();
 
-            services.AddScoped<IRecipeExecutor, RecipeExecutor>();
-            {
-                services.AddScoped<IRecipeParser, JsonRecipeParser>();
-                services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
-            }
+            services.AddScoped<IRecipeStore, RecipeStore>();
 
-            services.AddScoped<IRecipeResultAccessor, RecipeResultAccessor>();
             services.AddScoped<IIndexProvider, RecipeResultIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IRecipeHandler, RecipeExecutionStepHandler>();

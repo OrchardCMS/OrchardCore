@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
-namespace Orchard.Recipes.Providers.RecipeHandlers
+namespace Orchard.Recipes.RecipeHandlers
 {
     /// <summary>
     /// Delegates execution of the step to the appropriate recipe execution step implementation.

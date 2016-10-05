@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Commands;
-using Orchard.Recipes.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Orchard.Recipes.Models;
 using Orchard.Environment.Commands.Parameters;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
 
-namespace Orchard.Recipes.Providers.Executors
+namespace Orchard.Recipes.RecipeSteps
 {
     public class CommandStep : RecipeExecutionStep
     {

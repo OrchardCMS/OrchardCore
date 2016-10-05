@@ -14,24 +14,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql.Core.Services;
 
 namespace Orchard.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
         private readonly IEventBus _eventBus;
-        private readonly ISession _session;
         private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ILogger _logger;
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
+        private readonly IRecipeStore _recipeStore;
 
         public RecipeExecutor(
             IEventBus eventBus,
-            ISession session,
+            IRecipeStore recipeStore,
             IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
@@ -44,7 +43,7 @@ namespace Orchard.Recipes.Services
             _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
             _eventBus = eventBus;
-            _session = session;
+            _recipeStore = recipeStore;
             _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions.Value;
             _logger = logger;
@@ -87,7 +86,7 @@ namespace Orchard.Recipes.Services
                     }
 
                     result.Steps = stepResults;
-                    _session.Save(result);
+                    await _recipeStore.UpdateAsync(result);
                 }
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
