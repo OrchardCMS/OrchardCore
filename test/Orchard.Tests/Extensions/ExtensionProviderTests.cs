@@ -1,9 +1,7 @@
-﻿using Orchard.Environment.Extensions.Info;
-using Orchard.Environment.Extensions.Info.Physical;
-using Xunit;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
+using Orchard.Environment.Extensions.Info;
 using System.IO;
-using System.Linq;
+using Xunit;
 
 namespace Orchard.Tests.Extensions
 {

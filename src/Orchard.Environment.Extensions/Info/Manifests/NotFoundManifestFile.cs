@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Orchard.Environment.Extensions.Info.Manifests
 {
@@ -16,9 +13,9 @@ namespace Orchard.Environment.Extensions.Info.Manifests
         }
 
         public IFileInfo Manifest { get; private set; }
-        public bool Exists => true;
+        public bool Exists => Manifest.Exists;
         public string Name { get; } = null;
         public string Description { get; } = null;
-        public IDictionary<string, string> Attributes { get; } = new Dictionary<string, string>();
+        public IConfigurationRoot ConfigurationRoot { get; }
     }
 }
