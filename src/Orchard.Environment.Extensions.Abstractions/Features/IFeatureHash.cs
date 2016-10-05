@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -9,7 +8,7 @@ namespace Orchard.Environment.Extensions.Features
     /// Because its state should be cached, the instance should not have any state
     /// thus is declared as transient.
     /// </summary>
-    public interface IFeatureHash : ITransientDependency
+    public interface IFeatureHash
     {
         /// <summary>
         /// Returns a serial number representing the list of available features for the current tenant.

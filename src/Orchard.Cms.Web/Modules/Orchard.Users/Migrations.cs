@@ -3,7 +3,7 @@ using Orchard.Users.Indexes;
 
 namespace Orchard.Users
 {
-    public class Migrations : DataMigrations
+    public class Migrations : DataMigration
     {
         public int Create()
         {

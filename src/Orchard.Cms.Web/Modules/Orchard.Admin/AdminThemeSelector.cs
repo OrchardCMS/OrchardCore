@@ -10,12 +10,12 @@ namespace Orchard.Admin
     /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
     /// during the same scope.
     /// </summary>
-    public class SiteThemeSelector : IThemeSelector
+    public class AdminThemeSelector : IThemeSelector
     {
         private readonly IAdminThemeService _adminThemeService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SiteThemeSelector(
+        public AdminThemeSelector(
             IAdminThemeService adminThemeService,
             IHttpContextAccessor httpContextAccessor
             )

@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Environment.Cache.Abstractions;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Orchard.Environment.Cache;
 
 namespace Orchard.Environment.Extensions.Features
 {

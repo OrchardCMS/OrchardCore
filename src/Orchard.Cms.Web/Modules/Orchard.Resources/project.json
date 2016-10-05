@@ -3,7 +3,7 @@
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Orchard.ContentManagement": "2.0.0-*",
-    "Orchard.Hosting.Web": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Hosting": "1.0.0-*",
     "Orchard.ResourceManagement.Abstractions": "1.0.0-*"
   },
   "buildOptions": {

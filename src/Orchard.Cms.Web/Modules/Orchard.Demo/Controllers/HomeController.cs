@@ -11,7 +11,7 @@ using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 using Orchard.Events;
 using Orchard.DeferredTasks;
 using YesSql.Core.Services;

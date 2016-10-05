@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.Notify
     /// Where such notifications are displayed depends on the theme used. Default themes contain a 
     /// Messages zone for this.
     /// </remarks>
-    public interface INotifier : IDependency
+    public interface INotifier
     {
         /// <summary>
         /// Adds a new UI notification

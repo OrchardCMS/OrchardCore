@@ -1,6 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*",

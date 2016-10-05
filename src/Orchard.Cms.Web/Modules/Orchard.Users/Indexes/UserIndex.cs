@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.Users.Models;
+﻿using Orchard.Users.Models;
 using YesSql.Core.Indexes;
 
 namespace Orchard.Users.Indexes
@@ -10,7 +9,7 @@ namespace Orchard.Users.Indexes
         public string NormalizedEmail { get; set; }
     }
 
-    public class UserIndexProvider : IndexProvider<User>, IDependency
+    public class UserIndexProvider : IndexProvider<User>
     {
         public override void Describe(DescribeContext<User> context)
         {

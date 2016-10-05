@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    public interface IShapeTemplateViewEngine : IDependency
+    public interface IShapeTemplateViewEngine
     {
         IEnumerable<string> TemplateFileExtensions { get; }
     }

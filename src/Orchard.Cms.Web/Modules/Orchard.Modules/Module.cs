@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Modules.Recipes.Executors;
 using Orchard.Recipes;
 

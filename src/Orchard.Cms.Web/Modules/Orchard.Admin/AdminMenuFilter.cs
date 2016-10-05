@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Layout;
 using Orchard.Environment.Navigation;

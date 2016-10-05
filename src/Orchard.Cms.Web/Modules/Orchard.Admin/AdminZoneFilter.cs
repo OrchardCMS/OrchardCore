@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Admin
 {
-    [ScopedComponent(typeof(IFilterMetadata))]
     public class AdminZoneFilter : IActionFilter, IFilterMetadata
     {
         public void OnActionExecuted(ActionExecutedContext context)

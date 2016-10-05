@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.Theming;
+using Orchard.Environment.Navigation;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
 using Orchard.Themes.Recipes;
+using Orchard.Themes.Services;
 
 namespace Orchard.Themes
 {
@@ -14,6 +18,10 @@ namespace Orchard.Themes
         {
             services.AddRecipeExecutionStep<ThemesStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IThemeSelector, SafeModeThemeSelector>();
+            services.AddScoped<IThemeSelector, SiteThemeSelector>();
+            services.AddScoped<ISiteThemeService, SiteThemeService>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
         }
     }
 }

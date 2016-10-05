@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Caching.Distributed;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 
 namespace Orchard.DynamicCache.Services
 {

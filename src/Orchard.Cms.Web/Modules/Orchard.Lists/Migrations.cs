@@ -5,7 +5,7 @@ using Orchard.Lists.Indexes;
 
 namespace Orchard.Lists
 {
-    public class Migrations : DataMigrations
+    public class Migrations : DataMigration
     {
         IContentDefinitionManager _contentDefinitionManager;
 

@@ -6,7 +6,7 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.FileSystemGlobbing": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-    "Orchard.Abstractions": "2.0.0-*"
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

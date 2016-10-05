@@ -3,7 +3,7 @@ using System;
 
 namespace Orchard.ContentManagement.Records
 {
-    public class Migrations : DataMigrations
+    public class Migrations : DataMigration
     {
         public int Create()
         {

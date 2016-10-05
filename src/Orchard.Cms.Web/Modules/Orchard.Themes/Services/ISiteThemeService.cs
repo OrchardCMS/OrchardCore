@@ -1,10 +1,9 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
-using System.Threading.Tasks;
 
 namespace Orchard.Themes.Services
 {
-    public interface ISiteThemeService : IDependency
+    public interface ISiteThemeService
     {
         Task<ExtensionDescriptor> GetSiteThemeAsync();
         Task SetSiteThemeAsync(string themeName);

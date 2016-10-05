@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
-    public class DemoShapeProvider : IShapeTableProvider
+    public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
     {
         public void Discover(ShapeTableBuilder builder)
         {

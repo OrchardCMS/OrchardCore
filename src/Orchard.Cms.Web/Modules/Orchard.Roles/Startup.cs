@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Roles.Services;
 using Orchard.Security;
@@ -20,6 +22,7 @@ namespace Orchard.Roles
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
         }
     }
 }

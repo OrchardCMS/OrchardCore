@@ -68,7 +68,7 @@ namespace Orchard.Data.Migration
 
             var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
             {
-                DataMigration record;
+                Records.DataMigration record;
                 if (currentVersions.TryGetValue(dataMigration.GetType().FullName, out record))
                     return CreateUpgradeLookupTable(dataMigration).ContainsKey(record.Version.Value);
 
@@ -169,7 +169,7 @@ namespace Orchard.Data.Migration
                     }
                     else
                     {
-                        dataMigrationRecord = new DataMigration { DataMigrationClass = migration.GetType().FullName };
+                        dataMigrationRecord = new Records.DataMigration { DataMigrationClass = migration.GetType().FullName };
                         _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
                     }
 
@@ -237,7 +237,7 @@ namespace Orchard.Data.Migration
             }
         }
 
-        private async Task<DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
+        private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
         {
             var dataMigrationRecord = await GetDataMigrationRecordAsync();
             return dataMigrationRecord

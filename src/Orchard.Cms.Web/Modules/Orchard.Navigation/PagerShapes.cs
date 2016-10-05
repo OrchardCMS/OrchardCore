@@ -15,11 +15,11 @@ using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.Navigation
 {
-    public class PagerShapes : IShapeTableProvider
+    public class PagerShapesTableProvider : IShapeTableProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PagerShapes(
+        public PagerShapesTableProvider(
             IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<PagerShapes> localizer)
         {
@@ -120,6 +120,28 @@ namespace Orchard.Navigation
                     }
                 });
         }
+
+        private string EncodeAlternateElement(string alternateElement)
+        {
+            return alternateElement.Replace("-", "__").Replace(".", "_");
+        }
+
+    }
+
+    public class PagerShapes : IShapeAttributeProvider
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public PagerShapes(
+            IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<PagerShapes> localizer)
+        {
+            _httpContextAccessor = httpContextAccessor;
+
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
 
         [Shape]
         public IHtmlContent Pager_Links(Shape Shape, dynamic Display, dynamic New,
@@ -355,11 +377,6 @@ namespace Orchard.Navigation
             return Display(Shape);
         }
 
-        private string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace(".", "_");
-        }
-
         static IHtmlContent CoerceHtmlString(object value)
         {
             if (value == null)
@@ -371,5 +388,7 @@ namespace Orchard.Navigation
 
             return new HtmlString(HtmlEncoder.Default.Encode(value.ToString()));
         }
+
+
     }
 }

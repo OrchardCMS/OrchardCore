@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 using Orchard.Environment.Extensions.Features;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Theming
 {
@@ -8,7 +7,7 @@ namespace Orchard.DisplayManagement.Theming
     /// The results of all implementations are then ordered by priority, and the result
     /// with the highest priority is selected as the current theme.
     /// </summary>
-    public interface IThemeSelector : IDependency
+    public interface IThemeSelector
     {
         /// <summary>
         /// Returns a <see cref="ThemeSelectorResult"/> representing a specific theme

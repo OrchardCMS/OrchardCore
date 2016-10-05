@@ -1,7 +1,5 @@
 ﻿using Orchard.ContentManagement;
-using Orchard.DependencyInjection;
 using Orchard.Lists.Models;
-using System;
 using YesSql.Core.Indexes;
 
 namespace Orchard.Lists.Indexes
@@ -12,7 +10,7 @@ namespace Orchard.Lists.Indexes
         public int Order { get; set; }
     }
 
-    public class ContainedPartIndexProvider : IndexProvider<ContentItem>, IDependency
+    public class ContainedPartIndexProvider : IndexProvider<ContentItem>
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {

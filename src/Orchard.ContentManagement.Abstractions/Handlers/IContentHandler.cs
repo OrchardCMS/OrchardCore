@@ -1,8 +1,6 @@
-﻿using Orchard.DependencyInjection;
-
-namespace Orchard.ContentManagement.Handlers
+﻿namespace Orchard.ContentManagement.Handlers
 {
-    public interface IContentHandler : IDependency
+    public interface IContentHandler
     {
         void Activating(ActivatingContentContext context);
         void Activated(ActivatedContentContext context);

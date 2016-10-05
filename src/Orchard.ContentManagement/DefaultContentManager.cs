@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.Metadata.Models;
+using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using Microsoft.Extensions.Logging;
 using YesSql.Core.Services;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement
 {
@@ -65,7 +65,7 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId();
+            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId("contentitem");
 
             Handlers.Invoke(handler => handler.Activated(context2), _logger);
 

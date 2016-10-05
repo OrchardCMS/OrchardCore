@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Orchard.Environment.Cache.Abstractions
+namespace Orchard.Environment.Cache
 {
     /// <summary>
     /// Returns a set of values describing the discriminators of the context and a value

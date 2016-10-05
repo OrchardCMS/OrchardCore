@@ -4,7 +4,7 @@ using System.Linq;
 using Orchard.DisplayManagement.Implementation;
 using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 
 namespace Orchard.DisplayManagement.Shapes
 {

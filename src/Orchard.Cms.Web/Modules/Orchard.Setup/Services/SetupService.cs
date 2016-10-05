@@ -96,7 +96,7 @@ namespace Orchard.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "Orchard.Hosting", // shortcut for built-in features
+                "Orchard.Cms",
                 "Orchard.Modules",
                 "Orchard.Recipes"
             };
@@ -153,10 +153,6 @@ namespace Orchard.Setup.Services
                             shellContext.Blueprint.Descriptor.Features,
                             shellContext.Blueprint.Descriptor.Parameters);
 
-                    // Apply all migrations for the newly initialized tenant
-                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
-                    await dataMigrationManager.UpdateAllFeaturesAsync();
-
                     var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
                     if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
@@ -165,8 +161,6 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
                 }
-
-                _orchardHost.UpdateShellSettings(shellSettings);
 
                 executionId = Guid.NewGuid().ToString("n");
 
@@ -191,10 +185,6 @@ namespace Orchard.Setup.Services
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
-                    // Apply all migrations for the newly initialized tenant
-                    var dataMigrationManager = scope.ServiceProvider.GetService<IDataMigrationManager>();
-                    await dataMigrationManager.UpdateAllFeaturesAsync();
-
                     bool hasErrors = false;
 
                     Action<string, string> reportError = (key, message) => {
@@ -217,10 +207,6 @@ namespace Orchard.Setup.Services
 
                     if (hasErrors)
                     {
-                        // TODO: check why the tables creation is not reverted
-                        var session = scope.ServiceProvider.GetService<YesSql.Core.Services.ISession>();
-                        session.Cancel();
-
                         return executionId;
                     }
 
@@ -232,12 +218,11 @@ namespace Orchard.Setup.Services
                         await deferredTaskEngine.ExecuteTasksAsync(taskContext);
                     }
                 }
-
-                // Update the shell state
-                shellSettings.State = TenantState.Running;
-                _orchardHost.UpdateShellSettings(shellSettings);
             }
 
+            // Update the shell state
+            shellSettings.State = TenantState.Running;
+            _orchardHost.UpdateShellSettings(shellSettings);
 
             return executionId;
         }

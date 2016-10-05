@@ -4,7 +4,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using Orchard.DependencyInjection;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
@@ -64,11 +63,14 @@ namespace Orchard.Settings.Services
                             });
 
                             _contentManager.Create(site);
+                            _memoryCache.Set(SiteCacheKey, site);
                         }
                     }
                 }
-
-                _memoryCache.Set(SiteCacheKey, site);
+                else
+                {
+                    _memoryCache.Set(SiteCacheKey, site);
+                }
             }
 
             return site.As<SiteSettingsPart>();

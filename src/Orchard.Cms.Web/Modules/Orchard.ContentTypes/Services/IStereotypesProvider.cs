@@ -1,9 +1,8 @@
-using Orchard.DependencyInjection;
 using System.Collections.Generic;
 
 namespace Orchard.ContentTypes.Services
 {
-    public interface IStereotypesProvider : IDependency
+    public interface IStereotypesProvider
     {
         IEnumerable<StereotypeDescription> GetStereotypes();
     }

@@ -3,7 +3,7 @@ using Orchard.Environment.Shell;
 
 namespace Orchard.Demo.Services
 {
-    public interface ITestDependency : IDependency
+    public interface ITestDependency
     {
         string SayHi(string line);
     }

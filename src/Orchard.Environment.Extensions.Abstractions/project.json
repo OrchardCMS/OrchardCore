@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Microsoft.AspNetCore.Mvc.Razor": "1.0.0",
-    "Orchard.Abstractions": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.FileSystem": "2.0.0-*"
   },

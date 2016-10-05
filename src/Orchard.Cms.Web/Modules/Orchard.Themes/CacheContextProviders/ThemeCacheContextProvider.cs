@@ -1,5 +1,5 @@
 ﻿using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

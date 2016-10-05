@@ -7,7 +7,7 @@ namespace Orchard.DisplayManagement
     /// Service that creates new instances of dynamic shape objects
     /// This may be used directly, or through the IShapeHelperFactory.
     /// </summary>
-    public interface IShapeFactory : IDependency
+    public interface IShapeFactory
     {
         T Create<T>(string shapeType) where T : class;
         object Create(Type type, string shapeType);

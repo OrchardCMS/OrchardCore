@@ -12,14 +12,17 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly ILogger _logger;
+        private readonly IEnumerable<ShellFeature> _shellFeatures;
 
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
+            IEnumerable<ShellFeature> shellFeatures,
             ILogger<ShellContextFactory> logger)
         {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
+            _shellFeatures = shellFeatures;
             _logger = logger;
         }
 
@@ -47,6 +50,7 @@ namespace Orchard.Environment.Shell.Builders
             return describedContext;
         }
 
+        // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
         ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -84,21 +88,18 @@ namespace Orchard.Environment.Shell.Builders
             };
         }
 
-        private static ShellDescriptor MinimumShellDescriptor()
+        /// <summary>
+        /// The minimum shell descriptor is used to bootstrap the first container that will be used
+        /// to call all module IStartup implementation. It's composed of module names that reference
+        /// core components necessary for the desired scenario.
+        /// </summary>
+        /// <returns></returns>
+        private ShellDescriptor MinimumShellDescriptor()
         {
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new[]
-                {
-                    new ShellFeature { Name = "Orchard.Logging.Console" },
-                    new ShellFeature { Name = "Orchard.Hosting" },
-                    new ShellFeature { Name = "Orchard.Admin" },
-                    new ShellFeature { Name = "Orchard.Themes" },
-                    new ShellFeature { Name = "TheAdmin" },
-                    new ShellFeature { Name = "SafeMode" },
-                    new ShellFeature { Name = "Orchard.Recipes" }
-                },
+                Features = new List<ShellFeature>(_shellFeatures),
                 Parameters = new List<ShellParameter>()
             };
         }

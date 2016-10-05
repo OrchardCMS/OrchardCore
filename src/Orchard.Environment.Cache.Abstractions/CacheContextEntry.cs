@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Cache.Abstractions
+﻿namespace Orchard.Environment.Cache
 {
     public struct CacheContextEntry
     {

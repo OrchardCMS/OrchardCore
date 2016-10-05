@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 using Orchard.Roles.Models;
 using Orchard.Security;
 using Orchard.Security.Services;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.Metadata.Models;
-using Orchard.DependencyInjection;
 using Orchard.Utility;
 using System.Threading.Tasks;
 

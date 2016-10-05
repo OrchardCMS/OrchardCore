@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using Orchard.ContentManagement.Metadata.Models;
-using Orchard.ContentTypes.ViewModels;
-using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DependencyInjection;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentTypes.ViewModels;
 
 namespace Orchard.ContentTypes.Services
 {
-    public interface IContentDefinitionService : IDependency
+    public interface IContentDefinitionService
     {
         IEnumerable<EditTypeViewModel> GetTypes();
         EditTypeViewModel GetType(string name);

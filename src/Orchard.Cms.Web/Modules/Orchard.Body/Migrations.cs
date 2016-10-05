@@ -4,7 +4,7 @@ using Orchard.Data.Migration;
 
 namespace Orchard.Body
 {
-    public class Migrations : DataMigrations
+    public class Migrations : DataMigration
     {
         IContentDefinitionManager _contentDefinitionManager;
 

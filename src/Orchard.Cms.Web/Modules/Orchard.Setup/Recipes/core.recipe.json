@@ -13,6 +13,7 @@
       "name": "feature",
       "disable": [],
       "enable": [
+        "Orchard.Cms",
         "Orchard.Logging.Console",
         "Orchard.Settings",
         "Orchard.Admin",

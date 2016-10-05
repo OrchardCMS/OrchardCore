@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using Orchard.DependencyInjection;
 using System.Threading.Tasks;
 
 namespace Orchard.DynamicCache.Services
 {
-    public interface IDynamicCache : ISingletonDependency
+    public interface IDynamicCache
     {
         Task<byte[]> GetAsync(string key);
         Task RemoveAsync(string key);

@@ -4,11 +4,10 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
     "Newtonsoft.Json": "9.0.1",
+    "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "YesSql.Core": "2.0.0-*",
-    "YesSql.Storage.LightningDB": "1.0.0-*",
     "YesSql.Storage.Sql": "1.0.0-*"
   },
   "buildOptions": {
