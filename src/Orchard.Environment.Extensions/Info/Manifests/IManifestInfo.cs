@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.Environment.Extensions.Info
 {
@@ -9,6 +9,6 @@ namespace Orchard.Environment.Extensions.Info
         bool Exists { get; }
         string Name { get; }
         string Description { get; }
-        IDictionary<string, string> Attributes { get; }
+        IConfigurationRoot ConfigurationRoot { get; }
     }
 }
