@@ -453,7 +453,7 @@ namespace Orchard.Environment.Extensions
                                 var locale = Directory.GetParent(asset).Name
                                     .Replace(assetFolderName, String.Empty)
                                     .Replace(assemblyFolderName, String.Empty)
-                                    .Replace(ProbingDirectoryName, String.Empty);
+                                    .Replace(_probingDirectoryName, String.Empty);
 
                                 PopulateBinaryFolder(assemblyFolderPath, asset, locale);
                                 PopulateProbingFolder(asset, locale);
