@@ -35,6 +35,7 @@ namespace Orchard.Environment.Extensions
         private static HashSet<string> ApplicationAssemblyNames => _applicationAssemblyNames.Value;
         private static readonly Lazy<HashSet<string>> _applicationAssemblyNames = new Lazy<HashSet<string>>(GetApplicationAssemblyNames);
         private static readonly ConcurrentDictionary<string, Lazy<Assembly>> _loadedAssemblies = new ConcurrentDictionary<string, Lazy<Assembly>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, string> _compileOnlyAssemblies = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -74,6 +75,15 @@ namespace Orchard.Environment.Extensions
         {
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
+
+            foreach (var assemblyName in _compileOnlyAssemblies.Keys)
+            {
+                if (assemblyNames.Add(assemblyName))
+                {
+                    var metadataReference = MetadataReference.CreateFromFile(_compileOnlyAssemblies[assemblyName]);
+                    metadataReferences.Add(metadataReference);
+                }
+            }
 
             foreach (var assemblyName in _loadedAssemblies.Keys)
             {
@@ -371,6 +381,7 @@ namespace Orchard.Environment.Extensions
 
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
+                                _compileOnlyAssemblies[assetFileName] = assetResolvedPath;
                                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CompilerUtility.RefsDirectoryName);
                                 PopulateProbingFolder(assetResolvedPath, CompilerUtility.RefsDirectoryName);
                             }
@@ -479,6 +490,7 @@ namespace Orchard.Environment.Extensions
                     {
                         if (!IsAmbientAssembly(asset.Name) && !runtimeAssets.Contains(asset))
                         {
+                            _compileOnlyAssemblies[asset.Name] = asset.ResolvedPath;
                             PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
                             PopulateProbingFolder(asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
                         }
@@ -539,6 +551,7 @@ namespace Orchard.Environment.Extensions
                     var assetFileName = Path.GetFileName(asset);
                     var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CompilerUtility.RefsDirectoryName);
 
+                    _compileOnlyAssemblies[assetFileName] = assetResolvedPath;
                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CompilerUtility.RefsDirectoryName);
                     PopulateProbingFolder(assetResolvedPath, CompilerUtility.RefsDirectoryName);
                 }
