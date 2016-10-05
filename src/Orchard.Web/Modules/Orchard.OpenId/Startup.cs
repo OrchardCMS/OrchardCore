@@ -1,12 +1,14 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
-using Orchard.FileSystem.AppData;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
@@ -27,14 +29,20 @@ namespace Orchard.OpenId
 
         public Startup(
             ShellSettings shellSettings,
-            IAppDataFolder appDataFolder,
+            IOptions<ShellOptions> options,
+            IHostingEnvironment environment,
             ILoggerFactory loggerFactory,
             IDataProtectionProvider dataProtectionProvider)
         {
             _tenantName = shellSettings.Name;
             _tenantUrlPrefix = shellSettings.RequestUrlPrefix;
-            _certificateFullPath = appDataFolder.Combine(shellSettings.Name, CertificateFileName);
             _dataProtectionProvider = dataProtectionProvider.CreateProtector(_tenantName);
+            _certificateFullPath = Path.Combine(
+                environment.ContentRootPath,
+                options.Value.ShellsRootContainerName,
+                options.Value.ShellsContainerName,
+                shellSettings.Name,
+                CertificateFileName);
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
