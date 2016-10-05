@@ -9,13 +9,14 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict;
+using Orchard.Mvc;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
-    [Authorize, ValidateAntiForgeryToken]
+    [Authorize, AutoValidateAntiforgeryToken]
     public class AccessController : Controller
     {
         private readonly IOpenIdApplicationManager _applicationManager;
@@ -191,7 +192,8 @@ namespace Orchard.OpenId.Controllers
             });
         }
 
-        [HttpPost]
+        [ActionName(nameof(Authorize))]
+        [HttpPost, FormValueRequired("submit.Accept")]
         public Task<IActionResult> Accept()
         {
             var request = HttpContext.GetOpenIdConnectRequest();
@@ -229,7 +231,8 @@ namespace Orchard.OpenId.Controllers
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
-        [HttpPost]
+        [ActionName(nameof(Authorize))]
+        [HttpPost, FormValueRequired("submit.Deny")]
         public IActionResult Deny()
         {
             // Notify OpenIddict that the authorization grant has been denied by the resource owner
