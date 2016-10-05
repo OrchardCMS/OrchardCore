@@ -1,44 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.FileProviders;
-using System.IO;
-using System;
+﻿using Microsoft.Extensions.FileProviders;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace Orchard.Environment.Extensions.Info.Physical
+namespace Orchard.Environment.Extensions.Info
 {
-    public class PhysicalExtensionInfo : IExtensionInfo
-    {
-        private IFileInfo _fileInfo;
-        private IManifestInfo _manifestInfo;
-
-        public PhysicalExtensionInfo(
-            IFileInfo fileInfo,
-            IManifestInfo manifestInfo,
-            IEnumerable<IFeatureInfo> features) {
-
-            _fileInfo = fileInfo;
-            _manifestInfo = manifestInfo;
-            Features = features;
-        }
-
-        public string Id => _fileInfo.Name;
-        public IFileInfo Extension => _fileInfo;
-        public IManifestInfo Manifest => _manifestInfo;
-        public IList<IFeatureInfo> Features { get; private set; }
-    }
-
-    public interface IManifestProvider
-    {
-        IManifestInfo GetManifest(string subPath);
-    }
-
     public class ExtensionProvider : IExtensionProvider
     {
         private IFileProvider _fileProvider;
         private IManifestProvider _manifestProvider;
 
         /// <summary>
-        /// Initializes a new instance of a PhysicalExtensionProvider at the given root directory.
+        /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
         /// <param name="root">The root directory. This should be an absolute path.</param>
         /// <param name="manifestFileName">The manifest file name. i.e. module.txt.</param>
@@ -57,12 +29,20 @@ namespace Orchard.Environment.Extensions.Info.Physical
         {
             var manifest = _manifestProvider.GetManifest(subPath);
 
-            if (manifest == null)
+            if (!manifest.Exists)
             {
                 return null;
             }
 
             var extension = _fileProvider.GetFileInfo(subPath);
+
+            // This check man have already been done when checking for manifest
+            if (!extension.Exists)
+            {
+                return null;
+            }
+
+            var features = new List<IFeatureInfo>();
 
             if (manifest.Attributes.ContainsKey("features"))
             {
@@ -71,11 +51,12 @@ namespace Orchard.Environment.Extensions.Info.Physical
             else
             {
                 // The Extension has only one feature, itself, and that can have dependencies
-
-                
             }
 
-
+            return new ExtensionInfo(
+                extension,
+                manifest,
+                features);
         }
     }
 }

@@ -23,6 +23,6 @@ namespace Orchard.Environment.Extensions.Info
         /// <summary>
         /// List of features in extension
         /// </summary>
-        IEnumerable<IFeatureInfo> Features { get; }
+        IList<IFeatureInfo> Features { get; }
     }
 }

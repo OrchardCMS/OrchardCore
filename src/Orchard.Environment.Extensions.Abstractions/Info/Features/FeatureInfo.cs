@@ -16,10 +16,9 @@ namespace Orchard.Environment.Extensions.Info
             Dependencies = dependencies;
         }
 
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public IExtensionInfo Extension { get; set; }
-        public IEnumerable<IFeatureInfo> Dependencies { get; set; }
-            = new HashSet<IFeatureInfo>();
+        public string Id { get; private set; }
+        public string Name { get; private set; }
+        public IExtensionInfo Extension { get; private set; }
+        public IEnumerable<IFeatureInfo> Dependencies { get; private set; }
     }
 }
