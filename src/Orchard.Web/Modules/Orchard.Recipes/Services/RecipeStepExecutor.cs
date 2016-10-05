@@ -15,18 +15,21 @@ namespace Orchard.Recipes.Services
     {
         private readonly IEnumerable<IRecipeHandler> _recipeHandlers;
         private readonly IEventBus _eventBus;
+        private readonly IRecipeResultAccessor _recipeResultAccessor;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
         public RecipeStepExecutor(
             IEnumerable<IRecipeHandler> recipeHandlers,
             IEventBus eventBus,
+            IRecipeResultAccessor recipeResultAccessor,
             ISession session,
             ILogger<RecipeStepExecutor> logger,
             IStringLocalizer<RecipeStepExecutor> localizer)
         {
             _recipeHandlers = recipeHandlers;
             _eventBus = eventBus;
+            _recipeResultAccessor = recipeResultAccessor;
             _session = session;
             _logger = logger;
 
@@ -55,31 +58,23 @@ namespace Orchard.Recipes.Services
             await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
         }
 
-        private Task UpdateStepResultRecordAsync(
+        private async Task UpdateStepResultRecordAsync(
             RecipeContext recipeContext,
             bool IsSuccessful,
             Exception exception = null)
         {
-            // TODO: bad pattern, use an index
+            var recipeResult = await _recipeResultAccessor
+                .GetResultAsync(recipeContext.ExecutionId);
 
-            //var stepResults = await _session
-            //    .QueryAsync<RecipeResult>()
-            //    .List();
+            var recipeStepResult = recipeResult
+                .Steps
+                .First(step => step.StepId == recipeContext.RecipeStep.Id);
 
-            //var recipeResult = stepResults
-            //    .First(record => record.ExecutionId == recipeContext.ExecutionId);
+            recipeStepResult.IsCompleted = true;
+            recipeStepResult.IsSuccessful = IsSuccessful;
+            recipeStepResult.ErrorMessage = exception?.ToString();
 
-            //var recipeStepResult = recipeResult
-            //    .Steps
-            //    .First(step => step.StepId == recipeContext.RecipeStep.Id);
-
-            //recipeStepResult.IsCompleted = true;
-            //recipeStepResult.IsSuccessful = IsSuccessful;
-            //recipeStepResult.ErrorMessage = exception?.ToString();
-
-            //_session.Save(recipeResult);
-
-            return Task.CompletedTask;
+            _session.Save(recipeResult);
         }
     }
 }
