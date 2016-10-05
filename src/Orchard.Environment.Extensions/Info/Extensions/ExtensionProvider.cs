@@ -44,7 +44,7 @@ namespace Orchard.Environment.Extensions.Info
 
             var features = new List<IFeatureInfo>();
 
-            if (manifest.Attributes.ContainsKey("features"))
+            if (manifest.ConfigurationRoot.GetSection("features") != null)
             {
                 // Features and Dependencies live within this section
             }
