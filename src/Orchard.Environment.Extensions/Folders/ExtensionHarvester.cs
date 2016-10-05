@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Localization;
+using Orchard.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using Orchard.Localization;
-using Orchard.Environment.Extensions.Models;
-using Microsoft.Extensions.Logging;
-using Orchard.FileSystem;
-using Orchard.Utility;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions.Folders
 {
@@ -31,13 +32,14 @@ namespace Orchard.Environment.Extensions.Folders
         private const string FeaturesSection = "features";
         private const string SessionStateSection = "sessionstate";
 
-        private readonly IOrchardFileSystem _fileSystem;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
 
-        public ExtensionHarvester(IOrchardFileSystem fileSystem,
+        public ExtensionHarvester(
+            IHostingEnvironment hostingEnvironment,
             ILogger<ExtensionHarvester> logger)
         {
-            _fileSystem = fileSystem;
+            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
 
             T = NullLocalizer.Instance;
@@ -70,15 +72,19 @@ namespace Orchard.Environment.Extensions.Folders
             {
                 _logger.LogInformation("Start looking for extensions in '{0}'...", path);
             }
-
-            var subfolders = _fileSystem.ListDirectories(path);
-            foreach (var subfolder in subfolders)
+            
+            foreach (var subDirectory in _hostingEnvironment
+                .ContentRootFileProvider
+                .GetDirectoryContents(path).Where(x => x.IsDirectory))
             {
-                var extensionId = subfolder.Name;
-                var manifestPath = _fileSystem.Combine(path, extensionId, manifestName);
+                var extensionId = subDirectory.Name;
+
+                var manifestFile = _hostingEnvironment
+                    .ContentRootFileProvider
+                    .GetFileInfo(Path.Combine(path, extensionId, manifestName));
                 try
                 {
-                    var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestPath, manifestIsOptional);
+                    var descriptor = GetExtensionDescriptor(path, extensionId, extensionType, manifestFile, manifestIsOptional);
 
                     if (descriptor == null)
                         continue;
@@ -140,9 +146,10 @@ namespace Orchard.Environment.Extensions.Folders
         }
 
 
-        private ExtensionDescriptor GetExtensionDescriptor(string locationPath, string extensionId, string extensionType, string manifestPath, bool manifestIsOptional)
+        private ExtensionDescriptor GetExtensionDescriptor(
+            string locationPath, string extensionId, string extensionType, IFileInfo manifestFile, bool manifestIsOptional)
         {
-            var manifestText = _fileSystem.ReadFileAsync(manifestPath).Result;
+            var manifestText = File.ReadAllText(manifestFile.PhysicalPath);
             if (manifestText == null)
             {
                 if (manifestIsOptional)

@@ -16,12 +16,12 @@ namespace Orchard.Admin
         {
             services.AddNavigation();
 
+            services.AddScoped<IFilterMetadata, AdminZoneFilter>();
             services.AddScoped<IFilterMetadata, AdminFilter>();
             services.AddScoped<IFilterMetadata, AdminMenuFilter>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
-            services.AddScoped<IFilterMetadata, AdminZoneFilter>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

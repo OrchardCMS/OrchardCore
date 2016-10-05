@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.FileProviders;
+using System;
 
 namespace Orchard.Recipes.Models
 {
@@ -15,6 +16,6 @@ namespace Orchard.Recipes.Models
         public string[] Categories { get; set; }
         public string[] Tags { get; set; }
 
-        public string Location { get; set; }
+        public IFileInfo RecipeFileInfo { get; set; }
     }
 }

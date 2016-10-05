@@ -29,7 +29,7 @@ namespace Orchard.Cms.Web
         {
             services.AddThemingHost();
             services.AddThemeFolder("Themes");
-            services.AddSitesFolder("Sites");
+            services.AddSitesFolder("App_Data", "Sites");
             services.AddModuleServices(Configuration);
         }
 

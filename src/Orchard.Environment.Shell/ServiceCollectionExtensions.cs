@@ -8,14 +8,16 @@ namespace Orchard.Environment.Shell
     {
         public static IServiceCollection AddMultiTenancy(
             this IServiceCollection services,
-            string shellLocation)
+            string shellsRootContainerName,
+            string shellsContainerName)
         {
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
             services.AddScoped<IShellDescriptorManager, AllFeaturesShellDescriptorManager>();
 
             services.Configure<ShellOptions>(options =>
             {
-                options.Location = shellLocation;
+                options.ShellsRootContainerName = shellsRootContainerName;
+                options.ShellsContainerName = shellsContainerName;
             });
 
             return services;

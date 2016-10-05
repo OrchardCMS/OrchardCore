@@ -8,14 +8,11 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.FileSystem;
 using Orchard.Hosting;
-using Orchard.Hosting.FileSystem;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
@@ -96,10 +93,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                 internalServices.AddOptions();
                 internalServices.AddLocalization();
                 internalServices.AddHostCore();
-                internalServices.AddExtensionManagerHost();
+                internalServices.AddExtensionManagerHost("app_data", "dependencies");
                 internalServices.AddCommands();
 
-                internalServices.AddSingleton<IOrchardFileSystem, HostedFileSystem>();
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             });
         }

@@ -9,6 +9,7 @@ using Orchard.DeferredTasks;
 using Orchard.DisplayManagement;
 using Orchard.Environment;
 using Orchard.Environment.Cache;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Data;
 using Orchard.ResourceManagement;
 

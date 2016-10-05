@@ -12,11 +12,12 @@ namespace Orchard.Environment.Shell.Data
         /// <param name="services"></param>
         /// <param name="sitesPath"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSitesFolder(this IServiceCollection services, string sitesPath)
+        public static IServiceCollection AddSitesFolder(this IServiceCollection services, string rootPath, string sitesPath)
         {
             services.Configure<ShellOptions>(options =>
             {
-                options.Location = sitesPath;
+                options.ShellsRootContainerName = rootPath;
+                options.ShellsContainerName = sitesPath;
             });
 
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();

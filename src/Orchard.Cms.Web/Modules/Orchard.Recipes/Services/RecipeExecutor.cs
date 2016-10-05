@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.FileSystem;
 using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
-using YesSql.Core.Services;
-using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.Recipes.Services
 {
@@ -25,7 +24,6 @@ namespace Orchard.Recipes.Services
         private readonly ISession _session;
         private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly RecipeHarvestingOptions _recipeOptions;
-        private readonly IOrchardFileSystem _fileSystem;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ILogger _logger;
         private readonly ShellSettings _shellSettings;
@@ -36,7 +34,6 @@ namespace Orchard.Recipes.Services
             ISession session,
             IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
-            IOrchardFileSystem fileSystem,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IOrchardHost orchardHost,
@@ -50,7 +47,6 @@ namespace Orchard.Recipes.Services
             _session = session;
             _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions.Value;
-            _fileSystem = fileSystem;
             _logger = logger;
             T = localizer;
         }
@@ -63,13 +59,11 @@ namespace Orchard.Recipes.Services
 
             try
             {
-                var fileInfo = _fileSystem.GetFileInfo(recipeDescriptor.Location);
-
                 var parsersForFileExtension = _recipeOptions
                     .RecipeFileExtensions
-                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(fileInfo.PhysicalPath));
+                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(recipeDescriptor.RecipeFileInfo.PhysicalPath));
 
-                using (var stream = fileInfo.CreateReadStream())
+                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
                     RecipeResult result = new RecipeResult { ExecutionId = executionId };
                     List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
@@ -96,7 +90,7 @@ namespace Orchard.Recipes.Services
                     _session.Save(result);
                 }
 
-                using (var stream = fileInfo.CreateReadStream())
+                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
                     foreach (var parserForFileExtension in parsersForFileExtension)
                     {
