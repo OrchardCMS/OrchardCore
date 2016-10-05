@@ -10,7 +10,7 @@
         @Html.AntiForgeryToken()
 
         <input type="hidden" name="request_id" value="@Model.RequestId" />
-        <input formaction="@Url.Action("Accept")" class="btn btn-lg btn-success" name="Authorize" type="submit" value="Yes" />
-        <input formaction="@Url.Action("Deny")" class="btn btn-lg btn-danger" name="Deny" type="submit" value="No" />
+        <input class="btn btn-lg btn-success" name="submit.Accept" type="submit" value="Yes" />
+        <input class="btn btn-lg btn-danger" name="submit.Deny" type="submit" value="No" />
     </form>
 </div>
