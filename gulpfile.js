@@ -79,7 +79,7 @@ gulp.task("watch", function () {
 */
 
 function getAssetGroups() {
-    var assetManifestPaths = glob.sync("./src/Orchard.Web/{Core,Modules,Themes}/*/Assets.json", {});
+    var assetManifestPaths = glob.sync("./src/Orchard.Cms.Web/{Modules,Themes}/*/Assets.json", {});
     var assetGroups = [];
     assetManifestPaths.forEach(function (assetManifestPath) {
         var assetManifest = require("./" + assetManifestPath);
@@ -107,7 +107,7 @@ function resolveAssetGroupPaths(assetGroup, assetManifestPath) {
     assetGroup.outputDir = path.dirname(assetGroup.outputPath);
     assetGroup.outputFileName = path.basename(assetGroup.output);
     // Uncomment to copy assets to wwwroot
-    //assetGroup.webroot = path.join("./src/Orchard.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
+    //assetGroup.webroot = path.join("./src/Orchard.Cms.Web/wwwroot/", path.basename(assetGroup.basePath), path.dirname(assetGroup.output));
 }
 
 function createAssetGroupTask(assetGroup, doRebuild) {

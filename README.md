@@ -32,7 +32,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Ro
 - Delete `.build` (or run git clean -xdf) to get the latest KoreBuild
 - Delete `C:\Program Files (x86)\Microsoft SDKs\NuGetPackages\dotnet-test-xunit`
 - Run the `build.cmd` file included in the repository to dotnet CLI and build the solution.
-- Next navigate to `D:\Orchard2\src\Orchard.Web` or where ever your retrospective folder is on the command line in Administrator mode.
+- Next navigate to `D:\Orchard2\src\Orchard.Cms.Web` or where ever your retrospective folder is on the command line in Administrator mode.
 
 ### Using Kestrel
 
