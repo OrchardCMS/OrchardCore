@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions.Info
 {
@@ -12,8 +13,8 @@ namespace Orchard.Environment.Extensions.Info
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
-        /// <param name="root">The root directory. This should be an absolute path.</param>
-        /// <param name="manifestFileName">The manifest file name. i.e. module.txt.</param>
+        /// <param name="fileProvider">fileProvider containing extensions.</param>
+        /// <param name="manifestProvider">The manifest provider.</param>
         public ExtensionProvider(IFileProvider fileProvider, IManifestProvider manifestProvider)
         {
             _fileProvider = fileProvider;
@@ -28,7 +29,7 @@ namespace Orchard.Environment.Extensions.Info
         public IExtensionInfo GetExtensionInfo(string subPath)
         {
             var manifest = _manifestProvider.GetManifest(subPath);
-
+            
             if (!manifest.Exists)
             {
                 return null;
@@ -44,9 +45,28 @@ namespace Orchard.Environment.Extensions.Info
 
             var features = new List<IFeatureInfo>();
 
-            if (manifest.ConfigurationRoot.GetSection("features") != null)
+            // Features and Dependencies live within this section
+            var featuresSection = manifest.ConfigurationRoot.GetSection("features");
+            if (featuresSection != null)
             {
-                // Features and Dependencies live within this section
+                foreach (var featureSection in featuresSection.GetChildren())
+                {
+                    var featureId = featureSection.Key;
+
+                    var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
+
+                    var featureName = featureDetails["name"];
+                    var featureDependencyExtensionIds = featureDetails["dependencies"]
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(e => e.Trim())
+                        .ToArray();
+
+                    //var featureInfo = new FeatureInfo(
+                    //    featureId,
+                    //    featureName,
+                    //    null,
+                    //    new List<IFeatureInfo>());
+                }
             }
             else
             {
