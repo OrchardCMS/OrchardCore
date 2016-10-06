@@ -7,6 +7,7 @@ using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Resources;
 using Microsoft.DotNet.Tools.Common;
+using NuGet.Frameworks;
 
 namespace Orchard.Environment.Extensions.Compilers
 {
@@ -16,6 +17,35 @@ namespace Orchard.Environment.Extensions.Compilers
         public const string ReleaseConfiguration = "Release";
         public const string DefaultConfiguration = Constants.DefaultConfiguration;
         public const string LocaleLockFilePropertyName = "locale";
+
+        public static string GetAssemblyFileName(string assemblyName)
+        {
+            return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
+        }
+
+        public static string GetAssemblyFolderPath(string rootPath, string config, string framework)
+        {
+            return Path.Combine(rootPath, Constants.BinDirectoryName, config, NuGetFramework.Parse(framework).GetShortFolderName());
+        }
+
+        public static IEnumerable<string> GetOtherParentProjectsLocations(ProjectContext context, LibraryDescription library)
+        {
+            foreach (var parent in library.Parents)
+            {
+                if (parent is ProjectDescription && !parent.Identity.Name.Equals(context.ProjectName()))
+                {
+                    if (!string.IsNullOrEmpty(parent.Path))
+                    {
+                        yield return Path.Combine(Directory.GetParent(parent.Path).FullName);
+                    }
+                }
+
+                foreach (var path in GetOtherParentProjectsLocations(context, parent))
+                {
+                    yield return path;
+                }
+            }
+        }
 
         public static IEnumerable<string> GetCompilationSources(ProjectContext project, CommonCompilerOptions compilerOptions)
         {

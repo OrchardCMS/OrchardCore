@@ -1,27 +1,27 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.CodeAnalysis;
-using Microsoft.DotNet.Cli.Compiler.Common;
-using Microsoft.DotNet.Cli.Utils;
-using Microsoft.DotNet.InternalAbstractions;
-using Microsoft.DotNet.ProjectModel;
-using Microsoft.DotNet.ProjectModel.Compilation;
-using Microsoft.DotNet.Tools.Common;
-using Microsoft.Extensions.DependencyModel;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using NuGet.Frameworks;
-using Orchard.Environment.Extensions.Compilers;
-using Orchard.Environment.Extensions.FileSystem;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Localization;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.CodeAnalysis;
+using Microsoft.DotNet.Cli.Compiler.Common;
+using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.InternalAbstractions;
+using Microsoft.DotNet.ProjectModel;
+using Microsoft.DotNet.ProjectModel.Compilation;
+using Microsoft.DotNet.ProjectModel.Graph;
+using Microsoft.DotNet.Tools.Common;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NuGet.Packaging;
+using Orchard.Environment.Extensions.Compilers;
+using Orchard.Environment.Extensions.FileSystem;
+using Orchard.Environment.Extensions.Models;
+using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions
 {
@@ -35,21 +35,19 @@ namespace Orchard.Environment.Extensions
         private static HashSet<string> ApplicationAssemblyNames => _applicationAssemblyNames.Value;
         private static readonly Lazy<HashSet<string>> _applicationAssemblyNames = new Lazy<HashSet<string>>(GetApplicationAssemblyNames);
         private static readonly ConcurrentDictionary<string, Lazy<Assembly>> _loadedAssemblies = new ConcurrentDictionary<string, Lazy<Assembly>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, string> _compileOnlyAssemblies = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private readonly Lazy<List<MetadataReference>> _metadataReferences;
-        private readonly ApplicationPartManager _applicationPartManager;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
 
         public ExtensionLibraryService(
-            ApplicationPartManager applicationPartManager,
             IHostingEnvironment hostingEnvironment,
             IOptions<ExtensionProbingOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
             _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
-            _applicationPartManager = applicationPartManager;
             _hostingEnvironment = hostingEnvironment;
             _probingDirectoryName = optionsAccessor.Value.DependencyProbingDirectoryName;
             _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(Path.Combine(optionsAccessor.Value.RootProbingName, _probingDirectoryName)).PhysicalPath;
@@ -77,6 +75,15 @@ namespace Orchard.Environment.Extensions
         {
             var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
             var metadataReferences = new List<MetadataReference>();
+
+            foreach (var assemblyName in _compileOnlyAssemblies.Keys)
+            {
+                if (assemblyNames.Add(assemblyName))
+                {
+                    var metadataReference = MetadataReference.CreateFromFile(_compileOnlyAssemblies[assemblyName]);
+                    metadataReferences.Add(metadataReference);
+                }
+            }
 
             foreach (var assemblyName in _loadedAssemblies.Keys)
             {
@@ -109,7 +116,7 @@ namespace Orchard.Environment.Extensions
 
             var projectContext = GetProjectContext(descriptor);
 
-            if (projectContext == null || IsDynamicContext(projectContext))
+            if (!IsPrecompiledContext(projectContext))
             {
                 return null;
             }
@@ -119,7 +126,16 @@ namespace Orchard.Environment.Extensions
                 return _loadedAssemblies[descriptor.Id].Value;
             }
 
-            return LoadProject(projectContext);
+            if (projectContext != null)
+            {
+                LoadProject(projectContext);
+            }
+            else
+            {
+                LoadPrecompiledModule(descriptor);
+            }
+
+            return IsAssemblyLoaded(descriptor.Id) ? _loadedAssemblies[descriptor.Id].Value : null;
         }
 
         public Assembly LoadDynamicExtension(ExtensionDescriptor descriptor)
@@ -131,7 +147,7 @@ namespace Orchard.Environment.Extensions
 
             var projectContext = GetProjectContext(descriptor);
 
-            if (projectContext == null || !IsDynamicContext(projectContext))
+            if (!IsDynamicContext(projectContext))
             {
                 return null;
             }
@@ -142,8 +158,9 @@ namespace Orchard.Environment.Extensions
             }
 
             CompileProject(projectContext);
+            LoadProject(projectContext);
 
-            return LoadProject(projectContext);
+            return IsAssemblyLoaded(descriptor.Id) ? _loadedAssemblies[descriptor.Id].Value : null;
         }
 
         internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
@@ -156,7 +173,10 @@ namespace Orchard.Environment.Extensions
 
         internal ProjectContext GetProjectContextFromPath(string projectPath)
         {
-            return ProjectContext.CreateContextForEachFramework(projectPath).FirstOrDefault();
+            return File.Exists(Path.Combine(projectPath, Project.FileName))
+                && File.Exists(Path.Combine(projectPath, LockFile.FileName))
+                ? ProjectContext.CreateContextForEachFramework(projectPath).FirstOrDefault()
+                : null;
         }
 
         internal void CompileProject(ProjectContext context)
@@ -199,17 +219,13 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        internal Assembly LoadProject(ProjectContext context)
+        internal void LoadProject(ProjectContext context)
         {
             var outputPaths = context.GetOutputPaths(Configuration);
             var assemblyPath = outputPaths.CompilationFiles.Assembly;
-
-            var assembly = LoadFromAssemblyPath(assemblyPath);
-            PopulateProbingFolder(assemblyPath);
-
             var assemblyFolderPath = outputPaths.CompilationOutputPath;
-            var libraryExporter = context.CreateExporter(Configuration);
 
+            var libraryExporter = context.CreateExporter(Configuration);
             var runtimeIds = GetRuntimeIdentifiers();
 
             foreach (var dependency in libraryExporter.GetAllExports())
@@ -222,8 +238,15 @@ namespace Orchard.Environment.Extensions
                 {
                     if (!IsAmbientAssembly(library.Identity.Name))
                     {
-                        var assetFileName = GetAssemblyFileName(library.Identity.Name);
+                        var assetFileName = CompilerUtility.GetAssemblyFileName(library.Identity.Name);
                         var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
+
+                        if (String.IsNullOrEmpty(assetResolvedPath))
+                        {
+                            // Fallback to this (possible) precompiled module bin folder
+                            var path = Path.Combine(Directory.GetParent(library.Path).FullName, Constants.BinDirectoryName, assetFileName);
+                            assetResolvedPath = File.Exists(path) ? path : null;
+                        }
 
                         if (!String.IsNullOrEmpty(assetResolvedPath))
                         {
@@ -234,12 +257,18 @@ namespace Orchard.Environment.Extensions
                             var resourceFileName = library.Identity.Name + ".resources.dll";
                             var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
 
-                            var resourceAssemblies = Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories)
+                            var assetFolder = Directory.GetParent(assetResolvedPath);
+                            var assetFolderName = PathUtility.GetDirectoryName(assetFolder.FullName);
+                            var assetFolderPath = assetFolder.FullName;
+
+                            var resourceAssemblies = Directory.GetFiles(assetFolderPath, resourceFileName, SearchOption.AllDirectories)
+                                .Union(Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories))
                                 .Union(Directory.GetFiles(_probingFolderPath, resourceFileName, SearchOption.AllDirectories));
 
                             foreach (var asset in resourceAssemblies)
                             {
                                 var locale = Directory.GetParent(asset).Name
+                                    .Replace(assetFolderName, String.Empty)
                                     .Replace(assemblyFolderName, String.Empty)
                                     .Replace(_probingDirectoryName, String.Empty);
 
@@ -253,6 +282,8 @@ namespace Orchard.Environment.Extensions
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
+                    string fallbackBinPath = null;
+
                     foreach (var asset in package.RuntimeAssemblies)
                     {
                         var assetName = Path.GetFileNameWithoutExtension(asset.Path);
@@ -261,6 +292,35 @@ namespace Orchard.Environment.Extensions
                         {
                             var assetFileName = Path.GetFileName(asset.Path);
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
+
+                            if (String.IsNullOrEmpty(assetResolvedPath))
+                            {
+                                if (fallbackBinPath == null)
+                                {
+                                    fallbackBinPath = String.Empty;
+
+                                    // Fallback to a (possible) parent precompiled module bin folder
+                                    var parentBinPaths = CompilerUtility.GetOtherParentProjectsLocations(context, package)
+                                        .Select(x => Path.Combine(x, Constants.BinDirectoryName));
+
+                                    foreach (var binaryPath in parentBinPaths)
+                                    {
+                                        var path = Path.Combine(binaryPath, assetFileName);
+
+                                        if (File.Exists(path))
+                                        {
+                                            assetResolvedPath = path;
+                                            fallbackBinPath = binaryPath;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else if (!String.IsNullOrEmpty(fallbackBinPath))
+                                {
+                                    var path = Path.Combine(fallbackBinPath, assetFileName);
+                                    assetResolvedPath = File.Exists(path) ? path : null;
+                                }
+                            }
 
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
@@ -283,6 +343,12 @@ namespace Orchard.Environment.Extensions
                                 ? Path.GetDirectoryName(asset.Path) : String.Empty;
 
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, relativeFolderPath);
+
+                            if (String.IsNullOrEmpty(assetResolvedPath) && !String.IsNullOrEmpty(fallbackBinPath))
+                            {
+                                var path = Path.Combine(fallbackBinPath, relativeFolderPath, assetFileName);
+                                assetResolvedPath = File.Exists(path) ? path : null;
+                            }
 
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
@@ -307,8 +373,15 @@ namespace Orchard.Environment.Extensions
                         {
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CompilerUtility.RefsDirectoryName);
 
+                            if (String.IsNullOrEmpty(assetResolvedPath) && !String.IsNullOrEmpty(fallbackBinPath))
+                            {
+                                var path = Path.Combine(fallbackBinPath, CompilerUtility.RefsDirectoryName, assetFileName);
+                                assetResolvedPath = File.Exists(path) ? path : null;
+                            }
+
                             if (!String.IsNullOrEmpty(assetResolvedPath))
                             {
+                                _compileOnlyAssemblies[assetFileName] = assetResolvedPath;
                                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CompilerUtility.RefsDirectoryName);
                                 PopulateProbingFolder(assetResolvedPath, CompilerUtility.RefsDirectoryName);
                             }
@@ -325,6 +398,12 @@ namespace Orchard.Environment.Extensions
                                 var assetFileName = Path.GetFileName(asset.Path);
                                 var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, locale);
 
+                                if (String.IsNullOrEmpty(assetResolvedPath) && !String.IsNullOrEmpty(fallbackBinPath))
+                                {
+                                    var path = Path.Combine(fallbackBinPath, locale, assetFileName);
+                                    assetResolvedPath = File.Exists(path) ? path : null;
+                                }
+
                                 if (!String.IsNullOrEmpty(assetResolvedPath))
                                 {
                                     PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
@@ -340,45 +419,45 @@ namespace Orchard.Environment.Extensions
                 {
                     if (!IsAmbientAssembly(library.Identity.Name))
                     {
-                        var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
+                        var assetFileName = CompilerUtility.GetAssemblyFileName(library.Identity.Name);
+                        var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
 
-                        if (projectContext != null)
+                        if (String.IsNullOrEmpty(assetResolvedPath))
                         {
-                            var assetFileName = GetAssemblyFileName(library.Identity.Name);
-                            var outputPath = projectContext.GetOutputPaths(Configuration).CompilationOutputPath;
-                            var assetResolvedPath = Path.Combine(outputPath, assetFileName);
+                            // Fallback to this precompiled project output path
+                            var outputPath = CompilerUtility.GetAssemblyFolderPath(library.Project.ProjectDirectory,
+                                Configuration, context.TargetFramework.DotNetFrameworkName);
+                            var path = Path.Combine(outputPath, assetFileName);
+                            assetResolvedPath = File.Exists(path) ? path : null;
+                        }
 
-                            if (!File.Exists(assetResolvedPath))
-                            {
-                                assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
-                            }
+                        if (!String.IsNullOrEmpty(assetResolvedPath))
+                        {
+                            LoadFromAssemblyPath(assetResolvedPath);
+                            PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
+                            PopulateProbingFolder(assetResolvedPath);
 
-                            if (!String.IsNullOrEmpty(assetResolvedPath))
-                            {
-                                LoadFromAssemblyPath(assetResolvedPath);
-                                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
-                                PopulateProbingFolder(assetResolvedPath);
-                            }
+                            var resourceFileName = library.Identity.Name + ".resources.dll";
+                            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
 
-                            var compilationOptions = projectContext.ResolveCompilationOptions(Configuration);
-                            var resourceAssemblies = CompilerUtility.GetCultureResources(projectContext.ProjectFile, outputPath, compilationOptions);
+                            var assetFolder = Directory.GetParent(assetResolvedPath);
+                            var assetFolderName = PathUtility.GetDirectoryName(assetFolder.FullName);
+                            var assetFolderPath = assetFolder.FullName;
+
+                            var resourceAssemblies = Directory.GetFiles(assetFolderPath, resourceFileName, SearchOption.AllDirectories)
+                                .Union(Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories))
+                                .Union(Directory.GetFiles(_probingFolderPath, resourceFileName, SearchOption.AllDirectories));
 
                             foreach (var asset in resourceAssemblies)
                             {
-                                assetFileName = Path.GetFileName(asset.OutputFile);
-                                assetResolvedPath = asset.OutputFile;
+                                var locale = Directory.GetParent(asset).Name
+                                    .Replace(assetFolderName, String.Empty)
+                                    .Replace(assemblyFolderName, String.Empty)
+                                    .Replace(_probingDirectoryName, String.Empty);
 
-                                if (!File.Exists(assetResolvedPath))
-                                {
-                                    assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, asset.Culture);
-                                }
-
-                                if (!String.IsNullOrEmpty(assetResolvedPath))
-                                {
-                                    PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, asset.Culture);
-                                    PopulateProbingFolder(assetResolvedPath, asset.Culture);
-                                    PopulateRuntimeFolder(assetResolvedPath, asset.Culture);
-                                }
+                                PopulateBinaryFolder(assemblyFolderPath, asset, locale);
+                                PopulateProbingFolder(asset, locale);
+                                PopulateRuntimeFolder(asset, locale);
                             }
                         }
                     }
@@ -411,6 +490,7 @@ namespace Orchard.Environment.Extensions
                     {
                         if (!IsAmbientAssembly(asset.Name) && !runtimeAssets.Contains(asset))
                         {
+                            _compileOnlyAssemblies[asset.Name] = asset.ResolvedPath;
                             PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
                             PopulateProbingFolder(asset.ResolvedPath, CompilerUtility.RefsDirectoryName);
                         }
@@ -432,8 +512,101 @@ namespace Orchard.Environment.Extensions
                     }
                 }
             }
+        }
 
-            return assembly;
+        internal void LoadPrecompiledModule(ExtensionDescriptor descriptor)
+        {
+            var fileInfo = _hostingEnvironment.GetExtensionFileInfo(descriptor);
+            var assemblyFolderPath = Path.Combine(fileInfo.PhysicalPath, Constants.BinDirectoryName);
+            var assemblyPath = Path.Combine(assemblyFolderPath, CompilerUtility.GetAssemblyFileName(descriptor.Id));
+
+            // default runtime assemblies: "bin/{assembly}.dll"
+            var runtimeAssemblies = Directory.GetFiles(assemblyFolderPath,
+                "*" + FileNameSuffixes.DotNet.DynamicLib, SearchOption.TopDirectoryOnly);
+
+            foreach (var asset in runtimeAssemblies)
+            {
+                var assetName = Path.GetFileNameWithoutExtension(asset);
+
+                if (!IsAmbientAssembly(assetName))
+                {
+                    var assetFileName = Path.GetFileName(asset);
+                    var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName);
+                    LoadFromAssemblyPath(assetResolvedPath);
+
+                    PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath);
+                    PopulateProbingFolder(assetResolvedPath);
+                }
+            }
+
+            // compile only assemblies: "bin/refs/{assembly}.dll"
+            if (Directory.Exists(Path.Combine(assemblyFolderPath, CompilerUtility.RefsDirectoryName)))
+            {
+                var compilationAssemblies = Directory.GetFiles(
+                    Path.Combine(assemblyFolderPath, CompilerUtility.RefsDirectoryName),
+                    "*" + FileNameSuffixes.DotNet.DynamicLib, SearchOption.TopDirectoryOnly);
+
+                foreach (var asset in compilationAssemblies)
+                {
+                    var assetFileName = Path.GetFileName(asset);
+                    var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, CompilerUtility.RefsDirectoryName);
+
+                    _compileOnlyAssemblies[assetFileName] = assetResolvedPath;
+                    PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, CompilerUtility.RefsDirectoryName);
+                    PopulateProbingFolder(assetResolvedPath, CompilerUtility.RefsDirectoryName);
+                }
+            }
+
+            // specific runtime assemblies: "bin/runtimes/{rid}/lib/{tfm}/{assembly}.dll"
+            if (Directory.Exists(Path.Combine(assemblyFolderPath, PackagingConstants.Folders.Runtimes)))
+            {
+                var runtimeIds = GetRuntimeIdentifiers();
+
+                var runtimeTargets = Directory.GetFiles(
+                    Path.Combine(assemblyFolderPath, PackagingConstants.Folders.Runtimes),
+                    "*" + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories);
+
+                foreach (var asset in runtimeTargets)
+                {
+                    var assetName = Path.GetFileNameWithoutExtension(asset);
+
+                    if (!IsAmbientAssembly(assetName))
+                    {
+                        var tfmFolder = Directory.GetParent(asset);
+                        var libFolder = Directory.GetParent(tfmFolder.FullName);
+
+                        if (String.Equals(libFolder.Name, PackagingConstants.Folders.Lib, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var runtime = Directory.GetParent(libFolder.FullName).Name;
+                            var relativeFolderPath = Path.Combine(PackagingConstants.Folders.Runtimes, runtime, libFolder.Name, tfmFolder.Name);
+
+                            if (runtimeIds.Contains(runtime))
+                            {
+                                LoadFromAssemblyPath(asset);
+                            }
+
+                            PopulateProbingFolder(asset, relativeFolderPath);
+                        }
+                    }
+                }
+            }
+
+            // resource assemblies: "bin/{locale?}/{assembly}.resources.dll"
+            var resourceAssemblies = Directory.GetFiles(assemblyFolderPath, "*.resources"
+                + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories);
+
+            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
+
+            foreach (var asset in resourceAssemblies)
+            {
+                var assetFileName = Path.GetFileName(asset);
+                var locale = Directory.GetParent(asset).Name.Replace(assemblyFolderName, String.Empty);
+                var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, locale);
+
+                PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
+                PopulateProbingFolder(assetResolvedPath, locale);
+                PopulateRuntimeFolder(assetResolvedPath, locale);
+            }
         }
 
         private static string GetConfiguration()
@@ -480,13 +653,18 @@ namespace Orchard.Environment.Extensions
 
         private bool IsDynamicContext (ProjectContext context)
         {
+            if (context == null)
+            {
+                return false;
+            }
+
             var compilationOptions = context.ResolveCompilationOptions(Configuration);
             return CompilerUtility.GetCompilationSources(context, compilationOptions).Any();
         }
 
         private bool IsPrecompiledContext (ProjectContext context)
         {
-            return !IsDynamicContext(context);
+            return context == null || !IsDynamicContext(context);
         }
 
         private bool IsAmbientAssembly(string assemblyName)
@@ -506,17 +684,6 @@ namespace Orchard.Environment.Extensions
                 {
                     return AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
                 })).Value;
-        }
-
-        private string GetAssemblyFileName(string assemblyName)
-        {
-            return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
-        }
-
-        private string GetAssemblyFolderPath(string rootPath, string framework)
-        {
-            return Path.Combine(rootPath, Constants.BinDirectoryName, Configuration,
-                NuGetFramework.Parse(framework).GetShortFolderName());
         }
 
         private string ResolveAssemblyPath(string binaryFolderPath, string assemblyName, string relativeFolderPath = null)

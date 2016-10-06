@@ -152,26 +152,34 @@ namespace Orchard.Environment.Extensions.Compilers
                 // Check for an unresolved library
                 if (library != null && !library.Resolved)
                 {
-                    var fileName = GetAssemblyFileName(library.Identity.Name);
+                    var assetFileName = CompilerUtility.GetAssemblyFileName(library.Identity.Name);
 
                     // Search in the runtime directory
-                    var path = Path.Combine(runtimeDirectory, fileName);
+                    var assetResolvedPath = Path.Combine(runtimeDirectory, assetFileName);
 
-                    if (!File.Exists(path))
+                    if (!File.Exists(assetResolvedPath))
                     {
                         // Fallback to the project output path or probing folder
-                        path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
+                        assetResolvedPath = ResolveAssetPath(outputPath, probingFolderPath, assetFileName);
+
+                        if (String.IsNullOrEmpty(assetResolvedPath))
+                        {
+                            // Fallback to this (possible) precompiled module bin folder
+                            var path = Path.Combine(Directory.GetParent(library.Path).FullName, Constants.BinDirectoryName, assetFileName);
+                            assetResolvedPath = File.Exists(path) ? path : null;
+                        }
                     }
 
-                    if (!String.IsNullOrEmpty(path))
+                    if (!String.IsNullOrEmpty(assetResolvedPath))
                     {
-                        references.Add(path);
+                        references.Add(assetResolvedPath);
                     }
                 }
                 // Check for an unresolved package
                 else if (package != null && !package.Resolved)
                 {
                     var runtimeAssets = new HashSet<string>(package.RuntimeAssemblies.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
+                    string fallbackBinPath = null;
 
                     foreach (var asset in package.CompileTimeAssemblies)
                     {
@@ -179,50 +187,74 @@ namespace Orchard.Environment.Extensions.Compilers
                         var isRuntimeAsset = runtimeAssets.Contains(asset.Path);
 
                         // Search in the runtime directory
-                        var path = isRuntimeAsset ? Path.Combine(runtimeDirectory, assetFileName)
-                            : Path.Combine(runtimeDirectory, CompilerUtility.RefsDirectoryName, assetFileName);
+                        var relativeFolderPath = isRuntimeAsset ? String.Empty : CompilerUtility.RefsDirectoryName;
+                        var assetResolvedPath = Path.Combine(runtimeDirectory, relativeFolderPath, assetFileName);
 
-                        if (!File.Exists(path))
+                        if (!File.Exists(assetResolvedPath))
                         {
                             // Fallback to the project output path or probing folder
-                            var relativeFolderPath = isRuntimeAsset ? String.Empty : CompilerUtility.RefsDirectoryName;
-                            path = ResolveAssetPath(outputPath, probingFolderPath, assetFileName, relativeFolderPath);
+                            assetResolvedPath = ResolveAssetPath(outputPath, probingFolderPath, assetFileName, relativeFolderPath);
                         }
 
-                        if (!String.IsNullOrEmpty(path))
+                        if (String.IsNullOrEmpty(assetResolvedPath))
                         {
-                            references.Add(path);
+                            if (fallbackBinPath == null)
+                            {
+                                fallbackBinPath = String.Empty;
+
+                                // Fallback to a (possible) parent precompiled module bin folder
+                                var parentBinPaths = CompilerUtility.GetOtherParentProjectsLocations(context, package)
+                                    .Select(x => Path.Combine(x, Constants.BinDirectoryName));
+
+                                foreach (var binaryPath in parentBinPaths)
+                                {
+                                    var path = Path.Combine(binaryPath, relativeFolderPath, assetFileName);
+
+                                    if (File.Exists(path))
+                                    {
+                                        assetResolvedPath = path;
+                                        fallbackBinPath = binaryPath;
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (!String.IsNullOrEmpty(fallbackBinPath))
+                            {
+                                var path = Path.Combine(fallbackBinPath, relativeFolderPath, assetFileName);
+                                assetResolvedPath = File.Exists(path) ? path : null;
+                            }
+                        }
+
+                        if (!String.IsNullOrEmpty(assetResolvedPath))
+                        {
+                            references.Add(assetResolvedPath);
                         }
                     }
                 }
                 // Check for a precompiled library
                 else if (library != null && !dependency.CompilationAssemblies.Any())
                 {
-                    var projectContext = GetProjectContextFromPath(library.Project.ProjectDirectory);
+                    // Search in the project output path or probing folder
+                    var assetFileName = CompilerUtility.GetAssemblyFileName(library.Identity.Name);
+                    var assetResolvedPath = ResolveAssetPath(outputPath, probingFolderPath, assetFileName);
 
-                    if (projectContext != null)
+                    if (String.IsNullOrEmpty(assetResolvedPath))
                     {
-                        var fileName = GetAssemblyFileName(library.Identity.Name);
+                        // Fallback to this precompiled project output path
+                        var path = Path.Combine(CompilerUtility.GetAssemblyFolderPath(library.Project.ProjectDirectory,
+                            config, context.TargetFramework.DotNetFrameworkName), assetFileName);
+                        assetResolvedPath = File.Exists(path) ? path : null;
+                    }
 
-                        // Search in the precompiled project output path
-                        var path = Path.Combine(projectContext.GetOutputPaths(config).CompilationOutputPath, fileName);
-
-                        if (!File.Exists(path))
-                        {
-                            // Fallback to this project output path or probing folder
-                            path = ResolveAssetPath(outputPath, probingFolderPath, fileName);
-                        }
-
-                        if (!String.IsNullOrEmpty(path))
-                        {
-                            references.Add(path);
-                        }
+                    if (!String.IsNullOrEmpty(assetResolvedPath))
+                    {
+                        references.Add(assetResolvedPath);
                     }
                 }
                 // Check for a resolved but ambient library (compiled e.g by VS)
                 else if (library != null && AmbientLibraries.Contains(library.Identity.Name))
                 {
-                    // Search in the regular project bin folder, fallback to the runtime directory
+                    // Search in the regular project output path, fallback to the runtime directory
                     references.AddRange(dependency.CompilationAssemblies.Select(r => File.Exists(r.ResolvedPath)
                         ? r.ResolvedPath : Path.Combine(runtimeDirectory, r.FileName)));
                 }
@@ -385,7 +417,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Locate csc.dll and the csc.exe asset
-            var cscDllPath = Path.Combine(runtimeDirectory, GetAssemblyFileName("csc"));
+            var cscDllPath = Path.Combine(runtimeDirectory, CompilerUtility.GetAssemblyFileName("csc"));
 
             // Search in the runtime directory
             var cscRelativePath = Path.Combine("runtimes", "any", "native", "csc.exe");
@@ -470,11 +502,6 @@ namespace Orchard.Environment.Extensions.Compilers
         private ProjectContext GetProjectContextFromPath(string projectPath)
         {
             return ProjectContext.CreateContextForEachFramework(projectPath).FirstOrDefault();
-        }
-
-        private string GetAssemblyFileName(string assemblyName)
-        {
-            return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
         }
 
         private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName, string relativeFolderPath = null)
@@ -614,15 +641,16 @@ namespace Orchard.Environment.Extensions.Compilers
                 commonArgs.Add("-t:library");
             }
 
+            // Here, force debugType to portable
             if (string.IsNullOrEmpty(options.DebugType))
             {
-                commonArgs.Add(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                commonArgs.Add(false /*RuntimeInformation.IsOSPlatform(OSPlatform.Windows)*/
                     ? "-debug:full"
                     : "-debug:portable");
             }
             else
             {
-                commonArgs.Add(options.DebugType == "portable"
+                commonArgs.Add(true /*options.DebugType == "portable"*/
                     ? "-debug:portable"
                     : "-debug:full");
             }
