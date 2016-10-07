@@ -23,8 +23,10 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
 
         private static RuntimeLibrary CscLibrary => _cscLibrary.Value;
+        private static RuntimeLibrary NativePDBWriter => _nativePDBWriter.Value;
         private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
         private static readonly Lazy<RuntimeLibrary> _cscLibrary = new Lazy<RuntimeLibrary>(GetCscLibrary);
+        private static readonly Lazy<RuntimeLibrary> _nativePDBWriter = new Lazy<RuntimeLibrary>(GetNativePDBWriter);
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
@@ -42,6 +44,12 @@ namespace Orchard.Environment.Extensions.Compilers
             return DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
                 g => g.Runtime.Equals("any", StringComparison.OrdinalIgnoreCase) && g.AssetPaths.Any(
                     p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0))).FirstOrDefault();
+        }
+
+        private static RuntimeLibrary GetNativePDBWriter()
+        {
+            return DependencyContext.Default?.RuntimeLibraries.Where(l => 
+                l.Name.Equals("Microsoft.DiaSymReader.Native")).FirstOrDefault();
         }
 
         private static HashSet<string> GetAmbientLibraries()
@@ -290,8 +298,9 @@ namespace Orchard.Environment.Extensions.Compilers
                     filteredExports,
                     false, // For now, just assume non-portable mode in the legacy deps file (this is going away soon anyway)
                     context.TargetFramework,
+                    context.RuntimeIdentifier ?? string.Empty);
 
-                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json"));
+                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json");
                 resources.Add($"\"{depsJsonFile}\",{compilationOptions.OutputName}.deps.json");
             }
 
@@ -440,6 +449,61 @@ namespace Orchard.Environment.Extensions.Compilers
                         || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath))
                     {
                         File.Copy(cscExePath, cscDllPath, true);
+                    }
+                }
+            }
+
+            // Locate the csc dependencies file
+            var cscDepsPath = Path.Combine(runtimeDirectory, "csc.deps.json");
+
+            // Automatically create csc.deps.json
+            if (File.Exists(cscDllPath) && NativePDBWriter!= null && (!File.Exists(cscDepsPath)
+                || File.GetLastWriteTimeUtc(cscDllPath) > File.GetLastWriteTimeUtc(cscDepsPath)))
+            {
+                lock (_syncLock)
+                {
+                    if (!File.Exists(cscDepsPath)
+                        || File.GetLastWriteTimeUtc(cscDllPath) > File.GetLastWriteTimeUtc(cscDepsPath))
+                    {
+                        // Only reference windows native pdb writers
+                        var runtimeLibraries = new List<RuntimeLibrary>();
+                        runtimeLibraries.Add(NativePDBWriter);
+
+                        DependencyContext cscDependencyContext = new DependencyContext(
+                            DependencyContext.Default.Target, CompilationOptions.Default,
+                            new List<CompilationLibrary>(), runtimeLibraries,
+                            new List<RuntimeFallbacks>());
+
+                        // Write the csc.deps.json file
+                        if (cscDependencyContext != null)
+                        {
+                            var writer = new DependencyContextWriter();
+                            using (var fileStream = File.Create(cscDepsPath))
+                            {
+                                writer.Write(cscDependencyContext, fileStream);
+                            }
+                        }
+
+                        // Locate and store windows native pdb writers
+                        if (!String.IsNullOrEmpty(context.PackagesDirectory))
+                        {
+                            var assetPaths = NativePDBWriter.NativeLibraryGroups.SelectMany(l => l.AssetPaths);
+
+                            foreach (var assetPath in assetPaths)
+                            {
+                                var resolvedPath = Path.Combine(context.PackagesDirectory,
+                                    NativePDBWriter.Name, NativePDBWriter.Version, assetPath);
+
+                                var runtimePath = Path.Combine(runtimeDirectory, assetPath);
+
+                                if (File.Exists(resolvedPath) && (!File.Exists(runtimePath)
+                                    || File.GetLastWriteTimeUtc(resolvedPath) > File.GetLastWriteTimeUtc(runtimePath)))
+                                {
+                                    Directory.CreateDirectory(Directory.GetParent(runtimePath).FullName);
+                                    File.Copy(resolvedPath, runtimePath, true);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -641,18 +705,14 @@ namespace Orchard.Environment.Extensions.Compilers
                 commonArgs.Add("-t:library");
             }
 
-            // Here, force debugType to portable
             if (string.IsNullOrEmpty(options.DebugType))
             {
-                commonArgs.Add(false /*RuntimeInformation.IsOSPlatform(OSPlatform.Windows)*/
-                    ? "-debug:full"
-                    : "-debug:portable");
+                commonArgs.Add(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? "-debug:full" : "-debug:portable");
             }
             else
             {
-                commonArgs.Add(true /*options.DebugType == "portable"*/
-                    ? "-debug:portable"
-                    : "-debug:full");
+                commonArgs.Add("-debug:" + options.DebugType);
             }
 
             return commonArgs;
