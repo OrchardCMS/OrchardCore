@@ -1,10 +1,9 @@
-using System.Diagnostics;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.DotNet.Cli.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -16,23 +15,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseModules(
-            this IApplicationBuilder builder,
-            IHostingEnvironment hostingEnvironment,
-            ILoggerFactory loggerFactory)
+        public static IApplicationBuilder UseModules(this IApplicationBuilder builder)
         {
-            // TODO: Load logger configuration
-            // loggerFactory.AddConsole(LogLevel.Error);
-
             var extensionManager = builder.ApplicationServices.GetRequiredService<IExtensionManager>();
+            var hostingEnvironment = builder.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+            var loggerFactory = builder.ApplicationServices.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("Default");
 
-            // Add diagnostices pages
-            // TODO: make this modules from configurations
-            // builder.UseRuntimeInfoPage(); // removed!
-            builder.UseDeveloperExceptionPage();
+            if (hostingEnvironment.IsDevelopment())
+            {
+                builder.UseDeveloperExceptionPage();
+            }
 
             // Add static files to the request pipeline.
-
             builder.UseStaticFiles();
 
             // TODO: configure the location and parameters (max-age) per module.
@@ -59,33 +54,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             // Load controllers
             var applicationPartManager = builder.ApplicationServices.GetRequiredService<ApplicationPartManager>();
 
-            var sw = Stopwatch.StartNew();
-
-            Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
+            using (logger.BeginScope("Loading extensions"))
             {
-                try
+                Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
                 {
-                    var extensionEntry = extensionManager.LoadExtension(feature.Extension);
-                    applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
-                }
-                catch
-                {
-                    // TODO: An extension couldn't be loaded, log
-                }
-            });
-
-            // TODO: Why isn't it using the logger ?
-
-            var message = $"Overall time to dynamically compile and load extensions: {sw.Elapsed}";
-
-            if (Debugger.IsAttached)
-            {
-                Debug.WriteLine(message);
-            }
-            else
-            {
-                Reporter.Output.WriteLine(message);
-                Reporter.Output.WriteLine();
+                    try
+                    {
+                        var extensionEntry = extensionManager.LoadExtension(feature.Extension);
+                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogCritical("Could not load an extension", feature.Extension, e);
+                    }
+                });
             }
 
             return builder;

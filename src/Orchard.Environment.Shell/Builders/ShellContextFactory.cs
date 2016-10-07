@@ -61,7 +61,6 @@ namespace Orchard.Environment.Shell.Builders
             {
                 SerialNumber = -1,
                 Features = new[] {
-                    new ShellFeature { Name = "Orchard.Logging.Console" },
                     new ShellFeature { Name = "Orchard.Setup" },
                     new ShellFeature { Name = "Orchard.Recipes" }
                 }
