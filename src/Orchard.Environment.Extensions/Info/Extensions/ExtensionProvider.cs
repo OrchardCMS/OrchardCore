@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions.Info
@@ -15,7 +16,9 @@ namespace Orchard.Environment.Extensions.Info
         /// </summary>
         /// <param name="fileProvider">fileProvider containing extensions.</param>
         /// <param name="manifestProvider">The manifest provider.</param>
-        public ExtensionProvider(IFileProvider fileProvider, IManifestProvider manifestProvider)
+        public ExtensionProvider(
+            IFileProvider fileProvider, 
+            IManifestProvider manifestProvider)
         {
             _fileProvider = fileProvider;
             _manifestProvider = manifestProvider;
@@ -35,19 +38,24 @@ namespace Orchard.Environment.Extensions.Info
                 return null;
             }
 
-            var extension = _fileProvider.GetFileInfo(subPath);
+            var extension = _fileProvider
+                .GetDirectoryContents("")
+                .First(content => content.Name.Equals(subPath, StringComparison.OrdinalIgnoreCase));
 
-            // This check man have already been done when checking for manifest
-            if (!extension.Exists)
-            {
-                return null;
-            }
+            return new ExtensionInfo(extension, manifest, (ei) => {
+                return BuildFeatures(ei, manifest);
+            });
+        }
 
+        private IList<IFeatureInfo> BuildFeatures(
+            IExtensionInfo extensionInfo,
+            IManifestInfo manifestInfo)
+        {
             var features = new List<IFeatureInfo>();
 
             // Features and Dependencies live within this section
-            var featuresSection = manifest.ConfigurationRoot.GetSection("features");
-            if (featuresSection != null)
+            var featuresSection = manifestInfo.ConfigurationRoot.GetSection("features");
+            if (featuresSection.Value != null)
             {
                 foreach (var featureSection in featuresSection.GetChildren())
                 {
@@ -56,27 +64,42 @@ namespace Orchard.Environment.Extensions.Info
                     var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
 
                     var featureName = featureDetails["name"];
-                    var featureDependencyExtensionIds = featureDetails["dependencies"]
+                    var featureDependencyIds = featureDetails["dependencies"]?
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
                         .ToArray();
 
-                    //var featureInfo = new FeatureInfo(
-                    //    featureId,
-                    //    featureName,
-                    //    null,
-                    //    new List<IFeatureInfo>());
+                    var featureInfo = new FeatureInfo(
+                        featureId,
+                        featureName,
+                        extensionInfo,
+                        featureDependencyIds);
+
+                    features.Add(featureInfo);
                 }
             }
             else
             {
                 // The Extension has only one feature, itself, and that can have dependencies
+                var featureId = extensionInfo.ExtensionFileInfo.Name;
+                var featureName = manifestInfo.Name;
+
+                var featureDetails = manifestInfo.ConfigurationRoot;
+                var featureDependencyIds = featureDetails["dependencies"]?
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(e => e.Trim())
+                    .ToArray();
+
+                var featureInfo = new FeatureInfo(
+                    featureId,
+                    featureName,
+                    extensionInfo,
+                    featureDependencyIds);
+
+                features.Add(featureInfo);
             }
 
-            return new ExtensionInfo(
-                extension,
-                manifest,
-                features);
+            return features;
         }
     }
 }

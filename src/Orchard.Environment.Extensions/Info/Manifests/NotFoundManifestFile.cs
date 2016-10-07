@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Orchard.Environment.Extensions.Info.Manifests
 {
@@ -16,6 +17,7 @@ namespace Orchard.Environment.Extensions.Info.Manifests
         public bool Exists => Manifest.Exists;
         public string Name { get; } = null;
         public string Description { get; } = null;
+        public string Type { get; private set; }
         public IConfigurationRoot ConfigurationRoot { get; }
     }
 }

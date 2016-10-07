@@ -2,8 +2,6 @@
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Info.Manifests;
 using Orchard.Parser;
-using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Orchard.Environment.Extensions.Info
@@ -21,7 +19,7 @@ namespace Orchard.Environment.Extensions.Info
 
         public IManifestInfo GetManifest(string subPath)
         {
-            var manifestFileInfo = _fileProvider.GetFileInfo(subPath);
+            var manifestFileInfo = _fileProvider.GetFileInfo(Path.Combine(subPath, ManifestFile));
 
             if (!manifestFileInfo.Exists)
             {
@@ -30,8 +28,7 @@ namespace Orchard.Environment.Extensions.Info
 
             var configurationContainer =
                 new ConfigurationBuilder()
-                    .SetBasePath(manifestFileInfo.PhysicalPath)
-                    .AddYamlFile(ManifestFile, true);
+                    .AddYamlFile(manifestFileInfo.PhysicalPath, true);
 
             var config = configurationContainer.Build();
 

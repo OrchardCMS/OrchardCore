@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
+using System;
 
 namespace Orchard.Environment.Extensions.Info
 {
@@ -12,15 +13,15 @@ namespace Orchard.Environment.Extensions.Info
         public ExtensionInfo(
             IFileInfo fileInfo,
             IManifestInfo manifestInfo,
-            IList<IFeatureInfo> features) {
+            Func<IExtensionInfo, IList<IFeatureInfo>> features) {
 
             _fileInfo = fileInfo;
             _manifestInfo = manifestInfo;
-            _features = features;
+            _features = features(this);
         }
 
         public string Id => _fileInfo.Name;
-        public IFileInfo Extension => _fileInfo;
+        public IFileInfo ExtensionFileInfo => _fileInfo;
         public IManifestInfo Manifest => _manifestInfo;
         public IList<IFeatureInfo> Features => _features;
     }

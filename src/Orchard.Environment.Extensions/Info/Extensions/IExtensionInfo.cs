@@ -13,7 +13,7 @@ namespace Orchard.Environment.Extensions.Info
         /// <summary>
         /// The path to the extension
         /// </summary>
-        IFileInfo Extension { get; }
+        IFileInfo ExtensionFileInfo { get; }
 
         /// <summary>
         /// The manifest file of the extension

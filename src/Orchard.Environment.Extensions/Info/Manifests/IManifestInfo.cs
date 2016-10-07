@@ -9,6 +9,7 @@ namespace Orchard.Environment.Extensions.Info
         bool Exists { get; }
         string Name { get; }
         string Description { get; }
+        string Type { get; }
         IConfigurationRoot ConfigurationRoot { get; }
     }
 }
