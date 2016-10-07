@@ -484,23 +484,28 @@ namespace Orchard.Environment.Extensions.Compilers
                             }
                         }
 
-                        // Locate and store windows native pdb writers
+                        // Windows native pdb writers are outputed on dotnet publish.
+                        // But not on dotnet build during development, we do it here.
+                        
+                        // Check if there is a packages storage
                         if (!String.IsNullOrEmpty(context.PackagesDirectory))
                         {
                             var assetPaths = NativePDBWriter.NativeLibraryGroups.SelectMany(l => l.AssetPaths);
 
                             foreach (var assetPath in assetPaths)
                             {
-                                var resolvedPath = Path.Combine(context.PackagesDirectory,
+                                // Resolve the pdb writer from the packages storage
+                                var pdbResolvedPath = Path.Combine(context.PackagesDirectory,
                                     NativePDBWriter.Name, NativePDBWriter.Version, assetPath);
 
-                                var runtimePath = Path.Combine(runtimeDirectory, assetPath);
+                                var pdbOutputPath = Path.Combine(runtimeDirectory, assetPath);
 
-                                if (File.Exists(resolvedPath) && (!File.Exists(runtimePath)
-                                    || File.GetLastWriteTimeUtc(resolvedPath) > File.GetLastWriteTimeUtc(runtimePath)))
+                                // Store the pdb writer in the runtime directory
+                                if (File.Exists(pdbResolvedPath) && (!File.Exists(pdbOutputPath)
+                                    || File.GetLastWriteTimeUtc(pdbResolvedPath) > File.GetLastWriteTimeUtc(pdbOutputPath)))
                                 {
-                                    Directory.CreateDirectory(Directory.GetParent(runtimePath).FullName);
-                                    File.Copy(resolvedPath, runtimePath, true);
+                                    Directory.CreateDirectory(Directory.GetParent(pdbOutputPath).FullName);
+                                    File.Copy(pdbResolvedPath, pdbOutputPath, true);
                                 }
                             }
                         }
