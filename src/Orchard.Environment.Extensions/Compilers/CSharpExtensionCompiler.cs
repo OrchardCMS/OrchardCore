@@ -41,15 +41,15 @@ namespace Orchard.Environment.Extensions.Compilers
 
         private static RuntimeLibrary GetCscLibrary()
         {
-            return DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
+            return DependencyContext.Default?.RuntimeLibraries.FirstOrDefault(l => l.NativeLibraryGroups.Any(
                 g => g.Runtime.Equals("any", StringComparison.OrdinalIgnoreCase) && g.AssetPaths.Any(
-                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0))).FirstOrDefault();
+                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0)));
         }
 
         private static RuntimeLibrary GetNativePDBWriter()
         {
-            return DependencyContext.Default?.RuntimeLibraries.Where(l => 
-                l.Name.Equals("Microsoft.DiaSymReader.Native")).FirstOrDefault();
+            return DependencyContext.Default?.RuntimeLibraries.FirstOrDefault(l => l.Name.Equals(
+                "Microsoft.DiaSymReader.Native", StringComparison.OrdinalIgnoreCase));
         }
 
         private static HashSet<string> GetAmbientLibraries()
