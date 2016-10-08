@@ -14,7 +14,7 @@
       "disable": [],
       "enable": [
         "Orchard.Cms",
-        "Orchard.Logging.Console",
+        "Orchard.Diagnostics",
         "Orchard.Settings",
         "Orchard.Admin",
         "Orchard.Navigation",

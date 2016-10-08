@@ -7,10 +7,11 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>bd87418f-052f-4cc2-8926-c8d98a03ef42</ProjectGuid>
-    <RootNamespace>Orchard.Logging.Console</RootNamespace>
+    <ProjectGuid>74fa69fa-2561-4447-866a-7f86b8f91296</ProjectGuid>
+    <RootNamespace>Orchard.Diagnostics</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
 
   <PropertyGroup>
