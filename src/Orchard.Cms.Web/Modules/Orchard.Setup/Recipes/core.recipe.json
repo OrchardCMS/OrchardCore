@@ -30,6 +30,7 @@
         "Orchard.DynamicCache",
         "Orchard.Roles",
         "Orchard.Users",
+        "Orchard.Identity",
         "TheTheme",
         "TheAdmin",
         "SafeMode"

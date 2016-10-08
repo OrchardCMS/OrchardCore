@@ -16,8 +16,8 @@ namespace Orchard.Body
         {
             // Body Part
             services.AddScoped<IContentPartDisplayDriver, BodyPartDisplay>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, BodyPartSettingsDisplayDriver>();
             services.AddSingleton<ContentPart, BodyPart>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, BodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }

@@ -1,17 +1,15 @@
-﻿using Orchard.ContentManagement;
-using Orchard.Contents.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Orchard.ContentManagement;
+using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Records;
+using Orchard.Contents.Services;
 using Orchard.Contents.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.Lists.Indexes;
+using Orchard.Lists.Models;
 using Orchard.Navigation;
 using YesSql.Core.Query;
-using Orchard.Lists.Indexes;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Lists.Models;
-using Orchard.ContentManagement.Records;
 using YesSql.Core.Services;
 
 namespace Orchard.Lists.Services

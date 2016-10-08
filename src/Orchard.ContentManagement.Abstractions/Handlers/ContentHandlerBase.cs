@@ -20,8 +20,15 @@
         public virtual void Unpublished(PublishContentContext context) { }
         public virtual void Removing(RemoveContentContext context) { }
         public virtual void Removed(RemoveContentContext context) { }
+        
+        // TODO: Implement Index events
         //public virtual void Indexing(IndexContentContext context) { }
         //public virtual void Indexed(IndexContentContext context) { }
+
+        // TODO: Implement Clone event
+        //protected virtual void Cloning(CloneContentContext context) { }
+        //protected virtual void Cloned(CloneContentContext context) { }
+
         public virtual void GetContentItemMetadata(ContentItemMetadataContext context) { }
     }
 }

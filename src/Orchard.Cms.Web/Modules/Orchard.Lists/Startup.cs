@@ -25,9 +25,9 @@ namespace Orchard.Lists
 
             // List Part
             services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddSingleton<ContentPart, ListPart>();
             services.AddScoped<IContentPartHandler, ListPartHandler>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
         }
     }
