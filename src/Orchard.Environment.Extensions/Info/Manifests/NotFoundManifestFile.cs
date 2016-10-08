@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace Orchard.Environment.Extensions.Info.Manifests
 {

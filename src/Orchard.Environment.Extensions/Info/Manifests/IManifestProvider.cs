@@ -1,7 +1,11 @@
-﻿namespace Orchard.Environment.Extensions.Info
+﻿using Microsoft.Extensions.Configuration;
+using Orchard.Environment.Extensions.Info.Manifests;
+
+namespace Orchard.Environment.Extensions.Info
 {
     public interface IManifestProvider
     {
-        IManifestInfo GetManifest(string subPath);
+        int Priority { get; }
+        IConfigurationBuilder GetManifestConfiguration(IConfigurationBuilder configurationBuilder, string subPath);
     }
 }

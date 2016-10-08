@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Orchard.Environment.Extensions.Info.Manifests;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions.Info
@@ -9,19 +9,19 @@ namespace Orchard.Environment.Extensions.Info
     public class ExtensionProvider : IExtensionProvider
     {
         private IFileProvider _fileProvider;
-        private IManifestProvider _manifestProvider;
+        private IManifestBuilder _manifestBuilder;
 
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
         /// <param name="fileProvider">fileProvider containing extensions.</param>
-        /// <param name="manifestProvider">The manifest provider.</param>
+        /// <param name="manifestBuilder">The manifest provider.</param>
         public ExtensionProvider(
-            IFileProvider fileProvider, 
-            IManifestProvider manifestProvider)
+            IFileProvider fileProvider,
+            IManifestBuilder manifestBuilder)
         {
             _fileProvider = fileProvider;
-            _manifestProvider = manifestProvider;
+            _manifestBuilder = manifestBuilder;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Orchard.Environment.Extensions.Info
         /// <returns>The extension information. null returned if extension does not exist</returns>
         public IExtensionInfo GetExtensionInfo(string subPath)
         {
-            var manifest = _manifestProvider.GetManifest(subPath);
+            var manifest = _manifestBuilder.GetManifest(subPath);
             
             if (!manifest.Exists)
             {
