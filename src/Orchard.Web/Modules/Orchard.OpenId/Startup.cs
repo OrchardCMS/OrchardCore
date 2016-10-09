@@ -87,7 +87,11 @@ namespace Orchard.OpenId
                 .AllowRefreshTokenFlow()
 
                 .UseDataProtectionProvider(_dataProtectionProvider)
-                .UseJsonWebTokens();
+                .UseJsonWebTokens()
+
+                // Use the advanced ApplicationCanDisplayErrors = true option to allow AccessController
+                // to handle OpenID Connect error responses and render them in a custom error view.
+                .Configure(options => options.ApplicationCanDisplayErrors = true);
 
 #if DEBUG
             builder.DisableHttpsRequirement()
