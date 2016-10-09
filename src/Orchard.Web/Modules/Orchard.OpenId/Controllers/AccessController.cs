@@ -166,8 +166,18 @@ namespace Orchard.OpenId.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Authorize(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request,
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
         {
+            if (response != null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = response.Error,
+                    ErrorDescription = response.ErrorDescription
+                });
+            }
+
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
             {
@@ -193,10 +203,20 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Accept")]
-        public Task<IActionResult> Accept(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
+        public async Task<IActionResult> Accept(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request,
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
         {
-            return IssueAccessIdentityTokens(request);
+            if (response != null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = response.Error,
+                    ErrorDescription = response.ErrorDescription
+                });
+            }
+
+            return await IssueAccessIdentityTokens(request);
         }
 
         private async Task<IActionResult> IssueAccessIdentityTokens(OpenIdConnectRequest request)
@@ -231,16 +251,36 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Deny")]
-        public IActionResult Deny()
+        public IActionResult Deny(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
         {
+            if (response != null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = response.Error,
+                    ErrorDescription = response.ErrorDescription
+                });
+            }
+
             // Notify OpenIddict that the authorization grant has been denied by the resource owner
             // to redirect the user agent to the client application using the appropriate response_mode.
             return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(
+            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
         {
+            if (response != null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = response.Error,
+                    ErrorDescription = response.ErrorDescription
+                });
+            }
+
             await _signInManager.SignOutAsync();
 
             // Returning a SignOutResult will ask OpenIddict to redirect the user agent
