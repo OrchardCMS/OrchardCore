@@ -244,7 +244,7 @@ namespace Orchard.Environment.Extensions
                         if (String.IsNullOrEmpty(assetResolvedPath))
                         {
                             // Fallback to this (possible) precompiled module bin folder
-                            var path = Path.Combine(Directory.GetParent(library.Path).FullName, Constants.BinDirectoryName, assetFileName);
+                            var path = Path.Combine(Paths.GetParentFolderPath(library.Path), Constants.BinDirectoryName, assetFileName);
                             assetResolvedPath = File.Exists(path) ? path : null;
                         }
 
@@ -255,11 +255,10 @@ namespace Orchard.Environment.Extensions
                             PopulateProbingFolder(assetResolvedPath);
 
                             var resourceFileName = library.Identity.Name + ".resources.dll";
-                            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
+                            var assemblyFolderName = Paths.GetFolderName(assemblyFolderPath);
 
-                            var assetFolder = Directory.GetParent(assetResolvedPath);
-                            var assetFolderName = PathUtility.GetDirectoryName(assetFolder.FullName);
-                            var assetFolderPath = assetFolder.FullName;
+                            var assetFolderPath = Paths.GetParentFolderPath(assetResolvedPath);
+                            var assetFolderName = Paths.GetFolderName(assetFolderPath);
 
                             var resourceAssemblies = Directory.GetFiles(assetFolderPath, resourceFileName, SearchOption.AllDirectories)
                                 .Union(Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories))
@@ -267,7 +266,7 @@ namespace Orchard.Environment.Extensions
 
                             foreach (var asset in resourceAssemblies)
                             {
-                                var locale = Directory.GetParent(asset).Name
+                                var locale = Paths.GetParentFolderName(asset)
                                     .Replace(assetFolderName, String.Empty)
                                     .Replace(assemblyFolderName, String.Empty)
                                     .Replace(_probingDirectoryName, String.Empty);
@@ -340,7 +339,7 @@ namespace Orchard.Environment.Extensions
                             var assetFileName = Path.GetFileName(asset.Path);
 
                             var relativeFolderPath = !String.IsNullOrEmpty(asset.Runtime)
-                                ? Path.GetDirectoryName(asset.Path) : String.Empty;
+                                ? Paths.GetParentFolderPath(asset.Path) : String.Empty;
 
                             var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, relativeFolderPath);
 
@@ -438,11 +437,10 @@ namespace Orchard.Environment.Extensions
                             PopulateProbingFolder(assetResolvedPath);
 
                             var resourceFileName = library.Identity.Name + ".resources.dll";
-                            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
+                            var assemblyFolderName = Paths.GetFolderName(assemblyFolderPath);
 
-                            var assetFolder = Directory.GetParent(assetResolvedPath);
-                            var assetFolderName = PathUtility.GetDirectoryName(assetFolder.FullName);
-                            var assetFolderPath = assetFolder.FullName;
+                            var assetFolderPath = Paths.GetParentFolderPath(assetResolvedPath);
+                            var assetFolderName = Paths.GetFolderName(assetFolderPath);
 
                             var resourceAssemblies = Directory.GetFiles(assetFolderPath, resourceFileName, SearchOption.AllDirectories)
                                 .Union(Directory.GetFiles(assemblyFolderPath, resourceFileName, SearchOption.AllDirectories))
@@ -450,7 +448,7 @@ namespace Orchard.Environment.Extensions
 
                             foreach (var asset in resourceAssemblies)
                             {
-                                var locale = Directory.GetParent(asset).Name
+                                var locale = Paths.GetParentFolderName(asset)
                                     .Replace(assetFolderName, String.Empty)
                                     .Replace(assemblyFolderName, String.Empty)
                                     .Replace(_probingDirectoryName, String.Empty);
@@ -476,7 +474,7 @@ namespace Orchard.Environment.Extensions
                                 }
 
                                 var relativeFolderPath = !String.IsNullOrEmpty(assetGroup.Runtime)
-                                    ? Path.GetDirectoryName(asset.RelativePath) : String.Empty;
+                                    ? Paths.GetParentFolderPath(asset.RelativePath) : String.Empty;
 
                                 PopulateBinaryFolder(assemblyFolderPath, asset.ResolvedPath, relativeFolderPath);
                                 PopulateProbingFolder(asset.ResolvedPath, relativeFolderPath);
@@ -572,13 +570,16 @@ namespace Orchard.Environment.Extensions
 
                     if (!IsAmbientAssembly(assetName))
                     {
-                        var tfmFolder = Directory.GetParent(asset);
-                        var libFolder = Directory.GetParent(tfmFolder.FullName);
+                        var tfmPath = Paths.GetParentFolderPath(asset);
+                        var libPath = Paths.GetParentFolderPath(tfmPath);
+                        var lib = Paths.GetFolderName(libPath);
 
-                        if (String.Equals(libFolder.Name, PackagingConstants.Folders.Lib, StringComparison.OrdinalIgnoreCase))
+                        if (String.Equals(lib, PackagingConstants.Folders.Lib, StringComparison.OrdinalIgnoreCase))
                         {
-                            var runtime = Directory.GetParent(libFolder.FullName).Name;
-                            var relativeFolderPath = Path.Combine(PackagingConstants.Folders.Runtimes, runtime, libFolder.Name, tfmFolder.Name);
+                            var tfm = Paths.GetFolderName(tfmPath);
+                            var runtime = Paths.GetParentFolderName(libPath);
+
+                            var relativeFolderPath = Path.Combine(PackagingConstants.Folders.Runtimes, runtime, lib, tfm);
 
                             if (runtimeIds.Contains(runtime))
                             {
@@ -595,12 +596,12 @@ namespace Orchard.Environment.Extensions
             var resourceAssemblies = Directory.GetFiles(assemblyFolderPath, "*.resources"
                 + FileNameSuffixes.DotNet.DynamicLib, SearchOption.AllDirectories);
 
-            var assemblyFolderName = PathUtility.GetDirectoryName(assemblyFolderPath);
+            var assemblyFolderName = Paths.GetFolderName(assemblyFolderPath);
 
             foreach (var asset in resourceAssemblies)
             {
                 var assetFileName = Path.GetFileName(asset);
-                var locale = Directory.GetParent(asset).Name.Replace(assemblyFolderName, String.Empty);
+                var locale = Paths.GetParentFolderName(asset).Replace(assemblyFolderName, String.Empty);
                 var assetResolvedPath = ResolveAssemblyPath(assemblyFolderPath, assetFileName, locale);
 
                 PopulateBinaryFolder(assemblyFolderPath, assetResolvedPath, locale);
@@ -699,24 +700,7 @@ namespace Orchard.Environment.Extensions
             var binaryPath = Path.Combine(binaryFolderPath, assemblyName);
             var probingPath = Path.Combine(probingFolderPath, assemblyName);
 
-            if (File.Exists(binaryPath))
-            {
-                if (File.Exists(probingPath))
-                {
-                    if (File.GetLastWriteTimeUtc(probingPath) > File.GetLastWriteTimeUtc(binaryPath))
-                    {
-                        return probingPath;
-                    }
-                }
-
-                return binaryPath;
-            }
-            else if (File.Exists(probingPath))
-            {
-                return probingPath;
-            }
-
-            return null;
+            return Files.GetNewest(binaryPath, probingPath);
         }
 
         private void PopulateBinaryFolder(string binaryFolderPath, string assetPath, string relativeFolderPath = null)
@@ -729,11 +713,11 @@ namespace Orchard.Environment.Extensions
 
                 var binaryPath = Path.Combine(binaryFolderPath, Path.GetFileName(assetPath));
 
-                if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
+                if (Files.IsNewer(assetPath, binaryPath))
                 {
                     lock (_syncLock)
                     {
-                        if (!File.Exists(binaryPath) || File.GetLastWriteTimeUtc(assetPath) > File.GetLastWriteTimeUtc(binaryPath))
+                        if (Files.IsNewer(assetPath, binaryPath))
                         {
                             Directory.CreateDirectory(binaryFolderPath);
                             File.Copy(assetPath, binaryPath, true);
@@ -750,7 +734,7 @@ namespace Orchard.Environment.Extensions
 
         private void PopulateRuntimeFolder(string assetPath, string relativeFolderPath = null)
         {
-            var runtimeDirectory = Path.GetDirectoryName(CSharpExtensionCompiler.EntryAssembly.Location);
+            var runtimeDirectory = Paths.GetParentFolderPath(CSharpExtensionCompiler.EntryAssembly.Location);
             PopulateBinaryFolder(runtimeDirectory, assetPath, relativeFolderPath);
         }
     }

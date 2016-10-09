@@ -36,7 +36,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 {
                     if (!string.IsNullOrEmpty(parent.Path))
                     {
-                        yield return Path.Combine(Directory.GetParent(parent.Path).FullName);
+                        yield return Paths.GetParentFolderPath(parent.Path);
                     }
                 }
 
@@ -108,7 +108,7 @@ namespace Orchard.Environment.Extensions.Compilers
         {
             foreach (var resgenFile in cultureResgenFiles)
             {
-                var resourceOutputPath = Path.GetDirectoryName(resgenFile.OutputFile);
+                var resourceOutputPath = Paths.GetParentFolderPath(resgenFile.OutputFile);
                 Directory.CreateDirectory(resourceOutputPath);
 
                 var inputResourceFiles = resgenFile.InputFileToMetadata

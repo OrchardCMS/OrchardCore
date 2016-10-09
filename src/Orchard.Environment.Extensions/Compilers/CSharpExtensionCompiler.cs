@@ -125,7 +125,7 @@ namespace Orchard.Environment.Extensions.Compilers
             var resources = new List<string>();
 
             // Get the runtime directory
-            var runtimeDirectory = Path.GetDirectoryName(EntryAssembly.Location);
+            var runtimeDirectory = Paths.GetParentFolderPath(EntryAssembly.Location);
 
             foreach (var dependency in dependencies)
             {
@@ -173,7 +173,7 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (String.IsNullOrEmpty(assetResolvedPath))
                         {
                             // Fallback to this (possible) precompiled module bin folder
-                            var path = Path.Combine(Directory.GetParent(library.Path).FullName, Constants.BinDirectoryName, assetFileName);
+                            var path = Path.Combine(Paths.GetParentFolderPath(library.Path), Constants.BinDirectoryName, assetFileName);
                             assetResolvedPath = File.Exists(path) ? path : null;
                         }
                     }
@@ -412,13 +412,11 @@ namespace Orchard.Environment.Extensions.Compilers
             var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc" + FileNameSuffixes.RuntimeConfigJson);
 
             // Automatically create the csc runtime config file
-            if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
-                || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+            if (Files.IsNewer(runtimeConfigPath, cscRuntimeConfigPath))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscRuntimeConfigPath)
-                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath))
+                    if (Files.IsNewer(runtimeConfigPath, cscRuntimeConfigPath))
                     {
                         File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
                     }
@@ -440,13 +438,11 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Automatically create csc.dll
-            if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
-                || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
+            if (Files.IsNewer(cscExePath, cscDllPath))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscDllPath)
-                        || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath))
+                    if (Files.IsNewer(cscExePath, cscDllPath))
                     {
                         File.Copy(cscExePath, cscDllPath, true);
                     }
@@ -457,13 +453,11 @@ namespace Orchard.Environment.Extensions.Compilers
             var cscDepsPath = Path.Combine(runtimeDirectory, "csc.deps.json");
 
             // Automatically create csc.deps.json
-            if (File.Exists(cscDllPath) && NativePDBWriter!= null && (!File.Exists(cscDepsPath)
-                || File.GetLastWriteTimeUtc(cscDllPath) > File.GetLastWriteTimeUtc(cscDepsPath)))
+            if (NativePDBWriter!= null && Files.IsNewer(cscDllPath, cscDepsPath))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscDepsPath)
-                        || File.GetLastWriteTimeUtc(cscDllPath) > File.GetLastWriteTimeUtc(cscDepsPath))
+                    if (Files.IsNewer(cscDllPath, cscDepsPath))
                     {
                         // Only reference windows native pdb writers
                         var runtimeLibraries = new List<RuntimeLibrary>();
@@ -501,10 +495,9 @@ namespace Orchard.Environment.Extensions.Compilers
                                 var pdbOutputPath = Path.Combine(runtimeDirectory, assetPath);
 
                                 // Store the pdb writer in the runtime directory
-                                if (File.Exists(pdbResolvedPath) && (!File.Exists(pdbOutputPath)
-                                    || File.GetLastWriteTimeUtc(pdbResolvedPath) > File.GetLastWriteTimeUtc(pdbOutputPath)))
+                                if (Files.IsNewer(pdbResolvedPath, pdbOutputPath))
                                 {
-                                    Directory.CreateDirectory(Directory.GetParent(pdbOutputPath).FullName);
+                                    Directory.CreateDirectory(Paths.GetParentFolderPath(pdbOutputPath));
                                     File.Copy(pdbResolvedPath, pdbOutputPath, true);
                                 }
                             }
@@ -586,24 +579,7 @@ namespace Orchard.Environment.Extensions.Compilers
             var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
             var probingPath = Path.Combine(probingFolderPath, assetFileName);
 
-            if (File.Exists(binaryPath))
-            {
-                if (File.Exists(probingPath))
-                {
-                    if (File.GetLastWriteTimeUtc(probingPath) > File.GetLastWriteTimeUtc(binaryPath))
-                    {
-                        return probingPath;
-                    }
-                }
-
-                return binaryPath;
-            }
-            else if (File.Exists(probingPath))
-            {
-                return probingPath;
-            }
-
-            return null;
+            return Files.GetNewest(binaryPath, probingPath);
         }
 
         private static void AddNonCultureResources(List<string> resources, List<CompilerUtility.NonCultureResgenIO> resgenFiles)
