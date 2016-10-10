@@ -22,7 +22,9 @@ namespace Orchard.ContentManagement
             services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandler, UpdateContentsHandler>();
-            services.AddScoped<IContentHandler, ContentPartCoordinator>();
+            services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();
+            services.AddSingleton<IContentPartFactory, ContentPartFactory>();
+            services.AddSingleton<IContentFieldFactory, ContentFieldFactory>();
 
             return services;
         }

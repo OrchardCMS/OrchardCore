@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentTypes.ViewModels;
@@ -22,7 +23,7 @@ namespace Orchard.ContentTypes.Services
         EditPartViewModel AddPart(CreatePartViewModel partViewModel);
         void RemovePart(string name);
 
-        IEnumerable<ContentFieldInfo> GetFields();
+        IEnumerable<Type> GetFields();
         void AddFieldToPart(string fieldName, string fieldTypeName, string partName);
         void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName);
         void RemoveFieldFromPart(string fieldName, string partName);

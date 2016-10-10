@@ -1,19 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Orchard.ContentFields.ViewModels;
-using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.Drivers;
-using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentFields.Fields
 {
-    public class BooleanFieldDriver : ContentFieldDriver<BooleanField>
-    {
-    }
-
     public class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<BooleanField>
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)

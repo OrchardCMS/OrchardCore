@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
-using Orchard.ContentManagement.Drivers;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
@@ -20,27 +19,27 @@ namespace Orchard.ContentTypes.Services
     public class ContentDefinitionService : IContentDefinitionService
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IEnumerable<IContentPartDriver> _contentPartDrivers;
-        private readonly IEnumerable<IContentFieldDriver> _contentFieldDrivers;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IEventBus _eventBus;
+        private readonly IEnumerable<ContentPart> _contentParts;
+        private readonly IEnumerable<ContentField> _contentFields;
 
         public ContentDefinitionService(
                 IContentDefinitionManager contentDefinitionManager,
                 IContentManager contentManager,
                 ISession session,
-                IEnumerable<IContentPartDriver> contentPartDrivers,
-                IEnumerable<IContentFieldDriver> contentFieldDrivers,
                 ILogger<IContentDefinitionService> logger,
-                IEventBus eventBus)
+                IEventBus eventBus,
+                IEnumerable<ContentPart> contentParts,
+                IEnumerable<ContentField> contentFields)
         {
             _eventBus = eventBus;
             _session = session;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _contentPartDrivers = contentPartDrivers;
-            _contentFieldDrivers = contentFieldDrivers;
+            _contentParts = contentParts;
+            _contentFields = contentFields;
 
             Logger = logger;
             T = NullLocalizer.Instance;
@@ -176,10 +175,9 @@ namespace Orchard.ContentTypes.Services
             // code-defined parts
             var codeDefinedParts = metadataPartsOnly
                 ? Enumerable.Empty<EditPartViewModel>()
-                : _contentPartDrivers
-                    .Select(d => d.GetPartInfo())
-                        .Where(cpd => !userContentParts.ContainsKey(cpd.PartName))
-                        .Select(cpi => new EditPartViewModel { Name = cpi.PartName, DisplayName = cpi.PartName })
+                : _contentParts
+                        .Where(cpd => !userContentParts.ContainsKey(cpd.GetType().Name))
+                        .Select(cpi => new EditPartViewModel { Name = cpi.GetType().Name, DisplayName = cpi.GetType().Name })
                     .ToList();
 
             // Order by display name
@@ -240,9 +238,9 @@ namespace Orchard.ContentTypes.Services
             _eventBus.Notify<IContentDefinitionEventHandler>(x => x.ContentPartRemoved(new ContentPartRemovedContext { ContentPartDefinition = partDefinition }));
         }
 
-        public IEnumerable<ContentFieldInfo> GetFields()
+        public IEnumerable<Type> GetFields()
         {
-            return _contentFieldDrivers.Select(d => d.GetFieldInfo()).Where(x => x != null).OrderBy(x => x.FieldTypeName).ToList();
+            return _contentFields.Select(x => x.GetType()).OrderBy(x => x).ToList();
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)

@@ -2,16 +2,11 @@
 using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.Drivers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentFields.Fields
 {
-    public class TextFieldDriver : ContentFieldDriver<TextField>
-    {
-    }
-
     public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)

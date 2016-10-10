@@ -149,6 +149,11 @@ namespace Orchard.Environment.Extensions.Folders
         private ExtensionDescriptor GetExtensionDescriptor(
             string locationPath, string extensionId, string extensionType, IFileInfo manifestFile, bool manifestIsOptional)
         {
+            if (!File.Exists(manifestFile.PhysicalPath))
+            {
+                return null;
+            }
+
             var manifestText = File.ReadAllText(manifestFile.PhysicalPath);
             if (manifestText == null)
             {

@@ -29,8 +29,8 @@
         {
             <div class="radio">
                 <label asp-for="Fields[i].FieldTypeName">
-                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].FieldTypeName)" value="@Model.Fields[i].FieldTypeName" />
-                    @Model.Fields[i].FieldTypeName.CamelFriendly()
+                    <input checked="@(i == 0)" type="radio" asp-for="FieldTypeName" id="@Html.IdFor(m => m.Fields[i].Name)" value="@Model.Fields[i].Name" />
+                    @Model.Fields[i].Name.CamelFriendly()
                 </label>
             </div>
         }

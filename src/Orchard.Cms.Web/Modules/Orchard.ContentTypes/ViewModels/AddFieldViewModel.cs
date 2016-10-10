@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Models;
 using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Orchard.ContentTypes.ViewModels
 {
@@ -10,7 +10,7 @@ namespace Orchard.ContentTypes.ViewModels
     {
         public AddFieldViewModel()
         {
-            Fields = new List<ContentFieldInfo>();
+            Fields = new List<Type>();
         }
 
         /// <summary>
@@ -39,6 +39,6 @@ namespace Orchard.ContentTypes.ViewModels
         /// List of the available Field types
         /// </summary>
         [BindNever]
-        public List<ContentFieldInfo> Fields { get; set; }
+        public List<Type> Fields { get; set; }
     }
 }

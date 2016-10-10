@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -21,17 +20,17 @@ namespace Orchard.ContentManagement.Display
         private readonly IEnumerable<IContentFieldDisplayDriver> _fieldDisplayDrivers;
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IEnumerable<IContentPartDriver> _contentPartDrivers;
+        private readonly IContentPartFactory _contentPartFactory;
 
         public ContentItemDisplayCoordinator(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentDisplayDriver> displayDrivers,
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
             IEnumerable<IContentPartDisplayDriver> partDisplayDrivers,
-            IEnumerable<IContentPartDriver> partDrivers,
+            IContentPartFactory contentPartFactory,
             ILogger<ContentItemDisplayCoordinator> logger)
         {
-            _contentPartDrivers = partDrivers;
+            _contentPartFactory = contentPartFactory;
             _contentDefinitionManager = contentDefinitionManager;
             _displayDrivers = displayDrivers;
             _fieldDisplayDrivers = fieldDisplayDrivers;
@@ -66,23 +65,24 @@ namespace Orchard.ContentManagement.Display
                 }
             }
 
-            var partInfos = _contentPartDrivers.Select(x => x.GetPartInfo()).ToDictionary(x => x.PartName);
-
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = partInfos.ContainsKey(partTypeName) ? partInfos[partTypeName].Factory(contentTypePartDefinition).GetType() : null;
-                var part = contentItem.Get(partType ?? typeof(ContentPart), partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partTypeName) ?? typeof(ContentPart);
+                var part = contentItem.Get(partType, partName) as ContentPart;
 
                 foreach (var displayDriver in _partDisplayDrivers)
                 {
                     try
                     {
-                        var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
-                        if (result != null)
+                        if (part != null)
                         {
-                            result.Apply(context);
+                            var result = await displayDriver.BuildDisplayAsync(part, contentTypePartDefinition, context);
+                            if (result != null)
+                            {
+                                result.Apply(context);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -138,24 +138,11 @@ namespace Orchard.ContentManagement.Display
                 }
             }
 
-            var partInfos = _contentPartDrivers.Select(x => x.GetPartInfo()).ToDictionary(x => x.PartName);
-
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                ContentPartInfo partInfo;
                 ContentPart part;
 
-                if (partInfos.TryGetValue(typePartDefinition.PartDefinition.Name, out partInfo))
-                {
-                    // It's a well-known part type, bind the data to the model
-                    part = partInfo.Factory(typePartDefinition);
-                }
-                else
-                {
-                    // Generic content part model (custom part)
-                    part = new ContentPart();
-                }
-
+                part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
                 part = contentItem.GetOrCreate(part.GetType(), () => new ContentPart(), typePartDefinition.Name) as ContentPart;
 
                 // Create a custom shape to render all the part shapes into it
@@ -224,24 +211,11 @@ namespace Orchard.ContentManagement.Display
                 }
             }
 
-            var partInfos = _contentPartDrivers.Select(x => x.GetPartInfo()).ToDictionary(x => x.PartName);
-
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
-                ContentPartInfo partInfo;
                 ContentPart part;
 
-                if (partInfos.TryGetValue(typePartDefinition.PartDefinition.Name, out partInfo))
-                {
-                    // It's a well-known part type, bind the data to the model
-                    part = partInfo.Factory(typePartDefinition);
-                }
-                else
-                {
-                    // Generic content part model (custom part)
-                    part = new ContentPart();
-                }
-
+                part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
                 part = contentItem.GetOrCreate(part.GetType(), () => new ContentPart(), typePartDefinition.Name) as ContentPart;
 
                 // Create a custom shape to render all the part shapes into it

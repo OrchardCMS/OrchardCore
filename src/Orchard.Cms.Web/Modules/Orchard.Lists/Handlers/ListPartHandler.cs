@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Routing;
-using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Lists.Models;
 
 namespace Orchard.Lists.Drivers
 {
-    public class ListPartDriver : ContentPartDriver<ListPart>
+    public class ListPartHandler : ContentPartHandler<ListPart>
     {
-        protected override void GetContentItemMetadata(ContentItemMetadataContext context, ListPart part)
+        public override void GetContentItemMetadata(ContentItemMetadataContext context, ListPart part)
         {
             context.Metadata.AdminRouteValues = new RouteValueDictionary
             {
