@@ -568,18 +568,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
         private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName, string relativeFolderPath = null)
         {
-            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(binaryFolderPath, relativeFolderPath)
-                : binaryFolderPath;
-
-            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(probingFolderPath, relativeFolderPath)
-                : probingFolderPath;
-
-            var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
-            var probingPath = Path.Combine(probingFolderPath, assetFileName);
-
-            return Files.GetNewest(binaryPath, probingPath);
+            return CompilerUtility.ResolveAssetPath(binaryFolderPath, probingFolderPath, assetFileName, relativeFolderPath);
         }
 
         private static void AddNonCultureResources(List<string> resources, List<CompilerUtility.NonCultureResgenIO> resgenFiles)

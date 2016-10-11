@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,22 @@ namespace Orchard.Environment.Extensions.Compilers
         public const string ReleaseConfiguration = "Release";
         public const string DefaultConfiguration = Constants.DefaultConfiguration;
         public const string LocaleLockFilePropertyName = "locale";
+
+        public static string ResolveAssetPath(string binaryFolderPath, string probingFolderPath, string assetFileName, string relativeFolderPath = null)
+        {
+            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(binaryFolderPath, relativeFolderPath)
+                : binaryFolderPath;
+
+            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(probingFolderPath, relativeFolderPath)
+                : probingFolderPath;
+
+            var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
+            var probingPath = Path.Combine(probingFolderPath, assetFileName);
+
+            return Files.GetNewest(binaryPath, probingPath);
+        }
 
         public static string GetAssemblyFileName(string assemblyName)
         {

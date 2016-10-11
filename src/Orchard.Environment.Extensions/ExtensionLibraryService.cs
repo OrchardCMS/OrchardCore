@@ -689,18 +689,7 @@ namespace Orchard.Environment.Extensions
 
         private string ResolveAssemblyPath(string binaryFolderPath, string assemblyName, string relativeFolderPath = null)
         {
-            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(binaryFolderPath, relativeFolderPath)
-                : binaryFolderPath;
-
-            var probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(_probingFolderPath, relativeFolderPath)
-                : _probingFolderPath;
-
-            var binaryPath = Path.Combine(binaryFolderPath, assemblyName);
-            var probingPath = Path.Combine(probingFolderPath, assemblyName);
-
-            return Files.GetNewest(binaryPath, probingPath);
+            return CompilerUtility.ResolveAssetPath(binaryFolderPath, _probingFolderPath, assemblyName, relativeFolderPath);
         }
 
         private void PopulateBinaryFolder(string binaryFolderPath, string assetPath, string relativeFolderPath = null)
