@@ -89,6 +89,8 @@ namespace Orchard.OpenId
                 .UseDataProtectionProvider(_dataProtectionProvider)
                 .UseJsonWebTokens()
 
+                .RequireClientIdentification()
+
                 // Use the advanced ApplicationCanDisplayErrors = true option to allow AccessController
                 // to handle OpenID Connect error responses and render them in a custom error view.
                 .Configure(options => options.ApplicationCanDisplayErrors = true);
