@@ -494,7 +494,7 @@ namespace Orchard.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel.PartDefinition,
-                Fields = _contentDefinitionService.GetFields().ToList()
+                Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
             };
 
             return View(viewModel);
@@ -552,7 +552,7 @@ namespace Orchard.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 viewModel.Part = partDefinition;
-                viewModel.Fields = _contentDefinitionService.GetFields().ToList();
+                viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
                 _session.Cancel();
 

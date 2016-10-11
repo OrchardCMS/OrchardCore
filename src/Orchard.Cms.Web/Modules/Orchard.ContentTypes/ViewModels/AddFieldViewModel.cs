@@ -10,7 +10,7 @@ namespace Orchard.ContentTypes.ViewModels
     {
         public AddFieldViewModel()
         {
-            Fields = new List<Type>();
+            Fields = new List<string>();
         }
 
         /// <summary>
@@ -39,6 +39,6 @@ namespace Orchard.ContentTypes.ViewModels
         /// List of the available Field types
         /// </summary>
         [BindNever]
-        public List<Type> Fields { get; set; }
+        public List<string> Fields { get; set; }
     }
 }

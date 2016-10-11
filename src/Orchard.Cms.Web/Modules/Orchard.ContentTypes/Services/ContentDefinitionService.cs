@@ -240,7 +240,7 @@ namespace Orchard.ContentTypes.Services
 
         public IEnumerable<Type> GetFields()
         {
-            return _contentFields.Select(x => x.GetType()).OrderBy(x => x).ToList();
+            return _contentFields.Select(x => x.GetType()).ToList();
         }
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
