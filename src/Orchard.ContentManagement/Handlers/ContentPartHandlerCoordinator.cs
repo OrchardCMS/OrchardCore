@@ -1,9 +1,7 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
-using System.Collections.Generic;
-using System.Linq;
-using System;
 
 namespace Orchard.ContentManagement.Drivers.Coordinators
 {
@@ -51,7 +49,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
 
                 _partHandlers.Invoke(handler => handler.Activating(context, part), Logger);
-                
+
                 context.Builder.Weld(partName, part);
             }
         }
@@ -73,7 +71,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                     _partHandlers.Invoke(handler => handler.Activated(context, part), Logger);
                     context.ContentItem.Weld(partName, part);
                 }
-
             }
         }
 
@@ -108,7 +105,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                
+
                 var part = context.ContentItem.Get(partType, partName) as ContentPart;
 
                 if (part != null)
@@ -168,7 +165,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                     context.ContentItem.Weld(partName, part);
                 }
             }
-
         }
 
         public override void Loading(LoadContentContext context)
@@ -439,7 +435,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 }
             }
         }
-        
+
         public override void GetContentItemMetadata(ContentItemMetadataContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
