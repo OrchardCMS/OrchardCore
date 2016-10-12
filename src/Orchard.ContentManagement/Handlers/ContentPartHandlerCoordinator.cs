@@ -46,15 +46,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
 
-                    _partHandlers.Invoke(handler => handler.Activating(context, part), Logger);
+                // We create the part from it's known type or from a generic one
+                var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
 
-                    context.Builder.Weld(partName, part);
-                }
+                _partHandlers.Invoke(handler => handler.Activating(context, part), Logger);
+                
+                context.Builder.Weld(partName, part);
             }
         }
 
@@ -67,17 +65,15 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Activated(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Activated(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
+
             }
         }
 
@@ -90,16 +86,14 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Creating(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
+
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Creating(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -113,16 +107,14 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Created(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Created(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -136,26 +128,24 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                _partHandlers.Invoke(handler => handler.Initializing(context, part), Logger);
+
+                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
-                    _partHandlers.Invoke(handler => handler.Initializing(context, part), Logger);
+                    var fieldTypeName = partFieldDefinition.FieldDefinition.Name;
+                    var field = _contentFieldFactory.CreateContentField(fieldTypeName);
 
-                    foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
+                    if (field != null)
                     {
-                        var fieldTypeName = partFieldDefinition.FieldDefinition.Name;
-                        var field = _contentFieldFactory.CreateContentField(fieldTypeName);
-
-                        if (field != null)
-                        {
-                            var fieldName = partFieldDefinition.Name;
-                            context.ContentItem.Get(partName).Weld(fieldName, field);
-                        }
+                        var fieldName = partFieldDefinition.Name;
+                        part.Weld(fieldName, field);
                     }
-
-                    context.ContentItem.Weld(partName, part);
                 }
+
+                context.ContentItem.Weld(partName, part);
             }
         }
 
@@ -168,18 +158,17 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Initialized(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
+
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Initialized(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
+
         }
 
         public override void Loading(LoadContentContext context)
@@ -231,16 +220,14 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Loaded(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Loaded(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -254,16 +241,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Publishing(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Publishing(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -277,16 +261,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Published(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Published(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -300,16 +281,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Removing(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Removing(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -323,16 +301,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Removed(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Removed(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -346,16 +321,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Unpublishing(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Unpublishing(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -369,16 +341,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Unpublished(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Unpublished(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -392,16 +361,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Updating(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Updating(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -415,16 +381,13 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Updated(context, part), Logger);
-                        context.ContentItem.Weld(partName, part);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.Updated(context, part), Logger);
+                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -438,20 +401,17 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
+                var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
+                var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+
+                if (buildingPart != null && existingPart != null)
                 {
-                    var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
-                    var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+                    _partHandlers.Invoke(handler => handler.Versioning(context, existingPart, buildingPart), Logger);
 
-                    if (buildingPart != null && existingPart != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Versioning(context, existingPart, buildingPart), Logger);
-
-                        context.BuildingContentItem.Weld(partName, buildingPart);
-                        context.ExistingContentItem.Weld(partName, existingPart);
-                    }
+                    context.BuildingContentItem.Weld(partName, buildingPart);
+                    context.ExistingContentItem.Weld(partName, existingPart);
                 }
             }
         }
@@ -465,20 +425,17 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
+                var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
+                var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+
+                if (buildingPart != null && existingPart != null)
                 {
-                    var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
-                    var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+                    _partHandlers.Invoke(handler => handler.Versioned(context, existingPart, buildingPart), Logger);
 
-                    if (buildingPart != null && existingPart != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.Versioned(context, existingPart, buildingPart), Logger);
-
-                        context.BuildingContentItem.Weld(partName, buildingPart);
-                        context.ExistingContentItem.Weld(partName, existingPart);
-                    }
+                    context.BuildingContentItem.Weld(partName, buildingPart);
+                    context.ExistingContentItem.Weld(partName, existingPart);
                 }
             }
         }
@@ -492,15 +449,12 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName);
-                if (partType != null)
-                {
-                    var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
 
-                    if (part != null)
-                    {
-                        _partHandlers.Invoke(handler => handler.GetContentItemMetadata(context, part), Logger);
-                    }
+                if (part != null)
+                {
+                    _partHandlers.Invoke(handler => handler.GetContentItemMetadata(context, part), Logger);
                 }
             }
         }
