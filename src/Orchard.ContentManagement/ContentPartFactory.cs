@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using Orchard.ContentManagement;
 
 public class ContentPartFactory : IContentPartFactory
 {
-    private readonly IEnumerable<ContentPart> _contentParts;
-    
+    private readonly ConcurrentDictionary<string, Type> _contentPartTypes;
+
     public ContentPartFactory(IEnumerable<ContentPart> contentParts)
     {
-        _contentParts = contentParts;
+        _contentPartTypes = new ConcurrentDictionary<string, Type>();
+
+        foreach(var contentPart in contentParts)
+        {
+            _contentPartTypes.TryAdd(contentPart.GetType().Name, contentPart.GetType());
+        }
     }
 
     public ContentPart CreateContentPart(string partName)
@@ -25,6 +30,9 @@ public class ContentPartFactory : IContentPartFactory
 
     public Type GetContentPartType(string partName)
     {
-        return _contentParts.FirstOrDefault(x => x.GetType().Name == partName)?.GetType();
+        Type result = null;
+        _contentPartTypes.TryGetValue(partName, out result);
+
+        return result;
     }
 }
