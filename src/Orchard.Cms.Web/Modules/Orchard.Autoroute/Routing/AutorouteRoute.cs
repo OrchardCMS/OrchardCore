@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Orchard.Autoroute.Services;
-using Orchard.Environment.Shell;
 
 namespace Orchard.Autoroute.Routing
 {

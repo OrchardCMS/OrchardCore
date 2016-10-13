@@ -1,8 +1,8 @@
 ﻿namespace Orchard.Autoroute.Model
 {
-    public class AutorouteEntry
+    public struct AutorouteEntry
     {
-        public int ContentItemId { get; set; }
-        public string Path { get; set; }
+        public int ContentItemId;
+        public string Path;
     }
 }

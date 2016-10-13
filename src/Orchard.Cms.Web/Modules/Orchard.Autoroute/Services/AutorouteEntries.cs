@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Orchard.Autoroute.Model;
 
@@ -7,13 +6,13 @@ namespace Orchard.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
-        private readonly ConcurrentDictionary<int, string> _paths;
-        private readonly ConcurrentDictionary<string, int> _contentItemIds;
+        private readonly Dictionary<int, string> _paths;
+        private readonly Dictionary<string, int> _contentItemIds;
 
         public AutorouteEntries()
         {
-            _paths = new ConcurrentDictionary<int, string>();
-            _contentItemIds = new ConcurrentDictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            _paths = new Dictionary<int, string>();
+            _contentItemIds = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         public bool TryGetContentItemId(string path, out int contentItemId)
@@ -32,8 +31,8 @@ namespace Orchard.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
-                    _paths.TryAdd(entry.ContentItemId, entry.Path);
-                    _contentItemIds.TryAdd(entry.Path, entry.ContentItemId);
+                    _paths[entry.ContentItemId] = entry.Path;
+                    _contentItemIds[entry.Path] = entry.ContentItemId;
                 }
             }
         }
@@ -42,13 +41,10 @@ namespace Orchard.Autoroute.Services
         {
             lock (this)
             {
-                int c;
-                string p;
-
                 foreach (var entry in entries)
                 {
-                    _paths.TryRemove(entry.ContentItemId, out p);
-                    _contentItemIds.TryRemove(entry.Path, out c);
+                    _paths.Remove(entry.ContentItemId);
+                    _contentItemIds.Remove(entry.Path);
                 }
             }
         }
