@@ -63,25 +63,38 @@ namespace Orchard.Routes
         {
             var routeCollection = new RouteCollection();
 
-            foreach (var route in Routes.OfType<Route>())
+            foreach (var entry in Routes)
             {
-                var constraints = new Dictionary<string, object>();
-
-                foreach (var kv in route.Constraints)
+                if(entry == null)
                 {
-                    constraints.Add(kv.Key, kv.Value);
+                    continue;
                 }
 
-                var prefixedRoute = new Route(
-                    _baseRouteBuilder.DefaultHandler,
-                    route.Name,
-                    _routePrefix + route.RouteTemplate,
-                    route.Defaults,
-                    constraints,
-                    route.DataTokens,
-                    _constraintResolver);
+                var route = entry as Route;
+                if (route != null)
+                {
+                    var constraints = new Dictionary<string, object>();
 
-                _baseRouteBuilder.Routes.Add(prefixedRoute);
+                    foreach (var kv in route.Constraints)
+                    {
+                        constraints.Add(kv.Key, kv.Value);
+                    }
+
+                    var prefixedRoute = new Route(
+                        _baseRouteBuilder.DefaultHandler,
+                        route.Name,
+                        _routePrefix + route.RouteTemplate,
+                        route.Defaults,
+                        constraints,
+                        route.DataTokens,
+                        _constraintResolver);
+
+                    _baseRouteBuilder.Routes.Add(prefixedRoute);
+                }
+                else
+                {
+                    _baseRouteBuilder.Routes.Add(entry);
+                }
             }
 
             return _baseRouteBuilder.Build();

@@ -1,10 +1,9 @@
 ﻿using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
-using Orchard.Identity.Indexes;
-using Orchard.Identity.Models;
 
-namespace Orchard.Identity
+namespace Orchard.Autoroute
 {
     public class Migrations : DataMigration
     {
@@ -17,12 +16,13 @@ namespace Orchard.Identity
 
         public int Create()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(IdentityPart), builder => builder
+            _contentDefinitionManager.AlterPartDefinition("AutoroutePart", builder => builder
                 .Attachable()
-                .WithDescription("Automatically assigns a unique identity which is stable accross systems."));
+                .WithDescription("Provides a custom url for your content item."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(IdentityPartIndex), table => table
-                .Column<string>("Identifier", col => col.WithLength(36))
+            SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table
+                .Column<int>("ContentItemId")
+                .Column<string>("Path", col => col.WithLength(1024))
             );
 
             return 1;

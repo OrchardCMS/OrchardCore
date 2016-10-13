@@ -157,6 +157,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Diagnostics", "src\
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Identity", "src\Orchard.Cms.Web\Modules\Orchard.Identity\Orchard.Identity.xproj", "{716AD330-36FE-42C9-A40A-E92D5C5D27AE}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Autoroute", "src\Orchard.Cms.Web\Modules\Orchard.Autoroute\Orchard.Autoroute.xproj", "{0A8A006B-B0B5-4368-8817-37357848115C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -415,6 +417,10 @@ Global
 		{716AD330-36FE-42C9-A40A-E92D5C5D27AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{716AD330-36FE-42C9-A40A-E92D5C5D27AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{716AD330-36FE-42C9-A40A-E92D5C5D27AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A8A006B-B0B5-4368-8817-37357848115C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A8A006B-B0B5-4368-8817-37357848115C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A8A006B-B0B5-4368-8817-37357848115C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A8A006B-B0B5-4368-8817-37357848115C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -489,5 +495,6 @@ Global
 		{F1A7EE1A-DB21-40E9-A215-B9093CBE3116} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{74FA69FA-2561-4447-866A-7F86B8F91296} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{716AD330-36FE-42C9-A40A-E92D5C5D27AE} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{0A8A006B-B0B5-4368-8817-37357848115C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

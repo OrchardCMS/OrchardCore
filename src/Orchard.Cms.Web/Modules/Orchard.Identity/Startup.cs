@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
 using Orchard.Identity.Handlers;
+using Orchard.Identity.Indexes;
 using Orchard.Identity.Models;
 using YesSql.Core.Indexes;
 
