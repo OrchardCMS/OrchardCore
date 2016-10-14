@@ -32,6 +32,8 @@
         "Orchard.Users",
         "Orchard.Identity",
         "Orchard.Autoroute",
+        "Orchard.Tokens",
+        "Orchard.Tokens.Content",
         "TheTheme",
         "TheAdmin",
         "SafeMode"
