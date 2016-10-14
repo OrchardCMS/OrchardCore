@@ -8,13 +8,16 @@ using Orchard.Autoroute.Drivers;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Routing;
 using Orchard.Autoroute.Services;
+using Orchard.Autoroute.Settings;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Records;
+using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using Orchard.Title.Handlers;
+using Orchard.Tokens;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 
@@ -24,15 +27,18 @@ namespace Orchard.Autoroute
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Title Part
+            // Autoroute Part
             services.AddScoped<IContentPartDisplayDriver, AutoroutePartDisplay>();
             services.AddSingleton<ContentPart, AutoroutePart>();
             services.AddScoped<IContentPartHandler, AutoroutePartHandler>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
 
             services.AddScoped<IIndexProvider, AutoroutePartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
+
+            services.AddDefaultTokenizer();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

@@ -1,15 +1,25 @@
 ﻿using Orchard.ContentManagement.Handlers;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Services;
+using Orchard.ContentManagement.MetaData;
+using System.Dynamic;
+using System;
+using System.Linq;
+using Orchard.Autoroute.Models;
+using Orchard.Tokens.Services;
 
 namespace Orchard.Title.Handlers
 {
     public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     {
+        private readonly ITokenizer _tokenizer;
         private readonly IAutorouteEntries _entries;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public AutoroutePartHandler(IAutorouteEntries entries)
+        public AutoroutePartHandler(IAutorouteEntries entries, ITokenizer tokenizer, IContentDefinitionManager contentDefinitionManager)
         {
+            _tokenizer = tokenizer;
+            _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
         }
 
@@ -26,6 +36,28 @@ namespace Orchard.Title.Handlers
         public override void Removed(RemoveContentContext context, AutoroutePart instance)
         {
             _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+        }
+
+        public override void Updated(UpdateContentContext context, AutoroutePart part)
+        {
+            var pattern = GetPattern(part);
+
+            if (!String.IsNullOrEmpty(pattern))
+            {
+                dynamic ctx = new ExpandoObject();
+                ctx.content = part.ContentItem;
+
+                part.Path = _tokenizer.Tokenize(pattern, ctx);
+            }
+        }
+
+        private string GetPattern(AutoroutePart part)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart", StringComparison.Ordinal));
+            var pattern = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>().Pattern;
+
+            return pattern;
         }
     }
 }

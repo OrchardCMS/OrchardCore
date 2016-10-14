@@ -1,7 +1,7 @@
 ﻿@using Orchard.Autoroute.ViewModels;
 @model AutoroutePartViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Title">
+<fieldset class="form-group" asp-validation-class-for="Path">
     <label asp-for="Path">@T["Path"] <span asp-validation-for="Path"></span></label>
     <input asp-for="Path" class="form-control" />
     <span class="hint">@T["The url of the content item."]</span>

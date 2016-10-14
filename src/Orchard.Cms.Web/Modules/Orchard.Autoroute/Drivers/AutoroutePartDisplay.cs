@@ -22,7 +22,7 @@ namespace Orchard.Autoroute.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.Path);
+            var result = await updater.TryUpdateModelAsync(model, Prefix, t => t.Path);
 
             return Edit(model);
         }
