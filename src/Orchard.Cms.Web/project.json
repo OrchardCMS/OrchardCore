@@ -17,7 +17,8 @@
     "Orchard.Recipes.Abstractions": "2.0.0-*",
     "Microsoft.Extensions.Logging.Console": "1.0.0",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.1"
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.1",
+    "System.Dynamic.Runtime": "4.0.11"
   },
   "runtimeOptions": {
     "configProperties": {

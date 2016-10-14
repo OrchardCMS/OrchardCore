@@ -1,11 +1,10 @@
-﻿using Orchard.ContentManagement.Handlers;
-using Orchard.Autoroute.Model;
-using Orchard.Autoroute.Services;
-using Orchard.ContentManagement.MetaData;
-using System.Dynamic;
-using System;
+﻿using System;
 using System.Linq;
+using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
+using Orchard.Autoroute.Services;
+using Orchard.ContentManagement.Handlers;
+using Orchard.ContentManagement.MetaData;
 using Orchard.Tokens.Services;
 
 namespace Orchard.Title.Handlers
@@ -59,8 +58,9 @@ namespace Orchard.Title.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                dynamic ctx = new ExpandoObject();
-                ctx.content = part.ContentItem;
+                var ctx = _tokenizer
+                    .CreateViewModel()
+                    .Content(part.ContentItem);
 
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
             }

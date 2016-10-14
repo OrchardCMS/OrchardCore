@@ -9,7 +9,7 @@ namespace Orchard.Tokens
         /// <summary>
         /// Registers a fallback tokenizer in case the Tokenizer module is not enabled.
         /// </summary>
-        public static IServiceCollection AddDefaultTokenizer(this IServiceCollection services)
+        public static IServiceCollection AddNullTokenizer(this IServiceCollection services)
         {
             services.TryAddSingleton<ITokenizer, NullTokenizer>();
 

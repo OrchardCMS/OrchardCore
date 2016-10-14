@@ -163,6 +163,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tokens", "src\Orcha
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tokens.Abstractions", "src\Orchard.Cms.Web\Modules\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.xproj", "{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tokens.Content", "src\Orchard.Cms.Web\Modules\Orchard.Tokens.Content\Orchard.Tokens.Content.xproj", "{20F38722-4638-48FE-904B-4F6A8F4F362A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -433,6 +435,10 @@ Global
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20F38722-4638-48FE-904B-4F6A8F4F362A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20F38722-4638-48FE-904B-4F6A8F4F362A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20F38722-4638-48FE-904B-4F6A8F4F362A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20F38722-4638-48FE-904B-4F6A8F4F362A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -510,5 +516,6 @@ Global
 		{0A8A006B-B0B5-4368-8817-37357848115C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{874AF752-83B1-4595-AACD-B18D4A8C4649} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{20F38722-4638-48FE-904B-4F6A8F4F362A} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

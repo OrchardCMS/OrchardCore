@@ -5,7 +5,7 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
-    "Orchard.Tokens.Abstractions": "1.0.0-*"
+    "Orchard.Tokens.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

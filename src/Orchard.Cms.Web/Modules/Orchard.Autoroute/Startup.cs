@@ -38,7 +38,7 @@ namespace Orchard.Autoroute
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
 
-            services.AddDefaultTokenizer();
+            services.AddNullTokenizer();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

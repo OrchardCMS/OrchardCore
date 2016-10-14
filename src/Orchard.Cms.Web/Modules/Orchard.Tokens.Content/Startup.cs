@@ -5,22 +5,19 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Tokens.Services;
 
-namespace Orchard.Tokens
+namespace Orchard.Tokens.Content
 {
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Added as a singleton in order to reuse the cached templates
-            services.AddSingleton<HandlebarsTokenizer>();
-            services.AddScoped<ITokenizer, Tokenizer>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var handlebars = serviceProvider.GetRequiredService<HandlebarsTokenizer>().Handlebar;
 
-            handlebars.RegisterStandardTokens();
+            handlebars.RegisterContentTokens();
         }
     }
 }
