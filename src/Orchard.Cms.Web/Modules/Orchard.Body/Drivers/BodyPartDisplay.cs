@@ -1,9 +1,9 @@
-﻿using Orchard.ContentManagement.Display.ContentDisplay;
+﻿using System.Threading.Tasks;
 using Orchard.Body.Model;
+using Orchard.Body.ViewModels;
+using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using System.Threading.Tasks;
-using Orchard.Body.ViewModels;
 
 namespace Orchard.Body.Drivers
 {
@@ -17,7 +17,6 @@ namespace Orchard.Body.Drivers
                 Shape("BodyPart_Summary", bodyPart)
                     .Location("Summary", "Content:10")
             );
-
         }
 
         public override IDisplayResult Edit(BodyPart bodyPart)

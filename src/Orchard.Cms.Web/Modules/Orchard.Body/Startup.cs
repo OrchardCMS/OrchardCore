@@ -7,6 +7,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
+using Orchard.Tokens;
 
 namespace Orchard.Body
 {
@@ -19,6 +20,8 @@ namespace Orchard.Body
             services.AddSingleton<ContentPart, BodyPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
+
+            services.AddNullTokenizer();
         }
     }
 }

@@ -1,3 +1,10 @@
 ﻿@model dynamic
+@inject Orchard.Tokens.Services.ITokenizer Tokenizer
 
-@Html.Raw(Model.Body)
+@{ 
+    string body = Model.Body;
+    var context = Tokenizer.CreateViewModel().Content(Model.ContentItem);
+    body = Tokenizer.Tokenize(body, context);
+}
+
+@Html.Raw(body)
