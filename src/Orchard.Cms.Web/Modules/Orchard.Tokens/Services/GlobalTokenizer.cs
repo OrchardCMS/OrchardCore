@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using HandlebarsDotNet;
 
 namespace Orchard.Tokens.Services
 {
     public class HandlebarsTokenizer
     {
+        private static readonly Regex _tokens = new Regex(@"(\{\{.*\}\})", RegexOptions.Compiled);
+
         private readonly ConcurrentDictionary<string, Func<object, string>> _renderers;
         private readonly IHandlebars _handlebars;
 
@@ -25,19 +28,13 @@ namespace Orchard.Tokens.Services
 
         public string Tokenize(string template, dynamic context, IServiceProvider serviceProvider)
         {
-            // If the text doesn't have handlebars blocks to process, return it
-            if (!template.Contains("{{") || !template.Contains("}}"))
-            {
-                return template;
-            }
-
-            // TODO: extract all the handlebars blocks and build the resulting text by concatenating 
-            // the fragments.
-
             context.ServiceProvider = serviceProvider;
-            var render = _renderers.GetOrAdd(template, t => _handlebars.Compile(t));
 
-            return render(context);
+            return _tokens.Replace(template, match =>
+            {
+                var render = _renderers.GetOrAdd(match.Value, t => _handlebars.Compile(t));
+                return render.Invoke(context);
+            });
         }
     }
 }
