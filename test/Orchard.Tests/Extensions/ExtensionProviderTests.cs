@@ -11,7 +11,7 @@ namespace Orchard.Tests.Extensions
             = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "TestModules"));
 
         private IExtensionProvider Provider = 
-                new ExtensionProvider(RunningTestFileProvider, new ManifestProvider(RunningTestFileProvider));
+                new ExtensionProvider(RunningTestFileProvider, new ManifestBuilder(new ManifestProvider(RunningTestFileProvider)));
 
         [Fact]
         public void ThatGetExtensionInfoShouldReturnExtensionWhenManifestIsPresent() {
