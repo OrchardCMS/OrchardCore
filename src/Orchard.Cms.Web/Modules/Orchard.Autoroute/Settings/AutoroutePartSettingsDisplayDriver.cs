@@ -23,6 +23,7 @@ namespace Orchard.Autoroute.Settings
             {
                 var settings = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>();
 
+                model.AllowCustomPath = settings.AllowCustomPath;
                 model.Pattern = settings.Pattern;
                 model.AutoroutePartSettings = settings;
 

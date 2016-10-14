@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Orchard.Autoroute.Model;
+using Orchard.Autoroute.Models;
 
 namespace Orchard.Autoroute.ViewModels
 {
@@ -9,5 +10,8 @@ namespace Orchard.Autoroute.ViewModels
 
         [BindNever]
         public AutoroutePart AutoroutePart { get; set; }
+
+        [BindNever]
+        public AutoroutePartSettings Settings { get; set; }
     }
 }
