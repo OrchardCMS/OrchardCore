@@ -1,14 +1,21 @@
 ﻿{
-  "version": "1.0.0-*",
-
+  "version": "2.0.0-*",
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0"
   },
-
+  "buildOptions": {
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.6.0-*"
+      }
     }
   }
 }

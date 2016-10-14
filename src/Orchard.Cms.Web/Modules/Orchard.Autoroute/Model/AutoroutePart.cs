@@ -5,7 +5,6 @@ namespace Orchard.Autoroute.Model
 {
     public class AutoroutePart : ContentPart
     {
-        [Required]
         public string Path { get; set; }
     }
 }

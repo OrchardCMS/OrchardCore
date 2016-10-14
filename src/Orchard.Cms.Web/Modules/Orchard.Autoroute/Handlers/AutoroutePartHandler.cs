@@ -25,21 +25,36 @@ namespace Orchard.Title.Handlers
 
         public override void Published(PublishContentContext context, AutoroutePart instance)
         {
-            _entries.AddEntry(instance.ContentItem.ContentItemId, instance.Path);
+            if (!String.IsNullOrWhiteSpace(instance.Path))
+            {
+                _entries.AddEntry(instance.ContentItem.ContentItemId, instance.Path);
+            }
         }
 
         public override void Unpublished(PublishContentContext context, AutoroutePart instance)
         {
-            _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+            if (!String.IsNullOrWhiteSpace(instance.Path))
+            {
+                _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+            }
         }
 
         public override void Removed(RemoveContentContext context, AutoroutePart instance)
         {
-            _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+            if (!String.IsNullOrWhiteSpace(instance.Path))
+            {
+                _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+            }
         }
 
         public override void Updated(UpdateContentContext context, AutoroutePart part)
         {
+            // Compute the Path only if it's empty
+            if (!String.IsNullOrWhiteSpace(part.Path))
+            {
+                return;
+            }
+
             var pattern = GetPattern(part);
 
             if (!String.IsNullOrEmpty(pattern))
@@ -51,6 +66,14 @@ namespace Orchard.Title.Handlers
             }
         }
 
+        public override void GetContentItemMetadata(ContentItemMetadataContext context, AutoroutePart part)
+        {
+            context.Metadata.Identity.Add("Alias", part.Path);
+        }
+
+        /// <summary>
+        /// Get the pattern from the AutoroutePartSettings property for its type
+        /// </summary>
         private string GetPattern(AutoroutePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
