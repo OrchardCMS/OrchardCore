@@ -23,8 +23,10 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly ConcurrentDictionary<string, object> _compilationlocks = new ConcurrentDictionary<string, object>();
 
         private static RuntimeLibrary CscLibrary => _cscLibrary.Value;
+        private static RuntimeLibrary NativePDBWriter => _nativePDBWriter.Value;
         private static HashSet<string> AmbientLibraries => _ambientLibraries.Value;
         private static readonly Lazy<RuntimeLibrary> _cscLibrary = new Lazy<RuntimeLibrary>(GetCscLibrary);
+        private static readonly Lazy<RuntimeLibrary> _nativePDBWriter = new Lazy<RuntimeLibrary>(GetNativePDBWriter);
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(Assembly.GetEntryAssembly);
@@ -39,9 +41,15 @@ namespace Orchard.Environment.Extensions.Compilers
 
         private static RuntimeLibrary GetCscLibrary()
         {
-            return DependencyContext.Default?.RuntimeLibraries.Where(l => l.NativeLibraryGroups.Any(
+            return DependencyContext.Default?.RuntimeLibraries.FirstOrDefault(l => l.NativeLibraryGroups.Any(
                 g => g.Runtime.Equals("any", StringComparison.OrdinalIgnoreCase) && g.AssetPaths.Any(
-                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0))).FirstOrDefault();
+                    p => p.IndexOf("csc.exe", StringComparison.OrdinalIgnoreCase) >= 0)));
+        }
+
+        private static RuntimeLibrary GetNativePDBWriter()
+        {
+            return DependencyContext.Default?.RuntimeLibraries.FirstOrDefault(l => l.Name.Equals(
+                "Microsoft.DiaSymReader.Native", StringComparison.OrdinalIgnoreCase));
         }
 
         private static HashSet<string> GetAmbientLibraries()
@@ -117,7 +125,7 @@ namespace Orchard.Environment.Extensions.Compilers
             var resources = new List<string>();
 
             // Get the runtime directory
-            var runtimeDirectory = Path.GetDirectoryName(EntryAssembly.Location);
+            var runtimeDirectory = Paths.GetParentFolderPath(EntryAssembly.Location);
 
             foreach (var dependency in dependencies)
             {
@@ -165,7 +173,7 @@ namespace Orchard.Environment.Extensions.Compilers
                         if (String.IsNullOrEmpty(assetResolvedPath))
                         {
                             // Fallback to this (possible) precompiled module bin folder
-                            var path = Path.Combine(Directory.GetParent(library.Path).FullName, Constants.BinDirectoryName, assetFileName);
+                            var path = Path.Combine(Paths.GetParentFolderPath(library.Path), Constants.BinDirectoryName, assetFileName);
                             assetResolvedPath = File.Exists(path) ? path : null;
                         }
                     }
@@ -290,8 +298,9 @@ namespace Orchard.Environment.Extensions.Compilers
                     filteredExports,
                     false, // For now, just assume non-portable mode in the legacy deps file (this is going away soon anyway)
                     context.TargetFramework,
+                    context.RuntimeIdentifier ?? string.Empty);
 
-                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json"));
+                depsJsonFile = Path.Combine(intermediateOutputPath, compilationOptions.OutputName + "dotnet-compile.deps.json");
                 resources.Add($"\"{depsJsonFile}\",{compilationOptions.OutputName}.deps.json");
             }
 
@@ -403,13 +412,11 @@ namespace Orchard.Environment.Extensions.Compilers
             var cscRuntimeConfigPath =  Path.Combine(runtimeDirectory, "csc" + FileNameSuffixes.RuntimeConfigJson);
 
             // Automatically create the csc runtime config file
-            if (File.Exists(runtimeConfigPath) && (!File.Exists(cscRuntimeConfigPath)
-                || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath)))
+            if (Files.IsNewer(runtimeConfigPath, cscRuntimeConfigPath))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscRuntimeConfigPath)
-                        || File.GetLastWriteTimeUtc(runtimeConfigPath) > File.GetLastWriteTimeUtc(cscRuntimeConfigPath))
+                    if (Files.IsNewer(runtimeConfigPath, cscRuntimeConfigPath))
                     {
                         File.Copy(runtimeConfigPath, cscRuntimeConfigPath, true);
                     }
@@ -431,15 +438,70 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Automatically create csc.dll
-            if (File.Exists(cscExePath) && (!File.Exists(cscDllPath)
-                || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath)))
+            if (Files.IsNewer(cscExePath, cscDllPath))
             {
                 lock (_syncLock)
                 {
-                    if (!File.Exists(cscDllPath)
-                        || File.GetLastWriteTimeUtc(cscExePath) > File.GetLastWriteTimeUtc(cscDllPath))
+                    if (Files.IsNewer(cscExePath, cscDllPath))
                     {
                         File.Copy(cscExePath, cscDllPath, true);
+                    }
+                }
+            }
+
+            // Locate the csc dependencies file
+            var cscDepsPath = Path.Combine(runtimeDirectory, "csc.deps.json");
+
+            // Automatically create csc.deps.json
+            if (NativePDBWriter!= null && Files.IsNewer(cscDllPath, cscDepsPath))
+            {
+                lock (_syncLock)
+                {
+                    if (Files.IsNewer(cscDllPath, cscDepsPath))
+                    {
+                        // Only reference windows native pdb writers
+                        var runtimeLibraries = new List<RuntimeLibrary>();
+                        runtimeLibraries.Add(NativePDBWriter);
+
+                        DependencyContext cscDependencyContext = new DependencyContext(
+                            DependencyContext.Default.Target, CompilationOptions.Default,
+                            new List<CompilationLibrary>(), runtimeLibraries,
+                            new List<RuntimeFallbacks>());
+
+                        // Write the csc.deps.json file
+                        if (cscDependencyContext != null)
+                        {
+                            var writer = new DependencyContextWriter();
+                            using (var fileStream = File.Create(cscDepsPath))
+                            {
+                                writer.Write(cscDependencyContext, fileStream);
+                            }
+                        }
+
+                        // Windows native pdb writers are outputed on dotnet publish.
+                        // But not on dotnet build during development, we do it here.
+                        
+                        // Check if there is a packages storage
+                        if (!String.IsNullOrEmpty(context.PackagesDirectory))
+                        {
+                            var assetPaths = NativePDBWriter.NativeLibraryGroups.SelectMany(l => l.AssetPaths);
+
+                            foreach (var assetPath in assetPaths)
+                            {
+                                // Resolve the pdb writer from the packages storage
+                                var pdbResolvedPath = Path.Combine(context.PackagesDirectory,
+                                    NativePDBWriter.Name, NativePDBWriter.Version, assetPath);
+
+                                var pdbOutputPath = Path.Combine(runtimeDirectory, assetPath);
+
+                                // Store the pdb writer in the runtime directory
+                                if (Files.IsNewer(pdbResolvedPath, pdbOutputPath))
+                                {
+                                    Directory.CreateDirectory(Paths.GetParentFolderPath(pdbOutputPath));
+                                    File.Copy(pdbResolvedPath, pdbOutputPath, true);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -506,35 +568,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
         private string ResolveAssetPath(string binaryFolderPath, string probingFolderPath,  string assetFileName, string relativeFolderPath = null)
         {
-            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(binaryFolderPath, relativeFolderPath)
-                : binaryFolderPath;
-
-            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
-                ? Path.Combine(probingFolderPath, relativeFolderPath)
-                : probingFolderPath;
-
-            var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
-            var probingPath = Path.Combine(probingFolderPath, assetFileName);
-
-            if (File.Exists(binaryPath))
-            {
-                if (File.Exists(probingPath))
-                {
-                    if (File.GetLastWriteTimeUtc(probingPath) > File.GetLastWriteTimeUtc(binaryPath))
-                    {
-                        return probingPath;
-                    }
-                }
-
-                return binaryPath;
-            }
-            else if (File.Exists(probingPath))
-            {
-                return probingPath;
-            }
-
-            return null;
+            return CompilerUtility.ResolveAssetPath(binaryFolderPath, probingFolderPath, assetFileName, relativeFolderPath);
         }
 
         private static void AddNonCultureResources(List<string> resources, List<CompilerUtility.NonCultureResgenIO> resgenFiles)
@@ -641,18 +675,14 @@ namespace Orchard.Environment.Extensions.Compilers
                 commonArgs.Add("-t:library");
             }
 
-            // Here, force debugType to portable
             if (string.IsNullOrEmpty(options.DebugType))
             {
-                commonArgs.Add(false /*RuntimeInformation.IsOSPlatform(OSPlatform.Windows)*/
-                    ? "-debug:full"
-                    : "-debug:portable");
+                commonArgs.Add(RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? "-debug:full" : "-debug:portable");
             }
             else
             {
-                commonArgs.Add(true /*options.DebugType == "portable"*/
-                    ? "-debug:portable"
-                    : "-debug:full");
+                commonArgs.Add("-debug:" + options.DebugType);
             }
 
             return commonArgs;
