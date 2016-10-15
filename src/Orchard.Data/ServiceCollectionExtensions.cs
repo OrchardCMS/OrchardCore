@@ -44,7 +44,7 @@ namespace Orchard.Data
                     //    var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                     //    Directory.CreateDirectory(databaseFolder);
                     //    connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared", false);
-                    //    isolationLevel = IsolationLevel.Serializable;
+                    //    isolationLevel = IsolationLevel.ReadUncommitted;
                     //    break;
                     default:
                         throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
