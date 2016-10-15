@@ -40,9 +40,10 @@ namespace Orchard.Autoroute.Settings
 
             var model = new AutoroutePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.AllowCustomPath);
 
             context.Builder.WithSetting(nameof(AutoroutePartSettings.Pattern), model.Pattern);
+            context.Builder.WithSetting(nameof(AutoroutePartSettings.AllowCustomPath), model.AllowCustomPath.ToString());
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
