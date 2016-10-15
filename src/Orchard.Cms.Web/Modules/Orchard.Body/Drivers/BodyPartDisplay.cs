@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Orchard.Body.Model;
+using Orchard.Body.Settings;
 using Orchard.Body.ViewModels;
 using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
@@ -9,25 +12,26 @@ namespace Orchard.Body.Drivers
 {
     public class BodyPartDisplay : ContentPartDisplayDriver<BodyPart>
     {
+        private readonly IContentDefinitionManager _contentDefinitionManager;
+
+        public BodyPartDisplay(IContentDefinitionManager contentDefinitionManager)
+        {
+            _contentDefinitionManager = contentDefinitionManager;
+        }
+
         public override IDisplayResult Display(BodyPart bodyPart)
         {
             return Combine(
-                Shape("BodyPart", bodyPart)
+                Shape<BodyPartViewModel>("BodyPart", m => BuildViewModel(m, bodyPart))
                     .Location("Detail", "Content:10"),
-                Shape("BodyPart_Summary", bodyPart)
+                Shape<BodyPartViewModel>("BodyPart_Summary", m => BuildViewModel(m, bodyPart))
                     .Location("Summary", "Content:10")
             );
         }
 
         public override IDisplayResult Edit(BodyPart bodyPart)
         {
-            return Shape<BodyPartViewModel>("BodyPart_Edit", model =>
-            {
-                model.Body = bodyPart.Body;
-                model.BodyPart = bodyPart;
-
-                return Task.CompletedTask;
-            });
+            return Shape<BodyPartViewModel>("BodyPart_Edit", m => BuildViewModel(m, bodyPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BodyPart model, IUpdateModel updater)
@@ -35,6 +39,19 @@ namespace Orchard.Body.Drivers
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Body);
 
             return Edit(model);
+        }
+
+        private Task BuildViewModel(BodyPartViewModel model, BodyPart bodyPart)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(bodyPart.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(BodyPart));
+            var settings = contentTypePartDefinition.Settings.ToObject<BodyPartSettings>();
+
+            model.RenderTokens = settings.RenderTokens;
+            model.Body = bodyPart.Body;
+            model.BodyPart = bodyPart;
+
+            return Task.CompletedTask;
         }
     }
 }
