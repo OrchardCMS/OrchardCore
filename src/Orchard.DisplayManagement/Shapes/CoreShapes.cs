@@ -1,19 +1,15 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Descriptors;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Orchard.DisplayManagement.Descriptors;
 
 namespace Orchard.DisplayManagement.Shapes
 {
-    public class CoreShapes : IShapeTableProvider
+    public class CoreShapes : IShapeAttributeProvider
     {
-        public void Discover(ShapeTableBuilder builder)
-        {
-        }
-
         [Shape]
         public void PlaceChildContent(dynamic Source, TextWriter Output)
         {

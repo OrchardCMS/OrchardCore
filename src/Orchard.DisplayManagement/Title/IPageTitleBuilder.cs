@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
-using Orchard.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Title
 {
-    public interface IPageTitleBuilder : IDependency
+    public interface IPageTitleBuilder
     {
         /// <summary>
         /// Clears the current list of segments.

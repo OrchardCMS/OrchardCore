@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Orchard.ContentManagement.MetaData;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 
 namespace Orchard.ContentManagement.Cache
 {

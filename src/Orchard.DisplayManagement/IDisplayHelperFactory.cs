@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DependencyInjection;
 
 namespace Orchard.DisplayManagement
 {
     /// <summary>
     /// Used to create a dynamic, contextualized Display object to dispatch shape rendering
     /// </summary>
-    public interface IDisplayHelperFactory : IDependency
+    public interface IDisplayHelperFactory
     {
         dynamic CreateHelper(ViewContext viewContext);
     }

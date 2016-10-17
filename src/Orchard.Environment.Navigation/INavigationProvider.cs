@@ -1,8 +1,6 @@
-﻿using Orchard.DependencyInjection;
-
-namespace Orchard.Environment.Navigation
+﻿namespace Orchard.Environment.Navigation
 {
-    public interface INavigationProvider : IDependency
+    public interface INavigationProvider
     {
         void BuildNavigation(string name, NavigationBuilder builder);
     }

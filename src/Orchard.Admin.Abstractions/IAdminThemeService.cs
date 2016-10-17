@@ -1,13 +1,9 @@
-﻿using Orchard.DependencyInjection;
+﻿using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.Admin
 {
-    public interface IAdminThemeService : IDependency
+    public interface IAdminThemeService
     {
         Task<ExtensionDescriptor> GetAdminThemeAsync();
         Task SetAdminThemeAsync(string themeName);

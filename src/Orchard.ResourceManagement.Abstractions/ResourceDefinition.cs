@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -31,7 +32,7 @@ namespace Orchard.ResourceManagement
         };
 
         private string _basePath;
-        private readonly Dictionary<RequireSettings, string> _urlResolveCache = new Dictionary<RequireSettings, string>();
+        private readonly IDictionary<RequireSettings, string> _urlResolveCache = new ConcurrentDictionary<RequireSettings, string>();
 
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
         {

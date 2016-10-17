@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
-using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.Metadata.Models;
+using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using Microsoft.Extensions.Logging;
 using YesSql.Core.Services;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement
 {
@@ -65,9 +66,9 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId();
+            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId("contentitem");
 
-            Handlers.Invoke(handler => handler.Activated(context2), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
 
             var context3 = new InitializingContentContext
             {
@@ -76,7 +77,7 @@ namespace Orchard.ContentManagement
             };
 
             Handlers.Invoke(handler => handler.Initializing(context3), _logger);
-            Handlers.Invoke(handler => handler.Initialized(context3), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Initialized(context3), _logger);
 
             // composite result is returned
             return context3.ContentItem;
@@ -179,7 +180,7 @@ namespace Orchard.ContentManagement
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Invoke(handler => handler.Loaded(context), _logger);
+                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
 
                 contentItem = context.ContentItem;
             }
@@ -241,7 +242,7 @@ namespace Orchard.ContentManagement
 
             _session.Save(contentItem);
 
-            Handlers.Invoke(handler => handler.Published(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -278,7 +279,7 @@ namespace Orchard.ContentManagement
 
             _session.Save(contentItem);
 
-            Handlers.Invoke(handler => handler.Unpublished(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
@@ -321,7 +322,7 @@ namespace Orchard.ContentManagement
             };
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
-            Handlers.Invoke(handler => handler.Versioned(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
 
             return context.BuildingContentItem;
         }
@@ -358,7 +359,7 @@ namespace Orchard.ContentManagement
             // invoke handlers to add information to persistent stores
             Handlers.Invoke(handler => handler.Creating(context), _logger);
 
-            Handlers.Invoke(handler => handler.Created(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Created(context), _logger);
 
             if (options.IsPublished)
             {
@@ -368,7 +369,7 @@ namespace Orchard.ContentManagement
                 Handlers.Invoke(handler => handler.Publishing(publishContext), _logger);
 
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Published(publishContext), _logger);
+                Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
 
             _session.Save(contentItem);
@@ -406,7 +407,7 @@ namespace Orchard.ContentManagement
                 _session.Save(version);
             }
 
-            Handlers.Invoke(handler => handler.Removed(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
         }
 
     }

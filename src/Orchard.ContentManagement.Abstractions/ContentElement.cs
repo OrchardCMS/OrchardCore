@@ -166,7 +166,16 @@ namespace Orchard.ContentManagement
         /// </summary>
         public void Weld(string name, object obj)
         {
-            Data[name] = JObject.FromObject(obj);
+            // If it's a generic part, use its data directly, otherwise converting it to a JObject
+            // would return an empty object
+            if (obj.GetType() == typeof(ContentPart))
+            {
+                Data[name] = ((ContentPart)obj).Data;
+            }
+            else
+            {
+                Data[name] = JObject.FromObject(obj);
+            }
         }
     }
 }

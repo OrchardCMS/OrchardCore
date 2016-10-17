@@ -5,6 +5,11 @@ namespace Orchard.Recipes.Models
 {
     public class RecipeResult
     {
+        public RecipeResult()
+        {
+            Steps = new List<RecipeStepResult>();
+        }
+
         public string ExecutionId { get; set; }
         public IEnumerable<RecipeStepResult> Steps { get; set; }
         public bool IsCompleted

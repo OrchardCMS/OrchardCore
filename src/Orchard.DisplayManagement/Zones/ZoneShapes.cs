@@ -9,12 +9,8 @@ using Orchard.Utility;
 
 namespace Orchard.DisplayManagement.Zones
 {
-    public class ZoneShapes : IShapeTableProvider
+    public class ZoneShapes : IShapeAttributeProvider
     {
-        public void Discover(ShapeTableBuilder builder)
-        {
-        }
-
         [Shape]
         public IHtmlContent Zone(dynamic Display, dynamic Shape)
         {

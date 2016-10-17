@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
-using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
-using Orchard.DisplayManagement.Descriptors;
-using Orchard.DependencyInjection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
+using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.Descriptors;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
-    public class ShapeTagHelperDescriptorResolver : TagHelperDescriptorResolver, ITagHelperDescriptorResolver, ISingletonDependency
+    public class ShapeTagHelperDescriptorResolver : TagHelperDescriptorResolver, ITagHelperDescriptorResolver
     {
         private static readonly Type ShapeTagHelperType = typeof(ShapeTagHelper);
         private readonly IHttpContextAccessor _httpContextAccessor;

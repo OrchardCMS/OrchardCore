@@ -63,15 +63,18 @@ namespace Orchard.Tests.Configuration
         public void ShouldParseRecipeDescriptor()
         {
             var parser = new JsonRecipeParser();
-            var descriptor = parser.ParseRecipe(_fileInfo.CreateReadStream());
-            Assert.Equal("core", descriptor.Name);
-            Assert.Equal("core descriptor.", descriptor.Description);
-            Assert.Equal("The Orchard Team", descriptor.Author);
-            Assert.Equal("http://orchardproject.net", descriptor.WebSite);
-            Assert.Equal("2.0", descriptor.Version);
-            Assert.Equal(true, descriptor.IsSetupRecipe);
-            Assert.Equal("default", descriptor.Categories[0]);
-            Assert.Equal("developer", descriptor.Tags[0]);
+            using (var stream = _fileInfo.CreateReadStream())
+            {
+                var descriptor = parser.ParseRecipe(stream);
+                Assert.Equal("core", descriptor.Name);
+                Assert.Equal("core descriptor.", descriptor.Description);
+                Assert.Equal("The Orchard Team", descriptor.Author);
+                Assert.Equal("http://orchardproject.net", descriptor.WebSite);
+                Assert.Equal("2.0", descriptor.Version);
+                Assert.Equal(true, descriptor.IsSetupRecipe);
+                Assert.Equal("default", descriptor.Categories[0]);
+                Assert.Equal("developer", descriptor.Tags[0]);
+            }
         }
 
         [Fact]
@@ -80,10 +83,15 @@ namespace Orchard.Tests.Configuration
             var recipeParser = new JsonRecipeParser();
 
             List<RecipeStepDescriptor> recipeSteps = new List<RecipeStepDescriptor>();
-            await recipeParser.ProcessRecipeAsync(_fileInfo.CreateReadStream(), (descripor, stepDescriptor) => {
-                recipeSteps.Add(stepDescriptor);
-                return Task.CompletedTask;
-            });
+
+            using (var stream = _fileInfo.CreateReadStream())
+            {
+                await recipeParser.ProcessRecipeAsync(stream, (descripor, stepDescriptor) =>
+                {
+                    recipeSteps.Add(stepDescriptor);
+                    return Task.CompletedTask;
+                });
+            }
 
             // Assert that each step has a unique ID.
             Assert.True(recipeSteps.GroupBy(x => x.Id).All(y => y.Count() == 1));

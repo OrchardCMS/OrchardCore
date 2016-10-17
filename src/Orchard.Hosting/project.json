@@ -4,8 +4,7 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
-    "Orchard.Abstractions": "2.0.0-*",
-    "Orchard.Environment.Cache": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*",
     "Orchard.Events": "2.0.0-*"

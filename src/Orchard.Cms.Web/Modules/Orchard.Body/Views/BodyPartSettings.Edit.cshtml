@@ -1,0 +1,8 @@
+@model Orchard.Body.Settings.BodyPartSettingsViewModel
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="RenderTokens" type="checkbox" class="form-check-input" checked="@Model.RenderTokens" /> @T["Render tokens"]
+        <span class="hint">@T["Check to render the tokens present in the body."]</span>
+    </label>
+</fieldset>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Cache.Abstractions
+namespace Orchard.Environment.Cache
 {
     public class CacheContext
     {

@@ -15,7 +15,7 @@ var buildDir='${Path.Combine(targetDir, "build")}'
 
 #build-modules target='build-themes'
   @{
-      var orchardModulesDir = Path.Combine(baseDir, "src/Orchard.Web/Modules");
+      var orchardModulesDir = Path.Combine(baseDir, "src/Orchard.Cms.Web/Modules");
       
       foreach(var projectDir in Directory.GetDirectories(orchardModulesDir)) 
       {
@@ -35,7 +35,7 @@ var buildDir='${Path.Combine(targetDir, "build")}'
   
 #build-themes target='test-compile'
   @{
-      var orchardThemesDir = Path.Combine(baseDir, "src/Orchard.Web/Themes");
+      var orchardThemesDir = Path.Combine(baseDir, "src/Orchard.Cms.Web/Themes");
       
       foreach(var projectDir in Directory.GetDirectories(orchardThemesDir)) 
       {

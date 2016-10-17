@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Shapes;
-using Orchard.Environment.Cache.Abstractions;
+using Orchard.Environment.Cache;
 
 namespace Orchard.DisplayManagement.Views
 {

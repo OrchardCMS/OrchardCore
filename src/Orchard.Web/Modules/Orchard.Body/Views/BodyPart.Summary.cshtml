@@ -1,6 +1,0 @@
-﻿@model dynamic
-@{
-    string body = Model.Body ?? "";
-}
-
-@body.Substring(0, Math.Min(body.Length, 200))

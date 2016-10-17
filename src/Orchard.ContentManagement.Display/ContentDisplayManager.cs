@@ -11,6 +11,8 @@ using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Theming;
+using Orchard.ContentManagement.Handlers;
+using System.Linq;
 
 namespace Orchard.ContentManagement.Display
 {
@@ -22,6 +24,7 @@ namespace Orchard.ContentManagement.Display
     /// </summary>
     public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
     {
+        private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -31,6 +34,7 @@ namespace Orchard.ContentManagement.Display
 
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
+            IEnumerable<IContentHandler> contentHandlers,
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
@@ -40,6 +44,7 @@ namespace Orchard.ContentManagement.Display
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
             _handlers = handlers;
+            _contentHandlers = contentHandlers;
             _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
@@ -151,7 +156,13 @@ namespace Orchard.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
+            var updateContentContext = new UpdateContentContext(contentItem);
+
+            _contentHandlers.Invoke(handler => handler.Updating(updateContentContext), Logger);
+
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
+
+            _contentHandlers.Reverse().Invoke(handler => handler.Updated(updateContentContext), Logger);
 
             return context.Shape;
         }

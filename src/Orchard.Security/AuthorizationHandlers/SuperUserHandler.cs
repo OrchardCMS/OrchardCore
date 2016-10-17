@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Orchard.DependencyInjection;
 using Orchard.Settings;
 
 namespace Orchard.Security.AuthorizationHandlers
@@ -10,7 +9,6 @@ namespace Orchard.Security.AuthorizationHandlers
     /// <summary>
     /// This authorization handler validates any permission when the user is the site owner.
     /// </summary>
-    [ScopedComponent(typeof(IAuthorizationHandler))]
     public class SuperUserHandler : IAuthorizationHandler
     {
         private readonly ISiteService _siteService;

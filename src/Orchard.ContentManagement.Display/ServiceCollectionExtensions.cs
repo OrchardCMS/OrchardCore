@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orchard.ContentManagement.Display.ContentDisplay;
 
 namespace Orchard.ContentManagement.Display
 {
@@ -8,9 +9,7 @@ namespace Orchard.ContentManagement.Display
         public static IServiceCollection AddContentManagementDisplay(this IServiceCollection services)
         {
             services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
-            // TODO: Remove IDependency marker and use these registrations
-            //services.AddScoped<IContentDisplayHandler, ContentFieldDisplayCoordinator>();
-            //services.AddScoped<IContentDisplayHandler, ContentDisplayCoordinator>();
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IContentDisplayHandler), typeof(ContentItemDisplayCoordinator), ServiceLifetime.Scoped));
             return services;
         }
     }

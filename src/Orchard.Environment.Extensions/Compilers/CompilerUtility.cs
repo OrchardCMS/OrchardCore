@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +8,7 @@ using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Files;
 using Microsoft.DotNet.ProjectModel.Resources;
 using Microsoft.DotNet.Tools.Common;
+using NuGet.Frameworks;
 
 namespace Orchard.Environment.Extensions.Compilers
 {
@@ -16,6 +18,51 @@ namespace Orchard.Environment.Extensions.Compilers
         public const string ReleaseConfiguration = "Release";
         public const string DefaultConfiguration = Constants.DefaultConfiguration;
         public const string LocaleLockFilePropertyName = "locale";
+
+        public static string ResolveAssetPath(string binaryFolderPath, string probingFolderPath, string assetFileName, string relativeFolderPath = null)
+        {
+            binaryFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(binaryFolderPath, relativeFolderPath)
+                : binaryFolderPath;
+
+            probingFolderPath = !String.IsNullOrEmpty(relativeFolderPath)
+                ? Path.Combine(probingFolderPath, relativeFolderPath)
+                : probingFolderPath;
+
+            var binaryPath = Path.Combine(binaryFolderPath, assetFileName);
+            var probingPath = Path.Combine(probingFolderPath, assetFileName);
+
+            return Files.GetNewest(binaryPath, probingPath);
+        }
+
+        public static string GetAssemblyFileName(string assemblyName)
+        {
+            return assemblyName + FileNameSuffixes.DotNet.DynamicLib;
+        }
+
+        public static string GetAssemblyFolderPath(string rootPath, string config, string framework)
+        {
+            return Path.Combine(rootPath, Constants.BinDirectoryName, config, NuGetFramework.Parse(framework).GetShortFolderName());
+        }
+
+        public static IEnumerable<string> GetOtherParentProjectsLocations(ProjectContext context, LibraryDescription library)
+        {
+            foreach (var parent in library.Parents)
+            {
+                if (parent is ProjectDescription && !parent.Identity.Name.Equals(context.ProjectName()))
+                {
+                    if (!string.IsNullOrEmpty(parent.Path))
+                    {
+                        yield return Paths.GetParentFolderPath(parent.Path);
+                    }
+                }
+
+                foreach (var path in GetOtherParentProjectsLocations(context, parent))
+                {
+                    yield return path;
+                }
+            }
+        }
 
         public static IEnumerable<string> GetCompilationSources(ProjectContext project, CommonCompilerOptions compilerOptions)
         {
@@ -78,7 +125,7 @@ namespace Orchard.Environment.Extensions.Compilers
         {
             foreach (var resgenFile in cultureResgenFiles)
             {
-                var resourceOutputPath = Path.GetDirectoryName(resgenFile.OutputFile);
+                var resourceOutputPath = Paths.GetParentFolderPath(resgenFile.OutputFile);
                 Directory.CreateDirectory(resourceOutputPath);
 
                 var inputResourceFiles = resgenFile.InputFileToMetadata

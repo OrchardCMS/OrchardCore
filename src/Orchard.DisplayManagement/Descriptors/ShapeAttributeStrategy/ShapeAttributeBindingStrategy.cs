@@ -1,14 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CSharp.RuntimeBinder;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,31 +8,56 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeBindingStrategy : IShapeTableProvider
     {
-        private readonly IEnumerable<ShapeAttributeOccurrence> _shapeAttributeOccurrences;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
         public ShapeAttributeBindingStrategy(
-            IEnumerable<ShapeAttributeOccurrence> shapeAttributeOccurrences,
             IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor,
-            ITypeFeatureProvider typeFeatureProvider)
+            ITypeFeatureProvider typeFeatureProvider,
+            IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
-            _shapeAttributeOccurrences = shapeAttributeOccurrences;
             _typeFeatureProvider = typeFeatureProvider;
+            _shapeProviders = shapeProviders;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            foreach (var iter in _shapeAttributeOccurrences)
+            var shapeAttributeOccurrences = new List<ShapeAttributeOccurrence>();
+
+            foreach (var shapeProvider in _shapeProviders)
+            {
+                var serviceType = shapeProvider.GetType();
+
+                foreach (var method in serviceType.GetMethods())
+                {
+                    var customAttributes = method.GetCustomAttributes(typeof(ShapeAttribute), false).OfType<ShapeAttribute>();
+                    foreach (var customAttribute in customAttributes)
+                    {
+                        shapeAttributeOccurrences.Add(new ShapeAttributeOccurrence(customAttribute, method, serviceType));
+                    }
+                }
+            }
+
+            foreach (var iter in shapeAttributeOccurrences)
             {
                 var occurrence = iter;
                 var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;

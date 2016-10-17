@@ -2,7 +2,7 @@
 
 namespace Orchard.DisplayManagement.Layout
 {
-    public interface ILayoutAccessor : IDependency
+    public interface ILayoutAccessor
     {
         dynamic GetLayout();
     }
