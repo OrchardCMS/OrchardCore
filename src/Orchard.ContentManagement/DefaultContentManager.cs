@@ -41,7 +41,7 @@ namespace Orchard.ContentManagement
             return _contentDefinitionManager.ListTypeDefinitions();
         }
 
-        public virtual ContentItem New(string contentType)
+        public ContentItem New(string contentType)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
             if (contentTypeDefinition == null)
@@ -327,12 +327,12 @@ namespace Orchard.ContentManagement
             return context.BuildingContentItem;
         }
 
-        public virtual void Create(ContentItem contentItem)
+        public void Create(ContentItem contentItem)
         {
             Create(contentItem, VersionOptions.Published);
         }
 
-        public virtual void Create(ContentItem contentItem, VersionOptions options)
+        public void Create(ContentItem contentItem, VersionOptions options)
         {
             if (contentItem.Number == 0)
             {
@@ -389,7 +389,7 @@ namespace Orchard.ContentManagement
             return context.Metadata;
         }
 
-        public virtual async Task RemoveAsync(ContentItem contentItem)
+        public async Task RemoveAsync(ContentItem contentItem)
         {
             var activeVersions = await _session.QueryAsync<ContentItem, ContentItemIndex>()
                 .Where(x =>
