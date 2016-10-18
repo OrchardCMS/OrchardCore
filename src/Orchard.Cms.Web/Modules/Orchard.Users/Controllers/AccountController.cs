@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
@@ -15,24 +16,30 @@ namespace Orchard.Users.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger _logger;
+        private readonly string _externalCookieScheme;
         private readonly ShellSettings _shellSettings;
 
         public AccountController(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ShellSettings shellSettings,
+            IOptions<IdentityCookieOptions> identityCookieOptions)
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _shellSettings = shellSettings;
+            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _logger = logger;
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
