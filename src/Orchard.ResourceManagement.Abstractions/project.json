@@ -2,9 +2,9 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.0",
-    "NETStandard.Library": "1.6.0",
-    "System.Collections.Specialized": "4.0.1"
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0-preview1-final",
+    "NETStandard.Library": "1.6.1-preview1-24530-04",
+    "System.Collections.Specialized": "4.3.0-*"
   },
 
   "buildOptions": {

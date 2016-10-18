@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.0-preview1-final",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0-preview1-final",
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
@@ -18,7 +18,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
+        "NETStandard.Library": "1.6.1-preview1-24530-04"
       }
     }
   },

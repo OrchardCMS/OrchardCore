@@ -1,8 +1,8 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.Configuration": "1.0.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.1.0-preview1-final",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0-preview1-final",
     "YamlDotNet": "4.0.0"
   },
   "buildOptions": {
@@ -17,7 +17,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
+        "NETStandard.Library": "1.6.1-preview1-24530-04"
       }
     }
   },

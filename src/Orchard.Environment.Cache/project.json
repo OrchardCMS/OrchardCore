@@ -1,9 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Caching.Memory": "1.0.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0-preview1-final",
+    "Microsoft.Extensions.Caching.Abstractions": "1.1.0-preview1-final",
+    "Microsoft.Extensions.Caching.Memory": "1.1.0-preview1-final",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*"
@@ -20,7 +20,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
+        "NETStandard.Library": "1.6.1-preview1-24530-04"
       }
     }
   },

@@ -2,8 +2,8 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "NETStandard.Library": "1.6.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-preview1-final",
+    "NETStandard.Library": "1.6.1-preview1-24530-04",
     "Orchard.DeferredTasks": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.Environment.Cache": "2.0.0-*",

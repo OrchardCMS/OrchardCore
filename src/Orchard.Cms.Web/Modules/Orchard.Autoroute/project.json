@@ -1,7 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0-preview1-final",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "1.0.0-*",
@@ -20,7 +20,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
+        "NETStandard.Library": "1.6.1-preview1-24530-04"
       }
     }
   }

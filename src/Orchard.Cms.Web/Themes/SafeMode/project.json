@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.0-preview1-final",
+    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.1.0-preview1-final",
     "Orchard.DisplayManagement": "2.0.0-*"
   },
   "buildOptions": {
@@ -14,7 +14,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
+        "NETStandard.Library": "1.6.1-preview1-24530-04"
       }
     }
   },
