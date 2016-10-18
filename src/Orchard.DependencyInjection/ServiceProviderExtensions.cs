@@ -38,6 +38,13 @@ namespace Orchard.DependencyInjection
 
                         clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
                         //clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
+
+                        // https://github.com/aspnet/DependencyInjection/issues/459
+                        if (service.ServiceType.IsAssignableFrom(typeof(IDisposable))) 
+                        {
+                            throw new ArgumentOutOfRangeException($"The type {service.ServiceType} implements IDisposable.");
+                        }
+
                     }
                 }
                 else
