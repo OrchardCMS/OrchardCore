@@ -128,5 +128,105 @@ namespace Orchard.Deployment.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Edit(int id, string stepId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Unauthorized();
+            }
+
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+
+            if (step == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditDeploymentPlanStepViewModel
+            {
+                DeploymentPlanId = id,
+                DeploymentStep = step,
+                DeploymentStepId = step.Id,
+                DeploymentStepType = step.GetType().Name,
+                Editor = await _displayManager.BuildStepEditorAsync(step, this)
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditDeploymentPlanStepViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Unauthorized();
+            }
+
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.DeploymentPlanId);
+
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
+
+            if (step == null)
+            {
+                return NotFound();
+            }
+
+            var editor = await _displayManager.UpdatStepEditorAsync(step, this);
+
+            if (ModelState.IsValid)
+            {
+                _session.Save(deploymentPlan);
+
+                _notifier.Success(H["Deployment plan step updated successfully"]);
+                return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
+            }
+
+            model.Editor = editor;
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id, string stepId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Unauthorized();
+            }
+
+            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+
+            if (deploymentPlan == null)
+            {
+                return NotFound();
+            }
+
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+
+            if (step == null)
+            {
+                return NotFound();
+            }
+
+            deploymentPlan.DeploymentSteps.Remove(step);
+            _session.Save(deploymentPlan);
+
+            _notifier.Success(H["Deployment step deleted successfully"]);
+
+            return RedirectToAction("Display", "DeploymentPlan", new { id });
+        }
     }
 }

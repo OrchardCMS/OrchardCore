@@ -4,27 +4,21 @@
 
 <nav class="admin-toolbar">
     <div class="nav navbar-nav">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Add Step"]
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-               @foreach (var type in Model.DeploymentStepTypes)
-               {
-                <a class="dropdown-item" asp-route-action="Create" asp-route-controller="Step" asp-route-id="@Model.DeploymentPlan.Id" asp-route-type="@type">@type</a>
-               }
-            </div>
-        </div>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            @T["Add Step"]
+        </button>
     </div>
 </nav>
 
-@using (Html.BeginForm())
-{
+<form asp-action="DeploymentPlan">
     @if (Model.Items.Any())
     {
         <ul class="list-group">
             @foreach (var item in Model.Items)
             {
+                item.DeploymentPlanId = Model.DeploymentPlan.Id;
+
                 <li class="list-group-item">
                     @Display(item)
                 </li>
@@ -37,4 +31,32 @@
             @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
         </div>
     }
-}
+</form>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">@T["Available Steps"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var thumbnail in Model.Thumbnails)
+                    {
+                        thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
+                        thumbnail.Value.Type = thumbnail.Key;
+                        <div class="col-sm-6">
+                            @Display(thumbnail.Value)
+                        </div>
+                    }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+</div>

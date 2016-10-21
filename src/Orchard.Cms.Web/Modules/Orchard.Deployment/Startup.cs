@@ -32,6 +32,13 @@ namespace Orchard.Deployment
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "DeleteStep",
+                area: "Orchard.Deployment",
+                template: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
+                controller: "Step",
+                action: "Delete"
+            );
         }
     }
 }

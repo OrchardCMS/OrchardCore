@@ -1,6 +1,22 @@
 @model dynamic
+@inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
 
 @{ 
-    var contentType = (string)Model.ContentType;
+    var contentTypes = (string[])Model.ContentTypes;
 }
-<h5>@T["Content Type: {0}", contentType]</h5>
+
+<h5>@T["Content Types"]</h5>
+@if (contentTypes != null && contentTypes.Length > 0)
+{
+    @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions())
+    {
+        if (contentTypes.Contains(contentTypeDefinition.Name))
+        {
+            <span class="tag tag-default">@contentTypeDefinition.DisplayName</span>
+        }
+    }
+}
+else
+{
+    <span class="tag tag-warning">@T["Nothing here!"]</span>
+}

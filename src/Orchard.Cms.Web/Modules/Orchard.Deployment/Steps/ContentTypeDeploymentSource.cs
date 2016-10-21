@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
@@ -30,7 +31,7 @@ namespace Orchard.Deployment.Steps
             var data = new JArray();
             var descriptor = new RecipeStepDescriptor { Name = "Data", Step = data };
 
-            foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType == contentState.ContentType).List())
+            foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && Array.IndexOf(contentState.ContentTypes, x.ContentType) > 0).List())
             {
                 data.Add(contentItem.Content);
             }

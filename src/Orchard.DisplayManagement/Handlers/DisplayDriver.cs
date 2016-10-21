@@ -86,7 +86,8 @@ namespace Orchard.DisplayManagement.Handlers
         }
 
         /// <summary>
-        /// If the shape needs to be rendered, it is created automatically from its type name and initialized with a model.
+        /// If the shape needs to be rendered, it is created automatically from its type name and initialized with a <see param name="model" />
+        /// All the properties of the <see param name="model" /> object are duplicated on the resulting shape.
         /// </summary>
         public ShapeResult Shape(string shapeType, object model)
         {

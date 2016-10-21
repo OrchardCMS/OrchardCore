@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Html;
-using System.IO;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using System;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Implementation
 {

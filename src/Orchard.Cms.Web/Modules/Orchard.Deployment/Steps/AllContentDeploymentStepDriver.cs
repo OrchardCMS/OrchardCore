@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Orchard.Deployment.Editors;
+﻿using Orchard.Deployment.Editors;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.Deployment.Steps
@@ -11,7 +7,11 @@ namespace Orchard.Deployment.Steps
     {
         public override IDisplayResult Display(AllContentDeploymentStep step)
         {
-            return Shape("AllContentDeploymentStep", step).Location("Content");
+            return
+                Combine(
+                    Shape("AllContentDeploymentStep", step).Location("Summary", "Content"),
+                    Shape("AllContentDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+                );
         }
 
         public override IDisplayResult Edit(AllContentDeploymentStep step)

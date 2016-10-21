@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Orchard.Deployment.Steps
 {
@@ -15,6 +12,7 @@ namespace Orchard.Deployment.Steps
             Name = "ContentTypeDeploymentStep";
         }
 
-        public string ContentType { get; set; }
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string[] ContentTypes { get; set; }
     }
 }

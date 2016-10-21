@@ -123,18 +123,24 @@ namespace Orchard.Deployment.Controllers
             }
 
             var items = new List<dynamic>();
-
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                var stepShape = await _displayManager.DisplayStepAsync(step, this);
-                items.Add(stepShape);
+                var item = await _displayManager.DisplayStepAsync(step, this, "Summary");
+                items.Add(item);
+            }
+
+            var thumbnails = new Dictionary<string, dynamic>();
+            foreach (var driver in _drivers)
+            {
+                var thumbnail = await _displayManager.DisplayStepAsync(driver.Create(), this, "Thumbnail");
+                thumbnails.Add(driver.Type.Name, thumbnail);
             }
 
             var model = new DisplayDeploymentPlanViewModel
             {
                 DeploymentPlan = deploymentPlan,
                 Items = items,
-                DeploymentStepTypes = _drivers.Select(x => x.Type.Name).ToArray()
+                Thumbnails = thumbnails,
             };
 
             return View(model);

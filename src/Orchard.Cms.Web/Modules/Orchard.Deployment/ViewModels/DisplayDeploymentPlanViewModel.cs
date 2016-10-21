@@ -6,6 +6,6 @@ namespace Orchard.Deployment.ViewModels
     {
         public DeploymentPlan DeploymentPlan { get; set; }
         public IEnumerable<dynamic> Items { get; set; }
-        public string[] DeploymentStepTypes { get; set; }
+        public IDictionary<string, dynamic> Thumbnails { get; set; }
     }
 }

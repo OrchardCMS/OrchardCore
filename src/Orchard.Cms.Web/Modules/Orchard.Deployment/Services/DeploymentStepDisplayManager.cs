@@ -39,14 +39,23 @@ namespace Orchard.Deployment.Services
 
         public ILogger Logger;
 
-        public async Task<dynamic> DisplayStepAsync(DeploymentStep step, IUpdateModel updater)
+        public async Task<dynamic> DisplayStepAsync(DeploymentStep step, IUpdateModel updater, string displayType = null)
         {
-            dynamic deploymentStepShape = CreateContentShape("DeploymentStep");
+            var actualShapeType = "DeploymentStep";
+            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Summary" : displayType;
+
+            // _[DisplayType] is only added for the ones different than Detail
+            if (actualDisplayType != "Summary")
+            {
+                actualShapeType = actualShapeType + "_" + actualDisplayType;
+            }
+
+            dynamic deploymentStepShape = CreateContentShape(actualShapeType);
             deploymentStepShape.DeploymentStep = step;
 
             var context = new BuildDisplayContext(
                 deploymentStepShape,
-                "", // We don't support display types for Deployment Steps
+                actualDisplayType,
                 "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
