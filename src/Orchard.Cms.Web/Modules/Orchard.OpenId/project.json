@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Orchard.ContentManagement.Display": "2.0.0-*",
+    "Orchard.Data": "2.0.0-*",
+    "Orchard.Roles": "2.0.0-*",
+    "Orchard.Users": "2.0.0-*",
+    "OpenIddict.Mvc": "1.0.0-alpha2-*"
+  },
+  "buildOptions": {
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.6.0-*"
+      }
+    }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
+  }
+}
