@@ -53,7 +53,6 @@ namespace Orchard.Recipes.Services
                             await stepActionAsync(descriptor, new RecipeStepDescriptor
                             {
                                 Id = (stepId++).ToString(CultureInfo.InvariantCulture),
-                                RecipeName = descriptor.Name,
                                 Name = child.Value<string>("name"),
                                 Step = child
                             });

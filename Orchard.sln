@@ -165,6 +165,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tokens.Content", "s
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tokens.Abstractions", "src\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.xproj", "{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Deployment.Abstractions", "src\Orchard.Deployment.Abstractions\Orchard.Deployment.Abstractions.xproj", "{F889E955-77A9-44FA-8663-674BE39C23F0}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Deployment", "src\Orchard.Cms.Web\Modules\Orchard.Deployment\Orchard.Deployment.xproj", "{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -439,6 +443,14 @@ Global
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F889E955-77A9-44FA-8663-674BE39C23F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F889E955-77A9-44FA-8663-674BE39C23F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F889E955-77A9-44FA-8663-674BE39C23F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F889E955-77A9-44FA-8663-674BE39C23F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -517,5 +529,7 @@ Global
 		{874AF752-83B1-4595-AACD-B18D4A8C4649} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{20F38722-4638-48FE-904B-4F6A8F4F362A} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{A76DFCA4-4CCA-41CB-88C6-AF83414C7122} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{F889E955-77A9-44FA-8663-674BE39C23F0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

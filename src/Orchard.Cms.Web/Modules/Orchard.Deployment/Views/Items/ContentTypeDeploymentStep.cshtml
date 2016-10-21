@@ -1,0 +1,6 @@
+@model dynamic
+
+@{ 
+    var contentType = (string)Model.ContentType;
+}
+<h5>@T["Content Type: {0}", contentType]</h5>

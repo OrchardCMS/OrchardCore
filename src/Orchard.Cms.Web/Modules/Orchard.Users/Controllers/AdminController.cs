@@ -117,7 +117,7 @@ namespace Orchard.Users.Controllers
                 .Take(pager.PageSize)
                 .List();
 
-            // maintain previous route data when generating page links
+            // Maintain previous route data when generating page links
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
             routeData.Values.Add("Options.Search", options.Search);

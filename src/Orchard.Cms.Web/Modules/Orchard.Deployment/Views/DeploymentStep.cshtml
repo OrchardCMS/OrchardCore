@@ -1,0 +1,10 @@
+@model dynamic
+    
+<div class="properties">
+    <div class="related pull-xs-right">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </div>
+</div>
+
+@Display(Model.Content)
