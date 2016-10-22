@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.FileProviders;
+﻿using Microsoft.Extensions.FileProviders;
+using Orchard.Environment.Extensions.Info.Features;
 using System;
+using System.Collections.Generic;
 
-namespace Orchard.Environment.Extensions.Info
+namespace Orchard.Environment.Extensions.Info.Extensions
 {
     public class ExtensionInfo : IExtensionInfo
     {

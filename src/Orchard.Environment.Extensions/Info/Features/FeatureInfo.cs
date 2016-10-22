@@ -1,4 +1,4 @@
-﻿namespace Orchard.Environment.Extensions.Info
+﻿namespace Orchard.Environment.Extensions.Info.Features
 {
     public class FeatureInfo : IFeatureInfo
     {

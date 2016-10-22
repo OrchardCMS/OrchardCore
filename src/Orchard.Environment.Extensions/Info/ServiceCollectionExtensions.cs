@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Extensions.Info.Extensions;
+using Orchard.Environment.Extensions.Info.Manifests;
 
 namespace Orchard.Environment.Extensions.Info
 {

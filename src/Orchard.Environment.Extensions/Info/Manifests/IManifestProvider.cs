@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Extensions.Info.Manifests;
 
-namespace Orchard.Environment.Extensions.Info
+namespace Orchard.Environment.Extensions.Info.Manifests
 {
     public interface IManifestProvider
     {

@@ -8,6 +8,8 @@ namespace Orchard.Environment.Extensions.Info.Extensions
 {
     public interface IExtensionManager
     {
+        IExtensionInfo GetExtension(string extensionId);
+        IEnumerable<IExtensionInfo> GetExtensions();
     }
 
     public class ExtensionManager : IExtensionManager
@@ -45,7 +47,7 @@ namespace Orchard.Environment.Extensions.Info.Extensions
 
         public IEnumerable<IExtensionInfo> GetExtensions()
         {
-            // (ngm) throw this to a static, no need to build this everytime
+            // TODO (ngm) throw this to a static, no need to build this everytime
             IDictionary<string, IExtensionInfo> extensionsById
                 = new Dictionary<string, IExtensionInfo>();
 

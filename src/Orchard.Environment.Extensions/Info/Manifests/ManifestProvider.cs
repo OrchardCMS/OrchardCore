@@ -3,7 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Orchard.Parser;
 using System.IO;
 
-namespace Orchard.Environment.Extensions.Info
+namespace Orchard.Environment.Extensions.Info.Manifests
 {
     public class ManifestProvider : IManifestProvider
     {

@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Extensions.Info.Manifests;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Info
+namespace Orchard.Environment.Extensions.Info.Manifests
 {
     public class ManifestBuilder : IManifestBuilder
     {

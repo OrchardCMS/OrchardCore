@@ -1,27 +1,31 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Orchard.Environment.Extensions.Info.Features;
 using Orchard.Environment.Extensions.Info.Manifests;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Environment.Extensions.Info
+namespace Orchard.Environment.Extensions.Info.Extensions
 {
     public class ExtensionProvider : IExtensionProvider
     {
         private IFileProvider _fileProvider;
         private IManifestBuilder _manifestBuilder;
+        private IFeatureManager _featureManager;
 
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
         /// </summary>
         /// <param name="fileProvider">fileProvider containing extensions.</param>
         /// <param name="manifestBuilder">The manifest provider.</param>
+        /// <param name="featureManager">The feature manager.</param>
         public ExtensionProvider(
             IFileProvider fileProvider,
-            IManifestBuilder manifestBuilder)
+            IManifestBuilder manifestBuilder,
+            IFeatureManager featureManager)
         {
             _fileProvider = fileProvider;
             _manifestBuilder = manifestBuilder;
+            _featureManager = featureManager;
         }
 
         /// <summary>
@@ -43,69 +47,8 @@ namespace Orchard.Environment.Extensions.Info
                 .First(content => content.Name.Equals(subPath, StringComparison.OrdinalIgnoreCase));
 
             return new ExtensionInfo(extension, manifest, (ei) => {
-                return BuildFeatures(ei, manifest);
+                return _featureManager.GetFeatures(ei, manifest);
             });
-        }
-
-        private IList<IFeatureInfo> BuildFeatures(
-            IExtensionInfo extensionInfo,
-            IManifestInfo manifestInfo)
-        {
-            var features = new List<IFeatureInfo>();
-
-            // Features and Dependencies live within this section
-            var featuresSection = manifestInfo.ConfigurationRoot.GetSection("features");
-            if (featuresSection.Value != null)
-            {
-                foreach (var featureSection in featuresSection.GetChildren())
-                {
-                    var featureId = featureSection.Key;
-
-                    var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
-
-                    var featureName = featureDetails["name"];
-
-                    // TODO (ngm) look at priority
-                    var featurePriority = featureDetails.ContainsKey("priority") ?
-                            double.Parse(featureDetails["priority"]) : 0D;
-
-                    var featureDependencyIds = featureDetails["dependencies"]?
-                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(e => e.Trim())
-                        .ToArray();
-
-                    var featureInfo = new FeatureInfo(
-                        featureId,
-                        featureName,
-                        featurePriority,
-                        extensionInfo,
-                        featureDependencyIds);
-
-                    features.Add(featureInfo);
-                }
-            }
-            else
-            {
-                // The Extension has only one feature, itself, and that can have dependencies
-                var featureId = extensionInfo.ExtensionFileInfo.Name;
-                var featureName = manifestInfo.Name;
-
-                var featureDetails = manifestInfo.ConfigurationRoot;
-                var featureDependencyIds = featureDetails["dependencies"]?
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(e => e.Trim())
-                    .ToArray();
-
-                var featureInfo = new FeatureInfo(
-                    featureId,
-                    featureName,
-                    extensionInfo,
-                    featureDependencyIds);
-
-                features.Add(featureInfo);
-            }
-
-            return features;
         }
     }
 }
