@@ -64,6 +64,11 @@ namespace Orchard.Environment.Extensions.Info
                     var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
 
                     var featureName = featureDetails["name"];
+
+                    // TODO (ngm) look at priority
+                    var featurePriority = featureDetails.ContainsKey("priority") ?
+                            double.Parse(featureDetails["priority"]) : 0D;
+
                     var featureDependencyIds = featureDetails["dependencies"]?
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
@@ -72,6 +77,7 @@ namespace Orchard.Environment.Extensions.Info
                     var featureInfo = new FeatureInfo(
                         featureId,
                         featureName,
+                        featurePriority,
                         extensionInfo,
                         featureDependencyIds);
 
