@@ -14,15 +14,19 @@ using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
+using Orchard.Hosting.Extensions;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
+using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
     public static class ServiceCollectionExtensions
     {
+        public const string cExtraModulesFolder = "ExtraModulesFolders";
+
         public static IServiceCollection AddModuleServices(this IServiceCollection services)
         {
             return AddModuleServices(services, null, "Modules", null);
@@ -48,6 +52,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             services.AddSingleton(new ShellFeature("Orchard.Hosting"));
             services.AddWebHost();
             services.AddModuleFolder(modulesPath);
+            var extraModulesPaths = new List<string>();
+            extraModulesPaths = configuration.GetConfigurationArray(cExtraModulesFolder).ToList();
+            extraModulesPaths.ForEach(modulePath => services.AddModuleFolder(modulePath));            
 
             services
                 .AddMvcCore(options =>
@@ -67,7 +74,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
-                var expander = new ModuleViewLocationExpander();
+                var expander = new ModuleViewLocationExpander(extraModulesPaths);
                 options.ViewLocationExpanders.Add(expander);
 
                 var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
@@ -103,6 +110,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
         {
             return services.AddAllFeaturesDescriptor();
         }
+
 
         public static IServiceCollection AddWebHost(this IServiceCollection services)
         {
