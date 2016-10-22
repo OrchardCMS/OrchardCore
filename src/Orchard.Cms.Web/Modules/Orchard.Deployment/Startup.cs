@@ -20,8 +20,8 @@ namespace Orchard.Deployment
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDeploymentStepDisplayManager, DeploymentStepDisplayManager>();
-            services.AddSingleton<IDeploymentTargetProvider, DeploymentTargetProvider>();
             services.AddSingleton<IDeploymentManager, DeploymentManager>();
+            services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
             services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
             services.AddTransient<IDeploymentSource, ContentTypeDeploymentSource>();
@@ -50,20 +50,6 @@ namespace Orchard.Deployment
                 controller: "DeploymentPlan",
                 action: "Execute"
             );
-
-            var deploymentTargetProvider = serviceProvider.GetService<IDeploymentTargetProvider>();
-            var t = serviceProvider.GetService<IStringLocalizer<Startup>>();
-
-            deploymentTargetProvider.DeploymentTargets.Add(new DeploymentTarget(
-                name: t["File Download"],
-                description: t["Download a deployment plan locally."],
-                route: new RouteValueDictionary(new
-                {
-                    area = "Orchard.Deployment",
-                    controller = "ExportFile",
-                    action = "Execute"
-                })
-            ));
         }
     }
 }

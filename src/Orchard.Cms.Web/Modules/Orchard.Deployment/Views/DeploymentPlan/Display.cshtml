@@ -1,5 +1,6 @@
 ﻿@model DisplayDeploymentPlanViewModel
-@inject IDeploymentTargetProvider DeploymentTargetProvider
+@inject IDeploymentManager DeploymentTargetManager
+@using Orchard.Deployment.Services
 @using Microsoft.AspNetCore.Routing
 
 <h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
@@ -84,7 +85,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    @foreach (var target in DeploymentTargetProvider.DeploymentTargets)
+                    @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
                         routeWithId["id"] = Model.DeploymentPlan.Id;

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Deployment
 {
     public interface IDeploymentTargetProvider
     {
-        List<DeploymentTarget> DeploymentTargets { get; }
+        Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync();
     }
 }
