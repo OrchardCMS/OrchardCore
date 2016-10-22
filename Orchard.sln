@@ -127,7 +127,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.BackgroundTasks.Abs
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.BackgroundTasks", "src\Orchard.BackgroundTasks\Orchard.BackgroundTasks.xproj", "{D7562E00-C5DD-4F0D-B96D-0D518E4FB533}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.OpenId", "src\Orchard.Web\Modules\Orchard.OpenId\Orchard.OpenId.xproj", "{417BAE48-634D-4C1A-BF30-70866701F936}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.OpenId", "src\Orchard.Cms.Web\Modules\Orchard.OpenId\Orchard.OpenId.xproj", "{417BAE48-634D-4C1A-BF30-70866701F936}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Modules", "src\Orchard.Cms.Web\Modules\Orchard.Modules\Orchard.Modules.xproj", "{0FF07008-D6D6-4668-84CF-F9E4F55BC233}"
 EndProject
