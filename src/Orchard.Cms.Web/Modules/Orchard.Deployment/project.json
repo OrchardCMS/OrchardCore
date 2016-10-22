@@ -3,6 +3,7 @@
   "dependencies": {
     "Handlebars.Net": "1.8.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "System.IO.Compression.ZipFile": "4.0.1",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.Deployment.Abstractions": "2.0.0-*",

@@ -1,13 +1,23 @@
 ﻿@model DisplayDeploymentPlanViewModel
+@inject IDeploymentTargetProvider DeploymentTargetProvider
+@using Microsoft.AspNetCore.Routing
 
 <h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
 
 <nav class="admin-toolbar">
     <div class="nav navbar-nav">
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-            @T["Add Step"]
-        </button>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalTargets">
+                @T["Execute"]
+            </button>
+        </div>
+
+        <div class="pull-xs-right">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalSteps">
+                @T["Add Step"]
+            </button>
+        </div>
     </div>
 </nav>
 
@@ -32,15 +42,16 @@
         </div>
     }
 </form>
+
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">@T["Available Steps"]</h4>
+                <h4 class="modal-title">@T["Available Steps"]</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -59,4 +70,42 @@
                 </div>
             </div>
         </div>
+</div>
+
+
+<div class="modal fade" id="modalTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">@T["Available Targets"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var target in DeploymentTargetProvider.DeploymentTargets)
+                    {
+                        var routeWithId = new RouteValueDictionary(target.Route);
+                        routeWithId["id"] = Model.DeploymentPlan.Id;
+
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-block">
+                                    <h4 class="card-title">@target.Name</h4>
+                                    <p>@target.Description</p>
+                                </div>
+                                <div class="card-footer text-muted text-xs-right">
+                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+                                </div>
+                            </div>                        
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
 </div>

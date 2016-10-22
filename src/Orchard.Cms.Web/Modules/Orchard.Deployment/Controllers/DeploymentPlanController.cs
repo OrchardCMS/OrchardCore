@@ -187,6 +187,7 @@ namespace Orchard.Deployment.Controllers
             return View(model);
         }
 
+        [Route("Deployment/DeploymentPlan/{id}/Edit")]
         public async Task<IActionResult> Edit(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -264,6 +265,5 @@ namespace Orchard.Deployment.Controllers
             
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

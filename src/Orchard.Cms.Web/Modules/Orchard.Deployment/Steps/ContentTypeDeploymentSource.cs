@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
-using Orchard.Recipes.Models;
 using YesSql.Core.Services;
 
 namespace Orchard.Deployment.Steps
@@ -21,6 +19,8 @@ namespace Orchard.Deployment.Steps
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
+            // TODO: Batch and create separate content files in the result
+
             var contentState = step as ContentTypeDeploymentStep;
 
             if (contentState == null)
@@ -29,11 +29,19 @@ namespace Orchard.Deployment.Steps
             }
 
             var data = new JArray();
-            var descriptor = new RecipeStepDescriptor { Name = "Data", Step = data };
 
-            foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && Array.IndexOf(contentState.ContentTypes, x.ContentType) > 0).List())
+            foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentState.ContentTypes)).List())
             {
-                data.Add(contentItem.Content);
+                data.Add(JObject.FromObject(contentItem));
+            }
+
+            if (data.HasValues)
+            {
+                var jobj = new JObject();
+                jobj["name"] = "content";
+                jobj["data"] = data;
+
+                result.Steps.Add(jobj);
             }
 
             return;
