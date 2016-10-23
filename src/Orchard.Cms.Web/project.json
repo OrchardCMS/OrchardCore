@@ -36,6 +36,7 @@
         "node_modules",
         "App_Data",
         "Modules",
+        "UserModules",
         "Themes"
       ]
     }
@@ -70,6 +71,7 @@
     "include": [
       "app_data",
       "modules",
+      "usermodules",
       "themes",
       "views",
       "_ViewStart.cshtml",

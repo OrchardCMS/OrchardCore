@@ -18,6 +18,7 @@
   <ItemGroup>
     <DnxInvisibleFolder Include="App_Data\" />
     <DnxInvisibleFolder Include="Modules\" />
+	<DnxInvisibleFolder Include="UserModules\" />
     <DnxInvisibleFolder Include="Themes\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
