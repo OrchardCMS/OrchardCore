@@ -6,20 +6,23 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Modules.Recipes.Executors
 {
     public class FeatureStep : RecipeExecutionStep
     {
         private readonly IFeatureManager _featureManager;
+        private readonly IExtensionManager _extensionManager;
 
         public FeatureStep(
             IFeatureManager featureManager,
+            IExtensionManager extensionManager,
             ILoggerFactory logger,
             IStringLocalizer<FeatureStep> localizer) : base(logger, localizer)
         {
-
             _featureManager = featureManager;
+            _extensionManager = extensionManager;
         }
 
         public override string Name
@@ -31,7 +34,7 @@ namespace Orchard.Modules.Recipes.Executors
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
-            var availableFeatures = _featureManager.GetAvailableFeaturesAsync().Result.Select(x => x.Id).ToArray();
+            var availableFeatures = _extensionManager.GetExtensions().Features.Select(x => x.Id).ToArray();
             foreach (var featureName in step.Disable)
             {
                 if (!availableFeatures.Contains(featureName))

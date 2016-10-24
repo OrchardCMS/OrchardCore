@@ -5,9 +5,9 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -68,9 +68,9 @@ namespace Orchard.Environment.Shell.Builders
         }
         
         private static IEnumerable<T> BuildBlueprint<T>(
-            IEnumerable<Feature> features,
+            IEnumerable<IFeatureInfo> features,
             Func<Type, bool> predicate,
-            Func<Type, Feature, T> selector,
+            Func<Type, IFeatureInfo, T> selector,
             IEnumerable<string> excludedTypes)
         {
             // Load types excluding the replaced types
@@ -87,7 +87,7 @@ namespace Orchard.Environment.Shell.Builders
             return typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(type);
         }
 
-        private static DependencyBlueprint BuildModule(Type type, Feature feature)
+        private static DependencyBlueprint BuildModule(Type type, IFeatureInfo feature)
         {
             return new DependencyBlueprint
             {
@@ -97,7 +97,7 @@ namespace Orchard.Environment.Shell.Builders
             };
         }
         
-        private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor)
+        private static DependencyBlueprint BuildDependency(Type type, IFeatureInfo feature, ShellDescriptor descriptor)
         {
             return new DependencyBlueprint
             {

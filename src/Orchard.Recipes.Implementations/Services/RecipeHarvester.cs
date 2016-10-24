@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Recipes.Models;
 using System.Collections.Generic;
 using System.IO;
@@ -42,7 +41,7 @@ namespace Orchard.Recipes.Services
 
         public async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {
-            return await _extensionManager.AvailableExtensions().InvokeAsync(async descriptor => {
+            return await _extensionManager.GetExtensions().InvokeAsync(async descriptor => {
                 return await HarvestRecipesAsync(descriptor);
             }, Logger);
         }
@@ -59,9 +58,9 @@ namespace Orchard.Recipes.Services
             return Enumerable.Empty<RecipeDescriptor>();
         }
 
-        private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(ExtensionDescriptor extension)
+        private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(IExtensionInfo extension)
         {
-            var folderSubPath = Path.Combine(extension.Location, extension.Id, "Recipes");
+            var folderSubPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, extension.Id, "Recipes");
             var recipeContainerFileInfo = _hostingEnvironment
                 .ContentRootFileProvider
                 .GetFileInfo(folderSubPath);

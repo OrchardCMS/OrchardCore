@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing;
+using Orchard.Environment.Extensions.Loaders;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -31,9 +32,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             builder.UseStaticFiles();
 
             // TODO: configure the location and parameters (max-age) per module.
-            foreach(var extension in extensionManager.AvailableExtensions())
+            var availableExtensions = extensionManager.GetExtensions();
+            foreach (var extension in availableExtensions)
             {
-                var contentPath = Path.Combine(hostingEnvironment.ContentRootPath, extension.Location, extension.Id, "Content");
+                var contentPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content");
                 if (Directory.Exists(contentPath))
                 {
                     builder.UseStaticFiles(new StaticFileOptions()
@@ -56,18 +58,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             using (logger.BeginScope("Loading extensions"))
             {
-                Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
+                var extensionEntries = extensionManager.LoadExtensions(availableExtensions);
+
+                foreach (var assemblyPart in extensionEntries
+                    .Where(x => x.GetType() != typeof(FailedExtensionEntry))
+                    .Select(x => new AssemblyPart(x.Assembly))) {
+                    applicationPartManager.ApplicationParts.Add(assemblyPart);
+                }
+
+                var failed = extensionEntries.Where(x => x.GetType() == typeof(FailedExtensionEntry));
+
+                foreach (FailedExtensionEntry failure in failed)
                 {
-                    try
-                    {
-                        var extensionEntry = extensionManager.LoadExtension(feature.Extension);
-                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogCritical("Could not load an extension", feature.Extension, e);
-                    }
-                });
+                    logger.LogCritical("Could not load an extension", failure.Exception);
+                }
             }
 
             return builder;

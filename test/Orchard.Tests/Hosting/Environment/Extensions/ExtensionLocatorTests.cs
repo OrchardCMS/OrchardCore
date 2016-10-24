@@ -1,114 +1,114 @@
-﻿using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions.Folders;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Tests.Stubs;
-using System;
-using System.IO;
-using System.Linq;
-using Xunit;
+﻿//using Microsoft.Extensions.Options;
+//using Orchard.Environment.Extensions.Folders;
+//using Orchard.Environment.Extensions.Models;
+//using Orchard.Tests.Stubs;
+//using System;
+//using System.IO;
+//using System.Linq;
+//using Xunit;
 
-namespace Orchard.Tests.Hosting.Environment.Extensions
-{
-    public class ExtensionLocatorTests
-    {
-        private string _subPath = string.Format("Hosting{0}Environment{0}Extensions{0}FoldersData", Path.DirectorySeparatorChar);
+//namespace Orchard.Tests.Hosting.Environment.Extensions
+//{
+//    public class ExtensionLocatorTests
+//    {
+//        private string _subPath = string.Format("Hosting{0}Environment{0}Extensions{0}FoldersData", Path.DirectorySeparatorChar);
 
-        [Fact]
-        [Trait("Category", "ExtensionLocator")]
-        public void IdsFromFoldersWithModuleTxtShouldBeListed()
-        {
-            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
-                                                        new NullLogger<ExtensionHarvester>());
-            var options = new ExtensionHarvestingOptions();
-            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
-            var folders = new ExtensionLocator(
-                new FakeOptions(options),
-                harvester);
+//        [Fact]
+//        [Trait("Category", "ExtensionLocator")]
+//        public void IdsFromFoldersWithModuleTxtShouldBeListed()
+//        {
+//            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
+//                                                        new NullLogger<ExtensionHarvester>());
+//            var options = new ExtensionHarvestingOptions();
+//            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
+//            var folders = new ExtensionLocator(
+//                new FakeOptions(options),
+//                harvester);
 
-            var ids = folders.AvailableExtensions().Select(d => d.Id);
-            Assert.Equal(5, ids.Count());
-            Assert.Contains("Sample1", ids); // Sample1 - obviously
-            Assert.Contains("Sample3", ids); // Sample3
-            Assert.Contains("Sample4", ids); // Sample4
-            Assert.Contains("Sample6", ids); // Sample6
-            Assert.Contains("Sample7", ids); // Sample7
-        }
+//            var ids = folders.AvailableExtensions().Select(d => d.Id);
+//            Assert.Equal(5, ids.Count());
+//            Assert.Contains("Sample1", ids); // Sample1 - obviously
+//            Assert.Contains("Sample3", ids); // Sample3
+//            Assert.Contains("Sample4", ids); // Sample4
+//            Assert.Contains("Sample6", ids); // Sample6
+//            Assert.Contains("Sample7", ids); // Sample7
+//        }
 
-        [Fact]
-        public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument()
-        {
-            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
-                                                        new NullLogger<ExtensionHarvester>());
-            var options = new ExtensionHarvestingOptions();
-            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
-            var folders = new ExtensionLocator(
-                new FakeOptions(options),
-                harvester);
+//        [Fact]
+//        public void ModuleTxtShouldBeParsedAndReturnedAsYamlDocument()
+//        {
+//            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
+//                                                        new NullLogger<ExtensionHarvester>());
+//            var options = new ExtensionHarvestingOptions();
+//            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
+//            var folders = new ExtensionLocator(
+//                new FakeOptions(options),
+//                harvester);
 
-            var sample1 = folders.AvailableExtensions().Single(d => d.Id == "Sample1");
-            Assert.NotEmpty(sample1.Id);
-            Assert.Equal("Bertrand Le Roy", sample1.Author); // Sample1
-        }
+//            var sample1 = folders.AvailableExtensions().Single(d => d.Id == "Sample1");
+//            Assert.NotEmpty(sample1.Id);
+//            Assert.Equal("Bertrand Le Roy", sample1.Author); // Sample1
+//        }
 
-        [Fact]
-        public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven()
-        {
-            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
-                                                        new NullLogger<ExtensionHarvester>());
-            var options = new ExtensionHarvestingOptions();
-            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
-            var folders = new ExtensionLocator(
-                new FakeOptions(options),
-                harvester);
+//        [Fact]
+//        public void NamesFromFoldersWithModuleTxtShouldFallBackToIdIfNotGiven()
+//        {
+//            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
+//                                                        new NullLogger<ExtensionHarvester>());
+//            var options = new ExtensionHarvestingOptions();
+//            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
+//            var folders = new ExtensionLocator(
+//                new FakeOptions(options),
+//                harvester);
 
-            var names = folders.AvailableExtensions().Select(d => d.Name);
-            Assert.Equal(5, names.Count());
-            Assert.Contains("Le plug-in français", names); // Sample1
-            Assert.Contains("This is another test.txt", names); // Sample3
-            Assert.Contains("Sample4", names); // Sample4
-            Assert.Contains("SampleSix", names); // Sample6
-            Assert.Contains("Sample7", names); // Sample7
-        }
+//            var names = folders.AvailableExtensions().Select(d => d.Name);
+//            Assert.Equal(5, names.Count());
+//            Assert.Contains("Le plug-in français", names); // Sample1
+//            Assert.Contains("This is another test.txt", names); // Sample3
+//            Assert.Contains("Sample4", names); // Sample4
+//            Assert.Contains("SampleSix", names); // Sample6
+//            Assert.Contains("Sample7", names); // Sample7
+//        }
 
-        [Fact]
-        public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven()
-        {
-            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
-                                                        new NullLogger<ExtensionHarvester>());
-            var options = new ExtensionHarvestingOptions();
-            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
-            var folders = new ExtensionLocator(
-                new FakeOptions(options),
-                harvester);
+//        [Fact]
+//        public void PathsFromFoldersWithModuleTxtShouldFallBackAppropriatelyIfNotGiven()
+//        {
+//            var harvester = new ExtensionHarvester(new StubHostingEnvironment(),
+//                                                        new NullLogger<ExtensionHarvester>());
+//            var options = new ExtensionHarvestingOptions();
+//            options.ExtensionLocationExpanders.Add(ModuleFolder(_subPath));
+//            var folders = new ExtensionLocator(
+//                new FakeOptions(options),
+//                harvester);
 
-            var paths = folders.AvailableExtensions().Select(d => d.Path);
-            Assert.Equal(5, paths.Count());
-            Assert.Contains("Sample1", paths); // Sample1 - Id, Name invalid URL segment
-            Assert.Contains("Sample3", paths); // Sample3 - Id, Name invalid URL segment
-            Assert.Contains("ThisIs.Sample4", paths); // Sample4 - Path
-            Assert.Contains("SampleSix", paths); // Sample6 - Name, no Path
-            Assert.Contains("Sample7", paths); // Sample7 - Id, no Name or Path
-        }
-        public ExtensionLocationExpander ModuleFolder(string path)
-        {
-            return new ExtensionLocationExpander(
-                DefaultExtensionTypes.Module,
-                new[] { path },
-                "Module.txt"
-                );
-        }
+//            var paths = folders.AvailableExtensions().Select(d => d.Path);
+//            Assert.Equal(5, paths.Count());
+//            Assert.Contains("Sample1", paths); // Sample1 - Id, Name invalid URL segment
+//            Assert.Contains("Sample3", paths); // Sample3 - Id, Name invalid URL segment
+//            Assert.Contains("ThisIs.Sample4", paths); // Sample4 - Path
+//            Assert.Contains("SampleSix", paths); // Sample6 - Name, no Path
+//            Assert.Contains("Sample7", paths); // Sample7 - Id, no Name or Path
+//        }
+//        public ExtensionLocationExpander ModuleFolder(string path)
+//        {
+//            return new ExtensionLocationExpander(
+//                DefaultExtensionTypes.Module,
+//                new[] { path },
+//                "Module.txt"
+//                );
+//        }
 
-        public class FakeOptions : IOptions<ExtensionHarvestingOptions>
-        {
-            public FakeOptions(ExtensionHarvestingOptions options)
-            {
-                Value = options;
-            }
-            public ExtensionHarvestingOptions Value
-            {
-                get;
-                private set;
-            }
-        }
-    }
-}
+//        public class FakeOptions : IOptions<ExtensionHarvestingOptions>
+//        {
+//            public FakeOptions(ExtensionHarvestingOptions options)
+//            {
+//                Value = options;
+//            }
+//            public ExtensionHarvestingOptions Value
+//            {
+//                get;
+//                private set;
+//            }
+//        }
+//    }
+//}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Environment.Shell.Builders.Models
 {
@@ -21,7 +21,7 @@ namespace Orchard.Environment.Shell.Builders.Models
     public class ShellBlueprintItem
     {
         public Type Type { get; set; }
-        public Feature Feature { get; set; }
+        public IFeatureInfo Feature { get; set; }
     }
 
     public class DependencyBlueprint : ShellBlueprintItem

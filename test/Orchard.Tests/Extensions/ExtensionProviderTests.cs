@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions.Info.Extensions;
-using Orchard.Environment.Extensions.Info.Features;
-using Orchard.Environment.Extensions.Info.Manifests;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Manifests;
 using System.IO;
 using Xunit;
 

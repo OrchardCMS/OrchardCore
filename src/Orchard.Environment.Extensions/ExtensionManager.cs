@@ -1,122 +1,107 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Orchard.Localization;
-using Orchard.Environment.Extensions.Folders;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Utility;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Utility;
+using Microsoft.Extensions.Options;
+using Orchard.Environment.Extensions.Loaders;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
-        private readonly IExtensionLocator _extensionLocator;
-        private readonly IEnumerable<IExtensionLoader> _loaders;
+        private ExtensionOptions _extensionOptions;
+        private IExtensionProvider _extensionProvider;
+        private IEnumerable<IExtensionLoader> _extensionLoaders;
+        private IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private List<ExtensionDescriptor> _availableExtensions;
-        private List<FeatureDescriptor> _availableFeatures;
 
-        private Dictionary<string, Feature> _features = new Dictionary<string, Feature>();
-        private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions = new ConcurrentDictionary<string, ExtensionEntry>();
-
-        public Localizer T { get; set; }
+        // TODO (ngm) value providers not thread safe...
+        private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions 
+            = new ConcurrentDictionary<string, ExtensionEntry>();
 
         public ExtensionManager(
-            IExtensionLocator extensionLocator,
-            IEnumerable<IExtensionLoader> loaders,
-            ITypeFeatureProvider typeFeatureProvider,
-            ILogger<ExtensionManager> logger)
+            IOptions<ExtensionOptions> optionsAccessor,
+            IExtensionProvider extensionProvider,
+            IEnumerable<IExtensionLoader> extensionLoaders,
+            IHostingEnvironment hostingEnvironment,
+            ILogger<ExtensionManager> logger,
+            IStringLocalizer<ExtensionManager> localizer)
         {
-            _typeFeatureProvider = typeFeatureProvider;
-            _extensionLocator = extensionLocator;
-            _loaders = loaders.OrderBy(x => x.Order).ToArray();
+            _extensionOptions = optionsAccessor.Value;
+            _extensionProvider = extensionProvider;
+            _extensionLoaders = extensionLoaders;
+            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
+        public IStringLocalizer T { get; set; }
 
-        // This method does not load extension types, simply parses extension manifests from
-        // the filesystem.
-        public ExtensionDescriptor GetExtension(string id)
+        public IExtensionInfo GetExtension(string extensionId)
         {
-            return AvailableExtensions().FirstOrDefault(x => x.Id == id);
-        }
-
-        public IEnumerable<ExtensionDescriptor> AvailableExtensions()
-        {
-            // Memoize the list of extensions to prevent module discovery on every call
-            if (_availableExtensions == null)
+            foreach (var searchPath in _extensionOptions.SearchPaths)
             {
-                _availableExtensions = _extensionLocator.AvailableExtensions().ToList();
-            }
+                var subPath = 
+                    Path.Combine(searchPath, extensionId);
+                var extensionInfo = 
+                    _extensionProvider.GetExtensionInfo(subPath);
 
-            return _availableExtensions;
-        }
-
-        public IEnumerable<FeatureDescriptor> AvailableFeatures()
-        {
-            // Memoize the list of features to prevent re-ordering on every call
-            if (_availableFeatures == null)
-            {
-                _availableFeatures = AvailableExtensions()
-                    .SelectMany(ext => ext.Features)
-                    .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
-                    .ToList();
-            }
-
-            return _availableFeatures;
-        }
-
-        internal static int GetPriority(FeatureDescriptor featureDescriptor)
-        {
-            return featureDescriptor.Priority;
-        }
-
-        /// <summary>
-        /// Returns true if the item has an explicit or implicit dependency on the subject
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="subject"></param>
-        /// <returns></returns>
-        public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
-        {
-            if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType))
-            {
-                if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType))
+                if (extensionInfo != null)
                 {
-                    // Themes implicitly depend on modules to ensure build and override ordering
-                    return true;
-                }
-
-                if (DefaultExtensionTypes.IsTheme(subject.Extension.ExtensionType))
-                {
-                    // Theme depends on another if it is its base theme
-                    return item.Extension.BaseTheme == subject.Id;
+                    return extensionInfo;
                 }
             }
 
-            // Return based on explicit dependencies
-            return item.Dependencies != null &&
-                   item.Dependencies.Any(x => StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
+            return null;
         }
 
-        public ExtensionEntry LoadExtension(ExtensionDescriptor extensionDescriptor)
+        public IExtensionInfoList GetExtensions()
+        {
+            // TODO (ngm) throw this to a static, no need to build this everytime
+            IDictionary<string, IExtensionInfo> extensionsById
+                = new Dictionary<string, IExtensionInfo>();
+
+            foreach (var searchPath in _extensionOptions.SearchPaths)
+            {
+                foreach (var subDirectory in _hostingEnvironment
+                    .ContentRootFileProvider
+                    .GetDirectoryContents(searchPath).Where(x => x.IsDirectory))
+                {
+                    var extensionId = subDirectory.Name;
+                    if (!extensionsById.ContainsKey(extensionId))
+                    {
+                        var subPath = Path.Combine(searchPath, extensionId);
+
+                        var extensionInfo =
+                            _extensionProvider.GetExtensionInfo(subPath);
+
+                        if (extensionInfo != null)
+                        {
+                            extensionsById.Add(extensionId, extensionInfo);
+                        }
+                    }
+                }
+            }
+
+            return new ExtensionInfoList(extensionsById);
+        }
+
+        public ExtensionEntry LoadExtension(IExtensionInfo extensionInfo)
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
 
             try
             {
-                return _extensions.GetOrAdd(extensionDescriptor.Id, id =>
+                return _extensions.GetOrAdd(extensionInfo.Id, id =>
                 {
-                    foreach (var loader in _loaders)
+                    foreach (var loader in _extensionLoaders)
                     {
-                        ExtensionEntry entry = loader.Load(extensionDescriptor);
+                        var entry = loader.Load(extensionInfo);
                         if (entry != null)
                         {
                             return entry;
@@ -125,7 +110,7 @@ namespace Orchard.Environment.Extensions
 
                     if (_logger.IsEnabled(LogLevel.Warning))
                     {
-                        _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionDescriptor.Id);
+                        _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
                     }
 
                     return null;
@@ -133,106 +118,27 @@ namespace Orchard.Environment.Extensions
             }
             catch (Exception ex)
             {
-                _logger.LogError(string.Format("Error loading extension '{0}'", extensionDescriptor.Id), ex);
-                throw new OrchardException(T("Error while loading extension '{0}'.", extensionDescriptor.Id), ex);
+                _logger.LogError(string.Format("Error loading extension '{0}'", extensionInfo.Id), ex);
+                throw new OrchardException(T["Error while loading extension '{0}'.", extensionInfo.Id], ex);
             }
         }
 
-        public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
-        {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Loading features");
-            }
+        public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos) {
+            List<ExtensionEntry> extensionEntries = new List<ExtensionEntry>();
 
-            var result = featureDescriptors
-                .Select(descriptor => LoadFeature(descriptor))
-                .ToArray();
-
-            if (_logger.IsEnabled(LogLevel.Information))
+            Parallel.ForEach(extensionInfos, extension =>
             {
-                _logger.LogInformation("Done loading features");
-            }
-            return result;
+                try
+                {
+                    extensionEntries.Add(LoadExtension(extension));
+                }
+                catch (Exception e)
+                {
+                    extensionEntries.Add(new FailedExtensionEntry { Exception = e, ExtensionInfo = extension });
+                }
+            });
+
+            return extensionEntries;
         }
-
-        private Feature LoadFeature(FeatureDescriptor featureDescriptor)
-        {
-            lock(_features)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Loading feature {0}", featureDescriptor.Name);
-                }
-
-                if(_features.ContainsKey(featureDescriptor.Id))
-                {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Feature {0} loaded from cache", featureDescriptor.Name);
-                    }
-
-                    return _features[featureDescriptor.Id];
-                }
-
-                var extensionDescriptor = featureDescriptor.Extension;
-                var featureId = featureDescriptor.Id;
-                var extensionId = extensionDescriptor.Id;
-
-                var extensionEntry = LoadExtension(extensionDescriptor);
-
-                Feature feature;
-                if (extensionEntry == null)
-                {
-                    // If the feature could not be compiled for some reason,
-                    // return a "null" feature, i.e. a feature with no exported types.
-                    feature = new Feature
-                    {
-                        Descriptor = featureDescriptor,
-                        ExportedTypes = Enumerable.Empty<Type>()
-                    };
-
-                    _features.Add(featureDescriptor.Id, feature);
-                    return feature;
-                }
-
-                var extensionTypes = extensionEntry.ExportedTypes.Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
-                var featureTypes = new List<Type>();
-
-                foreach (var type in extensionTypes)
-                {
-                    string sourceFeature = GetSourceFeatureNameForType(type, extensionId);
-                    if (String.Equals(sourceFeature, featureId, StringComparison.OrdinalIgnoreCase))
-                    {
-                        featureTypes.Add(type);
-                    }
-                }
-
-                feature = new Feature
-                {
-                    Descriptor = featureDescriptor,
-                    ExportedTypes = featureTypes
-                };
-
-                foreach (var type in feature.ExportedTypes)
-                {
-                    _typeFeatureProvider.TryAdd(type, feature);
-                }
-
-
-                _features.Add(featureDescriptor.Id, feature);
-                return feature;
-            }
-        }
-
-        private static string GetSourceFeatureNameForType(Type type, string extensionId)
-        {
-            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false))
-            {
-                return featureAttribute.FeatureName;
-            }
-            return extensionId;
-        }
-
     }
 }

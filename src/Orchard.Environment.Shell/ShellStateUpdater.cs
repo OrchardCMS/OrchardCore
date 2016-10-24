@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.State;
 using Orchard.Events;
 
@@ -50,14 +49,14 @@ namespace Orchard.Environment.Shell
             var shellState = _stateManager.GetShellStateAsync().Result;
 
             // start with description of all declared features in order - order preserved with all merging
-            var orderedFeatureDescriptors = _extensionManager.AvailableFeatures();
+            var orderedFeatureDescriptors = _extensionManager.GetExtensions().Features;
 
             // merge feature state into ordered list
             var orderedFeatureDescriptorsAndStates = orderedFeatureDescriptors
-                .Select(featureDescriptor => new
+                .Select(featureInfo => new
                 {
-                    FeatureDescriptor = featureDescriptor,
-                    FeatureState = shellState.Features.FirstOrDefault(s => s.Name == featureDescriptor.Id),
+                    FeatureDescriptor = featureInfo,
+                    FeatureState = shellState.Features.FirstOrDefault(s => s.Name == featureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
                 .ToArray();

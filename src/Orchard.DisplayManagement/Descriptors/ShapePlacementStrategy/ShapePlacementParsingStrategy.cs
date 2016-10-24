@@ -3,9 +3,9 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.FileSystem;
-using Orchard.Environment.Extensions.Models;
 using Microsoft.AspNetCore.Hosting;
+using Orchard.Environment.Extensions;
+using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -34,10 +34,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
-
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
+        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             var virtualFileInfo = _hostingEnviroment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
@@ -59,10 +58,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private void ProcessPlacementFile(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor, PlacementFile placementFile)
+        private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
         {
-            var feature = new Feature { Descriptor = featureDescriptor };
-
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
@@ -78,7 +75,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
                     placement.ShapeType = filter.ShapeType;
 
                     builder.Describe(shapeType)
-                        .From(feature)
+                        .From(featureDescriptor)
                         .Placement(ctx => CheckFilter(ctx, filter), placement);
                 }
             }
@@ -134,9 +131,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             //}
         }
 
-        private bool FeatureIsTheme(FeatureDescriptor fd)
+        private bool FeatureIsTheme(IFeatureInfo fd)
         {
-            return DefaultExtensionTypes.IsTheme(fd.Extension.ExtensionType);
+            return fd.Extension.Manifest.IsTheme();
         }
     }
 }

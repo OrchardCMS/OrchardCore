@@ -10,9 +10,8 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.FileSystem;
-using Orchard.Environment.Extensions.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,10 +29,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
+        private readonly IExtensionManager _extensionManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IFeatureManager featureManager,
+            IExtensionManager extensionManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IHostingEnvironment hostingEnvironment,
@@ -41,6 +42,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         {
             _harvesters = harvesters;
             _featureManager = featureManager;
+            _extensionManager = extensionManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _hostingEnvironment = hostingEnvironment;
@@ -49,10 +51,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         public bool DisableMonitoring { get; set; }
 
-        private static IEnumerable<ExtensionDescriptor> Once(IEnumerable<FeatureDescriptor> featureDescriptors)
+        private static IEnumerable<IFeatureInfo> Once(IEnumerable<IFeatureInfo> featureDescriptors)
         {
             var once = new ConcurrentDictionary<string, object>();
-            return featureDescriptors.Select(fd => fd.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
+            return featureDescriptors.Where(ed => once.TryAdd(ed.Id, null)).ToList();
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -84,18 +86,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var location = _hostingEnvironment
-                        .GetExtensionFileInfo(extensionDescriptor, subPath);
-
                     var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(location.PhysicalPath)))
+                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(extensionDescriptor.Extension.ExtensionFileInfo.PhysicalPath)))
                         .Files;
 
                     var files = matches
                         .Select(match => _hostingEnvironment
-                            .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
+                            .GetExtensionFileInfo(extensionDescriptor.Extension, Path.Combine(subPath, match.Path))).ToArray();
 
-                    var basePath = Path.Combine(extensionDescriptor.Location, extensionDescriptor.Id);
+                    var basePath = Path.Combine(extensionDescriptor.Extension.SubPath, extensionDescriptor.Id);
                     var virtualPath = Path.Combine(basePath, subPath);
 
                     return new { harvesterInfo.harvester, subPath, virtualPath, files };

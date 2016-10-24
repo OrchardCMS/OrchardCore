@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions.Folders;
-using Orchard.Environment.Extensions.Models;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -15,11 +12,11 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
-            IOptions<ExtensionHarvestingOptions> optionsAccessor,
+            IOptions<ExtensionOptions> optionsAccessor,
             IExtensionLibraryService extensionLibraryService,
             ILogger<DynamicExtensionLoader> logger)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.ExtensionLocationExpanders.SelectMany(x => x.SearchPaths).ToArray();
+            ExtensionsSearchPaths = optionsAccessor.Value.SearchPaths.ToArray();
             _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
@@ -28,29 +25,16 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public int Order => 50;
 
-        public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
+        public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-        }
-
-        public void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
-        {
-        }
-
-        public bool IsCompatibleWithModuleReferences(ExtensionDescriptor extension, IEnumerable<ExtensionProbeEntry> references)
-        {
-            return true;
-        }
-
-        public ExtensionEntry Load(ExtensionDescriptor descriptor)
-        {
-            if (!ExtensionsSearchPaths.Contains(descriptor.Location))
+            if (!ExtensionsSearchPaths.Contains(extensionInfo.ExtensionFileInfo.PhysicalPath))
             {
                 return null;
             }
 
             try
             {
-                var assembly = _extensionLibraryService.LoadDynamicExtension(descriptor);
+                var assembly = _extensionLibraryService.LoadDynamicExtension(extensionInfo);
             
                 if (assembly == null)
                 {
@@ -59,12 +43,12 @@ namespace Orchard.Environment.Extensions.Loaders
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Loaded referenced dynamic extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                    _logger.LogInformation("Loaded referenced dynamic extension \"{0}\": assembly name=\"{1}\"", extensionInfo.Id, assembly.FullName);
                 }
 
                 return new ExtensionEntry
                 {
-                    Descriptor = descriptor,
+                    ExtensionInfo = extensionInfo,
                     Assembly = assembly,
                     ExportedTypes = assembly.ExportedTypes
                 };
@@ -74,18 +58,5 @@ namespace Orchard.Environment.Extensions.Loaders
                 return null;
             }
        }
-
-        public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
-        {
-            return null;
-        }
-
-        public void ReferenceActivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
-        {
-        }
-
-        public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
-        {
-        }
     }
 }

@@ -75,7 +75,7 @@ namespace Orchard.Data.Migration
                 return (GetCreateMethod(dataMigration) != null);
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Descriptor.Id).ToList();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
         }
 
         public async Task Uninstall(string feature)
@@ -136,7 +136,7 @@ namespace Orchard.Data.Migration
             }
 
             // proceed with dependent features first, whatever the module it's in
-            var dependencies = _extensionManager.AvailableFeatures()
+            var dependencies = _extensionManager.GetExtensions().Features
                 .Where(f => String.Equals(f.Id, feature, StringComparison.OrdinalIgnoreCase))
                 .Where(f => f.Dependencies != null)
                 .SelectMany(f => f.Dependencies)
@@ -251,7 +251,7 @@ namespace Orchard.Data.Migration
         private IEnumerable<IDataMigration> GetDataMigrations(string feature)
         {
             var migrations = _dataMigrations
-                    .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Descriptor.Id, feature, StringComparison.OrdinalIgnoreCase))
+                    .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id, feature, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
             //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {

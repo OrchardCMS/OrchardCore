@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Models;
+﻿using Orchard.Environment.Extensions;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Theming
 {
     public interface IThemeManager
     {
-        Task<ExtensionDescriptor> GetThemeAsync();
+        Task<IExtensionInfo> GetThemeAsync();
     }
 }

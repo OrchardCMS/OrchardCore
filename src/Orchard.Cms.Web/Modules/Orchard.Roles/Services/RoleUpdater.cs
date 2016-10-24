@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Roles.Services
 {
@@ -33,45 +33,45 @@ namespace Orchard.Roles.Services
 
         public ILogger Logger { get; set; }
 
-        void IFeatureEventHandler.Installing(Feature feature)
+        void IFeatureEventHandler.Installing(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Installed(Feature feature)
+        void IFeatureEventHandler.Installed(IFeatureInfo feature)
         {
             AddDefaultRolesForFeatureAsync(feature).Wait();
         }
 
-        void IFeatureEventHandler.Enabling(Feature feature)
+        void IFeatureEventHandler.Enabling(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Enabled(Feature feature)
+        void IFeatureEventHandler.Enabled(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Disabling(Feature feature)
+        void IFeatureEventHandler.Disabling(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Disabled(Feature feature)
+        void IFeatureEventHandler.Disabled(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Uninstalling(Feature feature)
+        void IFeatureEventHandler.Uninstalling(IFeatureInfo feature)
         {
         }
 
-        void IFeatureEventHandler.Uninstalled(Feature feature)
+        void IFeatureEventHandler.Uninstalled(IFeatureInfo feature)
         {
         }
 
-        public async Task AddDefaultRolesForFeatureAsync(Feature feature)
+        public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
         {
-            var featureName = feature.Descriptor.Id;
+            var featureName = feature.Id;
 
             // when another module is being enabled, locate matching permission providers
-            var providersForEnabledModule = _permissionProviders.Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType())?.Descriptor?.Id == featureName);
+            var providersForEnabledModule = _permissionProviders.Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType())?.Id == featureName);
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
