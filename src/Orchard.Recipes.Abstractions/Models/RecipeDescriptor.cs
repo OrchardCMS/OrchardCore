@@ -18,5 +18,10 @@ namespace Orchard.Recipes.Models
 
         public string RecipeFileName { get; set; }
         public IFileProvider RecipeFileProvider { get; set; }
+
+        public IFileInfo GetRecipeFile()
+        {
+            return RecipeFileProvider.GetFileInfo(RecipeFileName);
+        }
     }
 }

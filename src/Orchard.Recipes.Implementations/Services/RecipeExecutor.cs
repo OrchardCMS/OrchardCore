@@ -60,9 +60,9 @@ namespace Orchard.Recipes.Services
             {
                 var parsersForFileExtension = _recipeOptions
                     .RecipeFileExtensions
-                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(recipeDescriptor.RecipeFileProvider.GetFileInfo(recipeDescriptor.RecipeFileName).PhysicalPath));
+                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(recipeDescriptor.GetRecipeFile().PhysicalPath));
 
-                using (var stream = recipeDescriptor.RecipeFileProvider.GetFileInfo(recipeDescriptor.RecipeFileName).CreateReadStream())
+                using (var stream = recipeDescriptor.GetRecipeFile().CreateReadStream())
                 {
                     RecipeResult result = new RecipeResult { ExecutionId = executionId };
                     List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
@@ -89,7 +89,7 @@ namespace Orchard.Recipes.Services
                     await _recipeStore.UpdateAsync(result);
                 }
 
-                using (var stream = recipeDescriptor.RecipeFileProvider.GetFileInfo("Recipe.json").CreateReadStream())
+                using (var stream = recipeDescriptor.GetRecipeFile().CreateReadStream())
                 {
                     foreach (var parserForFileExtension in parsersForFileExtension)
                     {
