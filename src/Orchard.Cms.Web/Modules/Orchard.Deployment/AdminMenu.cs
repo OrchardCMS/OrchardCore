@@ -23,7 +23,7 @@ namespace Orchard.Deployment
             builder
                 .Add(T["Content"], "10", content => content
                     .Add(T["Import/Export"], "10", import => import
-                        .Add(T["Deployment"], "5", deployment => deployment
+                        .Add(T["Deployment Plans"], "5", deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "Orchard.Deployment" })
                             .Permission(Permissions.Export)
                             .LocalNav()
