@@ -19,6 +19,7 @@ namespace Orchard.Environment.Extensions
             Func<IExtensionInfo, IList<IFeatureInfo>> features) {
 
             _fileInfo = fileInfo;
+            _subPath = subPath;
             _manifestInfo = manifestInfo;
             _features = features(this);
         }

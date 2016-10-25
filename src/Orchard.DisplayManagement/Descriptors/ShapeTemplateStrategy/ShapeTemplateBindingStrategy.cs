@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Descriptor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,11 +32,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly ILogger _logger;
         private readonly IFeatureManager _featureManager;
         private readonly IExtensionManager _extensionManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly IShellDescriptorManager _shellDescriptorManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IFeatureManager featureManager,
             IExtensionManager extensionManager,
+            IShellFeaturesManager shellFeaturesManager,
+            IShellDescriptorManager shellDescriptorManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IHostingEnvironment hostingEnvironment,
@@ -43,6 +49,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _harvesters = harvesters;
             _featureManager = featureManager;
             _extensionManager = extensionManager;
+            _shellFeaturesManager = shellFeaturesManager;
+            _shellDescriptorManager = shellDescriptorManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _hostingEnvironment = hostingEnvironment;
@@ -68,8 +76,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
-            var activeExtensions = Once(activeFeatures).ToList();
+            var activeExtensions = Once(
+                _shellFeaturesManager.EnabledFeatures(
+                    _shellDescriptorManager.GetShellDescriptorAsync().Result));
 
             var matcher = new Matcher();
             foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))

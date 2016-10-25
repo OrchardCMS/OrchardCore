@@ -17,7 +17,7 @@ namespace Orchard.Environment.Extensions
                 return feature;
             }
 
-            return new NotFoundFeatureInfo();
+            return null;
         }
 
         public void TryAdd(Type type, IFeatureInfo feature)
