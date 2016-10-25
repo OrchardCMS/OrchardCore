@@ -1,4 +1,5 @@
-﻿using Orchard.Environment.Extensions.Loaders;
+﻿using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Loaders;
 using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
@@ -9,5 +10,8 @@ namespace Orchard.Environment.Extensions
         IExtensionInfoList GetExtensions();
         ExtensionEntry LoadExtension(IExtensionInfo extensionInfo);
         IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos);
+
+        FeatureEntry LoadFeature(IFeatureInfo feature);
+        IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features);
     }
 }

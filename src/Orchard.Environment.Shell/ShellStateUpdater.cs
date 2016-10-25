@@ -5,6 +5,7 @@ using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.State;
 using Orchard.Events;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Environment.Shell
 {
@@ -62,18 +63,15 @@ namespace Orchard.Environment.Shell
                 .ToArray();
 
             // get loaded feature information
-            var loadedFeatures = _extensionManager.LoadFeatures(orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor)).ToArray();
+            var loadedFeatures = _extensionManager.LoadFeatures(
+                orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor)).ToArray();
 
             // merge loaded feature information into ordered list
             var loadedEntries = orderedFeatureDescriptorsAndStates.Select(
                 entry => new
                 {
-                    Feature = loadedFeatures.SingleOrDefault(f => f.Descriptor == entry.FeatureDescriptor)
-                              ?? new Feature
-                              {
-                                  Descriptor = entry.FeatureDescriptor,
-                                  ExportedTypes = Enumerable.Empty<Type>()
-                              },
+                    Feature = loadedFeatures.SingleOrDefault(f => f.FeatureInfo == entry.FeatureDescriptor)
+                              ?? new NonCompiledFeatureEntry(entry.FeatureDescriptor),
                     entry.FeatureDescriptor,
                     entry.FeatureState,
                 }).ToList();

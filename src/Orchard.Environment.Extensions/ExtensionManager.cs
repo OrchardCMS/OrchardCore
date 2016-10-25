@@ -2,12 +2,14 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions
@@ -18,17 +20,22 @@ namespace Orchard.Environment.Extensions
         private IExtensionProvider _extensionProvider;
         private IEnumerable<IExtensionLoader> _extensionLoaders;
         private IHostingEnvironment _hostingEnvironment;
+        private ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
         // TODO (ngm) value providers not thread safe...
         private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions 
             = new ConcurrentDictionary<string, ExtensionEntry>();
 
+        private ConcurrentDictionary<string, FeatureEntry> _features 
+            = new ConcurrentDictionary<string, FeatureEntry>();
+
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IExtensionProvider extensionProvider,
             IEnumerable<IExtensionLoader> extensionLoaders,
             IHostingEnvironment hostingEnvironment,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
         {
@@ -36,6 +43,7 @@ namespace Orchard.Environment.Extensions
             _extensionProvider = extensionProvider;
             _extensionLoaders = extensionLoaders;
             _hostingEnvironment = hostingEnvironment;
+            _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             T = localizer;
         }
@@ -139,6 +147,69 @@ namespace Orchard.Environment.Extensions
             });
 
             return extensionEntries;
+        }
+
+        public FeatureEntry LoadFeature(IFeatureInfo feature)
+        {
+            return _features.GetOrAdd(feature.Id, (key) =>
+            {
+                var loadedExtension = LoadExtension(feature.Extension);
+
+                if (loadedExtension == null)
+                {
+                    return new NonCompiledFeatureEntry(feature);
+                }
+
+                var extensionTypes = loadedExtension
+                    .ExportedTypes
+                    .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
+
+                var featureTypes = new List<Type>();
+
+                foreach (var type in extensionTypes)
+                {
+                    string sourceFeature = GetSourceFeatureNameForType(type, feature.Extension.Id);
+                    if (string.Equals(sourceFeature, feature.Id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        featureTypes.Add(type);
+                    }
+                }
+
+                foreach (var type in featureTypes)
+                {
+                    _typeFeatureProvider.TryAdd(type, feature);
+                }
+
+                return new CompiledFeatureEntry(feature, featureTypes);
+            });
+        }
+
+        public IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features)
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loading features");
+            }
+
+            var result = features
+                .Select(descriptor => LoadFeature(descriptor))
+                .ToArray();
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Done loading features");
+            }
+
+            return result;
+        }
+
+        private static string GetSourceFeatureNameForType(Type type, string extensionId)
+        {
+            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false))
+            {
+                return featureAttribute.FeatureName;
+            }
+            return extensionId;
         }
     }
 }

@@ -7,5 +7,7 @@ namespace Orchard.Environment.Extensions.Features
         IList<IFeatureInfo> GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo);
+
+
     }
 }
