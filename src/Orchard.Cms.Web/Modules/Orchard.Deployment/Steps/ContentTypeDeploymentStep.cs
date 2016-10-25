@@ -12,7 +12,6 @@ namespace Orchard.Deployment.Steps
             Name = "ContentTypeDeploymentStep";
         }
 
-        [DisplayFormat(ConvertEmptyStringToNull = false)]
         public string[] ContentTypes { get; set; }
     }
 }

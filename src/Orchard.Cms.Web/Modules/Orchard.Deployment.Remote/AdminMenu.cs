@@ -2,7 +2,7 @@
 using Orchard.Environment.Navigation;
 using System;
 
-namespace Orchard.Deployment
+namespace Orchard.Deployment.Remote
 {
     public class AdminMenu : INavigationProvider
     {
@@ -23,9 +23,14 @@ namespace Orchard.Deployment
             builder
                 .Add(T["Content"], "10", content => content
                     .Add(T["Import/Export"], "10", import => import
-                        .Add(T["Deployment"], "5", deployment => deployment
-                            .Action("Index", "DeploymentPlan", new { area = "Orchard.Deployment" })
-                            .Permission(Permissions.Export)
+                        .Add(T["Remote Instances"], "5.1", remote => remote
+                            .Action("Index", "RemoteInstance", new { area = "Orchard.Deployment.Remote" })
+                            .Permission(Permissions.ManageRemoteInstances)
+                            .LocalNav()
+                        )
+                        .Add(T["Remote Clients"], "5.2", remote => remote
+                            .Action("Index", "RemoteClient", new { area = "Orchard.Deployment.Remote" })
+                            .Permission(Permissions.ManageRemoteClients)
                             .LocalNav()
                         )
                     )

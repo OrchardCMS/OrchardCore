@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Orchard.Deployment.Services;
 
-namespace Orchard.Deployment.Services
+namespace Orchard.Deployment.Core.Services
 {
     public class DeploymentManager : IDeploymentManager
     {

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.Recipes.Services
 {
@@ -91,7 +92,8 @@ namespace Orchard.Recipes.Services
                         using (var stream = recipeFile.CreateReadStream())
                         {
                             var recipe = recipeParser.ParseRecipe(stream);
-                            recipe.RecipeFileInfo = recipeFile;
+                            recipe.RecipeFileName = recipeFile.Name;
+                            recipe.RecipeFileProvider = new PhysicalFileProvider(Path.GetDirectoryName(recipeFile.PhysicalPath));
                             return Task.FromResult(recipe);
                         }
                     }, Logger));

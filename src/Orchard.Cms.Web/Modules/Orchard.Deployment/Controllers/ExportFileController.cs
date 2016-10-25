@@ -3,7 +3,8 @@ using System.IO.Compression;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+using Orchard.Deployment.Core.Mvc;
+using Orchard.Deployment.Core.Services;
 using Orchard.Deployment.Services;
 using Orchard.Utility;
 using YesSql.Core.Services;
@@ -55,26 +56,6 @@ namespace Orchard.Deployment.Controllers
             }
 
             return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
-        }
-
-        class DeleteFileResultFilter : ResultFilterAttribute
-        {
-            public override void OnResultExecuted(ResultExecutedContext context)
-            {
-                var result = context.Result as PhysicalFileResult;
-
-                if (result == null)
-                {
-                    return;
-                }
-
-                var fileInfo = new FileInfo(result.FileName);
-
-                if (fileInfo.Exists)
-                {
-                    fileInfo.Delete();
-                }
-            }
         }
     }
 }

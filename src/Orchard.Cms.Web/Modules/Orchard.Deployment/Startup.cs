@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Orchard.Data.Migration;
+using Orchard.Deployment.Core;
 using Orchard.Deployment.Editors;
 using Orchard.Deployment.Indexes;
 using Orchard.Deployment.Services;
@@ -18,15 +18,18 @@ namespace Orchard.Deployment
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddDeploymentServices();
+
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDeploymentStepDisplayManager, DeploymentStepDisplayManager>();
-            services.AddSingleton<IDeploymentManager, DeploymentManager>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
             services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
+            services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();
             services.AddTransient<IDeploymentSource, ContentTypeDeploymentSource>();
 
             services.AddTransient<IDeploymentStepDisplayDriver, ContentTypeDeploymentStepDriver>();
+            services.AddTransient<IDeploymentStepDisplayDriver, CustomFileDeploymentStepDriver>();
             services.AddTransient<IDeploymentStepDisplayDriver, AllContentDeploymentStepDriver>();
 
             services.AddTransient<IIndexProvider, DeploymentPlanIndexProvider>();

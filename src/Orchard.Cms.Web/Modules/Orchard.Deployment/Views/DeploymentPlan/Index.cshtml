@@ -7,35 +7,6 @@
 
         <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Deployment Plan"]</a>
 
-        <!-- Single button -->
-        @*<div class="btn-group">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Actions"]
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">@T["Approve"]</a>
-                <a class="dropdown-item" href="#">@T["Disable"]</a>
-                <a class="dropdown-item" href="#">@T["Send challenge E-mail"]</a>
-                <a class="dropdown-item" href="#">@T["Delete"]</a>
-            </div>
-        </div>*@
-
-        @*@Html.TextBoxFor(m => m.Options.Search, new { @class = "text" })
-            <label for="filterResults">@T("Filter:")</label>
-            <select id="filterResults" name="@Html.NameOf(m => m.Options.Filter)">
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.All, T("All Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.Approved, T("Approved Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.Pending, T("Pending Users").ToString())
-                @Html.SelectOption(Model.Options.Filter, UsersFilter.EmailPending, T("Pending Emails").ToString())
-            </select>
-            <label for="sortResults">@T("Sort by:")</label>
-            <select id="sortResults" name="@Html.NameOf(m => m.Options.Order)">
-                @Html.SelectOption(Model.Options.Order, UsersOrder.Name, T("Name").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.Email, T("Email").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.CreatedUtc, T("Creation Time").ToString())
-                @Html.SelectOption(Model.Options.Order, UsersOrder.LastLoginUtc, T("Last Login Time").ToString())
-            </select>*@
-
         <form asp-action="Index" method="get" class="form-inline pull-xs-right">
             <input id="search-box" asp-for="Options.Search" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
             <button type="submit" class="btn btn-secondary">@T["Search"]</button>
@@ -43,24 +14,24 @@
     </div>
 </nav>
 
-@using (Html.BeginForm())
-{
+<form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+
     @if (Model.DeploymentPlans.Any())
     {
-    <ul class="list-group">
-        @foreach (var entry in Model.DeploymentPlans)
-        {
-            <li class="list-group-item">
-                <div class="properties">
-                    <div class="related pull-xs-right">
-                        <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+        <ul class="list-group">
+            @foreach (var entry in Model.DeploymentPlans)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related pull-xs-right">
+                            <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
                     </div>
-                </div>
-                <a asp-action="Display" asp-route-id="@entry.DeploymentPlan.Id">@entry.DeploymentPlan.Name</a>
-            </li>
-        }
-    </ul>
+                    <a asp-action="Display" asp-route-id="@entry.DeploymentPlan.Id">@entry.DeploymentPlan.Name</a>
+                </li>
+            }
+        </ul>
     }
     else
     {
@@ -68,6 +39,6 @@
             @T["<strong>Nothing here!</strong> There are no deployment plans for the moment."]
         </div>
     }
-}
+</form>
 
 @Display(Model.Pager)

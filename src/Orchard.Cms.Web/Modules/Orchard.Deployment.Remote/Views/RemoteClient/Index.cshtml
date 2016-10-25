@@ -1,0 +1,36 @@
+﻿@model RemoteClientIndexViewModel
+
+<h1>@RenderTitleSegments(T["Remote Clients"])</h1>
+
+<nav class="admin-toolbar">
+    <div class="nav navbar-nav">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Client"]</a>
+    </div>
+</nav>
+
+<form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+    @if (Model.RemoteClientList.RemoteClients.Any())
+    { 
+        <ul class="list-group">
+            @foreach (var entry in Model.RemoteClientList.RemoteClients)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related pull-xs-right">
+                            <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                    </div>
+                    <h5>@entry.ClientName</h5>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            @T["<strong>Nothing here!</strong> There are no remote clients for the moment."]
+        </div>
+    }
+</form>
+

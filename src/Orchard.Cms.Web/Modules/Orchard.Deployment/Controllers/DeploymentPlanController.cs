@@ -187,7 +187,6 @@ namespace Orchard.Deployment.Controllers
             return View(model);
         }
 
-        [Route("Deployment/DeploymentPlan/{id}/Edit")]
         public async Task<IActionResult> Edit(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -236,7 +235,12 @@ namespace Orchard.Deployment.Controllers
 
             if (ModelState.IsValid)
             {
+                deploymentPlan.Name = model.Name;
+
                 _session.Save(deploymentPlan);
+
+                _notifier.Success(H["Deployment plan updated successfully"]);
+
                 return RedirectToAction(nameof(Index));
             }
 
