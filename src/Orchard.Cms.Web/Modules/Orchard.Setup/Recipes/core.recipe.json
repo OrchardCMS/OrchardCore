@@ -34,6 +34,8 @@
         "Orchard.Autoroute",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
+        "Orchard.Deployment",
+        "Orchard.Deployment.Remote",
         "TheTheme",
         "TheAdmin",
         "SafeMode"
