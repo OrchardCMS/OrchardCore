@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Orchard.Events
 {
     /// <summary>
-    /// Registrations are shared accross all EventBus instances for a single tenant
+    /// Registrations are shared across all EventBus instances for a single tenant
     /// </summary>
     public interface IEventBusState
     {
