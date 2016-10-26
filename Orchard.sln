@@ -173,6 +173,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Deployment.Remote",
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Deployment.Core", "src\Orchard.Deployment.Core\Orchard.Deployment.Core.xproj", "{065785D6-758D-4DB8-8B5B-B88B760A76DE}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Tenants", "src\Orchard.Cms.Web\Modules\Orchard.Tenants\Orchard.Tenants.xproj", "{014A49FF-D068-4F94-ABF4-6316F2B3D260}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -463,6 +465,10 @@ Global
 		{065785D6-758D-4DB8-8B5B-B88B760A76DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{065785D6-758D-4DB8-8B5B-B88B760A76DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{065785D6-758D-4DB8-8B5B-B88B760A76DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014A49FF-D068-4F94-ABF4-6316F2B3D260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014A49FF-D068-4F94-ABF4-6316F2B3D260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014A49FF-D068-4F94-ABF4-6316F2B3D260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014A49FF-D068-4F94-ABF4-6316F2B3D260}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -545,5 +551,6 @@ Global
 		{1BFFAE3E-8FA1-4DF9-B46F-08C94A88BC7E} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{EC006198-8769-4661-9335-883EF13E6672} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{065785D6-758D-4DB8-8B5B-B88B760A76DE} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{014A49FF-D068-4F94-ABF4-6316F2B3D260} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

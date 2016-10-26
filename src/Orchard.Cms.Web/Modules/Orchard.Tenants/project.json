@@ -1,0 +1,24 @@
+﻿{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Orchard.Environment.Navigation": "2.0.0-*",
+    "Orchard.Admin.Abstractions": "2.0.0-*"
+  },
+  "buildOptions": {
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.6.0-*"
+      }
+    }
+  }
+}
