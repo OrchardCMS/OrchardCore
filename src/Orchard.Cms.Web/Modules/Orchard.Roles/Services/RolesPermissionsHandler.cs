@@ -94,7 +94,8 @@ namespace Orchard.Roles
                 }
             }
 
-            stack.Add(Permissions.SiteOwner.Name);
+            // SiteOwner permission grants them all
+            stack.Add(StandardPermissions.SiteOwner.Name);
         }
     }
 }
