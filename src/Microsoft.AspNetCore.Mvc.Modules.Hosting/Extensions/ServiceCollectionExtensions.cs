@@ -16,6 +16,7 @@ using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
+using Orchard.Environment.Extensions.Manifests;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -23,29 +24,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
     {
         public static IServiceCollection AddModuleServices(this IServiceCollection services)
         {
-            return AddModuleServices(services, null, "Modules", null);
+            return AddModuleServices(services, null, null);
         }
 
         public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration)
         {
-            return AddModuleServices(services, configuration, "Modules", null);
+            return AddModuleServices(services, configuration, null);
         }
 
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, string modulesPath)
-        {
-            return AddModuleServices(services, null, modulesPath, null);
-        }
-
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string modulesPath)
-        {
-            return AddModuleServices(services, configuration, modulesPath, null);
-        }
-
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string modulesPath, Action<MvcOptions> mvcSetupAction)
+        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, Action<MvcOptions> mvcSetupAction)
         {
             services.AddSingleton(new ShellFeature("Orchard.Hosting"));
             services.AddWebHost();
-            services.AddModuleFolder(modulesPath);
+            services.AddManifestDefinition("Module.txt");
 
             services
                 .AddMvcCore(options =>
