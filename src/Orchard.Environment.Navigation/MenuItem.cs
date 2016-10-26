@@ -79,11 +79,11 @@ namespace Orchard.Environment.Navigation
         /// <summary>
         /// The list of <see cref="Permission"/> objects the user must have in order to see this menu item.
         /// </summary>
-        public IList<Permission> Permissions { get; }
+        public List<Permission> Permissions { get; }
 
         /// <summary>
         /// The css classes to render with the menu item.
         /// </summary>
-        public IList<string> Classes { get; }
+        public List<string> Classes { get; }
     }
 }

@@ -83,6 +83,7 @@ namespace Orchard.Environment.Navigation
                 for (var j = items.Count - 1; j > i ; j--)
                 {
                     var cursor = items[j];
+
                     // A match is found, add all its items to the source
                     if(String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
@@ -93,6 +94,27 @@ namespace Orchard.Environment.Navigation
                         }
 
                         items.RemoveAt(j);
+
+                        // If the item to merge is more authoritative then use its values
+                        if (cursor.Position != null && source.Position == null)
+                        {
+                            source.Culture = cursor.Culture;
+                            source.Href = cursor.Href;
+                            source.Id = cursor.Id;
+                            source.LinkToFirstChild = cursor.LinkToFirstChild;
+                            source.LocalNav = cursor.LocalNav;
+                            source.Position = cursor.Position;
+                            source.Resource = cursor.Resource;
+                            source.RouteValues = cursor.RouteValues;
+                            source.Text = cursor.Text;
+                            source.Url = cursor.Url;
+
+                            source.Permissions.Clear();
+                            source.Permissions.AddRange(cursor.Permissions);
+
+                            source.Classes.Clear();
+                            source.Classes.AddRange(cursor.Classes);
+                        }
                     }
                 }
 

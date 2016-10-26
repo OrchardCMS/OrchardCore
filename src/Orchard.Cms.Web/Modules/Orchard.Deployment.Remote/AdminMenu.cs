@@ -21,14 +21,14 @@ namespace Orchard.Deployment.Remote
             }
 
             builder
-                .Add(T["Content"], "10", content => content
-                    .Add(T["Import/Export"], "10", import => import
+                .Add(T["Content"], content => content
+                    .Add(T["Import/Export"], import => import
                         .Add(T["Remote Instances"], "5.1", remote => remote
                             .Action("Index", "RemoteInstance", new { area = "Orchard.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteInstances)
                             .LocalNav()
                         )
-                        .Add(T["Remote Clients"], "5.2", remote => remote
+                        .Add(T["Remote Clients"], remote => remote
                             .Action("Index", "RemoteClient", new { area = "Orchard.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteClients)
                             .LocalNav()
