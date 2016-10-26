@@ -19,7 +19,7 @@ namespace Orchard.Identity
         {
             _contentDefinitionManager.AlterPartDefinition(nameof(IdentityPart), builder => builder
                 .Attachable()
-                .WithDescription("Automatically assigns a unique identity which is stable accross systems."));
+                .WithDescription("Automatically assigns a unique identity which is stable across systems."));
 
             SchemaBuilder.CreateMapIndexTable(nameof(IdentityPartIndex), table => table
                 .Column<string>("Identifier", col => col.WithLength(36))
