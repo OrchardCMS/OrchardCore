@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell
 {
+    public delegate void FeatureDependencyNotificationHandler(string messageFormat, IFeatureInfo feature, IEnumerable<IFeatureInfo> features);
+
     public interface IShellFeaturesManager
     {
         IEnumerable<IFeatureInfo> EnabledFeatures();

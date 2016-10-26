@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Environment.Shell
 {
@@ -16,15 +17,20 @@ namespace Orchard.Environment.Shell
 
         private readonly ILogger<ShellFeaturesManager> _logger;
 
+        public FeatureDependencyNotificationHandler FeatureDependencyNotification { get; set; }
+
         public ShellFeaturesManager(IExtensionManager extensionManager,
             IShellDescriptorManager shellDescriptorManager,
-            ILogger<ShellFeaturesManager> logger)
+            ILogger<ShellFeaturesManager> logger,
+            IStringLocalizer<ShellFeaturesManager> localizer)
         {
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
 
             _logger = logger;
+            T = localizer;
         }
+        public IStringLocalizer T { get; set; }
 
         public IEnumerable<IFeatureInfo> EnabledFeatures()
         {
@@ -180,12 +186,12 @@ namespace Orchard.Environment.Shell
 
                                           if (states.Count == 0)
                                           {
-                                              throw new OrchardException(T("Failed to get state for feature {0}", fId));
+                                              throw new OrchardException(T["Failed to get state for feature {0}", fId]);
                                           }
 
                                           if (states.Count > 1)
                                           {
-                                              throw new OrchardException(T("Found {0} states for feature {1}", states.Count, fId));
+                                              throw new OrchardException(T["Found {0} states for feature {1}", states.Count, fId]);
                                           }
 
                                           return states[0];
@@ -208,7 +214,7 @@ namespace Orchard.Environment.Shell
                 }
                 if (FeatureDependencyNotification != null)
                 {
-                    FeatureDependencyNotification("If {0} is enabled, then you'll also need to enable {1}.", featureInfo.Id, featuresToEnable.Where(f => f.Id != featureInfo.Id));
+                    FeatureDependencyNotification("If {0} is enabled, then you'll also need to enable {1}.", featureInfo, featuresToEnable.Where(f => f.Id != featureInfo.Id));
                 }
 
                 return Enumerable.Empty<IFeatureInfo>();
@@ -225,9 +231,13 @@ namespace Orchard.Environment.Shell
         /// <returns>An enumeration of the disabled features.</returns>
         private IEnumerable<IFeatureInfo> DisableFeature(IFeatureInfo featureInfo, bool force)
         {
-            IEnumerable<string> affectedFeatures = GetDependentFeatures(featureInfo);
+            IEnumerable<string> affectedFeatures = 
+                GetDependentFeatures(featureInfo);
 
-            if (affectedFeatures.Count() > 1 && !force)
+            var extensions = _extensionManager.GetExtensions();
+            var featuresToDisable = extensions.Features.Where(x => affectedFeatures.Contains(x.Id));
+
+            if (featuresToDisable.Count() > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -235,14 +245,11 @@ namespace Orchard.Environment.Shell
                 }
                 if (FeatureDependencyNotification != null)
                 {
-                    FeatureDependencyNotification("If {0} is disabled, then you'll also need to disable {1}.", featureInfo.Id, affectedFeatures.Where(fId => fId != featureInfo.Id));
+                    FeatureDependencyNotification("If {0} is disabled, then you'll also need to disable {1}.", featureInfo, featuresToDisable.Where(f => f.Id != featureInfo.Id));
                 }
 
                 return Enumerable.Empty<IFeatureInfo>();
             }
-
-            var extensions = _extensionManager.GetExtensions();
-            var featuresToDisable = extensions.Features.Where(x => affectedFeatures.Contains(x.Id));
 
             return featuresToDisable;
         }

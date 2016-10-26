@@ -15,7 +15,7 @@ namespace Orchard.Tests.Extensions
         private IExtensionProvider Provider = 
                 new ExtensionProvider(
                     RunningTestFileProvider, 
-                    new ManifestBuilder(new ManifestProvider(RunningTestFileProvider)),
+                    new ManifestBuilder(new ManifestProvider(RunningTestFileProvider), null),
                     new FeatureManager());
 
         [Fact]
