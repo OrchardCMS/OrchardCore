@@ -39,6 +39,11 @@ namespace Orchard.Environment.Extensions
             }
         }
 
+        public bool HasFeature(string featureId)
+        {
+            return Features.Any(x => x.Id == featureId);
+        }
+
         /// <summary>
         /// Returns true if the item has an explicit or implicit dependency on the subject
         /// </summary>

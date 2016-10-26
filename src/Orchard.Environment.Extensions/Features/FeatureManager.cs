@@ -7,6 +7,8 @@ namespace Orchard.Environment.Extensions.Features
 {
     public class FeatureManager : IFeatureManager
     {
+        public const string FeatureManagerCacheKey = "FeatureManager:Features";
+
         public IList<IFeatureInfo> GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)

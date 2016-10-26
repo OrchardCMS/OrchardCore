@@ -17,16 +17,19 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _environment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
 
         public CompositionStrategy(
             IHostingEnvironment environment,
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
+            IShellFeaturesManager shellFeaturesManager,
             ILogger<CompositionStrategy> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _environment = environment;
             _extensionManager = extensionManager;
+            _shellFeaturesManager = shellFeaturesManager;
             _logger = logger;
         }
 
@@ -37,7 +40,7 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
+            var enabledFeatures = _shellFeaturesManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
             
             // Statup classes are the only types that are automatically added to the blueprint
@@ -68,9 +71,9 @@ namespace Orchard.Environment.Shell.Builders
         }
         
         private static IEnumerable<T> BuildBlueprint<T>(
-            IEnumerable<IFeatureInfo> features,
+            IEnumerable<FeatureEntry> features,
             Func<Type, bool> predicate,
-            Func<Type, IFeatureInfo, T> selector,
+            Func<Type, FeatureEntry, T> selector,
             IEnumerable<string> excludedTypes)
         {
             // Load types excluding the replaced types
@@ -87,22 +90,22 @@ namespace Orchard.Environment.Shell.Builders
             return typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(type);
         }
 
-        private static DependencyBlueprint BuildModule(Type type, IFeatureInfo feature)
+        private static DependencyBlueprint BuildModule(Type type, FeatureEntry feature)
         {
             return new DependencyBlueprint
             {
                 Type = type,
-                Feature = feature,
+                Feature = feature.FeatureInfo,
                 Parameters = Enumerable.Empty<ShellParameter>()
             };
         }
         
-        private static DependencyBlueprint BuildDependency(Type type, IFeatureInfo feature, ShellDescriptor descriptor)
+        private static DependencyBlueprint BuildDependency(Type type, FeatureEntry feature, ShellDescriptor descriptor)
         {
             return new DependencyBlueprint
             {
                 Type = type,
-                Feature = feature,
+                Feature = feature.FeatureInfo,
                 Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()
             };
         }

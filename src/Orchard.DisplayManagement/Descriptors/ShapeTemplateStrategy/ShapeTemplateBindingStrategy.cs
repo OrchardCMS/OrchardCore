@@ -33,14 +33,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IFeatureManager _featureManager;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IFeatureManager featureManager,
             IExtensionManager extensionManager,
             IShellFeaturesManager shellFeaturesManager,
-            IShellDescriptorManager shellDescriptorManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IHostingEnvironment hostingEnvironment,
@@ -50,7 +48,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _featureManager = featureManager;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;
             _hostingEnvironment = hostingEnvironment;
@@ -59,10 +56,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
         public bool DisableMonitoring { get; set; }
 
-        private static IEnumerable<IFeatureInfo> Once(IEnumerable<IFeatureInfo> featureDescriptors)
+        private static IEnumerable<IExtensionInfo> Once(IEnumerable<IFeatureInfo> featureDescriptors)
         {
             var once = new ConcurrentDictionary<string, object>();
-            return featureDescriptors.Where(ed => once.TryAdd(ed.Id, null)).ToList();
+            return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -77,8 +74,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .ToList();
 
             var activeExtensions = Once(
-                _shellFeaturesManager.EnabledFeatures(
-                    _shellDescriptorManager.GetShellDescriptorAsync().Result));
+                _shellFeaturesManager.EnabledFeatures());
 
             var matcher = new Matcher();
             foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
@@ -96,14 +92,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
                     var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(extensionDescriptor.Extension.ExtensionFileInfo.PhysicalPath)))
+                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(extensionDescriptor.ExtensionFileInfo.PhysicalPath)))
                         .Files;
 
                     var files = matches
                         .Select(match => _hostingEnvironment
-                            .GetExtensionFileInfo(extensionDescriptor.Extension, Path.Combine(subPath, match.Path))).ToArray();
+                            .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
 
-                    var basePath = Path.Combine(extensionDescriptor.Extension.SubPath, extensionDescriptor.Id);
+                    var basePath = Path.Combine(extensionDescriptor.SubPath, extensionDescriptor.Id);
                     var virtualPath = Path.Combine(basePath, subPath);
 
                     return new { harvesterInfo.harvester, subPath, virtualPath, files };
@@ -155,7 +151,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         featureDescriptor.Id);
                     }
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                        .From(new Feature { Descriptor = featureDescriptor })
+                        .From(featureDescriptor)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
                             shapeDescriptor => displayContext => RenderAsync(shapeDescriptor, displayContext, hit.shapeContext.harvestShapeInfo, hit.shapeContext.harvestShapeHit));

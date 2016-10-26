@@ -7,5 +7,7 @@ namespace Orchard.Environment.Extensions
     {
         IExtensionInfo this[string key] { get; }
         IEnumerable<IFeatureInfo> Features { get; }
+
+        bool HasFeature(string featureId);
     }
 }

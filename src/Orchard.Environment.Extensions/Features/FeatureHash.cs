@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Environment.Cache;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -9,12 +10,12 @@ namespace Orchard.Environment.Extensions.Features
     {
         private const string FeatureHashCacheKey = "FeatureHash:Features";
 
-        private readonly IFeatureManager _featureManager;
+        private readonly IShellFeaturesManager _featureManager;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 
         public FeatureHash(
-            IFeatureManager featureManager,
+            IShellFeaturesManager featureManager,
             IMemoryCache memoryCache,
             ISignal signal)
         {
@@ -23,7 +24,7 @@ namespace Orchard.Environment.Extensions.Features
             _signal = signal;
         }
 
-        public async Task<int> GetFeatureHashAsync()
+        public int GetFeatureHash()
         {
             int serial;
             if (_memoryCache.TryGetValue(FeatureHashCacheKey, out serial))
@@ -32,7 +33,7 @@ namespace Orchard.Environment.Extensions.Features
             }
 
             // Calculate a hash of all enabled features' name
-            serial = (await _featureManager.GetEnabledFeaturesAsync())
+            serial = _featureManager.EnabledFeatures()
                 .OrderBy(x => x.Name)
                 .Aggregate(0, (a, f) => a * 7 + f.Name.GetHashCode());
 
@@ -44,14 +45,14 @@ namespace Orchard.Environment.Extensions.Features
             return serial;
         }
 
-        public async Task<int> GetFeatureHashAsync(string featureId)
+        public int GetFeatureHash(string featureId)
         {
             var cacheKey = FeatureHashCacheKey + ":" + featureId;
             bool enabled;
             if (!_memoryCache.TryGetValue(cacheKey, out enabled))
             {
                 enabled = 
-                    (await _featureManager.GetEnabledFeaturesAsync())
+                    _featureManager.EnabledFeatures()
                     .Any(x => x.Name.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()

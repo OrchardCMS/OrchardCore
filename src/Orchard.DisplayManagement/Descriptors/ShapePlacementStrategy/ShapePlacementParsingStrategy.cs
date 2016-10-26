@@ -6,6 +6,7 @@ using Orchard.Environment.Extensions.Features;
 using Microsoft.AspNetCore.Hosting;
 using Orchard.Environment.Extensions;
 using Orchard.DisplayManagement.Extensions;
+using Orchard.Environment.Shell;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -16,21 +17,24 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IFeatureManager featureManager,
             IHostingEnvironment hostingEnviroment,
+            IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
             _featureManager = featureManager;
             _hostingEnviroment = hostingEnviroment;
+            _shellFeaturesManager = shellFeaturesManager;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            foreach (var featureDescriptor in _featureManager.GetEnabledFeaturesAsync().Result)
+            foreach (var featureDescriptor in _shellFeaturesManager.EnabledFeatures())
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
@@ -38,6 +42,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
+            // TODO : (ngm) Replace with configuration Provider and read from that. 
+            // Dont use JSON Deserializer directly.
             var virtualFileInfo = _hostingEnviroment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 

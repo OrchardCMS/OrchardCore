@@ -7,22 +7,23 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Modules.Recipes.Executors
 {
     public class FeatureStep : RecipeExecutionStep
     {
-        private readonly IFeatureManager _featureManager;
         private readonly IExtensionManager _extensionManager;
+        private readonly IShellFeaturesManager _shellFeatureManager;
 
         public FeatureStep(
-            IFeatureManager featureManager,
             IExtensionManager extensionManager,
+            IShellFeaturesManager shellFeatureManager,
             ILoggerFactory logger,
             IStringLocalizer<FeatureStep> localizer) : base(logger, localizer)
         {
-            _featureManager = featureManager;
             _extensionManager = extensionManager;
+            _shellFeatureManager = shellFeatureManager;
         }
 
         public override string Name
@@ -34,10 +35,11 @@ namespace Orchard.Modules.Recipes.Executors
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
-            var availableFeatures = _extensionManager.GetExtensions().Features.Select(x => x.Id).ToArray();
+            var extensions = _extensionManager.GetExtensions();
+
             foreach (var featureName in step.Disable)
             {
-                if (!availableFeatures.Contains(featureName))
+                if (!extensions.HasFeature(featureName))
                 {
                     throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureName));
                 }
@@ -45,7 +47,7 @@ namespace Orchard.Modules.Recipes.Executors
 
             foreach (var featureName in step.Enable)
             {
-                if (!availableFeatures.Contains(featureName))
+                if (!extensions.HasFeature(featureName))
                 {
                     throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureName));
                 }
@@ -58,7 +60,9 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
                 }
 
-                await _featureManager.DisableFeaturesAsync(step.Disable, true);
+                var featuresToDisable = step.Disable.Select(d => extensions.Features.First(x => x.Id == d));
+
+                await _shellFeatureManager.DisableFeatures(featuresToDisable, true);
             }
 
             if (step.Enable.Any())
@@ -68,7 +72,9 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
                 }
 
-                await _featureManager.EnableFeaturesAsync(step.Enable, true);
+                var featuresToEnable = step.Enable.Select(d => extensions.Features.First(x => x.Id == d));
+
+                _shellFeatureManager.EnableFeatures(featuresToEnable, true);
             }
         }
 

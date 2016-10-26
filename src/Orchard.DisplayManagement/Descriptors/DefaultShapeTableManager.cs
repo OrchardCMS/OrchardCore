@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
 using Orchard.Utility;
 using System;

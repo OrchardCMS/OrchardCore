@@ -17,7 +17,7 @@ namespace Orchard.Environment.Extensions.Features
         /// An <see cref="int"/> value that changes every time the list of features changes.
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
-        Task<int> GetFeatureHashAsync();
+        int GetFeatureHash();
 
         /// <summary>
         /// Returns a serial number representing the list of available features for the current tenant.
@@ -26,7 +26,7 @@ namespace Orchard.Environment.Extensions.Features
         /// A <see cref="int"/> value that changes every time a specific feature is enabled.
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
-        Task<int> GetFeatureHashAsync(string featureId);
+        int GetFeatureHash(string featureId);
 
     }
 }
