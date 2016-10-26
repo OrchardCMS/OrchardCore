@@ -18,11 +18,12 @@ namespace Orchard.Environment.Extensions
             string rootProbingName,
             string dependencyProbingDirectoryName)
         {
-            services.AddSingleton<IExtensionProvider, ExtensionProvider>();
-            {
-                services.AddSingleton<IManifestProvider, ManifestProvider>();
-            }
+            services.AddSingleton<IManifestBuilder, ManifestBuilder>();
+            services.AddSingleton<IManifestProvider, ManifestProvider>();
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ManifestOptions>, ManifestOptionsSetup>());
 
+            services.AddSingleton<IExtensionProvider, ExtensionProvider>();
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
                 services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
@@ -43,6 +44,8 @@ namespace Orchard.Environment.Extensions
 
                 services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
+
+            services.AddSingleton<IFeatureManager, FeatureManager>();
 
             return services;
         }

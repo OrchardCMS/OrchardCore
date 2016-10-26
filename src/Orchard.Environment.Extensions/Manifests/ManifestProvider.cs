@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Parser;
 using System;
@@ -10,9 +11,9 @@ namespace Orchard.Environment.Extensions.Manifests
     {
         private IFileProvider _fileProvider;
 
-        public ManifestProvider(IFileProvider fileProvider)
+        public ManifestProvider(IHostingEnvironment hostingEnvironment)
         {
-            _fileProvider = fileProvider;
+            _fileProvider = hostingEnvironment.ContentRootFileProvider;
         }
 
         public int Priority { get { return 0; } }
