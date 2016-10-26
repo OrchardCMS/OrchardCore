@@ -47,6 +47,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             services.AddSingleton(new ShellFeature("Orchard.Hosting"));
             services.AddWebHost();
             services.AddManifestDefinition(manifestFileName);
+            services.AddExtensionLocation("Modules");
 
             services
                 .AddMvcCore(options =>

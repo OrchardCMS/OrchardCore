@@ -43,9 +43,12 @@ namespace Orchard.Environment.Extensions
                 return null;
             }
 
+            var path = System.IO.Path.GetDirectoryName(subPath);
+            var name = System.IO.Path.GetFileName(subPath);
+
             var extension = _fileProvider
-                .GetDirectoryContents("")
-                .First(content => content.Name.Equals(subPath, StringComparison.OrdinalIgnoreCase));
+                .GetDirectoryContents(path)
+                .First(content => content.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             return new ExtensionInfo(extension, subPath, manifest, (ei) => {
                 return _featureManager.GetFeatures(ei, manifest);

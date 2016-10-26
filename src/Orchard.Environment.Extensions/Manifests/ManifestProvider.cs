@@ -25,7 +25,7 @@ namespace Orchard.Environment.Extensions.Manifests
             // TODO.. (ngm) are there any better checks for IsYaml
             var extension = Path.GetExtension(subPath);
 
-            if (!extension.Equals("txt", StringComparison.OrdinalIgnoreCase))
+            if (!extension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
             {
                 return configurationBuilder;
             }

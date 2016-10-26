@@ -27,7 +27,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            if (!ExtensionsSearchPaths.Contains(extensionInfo.ExtensionFileInfo.PhysicalPath))
+            if (!ExtensionsSearchPaths.Any(x => extensionInfo.SubPath.StartsWith(x)))
             {
                 return null;
             }

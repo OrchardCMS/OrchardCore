@@ -57,5 +57,15 @@ namespace Orchard.Environment.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddExtensionLocation(
+            this IServiceCollection services,
+            string subPath)
+        {
+            return services.Configure<ExtensionOptions>(configureOptions: options =>
+            {
+                options.SearchPaths.Add(subPath);
+            });
+        }
     }
 }
