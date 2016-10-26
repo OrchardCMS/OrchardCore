@@ -25,25 +25,27 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             _featureHash = featureHash;
         }
 
-        public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+        public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
             if (contexts.Any(ctx => String.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
             {
                 // Add a hash of the enabled features
-                var hash = await _featureHash.GetFeatureHashAsync();;
+                var hash = _featureHash.GetFeatureHash();
                 entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
 
                 // If we track any changed feature, we don't need to look into specific ones
-                return;
+                return Task.CompletedTask;
             }
 
             foreach(var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
             {
                 var featureName = context.Substring(FeaturesPrefix.Length);
-                var hash = await _featureHash.GetFeatureHashAsync(featureName); ;
+                var hash = _featureHash.GetFeatureHash(featureName);
 
                 entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
             }
+
+            return Task.CompletedTask;
         }
     }
 }

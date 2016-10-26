@@ -208,7 +208,7 @@ namespace Orchard.Environment.Shell
                 }
                 if (FeatureDependencyNotification != null)
                 {
-                    FeatureDependencyNotification("If {0} is enabled, then you'll also need to enable {1}.", featureInfo.Id, featuresToEnable.Where(fId => fId != featureId));
+                    FeatureDependencyNotification("If {0} is enabled, then you'll also need to enable {1}.", featureInfo.Id, featuresToEnable.Where(f => f.Id != featureInfo.Id));
                 }
 
                 return Enumerable.Empty<IFeatureInfo>();

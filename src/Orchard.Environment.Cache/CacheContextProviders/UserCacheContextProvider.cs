@@ -28,8 +28,6 @@ namespace Orchard.Environment.Cache.CacheContextProviders
                 {
                     entries.Add(new CacheContextEntry("user", httpContext.User.Identity.Name));
                 }
-
-                return Task.CompletedTask;
             }
 
             return Task.CompletedTask;
