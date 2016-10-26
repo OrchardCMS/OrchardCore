@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using System.IO;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions.Manifests
@@ -6,22 +8,33 @@ namespace Orchard.Environment.Extensions.Manifests
     public class ManifestBuilder : IManifestBuilder
     {
         private readonly IManifestProvider _manifestProvider;
-        public ManifestBuilder(IManifestProvider manifestProvider)
+        private readonly ManifestOptions _manifestOptions;
+        public ManifestBuilder(IManifestProvider manifestProvider,
+            IOptions<ManifestOptions> optionsAccessor)
         {
             _manifestProvider = manifestProvider;
+            _manifestOptions = optionsAccessor.Value;
         }
 
         public IManifestInfo GetManifest(string subPath)
         {
-            var configurationContainer =
-                _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), subPath);
+            IConfigurationBuilder configurationBuilder 
+                = new ConfigurationBuilder();
 
-            if (!configurationContainer.Sources.Any())
+            foreach (var manifestConfiguration in _manifestOptions.ManifestConfigurations)
+            {
+                configurationBuilder =
+                    _manifestProvider.GetManifestConfiguration(
+                        configurationBuilder, 
+                        Path.Combine(subPath, manifestConfiguration.ManifestFileName));
+            }
+
+            if (!configurationBuilder.Sources.Any())
             {
                 return new NotFoundManifestInfo();
             }
 
-            var config = configurationContainer.Build();
+            var config = configurationBuilder.Build();
 
             return new ManifestInfo(config);
         }

@@ -10,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Folders;
-using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc.Filters;

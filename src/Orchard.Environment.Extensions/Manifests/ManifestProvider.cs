@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Parser;
+using System;
 using System.IO;
 
 namespace Orchard.Environment.Extensions.Manifests
 {
     public class ManifestProvider : IManifestProvider
     {
-        private const string ManifestFile = "module.txt";
-
         private IFileProvider _fileProvider;
 
         public ManifestProvider(IFileProvider fileProvider)
@@ -18,9 +17,19 @@ namespace Orchard.Environment.Extensions.Manifests
 
         public int Priority { get { return 0; } }
 
-        public IConfigurationBuilder GetManifestConfiguration(IConfigurationBuilder configurationBuilder, string subPath)
+        public IConfigurationBuilder GetManifestConfiguration(
+            IConfigurationBuilder configurationBuilder, 
+            string subPath)
         {
-            var manifestFileInfo = _fileProvider.GetFileInfo(Path.Combine(subPath, ManifestFile));
+            // TODO.. (ngm) are there any better checks for IsYaml
+            var extension = Path.GetExtension(subPath);
+
+            if (!extension.Equals("txt", StringComparison.OrdinalIgnoreCase))
+            {
+                return configurationBuilder;
+            }
+
+            var manifestFileInfo = _fileProvider.GetFileInfo(subPath);
 
             if (!manifestFileInfo.Exists)
             {
@@ -29,7 +38,7 @@ namespace Orchard.Environment.Extensions.Manifests
 
             return
                 configurationBuilder
-                    .AddYamlFile(_fileProvider, Path.Combine(subPath, ManifestFile), true, false);
+                    .AddYamlFile(_fileProvider, subPath, true, false);
         }
     }
 }
