@@ -60,7 +60,7 @@ namespace Orchard.Recipes.Services
 
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(IExtensionInfo extension)
         {
-            var folderSubPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, extension.Id, "Recipes");
+            var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
             var recipeContainerFileInfo = _hostingEnvironment
                 .ContentRootFileProvider
                 .GetFileInfo(folderSubPath);

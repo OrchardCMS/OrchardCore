@@ -31,10 +31,11 @@ namespace Orchard.Environment.Extensions.Features
                     var featurePriority = featureDetails.ContainsKey("priority") ?
                             double.Parse(featureDetails["priority"]) : 0D;
 
-                    var featureDependencyIds = featureDetails["dependencies"]?
+                    var featureDependencyIds = featureDetails["dependencies"] != null ?
+                    featureDetails["dependencies"]
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
-                        .ToArray();
+                        .ToArray() : new string[0];
 
                     var featureInfo = new FeatureInfo(
                         featureId,
@@ -57,10 +58,11 @@ namespace Orchard.Environment.Extensions.Features
                 // TODO (ngm) look at priority
                 var featurePriority = 0D;
 
-                var featureDependencyIds = featureDetails["dependencies"]?
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(e => e.Trim())
-                    .ToArray();
+                var featureDependencyIds = featureDetails["dependencies"] != null ?
+                    featureDetails["dependencies"]
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(e => e.Trim())
+                        .ToArray() : new string[0];
 
                 var featureInfo = new FeatureInfo(
                     featureId,
