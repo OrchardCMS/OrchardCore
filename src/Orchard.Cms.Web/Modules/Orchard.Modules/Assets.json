@@ -1,0 +1,16 @@
+﻿[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/css/modules.css"
+    ],
+    "output": "Content/Styles/modules.css"
+  },
+  {
+    "inputs": [
+      "../../Modules/Orchard.Resources/Assets/jQuery/jquery-3.1.0.js",
+      "Assets/js/*.js"
+    ],
+    "output": "Content/Scripts/features.js"
+  }
+]
