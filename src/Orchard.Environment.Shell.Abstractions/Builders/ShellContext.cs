@@ -17,6 +17,9 @@ namespace Orchard.Hosting.ShellBuilders
         public ShellBlueprint Blueprint { get; set; }
         public IServiceProvider ServiceProvider { get; set; }
 
+        /// <summary>
+        /// Whether the shell is activated. 
+        /// </summary>
         public bool IsActivated { get; set; }
 
         /// <summary>

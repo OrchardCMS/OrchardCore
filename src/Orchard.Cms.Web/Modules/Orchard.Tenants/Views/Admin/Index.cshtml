@@ -1,0 +1,50 @@
+﻿@model AdminIndexViewModel
+@using Orchard.Environment.Shell.Models
+
+<h1>@RenderTitleSegments(T["Tenants"])</h1>
+
+<nav class="admin-toolbar">
+    <div class="nav navbar-nav">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Tenant"]</a>
+    </div>
+</nav>
+
+<form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+    <ul class="list-group">
+        @foreach (var entry in Model.ShellSettingsEntries)
+        {
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="related pull-xs-right">
+                        <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                        <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                        <a asp-action="Delete" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    </div>
+                </div>
+                <h5>@entry.Name</h5>
+                <div>
+                    @switch (entry.ShellSettings.State)
+                    {
+                        case TenantState.Disabled:
+                            <span class="tag tag-default">@T["Disabled"]</span>
+                            break;
+                        case TenantState.Initializing:
+                            <span class="tag tag-Info">@T["Initializing"]</span>
+                            break;
+                        case TenantState.Invalid:
+                            <span class="tag tag-warning">@T["Invalid"]</span>
+                            break;
+                        case TenantState.Running:
+                            <span class="tag tag-success">@T["Running"]</span>
+                            break;
+                        case TenantState.Uninitialized:
+                            <span class="tag tag-primary">@T["Uninitialized"]</span>
+                            break;
+                    }                    
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+

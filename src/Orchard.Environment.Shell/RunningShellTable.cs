@@ -67,14 +67,14 @@ namespace Orchard.Environment.Shell
 
         public ShellSettings Match(string host, string appRelativePath)
         {
+            if (_single != null)
+            {
+                return _single;
+            }
+
             _lock.EnterReadLock();
             try
             {
-                if (_single != null)
-                {
-                    return _single;
-                }
-
                 string hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
 
                 ShellSettings result;

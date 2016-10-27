@@ -13,6 +13,11 @@ using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
+    /// <summary>
+    /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the
+    /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
+    /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
+    /// </summary>
     public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler
     {
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -75,15 +80,8 @@ namespace Orchard.Hosting
 
         public void UpdateShellSettings(ShellSettings settings)
         {
-            ShellContext context;
-
             _shellSettingsManager.SaveSettings(settings);
-            _runningShellTable.Remove(settings);
-            if (_shellContexts.TryRemove(settings.Name, out context))
-            {
-                context.Dispose();
-            }
-            GetOrCreateShellContext(settings);
+            ReloadShellContext(settings);
         }
 
         void CreateAndActivateShells()
@@ -126,6 +124,7 @@ namespace Orchard.Hosting
                     }
                 });
             }
+
             // No settings, run the Setup.
             else
             {
@@ -211,6 +210,23 @@ namespace Orchard.Hosting
             }
 
             return Task.CompletedTask;
+        }
+
+        public void ReloadShellContext(ShellSettings settings)
+        {
+            ShellContext context;
+
+            if (_shellContexts.TryRemove(settings.Name, out context))
+            {
+                _runningShellTable.Remove(settings);
+                context.Dispose();
+            }
+            GetOrCreateShellContext(settings);
+        }
+
+        public IEnumerable<ShellContext> ListShellContexts()
+        {
+            return _shellContexts.Values;
         }
     }
 }
