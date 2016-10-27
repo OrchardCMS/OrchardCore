@@ -4943,5 +4943,9 @@ ul.menu-admin ul {
 .menu-admin > li.demo > label::before {
   content: "\f292"; }
 
+.menu-admin > li.menu-design > a::before,
+.menu-admin > li.menu-design > label::before {
+  content: "\f013"; }
+
 .list-group.sortable li {
   cursor: move; }

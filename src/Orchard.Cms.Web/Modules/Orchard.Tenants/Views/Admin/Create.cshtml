@@ -5,10 +5,24 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
 
-    <div class="form-group" asp-validation-class-for="SiteName">
-        <label asp-for="SiteName">@T["Site Name"]</label>
-        <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
-        <input asp-for="SiteName" class="form-control" autofocus/>
+    <div class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
+        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+        <input asp-for="Name" class="form-control" autofocus/>
+        <span class="hint">@T["The name of the tenant."]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="RequestUrlPrefix">
+        <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
+        <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
+        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="RequestUrlHost">
+        <label asp-for="RequestUrlHost">@T["Hostname"]</label>
+        <input asp-for="RequestUrlHost" class="form-control" autofocus />
+        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\""]</span>
+        <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
     </div>
 
     <fieldset>

@@ -21,7 +21,8 @@
     "gulp-rename": "1.2.2",
     "gulp-concat": "2.6.0",
     "gulp-header": "1.8.2",
-    "gulp-eol": "0.1.2"
+    "gulp-eol": "0.1.2",
+    "gulp-cli": "1.2.2"
   },
   "dependencies": { }
 }

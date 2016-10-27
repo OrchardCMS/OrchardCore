@@ -17,12 +17,26 @@
                 <div class="properties">
                     <div class="related pull-xs-right">
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
-                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
-                        <a asp-action="Delete" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        @if (entry.ShellSettings.State == TenantState.Running)
+                        {
+                            <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                        }
+                        @if (entry.ShellSettings.State == TenantState.Disabled)
+                        {
+                            <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                        }
+                        @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                        {
+                            <a class="btn btn-success btn-sm" href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@T["Setup"]</a>
+                        }
+                        <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                 </div>
-                <h5>@entry.Name</h5>
+                <h5>
+                    <a href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@entry.Name</a>
+                    <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
+                </h5>
+                
                 <div>
                     @switch (entry.ShellSettings.State)
                     {
@@ -41,7 +55,7 @@
                         case TenantState.Uninitialized:
                             <span class="tag tag-primary">@T["Uninitialized"]</span>
                             break;
-                    }                    
+                    }
                 </div>
             </li>
         }

@@ -22,6 +22,7 @@ namespace Orchard.Tenants
 
             builder
                 .Add(T["Design"], "10", design => design
+                    .AddClass("menu-design")
                     .Add(T["Site"], "10", import => import
                         .Add(T["Tenants"], "5", deployment => deployment
                             .Action("Index", "Admin", new { area = "Orchard.Tenants" })

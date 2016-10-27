@@ -24,7 +24,10 @@ namespace Orchard.Environment.Shell
                 }
                 else
                 {
-                    _single = settings;
+                    if (_shellsByHostAndPrefix.Count == 0)
+                    {
+                        _single = settings;
+                    }
                 }
 
                 if(ShellHelper.DefaultShellName == settings.Name)

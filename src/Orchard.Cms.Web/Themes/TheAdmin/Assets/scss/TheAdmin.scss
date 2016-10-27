@@ -324,6 +324,10 @@ ul.menu-admin ul {
     content: "\f292";
 }
 
+.menu-admin > li.menu-design > a::before,
+.menu-admin > li.menu-design > label::before {
+    content: "\f013";
+}
 
 // Pager
 // ------------------------------

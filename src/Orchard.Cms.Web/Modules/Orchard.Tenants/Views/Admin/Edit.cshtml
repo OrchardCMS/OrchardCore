@@ -1,21 +1,29 @@
-﻿@model EditRemoteClientViewModel
+﻿@model EditTenantViewModel
 
-<h1>@RenderTitleSegments(T["Edit Remote Client"])</h1>
+<h1>@RenderTitleSegments(T["Edit Tenant"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Name" />
 
-    <div class="form-group" asp-validation-class-for="ClientName">
-        <label asp-for="ClientName">@T["Client Name"]</label>
-        <span asp-validation-for="ClientName" class="text-danger">@T["The client name is required."]</span>
-        <input asp-for="ClientName" class="form-control" />
+    <div class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Name">@T["Name"]</label>
+        <span asp-validation-for="Name" class="text-danger">@T["The name is required."]</span>
+        <input asp-for="Name" class="form-control" readonly autofocus />
+        <span class="hint">@T["The name of the tenant."]</span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="ApiKey">
-        <label asp-for="ApiKey">@T["Api Key"]</label>
-        <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
-        <input asp-for="ApiKey" type="password" class="form-control" value="@Model.ApiKey" />
+    <div class="form-group" asp-validation-class-for="RequestUrlPrefix">
+        <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
+        <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
+        <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+    </div>
+
+    <div class="form-group" asp-validation-class-for="RequestUrlHost">
+        <label asp-for="RequestUrlHost">@T["Hostname"]</label>
+        <input asp-for="RequestUrlHost" class="form-control" autofocus />
+        <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\""]</span>
+        <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
     </div>
 
     <fieldset>
