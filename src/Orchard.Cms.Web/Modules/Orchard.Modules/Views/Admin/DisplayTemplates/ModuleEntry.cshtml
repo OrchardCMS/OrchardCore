@@ -1,0 +1,52 @@
+﻿@model Orchard.Modules.Models.ModuleEntry
+@{
+    //Script.Require("ShapesBase"].AtFoot();
+
+    Orchard.Modules.Models.ModuleEntry module = Model;
+    var moduleClasses = module.IsRecentlyInstalled ? "class=\"recentlyInstalledModule\"" : String.Empty;
+}
+
+<div class="summary">
+    @*@if (module.Notifications != null && module.Notifications.Count > 0) {
+            <div class="notifications">
+                @foreach (var notification in module.Notifications) {
+                    <h5>@Html.Raw(notification)</h5>
+                }
+            </div>
+        }*@
+    <div class="properties">
+        <div class="head">
+            <div class="description">
+                <h2 @Html.Raw(moduleClasses)>
+                    @module.Descriptor.Name<span> - @T["Version:"] @(!String.IsNullOrEmpty(module.Descriptor.Version) ? module.Descriptor.Version : T["1.0"].Value)</span>
+                </h2>
+                @if (!String.IsNullOrEmpty(module.Descriptor.Description))
+                {
+                    <p>@module.Descriptor.Description</p>
+                }
+            </div>
+        </div>
+        <div class="related">
+            @Html.ActionLink(
+            T["Uninstall"].Value,
+            "UninstallModule",
+            "PackagingServices",
+            new { ModuleId = module.Descriptor.Id, Area = "Orchard.Packaging" },
+            new { itemprop = "RemoveUrl UnsafeUrl", @class = "btn btn-danger" })
+        </div>
+    </div>
+    <div class="metadata">
+        <ul class="pageStatus">
+            @{ var features = module.Descriptor.Features; }
+            <li>@T["Features:"] @String.Join(", ", features.Select(f => String.IsNullOrEmpty(f.Name) ? f.Id : f.Name).ToArray())</li>
+            <li>@T["Author: {0}", !String.IsNullOrEmpty(module.Descriptor.Author) ? module.Descriptor.Author : T["Unknown"].ToString()]</li>
+            <li>
+                @T["Website:"]
+                @if (!String.IsNullOrEmpty(module.Descriptor.WebSite))
+                { <a href="@module.Descriptor.WebSite">@module.Descriptor.WebSite</a> }
+                else
+                { @T["Unknown"].ToString() }
+            </li>
+        </ul>
+    </div>
+</div>

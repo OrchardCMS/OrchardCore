@@ -1,0 +1,26 @@
+﻿@model Orchard.Modules.ViewModels.ModulesIndexViewModel
+@using Orchard.Modules.Models;
+
+@{
+    //Style.Require("ModulesAdmin");
+
+    //Layout.Title = T("Modules").ToString();
+}
+
+@if (Model.Modules.Any())
+{
+    <div class="content-items">
+        <ul class="content-items no-selection">
+            @foreach (ModuleEntry module in Model.Modules.OrderBy(m => m.Descriptor.Name))
+            {
+                <li>
+                    @Html.DisplayFor(m => module)
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <p>@T["No modules available"]</p>
+}

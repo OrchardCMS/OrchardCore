@@ -13,8 +13,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
     <script asp-src="~/TheAdmin/Scripts/TheAdmin.js" at="Foot"></script>
-
-    <resources type="Header" />
+    
+    <resources type="Meta" />
+    <resources type="HeadLink" />
+    <resources type="Stylesheet" />
+    <resources type="HeadScript" />
 
     @await RenderSectionAsync("Header", required: false)
 </head>
