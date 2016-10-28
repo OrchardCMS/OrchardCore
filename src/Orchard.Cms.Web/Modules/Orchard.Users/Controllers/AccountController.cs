@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Shell;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
 
@@ -12,13 +14,19 @@ namespace Orchard.Users.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly ILogger _logger;
+        private readonly ShellSettings _shellSettings;
 
         public AccountController(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            ShellSettings shellSettings,
+            ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -42,7 +50,7 @@ namespace Orchard.Users.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    //_logger.LogInformation(1, "User logged in.");
+                    _logger.LogInformation(1, "User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
                 //if (result.RequiresTwoFactor)
@@ -51,7 +59,7 @@ namespace Orchard.Users.Controllers
                 //}
                 //if (result.IsLockedOut)
                 //{
-                //    //_logger.LogWarning(2, "User account locked out.");
+                //    _logger.LogWarning(2, "User account locked out.");
                 //    return View("Lockout");
                 //}
                 else
@@ -92,7 +100,7 @@ namespace Orchard.Users.Controllers
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    //_logger.LogInformation(3, "User created a new account with password.");
+                    _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
                 }
 
@@ -113,8 +121,9 @@ namespace Orchard.Users.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            //_logger.LogInformation(4, "User logged out.");
-            return Redirect("~/");
+            _logger.LogInformation(4, "User logged out.");
+
+            return Redirect("~/" + _shellSettings.RequestUrlPrefix);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -125,7 +134,7 @@ namespace Orchard.Users.Controllers
             }
             else
             {
-                return Redirect("~/");
+                return Redirect("~/" + _shellSettings.RequestUrlPrefix);
             }
         }
     }
