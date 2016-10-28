@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,6 +12,7 @@ using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
 using Orchard.Hosting;
+using Orchard.Hosting.ShellBuilders;
 using Orchard.Tenants.ViewModels;
 
 namespace Orchard.Tenants.Controllers
@@ -46,7 +49,7 @@ namespace Orchard.Tenants.Controllers
 
         public IActionResult Index()
         {
-            var shells = _orchardHost.ListShellContexts();
+            var shells = GetShells();
 
             var model = new AdminIndexViewModel
             {
@@ -89,7 +92,7 @@ namespace Orchard.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model);
+                ValidateViewModel(model, true);
             }
 
             if (ModelState.IsValid)
@@ -99,6 +102,9 @@ namespace Orchard.Tenants.Controllers
                     Name = model.Name,
                     RequestUrlPrefix = model.RequestUrlPrefix,
                     RequestUrlHost = model.RequestUrlHost,
+                    ConnectionString = model.ConnectionString,
+                    TablePrefix = model.TablePrefix,
+                    DatabaseProvider = model.DatabaseProvider,
                     State = TenantState.Uninitialized
                 };
 
@@ -124,8 +130,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellContext = _orchardHost
-                .ListShellContexts()
+            var shellContext = GetShells()
                 .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
@@ -140,8 +145,18 @@ namespace Orchard.Tenants.Controllers
             {
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
-                RequestUrlPrefix = shellSettings.RequestUrlPrefix
+                RequestUrlPrefix = shellSettings.RequestUrlPrefix,
             };
+
+            // The user can change the 'preset' database information only if the 
+            // tenant has not been initialized yet
+            if (shellSettings.State == TenantState.Uninitialized)
+            {
+                model.DatabaseProvider = shellSettings.DatabaseProvider;
+                model.TablePrefix = shellSettings.TablePrefix;
+                model.ConnectionString = shellSettings.ConnectionString;
+                model.CanSetDatabasePresets = true;
+            }
 
             return View(model);
         }
@@ -161,32 +176,47 @@ namespace Orchard.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                ValidateViewModel(model);
+                ValidateViewModel(model, false);
             }
 
-            if (ModelState.IsValid)
-            {
-                var shellContext = _orchardHost
-                .ListShellContexts()
+            var shellContext = GetShells()
                 .Where(x => String.Equals(x.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
-                if (shellContext == null)
+            if (shellContext == null)
+            {
+                return NotFound();
+            }
+
+            var shellSettings = shellContext.Settings;
+
+            if (ModelState.IsValid)
+            {
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+
+                // The user can change the 'preset' database information only if the 
+                // tenant has not been initialized yet
+                if (shellSettings.State == TenantState.Uninitialized)
                 {
-                    return NotFound();
+                    shellSettings.DatabaseProvider = model.DatabaseProvider;
+                    shellSettings.TablePrefix = model.TablePrefix;
+                    shellSettings.ConnectionString = model.ConnectionString;
                 }
 
-                var shellSettings = shellContext.Settings;
-
-                if (shellSettings.RequestUrlHost != model.RequestUrlHost || shellSettings.RequestUrlPrefix != model.RequestUrlPrefix)
-                {
-                    shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-                    shellSettings.RequestUrlHost = model.RequestUrlHost;
-
-                    _orchardHost.UpdateShellSettings(shellSettings);
-                }
+                _orchardHost.UpdateShellSettings(shellSettings);
 
                 return RedirectToAction(nameof(Index));
+            }
+
+            // The user can change the 'preset' database information only if the 
+            // tenant has not been initialized yet
+            if (shellSettings.State == TenantState.Uninitialized)
+            {
+                model.DatabaseProvider = shellSettings.DatabaseProvider;
+                model.TablePrefix = shellSettings.TablePrefix;
+                model.ConnectionString = shellSettings.ConnectionString;
+                model.CanSetDatabasePresets = true;
             }
 
             // If we got this far, something failed, redisplay form
@@ -206,8 +236,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            var shellContext = _orchardHost
-                .ListShellContexts()
+            var shellContext = GetShells()
                 .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
@@ -244,6 +273,7 @@ namespace Orchard.Tenants.Controllers
 
             var shellContext = _orchardHost
                 .ListShellContexts()
+                .OrderBy(x => x.Settings.Name)
                 .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
@@ -280,6 +310,7 @@ namespace Orchard.Tenants.Controllers
 
             var shellContext = _orchardHost
                 .ListShellContexts()
+                .OrderBy(x => x.Settings.Name)
                 .Where(x => String.Equals(x.Settings.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
@@ -293,16 +324,18 @@ namespace Orchard.Tenants.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        private void ValidateViewModel(EditTenantViewModel model)
+        private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
             if (String.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
-            var allShells = _orchardHost.ListShellContexts();
+            var allShells = _orchardHost
+                .ListShellContexts()
+                .OrderBy(x => x.Settings.Name);
 
-            if (allShells.Any(tenant => String.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
@@ -316,6 +349,11 @@ namespace Orchard.Tenants.Controllers
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and Url Prefix can not be empty at the same time."]);
             }
+        }
+
+        private IEnumerable<ShellContext> GetShells()
+        {
+            return _orchardHost.ListShellContexts().OrderBy(x => x.Settings.Name);
         }
     }
 }

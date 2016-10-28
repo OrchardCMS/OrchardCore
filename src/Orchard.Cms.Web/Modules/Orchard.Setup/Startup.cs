@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Data;
 using Orchard.Setup.Services;
 
 namespace Orchard.Setup
@@ -12,7 +11,6 @@ namespace Orchard.Setup
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataAccess();
             services.AddScoped<ISetupService, SetupService>();
         }
 
