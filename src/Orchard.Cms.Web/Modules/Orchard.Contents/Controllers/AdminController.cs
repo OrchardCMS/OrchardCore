@@ -461,10 +461,6 @@ namespace Orchard.Contents.Controllers
             {
                 contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
             }
-            else
-            {
-                _session.Save(contentItem);
-            }
 
             if (contentItem == null)
             {
@@ -497,6 +493,10 @@ namespace Orchard.Contents.Controllers
             if (draftRequired)
             {
                 await conditionallyPublish(contentItem);
+            }
+            else
+            {
+                _session.Save(contentItem);
             }
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
