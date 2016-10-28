@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -331,9 +330,7 @@ namespace Orchard.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
-            var allShells = _orchardHost
-                .ListShellContexts()
-                .OrderBy(x => x.Settings.Name);
+            var allShells = GetShells();
 
             if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
@@ -347,7 +344,20 @@ namespace Orchard.Tenants.Controllers
 
             if (!String.Equals(model.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and Url Prefix can not be empty at the same time."]);
+                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
+            }
+
+            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            {
+                if (model.RequestUrlPrefix.Contains('/'))
+                {
+                    ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contains more than one segment."]);
+                }
+
+                if (allShells.Any(x => String.Equals(x.Settings.RequestUrlPrefix.Trim(), model.RequestUrlPrefix.Trim(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix is already used by another tenant."]);
+                }
             }
         }
 
