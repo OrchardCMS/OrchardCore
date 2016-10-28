@@ -21,12 +21,15 @@ namespace Orchard.Modules
             }
 
             builder
-                .Add(T["Modules"], "9", modules => modules
-                    .AddClass("modules")
-                    .Add(T["Features"], "0", installed => installed
-                        .Action("Features", "Admin", new { area = "Orchard.Modules" })
-                        .Permission(Permissions.ManageFeatures)
-                        .LocalNav())
+                .Add(T["Design"], "10", design => design
+                    .AddClass("menu-design")
+                    .Add(T["Site"], "10", import => import
+                        .Add(T["Modules"], "6", deployment => deployment
+                            .Action("Features", "Admin", new { area = "Orchard.Modules" })
+                            .Permission(Permissions.ManageFeatures)
+                            .LocalNav()
+                        )
+                    )
                 );
         }
     }

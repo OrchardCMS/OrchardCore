@@ -1,17 +1,7 @@
-﻿@model Orchard.Modules.ViewModels.FeaturesViewModel
-@using Orchard.Modules.ViewModels;
-@using Orchard.Modules.Extensions;
-@{
-    //Style.Require("ModulesAdmin");
-    ////Style.Require("Switchable");
-    //Style.Require("FontAwesome");
-    //Script.Require("Switchable").AtFoot();
-    //Script.Require("features").AtFoot();
+﻿@model FeaturesViewModel
 
-    //Layout.Title = T("Modules").ToString();
-    Title.AddSegment(T["Modules"], "before");
-    //Layout.Tail.Add(New.ConfirmationDialog());
-}
+<h1>@RenderTitleSegments(T["Modules"])</h1>
+
 @{
 //var lifecycleStatusClassDictionary = new Dictionary<LifecycleStatus, string> {
 //    { LifecycleStatus.Production, "fa-check" },
@@ -19,8 +9,8 @@
 //    { LifecycleStatus.Deprecated, "fa-exclamation-circle" }
 //};
 }
-<style asp-src="~/Orchard.Modules/Styles/modules.css"></style>
 <h1>@RenderTitleSegments(T["Features"])</h1>
+
 @if (Model.Features.Any())
 {
 }
@@ -101,7 +91,7 @@
                                         }
 
                                         //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
-                                        var featureId = feature.Descriptor.Id.AsFeatureId(n => T[n]);
+                                        var featureId = feature.Descriptor.Id;
                                         var featureName = string.IsNullOrEmpty(feature.Descriptor.Name) ? feature.Descriptor.Id : feature.Descriptor.Name;
                                         var featureState = feature.IsEnabled ? "enabled" : "disabled";
                                         var featureClassName = string.Format("feature {0}", featureState + (feature.NeedsUpdate ? " update" : String.Empty));
@@ -187,7 +177,7 @@
                                                                 @foreach (var d in dependencies)
                                                                 {
                                                                     <li>
-                                                                        <a href="@string.Format("#{0}", d.Descriptor.Id.AsFeatureId(n => T[n]))">@(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)</a>
+                                                                        <a href="#@d">@(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)</a>
                                                                     </li>
                                                                 }
                                                             </ul>
@@ -229,8 +219,7 @@
             </ul>
         </div>
     </div>
-                                    }
-<script asp-name="features" at="Foot"></script>
+}
 <script at="Foot" type="text/javascript">
     //<![CDATA[
     var confirmDisableMessage = '@T["Disabling this feature will also disable the following dependent features. Are you sure you want to continue?"]'; //HttpUtility.JavaScriptStringEncode()

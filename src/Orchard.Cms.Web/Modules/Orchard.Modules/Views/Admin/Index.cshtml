@@ -1,11 +1,6 @@
-﻿@model Orchard.Modules.ViewModels.ModulesIndexViewModel
-@using Orchard.Modules.Models;
+﻿@model ModulesIndexViewModel
 
-@{
-    //Style.Require("ModulesAdmin");
-
-    //Layout.Title = T("Modules").ToString();
-}
+<h1>@RenderTitleSegments(T["Modules"])</h1>
 
 @if (Model.Modules.Any())
 {

@@ -4,7 +4,6 @@ using Orchard.Environment.Navigation;
 using Orchard.Modules.Recipes.Executors;
 using Orchard.Modules.Services;
 using Orchard.Recipes;
-using Orchard.ResourceManagement;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Modules
@@ -20,7 +19,6 @@ namespace Orchard.Modules
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
         }
     }
 }
