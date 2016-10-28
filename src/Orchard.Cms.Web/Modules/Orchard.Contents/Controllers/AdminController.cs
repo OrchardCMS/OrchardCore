@@ -447,7 +447,24 @@ namespace Orchard.Contents.Controllers
 
         private async Task<IActionResult> EditPOST(int id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+
+            if (contentItem == null)
+            {
+                return NotFound();
+            }
+
+            ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var draftRequired = (!contentItem.Published) || (typeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable);
+
+            if (draftRequired)
+            {
+                contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
+            }
+            else
+            {
+                _session.Save(contentItem);
+            }
 
             if (contentItem == null)
             {
@@ -477,7 +494,10 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
-            await conditionallyPublish(contentItem);
+            if (draftRequired)
+            {
+                await conditionallyPublish(contentItem);
+            }
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null
@@ -485,8 +505,6 @@ namespace Orchard.Contents.Controllers
             //{
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
-
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                 ? T["Your content has been saved."]
