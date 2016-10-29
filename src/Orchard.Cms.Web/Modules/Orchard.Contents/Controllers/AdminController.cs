@@ -455,7 +455,7 @@ namespace Orchard.Contents.Controllers
             }
 
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var draftRequired = (!contentItem.Published) || (typeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable);
+            var draftRequired = contentItem.Published && typeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable;
 
             if (draftRequired)
             {
@@ -490,14 +490,12 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
-            if (draftRequired)
-            {
-                await conditionallyPublish(contentItem);
-            }
-            else
+            if (!draftRequired)
             {
                 _session.Save(contentItem);
             }
+
+            await conditionallyPublish(contentItem);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null
