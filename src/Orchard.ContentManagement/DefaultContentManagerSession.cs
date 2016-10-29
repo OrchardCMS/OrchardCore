@@ -62,7 +62,16 @@ namespace Orchard.ContentManagement
                 return false;
             }
 
-            return _publishedItemsById.TryGetValue(id, out item);
+            if (_publishedItemsById.TryGetValue(id, out item))
+            {
+                if (!item.Published)
+                {
+                    _publishedItemsById.Remove(id);
+                    item = null;
+                }
+            }
+
+            return item != null;
         }
 
         public bool RecallLatestItemId(int id, out ContentItem item)
@@ -73,7 +82,16 @@ namespace Orchard.ContentManagement
                 return false;
             }
 
-            return _latestItemsById.TryGetValue(id, out item);
+            if (_latestItemsById.TryGetValue(id, out item))
+            {
+                if (!item.Latest)
+                {
+                    _latestItemsById.Remove(id);
+                    item = null;
+                }
+            }
+
+            return item != null;
         }
 
         public void Clear()
