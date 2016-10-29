@@ -354,7 +354,7 @@ namespace Orchard.Tenants.Controllers
                     ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contains more than one segment."]);
                 }
 
-                if (allShells.Any(x => String.Equals(x.Settings.RequestUrlPrefix.Trim(), model.RequestUrlPrefix.Trim(), StringComparison.OrdinalIgnoreCase)))
+                if (allShells.Any(x => x.Settings.RequestUrlPrefix != null && String.Equals(x.Settings.RequestUrlPrefix.Trim(), model.RequestUrlPrefix.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
                     ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix is already used by another tenant."]);
                 }
