@@ -332,7 +332,7 @@ namespace Orchard.ContentManagement
             Create(contentItem, VersionOptions.Published);
         }
 
-        public void Create(ContentItem contentItem, VersionOptions options, bool transient = false)
+        public void Create(ContentItem contentItem, VersionOptions options)
         {
             if (contentItem.Number == 0)
             {
@@ -372,7 +372,7 @@ namespace Orchard.ContentManagement
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
 
-            if (!transient)
+            if (!options.IsDraftTransient)
             {
                 _session.Save(contentItem);
                 _contentManagerSession.Store(contentItem);

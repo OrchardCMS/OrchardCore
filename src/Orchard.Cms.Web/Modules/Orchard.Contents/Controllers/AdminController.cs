@@ -352,7 +352,7 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            _contentManager.Create(contentItem, VersionOptions.Draft, transient: true);
+            _contentManager.Create(contentItem, VersionOptions.DraftTransient);
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
 
