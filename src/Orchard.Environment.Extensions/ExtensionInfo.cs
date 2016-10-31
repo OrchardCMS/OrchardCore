@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using System;
-using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
 {
@@ -10,13 +9,13 @@ namespace Orchard.Environment.Extensions
         private IFileInfo _fileInfo;
         private string _subPath;
         private IManifestInfo _manifestInfo;
-        private IList<IFeatureInfo> _features;
+        private IFeatureInfoList _features;
 
         public ExtensionInfo(
             IFileInfo fileInfo,
             string subPath,
             IManifestInfo manifestInfo,
-            Func<IExtensionInfo, IList<IFeatureInfo>> features) {
+            Func<IExtensionInfo, IFeatureInfoList> features) {
 
             _fileInfo = fileInfo;
             _subPath = subPath;
@@ -28,6 +27,6 @@ namespace Orchard.Environment.Extensions
         public IFileInfo ExtensionFileInfo => _fileInfo;
         public string SubPath => _subPath;
         public IManifestInfo Manifest => _manifestInfo;
-        public IList<IFeatureInfo> Features => _features;
+        public IFeatureInfoList Features => _features;
     }
 }

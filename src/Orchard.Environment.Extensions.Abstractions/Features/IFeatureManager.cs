@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace Orchard.Environment.Extensions.Features
+﻿namespace Orchard.Environment.Extensions.Features
 {
     public interface IFeatureManager
     {
-        IList<IFeatureInfo> GetFeatures(
+        IFeatureInfoList GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo);
-
-
     }
 }

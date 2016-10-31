@@ -1,5 +1,4 @@
-﻿using Orchard.Environment.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,11 +8,11 @@ namespace Orchard.Environment.Extensions.Features
     {
         public const string FeatureManagerCacheKey = "FeatureManager:Features";
 
-        public IList<IFeatureInfo> GetFeatures(
+        public IFeatureInfoList GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
         {
-            var features = new List<IFeatureInfo>();
+            var features = new Dictionary<string, IFeatureInfo>();
 
             // Features and Dependencies live within this section
             var featuresSection = manifestInfo.ConfigurationRoot.GetSection("features");
@@ -44,7 +43,7 @@ namespace Orchard.Environment.Extensions.Features
                         extensionInfo,
                         featureDependencyIds);
 
-                    features.Add(featureInfo);
+                    features.Add(featureId, featureInfo);
                 }
             }
             else
@@ -71,10 +70,10 @@ namespace Orchard.Environment.Extensions.Features
                     extensionInfo,
                     featureDependencyIds);
 
-                features.Add(featureInfo);
+                features.Add(featureId, featureInfo);
             }
 
-            return features;
+            return new FeatureInfoList(features);
         }
     }
 }

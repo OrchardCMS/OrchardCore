@@ -26,6 +26,6 @@ namespace Orchard.Environment.Extensions
         /// <summary>
         /// List of features in extension
         /// </summary>
-        IList<IFeatureInfo> Features { get; }
+        IFeatureInfoList Features { get; }
     }
 }
