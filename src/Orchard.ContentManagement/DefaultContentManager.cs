@@ -332,7 +332,7 @@ namespace Orchard.ContentManagement
             Create(contentItem, VersionOptions.Published);
         }
 
-        public void Create(ContentItem contentItem, VersionOptions options)
+        public void Create(ContentItem contentItem, VersionOptions options, bool transient = false)
         {
             if (contentItem.Number == 0)
             {
@@ -372,8 +372,11 @@ namespace Orchard.ContentManagement
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
 
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
+            if (!transient)
+            {
+                _session.Save(contentItem);
+                _contentManagerSession.Store(contentItem);
+            }
         }
 
         public ContentItemMetadata GetItemMetadata(IContent content)

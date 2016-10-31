@@ -32,7 +32,8 @@ namespace Orchard.ContentManagement
         /// </summary>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
         /// <param name="options">The version to create the item with</param>
-        void Create(ContentItem contentItem, VersionOptions options);
+        /// <param name="transient">The item is not yet persisted</param>
+        void Create(ContentItem contentItem, VersionOptions options, bool transient = false);
 
         /// <summary>
         /// Gets the content item with the specified id
