@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Orchard.Admin;
-using Orchard.Modules.Services;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Orchard.Admin;
+using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
-using Orchard.Modules.Models;
-using Orchard.Modules.ViewModels;
 using Orchard.Environment.Shell.Descriptor;
-using Orchard.DisplayManagement.Notify;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Localization;
+using Orchard.Modules.Models;
+using Orchard.Modules.Services;
+using Orchard.Modules.ViewModels;
 using Orchard.Mvc;
 
 namespace Orchard.Modules.Controllers
@@ -202,6 +202,42 @@ namespace Orchard.Modules.Controllers
             }
 
             return RedirectToAction("Features");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Disable(string id)
+        {
+            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+            
+            if (feature == null)
+            {
+                return NotFound();
+            }
+
+            await _featureManager.DisableFeaturesAsync(new[] { feature.Id }, force: true);
+
+            _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
+
+            return RedirectToAction(nameof(Features));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Enable(string id)
+        {
+            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+
+            if (feature == null)
+            {
+                return NotFound();
+            }
+
+            await _featureManager.EnableFeaturesAsync(new[] { feature.Id }, force: true);
+
+            _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
+
+            return RedirectToAction(nameof(Features));
         }
 
         /// <summary>
