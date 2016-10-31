@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Manifests;
 using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
@@ -16,9 +15,11 @@ namespace Orchard.Environment.Extensions
         }
 
         public IFileInfo ExtensionFileInfo { get; } = new NotFoundFileInfo(null);
-        public IList<IFeatureInfo> Features { get; } = new List<IFeatureInfo>();
+        public IFeatureInfoList Features { get; } = null;
         public string Id { get { return _extensionId; } }
         public IManifestInfo Manifest { get { return _manifest; } }
         public string SubPath { get; } = string.Empty;
     }
+
+    
 }

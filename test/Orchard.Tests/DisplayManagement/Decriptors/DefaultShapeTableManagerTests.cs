@@ -70,10 +70,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
+                Features = new FeatureInfoList(new Dictionary<string, IFeatureInfo>());
+
                 Manifest = new ManifestInfo(configurationBuilder.Build());
             }
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IList<IFeatureInfo> Features { get; set; } = new List<IFeatureInfo>();
+            public IFeatureInfoList Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
@@ -95,8 +97,14 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 configurationBuilder.Add(memConfigSrc1);
 
                 Manifest = new ManifestInfo(configurationBuilder.Build());
-                Features.Add(
-                    new FeatureInfo(name, name, 0D, this, new string[0]));
+
+                IDictionary<string, IFeatureInfo> features =
+                    new Dictionary<string, IFeatureInfo>()
+                    {
+                        {name, new FeatureInfo(name, name, 0D, this, new string[0])}
+                    };
+
+                Features = new FeatureInfoList(features);
 
                 Id = name;
             }
@@ -117,14 +125,19 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build());
 
-                Features.Add(
-                    new FeatureInfo(name, name, 0D, this, new string[] { baseTheme.Id }));
+                IDictionary<string, IFeatureInfo> features =
+                    new Dictionary<string, IFeatureInfo>()
+                    {
+                        {name, new FeatureInfo(name, name, 0D, this, new string[] { baseTheme.Id })}
+                    };
+
+                Features = new FeatureInfoList(features);
 
                 Id = name;
             }
 
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IList<IFeatureInfo> Features { get; set; } = new List<IFeatureInfo>();
+            public IFeatureInfoList Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }

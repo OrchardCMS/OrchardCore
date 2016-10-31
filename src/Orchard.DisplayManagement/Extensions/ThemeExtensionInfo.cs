@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Extensions
 {
@@ -26,7 +25,7 @@ namespace Orchard.DisplayManagement.Extensions
         public IFileInfo ExtensionFileInfo => _extensionInfo.ExtensionFileInfo;
         public string SubPath => _extensionInfo.SubPath;
         public IManifestInfo Manifest => _extensionInfo.Manifest;
-        public IList<IFeatureInfo> Features => _extensionInfo.Features;
+        public IFeatureInfoList Features => _extensionInfo.Features;
 
         public string BaseTheme => _baseTheme;
 
