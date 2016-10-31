@@ -22,13 +22,13 @@ namespace Orchard.Tests.Extensions
         private IExtensionProvider Provider =
                     new ExtensionProvider(
                         HostingEnvrionment,
-                        new ManifestBuilder(new ManifestProvider(HostingEnvrionment),  new StubManifestOptions(new ManifestOption { ManifestFileName = "module.txt" })),
+                        new ManifestBuilder(new ManifestProvider(HostingEnvrionment),  new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt" })),
                         new FeatureManager());
 
         [Fact]
         public void ThatGetExtensionInfoShouldReturnExtensionWhenManifestIsPresent()
         {
-            var extension = Provider.GetExtensionInfo("sample1");
+            var extension = Provider.GetExtensionInfo("Sample1");
 
             Assert.Equal("Sample1", extension.Id);
             Assert.True(extension.ExtensionFileInfo.Exists);
@@ -37,7 +37,7 @@ namespace Orchard.Tests.Extensions
         [Fact]
         public void ThatGetExtensionInfoShouldReturnNullWhenManifestDoesNotExist()
         {
-            var extension = Provider.GetExtensionInfo("sample2");
+            var extension = Provider.GetExtensionInfo("Sample2");
 
             Assert.Null(extension);
         }
