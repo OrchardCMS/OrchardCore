@@ -170,11 +170,11 @@ namespace Orchard.DisplayManagement.Descriptors
             while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())
             {
                 var themeExtensionInfo = new ThemeExtensionInfo(themeFeature.Extension);
-                if (string.IsNullOrEmpty(themeExtensionInfo.BaseTheme))
+                if (!themeExtensionInfo.HasBaseTheme())
                 {
                     return false;
                 }
-                if (featureName == themeExtensionInfo.BaseTheme)
+                if (themeExtensionInfo.IsBaseThemeFeature(featureName))
                 {
                     return true;
                 }

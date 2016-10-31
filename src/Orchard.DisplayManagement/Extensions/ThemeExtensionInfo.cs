@@ -1,21 +1,25 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Extensions
 {
     public class ThemeExtensionInfo : IExtensionInfo
     {
-        private IExtensionInfo _extensionInfo;
+        private readonly IExtensionInfo _extensionInfo;
+
+        private readonly string _baseTheme;
 
         public ThemeExtensionInfo(IExtensionInfo extensionInfo)
         {
-
             _extensionInfo = extensionInfo;
+
+            var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["basetheme"];
+
+            if (baseTheme != null && baseTheme.Length != 0) {
+                _baseTheme = baseTheme.ToString();
+            }
         }
 
         public string Id => _extensionInfo.Id;
@@ -24,6 +28,14 @@ namespace Orchard.DisplayManagement.Extensions
         public IManifestInfo Manifest => _extensionInfo.Manifest;
         public IList<IFeatureInfo> Features => _extensionInfo.Features;
 
-        public string BaseTheme => _extensionInfo.Manifest.ConfigurationRoot["basetheme"].ToString();
+        public string BaseTheme => _baseTheme;
+
+        public bool HasBaseTheme() {
+            return _baseTheme != null;
+        }
+
+        public bool IsBaseThemeFeature(string featureName) {
+            return featureName == _baseTheme;
+        }
     }
 }
