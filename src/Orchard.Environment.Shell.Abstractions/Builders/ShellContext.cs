@@ -44,17 +44,22 @@ namespace Orchard.Hosting.ShellBuilders
                 {
                 }
 
+                // Disposes all the services registered for this shell
+                if (ServiceProvider != null)
+                {
+                    (ServiceProvider as IDisposable)?.Dispose();
+                    ServiceProvider = null;
+                }
+
+                IsActivated = false;
+
                 Settings = null;
                 Blueprint = null;
-
-                // Disposes all the services registered for this shell
-                (ServiceProvider as IDisposable).Dispose();
-                IsActivated = false;
 
                 _disposed = true;
             }
         }
-
+        
         ~ShellContext()
         {
             Dispose(false);

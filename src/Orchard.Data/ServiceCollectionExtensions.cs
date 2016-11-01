@@ -19,7 +19,6 @@ namespace Orchard.Data
             services.AddScoped<AutomaticDataMigrations>();
 
             // Adding supported databases
-
             services.AddSingleton(new DatabaseProvider
             {
                 Name = "Sql Server",

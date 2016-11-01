@@ -33,6 +33,11 @@ namespace Orchard.Hosting.Routing
             object value;
             var tokens = GetHomeRouteValuesAsync().Result;
 
+            if (tokens == null)
+            {
+                return null;
+            }
+
             // Return null if it doesn't match the home route values
             foreach (var entry in tokens)
             {
