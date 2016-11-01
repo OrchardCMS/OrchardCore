@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc.Modules.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orchard.Data;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell.Data;
+using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Cms.Web
 {
@@ -32,7 +34,7 @@ namespace Orchard.Cms.Web
             services.AddThemingHost();
             services.AddThemeFolder("Themes");
             services.AddSitesFolder("App_Data", "Sites");
-            services.AddModuleServices(Configuration);
+            services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Cms");
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
