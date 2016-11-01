@@ -87,7 +87,7 @@
                                             select (from f in Model.Features where f.Descriptor.Id.Equals(d, StringComparison.OrdinalIgnoreCase) select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                         var missingDependencies = feature.Descriptor.Dependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id.Equals(d, StringComparison.OrdinalIgnoreCase)));
-                        var showDisable = categoryName.ToString() != "Core";
+                        var showDisable = true; // categoryName.ToString() != "Core";
                         var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "Orchard.Setup";
 
                         <li class="list-group-item">
@@ -121,7 +121,7 @@
                                 <h5>@featureName</h5>
                             }
 
-                            
+
                             <p class="text-muted">@feature.Descriptor.Description</p>
                             <div>
                                 @if (feature.Descriptor.Dependencies != null && feature.Descriptor.Dependencies.Any())
