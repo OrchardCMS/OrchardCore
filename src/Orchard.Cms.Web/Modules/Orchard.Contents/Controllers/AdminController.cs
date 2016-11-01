@@ -352,8 +352,6 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            _contentManager.Create(contentItem, VersionOptions.DraftTransient);
-
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
 
             if (!ModelState.IsValid)
@@ -362,7 +360,7 @@ namespace Orchard.Contents.Controllers
                 return View(model);
             }
 
-            _session.Save(contentItem);
+            _contentManager.Create(contentItem, VersionOptions.Draft);
 
             await conditionallyPublish(contentItem);
 

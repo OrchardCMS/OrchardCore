@@ -372,11 +372,8 @@ namespace Orchard.ContentManagement
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
 
-            if (!options.IsDraftTransient)
-            {
-                _session.Save(contentItem);
-                _contentManagerSession.Store(contentItem);
-            }
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
         }
 
         public ContentItemMetadata GetItemMetadata(IContent content)

@@ -20,7 +20,6 @@ namespace Orchard.ContentManagement
         /// <param name="contentType">The name of the content type</param>
         ContentItem New(string contentType);
 
-
         /// <summary>
         /// Creates (persists) a new content item
         /// </summary>
@@ -83,11 +82,6 @@ namespace Orchard.ContentManagement
         public static VersionOptions DraftRequired { get { return new VersionOptions { IsDraft = true, IsDraftRequired = true }; } }
 
         /// <summary>
-        /// Creates a new draft which is not yet persisted.
-        /// </summary>
-        public static VersionOptions DraftTransient { get { return new VersionOptions { IsDraft = true, IsDraftTransient = true }; } }
-
-        /// <summary>
         /// Gets all versions.
         /// </summary>
         public static VersionOptions AllVersions { get { return new VersionOptions { IsAllVersions = true }; } }
@@ -111,7 +105,6 @@ namespace Orchard.ContentManagement
         public bool IsPublished { get; private set; }
         public bool IsDraft { get; private set; }
         public bool IsDraftRequired { get; private set; }
-        public bool IsDraftTransient { get; private set; }
         public bool IsAllVersions { get; private set; }
         public int VersionNumber { get; private set; }
         public int VersionRecordId { get; private set; }
