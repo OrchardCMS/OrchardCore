@@ -95,6 +95,8 @@ namespace Orchard.Environment.Shell.Builders
         /// <returns></returns>
         private ShellDescriptor MinimumShellDescriptor()
         {
+            // Load default features from the list of registered ShellFeature instances in the DI
+
             return new ShellDescriptor
             {
                 SerialNumber = -1,
