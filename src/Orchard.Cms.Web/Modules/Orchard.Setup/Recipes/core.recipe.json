@@ -36,6 +36,8 @@
         "Orchard.Tokens.Content",
         "Orchard.Deployment",
         "Orchard.Deployment.Remote",
+        "Orchard.Modules",
+        "Orchard.Recipes",
         "TheTheme",
         "TheAdmin",
         "SafeMode"

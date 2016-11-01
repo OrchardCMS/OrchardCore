@@ -314,6 +314,11 @@ ul.menu-admin ul {
     content: "\f083";
 }
 
+.menu-admin > li.modules > a::before,
+.menu-admin > li.modules > label::before {
+    content: "\f12e";
+}
+
 .menu-admin > li.demo > a::before,
 .menu-admin > li.demo > label::before {
     content: "\f292";
