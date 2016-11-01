@@ -66,7 +66,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -84,7 +84,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -124,7 +124,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -168,7 +168,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -230,7 +230,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -265,7 +265,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -302,7 +302,7 @@ namespace Orchard.Tenants.Controllers
                 return Unauthorized();
             }
 
-            if (_currentShellSettings.Name != ShellHelper.DefaultShellName)
+            if (!IsDefaultShell())
             {
                 return Unauthorized();
             }
@@ -342,7 +342,7 @@ namespace Orchard.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!String.Equals(model.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
@@ -364,6 +364,11 @@ namespace Orchard.Tenants.Controllers
         private IEnumerable<ShellContext> GetShells()
         {
             return _orchardHost.ListShellContexts().OrderBy(x => x.Settings.Name);
+        }
+
+        private bool IsDefaultShell()
+        {
+            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

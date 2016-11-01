@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Data;
-
-namespace Orchard.Tenants.ViewModels
+﻿namespace Orchard.Tenants.ViewModels
 {
     public class EditTenantViewModel
     {
