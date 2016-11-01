@@ -6,19 +6,9 @@ namespace Orchard.Environment.Shell
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMultiTenancy(
-            this IServiceCollection services,
-            string shellsRootContainerName,
-            string shellsContainerName)
+        public static IServiceCollection AddAllFeaturesDescriptor(this IServiceCollection services)
         {
-            services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
             services.AddScoped<IShellDescriptorManager, AllFeaturesShellDescriptorManager>();
-
-            services.Configure<ShellOptions>(options =>
-            {
-                options.ShellsRootContainerName = shellsRootContainerName;
-                options.ShellsContainerName = shellsContainerName;
-            });
 
             return services;
         }

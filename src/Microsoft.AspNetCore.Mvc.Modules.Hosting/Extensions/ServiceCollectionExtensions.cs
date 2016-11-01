@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Folders;
+using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc.Filters;
@@ -83,6 +84,24 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             services.AddSingleton(_ => services);
 
             return services;
+        }
+
+        public static IServiceCollection WithDefaultFeatures(this IServiceCollection services, params string[] featureNames)
+        {
+            foreach (var featureName in featureNames)
+            {
+                services.AddSingleton(new ShellFeature(featureName));
+            };
+
+            return services;
+        }
+
+        /// <summary>
+        /// Enables all available features.
+        /// </summary>
+        public static IServiceCollection WithAllFeatures(this IServiceCollection services)
+        {
+            return services.AddAllFeaturesDescriptor();
         }
 
         public static IServiceCollection AddWebHost(this IServiceCollection services)

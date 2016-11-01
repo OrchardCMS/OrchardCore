@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Modules.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Mvc.Web
 {
@@ -28,7 +29,7 @@ namespace Orchard.Mvc.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Add ASP.NET MVC and support for modules
-            services.AddModuleServices(Configuration);
+            services.AddModuleServices(Configuration).WithAllFeatures();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
