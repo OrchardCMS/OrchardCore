@@ -19,19 +19,8 @@ namespace Orchard.Data
             services.AddScoped<AutomaticDataMigrations>();
 
             // Adding supported databases
-            services.AddSingleton(new DatabaseProvider
-            {
-                Name = "Sql Server",
-                Value = "SqlConnection",
-                HasConnectionString = true
-            });
-
-            services.AddSingleton(new DatabaseProvider
-            {
-                Name = "Sql Lite",
-                Value = "Sqlite",
-                HasConnectionString = false
-            });
+            services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
+            services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
 
             // Configuring data access
 

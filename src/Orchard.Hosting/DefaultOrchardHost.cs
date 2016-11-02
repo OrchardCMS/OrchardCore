@@ -183,7 +183,7 @@ namespace Orchard.Hosting
 
                 return new ShellContext { Settings = settings };
             }
-            else if(settings.State == TenantState.Running)
+            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -277,6 +277,7 @@ namespace Orchard.Hosting
         {
             return 
                 shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
         }
 }

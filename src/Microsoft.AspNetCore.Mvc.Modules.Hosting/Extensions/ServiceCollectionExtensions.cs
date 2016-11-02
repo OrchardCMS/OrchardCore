@@ -90,7 +90,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
         {
             foreach (var featureName in featureNames)
             {
-                services.AddSingleton(new ShellFeature(featureName));
+                services.AddTransient(sp => new ShellFeature(featureName));
             };
 
             return services;

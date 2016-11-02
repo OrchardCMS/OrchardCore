@@ -14,9 +14,8 @@ namespace Orchard.Setup
         {
             services.AddScoped<ISetupService, SetupService>();
 
-            // TODO: Remove once Orchard.Cms is a default feature always on
-            services.AddSingleton(new DatabaseProvider { Name = "Sql Server", Value = "SqlConnection", HasConnectionString = true });
-            services.AddSingleton(new DatabaseProvider { Name = "Sql Lite", Value = "Sqlite", HasConnectionString = false });
+            services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true );
+            services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false );
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
