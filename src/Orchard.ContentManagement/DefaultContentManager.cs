@@ -171,13 +171,11 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                // TODO: Check if it is right to always return null here.
                 return null;
-                // Anyway if contentItem is null we can't do the following.
             }
 
             // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
+            // If IsPublished or IsLatest is required then the test has already been checked before
             ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {
