@@ -20,10 +20,15 @@ namespace Orchard.Hosting.Routing
 
         protected override async Task OnRouteMatched(RouteContext context)
         {
-            foreach (var entry in await GetHomeRouteValuesAsync())
+            var tokens = await GetHomeRouteValuesAsync();
+
+            if (tokens != null)
             {
-                context.RouteData.Values[entry.Key] = entry.Value;
-            }            
+                foreach (var entry in tokens)
+                {
+                    context.RouteData.Values[entry.Key] = entry.Value;
+                }
+            }         
 
             await base.OnRouteMatched(context);
         }
