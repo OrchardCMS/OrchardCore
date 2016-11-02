@@ -108,5 +108,25 @@ namespace Orchard.ContentManagement
                    content.ContentItem.Published == false ||
                    (content.ContentItem.Published && content.ContentItem.Latest == false);
         }
+
+        public static bool IsLatest(this IContent content)
+        {
+            return content.ContentItem != null && content.ContentItem.Latest;
+        }
+
+        public static bool IsNew(this IContent content)
+        {
+            return content.ContentItem != null && content.ContentItem.Id == 0;
+        }
+
+        public static bool IsNewInstance(this IContent content)
+        {
+            return content.ContentItem.IsNew() && content.ContentItem.Number == 0;
+        }
+
+        public static bool IsNewVersion(this IContent content)
+        {
+            return content.ContentItem.IsNew() && content.ContentItem.Number != 0;
+        }
     }
 }
