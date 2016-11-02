@@ -27,6 +27,9 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions 
             = new ConcurrentDictionary<string, ExtensionEntry>();
 
+        private readonly ConcurrentDictionary<string, IExtensionInfo> _extensionsById
+            = new ConcurrentDictionary<string, IExtensionInfo>();
+
         private readonly ConcurrentDictionary<string, FeatureEntry> _features 
             = new ConcurrentDictionary<string, FeatureEntry>();
 
@@ -51,50 +54,16 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo GetExtension(string extensionId)
         {
-            foreach (var searchPath in _extensionOptions.SearchPaths)
-            {
-                var subPath = 
-                    Path.Combine(searchPath, extensionId);
-                var extensionInfo = 
-                    _extensionProvider.GetExtensionInfo(subPath);
+            InitializeExtensions();
 
-                if (extensionInfo != null)
-                {
-                    return extensionInfo;
-                }
-            }
-
-            return null;
+            return _extensionsById.ContainsKey(extensionId) ? _extensionsById[extensionId] : null;
         }
 
         public IExtensionInfoList GetExtensions()
         {
-            // TODO (ngm) throw this to a static, no need to build this everytime
-            var extensionsById = new Dictionary<string, IExtensionInfo>();
+            InitializeExtensions();
 
-            foreach (var searchPath in _extensionOptions.SearchPaths)
-            {
-                foreach (var subDirectory in _hostingEnvironment
-                    .ContentRootFileProvider
-                    .GetDirectoryContents(searchPath).Where(x => x.IsDirectory))
-                {
-                    var extensionId = subDirectory.Name;
-                    if (!extensionsById.ContainsKey(extensionId))
-                    {
-                        var subPath = Path.Combine(searchPath, extensionId);
-
-                        var extensionInfo =
-                            _extensionProvider.GetExtensionInfo(subPath);
-
-                        if (extensionInfo != null)
-                        {
-                            extensionsById.Add(extensionId, extensionInfo);
-                        }
-                    }
-                }
-            }
-
-            return new ExtensionInfoList(extensionsById);
+            return new ExtensionInfoList(_extensionsById);
         }
 
         public ExtensionEntry LoadExtension(IExtensionInfo extensionInfo)
@@ -124,7 +93,7 @@ namespace Orchard.Environment.Extensions
         }
 
         public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos) {
-            var extensionEntries = new List<ExtensionEntry>();
+            var extensionEntries = new ConcurrentBag<ExtensionEntry>();
 
             Parallel.ForEach(extensionInfos, extension =>
             {
@@ -164,12 +133,8 @@ namespace Orchard.Environment.Extensions
                     if (string.Equals(sourceFeature, feature.Id, StringComparison.OrdinalIgnoreCase))
                     {
                         featureTypes.Add(type);
+                        _typeFeatureProvider.TryAdd(type, feature);
                     }
-                }
-
-                foreach (var type in featureTypes)
-                {
-                    _typeFeatureProvider.TryAdd(type, feature);
                 }
 
                 return new CompiledFeatureEntry(feature, featureTypes);
@@ -193,6 +158,32 @@ namespace Orchard.Environment.Extensions
             }
 
             return result;
+        }
+
+        private void InitializeExtensions()
+        {
+            foreach (var searchPath in _extensionOptions.SearchPaths)
+            {
+                foreach (var subDirectory in _hostingEnvironment
+                    .ContentRootFileProvider
+                    .GetDirectoryContents(searchPath).Where(x => x.IsDirectory))
+                {
+                    var extensionId = subDirectory.Name;
+
+                    if (!_extensionsById.ContainsKey(extensionId))
+                    {
+                        var subPath = Path.Combine(searchPath, extensionId);
+
+                        var extensionInfo =
+                            _extensionProvider.GetExtensionInfo(subPath);
+
+                        if (extensionInfo != null)
+                        {
+                            _extensionsById.TryAdd(extensionId, extensionInfo);
+                        }
+                    }
+                }
+            }
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
