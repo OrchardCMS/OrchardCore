@@ -1,13 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions
 {
     internal class CompositeExtensionProvider : IExtensionProvider
     {
-        private readonly IEnumerable<IExtensionProvider> _extensionProviders;
+        private readonly IExtensionProvider[] _extensionProviders;
+        public CompositeExtensionProvider(params IExtensionProvider[] extensionProviders)
+        {
+            _extensionProviders = extensionProviders ?? new IExtensionProvider[0];
+        }
+
         public CompositeExtensionProvider(IEnumerable<IExtensionProvider> extensionProviders)
         {
-            _extensionProviders = extensionProviders;
+            if (extensionProviders == null)
+            {
+                throw new ArgumentNullException(nameof(extensionProviders));
+            }
+            _extensionProviders = extensionProviders.ToArray();
         }
 
         public IExtensionInfo GetExtensionInfo(string subPath)

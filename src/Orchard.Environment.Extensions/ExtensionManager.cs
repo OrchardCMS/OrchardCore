@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions
     {
         private readonly ExtensionOptions _extensionOptions;
         private readonly IExtensionProvider _extensionProvider;
-        private readonly IEnumerable<IExtensionLoader> _extensionLoaders;
+        private readonly IExtensionLoader _extensionLoader;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
@@ -41,7 +41,7 @@ namespace Orchard.Environment.Extensions
         {
             _extensionOptions = optionsAccessor.Value;
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
-            _extensionLoaders = extensionLoaders;
+            _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -70,8 +70,7 @@ namespace Orchard.Environment.Extensions
         public IExtensionInfoList GetExtensions()
         {
             // TODO (ngm) throw this to a static, no need to build this everytime
-            IDictionary<string, IExtensionInfo> extensionsById
-                = new Dictionary<string, IExtensionInfo>();
+            var extensionsById = new Dictionary<string, IExtensionInfo>();
 
             foreach (var searchPath in _extensionOptions.SearchPaths)
             {
@@ -107,21 +106,14 @@ namespace Orchard.Environment.Extensions
             {
                 return _extensions.GetOrAdd(extensionInfo.Id, id =>
                 {
-                    foreach (var loader in _extensionLoaders)
-                    {
-                        var entry = loader.Load(extensionInfo);
-                        if (entry != null)
-                        {
-                            return entry;
-                        }
-                    }
-
-                    if (_logger.IsEnabled(LogLevel.Warning))
+                    var extension = _extensionLoader.Load(extensionInfo);
+                    
+                    if (extension == null && _logger.IsEnabled(LogLevel.Warning))
                     {
                         _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
                     }
 
-                    return null;
+                    return extension;
                 });
             }
             catch (Exception ex)
@@ -132,7 +124,7 @@ namespace Orchard.Environment.Extensions
         }
 
         public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos) {
-            List<ExtensionEntry> extensionEntries = new List<ExtensionEntry>();
+            var extensionEntries = new List<ExtensionEntry>();
 
             Parallel.ForEach(extensionInfos, extension =>
             {
