@@ -454,22 +454,22 @@ namespace Orchard.Contents.Controllers
                 return NotFound();
             }
 
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            {
+                return Unauthorized();
+            }
+
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var draftRequired = contentItem.Published && typeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable;
 
             if (draftRequired)
             {
                 contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
-            }
 
-            if (contentItem == null)
-            {
-                return NotFound();
-            }
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
-            {
-                return Unauthorized();
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
             }
 
             //string previousRoute = null;
