@@ -4,7 +4,7 @@ namespace Orchard.Environment.Extensions.Manifests
 {
     public class ManifestInfo : IManifestInfo
     {
-        private IConfigurationRoot _configurationRoot;
+        private readonly IConfigurationRoot _configurationRoot;
 
         public ManifestInfo(
             IConfigurationRoot configurationRoot)

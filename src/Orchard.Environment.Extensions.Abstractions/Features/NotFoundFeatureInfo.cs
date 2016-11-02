@@ -4,8 +4,8 @@ namespace Orchard.Environment.Extensions.Features
 {
     public class NotFoundFeatureInfo : IFeatureInfo
     {
-        private string _featureId;
-        private IExtensionInfo _extensionInfo;
+        private readonly string _featureId;
+        private readonly IExtensionInfo _extensionInfo;
 
         public NotFoundFeatureInfo(string featureId, IExtensionInfo extension)
         {
@@ -18,10 +18,5 @@ namespace Orchard.Environment.Extensions.Features
         public string Id { get { return _featureId; } }
         public string Name { get; } = null;
         public double Priority { get; }
-
-        public bool DependencyOn(IFeatureInfo feature)
-        {
-            return false;
-        }
     }
 }

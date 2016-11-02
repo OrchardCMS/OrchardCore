@@ -7,7 +7,5 @@
         double Priority { get; }
         IExtensionInfo Extension { get; }
         string[] Dependencies { get; }
-
-        bool DependencyOn(IFeatureInfo feature);
     }
 }

@@ -16,23 +16,23 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
-        private ExtensionOptions _extensionOptions;
-        private IExtensionProvider _extensionProvider;
-        private IEnumerable<IExtensionLoader> _extensionLoaders;
-        private IHostingEnvironment _hostingEnvironment;
-        private ITypeFeatureProvider _typeFeatureProvider;
+        private readonly ExtensionOptions _extensionOptions;
+        private readonly IExtensionProvider _extensionProvider;
+        private readonly IEnumerable<IExtensionLoader> _extensionLoaders;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
         // TODO (ngm) value providers not thread safe...
         private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions 
             = new ConcurrentDictionary<string, ExtensionEntry>();
 
-        private ConcurrentDictionary<string, FeatureEntry> _features 
+        private readonly ConcurrentDictionary<string, FeatureEntry> _features 
             = new ConcurrentDictionary<string, FeatureEntry>();
 
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
-            IExtensionProvider extensionProvider,
+            IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
             IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
@@ -40,7 +40,7 @@ namespace Orchard.Environment.Extensions
             IStringLocalizer<ExtensionManager> localizer)
         {
             _extensionOptions = optionsAccessor.Value;
-            _extensionProvider = extensionProvider;
+            _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoaders = extensionLoaders;
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;

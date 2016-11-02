@@ -8,8 +8,8 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionInfoList : IExtensionInfoList
     {
-        private IDictionary<string, IExtensionInfo> _extensionsByKey;
-        private IReadOnlyList<IExtensionInfo> _extensions;
+        private readonly IDictionary<string, IExtensionInfo> _extensionsByKey;
+        private readonly IReadOnlyList<IExtensionInfo> _extensions;
 
         public ExtensionInfoList(IDictionary<string, IExtensionInfo> extensions) {
             _extensionsByKey = extensions;

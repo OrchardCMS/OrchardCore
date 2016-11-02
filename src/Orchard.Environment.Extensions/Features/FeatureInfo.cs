@@ -1,17 +1,12 @@
-﻿using Microsoft.DotNet.ProjectModel.FileSystemGlobbing;
-using Microsoft.Extensions.FileProviders;
-using System;
-using System.Linq;
-
-namespace Orchard.Environment.Extensions.Features
+﻿namespace Orchard.Environment.Extensions.Features
 {
     public class FeatureInfo : IFeatureInfo
     {
-        private string _id;
-        private string _name;
-        private double _priority;
-        private IExtensionInfo _extension;
-        private string[] _dependencies;
+        private readonly string _id;
+        private readonly string _name;
+        private readonly double _priority;
+        private readonly IExtensionInfo _extension;
+        private readonly string[] _dependencies;
 
         public FeatureInfo(
             string id,
@@ -32,11 +27,5 @@ namespace Orchard.Environment.Extensions.Features
         public double Priority { get { return _priority; } }
         public IExtensionInfo Extension { get { return _extension; } }
         public string[] Dependencies { get { return _dependencies; } }
-
-        public bool DependencyOn(IFeatureInfo subject)
-        {
-            return this.Dependencies.Any(x =>
-                StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
-        }
     }
 }

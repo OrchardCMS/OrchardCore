@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -9,10 +10,10 @@ namespace Orchard.Environment.Extensions.Manifests
     {
         private readonly IManifestProvider _manifestProvider;
         private readonly ManifestOptions _manifestOptions;
-        public ManifestBuilder(IManifestProvider manifestProvider,
+        public ManifestBuilder(IEnumerable<IManifestProvider> manifestProviders,
             IOptions<ManifestOptions> optionsAccessor)
         {
-            _manifestProvider = manifestProvider;
+            _manifestProvider = new CompositeManifestProvider(manifestProviders);
             _manifestOptions = optionsAccessor.Value;
         }
 

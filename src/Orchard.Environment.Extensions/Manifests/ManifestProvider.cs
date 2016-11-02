@@ -9,7 +9,7 @@ namespace Orchard.Environment.Extensions.Manifests
 {
     public class ManifestProvider : IManifestProvider
     {
-        private IFileProvider _fileProvider;
+        private readonly IFileProvider _fileProvider;
 
         public ManifestProvider(IHostingEnvironment hostingEnvironment)
         {

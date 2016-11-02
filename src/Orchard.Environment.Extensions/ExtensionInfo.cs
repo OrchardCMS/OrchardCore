@@ -6,10 +6,10 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionInfo : IExtensionInfo
     {
-        private IFileInfo _fileInfo;
-        private string _subPath;
-        private IManifestInfo _manifestInfo;
-        private IFeatureInfoList _features;
+        private readonly IFileInfo _fileInfo;
+        private readonly string _subPath;
+        private readonly IManifestInfo _manifestInfo;
+        private readonly IFeatureInfoList _features;
 
         public ExtensionInfo(
             IFileInfo fileInfo,

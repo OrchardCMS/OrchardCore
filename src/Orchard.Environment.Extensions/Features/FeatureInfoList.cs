@@ -1,6 +1,4 @@
-﻿using Orchard.Environment.Extensions.Utility;
-using Orchard.Environment.Extensions.Features;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 
@@ -8,8 +6,8 @@ namespace Orchard.Environment.Extensions.Features
 {
     public class FeatureInfoList : IFeatureInfoList
     {
-        private IDictionary<string, IFeatureInfo> _featuresByKey;
-        private IReadOnlyList<IFeatureInfo> _features;
+        private readonly IDictionary<string, IFeatureInfo> _featuresByKey;
+        private readonly IReadOnlyList<IFeatureInfo> _features;
 
         public FeatureInfoList(IDictionary<string, IFeatureInfo> features) {
             _featuresByKey = features;

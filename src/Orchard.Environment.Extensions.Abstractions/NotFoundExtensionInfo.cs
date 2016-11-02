@@ -15,11 +15,9 @@ namespace Orchard.Environment.Extensions
         }
 
         public IFileInfo ExtensionFileInfo { get; } = new NotFoundFileInfo(null);
-        public IFeatureInfoList Features { get; } = null;
+        public IFeatureInfoList Features { get; } = new EmptyFeatureInfoList();
         public string Id { get { return _extensionId; } }
         public IManifestInfo Manifest { get { return _manifest; } }
         public string SubPath { get; } = string.Empty;
     }
-
-    
 }

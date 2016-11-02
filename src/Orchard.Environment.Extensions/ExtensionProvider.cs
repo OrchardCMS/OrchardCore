@@ -9,9 +9,9 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionProvider : IExtensionProvider
     {
-        private IFileProvider _fileProvider;
-        private IManifestBuilder _manifestBuilder;
-        private IFeatureManager _featureManager;
+        private readonly IFileProvider _fileProvider;
+        private readonly IManifestBuilder _manifestBuilder;
+        private readonly IFeatureManager _featureManager;
 
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.

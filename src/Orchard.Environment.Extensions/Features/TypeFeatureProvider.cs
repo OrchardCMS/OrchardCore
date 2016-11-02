@@ -6,7 +6,8 @@ namespace Orchard.Environment.Extensions
 {
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
-        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features = new ConcurrentDictionary<Type, IFeatureInfo>();
+        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features 
+            = new ConcurrentDictionary<Type, IFeatureInfo>();
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
