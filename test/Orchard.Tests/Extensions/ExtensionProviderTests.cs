@@ -22,7 +22,9 @@ namespace Orchard.Tests.Extensions
         private IExtensionProvider Provider =
                     new ExtensionProvider(
                         HostingEnvrionment,
-                        new ManifestBuilder(new ManifestProvider(HostingEnvrionment),  new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt" })),
+                        new ManifestBuilder(
+                            new IManifestProvider[] { new ManifestProvider(HostingEnvrionment) },
+                            new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt" })),
                         new FeatureManager());
 
         [Fact]
