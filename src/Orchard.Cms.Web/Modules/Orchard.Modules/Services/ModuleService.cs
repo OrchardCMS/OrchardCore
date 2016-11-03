@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Localization;
+﻿using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
-using Orchard.Localization;
 using Orchard.Modules.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Modules.Services
 {
@@ -18,12 +17,14 @@ namespace Orchard.Modules.Services
         private readonly IFeatureManager _featureManager;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
 
         public ModuleService(
                 IFeatureManager featureManager,
                 IExtensionManager extensionManager,
                 IShellDescriptorManager shellDescriptorManager,
+                IShellFeaturesManager shellFeaturesManager,
                 IHtmlLocalizer<AdminMenu> htmlLocalizer,
                 INotifier notifier)
         {
@@ -31,7 +32,7 @@ namespace Orchard.Modules.Services
             _featureManager = featureManager;
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
-
+            _shellFeaturesManager = shellFeaturesManager;
             //if (_featureManager.FeatureDependencyNotification == null) {
             //    _featureManager.FeatureDependencyNotification = GenerateWarning;
             //}
@@ -49,10 +50,10 @@ namespace Orchard.Modules.Services
         {
             var currentShellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
             var enabledFeatures = currentShellDescriptor.Features;
-            return _extensionManager.AvailableExtensions()
+            return _extensionManager.GetExtensions()
                 .SelectMany(m => _extensionManager.LoadFeatures(m.Features))
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
-                    .FirstOrDefault(sf => string.Equals(sf.Name, f.Descriptor.Id, StringComparison.OrdinalIgnoreCase)) != null));
+                    .FirstOrDefault(sf => string.Equals(sf.Name, f.FeatureInfo.Id, StringComparison.OrdinalIgnoreCase)) != null));
         }
 
         /// <summary>
@@ -69,13 +70,14 @@ namespace Orchard.Modules.Services
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
-        public async void EnableFeatures(IEnumerable<string> featureIds, bool force)
+        public void EnableFeatures(IEnumerable<string> featureIds, bool force)
         {
-            var features = await _featureManager.EnableFeaturesAsync(featureIds, force);
-            foreach (string featureId in features)
+            var featuresToEnable = _extensionManager.GetExtensions().Features.Where(x => featureIds.Contains(x.Id));
+            var features = _shellFeaturesManager.EnableFeatures(featuresToEnable, force);
+            foreach (var feature in features)
             {
-                var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
-                var featureName = availableFeatures.First(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                var availableFeatures = _shellFeaturesManager.EnabledFeatures();
+                var featureName = availableFeatures.First(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
                 _notifier.Success(T["{0} was enabled", featureName]);
             }
         }
@@ -94,13 +96,14 @@ namespace Orchard.Modules.Services
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
-        public async void DisableFeatures(IEnumerable<string> featureIds, bool force)
+        public void DisableFeatures(IEnumerable<string> featureIds, bool force)
         {
-            var features = await _featureManager.DisableFeaturesAsync(featureIds, force);
-            foreach (string featureId in features)
+            var availableFeatures = _extensionManager.GetExtensions().Features;
+            var featuresToDisable = availableFeatures.Where(x => featureIds.Contains(x.Id));
+            var features = _shellFeaturesManager.DisableFeatures(featuresToDisable, force);
+            foreach (var feature in features)
             {
-                var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
-                var featureName = availableFeatures.Single(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                var featureName = availableFeatures.Single(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
                 _notifier.Success(T["{0} was disabled", featureName]);
             }
         }
@@ -123,15 +126,10 @@ namespace Orchard.Modules.Services
         //    return DateTime.UtcNow.Subtract(lastWrittenUtc) < new TimeSpan(1, 0, 0, 0);
         //}
 
-        public IEnumerable<FeatureDescriptor> GetDependentFeatures(string featureId)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return Task.Run(() => GetDependentFeaturesAsync(featureId)).Result;
-        }
-
-        public async Task<IEnumerable<FeatureDescriptor>> GetDependentFeaturesAsync(string featureId)
-        {
-            var dependants = await _featureManager.GetDependentFeaturesAsync(featureId);
-            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var dependants = _shellFeaturesManager.GetDependentFeatures(featureId);
+            var availableFeatures = _extensionManager.GetExtensions().Features;
             var availableFeaturesLookup = availableFeatures.ToLookup(f => f.Id, StringComparer.OrdinalIgnoreCase);
 
             return dependants
@@ -154,11 +152,11 @@ namespace Orchard.Modules.Services
         //    return projectPath;
         //}
 
-        private static ModuleFeature AssembleModuleFromDescriptor(Feature feature, bool isEnabled)
+        private static ModuleFeature AssembleModuleFromDescriptor(FeatureEntry feature, bool isEnabled)
         {
             return new ModuleFeature
             {
-                Descriptor = feature.Descriptor,
+                Descriptor = feature.FeatureInfo,
                 IsEnabled = isEnabled
             };
         }

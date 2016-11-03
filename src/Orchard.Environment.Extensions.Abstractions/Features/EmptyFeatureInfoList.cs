@@ -31,11 +31,11 @@ namespace Orchard.Environment.Extensions.Features
             }
         }
 
-        public IEnumerable<IExtensionInfo> Extensions
+        public IExtensionInfoList Extensions
         {
             get
             {
-                return Enumerable.Empty<IExtensionInfo>();
+                return null;
             }
         }
 

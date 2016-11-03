@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -29,10 +30,13 @@ namespace Orchard.Environment.Extensions.Features
             get { return _featuresByKey.Count; }
         }
 
-        public IEnumerable<IExtensionInfo> Extensions {
+        public IExtensionInfoList Extensions {
             get
             {
-                return _features.Select(x => x.Extension);
+                return new ExtensionInfoList(
+                    _features
+                        .ToDictionary(x => x.Extension.Id,
+                                      y => y.Extension));
             }
         }
 

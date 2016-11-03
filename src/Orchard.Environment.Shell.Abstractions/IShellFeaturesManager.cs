@@ -12,7 +12,10 @@ namespace Orchard.Environment.Shell
         IEnumerable<IFeatureInfo> EnabledFeatures(ShellDescriptor shell);
         IEnumerable<IFeatureInfo> EnableFeatures(IEnumerable<IFeatureInfo> features);
         IEnumerable<IFeatureInfo> EnableFeatures(IEnumerable<IFeatureInfo> features, bool force);
+        IEnumerable<IFeatureInfo> DisabledFeatures();
+        IEnumerable<IFeatureInfo> DisabledFeatures(ShellDescriptor shell);
         IEnumerable<IFeatureInfo> DisableFeatures(IEnumerable<IFeatureInfo> features);
         IEnumerable<IFeatureInfo> DisableFeatures(IEnumerable<IFeatureInfo> features, bool force);
+        IEnumerable<string> GetDependentFeatures(string featureId);
     }
 }

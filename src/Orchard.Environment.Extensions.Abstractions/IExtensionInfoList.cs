@@ -6,7 +6,7 @@ namespace Orchard.Environment.Extensions
     public interface IExtensionInfoList : IReadOnlyList<IExtensionInfo>
     {
         IExtensionInfo this[string key] { get; }
-        IEnumerable<IFeatureInfo> Features { get; }
+        IFeatureInfoList Features { get; }
 
         bool HasFeature(string featureId);
     }

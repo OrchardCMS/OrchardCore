@@ -31,11 +31,14 @@ namespace Orchard.Environment.Extensions
             get { return _extensions.Count; }
         }
 
-        public IEnumerable<IFeatureInfo> Features {
+        public IFeatureInfoList Features {
             get
             {
-                return _extensions.SelectMany(x => x.Features)
-                    .OrderByDependenciesAndPriorities(HasDependency, GetPriority);
+                return new FeatureInfoList(
+                    _extensions
+                        .SelectMany(x => x.Features)
+                        .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
+                        .ToDictionary(x => x.Id, y => y));
             }
         }
 

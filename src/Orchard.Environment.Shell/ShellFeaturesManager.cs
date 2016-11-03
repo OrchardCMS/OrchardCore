@@ -86,6 +86,19 @@ namespace Orchard.Environment.Shell
             return featuresToEnable;
         }
 
+        public IEnumerable<IFeatureInfo> DisabledFeatures()
+        {
+            return DisabledFeatures(_shellDescriptorManager.GetShellDescriptorAsync().Result);
+        }
+
+        public IEnumerable<IFeatureInfo> DisabledFeatures(ShellDescriptor shell)
+        {
+            var extensions = _extensionManager.GetExtensions();
+            var features = extensions.Features;
+            
+            return features.Where(fd => shell.Features.All(sf => sf.Name != fd.Id));
+        }
+
         /// <summary>
         /// Disables a list of features.
         /// </summary>
@@ -137,9 +150,9 @@ namespace Orchard.Environment.Shell
         /// <summary>
         /// Lists all enabled features that depend on a given feature.
         /// </summary>
-        /// <param name="feature">feature to check.</param>
+        /// <param name="featureId">feature to check.</param>
         /// <returns>An enumeration with dependent feature IDs.</returns>
-        public IEnumerable<string> GetDependentFeatures(IFeatureInfo feature)
+        public IEnumerable<string> GetDependentFeatures(string featureId)
         {
             var getEnabledDependants =
                 new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
@@ -159,7 +172,7 @@ namespace Orchard.Environment.Shell
                 .ToDictionary(featureDescriptor => featureDescriptor,
                                 featureDescriptor => enabledFeatures.FirstOrDefault(shellFeature => shellFeature.Name == featureDescriptor.Id) != null);
 
-            return GetAffectedFeatures(feature.Id, availableFeatures, getEnabledDependants);
+            return GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
         }
 
         /// <summary>
@@ -230,7 +243,7 @@ namespace Orchard.Environment.Shell
         private IEnumerable<IFeatureInfo> DisableFeature(IFeatureInfo featureInfo, bool force)
         {
             IEnumerable<string> affectedFeatures = 
-                GetDependentFeatures(featureInfo);
+                GetDependentFeatures(featureInfo.Id);
 
             var extensions = _extensionManager.GetExtensions();
             var featuresToDisable = extensions.Features.Where(x => affectedFeatures.Contains(x.Id));

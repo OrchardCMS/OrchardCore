@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Modules.Models {
     /// <summary>
@@ -16,7 +16,7 @@ namespace Orchard.Modules.Models {
         /// <summary>
         /// The module's extension descriptor.
         /// </summary>
-        public ExtensionDescriptor Descriptor { get; set; }
+        public IExtensionInfo Descriptor { get; set; }
 
         /// <summary>
         /// Boolean value indicating if the module needs a version update.

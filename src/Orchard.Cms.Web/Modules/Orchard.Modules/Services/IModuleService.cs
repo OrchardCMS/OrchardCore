@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Modules.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Modules.Services {
     public interface IModuleService {
@@ -49,6 +49,6 @@ namespace Orchard.Modules.Services {
         /// </summary>
         /// <param name="featureId">ID of a feature.</param>
         /// <returns>List of dependent feature descriptors.</returns>
-        IEnumerable<FeatureDescriptor> GetDependentFeatures(string featureId);
+        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId);
     }
 }
