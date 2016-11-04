@@ -12,8 +12,10 @@ namespace Orchard.Setup
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataAccess();
             services.AddScoped<ISetupService, SetupService>();
+
+            services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true );
+            services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false );
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

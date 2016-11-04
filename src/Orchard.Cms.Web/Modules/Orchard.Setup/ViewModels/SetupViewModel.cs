@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Orchard.Data;
 using Orchard.Recipes.Models;
 using Orchard.Setup.Annotations;
 
@@ -14,10 +15,13 @@ namespace Orchard.Setup.ViewModels
 
         [Required]
         public string DatabaseProvider { get; set; }
+        public bool DatabaseProviderPreset { get; set; }
 
         public string ConnectionString { get; set; }
+        public bool ConnectionStringPreset { get; set; }
 
         public string TablePrefix { get; set; }
+        public bool TablePrefixPreset { get; set; }
 
         [Required]
         public string AdminUserName { get; set; }
@@ -31,17 +35,10 @@ namespace Orchard.Setup.ViewModels
         [DataType(DataType.Password)]
         public string PasswordConfirmation { get; set; }
 
-        public IEnumerable<DatabaseProviderEntry> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProviderEntry>();
+        public IEnumerable<DatabaseProvider> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProvider>();
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
         public string RecipeName { get; set; }
-    }
-
-    public class DatabaseProviderEntry
-    {
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public bool HasConnectionString { get; set; }
     }
 }

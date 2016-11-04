@@ -29,7 +29,7 @@ namespace Orchard.Users
         {
             _options = options.Value;
             _tenantName = shellSettings.Name;
-            _tenantPrefix = shellSettings.RequestUrlPrefix;
+            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -72,8 +72,8 @@ namespace Orchard.Users
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
-                options.Cookies.ApplicationCookie.LoginPath = new PathString("/Orchard.Users/Account/Login/");
-                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Orchard.Users/Account/Login/");
+                options.Cookies.ApplicationCookie.LoginPath = new PathString(_tenantPrefix.TrimEnd('/') + "/Orchard.Users/Account/Login/");
+                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString(_tenantPrefix.TrimEnd('/') + "/Orchard.Users/Account/Login/");
             });
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();

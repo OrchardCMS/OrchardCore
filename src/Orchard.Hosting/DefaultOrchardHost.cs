@@ -13,6 +13,11 @@ using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
+    /// <summary>
+    /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the
+    /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
+    /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
+    /// </summary>
     public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler
     {
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -55,7 +60,7 @@ namespace Orchard.Hosting
                     if (_shellContexts == null)
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
-                        CreateAndActivateShells();
+                        CreateAndRegisterShells();
                     }
                 }
             }
@@ -68,25 +73,19 @@ namespace Orchard.Hosting
             return _shellContexts.GetOrAdd(settings.Name, tenant =>
             {
                 var shellContext = CreateShellContext(settings);
-                ActivateShell(shellContext);
+                RegisterShell(shellContext);
+
                 return shellContext;
             });
         }
 
         public void UpdateShellSettings(ShellSettings settings)
         {
-            ShellContext context;
-
             _shellSettingsManager.SaveSettings(settings);
-            _runningShellTable.Remove(settings);
-            if (_shellContexts.TryRemove(settings.Name, out context))
-            {
-                context.Dispose();
-            }
-            GetOrCreateShellContext(settings);
+            ReloadShellContext(settings);
         }
 
-        void CreateAndActivateShells()
+        void CreateAndRegisterShells()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -94,17 +93,12 @@ namespace Orchard.Hosting
             }
 
             // Load all extensions and features so that the controllers are
-            // registered in ITypeFeatureProvider and their areas definedin the application
+            // registered in ITypeFeatureProvider and their areas defined in the application
             // conventions.
             _extensionManager.LoadFeatures(_extensionManager.AvailableFeatures());
 
             // Is there any tenant right now?
-            var allSettings = _shellSettingsManager.LoadSettings()
-                .Where(settings =>
-                    settings.State == TenantState.Running ||
-                    settings.State == TenantState.Uninitialized ||
-                    settings.State == TenantState.Initializing)
-                .ToArray();
+            var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
 
             // Load all tenants, and activate their shell.
             if (allSettings.Any())
@@ -126,11 +120,12 @@ namespace Orchard.Hosting
                     }
                 });
             }
+
             // No settings, run the Setup.
             else
             {
                 var setupContext = CreateSetupContext();
-                ActivateShell(setupContext);
+                RegisterShell(setupContext);
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -142,12 +137,23 @@ namespace Orchard.Hosting
         /// <summary>
         /// Registers the shell settings in RunningShellTable
         /// </summary>
-        private void ActivateShell(ShellContext context)
+        private void RegisterShell(ShellContext context)
         {
+            if (!CanRegisterShell(context.Settings))
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Skipping shell context registration for tenant {0}", context.Settings.Name);
+                }
+
+                return;
+            }
+
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Activating context for tenant {0}", context.Settings.Name);
+                _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
             }
+
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
                 _runningShellTable.Add(context.Settings);
@@ -165,11 +171,31 @@ namespace Orchard.Hosting
                 {
                     _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
                 }
+
                 return _shellContextFactory.CreateSetupContext(settings);
             }
+            else if (settings.State == TenantState.Disabled)
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Creating disabled shell context for tenant {0} setup", settings.Name);
+                }
 
-            _logger.LogDebug("Creating shell context for tenant {0}", settings.Name);
-            return _shellContextFactory.CreateShellContext(settings);
+                return new ShellContext { Settings = settings };
+            }
+            else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Creating shell context for tenant {0}", settings.Name);
+                }
+
+                return _shellContextFactory.CreateShellContext(settings);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unexpected shell state for " + settings.Name);
+            }
         }
 
         /// <summary>
@@ -181,6 +207,7 @@ namespace Orchard.Hosting
             {
                 _logger.LogDebug("Creating shell context for root setup.");
             }
+
             return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
         }
 
@@ -212,5 +239,46 @@ namespace Orchard.Hosting
 
             return Task.CompletedTask;
         }
-    }
+
+        public void ReloadShellContext(ShellSettings settings)
+        {
+            ShellContext context;
+
+            if (_shellContexts.TryRemove(settings.Name, out context))
+            {
+                _runningShellTable.Remove(settings);
+                context.Dispose();
+            }
+
+            GetOrCreateShellContext(settings);
+        }
+
+        public IEnumerable<ShellContext> ListShellContexts()
+        {
+            return _shellContexts.Values;
+        }
+
+        /// <summary>
+        /// Whether or not a shell can be added to the list of available shells.
+        /// </summary>
+        private bool CanCreateShell(ShellSettings shellSettings)
+        {
+            return 
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing ||
+                shellSettings.State == TenantState.Disabled;
+        }
+
+        /// <summary>
+        /// Whether or not a shell can be activated and added to the running shells.
+        /// </summary>
+        private bool CanRegisterShell(ShellSettings shellSettings)
+        {
+            return 
+                shellSettings.State == TenantState.Running ||
+                shellSettings.State == TenantState.Uninitialized ||
+                shellSettings.State == TenantState.Initializing;
+        }
+}
 }

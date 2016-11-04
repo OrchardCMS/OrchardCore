@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Orchard.Data;
 using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
-using YesSql.Core.Services;
 
 namespace Orchard.Setup.Controllers
 {
@@ -17,14 +17,17 @@ namespace Orchard.Setup.Controllers
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private const string DefaultRecipe = "Default";
+        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
 
         public SetupController(
             ISetupService setupService,
             ShellSettings shellSettings,
+            IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<SetupController> t)
         {
             _setupService = setupService;
             _shellSettings = shellSettings;
+            _databaseProviders = databaseProviders;
 
             T = t;
         }
@@ -38,10 +41,28 @@ namespace Orchard.Setup.Controllers
 
             var model = new SetupViewModel
             {
-                DatabaseProviders = GetDatabaseProviders(),
+                DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe.Name
             };
+
+            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            {
+                model.ConnectionStringPreset = true;
+                model.ConnectionString = _shellSettings.ConnectionString;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            {
+                model.DatabaseProviderPreset = true;
+                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            {
+                model.TablePrefixPreset = true;
+                model.TablePrefix = _shellSettings.TablePrefix;
+            }
 
             return View(model);
         }
@@ -49,14 +70,14 @@ namespace Orchard.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            model.DatabaseProviders = GetDatabaseProviders();
+            model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
             var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
 
             if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
             {
-                ModelState.AddModelError("ConnectionString", T["The connection string is mandatory for this provider"]);
+                ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider"]);
             }
 
             if (String.IsNullOrEmpty(model.Password))
@@ -76,6 +97,24 @@ namespace Orchard.Setup.Controllers
                 ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
             }
 
+            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            {
+                model.ConnectionStringPreset = true;
+                model.ConnectionString = _shellSettings.ConnectionString;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            {
+                model.DatabaseProviderPreset = true;
+                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            {
+                model.TablePrefixPreset = true;
+                model.TablePrefix = _shellSettings.TablePrefix;
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -84,9 +123,6 @@ namespace Orchard.Setup.Controllers
             var setupContext = new SetupContext
             {
                 SiteName = model.SiteName,
-                DatabaseProvider = model.DatabaseProvider,
-                DatabaseConnectionString = model.ConnectionString,
-                DatabaseTablePrefix = model.TablePrefix,
                 EnabledFeatures = null, // default list,
                 AdminUsername = model.AdminUserName,
                 AdminEmail = model.AdminEmail,
@@ -94,6 +130,21 @@ namespace Orchard.Setup.Controllers
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe
             };
+
+            if (!model.DatabaseProviderPreset)
+            {
+                setupContext.DatabaseProvider = model.DatabaseProvider;
+            }
+
+            if (!model.ConnectionStringPreset)
+            {
+                setupContext.DatabaseConnectionString = model.ConnectionString;
+            }
+
+            if (!model.TablePrefixPreset)
+            {
+                setupContext.DatabaseTablePrefix = model.TablePrefix;
+            }
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
@@ -115,15 +166,6 @@ namespace Orchard.Setup.Controllers
             }
 
             return Redirect("~/" + urlPrefix);
-        }
-
-        private IEnumerable<DatabaseProviderEntry> GetDatabaseProviders()
-        {
-            return new List<DatabaseProviderEntry>
-            {
-                new DatabaseProviderEntry { Name = "Sql Server", Value = "SqlConnection", HasConnectionString = true },
-                new DatabaseProviderEntry { Name = "Sql Lite", Value = "Sqlite", HasConnectionString = false },
-            };
         }
     }
 }

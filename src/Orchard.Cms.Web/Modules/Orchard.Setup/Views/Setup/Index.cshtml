@@ -8,7 +8,7 @@
 <form asp-action="Index">
 
     <div class="jumbotron">
-        <h1>SETUP</h1>
+        <h1>@T["SETUP"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
 
@@ -43,12 +43,20 @@
             </nav>
         </fieldset>
     </div>
-
+    @if (!Model.TablePrefixPreset || !Model.ConnectionStringPreset || !Model.DatabaseProviderPreset)
+    {
     <h6>
-        Database
+        @T["Database"]
         <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents. You can specify a custom table prefix if you intend to reuse the same database for multiple sites."]</span>
     </h6>
+    }
     <div class="row">
+        @if (Model.DatabaseProviderPreset)
+        {
+            <input asp-for="DatabaseProvider" type="hidden" />
+        }
+        else
+        {
         <div class="form-group col-md-6">
             <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
             <select asp-for="DatabaseProvider" class="form-control">
@@ -58,13 +66,28 @@
                 }
             </select>
         </div>
+        }
+
+        @if (Model.TablePrefixPreset)
+        {
+            <input asp-for="TablePrefix" type="hidden" />
+        }
+        else
+        {
         <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
             <label asp-for="TablePrefix">@T["Table Prefix"]</label>
             <span asp-validation-for="TablePrefix" class="text-danger"></span>
             <input asp-for="TablePrefix" class="form-control" />
         </div>
+        }
     </div>
 
+    @if (Model.ConnectionStringPreset)
+    {
+        <input asp-for="ConnectionString" type="hidden" />
+    }
+    else
+    {
     <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="form-group col-xs-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
@@ -73,9 +96,9 @@
             <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
         </div>
     </fieldset>
-
+    }
     <h6>
-        Super User
+        @T["Super User"]
         <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
     </h6>
     <div class="row">

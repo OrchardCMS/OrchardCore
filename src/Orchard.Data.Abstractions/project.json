@@ -1,7 +1,8 @@
-﻿{
+{
   "version": "2.0.0-*",
 
   "dependencies": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "NETStandard.Library": "1.6.0",
     "YesSql.Core": "2.0.0-*"
   },

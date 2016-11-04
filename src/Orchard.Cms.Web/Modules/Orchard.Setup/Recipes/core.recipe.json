@@ -38,6 +38,7 @@
         "Orchard.Deployment.Remote",
         "Orchard.Modules",
         "Orchard.Recipes",
+        "Orchard.Tenants",
         "TheTheme",
         "TheAdmin",
         "SafeMode"

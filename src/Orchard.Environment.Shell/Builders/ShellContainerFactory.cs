@@ -120,6 +120,7 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
+
             using (var scope = shellServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var eventBusState = scope.ServiceProvider.GetService<IEventBusState>();
