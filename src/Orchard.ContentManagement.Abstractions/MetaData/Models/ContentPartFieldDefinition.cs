@@ -2,7 +2,7 @@
 
 namespace Orchard.ContentManagement.Metadata.Models
 {
-    public class ContentPartFieldDefinition
+    public class ContentPartFieldDefinition : ContentDefinition
     {
         public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, JObject settings)
         {
@@ -11,9 +11,7 @@ namespace Orchard.ContentManagement.Metadata.Models
             Settings = settings;
         }
 
-        public string Name { get; private set; }
         public ContentFieldDefinition FieldDefinition { get; private set; }
-        public JObject Settings { get; private set; }
         public ContentPartDefinition PartDefinition { get; set; }
     }
 }
