@@ -1,23 +1,23 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
-using System.Collections.Generic;
+using Orchard.Environment.Extensions.Manifests;
 
 namespace Orchard.Environment.Extensions
 {
     public class NotFoundExtensionInfo : IExtensionInfo
     {
-        private string _extensionId;
-        private IManifestInfo _manifest;
+        private readonly string _extensionId;
+        private readonly IFileInfo _fileInfo;
 
-        public NotFoundExtensionInfo(string extensionId, IManifestInfo manifest) {
+        public NotFoundExtensionInfo(string extensionId) {
             _extensionId = extensionId;
-            _manifest = manifest;
+            _fileInfo = new NotFoundFileInfo(_extensionId);
         }
 
-        public IFileInfo ExtensionFileInfo { get; } = new NotFoundFileInfo(null);
+        public IFileInfo ExtensionFileInfo { get { return _fileInfo; } }
         public IFeatureInfoList Features { get; } = new EmptyFeatureInfoList();
         public string Id { get { return _extensionId; } }
-        public IManifestInfo Manifest { get { return _manifest; } }
+        public IManifestInfo Manifest { get { return new NotFoundManifestInfo(_extensionId); } }
         public string SubPath { get; } = string.Empty;
     }
 }

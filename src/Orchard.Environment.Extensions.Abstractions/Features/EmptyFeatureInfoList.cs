@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.Environment.Extensions.Features
 {
     public class EmptyFeatureInfoList : IFeatureInfoList
     {
+        private readonly IDictionary<string, IFeatureInfo> _emptyDictionary =
+            new Dictionary<string, IFeatureInfo>();
+
+        private readonly IList<IFeatureInfo> _emptyList =
+            new List<IFeatureInfo>();
+
         public IFeatureInfo this[int index]
         {
             get
             {
-                throw new IndexOutOfRangeException();
+                return _emptyList[index];
             }
         }
 
@@ -19,7 +23,7 @@ namespace Orchard.Environment.Extensions.Features
         {
             get
             {
-                throw new IndexOutOfRangeException();
+                return _emptyDictionary[key];
             }
         }
 
@@ -35,18 +39,18 @@ namespace Orchard.Environment.Extensions.Features
         {
             get
             {
-                return null;
+                return new EmptyExtensionInfoList();
             }
         }
 
         public IEnumerator<IFeatureInfo> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _emptyList.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _emptyList.GetEnumerator();
         }
     }
 }

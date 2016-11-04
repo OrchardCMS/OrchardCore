@@ -86,9 +86,7 @@ namespace Orchard.Environment.Shell
                 var featureDescriptor = new NotFoundFeatureInfo(
                     featureState.Name,
                     new NotFoundExtensionInfo(
-                        featureState.Name,
-                        new NotFoundManifestInfo()
-                        )
+                        featureState.Name)
                     );
                 return new
                 {

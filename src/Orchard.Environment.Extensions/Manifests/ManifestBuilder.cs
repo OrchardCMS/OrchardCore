@@ -32,7 +32,7 @@ namespace Orchard.Environment.Extensions.Manifests
 
             if (!configurationBuilder.Sources.Any())
             {
-                return new NotFoundManifestInfo();
+                return new NotFoundManifestInfo(subPath);
             }
 
             var config = configurationBuilder.Build();
