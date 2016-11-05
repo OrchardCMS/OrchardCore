@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.Environment.Extensions.Features;
@@ -30,7 +31,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            foreach (var featureDescriptor in _featureManager.GetEnabledFeaturesAsync().Result)
+            var requestedfeatures = _featureManager.GetEnabledFeaturesAsync().Result;
+
+            if (builder.ExcludedFeatures.FirstOrDefault() != null)
+            {
+                requestedfeatures = requestedfeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null);
+            }
+
+            foreach (var featureDescriptor in requestedfeatures)
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
