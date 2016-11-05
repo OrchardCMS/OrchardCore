@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Orchard.Environment.Extensions.Models;
 
@@ -14,7 +15,11 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             _feature = feature;
             ExcludedFeatures = excludedFeatures ?? new List<FeatureDescriptor>();
-            _excluded = excludedFeatures?.FirstOrDefault(x => x.Id == _feature.Descriptor.Id) != null;
+
+            if (!String.IsNullOrEmpty(feature.Descriptor.Extension?.ExtensionType))
+            {
+                _excluded = excludedFeatures?.FirstOrDefault(x => x.Id == _feature.Descriptor.Id) != null;
+            }
         }
 
         public IList<FeatureDescriptor> ExcludedFeatures { get; }

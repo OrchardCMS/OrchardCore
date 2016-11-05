@@ -63,7 +63,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var excludedFeatures = shapeAlterations
                     .GroupBy(kvp => kvp.Value.Feature.Descriptor).Select(g => g.First().Value.Feature.Descriptor)
-                    .Where(shapeAlteration => IsNonCoreEnabledModuleOrRequestedTheme(shapeAlteration, themeName))
+                    .Where(shapeAlteration => IsEnabledModuleOrRequestedTheme(shapeAlteration, themeName))
                     .ToList();
 
                 IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
@@ -161,14 +161,6 @@ namespace Orchard.DisplayManagement.Descriptors
 
             return IsModuleOrRequestedTheme(descriptor, themeName) && (String.IsNullOrEmpty(extensionType)
                 || _featureManager.GetEnabledFeaturesAsync().Result.FirstOrDefault(x => x.Id == id) != null);
-        }
-
-        private bool IsNonCoreEnabledModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName)
-        {
-            var id = descriptor?.Id;
-
-            return IsModuleOrRequestedTheme(descriptor, themeName)
-                && _featureManager.GetEnabledFeaturesAsync().Result.FirstOrDefault(x => x.Id == id) != null;
         }
 
         private bool IsModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName)
