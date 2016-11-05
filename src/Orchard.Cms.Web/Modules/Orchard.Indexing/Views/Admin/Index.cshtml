@@ -1,0 +1,73 @@
+﻿@model AdminIndexViewModel
+
+<h1>@RenderTitleSegments(T["Indexes"])</h1>
+
+@if (!Model.Providers.Any())
+{
+    <div class="alert alert-warning" role="alert">
+        @T["There are currently no Index providers available. Please enable one."]
+    </div>
+}
+else
+{
+    <nav class="admin-toolbar">
+        <div class="nav navbar-nav">
+            @if (Model.Providers.Count() == 1)
+            {
+                <a asp-route-action="Create" asp-route-id="@Model.Providers.First()" class="btn btn-primary" role="button">@T["Add Index"]</a>
+            }
+            else
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Add Index"]
+                    </button>
+                    <div class="dropdown-menu">
+                    @foreach (var provider in Model.Providers)
+                    {
+                        <a asp-route-action="Create" asp-route-id="@provider" class="dropdown-item">@provider</a>
+                    }
+                    </div>
+                </div>
+            }
+        </div>
+    </nav>
+
+    <form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
+        @if (Model.Indexes.Any())
+        {
+            @foreach (var provider in Model.Providers)
+            {
+                @if (Model.Providers.Count() > 1)
+                {
+                    <h4>@T["{0} indexes", provider]</h4>
+                }
+
+                <ul class="list-group">
+                    @foreach (var entry in Model.Indexes)
+                    {
+                        if (entry.Provider != provider)
+                        {
+                            continue;
+                        }
+
+                        <li class="list-group-item">
+                            <div class="properties">
+                                <div class="related pull-xs-right">
+                                    <a asp-action="Delete" asp-route-indexname="@entry.Name" asp-route-providername="@provider" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                </div>
+                            </div>
+                            <h5>@entry.Name</h5>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                @T["<strong>Nothing here!</strong> There are no indexes for the moment."]
+            </div>
+        }
+    </form>
+}

@@ -10,6 +10,15 @@ namespace Orchard.Indexing.Settings
         /// <summary>
         /// The list of indexes that this type should be included into.
         /// </summary>
-        public List<string> Indexes { get; set; } 
+        public List<TypeIndexEntry> Indexes { get; set; } 
+    }
+
+    public class TypeIndexEntry
+    {
+        public const string Published = "published";
+        public const string Latest = "latest";
+
+        public string Name { get; set; }
+        public string Version { get; set; }
     }
 }

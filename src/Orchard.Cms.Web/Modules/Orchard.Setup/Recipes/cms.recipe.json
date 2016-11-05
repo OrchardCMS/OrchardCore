@@ -13,7 +13,7 @@
       "name": "feature",
       "disable": [],
       "enable": [
-        "Orchard.Commons",
+        "Lucene",
         "Orchard.Admin",
         "Orchard.Autoroute",
         "Orchard.Body",

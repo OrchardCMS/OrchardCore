@@ -1,41 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Orchard.Indexing;
 
 namespace Lucene
 {
     public class LuceneIndexProvider : IIndexProvider
     {
-        public void CreateIndex(string name)
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly string _rootPath;
+
+        public LuceneIndexProvider(
+            IHostingEnvironment hostingEnvironment,
+            string rootPath)
         {
-            throw new NotImplementedException();
+            _hostingEnvironment = hostingEnvironment;
+            _rootPath = rootPath;
+
+            Directory.CreateDirectory(_rootPath);
         }
 
-        public void Delete(string indexName, IEnumerable<int> documentIds)
+        public void CreateIndex(string indexName)
         {
-            throw new NotImplementedException();
+            using (File.CreateText(Path.Combine(_rootPath, indexName + ".txt"))) { }
         }
 
-        public void DeleteIndex(string name)
+        public void DeleteDocuments(string indexName, IEnumerable<int> documentIds)
         {
-            throw new NotImplementedException();
         }
 
-        public bool Exists(string name)
+        public void DeleteIndex(string indexName)
+        {
+            File.Delete(Path.Combine(_rootPath, indexName + ".txt"));
+
+        }
+
+        public bool Exists(string indexName)
+        {
+            return File.Exists(Path.Combine(_rootPath, indexName + ".txt"));
+        }
+
+        public int GetLastIndexDocumentId(string indexName)
         {
             throw new NotImplementedException();
         }
 
         public IEnumerable<string> List()
         {
-            throw new NotImplementedException();
+            return _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(_rootPath).Select(x => Path.GetFileNameWithoutExtension(x.Name));
         }
 
-        public void Store(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+        public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            throw new NotImplementedException();
+            File.AppendAllLines(Path.Combine(_rootPath, indexName + ".txt"), indexDocuments.Select(x => x.DocumentId.ToString()));
         }
     }
 }

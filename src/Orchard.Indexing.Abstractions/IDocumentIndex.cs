@@ -37,7 +37,7 @@ namespace Orchard.Indexing
             Entries[name] = new DocumentIndexEntry(value, Types.Number, options);
         }
 
-        int DocumentId { get; }
+        public int DocumentId { get; }
 
         public enum Types
         {
