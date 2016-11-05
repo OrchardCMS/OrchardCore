@@ -13,7 +13,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableProvider
+    public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
         private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;

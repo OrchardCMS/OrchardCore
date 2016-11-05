@@ -71,6 +71,9 @@ namespace Orchard.DisplayManagement.Descriptors
                     Feature strategyDefaultFeature =
                         _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
+                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.FirstOrDefault(x => x.Id == strategyDefaultFeature.Descriptor.Id) != null)
+                        continue;
+
                     var builder = new ShapeTableBuilder(strategyDefaultFeature, excludedFeatures);
 
                     bindingStrategy.Discover(builder);
@@ -90,10 +93,6 @@ namespace Orchard.DisplayManagement.Descriptors
                         if (!shapeAlterations.ContainsKey(key))
                         {
                             shapeAlterations[key] = alteration;
-                        }
-                        else
-                        {
-                            ;
                         }
                     }
                 }

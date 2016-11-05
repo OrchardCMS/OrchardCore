@@ -21,7 +21,7 @@ using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
-    public class ShapeAttributeBindingStrategy : IShapeTableProvider
+    public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;

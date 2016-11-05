@@ -22,7 +22,7 @@ using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    public class ShapeTemplateBindingStrategy : IShapeTableProvider
+    public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
@@ -66,11 +66,11 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result;
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
 
             if (builder.ExcludedFeatures?.FirstOrDefault() != null)
             {
-                activeFeatures = activeFeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null);
+                activeFeatures = activeFeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null).ToList();
             }
 
             var activeExtensions = Once(activeFeatures).ToList();

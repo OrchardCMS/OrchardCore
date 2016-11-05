@@ -9,17 +9,11 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         private readonly IList<ShapeAlterationBuilder> _alterationBuilders = new List<ShapeAlterationBuilder>();
         private readonly Feature _feature;
-        private bool _excluded = false;
 
         public ShapeTableBuilder(Feature feature, IList<FeatureDescriptor> excludedFeatures = null)
         {
             _feature = feature;
             ExcludedFeatures = excludedFeatures ?? new List<FeatureDescriptor>();
-
-            if (!DefaultExtensionTypes.IsCore(feature.Descriptor.Extension.ExtensionType))
-            {
-                _excluded = excludedFeatures?.FirstOrDefault(x => x.Id == _feature.Descriptor.Id) != null;
-            }
         }
 
         public IList<FeatureDescriptor> ExcludedFeatures { get; }
@@ -27,12 +21,7 @@ namespace Orchard.DisplayManagement.Descriptors
         public ShapeAlterationBuilder Describe(string shapeType)
         {
             var alterationBuilder = new ShapeAlterationBuilder(_feature, shapeType);
-
-            if (!_excluded)
-            {
-                _alterationBuilders.Add(alterationBuilder);
-            }
-
+            _alterationBuilders.Add(alterationBuilder);
             return alterationBuilder;
         }
 
