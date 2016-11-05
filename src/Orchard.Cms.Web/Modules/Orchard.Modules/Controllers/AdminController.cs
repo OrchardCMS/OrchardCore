@@ -56,7 +56,7 @@ namespace Orchard.Modules.Controllers
         {
             IEnumerable<ModuleEntry> modules = _extensionManager.GetExtensions()
                 .Where(extensionDescriptor => extensionDescriptor.Manifest.IsModule())
-                .OrderBy(extensionDescriptor => extensionDescriptor.Id)
+                .OrderBy(extensionDescriptor => extensionDescriptor.Manifest.Name)
                 .Select(extensionDescriptor => new ModuleEntry { Descriptor = extensionDescriptor });
             
             var features = _shellFeaturesManager.EnabledFeatures();

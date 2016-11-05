@@ -68,20 +68,19 @@ namespace Orchard.Roles.Services
 
         public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
         {
-            var featureName = feature.Id;
-
             // when another module is being enabled, locate matching permission providers
-            var providersForEnabledModule = _permissionProviders.Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType())?.Id == featureName);
+            var providersForEnabledModule = _permissionProviders
+                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType())?.Id == feature.Id);
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 if (providersForEnabledModule.Any())
                 {
-                    Logger.LogDebug($"Configuring default roles for module {featureName}");
+                    Logger.LogDebug($"Configuring default roles for module {feature.Id}");
                 }
                 else
                 {
-                    Logger.LogDebug($"No default roles for module {featureName}");
+                    Logger.LogDebug($"No default roles for module {feature.Id}");
                 }
             }
 
