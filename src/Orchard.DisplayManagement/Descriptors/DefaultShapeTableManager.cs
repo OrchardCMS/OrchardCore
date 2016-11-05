@@ -90,10 +90,7 @@ namespace Orchard.DisplayManagement.Descriptors
                             + alteration.Feature.Descriptor.Id + ":"
                             + alteration.ShapeType;
 
-                        if (!shapeAlterations.ContainsKey(key))
-                        {
-                            shapeAlterations[key] = alteration;
-                        }
+                        shapeAlterations[key] = alteration;
                     }
                 }
 
