@@ -63,7 +63,6 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var excludedFeatures = shapeAlterations
                     .GroupBy(kvp => kvp.Value.Feature.Descriptor).Select(g => g.First().Value.Feature.Descriptor)
-                    .Where(shapeAlteration => IsEnabledModuleOrRequestedTheme(shapeAlteration, themeName))
                     .ToList();
 
                 IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
@@ -91,6 +90,10 @@ namespace Orchard.DisplayManagement.Descriptors
                         if (!shapeAlterations.ContainsKey(key))
                         {
                             shapeAlterations[key] = alteration;
+                        }
+                        else
+                        {
+                            ;
                         }
                     }
                 }
@@ -159,7 +162,7 @@ namespace Orchard.DisplayManagement.Descriptors
             var id = descriptor?.Id;
             var extensionType = descriptor?.Extension?.ExtensionType;
 
-            return IsModuleOrRequestedTheme(descriptor, themeName) && (String.IsNullOrEmpty(extensionType)
+            return IsModuleOrRequestedTheme(descriptor, themeName) && (DefaultExtensionTypes.IsCore(extensionType)
                 || _featureManager.GetEnabledFeaturesAsync().Result.FirstOrDefault(x => x.Id == id) != null);
         }
 
@@ -172,7 +175,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
             var extensionType = descriptor.Extension.ExtensionType;
 
-            if(String.IsNullOrEmpty(extensionType))
+            if(DefaultExtensionTypes.IsCore(extensionType))
             {
                 // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
                 return true;

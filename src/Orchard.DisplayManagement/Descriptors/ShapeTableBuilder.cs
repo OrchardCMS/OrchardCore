@@ -16,7 +16,7 @@ namespace Orchard.DisplayManagement.Descriptors
             _feature = feature;
             ExcludedFeatures = excludedFeatures ?? new List<FeatureDescriptor>();
 
-            if (!String.IsNullOrEmpty(feature.Descriptor.Extension?.ExtensionType))
+            if (!DefaultExtensionTypes.IsCore(feature.Descriptor.Extension.ExtensionType))
             {
                 _excluded = excludedFeatures?.FirstOrDefault(x => x.Id == _feature.Descriptor.Id) != null;
             }

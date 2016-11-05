@@ -68,7 +68,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result;
 
-            if (builder.ExcludedFeatures.FirstOrDefault() != null)
+            if (builder.ExcludedFeatures?.FirstOrDefault() != null)
             {
                 activeFeatures = activeFeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null);
             }

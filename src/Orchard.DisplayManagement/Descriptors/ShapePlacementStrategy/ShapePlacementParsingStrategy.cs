@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
         {
             var requestedfeatures = _featureManager.GetEnabledFeaturesAsync().Result;
 
-            if (builder.ExcludedFeatures.FirstOrDefault() != null)
+            if (builder.ExcludedFeatures?.FirstOrDefault() != null)
             {
                 requestedfeatures = requestedfeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null);
             }
