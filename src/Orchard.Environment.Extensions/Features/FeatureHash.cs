@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Environment.Cache;
 using Orchard.Environment.Shell;

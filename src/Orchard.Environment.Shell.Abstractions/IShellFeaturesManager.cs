@@ -4,16 +4,12 @@ using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell
 {
-    public delegate void FeatureDependencyNotificationHandler(string messageFormat, IFeatureInfo feature, IEnumerable<IFeatureInfo> features);
-
     public interface IShellFeaturesManager
     {
         IEnumerable<IFeatureInfo> EnabledFeatures();
-        IEnumerable<IFeatureInfo> EnabledFeatures(ShellDescriptor shell);
         IEnumerable<IFeatureInfo> EnableFeatures(IEnumerable<IFeatureInfo> features);
         IEnumerable<IFeatureInfo> EnableFeatures(IEnumerable<IFeatureInfo> features, bool force);
         IEnumerable<IFeatureInfo> DisabledFeatures();
-        IEnumerable<IFeatureInfo> DisabledFeatures(ShellDescriptor shell);
         IEnumerable<IFeatureInfo> DisableFeatures(IEnumerable<IFeatureInfo> features);
         IEnumerable<IFeatureInfo> DisableFeatures(IEnumerable<IFeatureInfo> features, bool force);
         IEnumerable<string> GetDependentFeatures(string featureId);

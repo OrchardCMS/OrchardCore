@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Orchard.Environment.Extensions.Features;
-using Microsoft.AspNetCore.Hosting;
 using Orchard.Environment.Extensions;
-using Orchard.DisplayManagement.Extensions;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
+using System;
+using System.IO;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {

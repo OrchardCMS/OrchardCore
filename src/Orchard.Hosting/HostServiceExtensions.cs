@@ -30,7 +30,6 @@ namespace Orchard.Hosting
             {
                 // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
-                services.TryAddSingleton<IShellFeaturesManager, ShellFeaturesManager>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {

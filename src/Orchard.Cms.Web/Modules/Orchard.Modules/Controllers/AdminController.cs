@@ -52,15 +52,14 @@ namespace Orchard.Modules.Controllers
 
         public IHtmlLocalizer T { get; }
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
             IEnumerable<ModuleEntry> modules = _extensionManager.GetExtensions()
                 .Where(extensionDescriptor => extensionDescriptor.Manifest.IsModule())
                 .OrderBy(extensionDescriptor => extensionDescriptor.Id)
                 .Select(extensionDescriptor => new ModuleEntry { Descriptor = extensionDescriptor });
-
-            var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
-            var features = _shellFeaturesManager.EnabledFeatures(shellDescriptor);
+            
+            var features = _shellFeaturesManager.EnabledFeatures();
             var installModules = features.FirstOrDefault(f => f.Id == "PackagingServices") != null;
 
             modules = modules.ToList();
@@ -95,7 +94,7 @@ namespace Orchard.Modules.Controllers
 
             //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
             var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
-            var availableFeatures = _shellFeaturesManager.EnabledFeatures(shellDescriptor);
+            var availableFeatures = _shellFeaturesManager.EnabledFeatures();
 
             IEnumerable<ModuleFeature> features = availableFeatures
                 .Where(f => !f.Extension.Manifest.IsTheme())

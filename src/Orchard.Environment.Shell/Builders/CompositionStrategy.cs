@@ -17,19 +17,16 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _environment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
 
         public CompositionStrategy(
             IHostingEnvironment environment,
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
-            IShellFeaturesManager shellFeaturesManager,
             ILogger<CompositionStrategy> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _environment = environment;
             _extensionManager = extensionManager;
-            _shellFeaturesManager = shellFeaturesManager;
             _logger = logger;
         }
 
@@ -40,7 +37,7 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var enabledFeatures = _shellFeaturesManager.EnabledFeatures(descriptor);
+            var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
             var features = _extensionManager.LoadFeatures(enabledFeatures);
             
             // Statup classes are the only types that are automatically added to the blueprint
