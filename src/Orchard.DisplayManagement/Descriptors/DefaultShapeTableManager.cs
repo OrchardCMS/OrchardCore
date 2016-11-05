@@ -81,10 +81,6 @@ namespace Orchard.DisplayManagement.Descriptors
                     {
                         alterationSets.Add(builtAlterations);
                     }
-                    else
-                    {
-                        ;
-                    }
 
                     foreach (var alteration in builtAlterations)
                     {
