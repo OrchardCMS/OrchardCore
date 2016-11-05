@@ -5,17 +5,20 @@ namespace Orchard.Environment.Extensions.Manifests
     public class ManifestInfo : IManifestInfo
     {
         private readonly IConfigurationRoot _configurationRoot;
+        private string _type;
 
         public ManifestInfo(
-            IConfigurationRoot configurationRoot)
+            IConfigurationRoot configurationRoot,
+            string type)
         {
             _configurationRoot = configurationRoot;
+            _type = type;
         }
 
         public bool Exists => true;
         public string Name => _configurationRoot["name"];
         public string Description => _configurationRoot["description"];
-        public string Type => _configurationRoot["type"];
+        public string Type { get { return _type; } }
         public IConfigurationRoot ConfigurationRoot => _configurationRoot;
     }
 }

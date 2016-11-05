@@ -72,7 +72,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Features = new FeatureInfoList(new Dictionary<string, IFeatureInfo>());
 
-                Manifest = new ManifestInfo(configurationBuilder.Build());
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
             }
             public IFileInfo ExtensionFileInfo { get; set; }
             public IFeatureInfoList Features { get; set; }
@@ -96,7 +96,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build());
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
                 IDictionary<string, IFeatureInfo> features =
                     new Dictionary<string, IFeatureInfo>()
@@ -123,7 +123,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Manifest = new ManifestInfo(configurationBuilder.Build());
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
                 IDictionary<string, IFeatureInfo> features =
                     new Dictionary<string, IFeatureInfo>()

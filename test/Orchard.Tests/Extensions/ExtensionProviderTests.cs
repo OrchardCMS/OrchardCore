@@ -24,7 +24,8 @@ namespace Orchard.Tests.Extensions
                         HostingEnvrionment,
                         new ManifestBuilder(
                             new IManifestProvider[] { new ManifestProvider(HostingEnvrionment) },
-                            new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt" })),
+                            HostingEnvrionment,
+                            new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt", Type = "module" })),
                         new FeatureManager());
 
         [Fact]
