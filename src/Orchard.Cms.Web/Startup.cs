@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Data;
 using Orchard.DisplayManagement;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
 using Orchard.Environment.Shell.Descriptor.Models;
@@ -33,6 +34,7 @@ namespace Orchard.Cms.Web
         {
             services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt");
+            services.AddExtensionLocation("Themes");
             services.AddSitesFolder("App_Data", "Sites");
             services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Commons");
         }
