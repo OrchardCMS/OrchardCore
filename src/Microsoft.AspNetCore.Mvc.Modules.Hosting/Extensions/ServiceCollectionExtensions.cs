@@ -91,7 +91,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
         {
             foreach (var featureId in featureIds)
             {
-                services.AddTransient(sp => new ShellFeature(featureName));
+                services.AddTransient(sp => new ShellFeature(featureId));
             };
 
             return services;
