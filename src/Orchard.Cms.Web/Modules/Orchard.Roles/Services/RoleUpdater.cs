@@ -70,7 +70,7 @@ namespace Orchard.Roles.Services
         {
             // when another module is being enabled, locate matching permission providers
             var providersForEnabledModule = _permissionProviders
-                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType())?.Id == feature.Id);
+                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType()).Id == feature.Id);
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
