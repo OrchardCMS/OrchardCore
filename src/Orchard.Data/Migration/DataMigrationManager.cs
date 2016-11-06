@@ -245,10 +245,10 @@ namespace Orchard.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
         /// </summary>
-        private IEnumerable<IDataMigration> GetDataMigrations(string feature)
+        private IEnumerable<IDataMigration> GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
-                    .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id, feature, StringComparison.OrdinalIgnoreCase))
+                    .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
                     .ToList();
 
             //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {
@@ -334,7 +334,7 @@ namespace Orchard.Data.Migration
                         throw;
                     }
 
-                    _logger.LogError("Could not run migrations automatically on " + feature, ex);
+                    _logger.LogError("Could not run migrations automatically on " + featureId, ex);
                 }
             }
         }
