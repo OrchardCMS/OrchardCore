@@ -75,13 +75,9 @@ namespace Orchard.Modules.Services
             var enabledFeatures = _shellFeaturesManager.EnabledFeatures();
 
             // todo: (ngn) this doesnt seem right
-            foreach (var feature in features)
+            foreach (var enabledFeature in enabledFeatures)
             {
-                var featureName = enabledFeatures
-                    .First(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase))
-                    .Name;
-
-                _notifier.Success(T["{0} was enabled", featureName]);
+                _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
             }
         }
 
@@ -106,9 +102,7 @@ namespace Orchard.Modules.Services
             var features = _shellFeaturesManager.DisableFeatures(featuresToDisable, force);
             foreach (var feature in features)
             {
-                var featureName = availableFeatures[feature.Id].Name;
-
-                _notifier.Success(T["{0} was disabled", featureName]);
+                _notifier.Success(T["{0} was disabled", feature.Name]);
             }
         }
 

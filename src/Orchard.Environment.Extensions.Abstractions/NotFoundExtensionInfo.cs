@@ -6,18 +6,23 @@ namespace Orchard.Environment.Extensions
 {
     public class NotFoundExtensionInfo : IExtensionInfo
     {
-        private readonly string _extensionId;
         private readonly IFileInfo _fileInfo;
+        private readonly string _subPath;
+        private readonly IManifestInfo _manifestInfo;
+        private readonly IFeatureInfoList _features;
 
         public NotFoundExtensionInfo(string extensionId) {
-            _extensionId = extensionId;
-            _fileInfo = new NotFoundFileInfo(_extensionId);
-        }
+            _fileInfo = new NotFoundFileInfo(extensionId);
 
-        public IFileInfo ExtensionFileInfo { get { return _fileInfo; } }
-        public IFeatureInfoList Features { get; } = new EmptyFeatureInfoList();
-        public string Id { get { return _extensionId; } }
-        public IManifestInfo Manifest { get { return new NotFoundManifestInfo(_extensionId); } }
-        public string SubPath { get; } = string.Empty;
+            _subPath = string.Empty;
+            _manifestInfo = new NotFoundManifestInfo(extensionId);
+            _features = new EmptyFeatureInfoList();
+        }
+        
+        public string Id => _fileInfo.Name;
+        public IFileInfo ExtensionFileInfo => _fileInfo;
+        public string SubPath => _subPath;
+        public IManifestInfo Manifest => _manifestInfo;
+        public IFeatureInfoList Features => _features;
     }
 }
