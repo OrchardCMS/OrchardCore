@@ -5,7 +5,6 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Modules.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,7 +46,7 @@ namespace Orchard.Modules.Services
             return _extensionManager
                 .LoadFeatures(_extensionManager.GetExtensions().Features)
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
-                    .FirstOrDefault(sf => string.Equals(sf.Id, f.FeatureInfo.Id, StringComparison.OrdinalIgnoreCase)) != null));
+                    .Any(sf => sf.Id == f.FeatureInfo.Id)));
         }
 
         /// <summary>
@@ -71,10 +70,7 @@ namespace Orchard.Modules.Services
                 .Features
                 .Where(x => featureIds.Contains(x.Id));
 
-            var features = _shellFeaturesManager.EnableFeatures(featuresToEnable, force);
-            var enabledFeatures = _shellFeaturesManager.EnabledFeatures();
-
-            // todo: (ngn) this doesnt seem right
+            var enabledFeatures = _shellFeaturesManager.EnableFeatures(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
                 _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
@@ -97,8 +93,11 @@ namespace Orchard.Modules.Services
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
         public void DisableFeatures(IEnumerable<string> featureIds, bool force)
         {
-            var availableFeatures = _extensionManager.GetExtensions().Features;
-            var featuresToDisable = availableFeatures.Where(x => featureIds.Contains(x.Id));
+            var featuresToDisable = _extensionManager
+                .GetExtensions()
+                .Features
+                .Where(x => featureIds.Contains(x.Id));
+
             var features = _shellFeaturesManager.DisableFeatures(featuresToDisable, force);
             foreach (var feature in features)
             {
@@ -127,6 +126,7 @@ namespace Orchard.Modules.Services
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
             var dependants = _shellFeaturesManager.GetDependentFeatures(featureId);
+
             return _extensionManager
                 .GetExtensions()
                 .Features
