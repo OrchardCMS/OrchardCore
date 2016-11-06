@@ -1,12 +1,12 @@
-﻿using Orchard.Environment.Extensions;
+﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Localization;
-using Orchard.Environment.Shell.Descriptor;
 
 namespace Orchard.Environment.Shell
 {
@@ -129,9 +129,10 @@ namespace Orchard.Environment.Shell
             var getEnabledDependants =
                 new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
                     (currentFeatureId, fs) => fs
-                        .Where(f => f.Value && f.Key.Dependencies != null && f.Key.Dependencies
-                            .Select(s => s.ToLowerInvariant())
-                            .Contains(currentFeatureId.ToLowerInvariant()))
+                        .Where(f => 
+                                f.Value && 
+                                f.Key.Dependencies.Contains(currentFeatureId)
+                               )
                         .ToDictionary(f => f.Key, f => f.Value));
             
             var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor).ToList();
@@ -141,7 +142,7 @@ namespace Orchard.Environment.Shell
             IDictionary<IFeatureInfo, bool> availableFeatures = extensions
                 .Features
                 .ToDictionary(featureDescriptor => featureDescriptor,
-                                featureDescriptor => enabledFeatures.FirstOrDefault(shellFeature => shellFeature.Id == featureDescriptor.Id) != null);
+                                featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
 
             return GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
         }
@@ -153,20 +154,22 @@ namespace Orchard.Environment.Shell
         /// <param name="availableFeatures">A dictionary of the available feature descriptors and their current state (enabled / disabled).</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
         /// <returns>An enumeration of the enabled features.</returns>
-        private IEnumerable<IFeatureInfo> EnableFeature(IFeatureInfo featureInfo, 
-            IDictionary<IFeatureInfo, bool> availableFeatures, bool force)
+        private IEnumerable<IFeatureInfo> EnableFeature(
+            IFeatureInfo featureInfo, 
+            IDictionary<IFeatureInfo, bool> availableFeatures, 
+            bool force)
         {
             var getDisabledDependencies =
                 new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
                     (currentFeatureId, featuresState) =>
                     {
-                        KeyValuePair<IFeatureInfo, bool> feature = featuresState.Single(featureState => featureState.Key.Id.Equals(currentFeatureId, StringComparison.OrdinalIgnoreCase));
+                        KeyValuePair<IFeatureInfo, bool> feature = featuresState.Single(featureState => featureState.Key.Id == currentFeatureId);
 
                         // Retrieve disabled dependencies for the current feature
                         return feature.Key.Dependencies
                                       .Select(fId =>
                                       {
-                                          var states = featuresState.Where(featureState => featureState.Key.Id.Equals(fId, StringComparison.OrdinalIgnoreCase)).ToList();
+                                          var states = featuresState.Where(featureState => featureState.Key.Id == fId).ToList();
 
                                           if (states.Count == 0)
                                           {
@@ -187,8 +190,11 @@ namespace Orchard.Environment.Shell
             IEnumerable<string> affectedFeatures = 
                 GetAffectedFeatures(featureInfo.Id, availableFeatures, getDisabledDependencies);
 
-            var extensions = _extensionManager.GetExtensions();
-            var featuresToEnable = extensions.Features.Where(x => affectedFeatures.Contains(x.Id));
+            var featuresToEnable = _extensionManager
+                .GetExtensions()
+                .Features
+                .Where(x => affectedFeatures.Contains(x.Id))
+                .ToList();
 
             if (featuresToEnable.Count() > 1 && !force)
             {
@@ -216,8 +222,11 @@ namespace Orchard.Environment.Shell
             IEnumerable<string> affectedFeatures = 
                 GetDependentFeatures(shellDescriptor, featureInfo.Id);
 
-            var extensions = _extensionManager.GetExtensions();
-            var featuresToDisable = extensions.Features.Where(x => affectedFeatures.Contains(x.Id));
+            var featuresToDisable = _extensionManager
+                .GetExtensions()
+                .Features
+                .Where(x => affectedFeatures.Contains(x.Id))
+                .ToList();
 
             if (featuresToDisable.Count() > 1 && !force)
             {
@@ -235,10 +244,11 @@ namespace Orchard.Environment.Shell
         }
 
         private static IEnumerable<string> GetAffectedFeatures(
-            string featureId, IDictionary<IFeatureInfo, bool> features,
+            string featureId, 
+            IDictionary<IFeatureInfo, bool> features,
             Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>> getAffectedDependencies)
         {
-            var dependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { featureId };
+            var dependencies = new HashSet<string>() { featureId };
             var stack = new Stack<IDictionary<IFeatureInfo, bool>>();
 
             stack.Push(getAffectedDependencies(featureId, features));
