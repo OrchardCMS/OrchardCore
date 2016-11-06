@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Orchard.Environment.Extensions;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.DisplayManagement.Theming
 {
@@ -48,7 +49,7 @@ namespace Orchard.DisplayManagement.Theming
                     var t = _extensionManager.GetExtension(theme.ThemeName);
                     if (t != null)
                     {
-                        return _theme = t;
+                        return _theme = new ThemeExtensionInfo(t);
                     }
                 }
 
