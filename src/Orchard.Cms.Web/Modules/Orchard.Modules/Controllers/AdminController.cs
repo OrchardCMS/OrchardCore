@@ -149,7 +149,7 @@ namespace Orchard.Modules.Controllers
                         var enabledFeatures = _shellFeaturesManager.EnableFeatures(idFeaturesDisabled, force == true);
                         foreach (var feature in enabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
                         break;
@@ -159,7 +159,7 @@ namespace Orchard.Modules.Controllers
                         var disabledFeatures = _shellFeaturesManager.DisableFeatures(idFeaturesEnabled, force == true);
                         foreach (var feature in disabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
@@ -170,14 +170,14 @@ namespace Orchard.Modules.Controllers
                         var enabledFeaturesToggle = _shellFeaturesManager.EnableFeatures(idFeaturesDisabled, force == true);
                         foreach (var feature in enabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
 
                         var disabledFeaturesToggle = _shellFeaturesManager.DisableFeatures(idFeaturesEnabled, force == true);
                         foreach (var feature in disabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
