@@ -58,7 +58,7 @@ namespace Orchard.Environment.Shell
                 .Select(featureInfo => new
                 {
                     FeatureDescriptor = featureInfo,
-                    FeatureState = shellState.Features.FirstOrDefault(s => s.Name == featureInfo.Id),
+                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == featureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
                 .ToArray();
@@ -84,9 +84,9 @@ namespace Orchard.Environment.Shell
             var allEntries = loadedEntries.Concat(additionalState.Select(featureState =>
             {
                 var featureDescriptor = new NotFoundFeatureInfo(
-                    featureState.Name,
+                    featureState.Id,
                     new NotFoundExtensionInfo(
-                        featureState.Name)
+                        featureState.Id)
                     );
                 return new
                 {

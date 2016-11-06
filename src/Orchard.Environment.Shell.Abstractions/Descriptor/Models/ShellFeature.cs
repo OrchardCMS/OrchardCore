@@ -6,11 +6,11 @@
         {
         }
 
-        public ShellFeature(string name)
+        public ShellFeature(string id)
         {
-            Name = name;
+            Id = id;
         }
 
-        public string Name { get; set; }
+        public string Id { get; set; }
     }
 }

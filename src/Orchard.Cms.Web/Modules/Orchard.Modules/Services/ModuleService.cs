@@ -14,14 +14,12 @@ namespace Orchard.Modules.Services
 {
     public class ModuleService : IModuleService
     {
-        private readonly IFeatureManager _featureManager;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
 
         public ModuleService(
-                IFeatureManager featureManager,
                 IExtensionManager extensionManager,
                 IShellDescriptorManager shellDescriptorManager,
                 IShellFeaturesManager shellFeaturesManager,
@@ -29,13 +27,9 @@ namespace Orchard.Modules.Services
                 INotifier notifier)
         {
             _notifier = notifier;
-            _featureManager = featureManager;
             _extensionManager = extensionManager;
             _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
-            //if (_featureManager.FeatureDependencyNotification == null) {
-            //    _featureManager.FeatureDependencyNotification = GenerateWarning;
-            //}
 
             T = htmlLocalizer;
         }
@@ -53,7 +47,7 @@ namespace Orchard.Modules.Services
             return _extensionManager
                 .LoadFeatures(_extensionManager.GetExtensions().Features)
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
-                    .FirstOrDefault(sf => string.Equals(sf.Name, f.FeatureInfo.Name, StringComparison.OrdinalIgnoreCase)) != null));
+                    .FirstOrDefault(sf => string.Equals(sf.Id, f.FeatureInfo.Id, StringComparison.OrdinalIgnoreCase)) != null));
         }
 
         /// <summary>
@@ -78,11 +72,12 @@ namespace Orchard.Modules.Services
                 .Where(x => featureIds.Contains(x.Id));
 
             var features = _shellFeaturesManager.EnableFeatures(featuresToEnable, force);
+            var enabledFeatures = _shellFeaturesManager.EnabledFeatures();
 
+            // todo: (ngn) this doesnt seem right
             foreach (var feature in features)
             {
-                var featureName = _shellFeaturesManager
-                    .EnabledFeatures()
+                var featureName = enabledFeatures
                     .First(f => f.Id.Equals(feature.Id, StringComparison.OrdinalIgnoreCase))
                     .Name;
 

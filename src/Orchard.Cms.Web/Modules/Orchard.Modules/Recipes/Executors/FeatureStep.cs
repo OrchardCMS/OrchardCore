@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Modules.Recipes.Executors
 {
@@ -41,7 +40,7 @@ namespace Orchard.Modules.Recipes.Executors
             {
                 if (!extensions.HasFeature(featureId))
                 {
-                    throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureName));
+                    throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureId));
                 }
             }
 
@@ -49,7 +48,7 @@ namespace Orchard.Modules.Recipes.Executors
             {
                 if (!extensions.HasFeature(featureId))
                 {
-                    throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureName));
+                    throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureId));
                 }
             }
 
@@ -60,7 +59,7 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
                 }
 
-                var featuresToDisable = step.Disable.Select(d => extensions.Features.First(x => x.Id == d));
+                var featuresToDisable = extensions.Features.Where(x => step.Disable.Contains(x.Id));
 
                 _shellFeatureManager.DisableFeatures(featuresToDisable, true);
             }
@@ -72,7 +71,7 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
                 }
 
-                var featuresToEnable = step.Enable.Select(d => extensions.Features.First(x => x.Id == d));
+                var featuresToEnable = extensions.Features.Where(x => step.Enable.Contains(x.Id));
 
                 _shellFeatureManager.EnableFeatures(featuresToEnable, true);
             }

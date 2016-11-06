@@ -101,7 +101,7 @@ namespace Orchard.Modules.Controllers
                 .Select(f => new ModuleFeature
                 {
                     Descriptor = f,
-                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Name == f.Id),
+                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Id == f.Id),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     DependentFeatures = _moduleService.GetDependentFeatures(f.Id).Where(x => x.Id != f.Id).ToList()

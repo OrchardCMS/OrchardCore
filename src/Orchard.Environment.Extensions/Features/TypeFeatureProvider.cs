@@ -9,6 +9,9 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary<Type, IFeatureInfo> _features 
             = new ConcurrentDictionary<Type, IFeatureInfo>();
 
+        private static readonly IFeatureInfo CoreFeature 
+            = new NotFoundFeatureInfo("Core", new NotFoundExtensionInfo("Core"));
+
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
             IFeatureInfo feature = null;
@@ -18,7 +21,7 @@ namespace Orchard.Environment.Extensions
                 return feature;
             }
 
-            return null;
+            return CoreFeature;
         }
 
         public void TryAdd(Type type, IFeatureInfo feature)

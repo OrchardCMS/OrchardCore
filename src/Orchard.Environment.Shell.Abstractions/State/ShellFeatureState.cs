@@ -8,7 +8,7 @@ namespace Orchard.Environment.Shell.State
     /// </summary>
     public class ShellFeatureState
     {
-        public string Name { get; set; }
+        public string Id { get; set; }
         public State InstallState { get; set; }
         public State EnableState { get; set; }
 

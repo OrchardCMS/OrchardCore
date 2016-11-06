@@ -87,9 +87,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             return services;
         }
 
-        public static IServiceCollection WithDefaultFeatures(this IServiceCollection services, params string[] featureNames)
+        public static IServiceCollection WithDefaultFeatures(this IServiceCollection services, params string[] featureIds)
         {
-            foreach (var featureName in featureNames)
+            foreach (var featureId in featureIds)
             {
                 services.AddTransient(sp => new ShellFeature(featureName));
             };

@@ -122,7 +122,7 @@ namespace Orchard.Setup.Services
 
             var shellDescriptor = new ShellDescriptor
             {
-                Features = context.EnabledFeatures.Select(name => new ShellFeature { Name = name }).ToList()
+                Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
             };
 
             using (var shellContext = _shellContextFactory.CreateDescribedContext(shellSettings, shellDescriptor))

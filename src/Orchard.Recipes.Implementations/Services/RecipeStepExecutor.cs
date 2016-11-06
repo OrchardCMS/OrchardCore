@@ -48,14 +48,9 @@ namespace Orchard.Recipes.Services
             await _eventBus
                 .NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
 
-            IList<Task> tasks = new List<Task>();
-            foreach (var handler in _recipeHandlers)
-            {
-                tasks.Add(handler.ExecuteRecipeStepAsync(recipeContext));
-            }
-            Task.WaitAll(tasks.ToArray());
+            await _recipeHandlers.InvokeAsync(rh => rh.ExecuteRecipeStepAsync(recipeContext), _logger);
 
-            UpdateStepResultRecordAsync(recipeContext, true).Wait();
+            await UpdateStepResultRecordAsync(recipeContext, true);
 
             await _eventBus
                 .NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));

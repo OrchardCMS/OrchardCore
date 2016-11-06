@@ -16,7 +16,7 @@ namespace Orchard.Environment.Extensions.Features
         public string[] Dependencies { get; } = new string[0];
         public IExtensionInfo Extension { get { return _extensionInfo; } }
         public string Id { get { return _featureId; } }
-        public string Name { get; } = null;
+        public string Name { get { return _featureId; } }
         public double Priority { get; }
     }
 }

@@ -71,12 +71,12 @@ namespace Orchard.Environment.Shell.Data.Descriptors
 
             foreach (var feature in enabledFeatures)
             {
-                shellDescriptorRecord.Features.Add(new ShellFeature { Name = feature.Name });
+                shellDescriptorRecord.Features.Add(new ShellFeature { Id = feature.Id });
             }
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Enabled features for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", enabledFeatures.Select(feature => feature.Name)));
+                _logger.LogDebug("Enabled features for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", enabledFeatures.Select(feature => feature.Id)));
             }
 
             shellDescriptorRecord.Parameters.Clear();

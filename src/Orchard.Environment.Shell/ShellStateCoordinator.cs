@@ -35,13 +35,13 @@ namespace Orchard.Environment.Shell
             var shellState = await _stateManager.GetShellStateAsync();
             foreach (var feature in descriptor.Features)
             {
-                var featureName = feature.Name;
-                var featureState = shellState.Features.SingleOrDefault(f => f.Name == featureName);
+                var featureId = feature.Id;
+                var featureState = shellState.Features.SingleOrDefault(f => f.Id == featureId);
                 if (featureState == null)
                 {
                     featureState = new ShellFeatureState
                     {
-                        Name = featureName
+                        Id = featureId
                     };
                 }
                 if (!featureState.IsInstalled)
@@ -55,8 +55,8 @@ namespace Orchard.Environment.Shell
             }
             foreach (var featureState in shellState.Features)
             {
-                var featureName = featureState.Name;
-                if (descriptor.Features.Any(f => f.Name == featureName))
+                var featureId = featureState.Id;
+                if (descriptor.Features.Any(f => f.Id == featureId))
                 {
                     continue;
                 }
@@ -85,7 +85,7 @@ namespace Orchard.Environment.Shell
                             .Where(FeatureShouldBeLoadedForStateChangeNotifications)
                             .Select(x => new ShellFeature
                             {
-                                Name = x.Name
+                                Id = x.Id
                             })
                             .ToArray()
                     };

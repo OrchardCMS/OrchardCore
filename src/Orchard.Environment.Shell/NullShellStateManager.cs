@@ -23,7 +23,7 @@ namespace Orchard.Environment.Shell
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 Logger.LogDebug("Feature {0} EnableState changed from {1} to {2}",
-                             featureState.Name, featureState.EnableState, value);
+                             featureState.Id, featureState.EnableState, value);
             }
         }
 
@@ -31,7 +31,7 @@ namespace Orchard.Environment.Shell
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Name, featureState.InstallState, value);
+                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Id, featureState.InstallState, value);
             }
         }
     }

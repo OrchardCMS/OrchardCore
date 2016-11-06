@@ -13,7 +13,7 @@ namespace Orchard.Environment.Shell
             var extensions = extensionManager.GetExtensions();
             var features = extensions.Features;
 
-            return features.Where(fd => shellDescriptor.Features.Any(sf => sf.Name == fd.Id));
+            return features.Where(fd => shellDescriptor.Features.Any(sf => sf.Id == fd.Id));
         }
 
         public static IEnumerable<IFeatureInfo> DisabledFeatures(this IExtensionManager extensionManager, ShellDescriptor shellDescriptor)
@@ -21,7 +21,7 @@ namespace Orchard.Environment.Shell
             var extensions = extensionManager.GetExtensions();
             var features = extensions.Features;
 
-            return features.Where(fd => shellDescriptor.Features.All(sf => sf.Name != fd.Id));
+            return features.Where(fd => shellDescriptor.Features.All(sf => sf.Id != fd.Id));
         }
     }
 }
