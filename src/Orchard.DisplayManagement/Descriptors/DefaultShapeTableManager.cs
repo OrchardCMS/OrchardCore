@@ -72,10 +72,10 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
 
                 var alterations = alterationSets
-                .SelectMany(shapeAlterations => shapeAlterations)
-                .Where(alteration => IsModuleOrRequestedTheme(alteration, themeId))
-                .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
-                .ToList();
+                    .SelectMany(shapeAlterations => shapeAlterations)
+                    .Where(alteration => IsModuleOrRequestedTheme(alteration, themeId))
+                    .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
+                    .ToList();
 
                 var descriptors = alterations.GroupBy(alteration => alteration.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => group.Aggregate(
@@ -128,15 +128,19 @@ namespace Orchard.DisplayManagement.Descriptors
         private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeId)
         {
             if (alteration == null ||
-                alteration.Feature == null ||
-                alteration.Feature.Extension == null)
+                alteration.Feature == null)
             {
                 return false;
             }
 
-            if(!alteration.Feature.Extension.Manifest.Exists)
+            if (string.IsNullOrEmpty(alteration.Feature.Extension.Manifest.Type))
             {
                 // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
+                return true;
+            }
+
+            if (alteration.Feature.Extension.Manifest.IsModule())
+            {
                 return true;
             }
 
@@ -151,11 +155,6 @@ namespace Orchard.DisplayManagement.Descriptors
                 // alterations from themes must be from the given theme or a base theme
                 var featureId = alteration.Feature.Id;
                 return string.IsNullOrEmpty(featureId) || featureId == themeId || IsBaseTheme(featureId, themeId);
-            }
-
-            if (alteration.Feature.Extension.Manifest.Exists)
-            {
-                return true;
             }
 
             return false;
