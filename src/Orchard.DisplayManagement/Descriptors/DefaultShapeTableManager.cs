@@ -42,9 +42,9 @@ namespace Orchard.DisplayManagement.Descriptors
             _memoryCache = memoryCache;
         }
 
-        public ShapeTable GetShapeTable(string themeName)
+        public ShapeTable GetShapeTable(string themeId)
         {
-            var cacheKey = $"ShapeTable:{themeName}";
+            var cacheKey = $"ShapeTable:{themeId}";
 
             ShapeTable shapeTable;
             if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
@@ -73,7 +73,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var alterations = alterationSets
                 .SelectMany(shapeAlterations => shapeAlterations)
-                .Where(alteration => IsModuleOrRequestedTheme(alteration, themeName))
+                .Where(alteration => IsModuleOrRequestedTheme(alteration, themeId))
                 .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
                 .ToList();
 
@@ -125,7 +125,7 @@ namespace Orchard.DisplayManagement.Descriptors
             return item.Feature.DependencyOn(subject.Feature);
         }
 
-        private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeName)
+        private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeId)
         {
             if (alteration == null ||
                 alteration.Feature == null ||
@@ -143,14 +143,14 @@ namespace Orchard.DisplayManagement.Descriptors
             if (alteration.Feature.Extension.Manifest.IsTheme())
             {
                 // A null theme means we are looking for any shape in any module or theme
-                if (String.IsNullOrEmpty(themeName))
+                if (String.IsNullOrEmpty(themeId))
                 {
                     return true;
                 }
 
                 // alterations from themes must be from the given theme or a base theme
-                var featureName = alteration.Feature.Id;
-                return string.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);
+                var featureId = alteration.Feature.Id;
+                return string.IsNullOrEmpty(featureId) || featureId == themeId || IsBaseTheme(featureId, themeId);
             }
 
             if (alteration.Feature.Extension.Manifest.Exists)
@@ -161,12 +161,12 @@ namespace Orchard.DisplayManagement.Descriptors
             return false;
         }
 
-        private bool IsBaseTheme(string featureName, string themeName)
+        private bool IsBaseTheme(string featureId, string themeId)
         {
             // determine if the given feature is a base theme of the given theme
             var availableFeatures = _extensionManager.GetExtensions().Features;
 
-            var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeName);
+            var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeId);
             while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())
             {
                 var themeExtensionInfo = new ThemeExtensionInfo(themeFeature.Extension);
@@ -174,7 +174,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 {
                     return false;
                 }
-                if (themeExtensionInfo.IsBaseThemeFeature(featureName))
+                if (themeExtensionInfo.IsBaseThemeFeature(featureId))
                 {
                     return true;
                 }

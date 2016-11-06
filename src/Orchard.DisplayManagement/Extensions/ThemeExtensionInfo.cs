@@ -33,8 +33,8 @@ namespace Orchard.DisplayManagement.Extensions
             return _baseTheme != null;
         }
 
-        public bool IsBaseThemeFeature(string featureName) {
-            return featureName == _baseTheme;
+        public bool IsBaseThemeFeature(string featureId) {
+            return featureId == _baseTheme;
         }
     }
 }
