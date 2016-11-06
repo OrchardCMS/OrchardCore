@@ -31,10 +31,10 @@ namespace Orchard.Environment.Extensions.Features
                 return serial;
             }
 
-            // Calculate a hash of all enabled features' name
+            // Calculate a hash of all enabled features' id
             serial = _featureManager.EnabledFeatures()
-                .OrderBy(x => x.Name)
-                .Aggregate(0, (a, f) => a * 7 + f.Name.GetHashCode());
+                .OrderBy(x => x.Id)
+                .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
 
             var options = new MemoryCacheEntryOptions()
                 .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
@@ -52,7 +52,7 @@ namespace Orchard.Environment.Extensions.Features
             {
                 enabled = 
                     _featureManager.EnabledFeatures()
-                    .Any(x => x.Name.Equals(featureId));
+                        .Any(x => x.Id.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()
                     .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
