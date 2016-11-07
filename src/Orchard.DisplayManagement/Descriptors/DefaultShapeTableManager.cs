@@ -98,7 +98,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 var descriptors = shapeAlterations
                 .Select(shapeAlteration => shapeAlteration.Value)
                 .Where(alteration => IsEnabledModuleOrRequestedTheme(alteration, themeName, enabledFeatureIds))
-                //.OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
+                .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
                 .GroupBy(alteration => alteration.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => group .Aggregate(
                         new ShapeDescriptor { ShapeType = group.Key },
