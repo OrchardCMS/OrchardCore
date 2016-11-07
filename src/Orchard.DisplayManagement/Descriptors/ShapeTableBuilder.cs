@@ -10,13 +10,13 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IList<ShapeAlterationBuilder> _alterationBuilders = new List<ShapeAlterationBuilder>();
         private readonly Feature _feature;
 
-        public ShapeTableBuilder(Feature feature, IList<FeatureDescriptor> excludedFeatures = null)
+        public ShapeTableBuilder(Feature feature, IList<string> excludedFeatureIds = null)
         {
             _feature = feature;
-            ExcludedFeatures = excludedFeatures ?? new List<FeatureDescriptor>();
+            ExcludedFeatureIds = excludedFeatureIds ?? new List<string>();
         }
 
-        public IList<FeatureDescriptor> ExcludedFeatures { get; }
+        public IList<string> ExcludedFeatureIds { get; }
 
         public ShapeAlterationBuilder Describe(string shapeType)
         {

@@ -66,12 +66,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
-
-            if (builder.ExcludedFeatures?.FirstOrDefault() != null)
-            {
-                activeFeatures = activeFeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null).ToList();
-            }
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
 
             var activeExtensions = Once(activeFeatures).ToList();
 

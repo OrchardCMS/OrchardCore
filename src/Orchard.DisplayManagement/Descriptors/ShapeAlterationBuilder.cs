@@ -68,6 +68,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 // ShapeDescriptor.Bindings is a case insensitive dictionary
                 descriptor.Bindings[_bindingName] = binding;
+                descriptor.BindingSources.Add(bindingSource);
             });
         }
 

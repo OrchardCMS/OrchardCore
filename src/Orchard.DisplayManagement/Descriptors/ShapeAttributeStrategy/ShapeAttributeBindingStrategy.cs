@@ -49,7 +49,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 var serviceType = shapeProvider.GetType();
 
                 Feature feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
-                if (builder.ExcludedFeatures?.FirstOrDefault(x => x.Id == feature.Descriptor.Id) != null)
+                if (builder.ExcludedFeatureIds.Contains(feature.Descriptor.Id))
                     continue;
 
                 foreach (var method in serviceType.GetMethods())

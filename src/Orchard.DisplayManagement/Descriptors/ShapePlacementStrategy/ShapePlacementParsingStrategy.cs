@@ -31,14 +31,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var requestedfeatures = _featureManager.GetEnabledFeaturesAsync().Result;
+            var featureDescriptors = _featureManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
-            if (builder.ExcludedFeatures?.FirstOrDefault() != null)
-            {
-                requestedfeatures = requestedfeatures.Where(x => builder.ExcludedFeatures.FirstOrDefault(y => y.Id == x.Id) == null);
-            }
-
-            foreach (var featureDescriptor in requestedfeatures)
+            foreach (var featureDescriptor in featureDescriptors)
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
