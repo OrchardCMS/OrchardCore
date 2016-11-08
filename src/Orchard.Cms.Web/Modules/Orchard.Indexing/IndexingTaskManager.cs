@@ -48,7 +48,7 @@ namespace Orchard.Indexing.Services
             var indexingTask = new IndexingTask
             {
                 CreatedUtc = _clock.UtcNow,
-                ContentItemId = contentItem.Id,
+                ContentItemId = contentItem.ContentItemId,
                 Type = type
             };
 
@@ -113,11 +113,24 @@ namespace Orchard.Indexing.Services
                 var insertCmd = $"insert into [{table}] ([CreatedUtc], [ContentItemId], [Type]) values (@CreatedUtc, @ContentItemId, @Type);";
                 await connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
             }
+            catch(Exception e)
+            {
+                Logger.LogError("An error occured while updating indexing tasks", e);
+                throw;
+            }
             finally
             {
                 transaction.Commit();
                 transaction.Dispose();
-                connection.Dispose();
+
+                if (_store.Configuration.ConnectionFactory.Disposable)
+                {
+                    connection.Dispose();
+                }
+                else
+                {
+                    connection.Close();
+                }
             }
 
             _tasksQueue.Clear();
@@ -133,16 +146,28 @@ namespace Orchard.Indexing.Services
 
             try
             {
+                var table = $"{_tablePrefix}{nameof(IndexingTask)}";
 
-                var table = $"{_tablePrefix }{ nameof(IndexingTask)}";
-
-                return await connection.QueryAsync<IndexingTask>($"select top {count} * from [{table}] where Id > @Id", new { id = afterTaskId });
+                return await connection.QueryAsync<IndexingTask>($"select top {count} * from [{table}] where Id > @Id", new { Id = afterTaskId }, transaction);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("An error occured while reading indexing tasks", e);
+                throw;
             }
             finally
             {
                 transaction.Commit();
                 transaction.Dispose();
-                connection.Dispose();
+
+                if (_store.Configuration.ConnectionFactory.Disposable)
+                {
+                    connection.Dispose();
+                }
+                else
+                {
+                    connection.Close();
+                }
             }
         }
     }

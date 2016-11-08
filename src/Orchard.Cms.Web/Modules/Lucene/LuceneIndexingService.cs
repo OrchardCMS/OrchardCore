@@ -46,10 +46,7 @@ namespace Lucene
 
         public async Task ProcessContentItemsAsync()
         {
-            if (!Monitor.TryEnter(_indexingState))
-            {
-                return;
-            }
+            // TODO: Lock over the filesystem
 
             var allIndexes = new Dictionary<string, int>();
 
@@ -118,8 +115,6 @@ namespace Lucene
                 _indexingState.Update();
 
             } while (batch.Count() == BatchSize);
-
-            return;
         }
     }
 }
