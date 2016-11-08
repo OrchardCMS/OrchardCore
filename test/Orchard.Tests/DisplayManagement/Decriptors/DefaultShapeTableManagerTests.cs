@@ -48,7 +48,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public string Id { get; set; }
             public string Name { get; set; }
             public double Priority { get; set; }
-
+            public string Category { get; set; }
+            public string Description { get; set; }
             public bool DependencyOn(IFeatureInfo feature)
             {
                 return false;
@@ -101,7 +102,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 IDictionary<string, IFeatureInfo> features =
                     new Dictionary<string, IFeatureInfo>()
                     {
-                        {name, new FeatureInfo(name, name, 0D, this, new string[0])}
+                        {name, new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
                 Features = new FeatureInfoList(features);
@@ -128,7 +129,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 IDictionary<string, IFeatureInfo> features =
                     new Dictionary<string, IFeatureInfo>()
                     {
-                        {name, new FeatureInfo(name, name, 0D, this, new string[] { baseTheme.Id })}
+                        {name, new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
                     };
 
                 Features = new FeatureInfoList(features);

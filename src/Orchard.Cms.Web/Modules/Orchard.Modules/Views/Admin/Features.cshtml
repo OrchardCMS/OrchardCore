@@ -80,13 +80,13 @@
 
                         //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                         var featureId = feature.Descriptor.Id;
-                        var featureName = string.IsNullOrEmpty(feature.Descriptor.Name) ? feature.Descriptor.Id : feature.Descriptor.Name;
+                        var featureName = feature.Descriptor.Name;
                         var featureState = feature.IsEnabled ? "enabled" : "disabled";
 
                         var dependencies = (from d in feature.Descriptor.Dependencies
-                                            select (from f in Model.Features where f.Descriptor.Id.Equals(d, StringComparison.OrdinalIgnoreCase) select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
+                                            select (from f in Model.Features where f.Descriptor.Id == d select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                         var missingDependencies = feature.Descriptor.Dependencies
-                            .Where(d => !Model.Features.Any(f => f.Descriptor.Id.Equals(d, StringComparison.OrdinalIgnoreCase)));
+                            .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d));
                         var showDisable = true; // categoryName.ToString() != "Core";
                         var showEnable = Model.IsAllowed(feature.Descriptor.Extension) && !missingDependencies.Any() && feature.Descriptor.Id != "Orchard.Setup";
 
