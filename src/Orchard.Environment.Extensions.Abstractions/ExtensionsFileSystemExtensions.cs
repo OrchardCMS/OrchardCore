@@ -12,7 +12,7 @@ namespace Orchard.Environment.Extensions
             string subPath)
         {
             return parentFileSystem.ContentRootFileProvider.GetFileInfo(
-                Path.Combine(extensionInfo.SubPath, extensionInfo.Id, subPath));
+                Path.Combine(extensionInfo.SubPath, subPath));
         }
     }
 }

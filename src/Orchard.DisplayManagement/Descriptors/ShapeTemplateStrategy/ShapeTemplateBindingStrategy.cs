@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -91,16 +92,27 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
+                    var subPathFileInfo = _hostingEnvironment
+                        .GetExtensionFileInfo(extensionDescriptor, subPath);
+
+                    var virtualPath = Path.Combine(extensionDescriptor.SubPath, subPath);
+
+                    if (!subPathFileInfo.Exists)
+                    {
+                        return new {
+                            harvesterInfo.harvester,
+                            subPath,
+                            virtualPath,
+                            files = new IFileInfo[0] };
+                    }
+
                     var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(extensionDescriptor.ExtensionFileInfo.PhysicalPath)))
+                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(subPathFileInfo.PhysicalPath)))
                         .Files;
 
                     var files = matches
                         .Select(match => _hostingEnvironment
                             .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
-
-                    var basePath = Path.Combine(extensionDescriptor.SubPath, extensionDescriptor.Id);
-                    var virtualPath = Path.Combine(basePath, subPath);
 
                     return new { harvesterInfo.harvester, subPath, virtualPath, files };
                 })).ToList();
@@ -140,18 +152,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 // templates are always associated with the namesake feature of module or theme
                 var hit = iter;
-                var featureDescriptors = iter.extensionDescriptor.Features.Where(fd => fd.Id == hit.extensionDescriptor.Id);
-                foreach (var featureDescriptor in featureDescriptors)
+                foreach (var feature in hit.extensionDescriptor.Features)
                 {
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
                         _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
-                        hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
-                        iter.shapeContext.harvestShapeHit.ShapeType,
-                        featureDescriptor.Id);
+                            hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
+                            iter.shapeContext.harvestShapeHit.ShapeType,
+                            feature.Id);
                     }
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                        .From(featureDescriptor)
+                        .From(feature)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
                             shapeDescriptor => displayContext => RenderAsync(shapeDescriptor, displayContext, hit.shapeContext.harvestShapeInfo, hit.shapeContext.harvestShapeHit));
