@@ -1,7 +1,7 @@
 ﻿using Orchard.Security.Permissions;
 using System.Collections.Generic;
 
-namespace Orchard.Indexing
+namespace Lucene
 {
     public class Permissions : IPermissionProvider
     {

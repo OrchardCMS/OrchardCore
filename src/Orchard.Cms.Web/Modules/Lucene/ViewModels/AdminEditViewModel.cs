@@ -1,8 +1,7 @@
-﻿namespace Orchard.Indexing.ViewModels
+﻿namespace Lucene.ViewModels
 {
     public class AdminEditViewModel
     {
-        public string ProviderName { get; set; }
         public string IndexName { get; set; }
     }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+﻿using Lucene.Settings;
 using Microsoft.AspNetCore.Mvc.Modules;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Orchard.Environment.Shell;
-using Orchard.Indexing;
+using Orchard.BackgroundTasks;
+using Orchard.ContentTypes.Editors;
+using Orchard.Environment.Navigation;
 
 namespace Lucene
 {
@@ -16,16 +12,16 @@ namespace Lucene
     /// </summary>
     public class Startup : StartupBase
     {
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void ConfigureServices(IServiceCollection services)
         {
-            var indexManager = serviceProvider.GetRequiredService<IndexManager>();
+            services.AddSingleton<LuceneIndexingState>();
+            services.AddScoped<LuceneIndexingService>();
 
-            var shellOptions = serviceProvider.GetService<IOptions<ShellOptions>>();
-            var shellSettings = serviceProvider.GetService<ShellSettings>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentIndexSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<LuceneIndexProvider>();
 
-            var rootIndexPath = Path.Combine( shellOptions.Value.ShellsRootContainerName, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
-
-            indexManager.Providers.Add("Lucene", new LuceneIndexProvider(serviceProvider.GetService<IHostingEnvironment>(), rootIndexPath));
+            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }
     }
 }

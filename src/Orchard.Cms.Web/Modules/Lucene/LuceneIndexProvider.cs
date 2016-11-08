@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
+using Orchard.Environment.Shell;
 using Orchard.Indexing;
 
 namespace Lucene
 {
-    public class LuceneIndexProvider : IIndexProvider
+    public class LuceneIndexProvider
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _rootPath;
 
         public LuceneIndexProvider(
             IHostingEnvironment hostingEnvironment,
-            string rootPath)
+            IOptions<ShellOptions> shellOptions,
+            ShellSettings shellSettings
+            )
         {
             _hostingEnvironment = hostingEnvironment;
-            _rootPath = rootPath;
-
+            _rootPath = Path.Combine(shellOptions.Value.ShellsRootContainerName, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
+            
             Directory.CreateDirectory(_rootPath);
         }
 
@@ -34,7 +38,6 @@ namespace Lucene
         public void DeleteIndex(string indexName)
         {
             File.Delete(Path.Combine(_rootPath, indexName + ".txt"));
-
         }
 
         public bool Exists(string indexName)
@@ -49,7 +52,7 @@ namespace Lucene
 
         public IEnumerable<string> List()
         {
-            return _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(_rootPath).Select(x => Path.GetFileNameWithoutExtension(x.Name));
+            return _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(_rootPath).Where(x => x.Name.EndsWith(".txt")).Select(x => Path.GetFileNameWithoutExtension(x.Name));
         }
 
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)

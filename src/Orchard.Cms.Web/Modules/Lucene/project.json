@@ -4,7 +4,11 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
-    "Orchard.Environment.Shell": "2.0.0-*"
+    "Orchard.Environment.Shell": "2.0.0-*",
+    "Orchard.BackgroundTasks.Abstractions": "2.0.0-*",
+    "Orchard.Security": "2.0.0-*",
+    "Orchard.Navigation": "2.0.0-*",
+    "Orchard.ContentTypes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

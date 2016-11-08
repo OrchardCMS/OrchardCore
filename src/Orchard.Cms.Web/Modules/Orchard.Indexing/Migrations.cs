@@ -1,7 +1,5 @@
 ﻿using System;
-using Orchard.ContentManagement.MetaData;
 using Orchard.Data.Migration;
-using Orchard.Indexing.Models;
 
 namespace Orchard.Indexing
 {

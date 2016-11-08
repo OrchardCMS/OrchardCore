@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Orchard.BackgroundTasks;
 
 namespace Orchard.Demo.Services
@@ -8,9 +9,11 @@ namespace Orchard.Demo.Services
     {
         private int _count;
 
-        public void DoWork(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
             _count++;
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Indexing.ViewModels;
 using Orchard.Utility;
 
-namespace Orchard.Indexing.Controllers
+namespace Lucene.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IndexManager _indexManager;
+        private readonly LuceneIndexProvider _luceneIndexProvider;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
 
         public AdminController(
-            IndexManager indexManager,
+            LuceneIndexProvider luceneIndexProvider,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
         {
-            _indexManager = indexManager;
+            _luceneIndexProvider = luceneIndexProvider;
             _authorizationService = authorizationService;
             _notifier = notifier;
             S = s;
@@ -42,31 +42,21 @@ namespace Orchard.Indexing.Controllers
         {
             var viewModel = new AdminIndexViewModel();
 
-            viewModel.Providers = _indexManager.Providers.Select(x => x.Key).ToList();
-            viewModel.Indexes = _indexManager.Providers
-                .SelectMany(x => x.Value.List().Select(s => new IndexViewModel { Name = s, Provider = x.Key })
-                ).ToArray();
+            viewModel.Indexes = _luceneIndexProvider.List().Select(s => new IndexViewModel { Name = s }).ToArray();
 
             return View(viewModel);
         }
 
-        public async Task<ActionResult> Create(string id)
+        public async Task<ActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Unauthorized();
             }
 
-            IIndexProvider provider;
-            if (!_indexManager.Providers.TryGetValue(id, out provider))
-            {
-                return NotFound();
-            }
-
             var model = new AdminEditViewModel
             {
                 IndexName = "",
-                ProviderName = id,
             };
 
             return View(model);
@@ -80,15 +70,9 @@ namespace Orchard.Indexing.Controllers
                 return Unauthorized();
             }
 
-            IIndexProvider provider;
-            if (!_indexManager.Providers.TryGetValue(model.ProviderName, out provider))
-            {
-                return NotFound();
-            }
-
             ValidateModel(model);
 
-            if (provider.Exists(model.IndexName))
+            if (_luceneIndexProvider.Exists(model.IndexName))
             {
                 ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
             }
@@ -100,16 +84,16 @@ namespace Orchard.Indexing.Controllers
             
             try
             {
-                provider.CreateIndex(model.IndexName);
+                _luceneIndexProvider.CreateIndex(model.IndexName);
             }
             catch (Exception e)
             {
                 _notifier.Error(H["An error occurred while creating the index"]);
-                Logger.LogError("An error occurred while creating the index " + model.ProviderName, e);
+                Logger.LogError("An error occurred while creating an index", e);
                 return View(model);
             }
 
-            _notifier.Success(H["Index <em>{0}</em> created successfully", model.ProviderName]);
+            _notifier.Success(H["Index <em>{0}</em> created successfully", model.IndexName]);
 
             return RedirectToAction("Index");
         }
@@ -148,15 +132,9 @@ namespace Orchard.Indexing.Controllers
                 return Unauthorized();
             }
 
-            IIndexProvider provider;
-            if (!_indexManager.Providers.TryGetValue(model.ProviderName, out provider))
-            {
-                return NotFound();
-            }
-
             try
             {
-                provider.DeleteIndex(model.IndexName);
+                _luceneIndexProvider.DeleteIndex(model.IndexName);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
