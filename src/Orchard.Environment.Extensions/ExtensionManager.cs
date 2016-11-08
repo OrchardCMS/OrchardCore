@@ -166,7 +166,8 @@ namespace Orchard.Environment.Extensions
             {
                 foreach (var subDirectory in _hostingEnvironment
                     .ContentRootFileProvider
-                    .GetDirectoryContents(searchPath).Where(x => x.IsDirectory))
+                    .GetDirectoryContents(searchPath)
+                    .Where(x => x.IsDirectory))
                 {
                     var extensionId = subDirectory.Name;
 

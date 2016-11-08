@@ -31,14 +31,21 @@ namespace Orchard.Environment.Extensions
             get { return _extensions.Count; }
         }
 
+        private IFeatureInfoList _features;
+
         public IFeatureInfoList Features {
             get
             {
-                return new FeatureInfoList(
-                    _extensions
-                        .SelectMany(x => x.Features)
-                        .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
-                        .ToDictionary(x => x.Id, y => y));
+                if (_features == null)
+                {
+                    _features = new FeatureInfoList(
+                        _extensions
+                            .SelectMany(x => x.Features)
+                            .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
+                            .ToDictionary(x => x.Id, y => y));
+                }
+
+                return _features;
             }
         }
 
