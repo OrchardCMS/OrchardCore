@@ -95,9 +95,11 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     var subPathFileInfo = _hostingEnvironment
                         .GetExtensionFileInfo(extensionDescriptor, subPath);
 
+                    var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
+
                     var virtualPath = Path.Combine(extensionDescriptor.SubPath, subPath);
 
-                    if (!subPathFileInfo.Exists)
+                    if (!directoryInfo.Exists)
                     {
                         return new {
                             harvesterInfo.harvester,
@@ -107,7 +109,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     }
 
                     var matches = matcher
-                        .Execute(new DirectoryInfoWrapper(new DirectoryInfo(subPathFileInfo.PhysicalPath)))
+                        .Execute(new DirectoryInfoWrapper(directoryInfo))
                         .Files;
 
                     var files = matches
