@@ -7,4 +7,5 @@ OrchardVersion: 2.0
 Description: Introduces a preconfigured container-enabled content type.
 FeatureDescription: A basic container-enabled content type.
 Dependencies: Orchard.Contents, Orchard.ContentTypes
-Category: Content
+Category: Content Management
+

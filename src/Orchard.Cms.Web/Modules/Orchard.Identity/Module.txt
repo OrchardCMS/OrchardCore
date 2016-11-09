@@ -7,4 +7,4 @@ OrchardVersion: 2.0.x
 Description: The identity module enables content items to have identifiers.
 FeatureDescription: Identity content part.
 Dependencies: Orchard.ContentTypes
-Category: Core
+Category: Content Management

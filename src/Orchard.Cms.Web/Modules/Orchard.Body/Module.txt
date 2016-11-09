@@ -7,4 +7,4 @@ OrchardVersion: 2.0.x
 Description: The body module enables content items to have bodies.
 FeatureDescription: Body content part.
 Dependencies: Orchard.Contents, Orchard.ContentTypes
-Category: Core
+Category: Content Management

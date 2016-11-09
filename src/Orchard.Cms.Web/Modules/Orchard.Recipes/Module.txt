@@ -6,4 +6,4 @@ OrchardVersion: 2.0.x
 Description: Provides Orchard Recipes.
 FeatureDescription: Implementation of Orchard recipes.
 Dependencies: Orchard.Modules
-Category: Core
+Category: Infrastructure
