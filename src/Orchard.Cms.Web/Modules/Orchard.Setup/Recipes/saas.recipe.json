@@ -13,7 +13,7 @@
       "name": "feature",
       "disable": [],
       "enable": [
-        "Orchard.Cms",
+        "Orchard.Commons",
         "Orchard.Diagnostics",
         "Orchard.Settings",
         "Orchard.Admin",
@@ -53,8 +53,8 @@
       "name": "settings",
       "HomeRoute": {
         "Action": "Index",
-        "Controller": "Admin",
-        "Area": "Orchard.Admin"
+        "Controller": "Home",
+        "Area": "Orchard.Commons"
       }
     }
   ]

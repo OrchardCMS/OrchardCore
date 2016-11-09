@@ -34,7 +34,7 @@ namespace Orchard.Cms.Web
             services.AddThemingHost();
             services.AddThemeFolder("Themes");
             services.AddSitesFolder("App_Data", "Sites");
-            services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Cms");
+            services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Commons");
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
