@@ -95,17 +95,16 @@ namespace Orchard.DisplayManagement.Descriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-                        .Select(group =>
-                            new ShapeDescriptorIndex
-                            (
-                                shapeType: group.Key,
-                                alterationKeys: group.Select(kv => kv.Key),
-                                descriptors: _shapeDescriptors
-                            ));
+                        .Select(group => new ShapeDescriptorIndex
+                        (
+                            shapeType: group.Key,
+                            alterationKeys: group.Select(kv => kv.Key),
+                            descriptors: _shapeDescriptors
+                        ));
 
                 shapeTable = new ShapeTable
                 {
-                    Descriptors = descriptors.Select(sd => sd as ShapeDescriptor).ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
+                    Descriptors = descriptors.Cast<ShapeDescriptor>().ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase)
                 };
 
                 //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));

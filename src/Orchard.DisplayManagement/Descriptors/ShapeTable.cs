@@ -22,29 +22,29 @@ namespace Orchard.DisplayManagement.Descriptors
                 _shapeTable = shapeTable;
             }
 
-            public bool ContainsKey(string shapeType)
+            public bool ContainsKey(string shapeAlternate)
             {
-                var index = shapeType.IndexOf("__");
-                var baseType = index < 0 ? shapeType : shapeType.Substring(0, index);
+                var index = shapeAlternate.IndexOf("__");
+                var shapeType = index < 0 ? shapeAlternate : shapeAlternate.Substring(0, index);
 
                 ShapeDescriptor descriptor;
-                if (_shapeTable.Descriptors.TryGetValue(baseType, out descriptor))
+                if (_shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
                 {
-                    return descriptor.Bindings.ContainsKey(shapeType);
+                    return descriptor.Bindings.ContainsKey(shapeAlternate);
                 }
 
                 return false;
             }
 
-            public bool TryGetValue(string shapeType, out ShapeBinding binding)
+            public bool TryGetValue(string shapeAlternate, out ShapeBinding binding)
             {
-                var index = shapeType.IndexOf("__");
-                var baseType = index < 0 ? shapeType : shapeType.Substring(0, index);
+                var index = shapeAlternate.IndexOf("__");
+                var shapeType = index < 0 ? shapeAlternate : shapeAlternate.Substring(0, index);
 
                 ShapeDescriptor descriptor;
-                if (_shapeTable.Descriptors.TryGetValue(baseType, out descriptor))
+                if (_shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
                 {
-                    return descriptor.Bindings.TryGetValue(shapeType, out binding);
+                    return descriptor.Bindings.TryGetValue(shapeAlternate, out binding);
                 }
 
                 binding = null;
