@@ -26,7 +26,7 @@ namespace Orchard.Settings.Services
         /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            SiteSettings site;
+            ISite site;
 
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
@@ -64,13 +64,34 @@ namespace Orchard.Settings.Services
         }
 
         /// <inheritdoc/>
-        public Task UpdateSiteSettingsAsync(ISite site)
+        public async Task UpdateSiteSettingsAsync(ISite site)
         {
-            var siteSettings = site as SiteSettings;
-            _session.Save(siteSettings);
+            // Load the currently saved object otherwise it would create a new document
+            // as the new session is not tracking the cached object.
+            // TODO: Solve by having an Update method in Session
 
-            _memoryCache.Set(SiteCacheKey, siteSettings);
-            return Task.CompletedTask;
+            var existing = await _session.QueryAsync<SiteSettings>().FirstOrDefault();
+            
+            existing.BaseUrl = site.BaseUrl;
+            existing.Calendar = site.Calendar;
+            existing.Culture = site.Culture;
+            existing.HomeRoute = site.HomeRoute;
+            existing.MaxPagedCount = site.MaxPagedCount;
+            existing.MaxPageSize = site.MaxPageSize;
+            existing.PageSize = site.PageSize;
+            existing.PageTitleSeparator = site.PageTitleSeparator;
+            existing.Properties = site.Properties;
+            existing.ResourceDebugMode = site.ResourceDebugMode;
+            existing.SiteName = site.SiteName;
+            existing.SiteSalt = site.SiteSalt;
+            existing.SuperUser = site.SuperUser;
+            existing.TimeZone = site.TimeZone;
+            existing.UseCdn = site.UseCdn;
+
+            _session.Save(existing);
+
+            _memoryCache.Set(SiteCacheKey, site);
+            return;
         }
     }
 }
