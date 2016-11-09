@@ -60,7 +60,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Select(kvp => kvp.Value.Feature.Descriptor.Id)
+                var excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id)
                     .Distinct().ToList();
 
                 IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
@@ -89,17 +89,23 @@ namespace Orchard.DisplayManagement.Descriptors
                     }
                 }
 
-                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(x => x.Extension.Id).ToList();
+                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Extension.Id).ToList();
 
                 var descriptors = _shapeDescriptors
-                    .Where(descriptor => IsEnabledModuleOrRequestedTheme(descriptor.Value, themeName, enabledFeatureIds))
+                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
-                    .GroupBy(alteration => alteration.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-                        .Select(group => new ShapeDescriptorIndex(group.Key, group.Select(x => x.Key), _shapeDescriptors));
+                    .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
+                        .Select(group =>
+                            new ShapeDescriptorIndex
+                            (
+                                shapeType: group.Key,
+                                alterationKeys: group.Select(kv => kv.Key),
+                                descriptors: _shapeDescriptors
+                            ));
 
                 shapeTable = new ShapeTable
                 {
-                    Descriptors = descriptors.Select(x => x as ShapeDescriptor).ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
+                    Descriptors = descriptors.Select(sd => sd as ShapeDescriptor).ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
                     Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 };
 

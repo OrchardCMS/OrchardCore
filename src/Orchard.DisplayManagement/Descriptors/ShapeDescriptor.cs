@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Descriptors
             get
             {
                 return _alterationKeys.Select(key => _descriptors[key])
-                    .SelectMany(x => x.Bindings).GroupBy(x => x.Key).Select(x => x.Last())
+                    .SelectMany(sd => sd.Bindings).GroupBy(kv => kv.Key).Select(kv => kv.Last())
                     .ToDictionary(kv => kv.Key, kv =>
                         new ShapeBinding
                         {
@@ -46,29 +46,30 @@ namespace Orchard.DisplayManagement.Descriptors
                             BindingSource = kv.Value.BindingSource,
                             BindingAsync = kv.Value.BindingAsync
                         },
+
                         StringComparer.OrdinalIgnoreCase);
             }
         }
 
         public override IEnumerable<Action<ShapeCreatingContext>> Creating
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Creating); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Creating); }
         }
         public override IEnumerable<Action<ShapeCreatedContext>> Created
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Created); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Created); }
         }
         public override IEnumerable<Action<ShapeDisplayingContext>> Displaying
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Displaying); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displaying); }
         }
         public override IEnumerable<Action<ShapeDisplayingContext>> Processing
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Processing); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Processing); }
         }
         public override IEnumerable<Action<ShapeDisplayedContext>> Displayed
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Displayed); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displayed); }
         }
 
         public override Func<ShapePlacementContext, PlacementInfo> Placement
@@ -91,11 +92,11 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public override IList<string> Wrappers
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Wrappers).ToList(); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Wrappers).ToList(); }
         }
         public override IList<string> BindingSources
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.BindingSources).ToList(); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.BindingSources).ToList(); }
         }
     }
 
@@ -121,7 +122,7 @@ namespace Orchard.DisplayManagement.Descriptors
         public PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
-            if(DefaultPlacement == null)
+            if (DefaultPlacement == null)
             {
                 return null;
             }
