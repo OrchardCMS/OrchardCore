@@ -4,7 +4,6 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Models;
 using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement;
 
 namespace Orchard.Admin
 {
@@ -41,7 +40,8 @@ namespace Orchard.Admin
         public async Task SetAdminThemeAsync(string themeName)
         {
             var site = await _siteService.GetSiteSettingsAsync();
-            (site as IContent).ContentItem.Content.CurrentAdminThemeName = themeName;
+            site.Properties["CurrentAdminThemeName"] = themeName;
+            //(site as IContent).ContentItem.Content.CurrentAdminThemeName = themeName;
             _memoryCache.Set(CacheKey, themeName);
             await _siteService.UpdateSiteSettingsAsync(site);
         }
@@ -49,10 +49,11 @@ namespace Orchard.Admin
         public async Task<string> GetAdminThemeNameAsync()
         {
             string themeName;
-            if(!_memoryCache.TryGetValue(CacheKey, out themeName))
+            if (!_memoryCache.TryGetValue(CacheKey, out themeName))
             {
                 var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)(site as IContent).ContentItem.Content.CurrentAdminThemeName;
+                themeName = (string)site.Properties["CurrentAdminThemeName"];
+                // themeName = (string)(site as IContent).ContentItem.Content.CurrentAdminThemeName;
                 _memoryCache.Set(CacheKey, themeName);
             }
 
