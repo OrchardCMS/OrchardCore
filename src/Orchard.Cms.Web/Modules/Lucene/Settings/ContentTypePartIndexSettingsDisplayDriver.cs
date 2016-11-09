@@ -9,12 +9,12 @@ using Orchard.Indexing;
 
 namespace Lucene.Settings
 {
-    public class ContentIndexSettingsDisplayDriver : ContentTypePartDisplayDriver
+    public class ContentTypePartIndexSettingsDisplayDriver : ContentTypePartDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+        public ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;

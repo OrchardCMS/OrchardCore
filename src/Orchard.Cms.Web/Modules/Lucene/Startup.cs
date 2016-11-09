@@ -17,7 +17,8 @@ namespace Lucene
             services.AddSingleton<LuceneIndexingState>();
             services.AddScoped<LuceneIndexingService>();
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<LuceneIndexProvider>();
 
