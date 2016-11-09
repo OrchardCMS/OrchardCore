@@ -318,11 +318,18 @@ namespace Orchard.Tenants.Controllers
                 return NotFound();
             }
 
+            // Generating routes can fail while the tenant is recycled as routes can use services.
+            // It could be fixed by waiting for the next request or the end of the current one
+            // to actually release the tenant. Right now we render the url before recycling the tenant.
+
+            var redirectUrl = Url.Action(nameof(Index));
+
             var shellSettings = shellContext.Settings;
             _orchardHost.ReloadShellContext(shellSettings);
 
-            return RedirectToAction(nameof(Index));
+            return Redirect(redirectUrl);
         }
+
         private void ValidateViewModel(EditTenantViewModel model, bool newTenant)
         {
             if (String.IsNullOrWhiteSpace(model.Name))

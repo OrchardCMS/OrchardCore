@@ -51,7 +51,7 @@ namespace Orchard.Hosting
 
                     if (!shellContext.IsActivated)
                     {
-                        lock (shellSetting)
+                        lock (shellContext)
                         {
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
@@ -60,6 +60,7 @@ namespace Orchard.Hosting
                                 eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync()).Wait();
                                 eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
 
+                                httpContext.Items["BuildPipeline"] = true;
                                 shellContext.IsActivated = true;
                             }
                         }

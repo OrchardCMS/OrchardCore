@@ -215,11 +215,17 @@ namespace Orchard.Modules.Controllers
                 return NotFound();
             }
 
+            // Generating routes can fail while the tenant is recycled as routes can use services.
+            // It could be fixed by waiting for the next request or the end of the current one
+            // to actually release the tenant. Right now we render the url before recycling the tenant.
+
+            var nextUrl = Url.Action(nameof(Features));
+
             await _featureManager.DisableFeaturesAsync(new[] { feature.Id }, force: true);
 
             _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
 
-            return RedirectToAction(nameof(Features));
+            return Redirect(nextUrl);
         }
 
         [HttpPost]
@@ -233,11 +239,17 @@ namespace Orchard.Modules.Controllers
                 return NotFound();
             }
 
+            // Generating routes can fail while the tenant is recycled as routes can use services.
+            // It could be fixed by waiting for the next request or the end of the current one
+            // to actually release the tenant. Right now we render the url before recycling the tenant.
+
+            var nextUrl = Url.Action(nameof(Features));
+
             await _featureManager.EnableFeaturesAsync(new[] { feature.Id }, force: true);
 
             _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
 
-            return RedirectToAction(nameof(Features));
+            return Redirect(nextUrl);
         }
 
         /// <summary>

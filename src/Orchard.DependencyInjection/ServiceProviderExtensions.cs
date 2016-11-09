@@ -39,8 +39,6 @@ namespace Orchard.DependencyInjection
                         clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
                         //clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
                     }
-
-                    
                 }
                 else
                 {
