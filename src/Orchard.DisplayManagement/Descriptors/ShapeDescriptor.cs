@@ -1,28 +1,124 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.DisplayManagement.Implementation;
-using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Extensions.Models;
+using Microsoft.AspNetCore.Html;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
+    public class FeatureShapeDescriptor : ShapeDescriptor
+    {
+        public FeatureShapeDescriptor(Feature feature, string shapeType)
+        {
+            Feature = feature;
+            ShapeType = shapeType;
+        }
+
+        public Feature Feature { get; private set; }
+    }
+
+    public class ShapeDescriptorIndex : ShapeDescriptor
+    {
+        private IEnumerable<int> _alterationKeys;
+        private ConcurrentDictionary<int, FeatureShapeDescriptor> _descriptors;
+
+        public ShapeDescriptorIndex(string shapeType, IEnumerable<int> alterationKeys, ConcurrentDictionary<int, FeatureShapeDescriptor> descriptors)
+        {
+            ShapeType = shapeType;
+            _alterationKeys = alterationKeys;
+            _descriptors = descriptors;
+        }
+
+        public override IDictionary<string, ShapeBinding> Bindings
+        {
+            get
+            {
+                return _alterationKeys.Select(key => _descriptors[key])
+                    .SelectMany(x => x.Bindings).GroupBy(x => x.Key).Select(x => x.Last())
+                    .ToDictionary(kv => kv.Key, kv =>
+                        new ShapeBinding
+                        {
+                            ShapeDescriptor = this,
+                            BindingName = kv.Value.BindingName,
+                            BindingSource = kv.Value.BindingSource,
+                            BindingAsync = kv.Value.BindingAsync
+                        },
+                        StringComparer.OrdinalIgnoreCase);
+            }
+        }
+
+        public override IEnumerable<Action<ShapeCreatingContext>> Creating
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Creating); }
+        }
+        public override IEnumerable<Action<ShapeCreatedContext>> Created
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Created); }
+        }
+        public override IEnumerable<Action<ShapeDisplayingContext>> Displaying
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Displaying); }
+        }
+        public override IEnumerable<Action<ShapeDisplayingContext>> Processing
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Processing); }
+        }
+        public override IEnumerable<Action<ShapeDisplayedContext>> Displayed
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Displayed); }
+        }
+
+        public override Func<ShapePlacementContext, PlacementInfo> Placement
+        {
+            get
+            {
+                return (ctx =>
+                {
+                    PlacementInfo info = null;
+                    foreach (var descriptor in _alterationKeys.Select(key => _descriptors[key]).Reverse())
+                    {
+                        info = descriptor.Placement(ctx);
+                        if (info != null)
+                            break;
+                    }
+                    return info;
+                });
+            }
+        }
+
+        public override IList<string> Wrappers
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.Wrappers).ToList(); }
+        }
+        public override IList<string> BindingSources
+        {
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(x => x.BindingSources).ToList(); }
+        }
+    }
+
     public class ShapeDescriptor
     {
         public ShapeDescriptor()
         {
-            Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
-            Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
-            Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
-            Processing = Enumerable.Empty<Action<ShapeDisplayingContext>>();
-            Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
-            Wrappers = new List<string>();
-            BindingSources = new List<string>();
-            Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
+            if (!(this is ShapeDescriptorIndex))
+            {
+                Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
+                Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
+                Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
+                Processing = Enumerable.Empty<Action<ShapeDisplayingContext>>();
+                Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
+                Wrappers = new List<string>();
+                BindingSources = new List<string>();
+                Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
+            }
+
             Placement = DefaultPlacementAction;
         }
 
-        private PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
+        public PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
             if(DefaultPlacement == null)
@@ -56,19 +152,19 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        public IDictionary<string, ShapeBinding> Bindings { get; set; }
+        public virtual IDictionary<string, ShapeBinding> Bindings { get; set; }
 
-        public IEnumerable<Action<ShapeCreatingContext>> Creating { get; set; }
-        public IEnumerable<Action<ShapeCreatedContext>> Created { get; set; }
-        public IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; set; }
-        public IEnumerable<Action<ShapeDisplayingContext>> Processing { get; set; }
-        public IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; set; }
+        public virtual IEnumerable<Action<ShapeCreatingContext>> Creating { get; set; }
+        public virtual IEnumerable<Action<ShapeCreatedContext>> Created { get; set; }
+        public virtual IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; set; }
+        public virtual IEnumerable<Action<ShapeDisplayingContext>> Processing { get; set; }
+        public virtual IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; set; }
 
-        public Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
+        public virtual Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
         public string DefaultPlacement { get; set; }
 
-        public IList<string> Wrappers { get; set; }
-        public IList<string> BindingSources { get; set; }
+        public virtual IList<string> Wrappers { get; set; }
+        public virtual IList<string> BindingSources { get; set; }
     }
 
     public class ShapeBinding
