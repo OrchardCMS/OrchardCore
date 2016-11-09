@@ -7,6 +7,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Roles.Services;
 using Orchard.Security;
+using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 
 namespace Orchard.Roles
@@ -23,6 +24,7 @@ namespace Orchard.Roles
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
     }
 }
