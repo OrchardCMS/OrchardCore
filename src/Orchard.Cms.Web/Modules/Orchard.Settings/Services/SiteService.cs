@@ -46,7 +46,7 @@ namespace Orchard.Settings.Services
                                 TimeZone = TimeZoneInfo.Local.Id,
                                 PageSize = 10,
                                 MaxPageSize = 100,
-                                MaxPagedCount = 500
+                                MaxPagedCount = 0
                             };
 
                             _session.Save(site);
