@@ -94,7 +94,7 @@ namespace Orchard.Modules.Controllers
 
             //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
             var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
-            var availableFeatures = _shellFeaturesManager.EnabledFeatures();
+            var availableFeatures = _extensionManager.GetExtensions().Features;
 
             IEnumerable<ModuleFeature> features = availableFeatures
                 .Where(f => !f.Extension.Manifest.IsTheme())

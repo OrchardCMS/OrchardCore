@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.State;
+using System.Linq;
+using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell
