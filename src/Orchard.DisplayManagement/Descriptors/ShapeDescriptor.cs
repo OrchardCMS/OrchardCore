@@ -38,16 +38,7 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 return _alterationKeys.Select(key => _descriptors[key])
                     .SelectMany(sd => sd.Bindings).GroupBy(kv => kv.Key).Select(kv => kv.Last())
-                    .ToDictionary(kv => kv.Key, kv =>
-                        new ShapeBinding
-                        {
-                            ShapeDescriptor = this,
-                            BindingName = kv.Value.BindingName,
-                            BindingSource = kv.Value.BindingSource,
-                            BindingAsync = kv.Value.BindingAsync
-                        },
-
-                        StringComparer.OrdinalIgnoreCase);
+                    .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
 
