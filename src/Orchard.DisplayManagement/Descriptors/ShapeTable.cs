@@ -44,15 +44,15 @@ namespace Orchard.DisplayManagement.Descriptors
                 ShapeDescriptor descriptor;
                 if (_shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
                 {
-                    ShapeBinding test;
-                    if (descriptor.Bindings.TryGetValue(shapeAlternate, out test))
+                    ShapeBinding shapeBinding;
+                    if (descriptor.Bindings.TryGetValue(shapeAlternate, out shapeBinding))
                     {
                         binding = new ShapeBinding
                         {
                             ShapeDescriptor = descriptor,
-                            BindingName = test.BindingName,
-                            BindingSource = test.BindingSource,
-                            BindingAsync = test.BindingAsync
+                            BindingName = shapeBinding.BindingName,
+                            BindingSource = shapeBinding.BindingSource,
+                            BindingAsync = shapeBinding.BindingAsync
                         };
 
                         return true;
