@@ -35,15 +35,11 @@ namespace Orchard.DependencyInjection
                     {
                         // When a service from the main container is resolved, just add its instance to the container.
                         // It will be shared by all tenant service providers.
+                        clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
 
-                        clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
-                        //clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
-
-                        // https://github.com/aspnet/DependencyInjection/issues/459
-                        if (service.ServiceType.IsAssignableFrom(typeof(IDisposable))) 
-                        {
-                            throw new ArgumentOutOfRangeException($"The type {service.ServiceType} implements IDisposable.");
-                        }
+                        // Ideally the service should be resolved when first requested, but ASp.NET DI will call Dispose()
+                        // and this would fail reusability of the instance across tenants' containers.
+                        //clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
 
                     }
                 }

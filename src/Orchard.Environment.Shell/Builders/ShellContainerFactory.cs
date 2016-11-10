@@ -54,10 +54,6 @@ namespace Orchard.Environment.Shell.Builders
 
             AddCoreServices(tenantServiceCollection);
 
-            // Remove the wrapper when this bug is fixed: https://github.com/aspnet/DependencyInjection/issues/459
-            var nonDisposableLoggerFactory = new NonDisposableLoggerFactoryWrapper(_loggerFactory);
-            tenantServiceCollection.AddSingleton(typeof(ILoggerFactory), nonDisposableLoggerFactory);
-            
             // Configure event handlers, they are not part of the blueprint, so they have
             // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();
