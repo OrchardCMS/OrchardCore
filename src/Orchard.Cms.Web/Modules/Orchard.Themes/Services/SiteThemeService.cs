@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.ContentManagement;
 using Orchard.Environment.Extensions;
 using Orchard.Settings;
 using System;
