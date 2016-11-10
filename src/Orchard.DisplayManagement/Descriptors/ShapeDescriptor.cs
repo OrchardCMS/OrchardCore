@@ -110,7 +110,7 @@ namespace Orchard.DisplayManagement.Descriptors
             Placement = DefaultPlacementAction;
         }
 
-        public PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
+        private PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
             if (DefaultPlacement == null)
