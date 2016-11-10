@@ -96,7 +96,7 @@ namespace Orchard.Setup.Services
             // Features to enable for Setup
             string[] hardcoded =
             {
-                "Orchard.Cms",
+                "Orchard.Commons",
                 "Orchard.Modules",
                 "Orchard.Recipes"
             };

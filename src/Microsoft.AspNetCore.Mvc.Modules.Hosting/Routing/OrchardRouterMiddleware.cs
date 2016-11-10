@@ -43,6 +43,17 @@ namespace Orchard.Hosting.Web.Routing
 
             var shellSettings = (ShellSettings)httpContext.Features[typeof(ShellSettings)];
 
+            // TODO: Invalidate the pipeline automatically when the shell context is changed
+            // such that we can reload the middlewares and the routes. Implement something similar
+            // to IRunningShellTable but for the pipelines.
+
+            // Do we need to rebuild the pipeline ?
+            var rebuildPipeline = httpContext.Items["BuildPipeline"] != null;
+            if (rebuildPipeline && _pipelines.ContainsKey(shellSettings.Name))
+            {
+                _pipelines.Remove(shellSettings.Name);
+            }
+
             RequestDelegate pipeline;
 
             if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))
@@ -56,10 +67,6 @@ namespace Orchard.Hosting.Web.Routing
 
                         if (shellSettings.State == Environment.Shell.Models.TenantState.Running)
                         {
-                            // TODO: Invalidate the pipeline automatically when the shell context is changed
-                            // such that we can reload the middlewares and the routes. Implement something similar
-                            // to IRunningShellTable but for the pipelines.
-
                             _pipelines.Add(shellSettings.Name, pipeline);
                         }
                     }

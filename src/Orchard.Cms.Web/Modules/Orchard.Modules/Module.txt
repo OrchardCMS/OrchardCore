@@ -6,9 +6,9 @@ Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: The Modules module enables the administrator of the site to manage the installed modules as well as activate and de-activate features.
 FeatureDescription: Standard module and feature management.
-Category: Core
+Category: Infrastructure
 Features:
     Orchard.Modules:
         Description: Standard module and feature management.
         Dependencies: Orchard.Resources
-        Category: Core
+		Category: Infrastructure

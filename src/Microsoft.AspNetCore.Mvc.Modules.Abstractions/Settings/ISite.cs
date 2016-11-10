@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.Settings
 {
@@ -18,6 +19,7 @@ namespace Orchard.Settings
         int MaxPagedCount { get; set; }
         string BaseUrl { get; set; }
         RouteValueDictionary HomeRoute { get; set; }
+        JObject Properties { get; set; }
     }
 
 }

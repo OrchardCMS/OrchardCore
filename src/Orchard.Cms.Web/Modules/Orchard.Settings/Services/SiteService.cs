@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.MetaData;
-using Orchard.ContentManagement.Records;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
@@ -13,21 +10,15 @@ namespace Orchard.Settings.Services
     /// </summary>
     public class SiteService : ISiteService
     {
-        private readonly IContentManager _contentManager;
         private readonly IMemoryCache _memoryCache;
         private readonly ISession _session;
 
         private const string SiteCacheKey = "Site";
-        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public SiteService(
             ISession session,
-            IContentManager contentManager,
-            IMemoryCache memoryCache,
-            IContentDefinitionManager contentDefinitionManager)
+            IMemoryCache memoryCache)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _contentManager = contentManager;
             _session = session;
             _memoryCache = memoryCache;
         }
@@ -35,11 +26,11 @@ namespace Orchard.Settings.Services
         /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
         {
-            ContentItem site;
+            ISite site;
 
             if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
             {
-                site = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentType == "Site").FirstOrDefault();
+                site = await _session.QueryAsync<SiteSettings>().FirstOrDefault();
 
                 if (site == null)
                 {
@@ -47,12 +38,8 @@ namespace Orchard.Settings.Services
                     {
                         if (!_memoryCache.TryGetValue(SiteCacheKey, out site))
                         {
-                            // Ensure the content type exists
-                            _contentDefinitionManager.AlterTypeDefinition("Site", builder => { });
-
-                            site = _contentManager.New("Site");
-                            site.Weld(new SiteSettingsPart()
-                            {
+                            site = new SiteSettings
+                            { 
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
                                 PageTitleSeparator = " - ",
@@ -60,9 +47,9 @@ namespace Orchard.Settings.Services
                                 PageSize = 10,
                                 MaxPageSize = 100,
                                 MaxPagedCount = 500
-                            });
+                            };
 
-                            _contentManager.Create(site);
+                            _session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
                         }
                     }
@@ -73,19 +60,38 @@ namespace Orchard.Settings.Services
                 }
             }
 
-            return site.As<SiteSettingsPart>();
+            return site;
         }
 
         /// <inheritdoc/>
-        public Task UpdateSiteSettingsAsync(ISite site)
+        public async Task UpdateSiteSettingsAsync(ISite site)
         {
-            var siteSettingsPart = site as SiteSettingsPart;
-            var contentItem = siteSettingsPart.ContentItem;
-            contentItem.Update(siteSettingsPart);
+            // Load the currently saved object otherwise it would create a new document
+            // as the new session is not tracking the cached object.
+            // TODO: Solve by having an Update method in Session
 
-            _session.Save(contentItem);
-            _memoryCache.Set(SiteCacheKey, contentItem);
-            return Task.CompletedTask;
+            var existing = await _session.QueryAsync<SiteSettings>().FirstOrDefault();
+            
+            existing.BaseUrl = site.BaseUrl;
+            existing.Calendar = site.Calendar;
+            existing.Culture = site.Culture;
+            existing.HomeRoute = site.HomeRoute;
+            existing.MaxPagedCount = site.MaxPagedCount;
+            existing.MaxPageSize = site.MaxPageSize;
+            existing.PageSize = site.PageSize;
+            existing.PageTitleSeparator = site.PageTitleSeparator;
+            existing.Properties = site.Properties;
+            existing.ResourceDebugMode = site.ResourceDebugMode;
+            existing.SiteName = site.SiteName;
+            existing.SiteSalt = site.SiteSalt;
+            existing.SuperUser = site.SuperUser;
+            existing.TimeZone = site.TimeZone;
+            existing.UseCdn = site.UseCdn;
+
+            _session.Save(existing);
+
+            _memoryCache.Set(SiteCacheKey, site);
+            return;
         }
     }
 }

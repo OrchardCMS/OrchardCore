@@ -12,7 +12,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Data;
 using Orchard.ResourceManagement;
 
-namespace Orchard.Cms
+namespace Orchard.Commons
 {
     /// <summary>
     /// These services are registered on the tenant service collection

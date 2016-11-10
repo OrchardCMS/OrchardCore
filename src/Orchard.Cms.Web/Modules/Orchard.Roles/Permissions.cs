@@ -10,8 +10,9 @@ namespace Orchard.Roles
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] {
-                ManageRoles,
+            return new[]
+            {
+                ManageRoles, AssignRoles
             };
         }
 
