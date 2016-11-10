@@ -16,7 +16,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04"
+        "NETStandard.Library": "1.6.1"
       }
     }
   },

@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Handlebars.Net": "1.8.0",
-    "Microsoft.Extensions.DependencyInjection": "1.1.0-preview1-final",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Tokens": "2.0.0-*",
     "Orchard.Tokens.Abstractions": "2.0.0-*"
@@ -19,7 +19,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04"
+        "NETStandard.Library": "1.6.1"
       }
     }
   }

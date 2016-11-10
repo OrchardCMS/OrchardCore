@@ -23,7 +23,7 @@ namespace Orchard.Users.Controllers
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ShellSettings shellSettings,
-            IOptions<IdentityCookieOptions> identityCookieOptions)
+            IOptions<IdentityCookieOptions> identityCookieOptions,
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;

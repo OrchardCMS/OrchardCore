@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.1-preview1-24530-04",
+    "NETStandard.Library": "1.6.1",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*"
   },

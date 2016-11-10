@@ -1,13 +1,13 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Diagnostics": "1.1.0-preview1-final",
-    "Microsoft.AspNetCore.Http": "1.1.0-preview1-final",
-    "Microsoft.AspNetCore.Mvc": "1.1.0-preview1-final",
-    "Microsoft.AspNetCore.Routing": "1.1.0-preview1-final",
-    "Microsoft.AspNetCore.StaticFiles": "1.1.0-preview1-final",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-preview1-final",
-    "Microsoft.Extensions.Logging": "1.1.0-preview1-final",
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
+    "Microsoft.AspNetCore.Http": "1.1.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.AspNetCore.Routing": "1.1.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
@@ -26,7 +26,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04",
+        "NETStandard.Library": "1.6.1",
         "System.Diagnostics.Process": "4.1.0-*"
       }
     }

@@ -1,7 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0-preview1-final",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
     "Orchard.DependencyInjection": "2.0.0-*"
   },
   "buildOptions": {
@@ -16,7 +16,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04",
+        "NETStandard.Library": "1.6.1",
         "System.Reflection.DispatchProxy": "4.0.1-*"
       }
     }

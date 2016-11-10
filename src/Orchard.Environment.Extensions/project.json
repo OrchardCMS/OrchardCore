@@ -1,9 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc.Razor": "1.1.0-preview1-final",
-    "Microsoft.Extensions.Caching.Abstractions": "1.1.0-preview1-final",
-    "Microsoft.Extensions.Options": "1.1.0-preview1-final",
+    "Microsoft.AspNetCore.Mvc.Razor": "1.1.0",
+    "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Options": "1.1.0",
     "Microsoft.DotNet.ProjectModel": "1.0.0-rc3-*",
     "Microsoft.DotNet.ProjectModel.Loader": "1.0.0-preview2-*",
     "Microsoft.DotNet.Cli.Utils": "1.0.0-preview2-*",
@@ -28,7 +28,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04"
+        "NETStandard.Library": "1.6.1"
       }
     }
   },

@@ -1,7 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-preview1-final",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "System.Dynamic.Runtime": "4.3.0-preview1-24530-04"
   },
   "buildOptions": {
@@ -15,7 +15,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1-preview1-24530-04"
+        "NETStandard.Library": "1.6.1"
       }
     }
   }
