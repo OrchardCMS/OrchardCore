@@ -39,24 +39,24 @@ namespace Orchard.Environment.Shell
 
         public IEnumerable<IFeatureInfo> EnableFeatures(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
-            List<ShellFeature> enabledFeatures = shellDescriptor.Features.ToList();
-
             var extensions = _extensionManager.GetExtensions();
-            
+            var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor);
+
             IDictionary<IFeatureInfo, bool> availableFeatures = extensions
                 .Features
                 .ToDictionary(featureDescriptor => featureDescriptor,
-                                featureDescriptor => enabledFeatures.FirstOrDefault(shellFeature => shellFeature.Id == featureDescriptor.Id) != null);
+                              featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
 
             IEnumerable<IFeatureInfo> featuresToEnable = features
-                .Select(feature => EnableFeature(feature, availableFeatures, false)).ToList()
+                .Select(feature => EnableFeature(feature, availableFeatures, false))
                 .SelectMany(ies => ies.Select(s => s));
 
             if (featuresToEnable.Any())
             {
+                shellDescriptor.Features.Clear();
                 foreach (var feature in featuresToEnable)
                 {
-                    enabledFeatures.Add(new ShellFeature(feature.Id));
+                    shellDescriptor.Features.Add(new ShellFeature(feature.Id));
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
                         _logger.LogInformation("{0} was enabled", feature.Id);
@@ -65,7 +65,7 @@ namespace Orchard.Environment.Shell
 
                 _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatures,
+                    shellDescriptor.Features,
                     shellDescriptor.Parameters);
             }
 
@@ -99,11 +99,14 @@ namespace Orchard.Environment.Shell
 
             if (featuresToDisable.Any())
             {
-                List<ShellFeature> enabledFeatures = shellDescriptor.Features.ToList();
+                var extensions = _extensionManager.GetExtensions();
+                var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor).ToList();
 
                 foreach (IFeatureInfo feature in featuresToDisable)
                 {
-                    enabledFeatures.RemoveAll(shellFeature => shellFeature.Id == feature.Id);
+                    enabledFeatures
+                        .RemoveAll(shellFeature => shellFeature.Id == feature.Id);
+
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
                         _logger.LogInformation("{0} was disabled", feature.Id);
@@ -134,10 +137,9 @@ namespace Orchard.Environment.Shell
                                 f.Key.Dependencies.Contains(currentFeatureId)
                                )
                         .ToDictionary(f => f.Key, f => f.Value));
-            
-            var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor).ToList();
 
             var extensions = _extensionManager.GetExtensions();
+            var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor);
 
             IDictionary<IFeatureInfo, bool> availableFeatures = extensions
                 .Features
