@@ -66,7 +66,7 @@ namespace Orchard.Environment.Shell
                 _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
                     enabledFeatures,
-                    shellDescriptor.Parameters);
+                    shellDescriptor.Parameters).Wait();
             }
 
             return featuresToEnable;
@@ -113,7 +113,7 @@ namespace Orchard.Environment.Shell
                 _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
                     enabledFeatures.Select(x => new ShellFeature(x.Id)),
-                    shellDescriptor.Parameters);
+                    shellDescriptor.Parameters).Wait();
             }
 
             return featuresToDisable;
