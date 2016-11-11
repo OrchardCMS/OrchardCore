@@ -60,14 +60,11 @@ namespace Orchard.DisplayManagement.Descriptors
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id)
-                    .Distinct().ToList();
+                var excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id).Distinct().ToList();
 
-                IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    Feature strategyDefaultFeature =
-                        _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    Feature strategyDefaultFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyDefaultFeature.Descriptor.Id))
                         continue;
@@ -126,10 +123,6 @@ namespace Orchard.DisplayManagement.Descriptors
             return shapeDescriptor.Value.Feature.Descriptor.Priority;
         }
 
-        private static int GetPriority(ShapeAlteration shapeAlteration)
-        {
-            return shapeAlteration.Feature.Descriptor.Priority;
-        }
         private bool DescriptorHasDependency(KeyValuePair<int, FeatureShapeDescriptor> item, KeyValuePair<int, FeatureShapeDescriptor> subject)
         {
             return _extensionManager.HasDependency(item.Value.Feature.Descriptor, subject.Value.Feature.Descriptor);
