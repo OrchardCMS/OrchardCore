@@ -8,20 +8,21 @@ namespace Orchard.DisplayManagement.Descriptors
     public class ShapeTable
     {
         public IDictionary<string, ShapeDescriptor> Descriptors { get; set; }
-        public IDictionary<string, ShapeBinding> ShapeBindings { get; set; }
 
         public IDictionary<string, ShapeBinding> Bindings
         {
-            get { return new TableBindings(this); }
+            get { return new ShapeTableBindings(this); }
 
             set { ShapeBindings = value; }
         }
 
-        public class TableBindings : IDictionary<string, ShapeBinding>
+        public IDictionary<string, ShapeBinding> ShapeBindings { get; set; }
+
+        public class ShapeTableBindings : IDictionary<string, ShapeBinding>
         {
             private ShapeTable _shapeTable;
 
-            public TableBindings(ShapeTable shapeTable)
+            public ShapeTableBindings(ShapeTable shapeTable)
             {
                 _shapeTable = shapeTable;
             }
