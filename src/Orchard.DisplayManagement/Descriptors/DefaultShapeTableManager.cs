@@ -60,7 +60,8 @@ namespace Orchard.DisplayManagement.Descriptors
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id).Distinct().ToList();
+                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id).Distinct().ToList();
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
