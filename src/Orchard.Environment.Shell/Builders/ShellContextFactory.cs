@@ -4,6 +4,7 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -26,32 +27,32 @@ namespace Orchard.Environment.Shell.Builders
             _logger = logger;
         }
 
-        ShellContext IShellContextFactory.CreateShellContext(ShellSettings settings)
+        async Task<ShellContext> IShellContextFactory.CreateShellContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Creating shell context for tenant {0}", settings.Name);
             }
 
-            var describedContext = CreateDescribedContext(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
             ShellDescriptor currentDescriptor;
             using (var scope = describedContext.CreateServiceScope())
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
-                currentDescriptor = shellDescriptorManager.GetShellDescriptorAsync().Result;
+                currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
             }
 
             if (currentDescriptor != null)
             {
-                return CreateDescribedContext(settings, currentDescriptor);
+                return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
             return describedContext;
         }
 
         // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
-        ShellContext IShellContextFactory.CreateSetupContext(ShellSettings settings)
+        async Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -66,17 +67,17 @@ namespace Orchard.Environment.Shell.Builders
                 }
             };
 
-            return CreateDescribedContext(settings, descriptor);
+            return await CreateDescribedContextAsync(settings, descriptor);
         }
 
-        public ShellContext CreateDescribedContext(ShellSettings settings, ShellDescriptor shellDescriptor)
+        public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating described context for tenant {0}", settings.Name);
             }
 
-            var blueprint = _compositionStrategy.Compose(settings, shellDescriptor);
+            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
             return new ShellContext

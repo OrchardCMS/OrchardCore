@@ -206,24 +206,24 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return new ExtensionInfoList(_features.ToDictionary(x => x.Extension.Id, y => y.Extension));
             }
 
-            public ExtensionEntry LoadExtension(IExtensionInfo extensionInfo)
+            public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
             {
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos)
+            public Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos)
             {
                 throw new NotImplementedException();
             }
 
-            public FeatureEntry LoadFeature(IFeatureInfo feature)
+            public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
             {
-                return new NonCompiledFeatureEntry(feature);
+                return Task.FromResult((FeatureEntry) new NonCompiledFeatureEntry(feature));
             }
 
-            public IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features)
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
-                return features.Select(x => new NonCompiledFeatureEntry(x));
+                return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
         }
 

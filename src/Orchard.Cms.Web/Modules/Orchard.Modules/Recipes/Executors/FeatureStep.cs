@@ -30,7 +30,7 @@ namespace Orchard.Modules.Recipes.Executors
             get { return "Feature"; }
         }
 
-        public override Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
@@ -59,9 +59,9 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
                 }
 
-                var featuresToDisable = extensions.Features.Where(x => step.Disable.Contains(x.Id));
+                var featuresToDisable = extensions.Features.Where(x => step.Disable.Contains(x.Id)).ToList();
 
-                _shellFeatureManager.DisableFeatures(featuresToDisable, true);
+                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
             }
 
             if (step.Enable.Any())
@@ -71,12 +71,12 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
                 }
 
-                var featuresToEnable = extensions.Features.Where(x => step.Enable.Contains(x.Id));
+                var featuresToEnable = extensions.Features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
-                _shellFeatureManager.EnableFeatures(featuresToEnable, true);
+                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
 
         private class InternalStep {

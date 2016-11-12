@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
@@ -17,6 +12,10 @@ using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Setup.Services
@@ -125,7 +124,7 @@ namespace Orchard.Setup.Services
                 Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
             };
 
-            using (var shellContext = _shellContextFactory.CreateDescribedContext(shellSettings, shellDescriptor))
+            using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {
@@ -181,7 +180,7 @@ namespace Orchard.Setup.Services
             }
 
             // Reloading the shell context as the recipe  has probably updated its features
-            using (var shellContext = _orchardHost.CreateShellContext(shellSettings))
+            using (var shellContext = await _orchardHost.CreateShellContextAsync(shellSettings))
             {
                 using (var scope = shellContext.CreateServiceScope())
                 {

@@ -7,12 +7,13 @@ using Orchard.Environment.Shell.State;
 using Orchard.Events;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
     public interface IShellStateUpdater
     {
-        void ApplyChanges();
+        Task ApplyChanges();
     }
 
     public class ShellStateUpdater : IShellStateUpdater
@@ -41,14 +42,14 @@ namespace Orchard.Environment.Shell
 
         public ILogger Logger { get; set; }
 
-        public void ApplyChanges()
+        public async Task ApplyChanges()
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
                 Logger.LogInformation("Applying changes for for shell '{0}'", _settings.Name);
             }
 
-            var shellState = _stateManager.GetShellStateAsync().Result;
+            var shellState = await _stateManager.GetShellStateAsync();
 
             // start with description of all declared features in order - order preserved with all merging
             var orderedFeatureDescriptors = _extensionManager.GetExtensions().Features;
@@ -64,8 +65,8 @@ namespace Orchard.Environment.Shell
                 .ToArray();
 
             // get loaded feature information
-            var loadedFeatures = _extensionManager.LoadFeatures(
-                orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor)).ToArray();
+            var loadedFeatures = (await _extensionManager.LoadFeaturesAsync(
+                orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor))).ToArray();
 
             // merge loaded feature information into ordered list
             var loadedEntries = orderedFeatureDescriptorsAndStates.Select(

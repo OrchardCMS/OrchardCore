@@ -14,7 +14,6 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -74,8 +73,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var activeExtensions = Once(
-                _shellFeaturesManager.EnabledFeatures());
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+
+            var activeExtensions = Once(enabledFeatures);
 
             var matcher = new Matcher();
             foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))

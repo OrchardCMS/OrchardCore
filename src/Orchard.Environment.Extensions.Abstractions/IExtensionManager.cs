@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions
 {
@@ -8,10 +9,10 @@ namespace Orchard.Environment.Extensions
     {
         IExtensionInfo GetExtension(string extensionId);
         IExtensionInfoList GetExtensions();
-        ExtensionEntry LoadExtension(IExtensionInfo extensionInfo);
-        IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos);
+        Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
+        Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos);
 
-        FeatureEntry LoadFeature(IFeatureInfo feature);
-        IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features);
+        Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature);
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features);
     }
 }

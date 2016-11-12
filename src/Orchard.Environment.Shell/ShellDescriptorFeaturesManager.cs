@@ -7,6 +7,7 @@ using Orchard.Environment.Shell.Descriptor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
@@ -32,15 +33,15 @@ namespace Orchard.Environment.Shell
         }
         public IStringLocalizer T { get; set; }
 
-        public IEnumerable<IFeatureInfo> EnableFeatures(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
+        public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
         {
-            return EnableFeatures(shellDescriptor, features, false);
+            return await EnableFeaturesAsync(shellDescriptor, features, false);
         }
 
-        public IEnumerable<IFeatureInfo> EnableFeatures(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
+        public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
             var extensions = _extensionManager.GetExtensions();
-            var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor);
+            var enabledFeatures = _extensionManager.GetEnabledFeatures(shellDescriptor).ToList();
 
             IDictionary<IFeatureInfo, bool> availableFeatures = extensions
                 .Features
@@ -49,21 +50,21 @@ namespace Orchard.Environment.Shell
 
             IEnumerable<IFeatureInfo> featuresToEnable = features
                 .Select(feature => EnableFeature(feature, availableFeatures, false))
-                .SelectMany(ies => ies.Select(s => s));
+                .SelectMany(ies => ies)
+                .Distinct();
 
             if (featuresToEnable.Any())
             {
-                shellDescriptor.Features.Clear();
-                foreach (var feature in featuresToEnable)
+                enabledFeatures.AddRange(featuresToEnable);
+
+                if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    shellDescriptor.Features.Add(new ShellFeature(feature.Id));
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation("{0} was enabled", feature.Id);
-                    }
+                    _logger.LogInformation("Enabling features {0}", string.Join(",", featuresToEnable.Select(x => x.Id)));
                 }
 
-                _shellDescriptorManager.UpdateShellDescriptorAsync(
+                shellDescriptor.Features = enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList();
+
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
                     shellDescriptor.Features,
                     shellDescriptor.Parameters);
@@ -77,9 +78,9 @@ namespace Orchard.Environment.Shell
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <returns>An enumeration with the disabled feature IDs.</returns>
-        public IEnumerable<IFeatureInfo> DisableFeatures(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
+        public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
         {
-            return DisableFeatures(shellDescriptor, features, false);
+            return await DisableFeaturesAsync(shellDescriptor, features, false);
         }
 
         /// <summary>
@@ -88,19 +89,19 @@ namespace Orchard.Environment.Shell
         /// <param name="features">The features to be disabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
         /// <returns>An enumeration with the disabled feature IDs.</returns>
-        public IEnumerable<IFeatureInfo> DisableFeatures(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
+        public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
             var featuresToDisable = new List<IFeatureInfo>();
             foreach (var feature in features)
             {
-                var disabled = DisableFeature(shellDescriptor, feature, force);
+                var disabled = await DisableFeatureAsync(shellDescriptor, feature, force);
                 featuresToDisable.AddRange(disabled);
             }
 
             if (featuresToDisable.Any())
             {
                 var extensions = _extensionManager.GetExtensions();
-                var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor).ToList();
+                var enabledFeatures = _extensionManager.GetEnabledFeatures(shellDescriptor).ToList();
 
                 foreach (IFeatureInfo feature in featuresToDisable)
                 {
@@ -113,9 +114,11 @@ namespace Orchard.Environment.Shell
                     }
                 }
 
-                _shellDescriptorManager.UpdateShellDescriptorAsync(
+                shellDescriptor.Features = enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList();
+
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
-                    enabledFeatures.Select(x => new ShellFeature(x.Id)),
+                    shellDescriptor.Features,
                     shellDescriptor.Parameters);
             }
 
@@ -127,7 +130,7 @@ namespace Orchard.Environment.Shell
         /// </summary>
         /// <param name="featureId">feature to check.</param>
         /// <returns>An enumeration with dependent feature IDs.</returns>
-        public IEnumerable<string> GetDependentFeatures(ShellDescriptor shellDescriptor, string featureId)
+        public async Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId)
         {
             var getEnabledDependants =
                 new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
@@ -139,14 +142,16 @@ namespace Orchard.Environment.Shell
                         .ToDictionary(f => f.Key, f => f.Value));
 
             var extensions = _extensionManager.GetExtensions();
-            var enabledFeatures = _extensionManager.EnabledFeatures(shellDescriptor);
+            var enabledFeatures = _extensionManager.GetEnabledFeatures(shellDescriptor);
 
             IDictionary<IFeatureInfo, bool> availableFeatures = extensions
                 .Features
                 .ToDictionary(featureDescriptor => featureDescriptor,
                                 featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
 
-            return GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
+            var affectedFeastures = GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
+
+            return await Task.FromResult(affectedFeastures);
         }
 
         /// <summary>
@@ -219,10 +224,10 @@ namespace Orchard.Environment.Shell
         /// <param name="featureId">The ID of the feature to be enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
         /// <returns>An enumeration of the disabled features.</returns>
-        private IEnumerable<IFeatureInfo> DisableFeature(ShellDescriptor shellDescriptor, IFeatureInfo featureInfo, bool force)
+        private async Task<IEnumerable<IFeatureInfo>> DisableFeatureAsync(ShellDescriptor shellDescriptor, IFeatureInfo featureInfo, bool force)
         {
             IEnumerable<string> affectedFeatures = 
-                GetDependentFeatures(shellDescriptor, featureInfo.Id);
+                await GetDependentFeaturesAsync(shellDescriptor, featureInfo.Id);
 
             var featuresToDisable = _extensionManager
                 .GetExtensions()

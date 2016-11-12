@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Cache;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
+using Orchard.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,20 +25,17 @@ namespace Orchard.Environment.Extensions
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
-        // TODO (ngm) value providers not thread safe...
-        private readonly ConcurrentDictionary<string, ExtensionEntry> _extensions 
-            = new ConcurrentDictionary<string, ExtensionEntry>();
+        private readonly AsyncCache _extensions;
+        private readonly AsyncCache _features;
 
         private readonly ConcurrentDictionary<string, IExtensionInfo> _extensionsById
             = new ConcurrentDictionary<string, IExtensionInfo>();
-
-        private readonly ConcurrentDictionary<string, FeatureEntry> _features 
-            = new ConcurrentDictionary<string, FeatureEntry>();
 
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
+            IClock clock,
             IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
@@ -45,6 +44,10 @@ namespace Orchard.Environment.Extensions
             _extensionOptions = optionsAccessor.Value;
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
+
+            _extensions = new AsyncCache(() => clock.UtcNow, TimeSpan.FromHours(1));
+            _features = new AsyncCache(() => clock.UtcNow, TimeSpan.FromHours(1));
+
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -66,14 +69,14 @@ namespace Orchard.Environment.Extensions
             return new ExtensionInfoList(_extensionsById);
         }
 
-        public ExtensionEntry LoadExtension(IExtensionInfo extensionInfo)
+        public async Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
 
             try
             {
-                return _extensions.GetOrAdd(extensionInfo.Id, id =>
+                return await _extensions.Get(extensionInfo.Id, id =>
                 {
                     var extension = _extensionLoader.Load(extensionInfo);
                     
@@ -82,7 +85,7 @@ namespace Orchard.Environment.Extensions
                         _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
                     }
 
-                    return extension;
+                    return Task.FromResult(extension);
                 });
             }
             catch (Exception ex)
@@ -92,33 +95,34 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos) {
+        public async Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos) {
             var extensionEntries = new ConcurrentBag<ExtensionEntry>();
 
-            Parallel.ForEach(extensionInfos, extension =>
+            Parallel.ForEach(extensionInfos, async extensionInfo =>
             {
                 try
                 {
-                    extensionEntries.Add(LoadExtension(extension));
+                    var extension = await LoadExtensionAsync(extensionInfo);
+                    extensionEntries.Add(extension);
                 }
                 catch (Exception e)
                 {
-                    extensionEntries.Add(new FailedExtensionEntry { Exception = e, ExtensionInfo = extension });
+                    extensionEntries.Add(new FailedExtensionEntry { Exception = e, ExtensionInfo = extensionInfo });
                 }
             });
 
-            return extensionEntries;
+            return await Task.FromResult(extensionEntries);
         }
 
-        public FeatureEntry LoadFeature(IFeatureInfo feature)
+        public async Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            return _features.GetOrAdd(feature.Id, (key) =>
+            return await _features.Get(feature.Id, (key) =>
             {
-                var loadedExtension = LoadExtension(feature.Extension);
+                var loadedExtension = LoadExtensionAsync(feature.Extension).Result;
 
                 if (loadedExtension == null)
                 {
-                    return new NonCompiledFeatureEntry(feature);
+                    return Task.FromResult<FeatureEntry>(new NonCompiledFeatureEntry(feature));
                 }
 
                 var extensionTypes = loadedExtension
@@ -137,27 +141,32 @@ namespace Orchard.Environment.Extensions
                     }
                 }
 
-                return new CompiledFeatureEntry(feature, featureTypes);
+                return Task.FromResult<FeatureEntry>(new CompiledFeatureEntry(feature, featureTypes));
             });
         }
 
-        public IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features)
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Loading features");
             }
 
-            var result = features
-                .Select(descriptor => LoadFeature(descriptor))
-                .ToArray();
+            var featuresToReturn =
+                new List<FeatureEntry>();
+
+            foreach (var feature in features)
+            {
+                var featureToReturn = await LoadFeatureAsync(feature);
+                featuresToReturn.Add(featureToReturn);
+            }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Done loading features");
             }
 
-            return result;
+            return featuresToReturn;
         }
 
         private void InitializeExtensions()

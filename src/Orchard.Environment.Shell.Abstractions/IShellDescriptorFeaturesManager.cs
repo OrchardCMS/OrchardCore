@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Descriptor.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
@@ -8,14 +9,14 @@ namespace Orchard.Environment.Shell
 
     public interface IShellDescriptorFeaturesManager
     {
-        IEnumerable<IFeatureInfo> EnableFeatures(
+        Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features);
-        IEnumerable<IFeatureInfo> EnableFeatures(
+        Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force);
-        IEnumerable<IFeatureInfo> DisableFeatures(
+        Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features);
-        IEnumerable<IFeatureInfo> DisableFeatures(
+        Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force);
-        IEnumerable<string> GetDependentFeatures(ShellDescriptor shellDescriptor, string featureId);
+        Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId);
     }
 }

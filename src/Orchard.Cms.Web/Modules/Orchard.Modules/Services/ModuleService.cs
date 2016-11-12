@@ -39,12 +39,17 @@ namespace Orchard.Modules.Services
         /// Retrieves an enumeration of the available features together with its state (enabled / disabled).
         /// </summary>
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
-        public async Task<IEnumerable<ModuleFeature>> GetAvailableFeatures()
+        public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
         {
-            var currentShellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
+            var currentShellDescriptor = await _shellDescriptorManager
+                .GetShellDescriptorAsync();
+
             var enabledFeatures = currentShellDescriptor.Features;
-            return _extensionManager
-                .LoadFeatures(_extensionManager.GetExtensions().Features)
+
+            var loadedFeatures = await _extensionManager
+                .LoadFeaturesAsync(_extensionManager.GetExtensions().Features);
+
+            return loadedFeatures
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
                     .Any(sf => sf.Id == f.FeatureInfo.Id)));
         }
@@ -53,9 +58,9 @@ namespace Orchard.Modules.Services
         /// Enables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be enabled.</param>
-        public void EnableFeatures(IEnumerable<string> featureIds)
+        public Task EnableFeaturesAsync(IEnumerable<string> featureIds)
         {
-            EnableFeatures(featureIds, false);
+            return EnableFeaturesAsync(featureIds, false);
         }
 
         /// <summary>
@@ -63,14 +68,14 @@ namespace Orchard.Modules.Services
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
-        public void EnableFeatures(IEnumerable<string> featureIds, bool force)
+        public async Task EnableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
             var featuresToEnable = _extensionManager
                 .GetExtensions()
                 .Features
                 .Where(x => featureIds.Contains(x.Id));
 
-            var enabledFeatures = _shellFeaturesManager.EnableFeatures(featuresToEnable, force);
+            var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
                 _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
@@ -81,9 +86,9 @@ namespace Orchard.Modules.Services
         /// Disables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
-        public void DisableFeatures(IEnumerable<string> featureIds)
+        public Task DisableFeaturesAsync(IEnumerable<string> featureIds)
         {
-            DisableFeatures(featureIds, false);
+            return DisableFeaturesAsync(featureIds, false);
         }
 
         /// <summary>
@@ -91,14 +96,14 @@ namespace Orchard.Modules.Services
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
-        public void DisableFeatures(IEnumerable<string> featureIds, bool force)
+        public async Task DisableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
             var featuresToDisable = _extensionManager
                 .GetExtensions()
                 .Features
                 .Where(x => featureIds.Contains(x.Id));
 
-            var features = _shellFeaturesManager.DisableFeatures(featuresToDisable, force);
+            var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
                 _notifier.Success(T["{0} was disabled", feature.Name]);
@@ -123,9 +128,9 @@ namespace Orchard.Modules.Services
         //    return DateTime.UtcNow.Subtract(lastWrittenUtc) < new TimeSpan(1, 0, 0, 0);
         //}
 
-        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
+        public async Task<IEnumerable<IFeatureInfo>> GetDependentFeaturesAsync(string featureId)
         {
-            var dependants = _shellFeaturesManager.GetDependentFeatures(featureId);
+            var dependants = await _shellFeaturesManager.GetDependentFeaturesAsync(featureId);
 
             return _extensionManager
                 .GetExtensions()

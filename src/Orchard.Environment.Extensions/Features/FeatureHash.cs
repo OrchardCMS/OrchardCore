@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Orchard.Environment.Cache;
 using Orchard.Environment.Shell;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -23,7 +24,7 @@ namespace Orchard.Environment.Extensions.Features
             _signal = signal;
         }
 
-        public int GetFeatureHash()
+        public async Task<int> GetFeatureHashAsync()
         {
             int serial;
             if (_memoryCache.TryGetValue(FeatureHashCacheKey, out serial))
@@ -32,7 +33,8 @@ namespace Orchard.Environment.Extensions.Features
             }
 
             // Calculate a hash of all enabled features' id
-            serial = _featureManager.EnabledFeatures()
+            var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+            serial = enabledFeatures
                 .OrderBy(x => x.Id)
                 .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
 
@@ -44,14 +46,15 @@ namespace Orchard.Environment.Extensions.Features
             return serial;
         }
 
-        public int GetFeatureHash(string featureId)
+        public async Task<int> GetFeatureHashAsync(string featureId)
         {
             var cacheKey = FeatureHashCacheKey + ":" + featureId;
             bool enabled;
             if (!_memoryCache.TryGetValue(cacheKey, out enabled))
             {
-                enabled = 
-                    _featureManager.EnabledFeatures()
+                var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+                enabled =
+                    enabledFeatures
                         .Any(x => x.Id.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()
@@ -59,7 +62,6 @@ namespace Orchard.Environment.Extensions.Features
 
                 _memoryCache.Set(cacheKey, enabled, options);
             }
-
 
             return enabled ? 1 : 0;
         }

@@ -58,7 +58,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             using (logger.BeginScope("Loading extensions"))
             {
-                var extensionEntries = extensionManager.LoadExtensions(availableExtensions);
+                var extensionEntries = extensionManager
+                    .LoadExtensionsAsync(availableExtensions)
+                    .Result;
 
                 foreach (var assemblyPart in extensionEntries
                     .Where(x => x.GetType() != typeof(FailedExtensionEntry))

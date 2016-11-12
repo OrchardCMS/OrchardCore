@@ -3,6 +3,7 @@ using System;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Tests.Stubs
 {
@@ -18,22 +19,22 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public ExtensionEntry LoadExtension(IExtensionInfo extensionInfo)
+        public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ExtensionEntry> LoadExtensions(IEnumerable<IExtensionInfo> extensionInfos)
+        public Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos)
         {
             throw new NotImplementedException();
         }
 
-        public FeatureEntry LoadFeature(IFeatureInfo feature)
+        public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FeatureEntry> LoadFeatures(IEnumerable<IFeatureInfo> features)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
         {
             throw new NotImplementedException();
         }

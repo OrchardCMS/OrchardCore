@@ -95,7 +95,7 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for shell '{0}'", _settings.Name);
                     }
 
-                    shellStateUpdater.ApplyChanges();
+                    await shellStateUpdater.ApplyChanges();
                 }
             });
         }
