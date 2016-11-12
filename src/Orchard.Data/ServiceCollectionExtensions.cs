@@ -1,7 +1,10 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
@@ -27,6 +30,7 @@ namespace Orchard.Data
             services.AddSingleton<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
+                var hostingEnvironment = sp.GetService<IHostingEnvironment>();
 
                 if (shellSettings.DatabaseProvider == null)
                 {
@@ -42,13 +46,13 @@ namespace Orchard.Data
                         connectionFactory = new DbConnectionFactory<SqlConnection>(shellSettings.ConnectionString);
                         isolationLevel = IsolationLevel.ReadUncommitted;
                         break;
-                    //case "Sqlite":
-                    //    var databaseFolder = Path.Combine(_hostingEnvironment.ContentRootPath, "App_Data", "Sites", shellSettings.Name);
-                    //    var databaseFile = Path.Combine(databaseFolder, "yessql.db");
-                    //    Directory.CreateDirectory(databaseFolder);
-                    //    connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared", false);
-                    //    isolationLevel = IsolationLevel.ReadUncommitted;
-                    //    break;
+                    case "Sqlite":
+                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, "App_Data", "Sites", shellSettings.Name);
+                        var databaseFile = Path.Combine(databaseFolder, "yessql.db");
+                        Directory.CreateDirectory(databaseFolder);
+                        connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
+                        isolationLevel = IsolationLevel.ReadUncommitted;
+                        break;
                     default:
                         throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
                 }
