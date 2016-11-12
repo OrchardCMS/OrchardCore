@@ -16,5 +16,10 @@ namespace Orchard.Environment.Extensions.Models
         {
             return string.Equals(extensionType, Theme, StringComparison.OrdinalIgnoreCase);
         }
+
+        public static bool IsCore(string extensionType)
+        {
+            return String.IsNullOrEmpty(extensionType);
+        }
     }
 }

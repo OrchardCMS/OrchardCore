@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.Environment.Extensions.Features;
@@ -12,7 +13,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableProvider
+    public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
         private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;
@@ -30,7 +31,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            foreach (var featureDescriptor in _featureManager.GetEnabledFeaturesAsync().Result)
+            var featureDescriptors = _featureManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
+
+            foreach (var featureDescriptor in featureDescriptors)
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }

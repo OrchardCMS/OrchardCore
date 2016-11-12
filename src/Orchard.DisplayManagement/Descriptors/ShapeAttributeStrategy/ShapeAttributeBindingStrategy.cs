@@ -17,10 +17,11 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
-    public class ShapeAttributeBindingStrategy : IShapeTableProvider
+    public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -46,6 +47,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             foreach (var shapeProvider in _shapeProviders)
             {
                 var serviceType = shapeProvider.GetType();
+
+                Feature feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
+                if (builder.ExcludedFeatureIds.Contains(feature.Descriptor.Id))
+                    continue;
 
                 foreach (var method in serviceType.GetMethods())
                 {

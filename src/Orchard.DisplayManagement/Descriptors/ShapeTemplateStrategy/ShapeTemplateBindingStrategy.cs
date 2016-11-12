@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,16 +19,10 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.FileSystem;
 using Orchard.Environment.Extensions.Models;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    public class ShapeTemplateBindingStrategy : IShapeTableProvider
+    public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
@@ -66,7 +66,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result.ToList();
+            var activeFeatures = _featureManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
+
             var activeExtensions = Once(activeFeatures).ToList();
 
             var matcher = new Matcher();

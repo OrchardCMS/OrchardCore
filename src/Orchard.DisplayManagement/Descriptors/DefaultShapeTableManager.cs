@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
@@ -6,10 +10,6 @@ using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
 using Orchard.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -19,8 +19,11 @@ namespace Orchard.DisplayManagement.Descriptors
     /// </summary>
     public class DefaultShapeTableManager : IShapeTableManager
     {
+        private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
+
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
+        private readonly IFeatureManager _featureManager;
         private readonly IEventBus _eventBus;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
@@ -30,6 +33,7 @@ namespace Orchard.DisplayManagement.Descriptors
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IExtensionManager extensionManager,
+            IFeatureManager featureManager,
             IEventBus eventBus,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
@@ -37,6 +41,7 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             _bindingStrategies = bindingStrategies;
             _extensionManager = extensionManager;
+            _featureManager = featureManager;
             _eventBus = eventBus;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -50,57 +55,55 @@ namespace Orchard.DisplayManagement.Descriptors
             ShapeTable shapeTable;
             if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
             {
-
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Start building shape table");
                 }
-                IList<IReadOnlyList<ShapeAlteration>> alterationSets = new List<IReadOnlyList<ShapeAlteration>>();
+
+                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id).Distinct().ToList();
+
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    Feature strategyDefaultFeature =
-                        _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    Feature strategyDefaultFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
-                    var builder = new ShapeTableBuilder(strategyDefaultFeature);
+                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyDefaultFeature.Descriptor.Id))
+                        continue;
 
+                    var builder = new ShapeTableBuilder(strategyDefaultFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
-
                     var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
-                    if (builtAlterations.Any())
+
+                    foreach (var alteration in builtAlterations)
                     {
-                        alterationSets.Add(builtAlterations);
+                        var key = (bindingStrategy.GetType().Name + ":"
+                            + alteration.Feature.Descriptor.Id + ":"
+                            + alteration.ShapeType).ToLower().GetHashCode();
+
+                        var descriptor = new FeatureShapeDescriptor(alteration.Feature, alteration.ShapeType);
+
+                        alteration.Alter(descriptor);
+                        _shapeDescriptors[key] = descriptor;
                     }
                 }
 
-                var alterations = alterationSets
-                .SelectMany(shapeAlterations => shapeAlterations)
-                .Where(alteration => IsModuleOrRequestedTheme(alteration, themeName))
-                .OrderByDependenciesAndPriorities(AlterationHasDependency, GetPriority)
-                .ToList();
+                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
 
-                var descriptors = alterations.GroupBy(alteration => alteration.ShapeType, StringComparer.OrdinalIgnoreCase)
-                    .Select(group => group.Aggregate(
-                        new ShapeDescriptor { ShapeType = group.Key },
-                        (descriptor, alteration) =>
-                        {
-                            alteration.Alter(descriptor);
-                            return descriptor;
-                        })).ToList();
-
-                foreach (var descriptor in descriptors)
-                {
-                    foreach (var alteration in alterations.Where(a => a.ShapeType == descriptor.ShapeType).ToList())
-                    {
-                        var local = new ShapeDescriptor { ShapeType = descriptor.ShapeType };
-                        alteration.Alter(local);
-                        descriptor.BindingSources.Add(local.BindingSource);
-                    }
-                }
+                var descriptors = _shapeDescriptors
+                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
+                    .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
+                    .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
+                        .Select(group => new ShapeDescriptorIndex
+                        (
+                            shapeType: group.Key,
+                            alterationKeys: group.Select(kv => kv.Key),
+                            descriptors: _shapeDescriptors
+                        ));
 
                 shapeTable = new ShapeTable
                 {
-                    Descriptors = descriptors.ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
-                    Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase),
+                    Descriptors = descriptors.Cast<ShapeDescriptor>().ToDictionary(sd => sd.ShapeType, StringComparer.OrdinalIgnoreCase),
+                    Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 };
 
                 //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
@@ -116,29 +119,40 @@ namespace Orchard.DisplayManagement.Descriptors
             return shapeTable;
         }
 
-        private static int GetPriority(ShapeAlteration shapeAlteration)
+        private static int GetPriority(KeyValuePair<int, FeatureShapeDescriptor> shapeDescriptor)
         {
-            return shapeAlteration.Feature.Descriptor.Priority;
+            return shapeDescriptor.Value.Feature.Descriptor.Priority;
         }
 
-        private bool AlterationHasDependency(ShapeAlteration item, ShapeAlteration subject)
+        private bool DescriptorHasDependency(KeyValuePair<int, FeatureShapeDescriptor> item, KeyValuePair<int, FeatureShapeDescriptor> subject)
         {
-            return _extensionManager.HasDependency(item.Feature.Descriptor, subject.Feature.Descriptor);
+            return _extensionManager.HasDependency(item.Value.Feature.Descriptor, subject.Value.Feature.Descriptor);
         }
 
-        private bool IsModuleOrRequestedTheme(ShapeAlteration alteration, string themeName)
+        private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
         {
-            if (alteration == null ||
-                alteration.Feature == null ||
-                alteration.Feature.Descriptor == null ||
-                alteration.Feature.Descriptor.Extension == null)
+            return IsEnabledModuleOrRequestedTheme(descriptor?.Feature?.Descriptor, themeName, enabledFeatureIds);
+        }
+
+        private bool IsEnabledModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
+        {
+            var id = descriptor?.Id;
+            var extensionType = descriptor?.Extension?.ExtensionType;
+
+            return IsModuleOrRequestedTheme(descriptor, themeName) && (DefaultExtensionTypes.IsCore(extensionType)
+                || enabledFeatureIds.Contains(id));
+        }
+
+        private bool IsModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName)
+        {
+            if (descriptor?.Extension == null)
             {
                 return false;
             }
 
-            var extensionType = alteration.Feature.Descriptor.Extension.ExtensionType;
+            var extensionType = descriptor.Extension.ExtensionType;
 
-            if(String.IsNullOrEmpty(extensionType))
+            if(DefaultExtensionTypes.IsCore(extensionType))
             {
                 // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
                 return true;
@@ -158,7 +172,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
 
                 // alterations from themes must be from the given theme or a base theme
-                var featureName = alteration.Feature.Descriptor.Id;
+                var featureName = descriptor.Id;
                 return string.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);
             }
 
