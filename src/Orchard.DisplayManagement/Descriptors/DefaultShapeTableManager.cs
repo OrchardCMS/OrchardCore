@@ -87,7 +87,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     }
                 }
 
-                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Extension.Id).ToList();
+                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
