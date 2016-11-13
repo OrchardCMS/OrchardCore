@@ -43,7 +43,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             var display = (DisplayHelper)_displayHelperFactory.CreateHelper(ViewContext);
 
             // Extract all attributes from the tag helper to
-            var properties = output.Attributes
+            var properties = tagHelperContext.AllAttributes
                 .Where(x => !InternalProperties.Contains(x.Name))
                 .ToDictionary(x => LowerKebabToPascalCase(x.Name), x => (object)x.Value.ToString())
                 ;
@@ -148,7 +148,7 @@ namespace Orchard.DisplayManagement.TagHelpers
                 nextIsUpper = false;
             }
 
-            return "";
+            return result.ToString();
         }
     }
 }

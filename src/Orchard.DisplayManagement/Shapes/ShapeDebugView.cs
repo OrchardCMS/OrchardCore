@@ -27,7 +27,6 @@ namespace Orchard.DisplayManagement.Shapes
             get
             {
                 return _shape.Properties
-                    .Cast<DictionaryEntry>()
                     .Select(entry => new KeyValuePairs(entry.Key, entry.Value))
                     .ToArray();
             }

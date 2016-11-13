@@ -14,12 +14,15 @@ namespace Orchard.DisplayManagement.Descriptors
         }
 
         [Shape]
-        public IHtmlContent Baz(string text, int count)
+        public IHtmlContent Baz(string Text, int Count)
         {
+            if (Count == 0)
+                Count = 1;
+
             var sb = new StringBuilder();
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < Count; i++)
             {
-                sb.Append(text);
+                sb.Append(Text ?? "There is no text");
             }
 
             return new HtmlString(sb.ToString());

@@ -1,9 +1,18 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.TagHelpers;
 
-namespace Orchard.Demo.Shapes
+namespace Orchard.Demo.TagHelpers
 {
-    public class BazTagHelper : TagHelper
+    [HtmlTargetElement("baz", Attributes = nameof(Text))]
+    public class BazTagHelper : ShapeTagHelper
     {
+        public BazTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
+            : base(shapeFactory, displayHelperFactory)
+        {
+            Type = "Baz";
+        }
+
         /// <summary>
         /// The text to render
         /// </summary>
