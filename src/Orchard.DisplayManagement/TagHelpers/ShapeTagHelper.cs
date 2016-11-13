@@ -122,7 +122,7 @@ namespace Orchard.DisplayManagement.TagHelpers
         /// <summary>
         /// Converts foo-bar to FooBar
         /// </summary>
-        private static string LowerKebabToPascalCase(string attribute)
+        public static string LowerKebabToPascalCase(string attribute)
         {
             attribute = attribute.Trim();
             bool nextIsUpper = true;
