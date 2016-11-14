@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
 using Orchard.Tests.Stubs;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement

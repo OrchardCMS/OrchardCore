@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
 using Orchard.Events;
 using Orchard.Tests.Stubs;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using Xunit;
-using System.Threading.Tasks;
 
 namespace Orchard.Tests.DisplayManagement
 {
@@ -38,7 +38,6 @@ namespace Orchard.Tests.DisplayManagement
             {
             }
         }
-
 
         public DefaultDisplayManagerTests()
         {
@@ -72,10 +71,6 @@ namespace Orchard.Tests.DisplayManagement
             void IShapeDisplayEvents.Displaying(ShapeDisplayingContext context) { Displaying(context); }
             void IShapeDisplayEvents.Displayed(ShapeDisplayedContext context) { Displayed(context); }
         }
-
-
-
-
 
         void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
         {
@@ -257,7 +252,6 @@ namespace Orchard.Tests.DisplayManagement
                 BindingAsync = binding,
             };
         }
-
 
         //[Fact]
         //public void IShapeDisplayEventsIsCalled() {

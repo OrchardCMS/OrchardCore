@@ -1,7 +1,7 @@
-﻿using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Theming;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Tests.Stubs
