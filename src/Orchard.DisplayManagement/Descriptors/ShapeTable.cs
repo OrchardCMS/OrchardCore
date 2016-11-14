@@ -9,7 +9,7 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         public IDictionary<string, ShapeDescriptor> Descriptors { get; set; }
 
-        public IDictionary<string, ShapeBinding> Bindings
+        public virtual IDictionary<string, ShapeBinding> Bindings
         {
             get { return new ShapeTableBindings(this); }
 

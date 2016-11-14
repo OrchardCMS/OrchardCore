@@ -76,7 +76,7 @@ namespace Orchard.DisplayManagement.Descriptors
                         if (info != null)
                             break;
                     }
-                    return info;
+                    return info ?? DefaultPlacementAction(ctx);
                 });
             }
         }
@@ -110,7 +110,7 @@ namespace Orchard.DisplayManagement.Descriptors
             Placement = DefaultPlacementAction;
         }
 
-        private PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
+        protected PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
             if (DefaultPlacement == null)

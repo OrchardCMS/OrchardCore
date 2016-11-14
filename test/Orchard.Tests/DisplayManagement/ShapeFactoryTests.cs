@@ -27,7 +27,7 @@ namespace Orchard.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            var defaultShapeTable = new ShapeTable
+            var defaultShapeTable = new TestShapeTable
             {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)

@@ -1,16 +1,21 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Orchard.Environment.Extensions.Models;
-using System;
 
 namespace Orchard.Tests.Stubs
 {
+    public class TestShapeTable : ShapeTable
+    {
+        public override IDictionary<string, ShapeBinding> Bindings { get; set; }
+    }
+
     public class TestShapeTableManager : IShapeTableManager
     {
-        private readonly ShapeTable _defaultShapeTable;
+        private readonly TestShapeTable _defaultShapeTable;
 
-        public TestShapeTableManager(ShapeTable defaultShapeTable)
+        public TestShapeTableManager(TestShapeTable defaultShapeTable)
         {
             _defaultShapeTable = defaultShapeTable;
         }

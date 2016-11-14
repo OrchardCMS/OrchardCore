@@ -45,12 +45,22 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
+            serviceCollection.AddScoped<IFeatureManager, TestFeatureManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             var features = new[] {
+                new FeatureDescriptor
+                {
+                    Id = "Testing",
+                    Dependencies = Enumerable.Empty<string>(),
+                    Extension = new ExtensionDescriptor
+                    {
+                        Id = "Testing",
+                        ExtensionType = DefaultExtensionTypes.Module,
+                    }
+                },
                 new FeatureDescriptor {
                     Id = "Theme1",
                     Extension = new ExtensionDescriptor {
@@ -78,9 +88,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             TestShapeProvider.FeatureShapes = new Dictionary<Feature, IEnumerable<string>> {
                 { TestFeature(), new [] {"Hello"} },
-                { Feature(features[0]), new [] {"Theme1Shape"} },
-                { Feature(features[1]), new [] {"DerivedShape", "OverriddenShape"} },
-                { Feature(features[2]), new [] {"BaseShape", "OverriddenShape"} }
+                { Feature(features[1]), new [] {"Theme1Shape"} },
+                { Feature(features[2]), new [] {"DerivedShape", "OverriddenShape"} },
+                { Feature(features[3]), new [] {"BaseShape", "OverriddenShape"} }
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
@@ -112,6 +122,69 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                     }
                 }
             };
+        }
+
+        public class TestFeatureManager : IFeatureManager
+        {
+            private readonly IExtensionManager _extensionManager;
+
+            public TestFeatureManager(IExtensionManager extensionManager)
+            {
+                _extensionManager = extensionManager;
+            }
+
+            public FeatureDependencyNotificationHandler FeatureDependencyNotification
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+
+                set
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> EnableFeaturesAsync(IEnumerable<string> featureIds)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> EnableFeaturesAsync(IEnumerable<string> featureIds, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetAvailableFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> GetDependentFeaturesAsync(string featureId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetDisabledFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetEnabledFeaturesAsync()
+            {
+                return Task.FromResult(_extensionManager.AvailableFeatures());
+            }
         }
 
         public class TestExtensionManager : IExtensionManager
@@ -220,6 +293,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
+            var test = manager.GetShapeTable(null);
             var hello = manager.GetShapeTable(null).Descriptors["Hello"];
             hello.DefaultPlacement = "Header:5";
             var result = hello.Placement(null);

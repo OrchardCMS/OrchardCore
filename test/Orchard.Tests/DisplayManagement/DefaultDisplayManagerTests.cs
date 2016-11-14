@@ -19,7 +19,7 @@ namespace Orchard.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        ShapeTable _defaultShapeTable;
+        TestShapeTable _defaultShapeTable;
         IServiceProvider _serviceProvider;
 
         public class StubEventBus : IEventBus
@@ -42,7 +42,7 @@ namespace Orchard.Tests.DisplayManagement
 
         public DefaultDisplayManagerTests()
         {
-            _defaultShapeTable = new ShapeTable
+            _defaultShapeTable = new TestShapeTable
             {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
