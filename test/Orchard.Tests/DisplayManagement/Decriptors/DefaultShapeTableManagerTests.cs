@@ -293,7 +293,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-            var test = manager.GetShapeTable(null);
             var hello = manager.GetShapeTable(null).Descriptors["Hello"];
             hello.DefaultPlacement = "Header:5";
             var result = hello.Placement(null);
