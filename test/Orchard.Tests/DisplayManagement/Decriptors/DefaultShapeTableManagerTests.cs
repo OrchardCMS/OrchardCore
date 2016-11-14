@@ -218,7 +218,21 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
             {
-                return _availableFeautures.Any(x => x.Id == item.Id);
+                if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType))
+                {
+                    if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType))
+                    {
+                        return true;
+                    }
+
+                    if (DefaultExtensionTypes.IsTheme(subject.Extension.ExtensionType))
+                    {
+                        return item.Extension.BaseTheme == subject.Id;
+                    }
+                }
+
+                return item.Dependencies != null && item.Dependencies.Any(x =>
+                    StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
             }
 
             public ExtensionEntry LoadExtension(ExtensionDescriptor descriptor)
