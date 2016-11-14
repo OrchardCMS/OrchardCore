@@ -253,35 +253,6 @@ namespace Orchard.Tests.DisplayManagement
             };
         }
 
-        //[Fact]
-        //public void IShapeDisplayEventsIsCalled() {
-        //    var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
-
-        //    var shape = new Shape {
-        //        Metadata = new ShapeMetadata {
-        //            Type = "Foo"
-        //        }
-        //    };
-
-        //    var descriptor = new ShapeDescriptor {
-        //        ShapeType = "Foo",
-        //    };
-        //    AddBinding(descriptor, "Foo", ctx => new HtmlString("yarg"));
-        //    AddShapeDescriptor(descriptor);
-
-        //    var displayingEventCount = 0;
-        //    var displayedEventCount = 0;
-        //    _container.Resolve<TestDisplayEvents>().Displaying = ctx => { ++displayingEventCount; };
-        //    _container.Resolve<TestDisplayEvents>().Displayed = ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToHtmlString() + "]"); };
-
-        //    var result = displayManager.Execute(CreateDisplayContext(shape));
-
-        //    Assert.That(displayingEventCount, Is.EqualTo(1));
-        //    Assert.That(displayedEventCount, Is.EqualTo(1));
-        //    Assert.That(result.ToString(), Is.EqualTo("[yarg]"));
-        //}
-
-
         [Fact]
         public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled()
         {
