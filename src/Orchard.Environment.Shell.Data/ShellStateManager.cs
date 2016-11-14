@@ -40,7 +40,7 @@ namespace Orchard.Environment.Shell
             return _shellState;
         }
 
-        public void UpdateEnabledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public async Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
@@ -48,7 +48,7 @@ namespace Orchard.Environment.Shell
                              featureState.Id, featureState.EnableState, value);
             }
 
-            var previousFeatureState = GetOrCreateFeatureState(featureState.Id);
+            var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.EnableState != featureState.EnableState)
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
@@ -64,14 +64,14 @@ namespace Orchard.Environment.Shell
             UpdateShellState();
         }
 
-        public void UpdateInstalledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public async Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Id, featureState.InstallState, value);
             }
 
-            var previousFeatureState = GetOrCreateFeatureState(featureState.Id);
+            var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.InstallState != featureState.InstallState)
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
@@ -87,9 +87,10 @@ namespace Orchard.Environment.Shell
             UpdateShellState();
         }
 
-        private ShellFeatureState GetOrCreateFeatureState(string id)
+        private async Task<ShellFeatureState> GetOrCreateFeatureStateAsync(string id)
         {
-            var featureState = GetShellStateAsync().Result.Features.FirstOrDefault(x => x.Id == id);
+            var shellState = await GetShellStateAsync();
+            var featureState = shellState.Features.FirstOrDefault(x => x.Id == id);
 
             if (featureState == null)
             {

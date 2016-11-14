@@ -106,7 +106,7 @@ namespace Orchard.Environment.Shell
                 }
 
                 _eventBus.Notify<IFeatureEventHandler>(x => x.Disabling(entry.Feature.FeatureInfo));
-                _stateManager.UpdateEnabledState(entry.FeatureState, ShellFeatureState.State.Down);
+                await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
                 _eventBus.Notify<IFeatureEventHandler>(x => x.Disabled(entry.Feature.FeatureInfo));
             }
 
@@ -119,7 +119,7 @@ namespace Orchard.Environment.Shell
                 }
 
                 _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalling(entry.Feature.FeatureInfo));
-                _stateManager.UpdateInstalledState(entry.FeatureState, ShellFeatureState.State.Down);
+                await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
                 _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalled(entry.Feature.FeatureInfo));
             }
 
@@ -134,7 +134,7 @@ namespace Orchard.Environment.Shell
                     }
 
                     _eventBus.Notify<IFeatureEventHandler>(x => x.Installing(entry.Feature.FeatureInfo));
-                    _stateManager.UpdateInstalledState(entry.FeatureState, ShellFeatureState.State.Up);
+                    await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
                     _eventBus.Notify<IFeatureEventHandler>(x => x.Installed(entry.Feature.FeatureInfo));
                 }
                 if (entry.FeatureState.EnableState == ShellFeatureState.State.Rising)
@@ -145,7 +145,7 @@ namespace Orchard.Environment.Shell
                     }
 
                     _eventBus.Notify<IFeatureEventHandler>(x => x.Enabling(entry.Feature.FeatureInfo));
-                    _stateManager.UpdateEnabledState(entry.FeatureState, ShellFeatureState.State.Up);
+                    await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
                     _eventBus.Notify<IFeatureEventHandler>(x => x.Enabled(entry.Feature.FeatureInfo));
                 }
             }

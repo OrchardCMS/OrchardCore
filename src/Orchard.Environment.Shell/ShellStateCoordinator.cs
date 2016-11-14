@@ -46,11 +46,11 @@ namespace Orchard.Environment.Shell
                 }
                 if (!featureState.IsInstalled)
                 {
-                    _stateManager.UpdateInstalledState(featureState, ShellFeatureState.State.Rising);
+                    await _stateManager.UpdateInstalledStateAsync(featureState, ShellFeatureState.State.Rising);
                 }
                 if (!featureState.IsEnabled)
                 {
-                    _stateManager.UpdateEnabledState(featureState, ShellFeatureState.State.Rising);
+                    await _stateManager.UpdateEnabledStateAsync(featureState, ShellFeatureState.State.Rising);
                 }
             }
             foreach (var featureState in shellState.Features)
@@ -62,7 +62,7 @@ namespace Orchard.Environment.Shell
                 }
                 if (!featureState.IsDisabled)
                 {
-                    _stateManager.UpdateEnabledState(featureState, ShellFeatureState.State.Falling);
+                    await _stateManager.UpdateEnabledStateAsync(featureState, ShellFeatureState.State.Falling);
                 }
             }
 

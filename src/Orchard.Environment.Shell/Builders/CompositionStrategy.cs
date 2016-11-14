@@ -31,7 +31,7 @@ namespace Orchard.Environment.Shell.Builders
             _logger = logger;
         }
 
-        public Task<ShellBlueprint> ComposeAsync(ShellSettings settings, ShellDescriptor descriptor)
+        public async Task<ShellBlueprint> ComposeAsync(ShellSettings settings, ShellDescriptor descriptor)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -39,7 +39,7 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var enabledFeatures = _extensionManager.GetEnabledFeatures(descriptor);
-            var features = _extensionManager.LoadFeaturesAsync(enabledFeatures).Result;
+            var features = await _extensionManager.LoadFeaturesAsync(enabledFeatures);
             
             // Statup classes are the only types that are automatically added to the blueprint
             var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());
@@ -65,7 +65,7 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogDebug("Done composing blueprint");
             }
-            return Task.FromResult(result);
+            return result;
         }
         
         private static IEnumerable<T> BuildBlueprint<T>(
