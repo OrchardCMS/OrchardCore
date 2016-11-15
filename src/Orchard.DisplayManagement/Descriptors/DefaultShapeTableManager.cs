@@ -81,17 +81,14 @@ namespace Orchard.DisplayManagement.Descriptors
                             + alteration.ShapeType).ToLower()
                             .GetHashCode();
 
-                        if (!_shapeDescriptors.ContainsKey(key))
-                        {
-                            var descriptor = new FeatureShapeDescriptor
-                            (
-                                alteration.Feature,
-                                alteration.ShapeType
-                            );
+                        var descriptor = new FeatureShapeDescriptor
+                        (
+                            alteration.Feature,
+                            alteration.ShapeType
+                        );
 
-                            alteration.Alter(descriptor);
-                            _shapeDescriptors[key] = descriptor;
-                        }
+                        alteration.Alter(descriptor);
+                        _shapeDescriptors[key] = descriptor;
                     }
                 }
 
