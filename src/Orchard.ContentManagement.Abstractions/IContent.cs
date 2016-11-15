@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+
 namespace Orchard.ContentManagement
 {
     public interface IContent

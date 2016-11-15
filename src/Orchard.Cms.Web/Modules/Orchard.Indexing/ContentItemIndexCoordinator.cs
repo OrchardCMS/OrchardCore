@@ -47,11 +47,22 @@ namespace Orchard.Indexing
 
                 var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 
+                // Skip this part if it's not included in the index and it's not the default type part
+                if (partName != partTypeName && !typePartIndexSettings.Included)
+                {
+                    continue;
+                }
+
                 await _partIndexHandlers.InvokeAsync(partIndexHandler => partIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings), Logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
                     var partFieldIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+
+                    if (!partFieldIndexSettings.Included)
+                    {
+                        continue;
+                    }
 
                     await _fieldIndexHandlers.InvokeAsync(_fieldIndexHandler => _fieldIndexHandler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings), Logger);
                 }

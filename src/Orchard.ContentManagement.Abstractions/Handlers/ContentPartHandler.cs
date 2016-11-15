@@ -154,6 +154,14 @@
             }
         }
 
+        void IContentPartHandler.GetContentAspect(ContentItemAspectContext context, ContentPart part)
+        {
+            if (part is TPart)
+            {
+                GetContentAspect(context, (TPart)part);
+            }
+        }
+
         public virtual void Activated(ActivatedContentContext context, TPart instance) { }
         public virtual void Activating(ActivatingContentContext context, TPart instance) { }
         public virtual void Initializing(InitializingContentContext context, TPart instance) { }
@@ -173,6 +181,7 @@
         public virtual void Removing(RemoveContentContext context, TPart instance) { }
         public virtual void Removed(RemoveContentContext context, TPart instance) { }
         public virtual void GetContentItemMetadata(ContentItemMetadataContext context, TPart part) { }
+        public virtual void GetContentAspect(ContentItemAspectContext context, TPart part) { }
 
     }
 }

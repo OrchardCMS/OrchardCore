@@ -11,5 +11,27 @@
         public bool Sanitized { get; set; }
         public bool Tokenized { get; set; }
         public string Template { get; set; }
+
+        public DocumentIndexOptions ToOptions()
+        {
+            var options = DocumentIndexOptions.None;
+
+            if (Stored)
+            {
+                options |= DocumentIndexOptions.Store;
+            }
+
+            if (Analyzed)
+            {
+                options |= DocumentIndexOptions.Analyze;
+            }
+
+            if (Sanitized)
+            {
+                options |= DocumentIndexOptions.Sanitize;
+            }
+
+            return options;
+        }
     }
 }

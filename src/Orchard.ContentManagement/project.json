@@ -5,6 +5,7 @@
     "Microsoft.AspNetCore.Mvc.DataAnnotations": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
+    "Castle.Core": "4.0.0-*",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",

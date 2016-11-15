@@ -75,6 +75,8 @@ namespace Lucene
                 {
                     foreach (var index in allIndexes)
                     {
+                        // TODO: ignore if this index is not configured for the content type
+
                         if (index.Value < task.Id)
                         {
                             _indexProvider.DeleteDocuments(index.Key, new int[] { task.ContentItemId });
@@ -84,7 +86,7 @@ namespace Lucene
                     if (task.Type == IndexingTaskTypes.Update)
                     {
                         var contentItem = await _contentManager.GetAsync(task.ContentItemId);
-                        var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem);
+                        var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
 
                         // Update the document from the index if its lastIndexId is smaller than the current task id. 
                         await _indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);

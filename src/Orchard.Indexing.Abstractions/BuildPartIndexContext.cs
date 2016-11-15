@@ -5,8 +5,12 @@ namespace Orchard.Indexing
 {
     public class BuildPartIndexContext : BuildIndexContext
     {
-        public BuildPartIndexContext(DocumentIndex documentIndex, ContentItem contentItem, ContentTypePartDefinition typePartDefinition, ContentIndexSettings settings)
-            :base(documentIndex, contentItem)
+        public BuildPartIndexContext(
+            DocumentIndex documentIndex, 
+            ContentItem contentItem, string key, 
+            ContentTypePartDefinition typePartDefinition, 
+            ContentIndexSettings settings)
+            :base(documentIndex, contentItem, key)
         {
             ContentTypePartDefinition = typePartDefinition;
             Settings = settings;

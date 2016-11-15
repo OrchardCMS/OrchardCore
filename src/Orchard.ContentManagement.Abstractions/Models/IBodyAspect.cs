@@ -2,8 +2,8 @@
 
 namespace Orchard.ContentManagement.Models
 {
-    public interface IBody : IContent
+    public interface IBodyAspect
     {
-        IHtmlContent BodyHtml { get; }
+        IHtmlContent Body { get; set; }
     }
 }

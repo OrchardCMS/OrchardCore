@@ -5,7 +5,8 @@
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
-    "Orchard.Navigation": "2.0.0-*"
+    "Orchard.Navigation": "2.0.0-*",
+    "Orchard.Indexing.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

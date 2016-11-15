@@ -5,9 +5,9 @@ namespace Orchard.Indexing
     [Flags]
     public enum DocumentIndexOptions
     {
-        None,
-        Store,
-        Analyze,
-        Sanitize
+        None = 0,
+        Store = 1,
+        Analyze = 2,
+        Sanitize = 4
     }
 }

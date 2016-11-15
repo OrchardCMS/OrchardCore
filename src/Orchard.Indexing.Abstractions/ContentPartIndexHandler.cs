@@ -19,7 +19,7 @@ namespace Orchard.Indexing
                 return Task.CompletedTask;
             }
 
-            var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, typePartDefinition, settings);
+            var buildPartIndexContext = new BuildPartIndexContext(context.DocumentIndex, context.ContentItem, typePartDefinition.Name, typePartDefinition, settings);
 
             return BuildIndexAsync(part, buildPartIndexContext);
         }

@@ -5,8 +5,15 @@ namespace Orchard.Indexing
 {
     public class BuildFieldIndexContext : BuildPartIndexContext
     {
-        public BuildFieldIndexContext(DocumentIndex documentIndex, ContentItem contentItem, ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, ContentIndexSettings settings)
-            :base(documentIndex, contentItem, typePartDefinition, settings)
+        public BuildFieldIndexContext(
+            DocumentIndex documentIndex, 
+            ContentItem contentItem, 
+            string key, 
+            ContentPart contentPart, 
+            ContentTypePartDefinition typePartDefinition, 
+            ContentPartFieldDefinition partFieldDefinition, 
+            ContentIndexSettings settings)
+            :base(documentIndex, contentItem, key, typePartDefinition, settings)
         {
             ContentPartFieldDefinition = partFieldDefinition;
             ContentPart = contentPart;

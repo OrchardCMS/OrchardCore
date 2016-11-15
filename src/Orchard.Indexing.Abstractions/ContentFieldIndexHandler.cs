@@ -21,7 +21,7 @@ namespace Orchard.Indexing
             var field = contentPart.Get<TField>(partFieldDefinition.Name);
             if (field != null)
             {
-                var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, contentPart, typePartDefinition, partFieldDefinition, settings);
+                var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, $"{typePartDefinition.Name}.{partFieldDefinition.Name}", contentPart, typePartDefinition, partFieldDefinition, settings);
 
                 return BuildIndexAsync(field, buildFieldIndexContext);
             }
