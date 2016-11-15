@@ -76,14 +76,22 @@ namespace Orchard.DisplayManagement.Descriptors
 
                     foreach (var alteration in builtAlterations)
                     {
-                        var key = (bindingStrategy.GetType().Name + ":"
-                            + alteration.Feature.Descriptor.Id + ":"
-                            + alteration.ShapeType).ToLower().GetHashCode();
+                        var key = (bindingStrategy.GetType().Name
+                            + alteration.Feature.Descriptor.Id
+                            + alteration.ShapeType).ToLower()
+                            .GetHashCode();
 
-                        var descriptor = new FeatureShapeDescriptor(alteration.Feature, alteration.ShapeType);
+                        if (!_shapeDescriptors.ContainsKey(key))
+                        {
+                            var descriptor = new FeatureShapeDescriptor
+                            (
+                                alteration.Feature,
+                                alteration.ShapeType
+                            );
 
-                        alteration.Alter(descriptor);
-                        _shapeDescriptors[key] = descriptor;
+                            alteration.Alter(descriptor);
+                            _shapeDescriptors[key] = descriptor;
+                        }
                     }
                 }
 
@@ -93,12 +101,12 @@ namespace Orchard.DisplayManagement.Descriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-                        .Select(group => new ShapeDescriptorIndex
-                        (
-                            shapeType: group.Key,
-                            alterationKeys: group.Select(kv => kv.Key),
-                            descriptors: _shapeDescriptors
-                        ));
+                    .Select(group => new ShapeDescriptorIndex
+                    (
+                        shapeType: group.Key,
+                        alterationKeys: group.Select(kv => kv.Key),
+                        descriptors: _shapeDescriptors
+                    ));
 
                 shapeTable = new ShapeTable
                 {
