@@ -8,14 +8,11 @@ namespace Orchard.Environment.Extensions.Features
         private readonly IDictionary<string, IFeatureInfo> _emptyDictionary =
             new Dictionary<string, IFeatureInfo>();
 
-        private readonly IList<IFeatureInfo> _emptyList =
-            new List<IFeatureInfo>();
-
         public IFeatureInfo this[int index]
         {
             get
             {
-                return _emptyList[index];
+                throw new System.IndexOutOfRangeException();
             }
         }
 
@@ -27,13 +24,7 @@ namespace Orchard.Environment.Extensions.Features
             }
         }
 
-        public int Count
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public int Count => 0;
 
         public IExtensionInfoList Extensions
         {
@@ -45,12 +36,12 @@ namespace Orchard.Environment.Extensions.Features
 
         public IEnumerator<IFeatureInfo> GetEnumerator()
         {
-            return _emptyList.GetEnumerator();
+            return _emptyDictionary.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _emptyList.GetEnumerator();
+            return _emptyDictionary.Values.GetEnumerator();
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Orchard.Environment.Extensions
             {
                 var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
-                if (loadedExtension == null)
+                if (loadedExtension.IsError)
                 {
                     return new NonCompiledFeatureEntry(feature);
                 }
