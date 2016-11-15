@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lucene.Net.Index;
+using Lucene.Net.Store;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
+using Directory = System.IO.Directory;
 
 namespace Lucene
 {
@@ -13,6 +16,7 @@ namespace Lucene
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _rootPath;
+        private readonly DirectoryInfo _rootDirectory;
 
         public LuceneIndexProvider(
             IHostingEnvironment hostingEnvironment,
@@ -22,13 +26,14 @@ namespace Lucene
         {
             _hostingEnvironment = hostingEnvironment;
             _rootPath = Path.Combine(shellOptions.Value.ShellsRootContainerName, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
-            
-            Directory.CreateDirectory(_rootPath);
+            _rootDirectory = Directory.CreateDirectory(_rootPath);
         }
 
         public void CreateIndex(string indexName)
         {
-            using (File.CreateText(Path.Combine(_rootPath, indexName + ".txt"))) { }
+            using (var directory = new NIOFSDirectory(_rootDirectory.CreateSubdirectory(indexName)))
+            {
+            }
         }
 
         public void DeleteDocuments(string indexName, IEnumerable<int> documentIds)
@@ -37,12 +42,12 @@ namespace Lucene
 
         public void DeleteIndex(string indexName)
         {
-            File.Delete(Path.Combine(_rootPath, indexName + ".txt"));
+            Directory.Delete(Path.Combine(_rootPath, indexName));
         }
 
         public bool Exists(string indexName)
         {
-            return File.Exists(Path.Combine(_rootPath, indexName + ".txt"));
+            return Directory.Exists(Path.Combine(_rootPath, indexName));
         }
 
         public int GetLastIndexDocumentId(string indexName)
@@ -52,12 +57,22 @@ namespace Lucene
 
         public IEnumerable<string> List()
         {
-            return _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(_rootPath).Where(x => x.Name.EndsWith(".txt")).Select(x => Path.GetFileNameWithoutExtension(x.Name));
+            return _rootDirectory
+                .GetDirectories()
+                .Select(x => x.Name);
         }
 
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            File.AppendAllLines(Path.Combine(_rootPath, indexName + ".txt"), indexDocuments.Select(x => x.DocumentId.ToString()));
+            using (var directory = FSDirectory.Open(new DirectoryInfo(Path.Combine(_rootPath, indexName))))
+            {
+                //using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(Net.Util.LuceneVersion.LUCENE_48, new StandardAnalyzer()))
+                //{
+                //    Documents.Document doc = new Documents.Document();
+                //    doc.Add(NewTextField("fieldname", text, Field.Store.YES));
+                //    iwriter.AddDocument(doc);
+                //}
+            }
         }
     }
 }

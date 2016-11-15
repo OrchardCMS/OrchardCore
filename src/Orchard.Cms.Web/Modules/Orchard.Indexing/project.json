@@ -5,7 +5,7 @@
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*",
-    "Orchard.Tokens.Abstractions": "2.0.0-*",
+    "Orchard.Tokens.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
