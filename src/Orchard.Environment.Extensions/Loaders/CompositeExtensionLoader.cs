@@ -40,7 +40,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            foreach (var loader in _extensionLoaders)
+            foreach (var loader in _extensionLoaders.OrderByDescending(x => x.Order))
             {
                 var entry = loader.Load(extensionInfo);
                 if (entry != null)
@@ -48,7 +48,7 @@ namespace Orchard.Environment.Extensions.Loaders
                     return entry;
                 }
             }
-            return null;
+            return new ExtensionEntry { ExtensionInfo = extensionInfo, IsError = true };
         }
     }
 }

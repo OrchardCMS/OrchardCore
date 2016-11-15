@@ -96,21 +96,27 @@ namespace Orchard.Modules.Controllers
             var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
             var availableFeatures = _extensionManager.GetExtensions().Features;
 
-            IEnumerable<ModuleFeature> features = availableFeatures
-                .Where(f => !f.Extension.Manifest.IsTheme())
-                .Select(f => new ModuleFeature
+
+            var moduleFeatures = new List<ModuleFeature>();
+            foreach (var moduleFeatureInfo in availableFeatures.Where(f => !f.Extension.Manifest.IsTheme()))
+            {
+                var dependentFeatures = await _moduleService.GetDependentFeaturesAsync(moduleFeatureInfo.Id);
+
+                var moduleFeature = new ModuleFeature
                 {
-                    Descriptor = f,
-                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Id == f.Id),
+                    Descriptor = moduleFeatureInfo,
+                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Id == moduleFeatureInfo.Id),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    DependentFeatures = _moduleService.GetDependentFeaturesAsync(f.Id).Result.Where(x => x.Id != f.Id).ToList()
-                })
-                .ToList();
+                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList()
+                };
+
+                moduleFeatures.Add(moduleFeature);
+            }
 
             return View(new FeaturesViewModel
             {
-                Features = features,
+                Features = moduleFeatures,
                 IsAllowed = ExtensionIsAllowed
             });
         }

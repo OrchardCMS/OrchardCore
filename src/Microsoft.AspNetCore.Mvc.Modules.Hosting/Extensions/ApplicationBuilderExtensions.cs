@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -10,7 +7,8 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing;
-using Orchard.Environment.Extensions.Loaders;
+using System.IO;
+using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -38,7 +36,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                 var contentPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content");
                 if (Directory.Exists(contentPath))
                 {
-                    builder.UseStaticFiles(new StaticFileOptions()
+                    builder.UseStaticFiles(new StaticFileOptions
                     {
                         RequestPath = "/" + extension.Id,
                         FileProvider = new PhysicalFileProvider(contentPath)
@@ -62,17 +60,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                     .LoadExtensionsAsync(availableExtensions)
                     .Result;
 
-                foreach (var assemblyPart in extensionEntries
-                    .Where(x => x.GetType() != typeof(FailedExtensionEntry))
-                    .Select(x => new AssemblyPart(x.Assembly))) {
+                foreach (var extensionEntry in extensionEntries
+                    .Where(x => !x.IsError)) {
+
+                    var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
+
                     applicationPartManager.ApplicationParts.Add(assemblyPart);
-                }
-
-                var failed = extensionEntries.Where(x => x.GetType() == typeof(FailedExtensionEntry));
-
-                foreach (FailedExtensionEntry failure in failed)
-                {
-                    logger.LogCritical("Could not load an extension", failure.Exception);
                 }
             }
 

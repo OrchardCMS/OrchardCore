@@ -10,7 +10,7 @@ namespace Orchard.Environment.Extensions
             = new ConcurrentDictionary<Type, IFeatureInfo>();
 
         private static readonly IFeatureInfo CoreFeature 
-            = new NotFoundFeatureInfo("Core", new NotFoundExtensionInfo("Core"));
+            = new InternalFeatureInfo("Core", new InternalExtensionInfo("Core"));
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {

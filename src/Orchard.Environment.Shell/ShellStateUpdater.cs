@@ -84,10 +84,9 @@ namespace Orchard.Environment.Shell
             // create additional stub entries for the sake of firing state change events on missing features
             var allEntries = loadedEntries.Concat(additionalState.Select(featureState =>
             {
-                var featureDescriptor = new NotFoundFeatureInfo(
+                var featureDescriptor = new InternalFeatureInfo(
                     featureState.Id,
-                    new NotFoundExtensionInfo(
-                        featureState.Id)
+                    new InternalExtensionInfo(featureState.Id)
                     );
                 return new
                 {

@@ -4,18 +4,18 @@ using Orchard.Environment.Extensions.Manifests;
 
 namespace Orchard.Environment.Extensions
 {
-    public class NotFoundExtensionInfo : IExtensionInfo
+    public class InternalExtensionInfo : IExtensionInfo
     {
         private readonly IFileInfo _fileInfo;
         private readonly string _subPath;
         private readonly IManifestInfo _manifestInfo;
         private readonly IFeatureInfoList _features;
 
-        public NotFoundExtensionInfo(string extensionId) {
-            _fileInfo = new NotFoundFileInfo(extensionId);
+        public InternalExtensionInfo(string subPath) {
+            _fileInfo = new NotFoundFileInfo(subPath);
 
-            _subPath = string.Empty;
-            _manifestInfo = new NotFoundManifestInfo(extensionId);
+            _subPath = subPath;
+            _manifestInfo = new NotFoundManifestInfo(subPath);
             _features = new EmptyFeatureInfoList();
         }
         

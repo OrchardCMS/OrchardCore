@@ -38,7 +38,7 @@ namespace Orchard.Modules.Recipes.Executors
 
             foreach (var featureId in step.Disable)
             {
-                if (!extensions.HasFeature(featureId))
+                if (!extensions.Features.Any(x => x.Id == featureId))
                 {
                     throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureId));
                 }
@@ -46,7 +46,7 @@ namespace Orchard.Modules.Recipes.Executors
 
             foreach (var featureId in step.Enable)
             {
-                if (!extensions.HasFeature(featureId))
+                if (!extensions.Features.Any(x => x.Id == featureId))
                 {
                     throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureId));
                 }

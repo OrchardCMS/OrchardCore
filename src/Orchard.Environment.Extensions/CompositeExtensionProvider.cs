@@ -31,7 +31,7 @@ namespace Orchard.Environment.Extensions
                     return extensionInfo;
                 }
             }
-            return null;
+            return new InternalExtensionInfo(subPath);
         }
     }
 }

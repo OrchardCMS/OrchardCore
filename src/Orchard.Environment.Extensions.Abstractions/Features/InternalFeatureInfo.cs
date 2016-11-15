@@ -2,7 +2,7 @@
 
 namespace Orchard.Environment.Extensions.Features
 {
-    public class NotFoundFeatureInfo : IFeatureInfo
+    public class InternalFeatureInfo : IFeatureInfo
     {
         private readonly string _id;
         private readonly string _name;
@@ -12,7 +12,7 @@ namespace Orchard.Environment.Extensions.Features
         private readonly IExtensionInfo _extension;
         private readonly string[] _dependencies;
 
-        public NotFoundFeatureInfo(
+        public InternalFeatureInfo(
             string id,
             IExtensionInfo extensionInfo)
         {

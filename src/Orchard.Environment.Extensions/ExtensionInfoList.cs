@@ -9,11 +9,9 @@ namespace Orchard.Environment.Extensions
     public class ExtensionInfoList : IExtensionInfoList
     {
         private readonly IDictionary<string, IExtensionInfo> _extensionsByKey;
-        private readonly IReadOnlyList<IExtensionInfo> _extensions;
 
         public ExtensionInfoList(IDictionary<string, IExtensionInfo> extensions) {
             _extensionsByKey = extensions;
-            _extensions = extensions.Select(e => e.Value).ToList();
         }
 
         public IExtensionInfo this[string key]
@@ -23,12 +21,12 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo this[int index]
         {
-            get { return _extensions[index]; }
+            get { return _extensionsByKey.Values.ToList()[index]; }
         }
 
         public int Count
         {
-            get { return _extensions.Count; }
+            get { return _extensionsByKey.Count; }
         }
 
         private IFeatureInfoList _features;
@@ -39,7 +37,8 @@ namespace Orchard.Environment.Extensions
                 if (_features == null)
                 {
                     _features = new FeatureInfoList(
-                        _extensions
+                        _extensionsByKey
+                            .Values
                             .SelectMany(x => x.Features)
                             .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
                             .ToDictionary(x => x.Id, y => y));
@@ -49,35 +48,30 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        public bool HasFeature(string featureId)
-        {
-            return Features.Any(x => x.Id == featureId);
-        }
-
         /// <summary>
         /// Returns true if the item has an explicit or implicit dependency on the subject
         /// </summary>
         /// <param name="item"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        public static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
+        private static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
         {
             return item.DependencyOn(subject);
         }
 
-        internal static double GetPriority(IFeatureInfo featureInfo)
+        private static double GetPriority(IFeatureInfo featureInfo)
         {
             return featureInfo.Priority;
         }
 
         public IEnumerator<IExtensionInfo> GetEnumerator()
         {
-            return _extensions.GetEnumerator();
+            return _extensionsByKey.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _extensions.GetEnumerator();
+            return _extensionsByKey.Values.GetEnumerator();
         }
     }
 }

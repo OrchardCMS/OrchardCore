@@ -9,10 +9,6 @@ namespace Orchard.Environment.Extensions.Loaders
         public IExtensionInfo ExtensionInfo { get; set; }
         public Assembly Assembly { get; set; }
         public IEnumerable<Type> ExportedTypes { get; set; }
-    }
-
-    public class FailedExtensionEntry : ExtensionEntry
-    {
-        public Exception Exception { get; set; }
+        public bool IsError { get; set; }
     }
 }
