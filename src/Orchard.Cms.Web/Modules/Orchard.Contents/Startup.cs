@@ -35,18 +35,16 @@ namespace Orchard.Contents
         {
             routes.MapAreaRoute(
                 name: "DisplayContent",
-                area: "Orchard.Contents",
+                areaName: "Orchard.Contents",
                 template: "Contents/Item/Display/{id}",
-                controller: "Item",
-                action: "Display"
+                defaults: new {controller = "Item", action = "Display" }
             );
 
             routes.MapAreaRoute(
                 name: "PreviewContent",
-                area: "Orchard.Contents",
+                areaName: "Orchard.Contents",
                 template: "Contents/Item/Preview/{id}",
-                controller: "Item",
-                action: "Preview"
+                defaults: new { controller = "Item", action = "Preview" }
             );
         }
     }

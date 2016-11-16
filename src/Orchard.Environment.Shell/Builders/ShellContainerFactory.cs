@@ -54,9 +54,6 @@ namespace Orchard.Environment.Shell.Builders
 
             AddCoreServices(tenantServiceCollection);
 
-            // Sure this is right?
-            tenantServiceCollection.AddSingleton(_loggerFactory);
-            
             // Configure event handlers, they are not part of the blueprint, so they have
             // to be added manually. Or need to create a module for this.
             tenantServiceCollection.AddScoped<IEventBus, DefaultOrchardEventBus>();

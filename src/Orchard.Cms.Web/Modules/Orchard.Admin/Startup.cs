@@ -28,10 +28,9 @@ namespace Orchard.Admin
         {
             routes.MapAreaRoute(
                 name: "Admin",
-                area: "Orchard.Admin",
+                areaName: "Orchard.Admin",
                 template: "admin",
-                controller: "Admin",
-                action: "Index"
+                defaults: new { controller = "Admin", action = "Index" }
             );
         }
     }

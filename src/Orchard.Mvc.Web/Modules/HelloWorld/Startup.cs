@@ -27,10 +27,9 @@ namespace HelloWorld
             routes.MapAreaRoute
             (
                 name: "Home",
-                area: "HelloWorld",
+                areaName: "HelloWorld",
                 template: "",
-                controller: "Home",
-                action: "Index"
+                defaults: new { controller = "Home", action = "Index" }
             );
         }
 
