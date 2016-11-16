@@ -102,7 +102,7 @@ namespace Orchard.Environment.Extensions
 
                 if (extension.IsError && _logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
+                    _logger.LogWarning("No suitable loader found for extension \"{0}\"", id);
                 }
 
                 return await Task.FromResult(extension);
@@ -122,7 +122,7 @@ namespace Orchard.Environment.Extensions
 
         public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            return _features.GetOrAdd(feature.Id, async (key) =>
+            return _features.GetOrAdd(feature.Id, async (id) =>
             {
                 var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
@@ -140,7 +140,7 @@ namespace Orchard.Environment.Extensions
                 foreach (var type in extensionTypes)
                 {
                     string sourceFeature = GetSourceFeatureNameForType(type, feature.Extension.Id);
-                    if (sourceFeature == feature.Id)
+                    if (sourceFeature == id)
                     {
                         featureTypes.Add(type);
                         _typeFeatureProvider.TryAdd(type, feature);
