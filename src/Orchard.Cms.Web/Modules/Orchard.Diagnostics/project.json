@@ -3,7 +3,6 @@
 
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
-    "NETStandard.Library": "1.6.1",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",

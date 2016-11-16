@@ -12,19 +12,11 @@
     "YesSql.Storage.Sql": "1.0.0-*"
   },
   "buildOptions": {
-    "define": [ "TRACE" ],
-    "debugType": "portable",
-    "warningsAsErrors": true
+    "debugType": "portable"
   },
   "frameworks": {
     "netstandard1.6": {
-      "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.1"
-      }
+      "imports": "dnxcore50"
     }
   },
   "packOptions": {
