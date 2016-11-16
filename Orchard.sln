@@ -179,10 +179,6 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Commons", "src\Orch
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Indexing.Abstractions", "src\Orchard.Indexing.Abstractions\Orchard.Indexing.Abstractions.xproj", "{CA48C824-1B11-46FF-9D43-AA0BC6955345}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "YesSql.Core", "..\yessql\src\YesSql.Core\YesSql.Core.xproj", "{A69B2298-1840-46E8-849E-CA68C96364EE}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "YesSql.Storage.Sql", "..\yessql\src\YesSql.Storage.Sql\YesSql.Storage.Sql.xproj", "{2BEB1EEC-2FC4-42CA-A410-5C7C6AF721B4}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Lucene", "src\Orchard.Cms.Web\Modules\Lucene\Lucene.xproj", "{23B628D8-4DCF-4EE1-AEA2-8CFF6C8B80B0}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Indexing", "src\Orchard.Cms.Web\Modules\Orchard.Indexing\Orchard.Indexing.xproj", "{A1B729D1-2BB2-4206-869B-839BF35D0ED5}"
@@ -485,14 +481,6 @@ Global
 		{CA48C824-1B11-46FF-9D43-AA0BC6955345}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA48C824-1B11-46FF-9D43-AA0BC6955345}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA48C824-1B11-46FF-9D43-AA0BC6955345}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A69B2298-1840-46E8-849E-CA68C96364EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A69B2298-1840-46E8-849E-CA68C96364EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A69B2298-1840-46E8-849E-CA68C96364EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A69B2298-1840-46E8-849E-CA68C96364EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2BEB1EEC-2FC4-42CA-A410-5C7C6AF721B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2BEB1EEC-2FC4-42CA-A410-5C7C6AF721B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2BEB1EEC-2FC4-42CA-A410-5C7C6AF721B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2BEB1EEC-2FC4-42CA-A410-5C7C6AF721B4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23B628D8-4DCF-4EE1-AEA2-8CFF6C8B80B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23B628D8-4DCF-4EE1-AEA2-8CFF6C8B80B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23B628D8-4DCF-4EE1-AEA2-8CFF6C8B80B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
