@@ -8,6 +8,12 @@ namespace Orchard.Environment.Extensions.Features
     {
         public const string FeatureManagerCacheKey = "FeatureManager:Features";
 
+        private static string NameKey = "name";
+        private static string PriorityKey = "priority";
+        private static string DependenciesKey = "dependencies";
+        private static string CategoryKey = "category";
+        private static string DescriptionKey = "description";
+
         public IFeatureInfoList GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
@@ -25,15 +31,15 @@ namespace Orchard.Environment.Extensions.Features
                     var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
                     
                     var featureName =
-                        featureDetails.ContainsKey("name") ?
-                            featureDetails["name"] : manifestInfo.Name;
+                        featureDetails.ContainsKey(NameKey) ?
+                            featureDetails[NameKey] : manifestInfo.Name;
 
                     // TODO (ngm) look at priority
-                    var featurePriority = featureDetails.ContainsKey("priority") ?
-                            double.Parse(featureDetails["priority"]) : 0D;
+                    var featurePriority = featureDetails.ContainsKey(PriorityKey) ?
+                            double.Parse(featureDetails[PriorityKey]) : 0D;
 
-                    var featureDependencyIds = featureDetails.ContainsKey("dependencies") ?
-                        featureDetails["dependencies"]
+                    var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
+                        featureDetails[DependenciesKey]
                             .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                             .Select(e => e.Trim())
                             .ToArray() : new string[0];
@@ -42,14 +48,14 @@ namespace Orchard.Environment.Extensions.Features
                         .ConfigurationRoot.GetChildren().ToDictionary(x => x.Key, v => v.Value);
 
                     var featureCategory = 
-                        featureDetails.ContainsKey("category") ? 
-                            featureDetails["category"] :
-                            (manifestFeatureDetails.ContainsKey("category") ? manifestFeatureDetails["category"] : null);
+                        featureDetails.ContainsKey(CategoryKey) ? 
+                            featureDetails[CategoryKey] :
+                            (manifestFeatureDetails.ContainsKey(CategoryKey) ? manifestFeatureDetails[CategoryKey] : null);
 
                     var featureDescription =
-                        featureDetails.ContainsKey("description") ?
-                            featureDetails["description"] :
-                            (manifestFeatureDetails.ContainsKey("description") ? manifestFeatureDetails["description"] : null);
+                        featureDetails.ContainsKey(DescriptionKey) ?
+                            featureDetails[DescriptionKey] :
+                            (manifestFeatureDetails.ContainsKey(DescriptionKey) ? manifestFeatureDetails[DescriptionKey] : null);
 
                     var featureInfo = new FeatureInfo(
                         featureId,
@@ -74,15 +80,15 @@ namespace Orchard.Environment.Extensions.Features
                 // TODO (ngm) look at priority
                 var featurePriority = 0D;
 
-                var featureDependencyIds = featureDetails.ContainsKey("dependencies") ?
-                    featureDetails["dependencies"]
+                var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
+                    featureDetails[DependenciesKey]
                         .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(e => e.Trim())
                         .ToArray() : new string[0];
 
-                var featureCategory = featureDetails.ContainsKey("category") ? featureDetails["category"] : null;
+                var featureCategory = featureDetails.ContainsKey(CategoryKey) ? featureDetails[CategoryKey] : null;
 
-                var featureDescription = featureDetails.ContainsKey("description") ? featureDetails["description"] : null;
+                var featureDescription = featureDetails.ContainsKey(DescriptionKey) ? featureDetails[DescriptionKey] : null;
 
                 var featureInfo = new FeatureInfo(
                     featureId,

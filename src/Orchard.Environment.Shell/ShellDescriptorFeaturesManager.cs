@@ -33,9 +33,9 @@ namespace Orchard.Environment.Shell
         }
         public IStringLocalizer T { get; set; }
 
-        public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
+        public Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
         {
-            return await EnableFeaturesAsync(shellDescriptor, features, false);
+            return EnableFeaturesAsync(shellDescriptor, features, false);
         }
 
         public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
@@ -78,9 +78,9 @@ namespace Orchard.Environment.Shell
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <returns>An enumeration with the disabled feature IDs.</returns>
-        public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
+        public Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features)
         {
-            return await DisableFeaturesAsync(shellDescriptor, features, false);
+            return DisableFeaturesAsync(shellDescriptor, features, false);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Orchard.Environment.Shell
         /// </summary>
         /// <param name="featureId">feature to check.</param>
         /// <returns>An enumeration with dependent feature IDs.</returns>
-        public async Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId)
+        public Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId)
         {
             var getEnabledDependants =
                 new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
@@ -151,7 +151,7 @@ namespace Orchard.Environment.Shell
 
             var affectedFeastures = GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
 
-            return await Task.FromResult(affectedFeastures);
+            return Task.FromResult(affectedFeastures);
         }
 
         /// <summary>
