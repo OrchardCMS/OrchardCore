@@ -23,8 +23,8 @@ namespace Orchard.Environment.Shell
             _shellDescriptorFeaturesManager = shellDescriptorFeaturesManager;
         }
 
-        private async Task<ShellDescriptor> GetCurrentShell() {
-            return await _shellDescriptorManager.GetShellDescriptorAsync();
+        private Task<ShellDescriptor> GetCurrentShell() {
+            return _shellDescriptorManager.GetShellDescriptorAsync();
         }
 
         public async Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
