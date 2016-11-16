@@ -1,32 +1,31 @@
-﻿using Orchard.Environment.Extensions.Utility;
-using Orchard.Environment.Extensions.Features;
+﻿using Orchard.Environment.Extensions.Features;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections;
 
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionInfoList : IExtensionInfoList
     {
-        private readonly IDictionary<string, IExtensionInfo> _extensionsByKey;
+        private readonly IList<IExtensionInfo> _extensions;
 
-        public ExtensionInfoList(IDictionary<string, IExtensionInfo> extensions) {
-            _extensionsByKey = extensions;
+        public ExtensionInfoList(IList<IExtensionInfo> extensions) {
+            _extensions = extensions;
         }
 
         public IExtensionInfo this[string key]
         {
-            get { return _extensionsByKey[key]; }
+            get { return _extensions.First(x => x.Id == key); }
         }
 
         public IExtensionInfo this[int index]
         {
-            get { return _extensionsByKey.Values.ToList()[index]; }
+            get { return _extensions[index]; }
         }
 
         public int Count
         {
-            get { return _extensionsByKey.Count; }
+            get { return _extensions.Count; }
         }
 
         private IFeatureInfoList _features;
@@ -37,41 +36,23 @@ namespace Orchard.Environment.Extensions
                 if (_features == null)
                 {
                     _features = new FeatureInfoList(
-                        _extensionsByKey
-                            .Values
+                        _extensions
                             .SelectMany(x => x.Features)
-                            .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
-                            .ToDictionary(x => x.Id, y => y));
+                            .ToList());
                 }
 
                 return _features;
             }
         }
 
-        /// <summary>
-        /// Returns true if the item has an explicit or implicit dependency on the subject
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="subject"></param>
-        /// <returns></returns>
-        private static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
-        {
-            return item.DependencyOn(subject);
-        }
-
-        private static double GetPriority(IFeatureInfo featureInfo)
-        {
-            return featureInfo.Priority;
-        }
-
         public IEnumerator<IExtensionInfo> GetEnumerator()
         {
-            return _extensionsByKey.Values.GetEnumerator();
+            return _extensions.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _extensionsByKey.Values.GetEnumerator();
+            return _extensions.GetEnumerator();
         }
     }
 }

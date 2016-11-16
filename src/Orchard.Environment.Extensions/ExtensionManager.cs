@@ -30,16 +30,10 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary<string, Task<FeatureEntry>> _features
             = new ConcurrentDictionary<string, Task<FeatureEntry>>();
 
-        private readonly ConcurrentDictionary<string, IExtensionInfo> _extensionsById
-            = new ConcurrentDictionary<string, IExtensionInfo>();
-
-        private bool isExtensionsInitialized;
-
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
-            IClock clock,
             IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
@@ -57,23 +51,52 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo GetExtension(string extensionId)
         {
-            InitializeExtensions();
-
-            return _extensionsById.ContainsKey(extensionId) ? _extensionsById[extensionId] : null;
+            return GetExtensions()[extensionId];
         }
+
+        private ExtensionInfoList _extensionInfoList;
 
         public IExtensionInfoList GetExtensions()
         {
-            InitializeExtensions();
+            if (_extensionInfoList == null)
+            {
+                var extensionsById = new Dictionary<string, IExtensionInfo>();
 
-            return new ExtensionInfoList(_extensionsById);
+                foreach (var searchPath in _extensionOptions.SearchPaths)
+                {
+                    foreach (var subDirectory in _hostingEnvironment
+                        .ContentRootFileProvider
+                        .GetDirectoryContents(searchPath)
+                        .Where(x => x.IsDirectory))
+                    {
+                        var extensionId = subDirectory.Name;
+
+                        if (!extensionsById.ContainsKey(extensionId))
+                        {
+                            var subPath = Path.Combine(searchPath, extensionId);
+
+                            var extensionInfo =
+                                _extensionProvider.GetExtensionInfo(subPath);
+
+                            if (extensionInfo.ExtensionFileInfo.Exists)
+                            {
+                                extensionsById.Add(extensionId, extensionInfo);
+                            }
+                        }
+                    }
+                }
+
+                _extensionInfoList = new ExtensionInfoList(extensionsById.Values.ToList());
+            }
+
+            return _extensionInfoList;
         }
 
-        public async Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
+        public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
-            return await _extensions.GetOrAdd(extensionInfo.Id, async id =>
+            return _extensions.GetOrAdd(extensionInfo.Id, async id =>
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
@@ -97,11 +120,9 @@ namespace Orchard.Environment.Extensions
             return entries;
         }
 
-        public async Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
+        public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            InitializeExtensions();
-
-            return await _features.GetOrAdd(feature.Id, async (key) =>
+            return _features.GetOrAdd(feature.Id, async (key) =>
             {
                 var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
@@ -132,8 +153,6 @@ namespace Orchard.Environment.Extensions
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
         {
-            InitializeExtensions();
-
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Loading features");
@@ -154,40 +173,6 @@ namespace Orchard.Environment.Extensions
             }
 
             return featuresToReturn;
-        }
-
-        private void InitializeExtensions()
-        {
-            if (isExtensionsInitialized)
-            {
-                return;
-            }
-
-            foreach (var searchPath in _extensionOptions.SearchPaths)
-            {
-                foreach (var subDirectory in _hostingEnvironment
-                    .ContentRootFileProvider
-                    .GetDirectoryContents(searchPath)
-                    .Where(x => x.IsDirectory))
-                {
-                    var extensionId = subDirectory.Name;
-
-                    if (!_extensionsById.ContainsKey(extensionId))
-                    {
-                        var subPath = Path.Combine(searchPath, extensionId);
-
-                        var extensionInfo =
-                            _extensionProvider.GetExtensionInfo(subPath);
-
-                        if (extensionInfo.ExtensionFileInfo.Exists)
-                        {
-                            _extensionsById.TryAdd(extensionId, extensionInfo);
-                        }
-                    }
-                }
-            }
-
-            isExtensionsInitialized = true;
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)

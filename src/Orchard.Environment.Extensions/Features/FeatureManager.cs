@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Features
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
         {
-            var features = new Dictionary<string, IFeatureInfo>();
+            var features = new List<IFeatureInfo>();
 
             // Features and Dependencies live within this section
             var featuresSection = manifestInfo.ConfigurationRoot.GetSection("features");
@@ -66,7 +66,7 @@ namespace Orchard.Environment.Extensions.Features
                         extensionInfo,
                         featureDependencyIds);
 
-                    features.Add(featureId, featureInfo);
+                    features.Add(featureInfo);
                 }
             }
             else
@@ -99,7 +99,7 @@ namespace Orchard.Environment.Extensions.Features
                     extensionInfo,
                     featureDependencyIds);
 
-                features.Add(featureId, featureInfo);
+                features.Add(featureInfo);
             }
 
             return new FeatureInfoList(features);
