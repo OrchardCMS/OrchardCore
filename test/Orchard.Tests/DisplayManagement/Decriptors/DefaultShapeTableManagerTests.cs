@@ -71,7 +71,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Features = new FeatureInfoList(new Dictionary<string, IFeatureInfo>());
+                Features = new FeatureInfoList(new List<IFeatureInfo>());
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
             }
@@ -99,10 +99,10 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
-                IDictionary<string, IFeatureInfo> features =
-                    new Dictionary<string, IFeatureInfo>()
+                var features =
+                    new List<IFeatureInfo>()
                     {
-                        {name, new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
                 Features = new FeatureInfoList(features);
@@ -126,10 +126,10 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
-                IDictionary<string, IFeatureInfo> features =
-                    new Dictionary<string, IFeatureInfo>()
+                var features =
+                    new List<IFeatureInfo>()
                     {
-                        {name, new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
                     };
 
                 Features = new FeatureInfoList(features);
@@ -203,7 +203,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IExtensionInfoList GetExtensions()
             {
-                return new ExtensionInfoList(_features.ToDictionary(x => x.Extension.Id, y => y.Extension));
+                return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)

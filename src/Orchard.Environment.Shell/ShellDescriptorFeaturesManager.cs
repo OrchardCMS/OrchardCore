@@ -48,21 +48,20 @@ namespace Orchard.Environment.Shell
                 .ToDictionary(featureDescriptor => featureDescriptor,
                               featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
 
-            IEnumerable<IFeatureInfo> featuresToEnable = features
+            var featuresToEnable = features
                 .Select(feature => EnableFeature(feature, availableFeatures, false))
                 .SelectMany(ies => ies)
-                .Distinct();
+                .Distinct()
+                .ToList();
 
-            if (featuresToEnable.Any())
+            if (featuresToEnable.Count > 0)
             {
-                enabledFeatures.AddRange(featuresToEnable);
-
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Enabling features {0}", string.Join(",", featuresToEnable.Select(x => x.Id)));
                 }
 
-                shellDescriptor.Features = enabledFeatures.Select(x => new ShellFeature(x.Id)).ToList();
+                shellDescriptor.Features = enabledFeatures.Concat(featuresToEnable).Select(x => new ShellFeature(x.Id)).ToList();
 
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
@@ -98,7 +97,7 @@ namespace Orchard.Environment.Shell
                 featuresToDisable.AddRange(disabled);
             }
 
-            if (featuresToDisable.Any())
+            if (featuresToDisable.Count > 0)
             {
                 var extensions = _extensionManager.GetExtensions();
                 var enabledFeatures = _extensionManager.GetEnabledFeatures(shellDescriptor).ToList();
@@ -203,7 +202,7 @@ namespace Orchard.Environment.Shell
                 .Where(x => affectedFeatures.Contains(x.Id))
                 .ToList();
 
-            if (featuresToEnable.Count() > 1 && !force)
+            if (featuresToEnable.Count > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -235,7 +234,7 @@ namespace Orchard.Environment.Shell
                 .Where(x => affectedFeatures.Contains(x.Id))
                 .ToList();
 
-            if (featuresToDisable.Count() > 1 && !force)
+            if (featuresToDisable.Count > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
