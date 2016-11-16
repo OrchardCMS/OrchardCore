@@ -65,25 +65,46 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    Feature strategyDefaultFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    Feature strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
-                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyDefaultFeature.Descriptor.Id))
+                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
                         continue;
 
-                    var builder = new ShapeTableBuilder(strategyDefaultFeature, excludedFeatures);
+                    var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
-                    var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
 
-                    foreach (var alteration in builtAlterations)
+                    var builtAlterations = builder.BuildAlterations();
+
+                    if (builtAlterations.Count() == 0)
+                        continue;
+                    
+                    var alterationSets = builtAlterations.GroupBy(a =>
+                        a.Feature.Descriptor.Id + a.ShapeType);
+
+                    foreach (var alterations in alterationSets)
                     {
-                        var key = (bindingStrategy.GetType().Name + ":"
-                            + alteration.Feature.Descriptor.Id + ":"
-                            + alteration.ShapeType).ToLower().GetHashCode();
+                        var firstAlteration = alterations.First();
 
-                        var descriptor = new FeatureShapeDescriptor(alteration.Feature, alteration.ShapeType);
+                        var key = (bindingStrategy.GetType().Name
+                            + firstAlteration.Feature.Descriptor.Id
+                            + firstAlteration.ShapeType).ToLower()
+                            .GetHashCode();
 
-                        alteration.Alter(descriptor);
-                        _shapeDescriptors[key] = descriptor;
+                        if (!_shapeDescriptors.ContainsKey(key))
+                        {
+                            var descriptor = new FeatureShapeDescriptor
+                            (
+                                firstAlteration.Feature,
+                                firstAlteration.ShapeType
+                            );
+
+                            foreach (var alteration in alterations)
+                            {
+                                alteration.Alter(descriptor);
+                            }
+
+                            _shapeDescriptors[key] = descriptor;
+                        }
                     }
                 }
 
@@ -93,12 +114,12 @@ namespace Orchard.DisplayManagement.Descriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-                        .Select(group => new ShapeDescriptorIndex
-                        (
-                            shapeType: group.Key,
-                            alterationKeys: group.Select(kv => kv.Key),
-                            descriptors: _shapeDescriptors
-                        ));
+                    .Select(group => new ShapeDescriptorIndex
+                    (
+                        shapeType: group.Key,
+                        alterationKeys: group.Select(kv => kv.Key),
+                        descriptors: _shapeDescriptors
+                    ));
 
                 shapeTable = new ShapeTable
                 {

@@ -1,19 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Events;
-using Orchard.Tests.Stubs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
@@ -45,12 +42,22 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
+            serviceCollection.AddScoped<IFeatureManager, TestFeatureManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
             var features = new[] {
+                new FeatureDescriptor
+                {
+                    Id = "Testing",
+                    Dependencies = Enumerable.Empty<string>(),
+                    Extension = new ExtensionDescriptor
+                    {
+                        Id = "Testing",
+                        ExtensionType = DefaultExtensionTypes.Module,
+                    }
+                },
                 new FeatureDescriptor {
                     Id = "Theme1",
                     Extension = new ExtensionDescriptor {
@@ -78,9 +85,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             TestShapeProvider.FeatureShapes = new Dictionary<Feature, IEnumerable<string>> {
                 { TestFeature(), new [] {"Hello"} },
-                { Feature(features[0]), new [] {"Theme1Shape"} },
-                { Feature(features[1]), new [] {"DerivedShape", "OverriddenShape"} },
-                { Feature(features[2]), new [] {"BaseShape", "OverriddenShape"} }
+                { Feature(features[1]), new [] {"Theme1Shape"} },
+                { Feature(features[2]), new [] {"DerivedShape", "OverriddenShape"} },
+                { Feature(features[3]), new [] {"BaseShape", "OverriddenShape"} }
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
@@ -114,6 +121,69 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             };
         }
 
+        public class TestFeatureManager : IFeatureManager
+        {
+            private readonly IExtensionManager _extensionManager;
+
+            public TestFeatureManager(IExtensionManager extensionManager)
+            {
+                _extensionManager = extensionManager;
+            }
+
+            public FeatureDependencyNotificationHandler FeatureDependencyNotification
+            {
+                get
+                {
+                    throw new NotImplementedException();
+                }
+
+                set
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            public Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> DisableFeaturesAsync(IEnumerable<string> featureIds, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> EnableFeaturesAsync(IEnumerable<string> featureIds)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> EnableFeaturesAsync(IEnumerable<string> featureIds, bool force)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetAvailableFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<string>> GetDependentFeaturesAsync(string featureId)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetDisabledFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureDescriptor>> GetEnabledFeaturesAsync()
+            {
+                return Task.FromResult(_extensionManager.AvailableFeatures());
+            }
+        }
+
         public class TestExtensionManager : IExtensionManager
         {
             private readonly IEnumerable<FeatureDescriptor> _availableFeautures;
@@ -145,7 +215,21 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
             {
-                return _availableFeautures.Any(x => x.Id == item.Id);
+                if (DefaultExtensionTypes.IsTheme(item.Extension.ExtensionType))
+                {
+                    if (DefaultExtensionTypes.IsModule(subject.Extension.ExtensionType))
+                    {
+                        return true;
+                    }
+
+                    if (DefaultExtensionTypes.IsTheme(subject.Extension.ExtensionType))
+                    {
+                        return item.Extension.BaseTheme == subject.Id;
+                    }
+                }
+
+                return item.Dependencies != null && item.Dependencies.Any(x =>
+                    StringComparer.OrdinalIgnoreCase.Equals(x, subject.Id));
             }
 
             public ExtensionEntry LoadExtension(ExtensionDescriptor descriptor)
@@ -234,12 +318,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe("Hello1").From(TestFeature())
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary" ? new PlacementInfo { Location = "" } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+            var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
             var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
             var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
             var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
@@ -264,12 +348,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe("Hello2").From(TestFeature())
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary", new PlacementInfo { Location = "" });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+            var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
             var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
             var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
             var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });

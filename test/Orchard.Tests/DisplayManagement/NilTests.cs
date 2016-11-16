@@ -27,7 +27,6 @@ namespace Orchard.Tests.DisplayManagement
             Assert.True(nil.Foo.Bar == null);
         }
 
-
         [Fact]
         public void CallingToStringOnNilShouldReturnEmpty()
         {

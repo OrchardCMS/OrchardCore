@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Orchard.DisplayManagement;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Routing;
+using Orchard.DisplayManagement;
 
 namespace Orchard.Tests.DisplayManagement
 {

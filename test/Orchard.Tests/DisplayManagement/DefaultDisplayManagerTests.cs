@@ -1,25 +1,25 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
 using Orchard.Events;
 using Orchard.Tests.Stubs;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using Xunit;
-using System.Threading.Tasks;
 
 namespace Orchard.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        ShapeTable _defaultShapeTable;
+        TestShapeTable _defaultShapeTable;
         IServiceProvider _serviceProvider;
 
         public class StubEventBus : IEventBus
@@ -39,10 +39,9 @@ namespace Orchard.Tests.DisplayManagement
             }
         }
 
-
         public DefaultDisplayManagerTests()
         {
-            _defaultShapeTable = new ShapeTable
+            _defaultShapeTable = new TestShapeTable
             {
                 Descriptors = new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
@@ -72,10 +71,6 @@ namespace Orchard.Tests.DisplayManagement
             void IShapeDisplayEvents.Displaying(ShapeDisplayingContext context) { Displaying(context); }
             void IShapeDisplayEvents.Displayed(ShapeDisplayedContext context) { Displayed(context); }
         }
-
-
-
-
 
         void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
         {
@@ -257,36 +252,6 @@ namespace Orchard.Tests.DisplayManagement
                 BindingAsync = binding,
             };
         }
-
-
-        //[Fact]
-        //public void IShapeDisplayEventsIsCalled() {
-        //    var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
-
-        //    var shape = new Shape {
-        //        Metadata = new ShapeMetadata {
-        //            Type = "Foo"
-        //        }
-        //    };
-
-        //    var descriptor = new ShapeDescriptor {
-        //        ShapeType = "Foo",
-        //    };
-        //    AddBinding(descriptor, "Foo", ctx => new HtmlString("yarg"));
-        //    AddShapeDescriptor(descriptor);
-
-        //    var displayingEventCount = 0;
-        //    var displayedEventCount = 0;
-        //    _container.Resolve<TestDisplayEvents>().Displaying = ctx => { ++displayingEventCount; };
-        //    _container.Resolve<TestDisplayEvents>().Displayed = ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToHtmlString() + "]"); };
-
-        //    var result = displayManager.Execute(CreateDisplayContext(shape));
-
-        //    Assert.That(displayingEventCount, Is.EqualTo(1));
-        //    Assert.That(displayedEventCount, Is.EqualTo(1));
-        //    Assert.That(result.ToString(), Is.EqualTo("[yarg]"));
-        //}
-
 
         [Fact]
         public async Task ShapeDescriptorDisplayingAndDisplayedAreCalled()

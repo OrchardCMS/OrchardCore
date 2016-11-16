@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -9,7 +8,7 @@ namespace Orchard.DisplayManagement.Descriptors
     {
         public IDictionary<string, ShapeDescriptor> Descriptors { get; set; }
 
-        public IDictionary<string, ShapeBinding> Bindings
+        public virtual IDictionary<string, ShapeBinding> Bindings
         {
             get { return new ShapeTableBindings(this); }
 

@@ -32,6 +32,27 @@ namespace Orchard.DisplayManagement.Descriptors
             _descriptors = descriptors;
         }
 
+        /// <summary>
+        /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
+        /// troubleshooting.
+        /// </summary>
+        public override string BindingSource
+        {
+            get
+            {
+                ShapeBinding binding;
+                return Bindings.TryGetValue(ShapeType, out binding) ? binding.BindingSource : null;
+            }
+        }
+
+        public override Func<DisplayContext, Task<IHtmlContent>> Binding
+        {
+            get
+            {
+                return Bindings[ShapeType].BindingAsync;
+            }
+        }
+
         public override IDictionary<string, ShapeBinding> Bindings
         {
             get
@@ -76,7 +97,7 @@ namespace Orchard.DisplayManagement.Descriptors
                         if (info != null)
                             break;
                     }
-                    return info;
+                    return info ?? DefaultPlacementAction(ctx);
                 });
             }
         }
@@ -110,7 +131,7 @@ namespace Orchard.DisplayManagement.Descriptors
             Placement = DefaultPlacementAction;
         }
 
-        private PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
+        protected PlacementInfo DefaultPlacementAction(ShapePlacementContext context)
         {
             // A null default placement means no default placement is specified
             if (DefaultPlacement == null)
@@ -127,7 +148,7 @@ namespace Orchard.DisplayManagement.Descriptors
         /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
         /// troubleshooting.
         /// </summary>
-        public string BindingSource
+        public virtual string BindingSource
         {
             get
             {
@@ -136,7 +157,7 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        public Func<DisplayContext, Task<IHtmlContent>> Binding
+        public virtual Func<DisplayContext, Task<IHtmlContent>> Binding
         {
             get
             {
