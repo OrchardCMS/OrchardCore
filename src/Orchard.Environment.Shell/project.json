@@ -1,8 +1,8 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "System.Reflection.TypeExtensions": "4.3.0",
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.0",
-    "Microsoft.Data.Sqlite": "1.0.0-*",
     "Microsoft.DotNet.ProjectModel": "1.0.0-rc3-003121",
     "Microsoft.DotNet.ProjectModel.Loader": "1.0.0-preview2-003121",
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
@@ -28,11 +28,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.1",
-        "System.Reflection.TypeExtensions": "4.3.0"
-      }
+      ]
     }
   },
   "packOptions": {

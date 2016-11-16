@@ -1,7 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Hosting": "1.0.0-*",
+    "Microsoft.AspNetCore.Hosting": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*"
@@ -19,10 +19,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.1"
-      }
+      ]
     }
   },
   "packOptions": {

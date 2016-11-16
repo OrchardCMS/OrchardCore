@@ -26,6 +26,6 @@
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-*"
+    "Microsoft.AspNetCore.Razor.Tools": "1.1.0-*"
   }
 }
