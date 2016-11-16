@@ -1,4 +1,6 @@
-﻿namespace Orchard.ContentManagement.Handlers
+﻿using System;
+
+namespace Orchard.ContentManagement.Handlers
 {
     public abstract class ContentHandlerBase : IContentHandler
     {
@@ -26,5 +28,7 @@
         //protected virtual void Cloned(CloneContentContext context) { }
 
         public virtual void GetContentItemMetadata(ContentItemMetadataContext context) { }
+
+        public virtual void GetContentItemAspect(ContentItemAspectContext context) { }
     }
 }

@@ -19,7 +19,6 @@ namespace Orchard.ContentManagement
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
         private readonly LinearBlockIdGenerator _idGenerator;
-
         private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
         public DefaultContentManager(
@@ -395,11 +394,11 @@ namespace Orchard.ContentManagement
         public TAspect GetAspect<TAspect>(IContent content) where TAspect : class
         {
             var aspect = ProxyGenerator.CreateClassProxy<TAspect>();
+
             var context = new ContentItemAspectContext
             {
                 ContentItem = content.ContentItem,
-                Aspect = aspect,
-                Type = typeof(TAspect)
+                Aspect = aspect
             };
 
             Handlers.Invoke(handler => handler.GetContentItemAspect(context), _logger);

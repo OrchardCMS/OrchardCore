@@ -24,6 +24,6 @@
         void Removing(RemoveContentContext context, ContentPart part);
         void Removed(RemoveContentContext context, ContentPart part);
         void GetContentItemMetadata(ContentItemMetadataContext context, ContentPart part);
-        void GetContentAspect(ContentItemAspectContext context, ContentPart part);
+        void GetContentItemAspect(ContentItemAspectContext context, ContentPart part);
     }
 }
