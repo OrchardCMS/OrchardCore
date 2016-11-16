@@ -3,7 +3,6 @@
 
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
-    "NETStandard.Library": "1.6.1",
     "Orchard.DeferredTasks": "2.0.0-*",
     "Orchard.Data": "2.0.0-*",
     "Orchard.Environment.Cache": "2.0.0-*",

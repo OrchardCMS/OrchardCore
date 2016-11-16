@@ -4,7 +4,6 @@ using Orchard.ContentFields.Fields;
 using Orchard.ContentFields.Settings;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Drivers;
 using Orchard.ContentTypes.Editors;
 
 namespace Orchard.ContentFields

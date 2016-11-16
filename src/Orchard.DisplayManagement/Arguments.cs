@@ -1,5 +1,4 @@
-﻿using Orchard.Validation;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,9 +37,6 @@ namespace Orchard.DisplayManagement
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
-                Argument.ThrowIfNull(arguments, nameof(arguments));
-                Argument.ThrowIfNull(names, nameof(names));
-
                 if (arguments.Count() < names.Count())
                 {
                     throw new ArgumentException("arguments.Count() < names.Count()");
