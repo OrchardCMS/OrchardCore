@@ -318,12 +318,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe("Hello1").From(TestFeature())
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary" ? new PlacementInfo { Location = "" } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+            var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
             var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
             var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
             var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
@@ -348,12 +348,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello").From(TestFeature())
+                builder => builder.Describe("Hello2").From(TestFeature())
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
                     .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary", new PlacementInfo { Location = "" });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+            var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
             var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
             var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
             var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });

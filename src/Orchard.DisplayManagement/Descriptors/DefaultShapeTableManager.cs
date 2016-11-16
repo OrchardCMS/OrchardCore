@@ -65,30 +65,46 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    Feature strategyDefaultFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    Feature strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
-                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyDefaultFeature.Descriptor.Id))
+                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
                         continue;
 
-                    var builder = new ShapeTableBuilder(strategyDefaultFeature, excludedFeatures);
+                    var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
-                    var builtAlterations = builder.BuildAlterations().ToReadOnlyCollection();
 
-                    foreach (var alteration in builtAlterations)
+                    var builtAlterations = builder.BuildAlterations();
+
+                    if (builtAlterations.Count() == 0)
+                        continue;
+                    
+                    var alterationSets = builtAlterations.GroupBy(a =>
+                        a.Feature.Descriptor.Id + a.ShapeType);
+
+                    foreach (var alterations in alterationSets)
                     {
+                        var firstAlteration = alterations.First();
+
                         var key = (bindingStrategy.GetType().Name
-                            + alteration.Feature.Descriptor.Id
-                            + alteration.ShapeType).ToLower()
+                            + firstAlteration.Feature.Descriptor.Id
+                            + firstAlteration.ShapeType).ToLower()
                             .GetHashCode();
 
-                        var descriptor = new FeatureShapeDescriptor
-                        (
-                            alteration.Feature,
-                            alteration.ShapeType
-                        );
+                        if (!_shapeDescriptors.ContainsKey(key))
+                        {
+                            var descriptor = new FeatureShapeDescriptor
+                            (
+                                firstAlteration.Feature,
+                                firstAlteration.ShapeType
+                            );
 
-                        alteration.Alter(descriptor);
-                        _shapeDescriptors[key] = descriptor;
+                            foreach (var alteration in alterations)
+                            {
+                                alteration.Alter(descriptor);
+                            }
+
+                            _shapeDescriptors[key] = descriptor;
+                        }
                     }
                 }
 
