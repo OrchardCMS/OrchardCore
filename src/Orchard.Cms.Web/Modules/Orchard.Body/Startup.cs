@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Body.Drivers;
+using Orchard.Body.Handlers;
+using Orchard.Body.Indexing;
 using Orchard.Body.Model;
 using Orchard.Body.Settings;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
+using Orchard.Indexing;
 using Orchard.Tokens;
 
 namespace Orchard.Body
@@ -20,6 +24,8 @@ namespace Orchard.Body
             services.AddSingleton<ContentPart, BodyPart>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BodyPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IContentPartIndexHandler, BodyPartIndexHandler>();
+            services.AddScoped<IContentPartHandler, BodyPartHandler>();
 
             services.AddNullTokenizer();
         }

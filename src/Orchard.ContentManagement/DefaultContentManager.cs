@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
@@ -18,6 +19,7 @@ namespace Orchard.ContentManagement
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
         private readonly LinearBlockIdGenerator _idGenerator;
+        private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
@@ -387,6 +389,21 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.GetContentItemMetadata(context), _logger);
 
             return context.Metadata;
+        }
+
+        public TAspect GetAspect<TAspect>(IContent content) where TAspect : class
+        {
+            var aspect = ProxyGenerator.CreateClassProxy<TAspect>();
+
+            var context = new ContentItemAspectContext
+            {
+                ContentItem = content.ContentItem,
+                Aspect = aspect
+            };
+
+            Handlers.Invoke(handler => handler.GetContentItemAspect(context), _logger);
+
+            return aspect;
         }
 
         public async Task RemoveAsync(ContentItem contentItem)

@@ -35,8 +35,8 @@ namespace Orchard.BackgroundTasks
             _orchardHost = orchardHost;
             _applicationLifetime = applicationLifetime;
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
-            _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Stopped);
-            _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWork, x, Timeout.Infinite, Timeout.Infinite));
+            _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Idle);
+            _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWorkAsync, x, Timeout.Infinite, Timeout.Infinite));
             _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
             Logger = logger;
         }
@@ -53,7 +53,9 @@ namespace Orchard.BackgroundTasks
             }
         }
 
-        private void DoWork(object group)
+        // NB: Async void should be avoided; it should only be used for event handlers.Timer.Elapsed is an event handler.So, it's not necessarily wrong here.
+        // c.f. http://stackoverflow.com/questions/25007670/using-async-await-inside-the-timer-elapsed-event-handler-within-a-windows-servic
+        private async void DoWorkAsync(object group)
         {
             // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
             // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
@@ -69,8 +71,19 @@ namespace Orchard.BackgroundTasks
                 {
                     try
                     {
+                        if (_states[task] == BackgroundTaskState.Stopped)
+                        {
+                            return;
+                        }
+
                         lock (_states)
                         {
+                            // Ensure Terminate() was not called before
+                            if (_states[task] == BackgroundTaskState.Stopped)
+                            {
+                                return;
+                            }
+
                             _states[task] = BackgroundTaskState.Running;
                         }
 
@@ -79,7 +92,7 @@ namespace Orchard.BackgroundTasks
                             Logger.LogInformation("Start processing background task \"{0}\".", taskName);
                         }
 
-                        task.DoWork(scope.ServiceProvider, _applicationLifetime.ApplicationStopping);
+                        await task.DoWorkAsync(scope.ServiceProvider, _applicationLifetime.ApplicationStopping);
 
                         if (Logger.IsEnabled(LogLevel.Information))
                         {
@@ -97,7 +110,11 @@ namespace Orchard.BackgroundTasks
                     {
                         lock (_states)
                         {
-                            _states[task] = BackgroundTaskState.Idle;
+                            // Ensure Terminate() was not called during the task
+                            if (_states[task] != BackgroundTaskState.Stopped)
+                            {
+                                _states[task] = BackgroundTaskState.Idle;
+                            }
                         }
                     }
                 }

@@ -20,10 +20,7 @@
         void Unpublished(PublishContentContext context);
         void Removing(RemoveContentContext context);
         void Removed(RemoveContentContext context);
-
-        //void Indexing(IndexContentContext context);
-        //void Indexed(IndexContentContext context);
-
         void GetContentItemMetadata(ContentItemMetadataContext context);
+        void GetContentItemAspect(ContentItemAspectContext context);
     }
 }

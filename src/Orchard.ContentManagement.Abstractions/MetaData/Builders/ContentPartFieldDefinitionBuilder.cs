@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentManagement.Metadata.Builders
@@ -22,6 +23,19 @@ namespace Orchard.ContentManagement.Metadata.Builders
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string value)
         {
             _settings[name] = value;
+            return this;
+        }
+
+        public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
+            var jObject = JObject.FromObject(settings);
+            _settings[typeof(T).Name] = jObject;
+
             return this;
         }
 

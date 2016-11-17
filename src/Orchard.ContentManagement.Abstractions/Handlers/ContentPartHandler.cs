@@ -1,4 +1,6 @@
-﻿namespace Orchard.ContentManagement.Handlers
+﻿using System;
+
+namespace Orchard.ContentManagement.Handlers
 {
     public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPart : ContentPart, new()
     {
@@ -154,6 +156,14 @@
             }
         }
 
+        void IContentPartHandler.GetContentItemAspect(ContentItemAspectContext context, ContentPart part)
+        {
+            if (part is TPart)
+            {
+                GetContentItemAspect(context, (TPart)part);
+            }
+        }
+
         public virtual void Activated(ActivatedContentContext context, TPart instance) { }
         public virtual void Activating(ActivatingContentContext context, TPart instance) { }
         public virtual void Initializing(InitializingContentContext context, TPart instance) { }
@@ -173,6 +183,6 @@
         public virtual void Removing(RemoveContentContext context, TPart instance) { }
         public virtual void Removed(RemoveContentContext context, TPart instance) { }
         public virtual void GetContentItemMetadata(ContentItemMetadataContext context, TPart part) { }
-
+        public virtual void GetContentItemAspect(ContentItemAspectContext context, TPart part) { }
     }
 }

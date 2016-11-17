@@ -59,7 +59,7 @@
 
                     @if (part != typePart)
                     {
-                    @if (!String.IsNullOrEmpty(part.Description()))
+                        @if (!String.IsNullOrEmpty(part.Description()))
                         {
                             <span class="hint">@T["— {0}", part.Description()]</span>
                         }

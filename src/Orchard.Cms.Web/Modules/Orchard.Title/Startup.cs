@@ -4,8 +4,10 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
+using Orchard.Indexing;
 using Orchard.Title.Drivers;
 using Orchard.Title.Handlers;
+using Orchard.Title.Indexing;
 using Orchard.Title.Model;
 
 namespace Orchard.Title
@@ -18,6 +20,7 @@ namespace Orchard.Title
             services.AddScoped<IContentPartDisplayDriver, TitlePartDisplay>();
             services.AddSingleton<ContentPart, TitlePart>();
             services.AddScoped<IContentPartHandler, TitlePartHandler>();
+            services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }
