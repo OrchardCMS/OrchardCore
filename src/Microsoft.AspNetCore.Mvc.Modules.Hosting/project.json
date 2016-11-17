@@ -1,6 +1,7 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
+    "System.Diagnostics.Process": "4.3.0",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Http": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
@@ -11,8 +12,7 @@
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*"
+    "Orchard.Hosting": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -26,8 +26,7 @@
         "portable-net451+win8"
       ],
       "dependencies": {
-        "NETStandard.Library": "1.6.1",
-        "System.Diagnostics.Process": "4.1.0-*"
+        "NETStandard.Library": "1.6.1"
       }
     }
   },

@@ -4,9 +4,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Parser;
 using Orchard.Parser.Yaml;
-using Orchard.Validation;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace Orchard.Environment.Shell
 {
@@ -67,10 +67,10 @@ namespace Orchard.Environment.Shell
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings)
         {
-            Argument.ThrowIfNull(shellSettings, nameof(shellSettings));
-            Argument.ThrowIfNullOrWhiteSpace(shellSettings.Name,
-                nameof(shellSettings.Name),
-                "The Name property of the supplied ShellSettings object is null or empty; the settings cannot be saved.");
+            if (shellSettings == null)
+            {
+                throw new ArgumentNullException(nameof(shellSettings));
+            }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {

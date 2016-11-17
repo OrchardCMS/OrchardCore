@@ -10,8 +10,7 @@
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*"
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
