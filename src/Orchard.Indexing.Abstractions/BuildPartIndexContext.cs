@@ -7,7 +7,8 @@ namespace Orchard.Indexing
     {
         public BuildPartIndexContext(
             DocumentIndex documentIndex, 
-            ContentItem contentItem, string key, 
+            ContentItem contentItem, 
+            string key, 
             ContentTypePartDefinition typePartDefinition, 
             ContentIndexSettings settings)
             :base(documentIndex, contentItem, key)

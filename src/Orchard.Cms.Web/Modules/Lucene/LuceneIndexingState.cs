@@ -24,8 +24,7 @@ namespace Lucene
                 shellOptions.Value.ShellsRootContainerName, 
                 shellOptions.Value.ShellsContainerName, 
                 shellSettings.Name, 
-                "Lucene", 
-                "status.json");
+                "lucene.status.json");
 
             if (!File.Exists(_indexSettingsFilename))
             {

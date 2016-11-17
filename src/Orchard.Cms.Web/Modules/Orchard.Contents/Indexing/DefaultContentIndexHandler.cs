@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Orchard.Indexing;
 
-namespace Orchard.Identity.Indexing
+namespace Orchard.Contents.Indexing
 {
     public class DefaultContentIndexHandler : IContentItemIndexHandler
     {

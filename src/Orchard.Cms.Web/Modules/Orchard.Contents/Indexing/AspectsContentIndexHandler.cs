@@ -3,7 +3,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Models;
 using Orchard.Indexing;
 
-namespace Orchard.Identity.Indexing
+namespace Orchard.Contents.Indexing
 {
     public class AspectsContentIndexHandler : IContentItemIndexHandler
     {
@@ -16,7 +16,7 @@ namespace Orchard.Identity.Indexing
 
         public Task BuildIndexAsync(BuildIndexContext context)
         {
-            var body = _contentManager.GetAspect<IBodyAspect>(context.ContentItem);
+            var body = _contentManager.PopulateAspect(context.ContentItem, new BodyAspect());
 
             if (body != null)
             {

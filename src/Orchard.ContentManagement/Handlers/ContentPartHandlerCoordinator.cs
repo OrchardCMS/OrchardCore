@@ -435,26 +435,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 }
             }
         }
-
-        public override void GetContentItemMetadata(ContentItemMetadataContext context)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (contentTypeDefinition == null)
-                return;
-
-            foreach (var typePartDefinition in contentTypeDefinition.Parts)
-            {
-                var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, partName) as ContentPart;
-
-                if (part != null)
-                {
-                    _partHandlers.Invoke(handler => handler.GetContentItemMetadata(context, part), Logger);
-                }
-            }
-        }
-
+        
         public override void GetContentItemAspect(ContentItemAspectContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

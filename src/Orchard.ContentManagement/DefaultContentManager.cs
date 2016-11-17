@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
@@ -19,7 +18,6 @@ namespace Orchard.ContentManagement
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
         private readonly LinearBlockIdGenerator _idGenerator;
-        private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
@@ -378,23 +376,8 @@ namespace Orchard.ContentManagement
             _contentManagerSession.Store(contentItem);
         }
 
-        public ContentItemMetadata GetItemMetadata(IContent content)
+        public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
         {
-            var context = new ContentItemMetadataContext
-            {
-                ContentItem = content.ContentItem,
-                Metadata = new ContentItemMetadata()
-            };
-
-            Handlers.Invoke(handler => handler.GetContentItemMetadata(context), _logger);
-
-            return context.Metadata;
-        }
-
-        public TAspect GetAspect<TAspect>(IContent content) where TAspect : class
-        {
-            var aspect = ProxyGenerator.CreateClassProxy<TAspect>();
-
             var context = new ContentItemAspectContext
             {
                 ContentItem = content.ContentItem,

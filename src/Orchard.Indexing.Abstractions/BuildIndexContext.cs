@@ -11,6 +11,7 @@ namespace Orchard.Indexing
         {
             ContentItem = contentItem;
             DocumentIndex = documentIndex;
+            Key = key;
         }
 
         public string Key { get; }

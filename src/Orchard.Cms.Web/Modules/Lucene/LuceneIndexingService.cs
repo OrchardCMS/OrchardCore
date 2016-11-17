@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard;
@@ -57,6 +56,11 @@ namespace Lucene
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
                 allIndexes.Add(indexName, taskId);
+            }
+
+            if (!allIndexes.Any())
+            {
+                return;
             }
 
             IEnumerable<IndexingTask> batch;

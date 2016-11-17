@@ -9,7 +9,7 @@ namespace Orchard.Body.Handlers
     {
         public override void GetContentItemAspect(ContentItemAspectContext context, BodyPart part)
         {
-            context.For<IBodyAspect>(bodyAspect => bodyAspect.Body = new HtmlString(part.Body));
+            context.For<BodyAspect>(bodyAspect => bodyAspect.Body = new HtmlString(part.Body));
         }
     }
 }

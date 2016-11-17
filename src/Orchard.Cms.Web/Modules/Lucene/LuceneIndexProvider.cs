@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
 using Directory = System.IO.Directory;
@@ -38,6 +38,14 @@ namespace Lucene
 
         public void DeleteDocuments(string indexName, IEnumerable<int> documentIds)
         {
+            foreach (var documentId in documentIds)
+            {
+                var filename = GetFilename(indexName, documentId);
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                }
+            }
         }
 
         public void DeleteIndex(string indexName)
@@ -64,6 +72,13 @@ namespace Lucene
 
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
+            foreach(var indexDocument in indexDocuments)
+            {
+                var filename = GetFilename(indexName, indexDocument.DocumentId);
+                var content = JsonConvert.SerializeObject(indexDocument);
+                File.WriteAllText(filename, content);
+            }
+
             using (var directory = FSDirectory.Open(new DirectoryInfo(Path.Combine(_rootPath, indexName))))
             {
                 //using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(Net.Util.LuceneVersion.LUCENE_48, new StandardAnalyzer()))
@@ -73,6 +88,11 @@ namespace Lucene
                 //    iwriter.AddDocument(doc);
                 //}
             }
+        }
+
+        private string GetFilename(string indexName, int documentId)
+        {
+            return Path.Combine(_rootPath, indexName, documentId + ".json");
         }
     }
 }

@@ -27,8 +27,6 @@ namespace Orchard.ContentManagement.Handlers
         //protected virtual void Cloning(CloneContentContext context) { }
         //protected virtual void Cloned(CloneContentContext context) { }
 
-        public virtual void GetContentItemMetadata(ContentItemMetadataContext context) { }
-
         public virtual void GetContentItemAspect(ContentItemAspectContext context) { }
     }
 }
