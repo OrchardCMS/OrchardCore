@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Commands;
+using NLog.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
@@ -41,6 +42,7 @@ namespace Orchard.Cms.Web
 
             app.UseStaticFiles();
             loggerFactory.AddConsole(Configuration);
+            loggerFactory.AddNLog();
 
             if (env.IsDevelopment())
             {

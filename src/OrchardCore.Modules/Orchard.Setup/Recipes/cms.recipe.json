@@ -41,7 +41,6 @@
         "Orchard.ContentTypes",
         "Orchard.Demo",
         "Orchard.Deployment",
-        "Orchard.Logging",
         "Orchard.Deployment.Remote",
         "Orchard.Feeds",
         "Orchard.Flows",
