@@ -3,7 +3,7 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Orchard.Admin.Abstractions": "2.0.0-*",
-    "Orchard.Data": "2.0.0-*",
+    "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",

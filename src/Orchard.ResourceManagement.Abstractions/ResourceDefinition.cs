@@ -32,7 +32,6 @@ namespace Orchard.ResourceManagement
         };
 
         private string _basePath;
-        private readonly IDictionary<RequireSettings, string> _urlResolveCache = new ConcurrentDictionary<RequireSettings, string>();
 
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
         {
@@ -222,41 +221,36 @@ namespace Orchard.ResourceManagement
         public TagBuilder GetTagBuilder(RequireSettings settings, string applicationPath)
         {
             string url;
-            if (!_urlResolveCache.TryGetValue(settings, out url))
+            // Url priority:
+            if (settings.DebugMode)
             {
-                // Url priority:
-                if (settings.DebugMode)
+                url = settings.CdnMode
+                    ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url)
+                    : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
+            }
+            else
+            {
+                url = settings.CdnMode
+                    ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
+                    : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
+            }
+            if (String.IsNullOrEmpty(url))
+            {
+                url = null;
+            }
+            if (!String.IsNullOrEmpty(settings.Culture))
+            {
+                string nearestCulture = FindNearestCulture(settings.Culture);
+                if (!String.IsNullOrEmpty(nearestCulture))
                 {
-                    url = settings.CdnMode
-                        ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url)
-                        : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
+                    url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
                 }
-                else
-                {
-                    url = settings.CdnMode
-                        ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
-                        : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
-                }
-                if (String.IsNullOrEmpty(url))
-                {
-                    url = null;
-                }
-                if (!String.IsNullOrEmpty(settings.Culture))
-                {
-                    string nearestCulture = FindNearestCulture(settings.Culture);
-                    if (!String.IsNullOrEmpty(nearestCulture))
-                    {
-                        url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
-                    }
-                }
+            }
 
-                if (url.StartsWith("~/", StringComparison.Ordinal))
-                {
-                    // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                    url = url.Substring(1);
-                }
-
-                _urlResolveCache[settings] = url;
+            if (url.StartsWith("~/", StringComparison.Ordinal))
+            {
+                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
+                url = url.Substring(1);
             }
 
             var tagBuilder = new TagBuilder(TagName);
