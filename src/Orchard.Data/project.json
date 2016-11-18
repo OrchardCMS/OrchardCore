@@ -1,9 +1,9 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Data.Sqlite": "1.0.0",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Data.Sqlite": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
@@ -12,19 +12,11 @@
     "YesSql.Storage.Sql": "1.0.0-*"
   },
   "buildOptions": {
-    "define": [ "TRACE" ],
-    "debugType": "portable",
-    "warningsAsErrors": true
+    "debugType": "portable"
   },
   "frameworks": {
     "netstandard1.6": {
-      "imports": [
-        "dnxcore50",
-        "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
-      }
+      "imports": "dnxcore50"
     }
   },
   "packOptions": {

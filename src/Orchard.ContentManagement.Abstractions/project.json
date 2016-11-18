@@ -1,14 +1,13 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Html.Abstractions": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.DataAnnotations": "1.0.0",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.0.0",
+    "Microsoft.AspNetCore.Html.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.DataAnnotations": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DependencyInjection": "2.0.0-*",
-    "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
-    "Orchard.Validation": "2.0.0-*"
+    "Orchard.Environment.Cache.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -20,10 +19,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
-      }
+      ]
     }
   },
   "packOptions": {

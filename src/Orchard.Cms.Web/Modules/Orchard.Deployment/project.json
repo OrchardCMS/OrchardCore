@@ -1,8 +1,8 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0",
-    "System.IO.Compression.ZipFile": "4.0.1",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
+    "System.IO.Compression.ZipFile": "4.3.0",
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Deployment.Core": "2.0.0-*",
@@ -20,10 +20,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
-      }
+      ]
     }
   }
 }

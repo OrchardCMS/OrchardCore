@@ -22,10 +22,9 @@ namespace Orchard.Setup
         {
             routes.MapAreaRoute(
                 name: "Setup",
-                area: "Orchard.Setup",
+                areaName: "Orchard.Setup",
                 template: "",
-                controller: "Setup",
-                action: "Index"
+                defaults: new { controller = "Setup", action = "Index" }
             );
         }
     }

@@ -1,10 +1,10 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.Data.Abstractions": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Microsoft.Extensions.Caching.Abstractions": "1.0.0"
+    "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -16,10 +16,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.0-*"
-      }
+      ]
     }
   },
   "packOptions": {

@@ -19,7 +19,6 @@ namespace Orchard.Roles.Services
         private const string Key = "RolesManager.Roles";
 
         private readonly ISession _session;
-        private RolesDocument _roles;
         private readonly ISignal _signal;
         private readonly IMemoryCache _memoryCache;
 
@@ -38,28 +37,25 @@ namespace Orchard.Roles.Services
         {
             return await _memoryCache.GetOrCreateAsync(Key, async (entry) =>
             {
-                _roles = await _session.QueryAsync<RolesDocument>().FirstOrDefault();
+                var roles = await _session.QueryAsync<RolesDocument>().FirstOrDefault();
 
-                if (_roles == null)
+                if (roles == null)
                 {
-                    _roles = new RolesDocument();
-                    UpdateRoles();
+                    roles = new RolesDocument();
+                    _session.Save(roles);
                 }
 
                 entry.ExpirationTokens.Add(_signal.GetToken(Key));
 
-                return _roles;
+                return roles;
             });
         }
 
-        public void UpdateRoles()
+        public void UpdateRoles(RolesDocument roles)
         {
-            if (_roles != null)
-            {
-                _roles.Serial++;
-                _session.Save(_roles);
-                _signal.SignalToken(Key);
-            }
+            roles.Serial++;
+            _session.Save(roles);
+            _memoryCache.Set(Key, roles);
         }
 
         public async Task<IEnumerable<string>> GetRoleNamesAsync()
@@ -80,7 +76,7 @@ namespace Orchard.Roles.Services
 
             var roles = await GetRolesAsync();
             roles.Roles.Add(role);
-            UpdateRoles();
+            UpdateRoles(roles);
 
             return IdentityResult.Success;
         }
@@ -102,7 +98,7 @@ namespace Orchard.Roles.Services
 
             var roles = await GetRolesAsync();
             roles.Roles.Remove(role);
-            UpdateRoles();
+            UpdateRoles(roles);
 
             return IdentityResult.Success;
         }
@@ -171,7 +167,6 @@ namespace Orchard.Roles.Services
             }
 
             role.NormalizedRoleName = normalizedName;
-            UpdateRoles();
 
             return Task.CompletedTask;
         }
@@ -186,12 +181,11 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleName = roleName;
-            UpdateRoles();
 
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -200,9 +194,14 @@ namespace Orchard.Roles.Services
                 throw new ArgumentNullException(nameof(role));
             }
 
-            UpdateRoles();
+            var roles = await GetRolesAsync();
+            var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
+            roles.Roles.Remove(existingRole);
+            roles.Roles.Add(role);
 
-            return Task.FromResult(IdentityResult.Success);
+            UpdateRoles(roles);
+
+            return IdentityResult.Success;
         }
 
         #endregion
@@ -221,7 +220,6 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value } );
-            UpdateRoles();
 
             return Task.CompletedTask;
         }
@@ -249,7 +247,6 @@ namespace Orchard.Roles.Services
             }
 
             role.RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
-            UpdateRoles();
 
             return Task.CompletedTask;
         }
