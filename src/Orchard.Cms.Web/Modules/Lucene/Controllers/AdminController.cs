@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.Net.QueryParsers.Classic;
 using Lucene.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,15 @@ namespace Lucene.Controllers
     public class AdminController : Controller
     {
         private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly LuceneSettings _luceneSettings;
         private readonly INotifier _notifier;
 
         public AdminController(
             LuceneIndexProvider luceneIndexProvider,
+            LuceneIndexingService luceneIndexingService,
+            LuceneSettings luceneSettings,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
@@ -27,7 +32,9 @@ namespace Lucene.Controllers
             ILogger<AdminController> logger)
         {
             _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
+            _luceneSettings = luceneSettings;
             _notifier = notifier;
             S = s;
             H = h;
@@ -84,7 +91,9 @@ namespace Lucene.Controllers
             
             try
             {
-                _luceneIndexProvider.CreateIndex(model.IndexName);
+                // We call Rebuild in order to reset the index state cursor too in case the same index
+                // name was also used previously.
+                _luceneIndexingService.RebuildIndex(model.IndexName);
             }
             catch (Exception e)
             {
@@ -99,14 +108,21 @@ namespace Lucene.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Update(string id)
+        public async Task<ActionResult> Reset(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Unauthorized();
             }
 
-            // _indexingService.UpdateIndex(id);
+            if (!_luceneIndexProvider.Exists(id))
+            {
+                return NotFound();
+            }
+
+            _luceneIndexingService.ResetIndex(id);
+
+            _notifier.Success(H["Index <em>{0}</em> resetted successfully", id]);
 
             return RedirectToAction("Index");
         }
@@ -119,7 +135,14 @@ namespace Lucene.Controllers
                 return Unauthorized();
             }
 
-            // _indexingService.RebuildIndex(id);
+            if (!_luceneIndexProvider.Exists(id))
+            {
+                return NotFound();
+            }
+
+            _luceneIndexingService.RebuildIndex(id);
+
+            _notifier.Success(H["Index <em>{0}</em> rebuilt successfully", id]);
 
             return RedirectToAction("Index");
         }
@@ -130,6 +153,11 @@ namespace Lucene.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Unauthorized();
+            }
+
+            if (!_luceneIndexProvider.Exists(model.IndexName))
+            {
+                return NotFound();
             }
 
             try
@@ -145,6 +173,35 @@ namespace Lucene.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Query(AdminQueryViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Unauthorized();
+            }
+
+            if (!_luceneIndexProvider.Exists(model.IndexName))
+            {
+                return NotFound();
+            }
+
+            if (String.IsNullOrWhiteSpace(model.Query))
+            {
+                return View(model);
+            }
+
+            var queryParser = new QueryParser(_luceneSettings.GetVersion(), "", _luceneSettings.GetAnalyzer());
+            var query = queryParser.Parse(model.Query);
+
+            _luceneIndexProvider.Search(model.IndexName, searcher =>
+            {
+                var docs = searcher.Search(query, 10);
+                model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+            });
+
+            return View(model);
         }
 
         private void ValidateModel(AdminEditViewModel model)

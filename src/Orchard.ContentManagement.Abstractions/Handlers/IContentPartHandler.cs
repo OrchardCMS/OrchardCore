@@ -23,7 +23,6 @@
         void Unpublished(PublishContentContext context, ContentPart part);
         void Removing(RemoveContentContext context, ContentPart part);
         void Removed(RemoveContentContext context, ContentPart part);
-        void GetContentItemMetadata(ContentItemMetadataContext context, ContentPart part);
         void GetContentItemAspect(ContentItemAspectContext context, ContentPart part);
     }
 }

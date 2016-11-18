@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.Net.Analysis;
 using Microsoft.Extensions.Logging;
 using Orchard;
 using Orchard.ContentManagement;
@@ -50,7 +51,7 @@ namespace Lucene
             var allIndexes = new Dictionary<string, int>();
 
             // Find the lowest task id to process
-            int lastTaskId = 0;
+            int lastTaskId = int.MaxValue;
             foreach (var indexName in _indexProvider.List())
             {
                 var taskId = _indexingState.GetLastTaskId(indexName);
@@ -102,8 +103,6 @@ namespace Lucene
                                 _indexProvider.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
                             }
                         }
-
-                        break;
                     }
                 }
 
@@ -121,6 +120,27 @@ namespace Lucene
                 _indexingState.Update();
 
             } while (batch.Count() == BatchSize);
+        }
+
+        /// <summary>
+        /// Restarts the indexing process from the beginning in order to update
+        /// current content items. It doesn't delete existing entries from the index.
+        /// </summary>
+        public void ResetIndex(string indexName)
+        {
+            _indexingState.SetLastTaskId(indexName, 0);
+            _indexingState.Update();
+        }
+
+        /// <summary>
+        /// Deletes and recreates the full index content.
+        /// </summary>
+        public void RebuildIndex(string indexName)
+        {
+            _indexProvider.DeleteIndex(indexName);
+            _indexProvider.CreateIndex(indexName);
+
+            ResetIndex(indexName);
         }
     }
 }

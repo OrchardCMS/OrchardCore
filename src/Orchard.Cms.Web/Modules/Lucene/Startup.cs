@@ -1,5 +1,8 @@
-﻿using Lucene.Settings;
+﻿using System;
+using Lucene.Settings;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
@@ -21,8 +24,20 @@ namespace Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<LuceneIndexProvider>();
+            services.AddScoped<LuceneSettings>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaRoute(
+                name: "Lucene.Search",
+                areaName: "Lucene",
+                template: "Search/{id?}",
+                defaults: new { controller = "Search", action = "Index", id = "" }
+            );
+
         }
     }
 }

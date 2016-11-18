@@ -21,11 +21,23 @@ namespace Orchard.Contents.Indexing
             if (body != null)
             {
                 context.DocumentIndex.Entries.Add(
-                "Content.IBodyAspect.Body",
+                "Content.BodyAspect.Body",
                 new DocumentIndex.DocumentIndexEntry(
                     body.Body,
                     DocumentIndex.Types.Text,
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+            }
+
+            var contentItemMetadata = _contentManager.PopulateAspect(context.ContentItem, new ContentItemMetadata());
+
+            if (contentItemMetadata?.DisplayText != null)
+            {
+                context.DocumentIndex.Entries.Add(
+                "Content.ContentItemMetadata.DisplayText",
+                new DocumentIndex.DocumentIndexEntry(
+                    contentItemMetadata.DisplayText,
+                    DocumentIndex.Types.Text,
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize | DocumentIndexOptions.Store));
             }
 
             return Task.CompletedTask;

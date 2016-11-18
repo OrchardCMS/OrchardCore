@@ -6,6 +6,7 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Codecs;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
+using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.AspNetCore.Hosting;
@@ -58,7 +59,7 @@ namespace Lucene
             }
         }
 
-        public void DeleteDocuments(string indexName, IEnumerable<int> documentIds)
+        public void DeleteDocuments(string indexName, IEnumerable<int> contentItemIds)
         {
             // FOR DEBUG ONLY
             //foreach (var documentId in documentIds)
@@ -75,17 +76,22 @@ namespace Lucene
             using (var directory = FSDirectory.Open(path))
             using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
             {
-                iwriter.DeleteDocuments(documentIds.Select(x => new Term("ContentItemId", x.ToString())).ToArray());
+                iwriter.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x.ToString())).ToArray());
             }
         }
 
         public void DeleteIndex(string indexName)
         {
-            Directory.Delete(Path.Combine(_rootPath, indexName));
+            Directory.Delete(Path.Combine(_rootPath, indexName), true);
         }
 
         public bool Exists(string indexName)
         {
+            if (String.IsNullOrWhiteSpace(indexName))
+            {
+                return false;
+            }
+
             return Directory.Exists(Path.Combine(_rootPath, indexName));
         }
 
@@ -130,12 +136,39 @@ namespace Lucene
             }
         }
 
+        public void Search(string indexName, Action<IndexSearcher> searcher)
+        {
+            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+            using (var directory = FSDirectory.Open(path))
+            {
+                using (var indexReader = DirectoryReader.Open(directory))
+                {
+                    var iSearcher = new IndexSearcher(indexReader);
+                    searcher(iSearcher);
+                }
+            }
+        }
+
+        public void Read(string indexName, Action<DirectoryReader> reader)
+        {
+            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+            using (var directory = FSDirectory.Open(path))
+            {
+                using (var indexReader = DirectoryReader.Open(directory))
+                {
+                    reader(indexReader);
+                }
+            }
+        }
+
         private Document CreateLuceneDocument(DocumentIndex documentIndex)
         {
             var doc = new Document();
 
             // Always store the content item id
-            doc.Add(new IntField("ContentItemId", documentIndex.ContentItemId, Field.Store.YES));
+            doc.Add(new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES));
 
             foreach (var entry in documentIndex.Entries)
             {

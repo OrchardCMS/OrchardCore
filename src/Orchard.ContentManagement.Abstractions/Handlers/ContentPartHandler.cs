@@ -148,14 +148,6 @@ namespace Orchard.ContentManagement.Handlers
             }
         }
 
-        void IContentPartHandler.GetContentItemMetadata(ContentItemMetadataContext context, ContentPart part)
-        {
-            if (part is TPart)
-            {
-                GetContentItemMetadata(context, (TPart)part);
-            }
-        }
-
         void IContentPartHandler.GetContentItemAspect(ContentItemAspectContext context, ContentPart part)
         {
             if (part is TPart)
@@ -182,7 +174,6 @@ namespace Orchard.ContentManagement.Handlers
         public virtual void Unpublished(PublishContentContext context, TPart instance) { }
         public virtual void Removing(RemoveContentContext context, TPart instance) { }
         public virtual void Removed(RemoveContentContext context, TPart instance) { }
-        public virtual void GetContentItemMetadata(ContentItemMetadataContext context, TPart part) { }
         public virtual void GetContentItemAspect(ContentItemAspectContext context, TPart part) { }
     }
 }

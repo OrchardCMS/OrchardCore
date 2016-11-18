@@ -3,6 +3,7 @@ using System.Linq;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
 using Orchard.Autoroute.Services;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Tokens.Services;
@@ -66,9 +67,12 @@ namespace Orchard.Title.Handlers
             }
         }
 
-        public override void GetContentItemMetadata(ContentItemMetadataContext context, AutoroutePart part)
+        public override void GetContentItemAspect(ContentItemAspectContext context, AutoroutePart part)
         {
-            context.Metadata.Identity.Add("Alias", part.Path);
+            context.For<ContentItemMetadata>(contentItemMetadata =>
+            {
+                contentItemMetadata.Identity.Add("Alias", part.Path);
+            });
         }
 
         /// <summary>
