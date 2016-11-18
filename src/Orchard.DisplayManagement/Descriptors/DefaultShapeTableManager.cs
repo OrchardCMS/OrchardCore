@@ -9,7 +9,6 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Utility;
-using Orchard.Events;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -20,12 +19,11 @@ namespace Orchard.DisplayManagement.Descriptors
     public class DefaultShapeTableManager : IShapeTableManager
     {
         private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
-        private static ConcurrentDictionary<int, Lazy<Task<bool>>> _buildDescriptorTasks = new ConcurrentDictionary<int, Lazy<Task<bool>>>();
+        private static ConcurrentDictionary<int, Lazy<bool>> _buildDescriptorResults = new ConcurrentDictionary<int, Lazy<bool>>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
         private readonly IFeatureManager _featureManager;
-        private readonly IEventBus _eventBus;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
@@ -35,7 +33,6 @@ namespace Orchard.DisplayManagement.Descriptors
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IExtensionManager extensionManager,
             IFeatureManager featureManager,
-            IEventBus eventBus,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
@@ -43,7 +40,6 @@ namespace Orchard.DisplayManagement.Descriptors
             _bindingStrategies = bindingStrategies;
             _extensionManager = extensionManager;
             _featureManager = featureManager;
-            _eventBus = eventBus;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
@@ -71,12 +67,12 @@ namespace Orchard.DisplayManagement.Descriptors
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
                         continue;
 
-                    var builtAlterations = BuildAlterationsAsync(bindingStrategy, strategyFeature, excludedFeatures).Result;
+                    var builtAlterations = BuildAlterations(bindingStrategy, strategyFeature, excludedFeatures);
 
                     if ((builtAlterations?.Count() ?? 0) == 0)
                         continue;
 
-                    BuildDescriptorsAsync(bindingStrategy, builtAlterations).Wait();
+                    BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
                 var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
@@ -98,8 +94,6 @@ namespace Orchard.DisplayManagement.Descriptors
                     Bindings = descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 };
 
-                //await _eventBus.NotifyAsync<IShapeTableEventHandler>(x => x.ShapeTableCreated(result));
-
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
                     _logger.LogInformation("Done building shape table");
@@ -111,29 +105,29 @@ namespace Orchard.DisplayManagement.Descriptors
             return shapeTable;
         }
 
-        private async Task<IEnumerable<ShapeAlteration>> BuildAlterationsAsync(IShapeTableProvider bindingStrategy, Feature strategyFeature, IList<string> excludedFeatures)
+        private IEnumerable<ShapeAlteration> BuildAlterations(IShapeTableProvider bindingStrategy, Feature strategyFeature, IList<string> excludedFeatures)
         {
             IEnumerable<ShapeAlteration> builtAlterations = null;
 
-            var buildAlterationsTaskResult = await _memoryCache.GetOrCreate(
-                bindingStrategy.GetType().FullName.GetHashCode(), (entry) =>
+            var result = _memoryCache.GetOrCreate(
+                bindingStrategy.GetType().FullName.GetHashCode(), entry =>
                 {
                     entry.Priority = CacheItemPriority.NeverRemove;
 
-                    return new Lazy<Task<bool>>(() => Task.Run(() =>
+                    return new Lazy<bool>(() =>
                     {
                         var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                         bindingStrategy.Discover(builder);
                         builtAlterations = builder.BuildAlterations();
-                        return Task.FromResult(true);
-                    }));
+                        return true;
+                    });
 
                 }).Value;
 
             return builtAlterations;
         }
 
-        private async Task<Task> BuildDescriptorsAsync(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
+        private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Descriptor.Id + a.ShapeType);
 
@@ -146,10 +140,9 @@ namespace Orchard.DisplayManagement.Descriptors
                     + firstAlteration.ShapeType).ToLower()
                     .GetHashCode();
 
-                var buildDescriptorTaskResult = await _buildDescriptorTasks.GetOrAdd
-                (key, (k) =>
+                var result = _buildDescriptorResults.GetOrAdd(key, k =>
                 {
-                    return new Lazy<Task<bool>>(() => Task.Run(() =>
+                    return new Lazy<bool>(() =>
                     {
                         var descriptor = new FeatureShapeDescriptor
                         (
@@ -163,13 +156,11 @@ namespace Orchard.DisplayManagement.Descriptors
                         }
 
                         _shapeDescriptors[key] = descriptor;
-                        return Task.FromResult(true);
-                    }));
+                        return true;
+                    });
 
                 }).Value;
             }
-
-            return Task.CompletedTask;
         }
 
         private static int GetPriority(KeyValuePair<int, FeatureShapeDescriptor> shapeDescriptor)
