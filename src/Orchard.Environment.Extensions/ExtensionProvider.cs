@@ -48,7 +48,7 @@ namespace Orchard.Environment.Extensions
 
             var extension = _fileProvider
                 .GetDirectoryContents(path)
-                .First(content => content.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                .First(content => content.Name == name);
 
             return new ExtensionInfo(extension, subPath, manifest, (ei) => {
                 return _featureManager.GetFeatures(ei, manifest);
