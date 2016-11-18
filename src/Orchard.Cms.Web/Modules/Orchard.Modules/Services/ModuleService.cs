@@ -41,17 +41,14 @@ namespace Orchard.Modules.Services
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
         public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
         {
-            var currentShellDescriptor = await _shellDescriptorManager
-                .GetShellDescriptorAsync();
+            var enabledFeatures = 
+                await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            var enabledFeatures = currentShellDescriptor.Features;
+            var availableFeatures = _extensionManager.GetExtensions().Features;
 
-            var loadedFeatures = await _extensionManager
-                .LoadFeaturesAsync(_extensionManager.GetExtensions().Features);
-
-            return loadedFeatures
+            return availableFeatures
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
-                    .Any(sf => sf.Id == f.FeatureInfo.Id)));
+                    .Any(sf => sf.Id == f.Id)));
         }
 
         /// <summary>
@@ -154,11 +151,11 @@ namespace Orchard.Modules.Services
         //    return projectPath;
         //}
 
-        private static ModuleFeature AssembleModuleFromDescriptor(FeatureEntry feature, bool isEnabled)
+        private static ModuleFeature AssembleModuleFromDescriptor(IFeatureInfo featureInfo, bool isEnabled)
         {
             return new ModuleFeature
             {
-                Descriptor = feature.FeatureInfo,
+                Descriptor = featureInfo,
                 IsEnabled = isEnabled
             };
         }

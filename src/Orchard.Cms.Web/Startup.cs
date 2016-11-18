@@ -10,6 +10,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
 using Orchard.Environment.Shell.Descriptor.Models;
+using System.IO;
 
 namespace Orchard.Cms.Web
 {

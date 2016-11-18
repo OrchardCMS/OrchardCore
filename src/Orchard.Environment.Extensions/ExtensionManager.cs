@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
-using Orchard.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
