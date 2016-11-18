@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Codecs;
+using Lucene.Net.Documents;
+using Lucene.Net.Index;
 using Lucene.Net.Store;
+using Lucene.Net.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
 using Directory = System.IO.Directory;
@@ -17,6 +21,15 @@ namespace Lucene
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _rootPath;
         private readonly DirectoryInfo _rootDirectory;
+
+        private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
+
+        static LuceneIndexProvider()
+        {
+            SPIClassIterator<Codec>.Types.Add(typeof(Net.Codecs.Lucene46.Lucene46Codec));
+            SPIClassIterator<PostingsFormat>.Types.Add(typeof(Net.Codecs.Lucene41.Lucene41PostingsFormat));
+            SPIClassIterator<DocValuesFormat>.Types.Add(typeof(Net.Codecs.Lucene45.Lucene45DocValuesFormat));
+        }
 
         public LuceneIndexProvider(
             IHostingEnvironment hostingEnvironment,
@@ -31,20 +44,38 @@ namespace Lucene
 
         public void CreateIndex(string indexName)
         {
-            using (var directory = new NIOFSDirectory(_rootDirectory.CreateSubdirectory(indexName)))
+            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+            if (!path.Exists)
             {
+                path.Create();
+            }
+
+            using (var directory = FSDirectory.Open(path))
+            using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))))
+            {
+
             }
         }
 
         public void DeleteDocuments(string indexName, IEnumerable<int> documentIds)
         {
-            foreach (var documentId in documentIds)
+            // FOR DEBUG ONLY
+            //foreach (var documentId in documentIds)
+            //{
+            //    var filename = GetFilename(indexName, documentId);
+            //    if (File.Exists(filename))
+            //    {
+            //        File.Delete(filename);
+            //    }
+            //}
+
+            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+            using (var directory = FSDirectory.Open(path))
+            using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
             {
-                var filename = GetFilename(indexName, documentId);
-                if (File.Exists(filename))
-                {
-                    File.Delete(filename);
-                }
+                iwriter.DeleteDocuments(documentIds.Select(x => new Term("ContentItemId", x.ToString())).ToArray());
             }
         }
 
@@ -72,22 +103,88 @@ namespace Lucene
 
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            foreach(var indexDocument in indexDocuments)
+            // FOR DEBUG ONLY
+            //foreach(var indexDocument in indexDocuments)
+            //{
+            //    var filename = GetFilename(indexName, indexDocument.DocumentId);
+            //    var content = JsonConvert.SerializeObject(indexDocument);
+            //    File.WriteAllText(filename, content);
+            //}
+
+            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+            if (!path.Exists)
             {
-                var filename = GetFilename(indexName, indexDocument.DocumentId);
-                var content = JsonConvert.SerializeObject(indexDocument);
-                File.WriteAllText(filename, content);
+                path.Create();
             }
 
-            using (var directory = FSDirectory.Open(new DirectoryInfo(Path.Combine(_rootPath, indexName))))
+            using (var directory = FSDirectory.Open(path))
             {
-                //using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(Net.Util.LuceneVersion.LUCENE_48, new StandardAnalyzer()))
-                //{
-                //    Documents.Document doc = new Documents.Document();
-                //    doc.Add(NewTextField("fieldname", text, Field.Store.YES));
-                //    iwriter.AddDocument(doc);
-                //}
+                using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
+                {
+                    foreach (var indexDocument in indexDocuments)
+                    {
+                        iwriter.AddDocument(CreateLuceneDocument(indexDocument));
+                    }
+                }
             }
+        }
+
+        private Document CreateLuceneDocument(DocumentIndex documentIndex)
+        {
+            var doc = new Document();
+
+            // Always store the content item id
+            doc.Add(new IntField("ContentItemId", documentIndex.ContentItemId, Field.Store.YES));
+
+            foreach (var entry in documentIndex.Entries)
+            {
+                var store = entry.Value.Options.HasFlag(DocumentIndexOptions.Store)
+                            ? Field.Store.YES
+                            : Field.Store.NO
+                            ;
+
+                switch (entry.Value.Type)
+                {
+                    case DocumentIndex.Types.Boolean:
+                        // store "true"/"false" for booleans
+                        doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value).ToLowerInvariant(), store));
+                        break;
+
+                    case DocumentIndex.Types.DateTime:
+                        if (entry.Value.Value is DateTimeOffset)
+                        {
+                            doc.Add(new StringField(entry.Key, ((DateTimeOffset)entry.Value.Value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"), store));
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(entry.Key, ((DateTime)entry.Value.Value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"), store));
+                        }
+                        break;
+
+                    case DocumentIndex.Types.Integer:
+                        doc.Add(new IntField(entry.Key, Convert.ToInt32(entry.Value.Value), store));
+                        break;
+
+                    case DocumentIndex.Types.Number:
+                        doc.Add(new DoubleField(entry.Key, Convert.ToDouble(entry.Value.Value), store));
+                        break;
+
+                    case DocumentIndex.Types.Text:
+                        if (entry.Value.Options.HasFlag(DocumentIndexOptions.Analyze))
+                        {
+                            doc.Add(new TextField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                        }
+                        else
+                        {
+                            doc.Add(new StringField(entry.Key, Convert.ToString(entry.Value.Value), store));
+                        }
+                        break;
+                }
+
+            }
+
+            return doc;
         }
 
         private string GetFilename(string indexName, int documentId)
