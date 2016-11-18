@@ -76,7 +76,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     if ((builtAlterations?.Count() ?? 0) == 0)
                         continue;
 
-                    BuildDescriptorsAsync(bindingStrategy, builtAlterations);
+                    BuildDescriptorsAsync(bindingStrategy, builtAlterations).Wait();
                 }
 
                 var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
@@ -133,7 +133,7 @@ namespace Orchard.DisplayManagement.Descriptors
             return builtAlterations;
         }
 
-        private async void BuildDescriptorsAsync(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
+        private async Task<Task> BuildDescriptorsAsync(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Descriptor.Id + a.ShapeType);
 
@@ -168,6 +168,8 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 }).Value;
             }
+
+            return Task.CompletedTask;
         }
 
         private static int GetPriority(KeyValuePair<int, FeatureShapeDescriptor> shapeDescriptor)
