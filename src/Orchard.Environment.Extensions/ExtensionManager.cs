@@ -54,7 +54,7 @@ namespace Orchard.Environment.Extensions
             return GetExtensions()[extensionId];
         }
 
-        private ExtensionInfoList _extensionInfoList;
+        private IExtensionInfoList _extensionInfoList;
 
         public IExtensionInfoList GetExtensions()
         {
