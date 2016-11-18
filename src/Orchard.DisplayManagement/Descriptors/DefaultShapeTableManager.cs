@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
@@ -9,7 +10,6 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Utility;
 using Orchard.Events;
-using Orchard.Utility;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -20,6 +20,7 @@ namespace Orchard.DisplayManagement.Descriptors
     public class DefaultShapeTableManager : IShapeTableManager
     {
         private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
+        private static ConcurrentDictionary<int, Lazy<Task<bool>>> _buildDescriptorTasks = new ConcurrentDictionary<int, Lazy<Task<bool>>>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
@@ -70,42 +71,12 @@ namespace Orchard.DisplayManagement.Descriptors
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
                         continue;
 
-                    var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-                    bindingStrategy.Discover(builder);
+                    var builtAlterations = BuildAlterationsAsync(bindingStrategy, strategyFeature, excludedFeatures).Result;
 
-                    var builtAlterations = builder.BuildAlterations();
-
-                    if (builtAlterations.Count() == 0)
+                    if ((builtAlterations?.Count() ?? 0) == 0)
                         continue;
-                    
-                    var alterationSets = builtAlterations.GroupBy(a =>
-                        a.Feature.Descriptor.Id + a.ShapeType);
 
-                    foreach (var alterations in alterationSets)
-                    {
-                        var firstAlteration = alterations.First();
-
-                        var key = (bindingStrategy.GetType().Name
-                            + firstAlteration.Feature.Descriptor.Id
-                            + firstAlteration.ShapeType).ToLower()
-                            .GetHashCode();
-
-                        if (!_shapeDescriptors.ContainsKey(key))
-                        {
-                            var descriptor = new FeatureShapeDescriptor
-                            (
-                                firstAlteration.Feature,
-                                firstAlteration.ShapeType
-                            );
-
-                            foreach (var alteration in alterations)
-                            {
-                                alteration.Alter(descriptor);
-                            }
-
-                            _shapeDescriptors[key] = descriptor;
-                        }
-                    }
+                    BuildDescriptorsAsync(bindingStrategy, builtAlterations);
                 }
 
                 var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
@@ -138,6 +109,65 @@ namespace Orchard.DisplayManagement.Descriptors
             }
 
             return shapeTable;
+        }
+
+        private async Task<IEnumerable<ShapeAlteration>> BuildAlterationsAsync(IShapeTableProvider bindingStrategy, Feature strategyFeature, IList<string> excludedFeatures)
+        {
+            IEnumerable<ShapeAlteration> builtAlterations = null;
+
+            var buildAlterationsTaskResult = await _memoryCache.GetOrCreate(
+                bindingStrategy.GetType().FullName.GetHashCode(), (entry) =>
+                {
+                    entry.Priority = CacheItemPriority.NeverRemove;
+
+                    return new Lazy<Task<bool>>(() => Task.Run(() =>
+                    {
+                        var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                        bindingStrategy.Discover(builder);
+                        builtAlterations = builder.BuildAlterations();
+                        return Task.FromResult(true);
+                    }));
+
+                }).Value;
+
+            return builtAlterations;
+        }
+
+        private async void BuildDescriptorsAsync(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
+        {
+            var alterationSets = builtAlterations.GroupBy(a => a.Feature.Descriptor.Id + a.ShapeType);
+
+            foreach (var alterations in alterationSets)
+            {
+                var firstAlteration = alterations.First();
+
+                var key = (bindingStrategy.GetType().Name
+                    + firstAlteration.Feature.Descriptor.Id
+                    + firstAlteration.ShapeType).ToLower()
+                    .GetHashCode();
+
+                var buildDescriptorTaskResult = await _buildDescriptorTasks.GetOrAdd
+                (key, (k) =>
+                {
+                    return new Lazy<Task<bool>>(() => Task.Run(() =>
+                    {
+                        var descriptor = new FeatureShapeDescriptor
+                        (
+                            firstAlteration.Feature,
+                            firstAlteration.ShapeType
+                        );
+
+                        foreach (var alteration in alterations)
+                        {
+                            alteration.Alter(descriptor);
+                        }
+
+                        _shapeDescriptors[key] = descriptor;
+                        return Task.FromResult(true);
+                    }));
+
+                }).Value;
+            }
         }
 
         private static int GetPriority(KeyValuePair<int, FeatureShapeDescriptor> shapeDescriptor)
