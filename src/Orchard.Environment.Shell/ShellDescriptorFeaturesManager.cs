@@ -259,7 +259,7 @@ namespace Orchard.Environment.Shell
 
             stack.Push(getAffectedDependencies(featureId, features));
 
-            while (stack.Any())
+            while (stack.Count > 0)
             {
                 var next = stack.Pop();
                 foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency.Key.Id)))
