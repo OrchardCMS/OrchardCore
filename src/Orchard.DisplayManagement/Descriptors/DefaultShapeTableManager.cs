@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Descriptors
     public class DefaultShapeTableManager : IShapeTableManager
     {
         private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
-        private static ConcurrentDictionary<int, Lazy<bool>> _buildDescriptorResults = new ConcurrentDictionary<int, Lazy<bool>>();
+        private static ConcurrentDictionary<string, Lazy<bool>> _buildDescriptorResults = new ConcurrentDictionary<string, Lazy<bool>>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
@@ -110,7 +110,7 @@ namespace Orchard.DisplayManagement.Descriptors
             IEnumerable<ShapeAlteration> builtAlterations = null;
 
             var result = _memoryCache.GetOrCreate(
-                bindingStrategy.GetType().FullName.GetHashCode(), entry =>
+                bindingStrategy.GetType().FullName, entry =>
                 {
                     entry.Priority = CacheItemPriority.NeverRemove;
 
@@ -135,10 +135,9 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = (bindingStrategy.GetType().Name
+                var key = bindingStrategy.GetType().Name
                     + firstAlteration.Feature.Descriptor.Id
-                    + firstAlteration.ShapeType).ToLower()
-                    .GetHashCode();
+                    + firstAlteration.ShapeType;
 
                 var result = _buildDescriptorResults.GetOrAdd(key, k =>
                 {
@@ -155,7 +154,7 @@ namespace Orchard.DisplayManagement.Descriptors
                             alteration.Alter(descriptor);
                         }
 
-                        _shapeDescriptors[key] = descriptor;
+                        _shapeDescriptors[key.GetHashCode()] = descriptor;
                         return true;
                     });
 
