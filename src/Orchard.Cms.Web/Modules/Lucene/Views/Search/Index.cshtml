@@ -27,3 +27,9 @@ else
 {
     <p class="alert alert-warning">@T["There are no such results"]</p>
 }
+
+@{
+    var pager = New.Pager(Model.Pager).ShowNext(Model.HasMoreResults);
+}
+
+@Display(pager)

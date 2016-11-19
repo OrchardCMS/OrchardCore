@@ -155,7 +155,8 @@ namespace Orchard.Navigation
             object NextText,
             object LastText,
             object GapText,
-            string PagerId
+            string PagerId,
+            bool ShowNext
             // parameter omitted to workaround an issue where a NullRef is thrown
             // when an anonymous object is bound to an object shape parameter
             /*object RouteValues*/)
@@ -271,13 +272,17 @@ namespace Orchard.Navigation
                 Shape.Add(New.Pager_Gap(Value: gapText, Pager: Shape));
             }
 
-            // next and last pages
-            if (Page < totalPageCount)
+            // Next
+            if (Page < totalPageCount || ShowNext)
             {
                 // next
                 routeData[pageKey] = Page + 1;
                 Shape.Add(New.Pager_Next(Value: nextText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
-                // last
+            }
+
+            // Last
+            if (Page < totalPageCount)
+            { 
                 routeData[pageKey] = totalPageCount;
                 Shape.Add(New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
             }

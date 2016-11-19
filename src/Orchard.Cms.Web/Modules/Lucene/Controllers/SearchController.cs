@@ -58,12 +58,11 @@ namespace Lucene.Controllers
             {
                 return View(new SearchIndexViewModel
                 {
-                    PagerParameters = pagerParameters,
+                    Pager = pager,
                     IndexName = id,
                     ContentItems = Enumerable.Empty<ContentItem>()
                 });
             }
-
 
             var queryParser = new MultiFieldQueryParser(_luceneSettings.GetVersion(), _luceneSettings.GetSearchFields(), _luceneSettings.GetAnalyzer());
             var query = queryParser.Parse(QueryParser.Escape(q));
@@ -72,10 +71,13 @@ namespace Lucene.Controllers
 
             _luceneIndexProvider.Search(indexName, searcher =>
             {
-                var docs = searcher.Search(query, pager.PageSize);
-                ScoreDoc[] hits = docs.ScoreDocs;
+                // Fetch one more result than PageSize to generate "More" links
+                TopScoreDocCollector collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
 
-                foreach (var hit in hits)
+                searcher.Search(query, collector);
+                TopDocs hits = collector.TopDocs(pager.GetStartIndex(), pager.PageSize + 1);
+
+                foreach (var hit in hits.ScoreDocs)
                 {
                     var d = searcher.Doc(hit.Doc, IdSet);
                     contentItemIds.Add(Convert.ToInt32(d.GetField("ContentItemId").StringValue));
@@ -83,7 +85,7 @@ namespace Lucene.Controllers
             });
 
             var contentItems = new List<ContentItem>();
-            foreach(var contentItemId in contentItemIds)
+            foreach(var contentItemId in contentItemIds.Take(pager.PageSize))
             {
                 var contentItem = await _contentManager.GetAsync(contentItemId);
                 if (contentItem != null)
@@ -94,8 +96,9 @@ namespace Lucene.Controllers
 
             var model = new SearchIndexViewModel
             {
+                HasMoreResults = contentItemIds.Count > pager.PageSize,
                 Query = q,
-                PagerParameters = pagerParameters,
+                Pager = pager,
                 IndexName = id,
                 ContentItems = contentItems
             };
