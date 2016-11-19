@@ -39,7 +39,7 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var enabledFeatures = _extensionManager.GetEnabledFeatures(descriptor);
-            var features = await _extensionManager.LoadFeaturesAsync(enabledFeatures);
+            var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
             
             // Statup classes are the only types that are automatically added to the blueprint
             var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());

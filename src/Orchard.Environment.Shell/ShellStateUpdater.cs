@@ -65,9 +65,10 @@ namespace Orchard.Environment.Shell
                 .ToArray();
 
             // get loaded feature information
-            var loadedFeatures = (await _extensionManager.LoadFeaturesAsync(
-                orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor))).ToArray();
-
+            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptorsAndStates
+                .Select(x => _extensionManager.LoadFeatureAsync(x.FeatureDescriptor))
+                .ToArray());
+            
             // merge loaded feature information into ordered list
             var loadedEntries = orderedFeatureDescriptorsAndStates.Select(
                 entry => new

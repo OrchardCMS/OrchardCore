@@ -96,7 +96,10 @@ namespace Orchard.Hosting
             // registered in ITypeFeatureProvider and their areas defined in the application
             // conventions.
             _extensionManager
-                .LoadFeaturesAsync(_extensionManager.GetExtensions().Features)
+                .GetExtensions()
+                .Features
+                .InvokeAsync(
+                    async f => await _extensionManager.LoadFeatureAsync(f), _logger)
                 .Wait();
 
             // Is there any tenant right now?

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Orchard;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing;
@@ -56,17 +57,16 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             using (logger.BeginScope("Loading extensions"))
             {
-                var extensionEntries = extensionManager
-                    .LoadExtensionsAsync(availableExtensions)
-                    .Result;
+                availableExtensions.InvokeAsync(async ae =>
+                {
+                    var extensionEntry = await extensionManager.LoadExtensionAsync(ae);
 
-                foreach (var extensionEntry in extensionEntries
-                    .Where(x => !x.IsError)) {
-
-                    var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
-
-                    applicationPartManager.ApplicationParts.Add(assemblyPart);
-                }
+                    if (!extensionEntry.IsError)
+                    {
+                        var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
+                        applicationPartManager.ApplicationParts.Add(assemblyPart);
+                    }
+                }, logger).Wait();
             }
 
             return builder;

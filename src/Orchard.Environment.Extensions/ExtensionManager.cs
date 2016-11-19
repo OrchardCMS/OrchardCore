@@ -108,17 +108,6 @@ namespace Orchard.Environment.Extensions
             });
         }
 
-        public async Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos) {
-            var entries = new List<ExtensionEntry>();
-
-            foreach (var extensionInfo in extensionInfos) {
-                var extension = await LoadExtensionAsync(extensionInfo);
-                entries.Add(extension);
-            }
-
-            return entries;
-        }
-
         public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
             return _features.GetOrAdd(feature.Id, async (id) =>
@@ -148,30 +137,6 @@ namespace Orchard.Environment.Extensions
 
                 return new CompiledFeatureEntry(feature, featureTypes);
             });
-        }
-
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
-        {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Loading features");
-            }
-
-            var featuresToReturn =
-                new List<FeatureEntry>();
-
-            foreach (var feature in features)
-            {
-                var featureToReturn = await LoadFeatureAsync(feature);
-                featuresToReturn.Add(featureToReturn);
-            }
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Done loading features");
-            }
-
-            return featuresToReturn;
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
