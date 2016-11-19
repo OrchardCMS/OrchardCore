@@ -12,7 +12,7 @@
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "Orchard.Parser.Yaml": "2.0.0-*",
+    "Orchard.Parser.Yaml": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
