@@ -99,7 +99,7 @@ namespace Orchard.Hosting
                 .GetExtensions()
                 .Features
                 .InvokeAsync(
-                    async f => await _extensionManager.LoadFeatureAsync(f), _logger)
+                    f => _extensionManager.LoadFeatureAsync(f), _logger)
                 .Wait();
 
             // Is there any tenant right now?
@@ -268,7 +268,7 @@ namespace Orchard.Hosting
         /// </summary>
         private bool CanCreateShell(ShellSettings shellSettings)
         {
-            return 
+            return
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing ||
@@ -280,7 +280,7 @@ namespace Orchard.Hosting
         /// </summary>
         private bool CanRegisterShell(ShellSettings shellSettings)
         {
-            return 
+            return
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;
