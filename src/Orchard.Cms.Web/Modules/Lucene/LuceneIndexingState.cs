@@ -32,6 +32,8 @@ namespace Lucene
 
             if (!File.Exists(_indexSettingsFilename))
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
+
                 File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
             }
 

@@ -82,7 +82,12 @@ namespace Lucene
 
         public void DeleteIndex(string indexName)
         {
-            Directory.Delete(Path.Combine(_rootPath, indexName), true);
+            var indexFolder = Path.Combine(_rootPath, indexName);
+
+            if (Directory.Exists(indexFolder))
+            {
+                Directory.Delete(indexFolder, true);
+            }
         }
 
         public bool Exists(string indexName)
