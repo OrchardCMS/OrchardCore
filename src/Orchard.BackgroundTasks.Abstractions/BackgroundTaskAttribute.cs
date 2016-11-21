@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.Localization;
 
 namespace Orchard.BackgroundTasks
 {

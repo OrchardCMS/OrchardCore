@@ -435,8 +435,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 }
             }
         }
-
-        public override void GetContentItemMetadata(ContentItemMetadataContext context)
+        
+        public override void GetContentItemAspect(ContentItemAspectContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -450,7 +450,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    _partHandlers.Invoke(handler => handler.GetContentItemMetadata(context, part), Logger);
+                    _partHandlers.Invoke(handler => handler.GetContentItemAspect(context, part), Logger);
                 }
             }
         }

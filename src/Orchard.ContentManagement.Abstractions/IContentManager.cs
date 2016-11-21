@@ -57,7 +57,8 @@ namespace Orchard.ContentManagement
 
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
-        ContentItemMetadata GetItemMetadata(IContent content);
+
+        TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
     }
 
     public class VersionOptions

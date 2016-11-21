@@ -376,17 +376,17 @@ namespace Orchard.ContentManagement
             _contentManagerSession.Store(contentItem);
         }
 
-        public ContentItemMetadata GetItemMetadata(IContent content)
+        public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
         {
-            var context = new ContentItemMetadataContext
+            var context = new ContentItemAspectContext
             {
                 ContentItem = content.ContentItem,
-                Metadata = new ContentItemMetadata()
+                Aspect = aspect
             };
 
-            Handlers.Invoke(handler => handler.GetContentItemMetadata(context), _logger);
+            Handlers.Invoke(handler => handler.GetContentItemAspect(context), _logger);
 
-            return context.Metadata;
+            return aspect;
         }
 
         public async Task RemoveAsync(ContentItem contentItem)
