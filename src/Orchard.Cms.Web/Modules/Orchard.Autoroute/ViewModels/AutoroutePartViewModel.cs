@@ -7,7 +7,9 @@ namespace Orchard.Autoroute.ViewModels
     public class AutoroutePartViewModel
     {
         public string Path { get; set; }
-
+        public bool SetHomepage { get; set; }
+        public bool IsHomepage { get; set; }
+        
         [BindNever]
         public AutoroutePart AutoroutePart { get; set; }
 

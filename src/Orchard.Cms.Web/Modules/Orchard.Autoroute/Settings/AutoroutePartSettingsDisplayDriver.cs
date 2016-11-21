@@ -25,6 +25,7 @@ namespace Orchard.Autoroute.Settings
 
                 model.AllowCustomPath = settings.AllowCustomPath;
                 model.Pattern = settings.Pattern;
+                model.ShowHomepageOption = settings.ShowHomepageOption;
                 model.AutoroutePartSettings = settings;
 
                 return Task.CompletedTask;
@@ -40,10 +41,14 @@ namespace Orchard.Autoroute.Settings
 
             var model = new AutoroutePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.AllowCustomPath);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, 
+                m => m.Pattern, 
+                m => m.AllowCustomPath, 
+                m => m.ShowHomepageOption);
 
             context.Builder.WithSetting(nameof(AutoroutePartSettings.Pattern), model.Pattern);
             context.Builder.WithSetting(nameof(AutoroutePartSettings.AllowCustomPath), model.AllowCustomPath.ToString());
+            context.Builder.WithSetting(nameof(AutoroutePartSettings.ShowHomepageOption), model.ShowHomepageOption.ToString());
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

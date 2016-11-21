@@ -6,6 +6,7 @@ namespace Orchard.Autoroute.ViewModels
     {
         public bool AllowCustomPath { get; set; }
         public string Pattern { get; set; }
+        public bool ShowHomepageOption {get; set; }
         public AutoroutePartSettings AutoroutePartSettings { get; set; }
     }
 }
