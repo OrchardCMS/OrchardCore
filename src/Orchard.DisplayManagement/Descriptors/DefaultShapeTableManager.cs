@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
@@ -19,7 +18,6 @@ namespace Orchard.DisplayManagement.Descriptors
     public class DefaultShapeTableManager : IShapeTableManager
     {
         private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
-        private static ConcurrentDictionary<string, Lazy<bool>> _buildDescriptorResults = new ConcurrentDictionary<string, Lazy<bool>>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
@@ -67,9 +65,11 @@ namespace Orchard.DisplayManagement.Descriptors
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
                         continue;
 
-                    var builtAlterations = BuildAlterations(bindingStrategy, strategyFeature, excludedFeatures);
+                    var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                    bindingStrategy.Discover(builder);
+                    var builtAlterations = builder.BuildAlterations();
 
-                    if ((builtAlterations?.Count() ?? 0) == 0)
+                    if (builtAlterations.Count() == 0)
                         continue;
 
                     BuildDescriptors(bindingStrategy, builtAlterations);
@@ -105,28 +105,6 @@ namespace Orchard.DisplayManagement.Descriptors
             return shapeTable;
         }
 
-        private IEnumerable<ShapeAlteration> BuildAlterations(IShapeTableProvider bindingStrategy, Feature strategyFeature, IList<string> excludedFeatures)
-        {
-            IEnumerable<ShapeAlteration> builtAlterations = null;
-
-            var result = _memoryCache.GetOrCreate(
-                bindingStrategy.GetType().FullName, entry =>
-                {
-                    entry.Priority = CacheItemPriority.NeverRemove;
-
-                    return new Lazy<bool>(() =>
-                    {
-                        var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-                        bindingStrategy.Discover(builder);
-                        builtAlterations = builder.BuildAlterations();
-                        return true;
-                    });
-
-                }).Value;
-
-            return builtAlterations;
-        }
-
         private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Descriptor.Id + a.ShapeType);
@@ -135,30 +113,26 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = bindingStrategy.GetType().Name
+                var key = (bindingStrategy.GetType().Name
                     + firstAlteration.Feature.Descriptor.Id
-                    + firstAlteration.ShapeType;
+                    + firstAlteration.ShapeType.ToLower())
+                    .GetHashCode();
 
-                var result = _buildDescriptorResults.GetOrAdd(key, k =>
+                if (!_shapeDescriptors.ContainsKey(key))
                 {
-                    return new Lazy<bool>(() =>
+                    var descriptor = new FeatureShapeDescriptor
+                    (
+                        firstAlteration.Feature,
+                        firstAlteration.ShapeType
+                    );
+
+                    foreach (var alteration in alterations)
                     {
-                        var descriptor = new FeatureShapeDescriptor
-                        (
-                            firstAlteration.Feature,
-                            firstAlteration.ShapeType
-                        );
+                        alteration.Alter(descriptor);
+                    }
 
-                        foreach (var alteration in alterations)
-                        {
-                            alteration.Alter(descriptor);
-                        }
-
-                        _shapeDescriptors[key.GetHashCode()] = descriptor;
-                        return true;
-                    });
-
-                }).Value;
+                    _shapeDescriptors[key] = descriptor;
+                }
             }
         }
 
