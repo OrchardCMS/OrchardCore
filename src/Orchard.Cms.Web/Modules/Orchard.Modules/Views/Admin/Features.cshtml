@@ -39,7 +39,7 @@
             </fieldset>
             *@
 
-        <form class="form-inline pull-xs-right" autocomplete="off" method="get">
+        <form class="form-inline float-xs-right" autocomplete="off" method="get">
             <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
         </form>
     </div>
@@ -92,7 +92,7 @@
 
                         <li class="list-group-item">
                             <div class="properties">
-                                <div class="related pull-xs-right">
+                                <div class="related float-xs-right">
                                     @if (showEnable && !feature.IsEnabled)
                                     {
                                         <a asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>

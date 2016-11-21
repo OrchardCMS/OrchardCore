@@ -7,7 +7,7 @@
 
         <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
 
-        <form class="form-inline pull-xs-right" autocomplete="off">
+        <form class="form-inline float-xs-right" autocomplete="off">
             <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
         </form>
     </div>
@@ -20,7 +20,7 @@
         {
             <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
                 <div class="properties">
-                    <div class="pull-xs-right">
+                    <div class="float-xs-right">
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
                         <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>

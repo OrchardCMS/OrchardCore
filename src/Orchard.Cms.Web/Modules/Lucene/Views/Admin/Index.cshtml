@@ -16,7 +16,7 @@
             {
                 <li class="list-group-item">
                     <div class="properties">
-                        <div class="related pull-xs-right">
+                        <div class="related float-xs-right">
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm" >@T["Query"]</a>
                             <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-message="@T["This will restart the indexing of all content items. Continue?"]" itemprop="UnsafeUrl">@T["Reset"]</a>
                             <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-message="@T["You index will rebuilt, which might alter some services during the process. Continue?"]" itemprop="UnsafeUrl">@T["Rebuild"]</a>
