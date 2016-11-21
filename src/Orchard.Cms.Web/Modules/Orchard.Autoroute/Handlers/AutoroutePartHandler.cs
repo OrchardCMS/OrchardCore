@@ -6,6 +6,7 @@ using Orchard.Autoroute.Services;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.Settings;
 using Orchard.Tokens.Services;
 
 namespace Orchard.Title.Handlers
@@ -15,35 +16,56 @@ namespace Orchard.Title.Handlers
         private readonly ITokenizer _tokenizer;
         private readonly IAutorouteEntries _entries;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ISiteService _siteService;
 
-        public AutoroutePartHandler(IAutorouteEntries entries, ITokenizer tokenizer, IContentDefinitionManager contentDefinitionManager)
+        public AutoroutePartHandler(
+            IAutorouteEntries entries, 
+            ITokenizer tokenizer, 
+            IContentDefinitionManager contentDefinitionManager,
+            ISiteService siteService)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
+            _siteService = siteService;
         }
 
-        public override void Published(PublishContentContext context, AutoroutePart instance)
+        public override void Published(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(instance.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.AddEntry(instance.ContentItem.ContentItemId, instance.Path);
+                _entries.AddEntry(part.ContentItem.ContentItemId, part.Path);
+            }
+
+            if (part.SetHomepage)
+            {
+                var site = _siteService.GetSiteSettingsAsync().Result;
+                var homeRoute = site.HomeRoute;
+
+                homeRoute["area"] = "Orchard.Contents";
+                homeRoute["controller"] = "Item";
+                homeRoute["action"] = "Display";
+                homeRoute["id"] = context.ContentItemId;
+
+                // Once we too the flag into account we can dismiss it.
+                part.SetHomepage = false;
+                _siteService.UpdateSiteSettingsAsync(site).Wait();
             }
         }
 
-        public override void Unpublished(PublishContentContext context, AutoroutePart instance)
+        public override void Unpublished(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(instance.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
             }
         }
 
-        public override void Removed(RemoveContentContext context, AutoroutePart instance)
+        public override void Removed(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(instance.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                _entries.RemoveEntry(instance.ContentItem.ContentItemId, instance.Path);
+                _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
             }
         }
 

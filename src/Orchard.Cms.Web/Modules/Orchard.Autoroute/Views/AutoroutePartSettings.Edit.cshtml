@@ -17,3 +17,12 @@
         </label>
     </div>
 </fieldset>
+
+<fieldset class="form-check">
+    <div class="row col-lg">
+        <label class="form-check-label">
+            <input asp-for="ShowHomepageOption" type="checkbox" class="form-check-input" checked="@Model.ShowHomepageOption" /> @T["Show homepage options"]
+            <span class="hint">@T["Check to allow the content items of this content type to be set as the homepage. It will only be visible to users with the appropriate permission."]</span>
+        </label>
+    </div>
+</fieldset>

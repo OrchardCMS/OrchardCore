@@ -11,5 +11,11 @@ namespace Orchard.Autoroute.Models
         /// The pattern used to build the Path.
         /// </summary>
         public string Pattern { get; set; }
+
+        /// <summary>
+        /// Whether to display an option to set the content item as the homepage.
+        /// </summary>
+        public bool ShowHomepageOption { get; set; }
+
     }
 }
