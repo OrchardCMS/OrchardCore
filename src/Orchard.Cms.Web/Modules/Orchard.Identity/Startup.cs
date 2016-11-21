@@ -5,7 +5,9 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
 using Orchard.Identity.Handlers;
 using Orchard.Identity.Indexes;
+using Orchard.Identity.Indexing;
 using Orchard.Identity.Models;
+using Orchard.Indexing;
 using YesSql.Core.Indexes;
 
 namespace Orchard.Identity
@@ -20,6 +22,7 @@ namespace Orchard.Identity
             // Identity Part
             services.AddScoped<ContentPart, IdentityPart>();
             services.AddScoped<IContentPartHandler, IdentityPartHandler>();
+            services.AddScoped<IContentPartIndexHandler, IdentityPartIndexHandler>();
         }
     }
 }

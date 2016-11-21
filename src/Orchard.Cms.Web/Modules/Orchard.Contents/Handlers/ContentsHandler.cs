@@ -1,63 +1,65 @@
-﻿using Orchard.ContentManagement.Handlers;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
+using Orchard.ContentManagement;
+using Orchard.ContentManagement.Handlers;
 
 namespace Orchard.Contents.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
-        public override void GetContentItemMetadata(ContentItemMetadataContext context)
+        public override void GetContentItemAspect(ContentItemAspectContext context)
         {
-
-            if (context.Metadata.CreateRouteValues == null)
+            context.For<ContentItemMetadata>(metadata =>
             {
-                context.Metadata.CreateRouteValues = new RouteValueDictionary {
-                    {"Area", "Orchard.Contents"},
-                    {"Controller", "Admin"},
-                    {"Action", "Create"},
-                    {"Id", context.ContentItem.ContentType}
-                };
+                if (metadata.CreateRouteValues == null)
+                {
+                    metadata.CreateRouteValues = new RouteValueDictionary {
+                        {"Area", "Orchard.Contents"},
+                        {"Controller", "Admin"},
+                        {"Action", "Create"},
+                        {"Id", context.ContentItem.ContentType}
+                    };
+                }
 
-            }
+                if (metadata.EditorRouteValues == null)
+                {
+                    metadata.EditorRouteValues = new RouteValueDictionary {
+                        {"Area", "Orchard.Contents"},
+                        {"Controller", "Admin"},
+                        {"Action", "Edit"},
+                        {"Id", context.ContentItem.ContentItemId}
+                    };
+                }
 
-            if (context.Metadata.EditorRouteValues == null)
-            {
-                context.Metadata.EditorRouteValues = new RouteValueDictionary {
-                    {"Area", "Orchard.Contents"},
-                    {"Controller", "Admin"},
-                    {"Action", "Edit"},
-                    {"Id", context.ContentItem.ContentItemId}
-                };
-            }
+                if (metadata.AdminRouteValues == null)
+                {
+                    metadata.AdminRouteValues = new RouteValueDictionary {
+                        {"Area", "Orchard.Contents"},
+                        {"Controller", "Admin"},
+                        {"Action", "Edit"},
+                        {"Id", context.ContentItem.ContentItemId}
+                    };
+                }
 
-            if (context.Metadata.AdminRouteValues == null)
-            {
-                context.Metadata.AdminRouteValues = new RouteValueDictionary {
-                    {"Area", "Orchard.Contents"},
-                    {"Controller", "Admin"},
-                    {"Action", "Edit"},
-                    {"Id", context.ContentItem.ContentItemId}
-                };
-            }
+                if (metadata.DisplayRouteValues == null)
+                {
+                    metadata.DisplayRouteValues = new RouteValueDictionary {
+                        {"Area", "Orchard.Contents"},
+                        {"Controller", "Item"},
+                        {"Action", "Display"},
+                        {"Id", context.ContentItem.ContentItemId}
+                    };
+                }
 
-            if (context.Metadata.DisplayRouteValues == null)
-            {
-                context.Metadata.DisplayRouteValues = new RouteValueDictionary {
-                    {"Area", "Orchard.Contents"},
-                    {"Controller", "Item"},
-                    {"Action", "Display"},
-                    {"Id", context.ContentItem.ContentItemId}
-                };
-            }
-
-            if (context.Metadata.RemoveRouteValues == null)
-            {
-                context.Metadata.RemoveRouteValues = new RouteValueDictionary {
-                    {"Area", "Orchard.Contents"},
-                    {"Controller", "Admin"},
-                    {"Action", "Remove"},
-                    {"Id", context.ContentItem.ContentItemId}
-                };
-            }
+                if (metadata.RemoveRouteValues == null)
+                {
+                    metadata.RemoveRouteValues = new RouteValueDictionary {
+                        {"Area", "Orchard.Contents"},
+                        {"Controller", "Admin"},
+                        {"Action", "Remove"},
+                        {"Id", context.ContentItem.ContentItemId}
+                    };
+                }
+            });
         }
     }
 }

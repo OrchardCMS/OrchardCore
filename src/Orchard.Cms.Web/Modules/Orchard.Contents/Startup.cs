@@ -9,9 +9,11 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Contents.Drivers;
 using Orchard.Contents.Handlers;
+using Orchard.Contents.Indexing;
 using Orchard.Contents.Recipes;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
+using Orchard.Indexing;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
 
@@ -29,6 +31,9 @@ namespace Orchard.Contents
             services.AddScoped<IContentDisplayDriver, ContentsDriver>();
             services.AddScoped<IContentHandler, ContentsHandler>();
             services.AddRecipeExecutionStep<ContentStep>();
+
+            services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
+            services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
