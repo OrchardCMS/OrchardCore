@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.Loaders;
+using Orchard.Environment.Extensions.Manifests;
 using Orchard.Events;
 using Orchard.Tests.Stubs;
 using System;
@@ -39,6 +41,109 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             }
         }
 
+        private class TestFeatureInfo : IFeatureInfo
+        {
+            public string[] Dependencies { get; set; } = new string[0];
+            public IExtensionInfo Extension { get; set; }
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public double Priority { get; set; }
+            public string Category { get; set; }
+            public string Description { get; set; }
+            public bool DependencyOn(IFeatureInfo feature)
+            {
+                return false;
+            }
+        }
+
+        private class TestModuleExtensionInfo : IExtensionInfo
+        {
+            public TestModuleExtensionInfo(string name)
+            {
+                var dic1 = new Dictionary<string, string>()
+                {
+                    {"name", name},
+                    {"desciption", name},
+                    {"type", "module"},
+                };
+
+                var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.Add(memConfigSrc1);
+
+                Features = new FeatureInfoList(new List<IFeatureInfo>());
+
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
+            }
+            public IFileInfo ExtensionFileInfo { get; set; }
+            public IFeatureInfoList Features { get; set; }
+            public string Id { get; set; }
+            public IManifestInfo Manifest { get; set; }
+            public string SubPath { get; set; }
+        }
+
+        private class TestThemeExtensionInfo : IExtensionInfo
+        {
+            public TestThemeExtensionInfo(string name)
+            {
+                var dic1 = new Dictionary<string, string>()
+                {
+                    {"name", name},
+                    {"desciption", name},
+                    {"type", "theme"},
+                };
+
+                var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.Add(memConfigSrc1);
+
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+
+                var features =
+                    new List<IFeatureInfo>()
+                    {
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                    };
+
+                Features = new FeatureInfoList(features);
+
+                Id = name;
+            }
+
+            public TestThemeExtensionInfo(string name, IFeatureInfo baseTheme)
+            {
+                var dic1 = new Dictionary<string, string>()
+                {
+                    {"name", name},
+                    {"desciption", name},
+                    {"type", "theme"},
+                    {"basetheme", baseTheme.Id}
+                };
+
+                var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.Add(memConfigSrc1);
+
+                Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
+
+                var features =
+                    new List<IFeatureInfo>()
+                    {
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
+                    };
+
+                Features = new FeatureInfoList(features);
+
+                Id = name;
+            }
+
+            public IFileInfo ExtensionFileInfo { get; set; }
+            public IFeatureInfoList Features { get; set; }
+            public string Id { get; set; }
+            public IManifestInfo Manifest { get; set; }
+            public string SubPath { get; set; }
+        }
+
         public DefaultShapeTableManagerTests()
         {
             IServiceCollection serviceCollection = new ServiceCollection();
@@ -50,37 +155,23 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
+            var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
+            var baseThemeFeatureExtensionInfo = new TestThemeExtensionInfo("BaseTheme");
+            var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features[0]);
+
             var features = new[] {
-                new FeatureDescriptor {
-                    Id = "Theme1",
-                    Extension = new ExtensionDescriptor {
-                        Id = "Theme1",
-                        ExtensionType = DefaultExtensionTypes.Theme
-                    }
-                },
-                new FeatureDescriptor {
-                    Id = "DerivedTheme",
-                    Extension = new ExtensionDescriptor {
-                        Id = "DerivedTheme",
-                        ExtensionType = DefaultExtensionTypes.Theme,
-                        BaseTheme = "BaseTheme"
-                    }
-                },
-                new FeatureDescriptor {
-                    Id = "BaseTheme",
-                    Extension = new ExtensionDescriptor {
-                        Id = "BaseTheme",
-                        ExtensionType = DefaultExtensionTypes.Theme
-                    }
-                }
+                theme1FeatureExtensionInfo.Features[0],
+                derivedThemeFeatureExtensionInfo.Features[0],
+                baseThemeFeatureExtensionInfo.Features[0]
             };
+
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
-            TestShapeProvider.FeatureShapes = new Dictionary<Feature, IEnumerable<string>> {
+            TestShapeProvider.FeatureShapes = new Dictionary<IFeatureInfo, IEnumerable<string>> {
                 { TestFeature(), new [] {"Hello"} },
-                { Feature(features[0]), new [] {"Theme1Shape"} },
-                { Feature(features[1]), new [] {"DerivedShape", "OverriddenShape"} },
-                { Feature(features[2]), new [] {"BaseShape", "OverriddenShape"} }
+                { features[0], new [] {"Theme1Shape"} },
+                { features[1], new [] {"DerivedShape", "OverriddenShape"} },
+                { features[2], new [] {"BaseShape", "OverriddenShape"} }
             };
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
@@ -89,74 +180,56 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        static Feature Feature(FeatureDescriptor descriptor)
+        static IFeatureInfo TestFeature()
         {
-            return new Feature
+            return new TestFeatureInfo
             {
-                Descriptor = descriptor
-            };
-        }
-
-        static Feature TestFeature()
-        {
-            return new Feature
-            {
-                Descriptor = new FeatureDescriptor
-                {
-                    Id = "Testing",
-                    Dependencies = Enumerable.Empty<string>(),
-                    Extension = new ExtensionDescriptor
-                    {
-                        Id = "Testing",
-                        ExtensionType = DefaultExtensionTypes.Module,
-                    }
-                }
+                Id = "Testing",
+                Dependencies = new string[0],
+                Extension = new TestModuleExtensionInfo("Testing")
             };
         }
 
         public class TestExtensionManager : IExtensionManager
         {
-            private readonly IEnumerable<FeatureDescriptor> _availableFeautures;
-
-            public TestExtensionManager(IEnumerable<FeatureDescriptor> availableFeautures)
+            private IEnumerable<IFeatureInfo> _features;
+            public TestExtensionManager(IEnumerable<IFeatureInfo> features) {
+                _features = features;
+            }
+            public IExtensionInfo GetExtension(string extensionId)
             {
-                _availableFeautures = availableFeautures;
+                return _features.Select(x => x.Extension).First(x => x.Id == extensionId);
             }
 
-            public ExtensionDescriptor GetExtension(string name)
+            public IExtensionInfoList GetExtensions()
+            {
+                return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
+            }
+
+            public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
             {
                 throw new NotImplementedException();
             }
 
-            public IEnumerable<ExtensionDescriptor> AvailableExtensions()
-            {
-                throw new NotSupportedException();
-            }
-
-            public IEnumerable<FeatureDescriptor> AvailableFeatures()
-            {
-                return _availableFeautures;
-            }
-
-            public IEnumerable<Feature> LoadFeatures(IEnumerable<FeatureDescriptor> featureDescriptors)
-            {
-                throw new NotSupportedException();
-            }
-
-            public bool HasDependency(FeatureDescriptor item, FeatureDescriptor subject)
-            {
-                return _availableFeautures.Any(x => x.Id == item.Id);
-            }
-
-            public ExtensionEntry LoadExtension(ExtensionDescriptor descriptor)
+            public Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos)
             {
                 throw new NotImplementedException();
+            }
+
+            public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
+            {
+                return Task.FromResult((FeatureEntry) new NonCompiledFeatureEntry(feature));
+            }
+
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            {
+                return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
         }
 
         public class TestShapeProvider : IShapeTableProvider
         {
-            public static IDictionary<Feature, IEnumerable<string>> FeatureShapes;
+            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes;
 
             public Action<ShapeTableBuilder> Discover = x => { };
 
@@ -166,7 +239,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 {
                     foreach (var shape in pair.Value)
                     {
-                        builder.Describe(shape).From(pair.Key).BoundAs(pair.Key.Descriptor.Id, null);
+                        builder.Describe(shape).From(pair.Key).BoundAs(pair.Key.Id, null);
                     }
                 }
 

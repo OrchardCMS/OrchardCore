@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.State;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
@@ -18,21 +18,25 @@ namespace Orchard.Environment.Shell
             return Task.FromResult(new ShellState());
         }
 
-        public void UpdateEnabledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 Logger.LogDebug("Feature {0} EnableState changed from {1} to {2}",
-                             featureState.Name, featureState.EnableState, value);
+                             featureState.Id, featureState.EnableState, value);
             }
+
+            return Task.CompletedTask;
         }
 
-        public void UpdateInstalledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Name, featureState.InstallState, value);
+                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Id, featureState.InstallState, value);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

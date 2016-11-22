@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Themes.Services
 {
     public interface ISiteThemeService
     {
-        Task<ExtensionDescriptor> GetSiteThemeAsync();
+        Task<IExtensionInfo> GetSiteThemeAsync();
         Task SetSiteThemeAsync(string themeName);
         Task<string> GetCurrentThemeNameAsync();
     }

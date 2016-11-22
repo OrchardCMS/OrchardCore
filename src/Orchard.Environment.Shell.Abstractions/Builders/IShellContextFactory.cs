@@ -1,5 +1,6 @@
 ﻿using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting.ShellBuilders;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -12,18 +13,18 @@ namespace Orchard.Environment.Shell.Builders
         /// <summary>
         /// Builds a shell context given a specific tenant settings structure
         /// </summary>
-        ShellContext CreateShellContext(ShellSettings settings);
+        Task<ShellContext> CreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Builds a shell context for an uninitialized Orchard instance. Needed
         /// to display setup user interface.
         /// </summary>
-        ShellContext CreateSetupContext(ShellSettings settings);
+        Task<ShellContext> CreateSetupContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Builds a shell context given a specific description of features and parameters.
         /// Shell's actual current descriptor has no effect. Does not use or update descriptor cache.
         /// </summary>
-        ShellContext CreateDescribedContext(ShellSettings settings, ShellDescriptor shellDescriptor);
+        Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -12,6 +13,6 @@ namespace Orchard.Environment.Shell.Builders
         /// Using information from the IExtensionManager, transforms and populates all of the
         /// blueprint model the shell builders will need to correctly initialize a tenant IoC container.
         /// </summary>
-        ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor);
+        Task<ShellBlueprint> ComposeAsync(ShellSettings settings, ShellDescriptor descriptor);
     }
 }

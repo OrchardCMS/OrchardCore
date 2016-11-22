@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Orchard.Environment.Extensions.Features;
+using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
     public class ShapeTableBuilder
     {
         private readonly IList<ShapeAlterationBuilder> _alterationBuilders = new List<ShapeAlterationBuilder>();
-        private readonly Feature _feature;
+        private readonly IFeatureInfo _feature;
 
-        public ShapeTableBuilder(Feature feature)
+        public ShapeTableBuilder(IFeatureInfo feature)
         {
             _feature = feature;
         }

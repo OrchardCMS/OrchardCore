@@ -35,34 +35,34 @@ namespace Orchard.Environment.Shell
             var shellState = await _stateManager.GetShellStateAsync();
             foreach (var feature in descriptor.Features)
             {
-                var featureName = feature.Name;
-                var featureState = shellState.Features.SingleOrDefault(f => f.Name == featureName);
+                var featureId = feature.Id;
+                var featureState = shellState.Features.SingleOrDefault(f => f.Id == featureId);
                 if (featureState == null)
                 {
                     featureState = new ShellFeatureState
                     {
-                        Name = featureName
+                        Id = featureId
                     };
                 }
                 if (!featureState.IsInstalled)
                 {
-                    _stateManager.UpdateInstalledState(featureState, ShellFeatureState.State.Rising);
+                    await _stateManager.UpdateInstalledStateAsync(featureState, ShellFeatureState.State.Rising);
                 }
                 if (!featureState.IsEnabled)
                 {
-                    _stateManager.UpdateEnabledState(featureState, ShellFeatureState.State.Rising);
+                    await _stateManager.UpdateEnabledStateAsync(featureState, ShellFeatureState.State.Rising);
                 }
             }
             foreach (var featureState in shellState.Features)
             {
-                var featureName = featureState.Name;
-                if (descriptor.Features.Any(f => f.Name == featureName))
+                var featureId = featureState.Id;
+                if (descriptor.Features.Any(f => f.Id == featureId))
                 {
                     continue;
                 }
                 if (!featureState.IsDisabled)
                 {
-                    _stateManager.UpdateEnabledState(featureState, ShellFeatureState.State.Falling);
+                    await _stateManager.UpdateEnabledStateAsync(featureState, ShellFeatureState.State.Falling);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace Orchard.Environment.Shell
                             .Where(FeatureShouldBeLoadedForStateChangeNotifications)
                             .Select(x => new ShellFeature
                             {
-                                Name = x.Name
+                                Id = x.Id
                             })
                             .ToArray()
                     };
@@ -95,7 +95,7 @@ namespace Orchard.Environment.Shell
                         Logger.LogInformation("Adding pending task 'ApplyChanges' for shell '{0}'", _settings.Name);
                     }
 
-                    shellStateUpdater.ApplyChanges();
+                    await shellStateUpdater.ApplyChanges();
                 }
             });
         }

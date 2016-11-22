@@ -6,7 +6,7 @@ namespace Orchard.Environment.Shell
     public interface IShellStateManager
     {
         Task<ShellState> GetShellStateAsync();
-        void UpdateEnabledState(ShellFeatureState featureState, ShellFeatureState.State value);
-        void UpdateInstalledState(ShellFeatureState featureState, ShellFeatureState.State value);
+        Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value);
+        Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value);
     }
 }

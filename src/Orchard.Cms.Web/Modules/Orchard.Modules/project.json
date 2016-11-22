@@ -10,6 +10,7 @@
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.ResourceManagement.Abstractions": "2.0.0-*"
   },
   "buildOptions": {

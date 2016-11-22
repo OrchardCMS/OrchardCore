@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Orchard.Settings;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Settings;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace Orchard.Themes.Services
             _memoryCache = memoryCache;
         }
 
-        public async Task<ExtensionDescriptor> GetSiteThemeAsync()
+        public async Task<IExtensionInfo> GetSiteThemeAsync()
         {
             string currentThemeName = await GetCurrentThemeNameAsync();
             if (String.IsNullOrEmpty(currentThemeName))

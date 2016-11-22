@@ -1,8 +1,8 @@
 ﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Models;
 using System;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Tests.Stubs
 {
@@ -23,11 +23,11 @@ namespace Orchard.Tests.Stubs
 
     public class MockThemeManager : IThemeManager
     {
-        ExtensionDescriptor _dec;
-        public MockThemeManager(ExtensionDescriptor des) {
+        IExtensionInfo _dec;
+        public MockThemeManager(IExtensionInfo des) {
             _dec = des;
         }
-        public Task<ExtensionDescriptor> GetThemeAsync()
+        public Task<IExtensionInfo> GetThemeAsync()
         {
             return Task.Run(() => _dec);
         }

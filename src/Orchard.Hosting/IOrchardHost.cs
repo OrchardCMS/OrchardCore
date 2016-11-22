@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
+using System.Threading.Tasks;
 
 namespace Orchard.Hosting
 {
@@ -35,7 +36,7 @@ namespace Orchard.Hosting
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to create.</param>
         /// <returns></returns>
-        ShellContext CreateShellContext(ShellSettings settings);
+        Task<ShellContext> CreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances. 

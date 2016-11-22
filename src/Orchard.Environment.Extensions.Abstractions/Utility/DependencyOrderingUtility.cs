@@ -17,7 +17,7 @@ namespace Orchard.Environment.Extensions.Utility
         /// is a dependency of another, this algorithm will return the collection of elements sorted
         /// so that a given element in the sequence doesn't depend on any other element further in the sequence.
         /// </summary>
-        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> elements, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
+        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> elements, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
         {
             var population = elements.Select(d => new Linkage<T>
             {
@@ -40,7 +40,7 @@ namespace Orchard.Environment.Extensions.Utility
             return result;
         }
 
-        private static void Add<T>(Linkage<T> item, ICollection<T> list, IEnumerable<Linkage<T>> population, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
+        private static void Add<T>(Linkage<T> item, ICollection<T> list, IEnumerable<Linkage<T>> population, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
         {
             if (item.Used)
                 return;
@@ -55,9 +55,9 @@ namespace Orchard.Environment.Extensions.Utility
             list.Add(item.Element);
         }
 
-        private static int BestPriorityPosition<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
+        private static int BestPriorityPosition<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
         {
-            int bestPriority = getPriority(list[index]);
+            double bestPriority = getPriority(list[index]);
             int bestIndex = index;
 
             for (int i = index - 1; i >= 0; i--)
@@ -67,7 +67,7 @@ namespace Orchard.Environment.Extensions.Utility
                     return bestIndex;
                 }
 
-                int currentPriority = getPriority(list[i]);
+                double currentPriority = getPriority(list[i]);
                 if (currentPriority > bestPriority)
                 {
                     bestIndex = i;

@@ -45,13 +45,15 @@ namespace Orchard.Recipes.Services
                 ExecutionId = executionId
             };
 
-            await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
+            await _eventBus
+                .NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(executionId, recipeStep));
 
             await _recipeHandlers.InvokeAsync(rh => rh.ExecuteRecipeStepAsync(recipeContext), _logger);
 
             await UpdateStepResultRecordAsync(recipeContext, true);
 
-            await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
+            await _eventBus
+                .NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(executionId, recipeStep));
         }
 
         private async Task UpdateStepResultRecordAsync(

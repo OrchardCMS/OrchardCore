@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Orchard.Environment.Extensions.Models;
+﻿using System.Collections.Generic;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Modules.Models {
     /// <summary>
@@ -10,7 +9,7 @@ namespace Orchard.Modules.Models {
         /// <summary>
         /// The feature descriptor.
         /// </summary>
-        public FeatureDescriptor Descriptor  { get; set; }
+        public IFeatureInfo Descriptor  { get; set; }
 
         /// <summary>
         /// Boolean value indicating if the feature is enabled.
@@ -35,6 +34,6 @@ namespace Orchard.Modules.Models {
         /// <summary>
         /// List of features that depend on this feature.
         /// </summary>
-        public IEnumerable<FeatureDescriptor> DependentFeatures { get; set; }
+        public IEnumerable<IFeatureInfo> DependentFeatures { get; set; }
     }
 }

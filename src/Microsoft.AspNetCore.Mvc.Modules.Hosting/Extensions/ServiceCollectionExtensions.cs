@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
@@ -18,6 +17,7 @@ using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
+using Orchard.Environment.Extensions.Manifests;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -25,29 +25,30 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
     {
         public static IServiceCollection AddModuleServices(this IServiceCollection services)
         {
-            return AddModuleServices(services, null, "Modules", null);
+            return AddModuleServices(services, null, "Module.txt");
         }
 
         public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration)
         {
-            return AddModuleServices(services, configuration, "Modules", null);
+            return AddModuleServices(services, configuration, "Module.txt");
         }
 
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, string modulesPath)
+        public static IServiceCollection AddModuleServices(this IServiceCollection services, string manifestFileName)
         {
-            return AddModuleServices(services, null, modulesPath, null);
+            return AddModuleServices(services, null, manifestFileName);
         }
 
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string modulesPath)
+        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string manifestFileName)
         {
-            return AddModuleServices(services, configuration, modulesPath, null);
+            return AddModuleServices(services, configuration, manifestFileName, null);
         }
 
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string modulesPath, Action<MvcOptions> mvcSetupAction)
+        public static IServiceCollection AddModuleServices(this IServiceCollection services, IConfiguration configuration, string manifestFileName, Action<MvcOptions> mvcSetupAction)
         {
             services.AddSingleton(new ShellFeature("Orchard.Hosting"));
             services.AddWebHost();
-            services.AddModuleFolder(modulesPath);
+            services.AddManifestDefinition(manifestFileName, "module");
+            services.AddExtensionLocation("Modules");
 
             services
                 .AddMvcCore(options =>
@@ -86,11 +87,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             return services;
         }
 
-        public static IServiceCollection WithDefaultFeatures(this IServiceCollection services, params string[] featureNames)
+        public static IServiceCollection WithDefaultFeatures(this IServiceCollection services, params string[] featureIds)
         {
-            foreach (var featureName in featureNames)
+            foreach (var featureId in featureIds)
             {
-                services.AddTransient(sp => new ShellFeature(featureName));
+                services.AddTransient(sp => new ShellFeature(featureId));
             };
 
             return services;

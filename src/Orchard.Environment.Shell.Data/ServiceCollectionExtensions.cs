@@ -34,7 +34,8 @@ namespace Orchard.Environment.Shell.Data
         {
             services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
             services.AddScoped<IShellStateManager, ShellStateManager>();
-
+            services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+            services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
 
             return services;
         }

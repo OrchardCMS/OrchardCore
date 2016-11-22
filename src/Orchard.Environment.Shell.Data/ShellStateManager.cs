@@ -1,7 +1,7 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.State;
+using System.Linq;
+using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Environment.Shell
@@ -40,21 +40,21 @@ namespace Orchard.Environment.Shell
             return _shellState;
         }
 
-        public void UpdateEnabledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public async Task UpdateEnabledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
                 Logger.LogDebug("Feature {0} EnableState changed from {1} to {2}",
-                             featureState.Name, featureState.EnableState, value);
+                             featureState.Id, featureState.EnableState, value);
             }
 
-            var previousFeatureState = GetOrCreateFeatureState(featureState.Name);
+            var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.EnableState != featureState.EnableState)
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
                 {
                     Logger.LogWarning("Feature {0} prior EnableState was {1} when {2} was expected",
-                               featureState.Name, previousFeatureState.EnableState, featureState.EnableState);
+                               featureState.Id, previousFeatureState.EnableState, featureState.EnableState);
                 }
             }
 
@@ -64,20 +64,20 @@ namespace Orchard.Environment.Shell
             UpdateShellState();
         }
 
-        public void UpdateInstalledState(ShellFeatureState featureState, ShellFeatureState.State value)
+        public async Task UpdateInstalledStateAsync(ShellFeatureState featureState, ShellFeatureState.State value)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Name, featureState.InstallState, value);
+                Logger.LogDebug("Feature {0} InstallState changed from {1} to {2}", featureState.Id, featureState.InstallState, value);
             }
 
-            var previousFeatureState = GetOrCreateFeatureState(featureState.Name);
+            var previousFeatureState = await GetOrCreateFeatureStateAsync(featureState.Id);
             if (previousFeatureState.InstallState != featureState.InstallState)
             {
                 if (Logger.IsEnabled(LogLevel.Warning))
                 {
                     Logger.LogWarning("Feature {0} prior InstallState was {1} when {2} was expected",
-                               featureState.Name, previousFeatureState.InstallState, featureState.InstallState);
+                               featureState.Id, previousFeatureState.InstallState, featureState.InstallState);
                 }
             }
 
@@ -87,13 +87,14 @@ namespace Orchard.Environment.Shell
             UpdateShellState();
         }
 
-        private ShellFeatureState GetOrCreateFeatureState(string name)
+        private async Task<ShellFeatureState> GetOrCreateFeatureStateAsync(string id)
         {
-            var featureState = GetShellStateAsync().Result.Features.FirstOrDefault(x => x.Name == name);
+            var shellState = await GetShellStateAsync();
+            var featureState = shellState.Features.FirstOrDefault(x => x.Id == id);
 
             if (featureState == null)
             {
-                featureState = new ShellFeatureState() { Name = name };
+                featureState = new ShellFeatureState() { Id = id };
                 _shellState.Features.Add(featureState);
             }
 

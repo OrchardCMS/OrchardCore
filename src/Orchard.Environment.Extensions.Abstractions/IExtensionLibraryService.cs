@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Orchard.Environment.Extensions.Models;
 
 namespace Orchard.Environment.Extensions
 {
@@ -15,19 +14,19 @@ namespace Orchard.Environment.Extensions
         /// Loads an ambient extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadAmbientExtension(ExtensionDescriptor descriptor);
+        Assembly LoadAmbientExtension(IExtensionInfo extensionInfo);
 
         /// <summary>
         /// Loads an external precompiled extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadPrecompiledExtension(ExtensionDescriptor descriptor);
+        Assembly LoadPrecompiledExtension(IExtensionInfo extensionInfo);
 
         /// <summary>
         /// Loads an external dynamic extension.
         /// Returns an <see cref="Assembly"/> instance.
         /// </summary>
-        Assembly LoadDynamicExtension(ExtensionDescriptor descriptor);
+        Assembly LoadDynamicExtension(IExtensionInfo extensionInfo);
 
         /// <summary>
         /// Lists references of all the available extensions.
