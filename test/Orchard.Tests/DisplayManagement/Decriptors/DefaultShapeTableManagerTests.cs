@@ -157,12 +157,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
             var baseThemeFeatureExtensionInfo = new TestThemeExtensionInfo("BaseTheme");
-            var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features[0]);
+            var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features.First());
 
             var features = new[] {
-                theme1FeatureExtensionInfo.Features[0],
-                derivedThemeFeatureExtensionInfo.Features[0],
-                baseThemeFeatureExtensionInfo.Features[0]
+                theme1FeatureExtensionInfo.Features.First(),
+                derivedThemeFeatureExtensionInfo.Features.First(),
+                baseThemeFeatureExtensionInfo.Features.First()
             };
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
@@ -204,6 +204,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public IExtensionInfoList GetExtensions()
             {
                 return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
+            }
+
+            public IFeatureInfoList GetFeatures(string[] featureIds)
+            {
+                throw new NotImplementedException();
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
