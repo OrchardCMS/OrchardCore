@@ -88,7 +88,7 @@ namespace Orchard.DisplayManagement.Descriptors
         }
 
         /// <summary>
-        /// Extracts the group information from a location string, or null if it was not defined.
+        /// Extracts the group information from a location string, or <c>null</c> if it is not present.
         /// e.g., Content:12@search
         /// </summary>
         public string GetGroup()
