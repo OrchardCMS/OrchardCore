@@ -17,7 +17,7 @@ namespace Orchard.DisplayManagement.Descriptors
     /// </summary>
     public class DefaultShapeTableManager : IShapeTableManager
     {
-        private static ConcurrentDictionary<int, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<int, FeatureShapeDescriptor>();
+        private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IExtensionManager _extensionManager;
@@ -113,10 +113,9 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = (bindingStrategy.GetType().Name
+                var key = bindingStrategy.GetType().Name
                     + firstAlteration.Feature.Descriptor.Id
-                    + firstAlteration.ShapeType.ToLower())
-                    .GetHashCode();
+                    + firstAlteration.ShapeType.ToLower();
 
                 if (!_shapeDescriptors.ContainsKey(key))
                 {
@@ -136,12 +135,12 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        private static int GetPriority(KeyValuePair<int, FeatureShapeDescriptor> shapeDescriptor)
+        private static int GetPriority(KeyValuePair<string, FeatureShapeDescriptor> shapeDescriptor)
         {
             return shapeDescriptor.Value.Feature.Descriptor.Priority;
         }
 
-        private bool DescriptorHasDependency(KeyValuePair<int, FeatureShapeDescriptor> item, KeyValuePair<int, FeatureShapeDescriptor> subject)
+        private bool DescriptorHasDependency(KeyValuePair<string, FeatureShapeDescriptor> item, KeyValuePair<string, FeatureShapeDescriptor> subject)
         {
             return _extensionManager.HasDependency(item.Value.Feature.Descriptor, subject.Value.Feature.Descriptor);
         }

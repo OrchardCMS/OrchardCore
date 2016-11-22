@@ -22,10 +22,10 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public class ShapeDescriptorIndex : ShapeDescriptor
     {
-        private IEnumerable<int> _alterationKeys;
-        private ConcurrentDictionary<int, FeatureShapeDescriptor> _descriptors;
+        private IEnumerable<string> _alterationKeys;
+        private ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
 
-        public ShapeDescriptorIndex(string shapeType, IEnumerable<int> alterationKeys, ConcurrentDictionary<int, FeatureShapeDescriptor> descriptors)
+        public ShapeDescriptorIndex(string shapeType, IEnumerable<string> alterationKeys, ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
         {
             ShapeType = shapeType;
             _alterationKeys = alterationKeys;
