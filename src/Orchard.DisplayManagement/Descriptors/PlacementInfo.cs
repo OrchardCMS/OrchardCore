@@ -87,12 +87,16 @@ namespace Orchard.DisplayManagement.Descriptors
             return Location.Substring(tabDelimiter + 1, nextDelimiter - tabDelimiter - 1);
         }
 
+        /// <summary>
+        /// Extracts the group information from a location string, or null if it was not defined.
+        /// e.g., Content:12@search
+        /// </summary>
         public string GetGroup()
         {
             var groupDelimiter = Location.IndexOf('@');
             if (groupDelimiter == -1)
             {
-                return "";
+                return null;
             }
 
             var nextDelimiter = Location.IndexOfAny(Delimiters, groupDelimiter + 1);
