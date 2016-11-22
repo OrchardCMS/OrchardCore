@@ -8,11 +8,11 @@ namespace Orchard.Environment.Extensions.Features
     {
         public const string FeatureManagerCacheKey = "FeatureManager:Features";
 
-        private static string NameKey = "name";
-        private static string PriorityKey = "priority";
-        private static string DependenciesKey = "dependencies";
-        private static string CategoryKey = "category";
-        private static string DescriptionKey = "description";
+        private static string NameKey = "Name";
+        private static string PriorityKey = "Priority";
+        private static string DependenciesKey = "Dependencies";
+        private static string CategoryKey = "Category";
+        private static string DescriptionKey = "Description";
 
         public IFeatureInfoList GetFeatures(
             IExtensionInfo extensionInfo,
@@ -21,7 +21,7 @@ namespace Orchard.Environment.Extensions.Features
             var features = new List<IFeatureInfo>();
 
             // Features and Dependencies live within this section
-            var featuresSection = manifestInfo.ConfigurationRoot.GetSection("features");
+            var featuresSection = manifestInfo.ConfigurationRoot.GetSection("Features");
             if (featuresSection.Value != null)
             {
                 foreach (var featureSection in featuresSection.GetChildren())
