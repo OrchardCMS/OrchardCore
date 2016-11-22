@@ -23,13 +23,16 @@ namespace Orchard.Settings.Drivers
             );
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, IUpdateModel updater, string groupId)
         {
-            var model = new SiteSettingsViewModel();
-
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName))
+            if (groupId == "general")
             {
-                site.SiteName = model.SiteName;
+                var model = new SiteSettingsViewModel();
+
+                if (await updater.TryUpdateModelAsync(model, Prefix, t => t.SiteName))
+                {
+                    site.SiteName = model.SiteName;
+                }
             }
 
             return Edit(site);

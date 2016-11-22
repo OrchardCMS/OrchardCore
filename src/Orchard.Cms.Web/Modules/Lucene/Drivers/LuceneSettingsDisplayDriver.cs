@@ -29,14 +29,17 @@ namespace Orchard.Lucene.Drivers
                 }).Location("Content:2").OnGroup("search");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, IUpdateModel updater, string groupId)
         {
-            var model = new LuceneSettingsViewModel();
+            if (groupId == "search")
+            {
+                var model = new LuceneSettingsViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
+                await updater.TryUpdateModelAsync(model, Prefix);
 
-            section.SearchIndex = model.SearchIndex;
-            section.SearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                section.SearchIndex = model.SearchIndex;
+                section.SearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            }
 
             return Edit(section);
         }

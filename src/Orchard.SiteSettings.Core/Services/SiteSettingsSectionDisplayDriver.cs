@@ -85,10 +85,10 @@ namespace Orchard.Settings.Services
 
         public virtual Task<IDisplayResult> UpdateAsync(TSection section, BuildEditorContext context)
         {
-            return UpdateAsync(section, context.Updater);
+            return UpdateAsync(section, context.Updater, context.GroupId);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater)
+        public virtual Task<IDisplayResult> UpdateAsync(TSection section, IUpdateModel updater, string groupId)
         {
             return Task.FromResult<IDisplayResult>(null);
         }

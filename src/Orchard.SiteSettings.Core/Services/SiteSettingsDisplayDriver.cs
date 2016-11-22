@@ -42,10 +42,10 @@ namespace Orchard.Settings.Services
 
         public virtual Task<IDisplayResult> UpdateAsync(ISite site, BuildEditorContext context)
         {
-            return UpdateAsync(site, context.Updater);
+            return UpdateAsync(site, context.Updater, context.GroupId);
         }
 
-        public virtual Task<IDisplayResult> UpdateAsync(ISite site, IUpdateModel updater)
+        public virtual Task<IDisplayResult> UpdateAsync(ISite site, IUpdateModel updaterm, string groupId)
         {
             return Task.FromResult<IDisplayResult>(null);
         }
