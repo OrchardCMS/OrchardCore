@@ -5,7 +5,7 @@ namespace Orchard.Settings
     public static class SiteSettingsExtensions
     {
         /// <summary>
-        /// Extracts the specified type of porperty.
+        /// Extracts the specified type of property.
         /// </summary>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
         /// <returns>The default value of the requested type if the property was not found.</returns>
@@ -16,7 +16,7 @@ namespace Orchard.Settings
         }
 
         /// <summary>
-        /// Extracts the specified named porperty.
+        /// Extracts the specified named property.
         /// </summary>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
         /// <param name="name">The name of the property to extract.</param>
