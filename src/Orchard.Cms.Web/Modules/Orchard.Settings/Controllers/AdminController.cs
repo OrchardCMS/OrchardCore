@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.DisplayManagement.ModelBinding;
@@ -16,16 +17,19 @@ namespace Orchard.Settings.Controllers
         private readonly ISiteSettingsDisplayManager _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IAuthorizationService _authorizationService;
 
         public AdminController(
             ISiteService siteService,
             ISiteSettingsDisplayManager siteSettingsDisplayManager,
+            IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
             _notifier = notifier;
+            _authorizationService = authorizationService;
             H = h;
         }
 
@@ -33,6 +37,11 @@ namespace Orchard.Settings.Controllers
 
         public async Task<IActionResult> Index(string groupId)
         {
+            if (! await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            {
+                return Unauthorized();
+            }
+
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
@@ -45,6 +54,11 @@ namespace Orchard.Settings.Controllers
         [ActionName(nameof(Index))]
         public async Task<IActionResult> IndexPost(string groupId)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            {
+                return Unauthorized();
+            }
+
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
