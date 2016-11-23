@@ -82,5 +82,11 @@ namespace Orchard.OpenId.Services
 
             return identity;
         }
+
+        public Task DeleteAsync(OpenIdApplication application)
+        {
+            var cts = new System.Threading.CancellationTokenSource();
+            return _appStore.DeleteAsync(application, cts.Token);
+        }
     }
 }

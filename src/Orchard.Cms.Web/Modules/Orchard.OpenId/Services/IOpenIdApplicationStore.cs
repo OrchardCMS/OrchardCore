@@ -8,5 +8,6 @@ namespace Orchard.OpenId.Services
     public interface IOpenIdApplicationStore : OpenIddict.IOpenIddictApplicationStore<OpenIdApplication>
     {
         Task<IList<string>> GetRolesAsync(OpenIdApplication application, CancellationToken cancellationToken);
+        Task DeleteAsync(OpenIdApplication application, CancellationToken cancellationToken);
     }
 }

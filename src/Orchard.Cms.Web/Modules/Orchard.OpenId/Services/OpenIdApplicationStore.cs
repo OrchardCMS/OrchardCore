@@ -114,5 +114,15 @@ namespace Orchard.OpenId.Services
 
             return Task.FromResult<IList<string>>(application.RoleNames);
         }
+        public Task DeleteAsync(OpenIdApplication application, CancellationToken cancellationToken)
+        {
+            
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return Task.Run(()=>_session.Delete(application),cancellationToken);
+        }
     }
 }
