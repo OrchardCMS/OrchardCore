@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
 using Lucene.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.Navigation;
 using Orchard.Settings;
@@ -17,7 +19,6 @@ namespace Lucene.Controllers
         private readonly ISiteService _siteService;
         private readonly LuceneIndexProvider _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
-        private readonly LuceneSettings _luceneSettings;
         private readonly IContentManager _contentManager;
 
         private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
@@ -26,16 +27,19 @@ namespace Lucene.Controllers
             ISiteService siteService,
             LuceneIndexProvider luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
-            LuceneSettings luceneSettings,
-            IContentManager contentManager
+            IContentManager contentManager,
+            ILogger<SearchController> logger
             )
         {
             _siteService = siteService;
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
-            _luceneSettings = luceneSettings;
             _contentManager = contentManager;
+
+            Logger = logger;
         }
+
+        ILogger Logger { get; set; }
 
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
@@ -64,7 +68,23 @@ namespace Lucene.Controllers
                 });
             }
 
-            var queryParser = new MultiFieldQueryParser(_luceneSettings.GetVersion(), _luceneSettings.GetSearchFields(), _luceneSettings.GetAnalyzer());
+            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+
+            if (luceneSettings == null)
+            {
+                Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+
+                return View(new SearchIndexViewModel
+                {
+                    HasMoreResults = false,
+                    Query = q,
+                    Pager = pager,
+                    IndexName = id,
+                    ContentItems = Enumerable.Empty<ContentItem>()
+                });
+            }
+
+            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.SearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             List<int> contentItemIds = new List<int>();

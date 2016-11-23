@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
 using Orchard.Environment.Navigation;
+using Orchard.Lucene.Drivers;
+using Orchard.Settings.Services;
 
 namespace Lucene
 {
@@ -24,7 +26,8 @@ namespace Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<LuceneIndexProvider>();
-            services.AddScoped<LuceneSettings>();
+
+            services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }
@@ -37,7 +40,6 @@ namespace Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
-
         }
     }
 }
