@@ -8,50 +8,123 @@
 <script at="Foot">
 
     $(function () {
+        var refreshDelay = 2000;
+
+        var iframe, delayTask, renderRequested, rendering, enabled;
         var previewButton = document.getElementById('previewButton');
+        var form = $(previewButton).closest('form');
         var previewUrl = $(document.getElementById('previewUrl')).data('value');
         var contentItemType = $(document.getElementById('contentItemType')).data('value');
         var contentPreviewContainer = document.getElementById('contentPreviewContainer');
+        var contentPreviewContent = document.getElementById('contentPreviewContent');
         var editSidebar = document.getElementsByClassName('edit-sidebar');
 
-        var previewTask;
+        hidePreview();
 
         $(previewButton).on('click', function (event) {
             event.preventDefault();
+            togglePreview();
+        });
 
-            if (previewTask) {
-                clearInterval(previewTask);
-                previewTask = null;
-                $(previewButton).text($(previewButton).data("start"));
-                $(editSidebar).css('visibility', 'hidden');
+        $(document).on('contentpreview:render', function () {
+            renderPreview();
+        });
+
+        $(document).on('contentpreview:toggle', function () {
+            togglePreview();
+        });
+
+        $(document).on('contentpreview:auto', function (event, data) {
+            if (data) {
+                startAutoRefresh();
             }
             else {
-                $(previewButton).text($(previewButton).data("stop"));
-                renderPreview();
-                previewTask = setInterval(renderPreview, 2000);
-                $(editSidebar).css('visibility', 'visible');
+                stopAutoRefresh();
             }
         });
 
+        function togglePreview() {
+            if (enabled) {
+                hidePreview();
+                stopAutoRefresh();
+            }
+            else {
+                showPreview();
+            }
+        }
+
+        function showPreview() {
+            enabled = true;
+            $(previewButton).text($(previewButton).data("stop"));
+            renderPreview();
+            $(editSidebar).css('visibility', 'visible');
+            $(contentPreviewNavigation).show();
+        }
+
+        function hidePreview() {
+            $(previewButton).text($(previewButton).data("start"));
+            $(editSidebar).css('visibility', 'hidden');
+            $(contentPreviewNavigation).hide();
+            $(contentPreviewContent).empty();
+            iframe = null;
+            enabled = false;
+        }
+
+        function startAutoRefresh() {
+            delayTask = setInterval(renderPreview, refreshDelay);
+        }
+
+        function stopAutoRefresh() {
+            clearInterval(delayTask);
+            delayTask = null;
+        }
+
         function renderPreview() {
-            var form = $(previewButton).closest('form');
-            var data = form.serialize();
 
-            $.post(previewUrl + "?id=" + contentItemType, data).done(function (data) {
+            // Preview is not open
+            if (!enabled) {
+                return;
+            }
 
-                var iframe = document.createElement('iframe');
-                iframe.setAttribute('frameborder', '0');
-                iframe.setAttribute('width', '100%');
-                iframe.setAttribute('scrolling', 'yes');
-                iframe.setAttribute('height', document.body.scrollHeight + 'px');
+            renderRequested = true;
 
-                var html = data;
-                $(contentPreviewContainer).empty();
-                contentPreviewContainer.appendChild(iframe);
-                iframe.contentWindow.document.open();
-                iframe.contentWindow.document.write(html);
-                iframe.contentWindow.document.close();
-            });
+            // Squashes all event calls into one
+            if (rendering) {
+                return;
+            }
+
+            // Pump renderPreview calls
+            while (renderRequested) {
+
+                renderRequested = false;
+                rendering = true;
+
+                var data = form.serialize();
+                $.post(previewUrl + "?id=" + contentItemType, data)
+                    .done(function (data) {
+                        
+                        if (!iframe) {
+                            iframe = document.createElement('iframe');
+                            iframe.setAttribute('frameborder', '0');
+                            iframe.setAttribute('width', '100%');
+                            iframe.setAttribute('scrolling', 'yes');
+                            iframe.setAttribute('height', document.body.scrollHeight + 'px');
+                            contentPreviewContent.appendChild(iframe);
+
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.close();
+                        }
+
+                        iframe.contentWindow.document.body.innerHTML = '';
+                        iframe.contentWindow.document.write(data);
+                    })
+                    .fail(function () {
+                        // An error occured, like validation
+                    })
+                    .always(function () {
+                        rendering = false;
+                    });
+            }
         }
     });
 </script>
