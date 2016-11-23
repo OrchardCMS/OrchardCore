@@ -27,10 +27,13 @@ namespace Lucene
                         .Add(T["Lucene Indexes"], "7", indexes => indexes
                             .Action("Index", "Admin", new { area = "Lucene" })
                             .Permission(Permissions.ManageIndexes)
+                            .LocalNav())))
+                .Add(T["Design"], design => design
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Search"], T["Search"], entry => entry
+                            .Action("Index", "Admin", new { area = "Orchard.Settings", groupId = "search" })
                             .LocalNav()
-                        )
-                    )
-                );
+                        )));
         }
     }
 }

@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Navigation;
-using Orchard.SiteSettings;
 
 namespace Orchard.Settings
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly SiteSettingsGroupProvider _siteSettingsGroupProvider;
-
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            SiteSettingsGroupProvider siteSettingsGroupProvider)
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            _siteSettingsGroupProvider = siteSettingsGroupProvider;
             T = localizer;
         }
 
@@ -28,16 +21,12 @@ namespace Orchard.Settings
             }
 
             builder.Add(T["Design"], design => design
-                .Add(T["Settings"], "1", settings => 
-                {
-                    foreach(var group in _siteSettingsGroupProvider.Groups.OrderBy(x => x.Value.Value))
-                    {
-                        settings
-                        .Add(group.Value, "1", entry => entry
-                        .Action("Index", "Admin", new { area = "Orchard.Settings", groupId = group.Key })
-                        .LocalNav());
-                    }                        
-                })
+                .Add(T["Settings"], "1", settings => settings
+                    .Add(T["General"], T["General"], entry => entry
+                        .Action("Index", "Admin", new { area = "Orchard.Settings", groupId = "general" })
+                        .LocalNav()
+                    )
+                )
             );
         }
     }

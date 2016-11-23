@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
 using Orchard.Settings.Services;
-using Orchard.SiteSettings;
 
 namespace Lucene
 {
@@ -42,10 +40,6 @@ namespace Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
-
-            var siteSettingsGroupProvider = serviceProvider.GetService<SiteSettingsGroupProvider>();
-            var t = serviceProvider.GetService<IStringLocalizer<Startup>>();
-            siteSettingsGroupProvider.Add("search", t["Search"]);
         }
     }
 }
