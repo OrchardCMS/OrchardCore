@@ -6,7 +6,7 @@
         <select asp-for="ContainedContentType" class="form-control">
             @foreach (var contentType in Model.ContentTypes.AllKeys)
             {
-                <option value="@contentType">@Model.ContentTypes[contentType]</option>
+                <option value="@contentType" selected="@(Model.ContainedContentType == contentType)">@Model.ContentTypes[contentType]</option>
             }
         </select>
         <span class="hint">@T["The content type that this list can contain, e.g. Blog Post for a Blog."]</span>

@@ -21,5 +21,4 @@ namespace Orchard.Settings
         RouteValueDictionary HomeRoute { get; set; }
         JObject Properties { get; set; }
     }
-
 }
