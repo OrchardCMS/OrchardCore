@@ -16,7 +16,7 @@ using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
-    [Authorize, AutoValidateAntiforgeryToken]
+    [Authorize]
     public class AccessController : Controller
     {
         private readonly IOpenIdApplicationManager _applicationManager;

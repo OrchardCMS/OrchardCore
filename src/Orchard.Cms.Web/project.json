@@ -15,7 +15,7 @@
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0",
-    "Microsoft.AspNetCore.DataProtection.Extensions": "1.1.0"
+    "Microsoft.AspNetCore.DataProtection.Extensions": "1.1.0",
     "System.Dynamic.Runtime": "4.3.0",
     "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Design": "1.1.0-*"
