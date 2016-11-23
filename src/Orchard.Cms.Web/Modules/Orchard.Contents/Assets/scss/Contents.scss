@@ -1,0 +1,16 @@
+﻿.edit-container {
+    display: table;
+    width: 100%;
+}
+
+.edit-body {
+    vertical-align: top;
+    display: table-cell;
+}
+
+.edit-sidebar {
+    visibility: hidden;
+    vertical-align: top;
+    display: table-cell;
+    padding-left: 15px;
+}

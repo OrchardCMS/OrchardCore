@@ -1,0 +1,57 @@
+﻿
+
+<button id="previewButton" class="publish-button btn btn-secondary" data-start="@T["Preview"]" data-stop="@T["Close Preview"]" >@T["Preview"]</button>
+
+<div id="previewUrl" style="display:none" data-value="@Url.Action("Index", "Preview", new { area = "Orchard.ContentPreview" })" ></div>
+<div id="contentItemType" style="display:none" data-value="@Model.ContentItem.ContentType"></div>
+
+<script at="Foot">
+
+    $(function () {
+        var previewButton = document.getElementById('previewButton');
+        var previewUrl = $(document.getElementById('previewUrl')).data('value');
+        var contentItemType = $(document.getElementById('contentItemType')).data('value');
+        var contentPreviewContainer = document.getElementById('contentPreviewContainer');
+        var editSidebar = document.getElementsByClassName('edit-sidebar');
+
+        var previewTask;
+
+        $(previewButton).on('click', function (event) {
+            event.preventDefault();
+
+            if (previewTask) {
+                clearInterval(previewTask);
+                previewTask = null;
+                $(previewButton).text($(previewButton).data("start"));
+                $(editSidebar).css('visibility', 'hidden');
+            }
+            else {
+                $(previewButton).text($(previewButton).data("stop"));
+                renderPreview();
+                previewTask = setInterval(renderPreview, 2000);
+                $(editSidebar).css('visibility', 'visible');
+            }
+        });
+
+        function renderPreview() {
+            var form = $(previewButton).closest('form');
+            var data = form.serialize();
+
+            $.post(previewUrl + "?id=" + contentItemType, data).done(function (data) {
+
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('width', '100%');
+                iframe.setAttribute('scrolling', 'yes');
+                iframe.setAttribute('height', document.body.scrollHeight + 'px');
+
+                var html = data;
+                $(contentPreviewContainer).empty();
+                contentPreviewContainer.appendChild(iframe);
+                iframe.contentWindow.document.open();
+                iframe.contentWindow.document.write(html);
+                iframe.contentWindow.document.close();
+            });
+        }
+    });
+</script>
