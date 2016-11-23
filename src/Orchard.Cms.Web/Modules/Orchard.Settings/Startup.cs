@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Navigation;
 using Orchard.Recipes;
+using Orchard.Security.Permissions;
 using Orchard.Settings.Drivers;
 using Orchard.Settings.Recipes;
 using Orchard.Settings.Services;
@@ -22,6 +23,7 @@ namespace Orchard.Settings
         {
             services.AddScoped<SetupEventHandler>();
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+            services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddRecipeExecutionStep<SettingsStep>();
             services.AddScoped<ISiteService, SiteService>();
