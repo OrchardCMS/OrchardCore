@@ -182,5 +182,25 @@ namespace Orchard.OpenId.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+            {
+                return Unauthorized();
+            }
+
+            var application = await _applicationManager.FindByIdAsync(id);
+
+            if (application == null)
+            {
+                return NotFound();
+            }
+
+            await _applicationManager.DeleteAsync(application);
+            
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
