@@ -19,6 +19,7 @@ namespace Orchard.OpenId.Services
         Task<IEnumerable<OpenIdApplication>> GetAppsAsync(int skip, int pageSize);
         Task<int> GetCount();
         Task<IList<string>> GetRolesAsync(OpenIdApplication application);
-        Task<ClaimsIdentity> CreateIdentityAsync(OpenIdApplication application, IEnumerable<string> scopes);        
+        Task<ClaimsIdentity> CreateIdentityAsync(OpenIdApplication application, IEnumerable<string> scopes);
+        Task DeleteAsync(OpenIdApplication application);
     }
 }
