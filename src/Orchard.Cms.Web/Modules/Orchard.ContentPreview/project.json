@@ -6,7 +6,7 @@
     "Orchard.ContentManagement": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
-    "Orchard.Security.Abstractions": "2.0.0-*"
+    "Orchard.Security": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

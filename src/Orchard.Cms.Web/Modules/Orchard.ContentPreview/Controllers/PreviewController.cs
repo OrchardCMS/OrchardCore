@@ -58,12 +58,13 @@ namespace Orchard.ContentPreview.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(string id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
+            {
+                return Unauthorized();
+            }
+
             var contentItem = _contentManager.New(id);
-
-            contentItem.Number = 1;
-            contentItem.Latest = true;
-            contentItem.Published = false;
-
+            
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
 
             if (!ModelState.IsValid)
