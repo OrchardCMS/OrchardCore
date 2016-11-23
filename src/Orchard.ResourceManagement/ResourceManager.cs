@@ -410,52 +410,42 @@ namespace Orchard.ResourceManagement
             _metas[index] = meta;
         }
 
-        public IHtmlContent RenderMeta()
+        public void RenderMeta(IHtmlContentBuilder builder)
         {
-            var htmlBuilder = new HtmlContentBuilder();
-
             var first = true;
 
             foreach (var meta in this.GetRegisteredMetas())
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(meta.GetTag());
+                builder.AppendHtml(meta.GetTag());
             }
-
-            return htmlBuilder;
         }
 
-        public IHtmlContent RenderHeadLink()
+        public void RenderHeadLink(IHtmlContentBuilder builder)
         {
-            var htmlBuilder = new HtmlContentBuilder();
-
             var first = true;
 
             foreach (var link in this.GetRegisteredLinks())
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(link.GetTag());
+                builder.AppendHtml(link.GetTag());
             }
-
-            return htmlBuilder;
         }
 
-        public IHtmlContent RenderStylesheet(RequireSettings settings)
+        public void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings)
         {
-            var htmlBuilder = new HtmlContentBuilder();
-
             var first = true;
 
             var styleSheets = this.GetRequiredResources("stylesheet");
@@ -464,21 +454,17 @@ namespace Orchard.ResourceManagement
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
             }
-
-            return htmlBuilder;
         }
 
-        public IHtmlContent RenderHeadScript(RequireSettings settings)
+        public void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings)
         {
-            var htmlBuilder = new HtmlContentBuilder();
-
             var headScripts = this.GetRequiredResources("script");
 
             var first = true;
@@ -487,33 +473,29 @@ namespace Orchard.ResourceManagement
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
             }
 
             foreach (var context in GetRegisteredHeadScripts())
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(context);
+                builder.AppendHtml(context);
             }
-
-            return htmlBuilder;
         }
 
-        public IHtmlContent RenderFootScript(RequireSettings settings)
+        public void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings)
         {
-            var htmlBuilder = new HtmlContentBuilder();
-
             var footScripts = this.GetRequiredResources("script");
 
             var first = true;
@@ -522,27 +504,25 @@ namespace Orchard.ResourceManagement
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
             }
 
             foreach (var context in GetRegisteredFootScripts())
             {
                 if (!first)
                 {
-                    htmlBuilder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(Environment.NewLine);
                 }
 
                 first = false;
 
-                htmlBuilder.AppendHtml(context);
+                builder.AppendHtml(context);
             }
-
-            return htmlBuilder;
         }
 
         private class ResourceTypeName : IEquatable<ResourceTypeName>

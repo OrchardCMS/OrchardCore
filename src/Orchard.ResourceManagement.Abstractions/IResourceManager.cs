@@ -89,26 +89,26 @@ namespace Orchard.ResourceManagement
         /// <summary>
         /// Renders the registered meta tags.
         /// </summary>
-        IHtmlContent RenderMeta();
+        void RenderMeta(IHtmlContentBuilder builder);
 
         /// <summary>
         /// Renders the registered header link tags.
         /// </summary>
-        IHtmlContent RenderHeadLink();
+        void RenderHeadLink(IHtmlContentBuilder builder);
 
         /// <summary>
         /// Renders the registered stylesheets.
         /// </summary>
-        IHtmlContent RenderStylesheet(RequireSettings settings);
+        void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings);
 
         /// <summary>
         /// Renders the registered header script tags.
         /// </summary>
-        IHtmlContent RenderHeadScript(RequireSettings settings);
+        void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings);
 
         /// <summary>
         /// Renders the registered footer script tags.
         /// </summary>
-        IHtmlContent RenderFootScript(RequireSettings settings);
+        void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings);
     }
 }
