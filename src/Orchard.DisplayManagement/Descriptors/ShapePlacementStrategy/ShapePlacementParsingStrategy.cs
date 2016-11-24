@@ -1,48 +1,49 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.FileSystem;
-using Orchard.Environment.Extensions.Models;
-using Microsoft.AspNetCore.Hosting;
+using Orchard.Environment.Shell;
+using System;
+using System.IO;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableHarvester
+    public class ShapePlacementParsingStrategy : IShapeTableProvider
     {
         private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IFeatureManager featureManager,
             IHostingEnvironment hostingEnviroment,
+            IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
             _featureManager = featureManager;
             _hostingEnviroment = hostingEnviroment;
+            _shellFeaturesManager = shellFeaturesManager;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var featureDescriptors = _featureManager.GetEnabledFeaturesAsync().Result
-                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
-
-            foreach (var featureDescriptor in featureDescriptors)
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+            foreach (var featureDescriptor in enabledFeatures)
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
             }
-
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor)
+        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
+            // TODO : (ngm) Replace with configuration Provider and read from that. 
+            // Dont use JSON Deserializer directly.
             var virtualFileInfo = _hostingEnviroment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
@@ -63,10 +64,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private void ProcessPlacementFile(ShapeTableBuilder builder, FeatureDescriptor featureDescriptor, PlacementFile placementFile)
+        private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
         {
-            var feature = new Feature { Descriptor = featureDescriptor };
-
             foreach (var entry in placementFile)
             {
                 var shapeType = entry.Key;
@@ -82,7 +81,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
                     placement.ShapeType = filter.ShapeType;
 
                     builder.Describe(shapeType)
-                        .From(feature)
+                        .From(featureDescriptor)
                         .Placement(ctx => CheckFilter(ctx, filter), placement);
                 }
             }
@@ -138,9 +137,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             //}
         }
 
-        private bool FeatureIsTheme(FeatureDescriptor fd)
+        private bool FeatureIsTheme(IFeatureInfo fd)
         {
-            return DefaultExtensionTypes.IsTheme(fd.Extension.ExtensionType);
+            return fd.Extension.Manifest.IsTheme();
         }
     }
 }

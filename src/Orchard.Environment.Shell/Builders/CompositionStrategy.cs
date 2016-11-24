@@ -1,13 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Environment.Shell.Descriptor.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
-using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -30,15 +31,15 @@ namespace Orchard.Environment.Shell.Builders
             _logger = logger;
         }
 
-        public ShellBlueprint Compose(ShellSettings settings, ShellDescriptor descriptor)
+        public async Task<ShellBlueprint> ComposeAsync(ShellSettings settings, ShellDescriptor descriptor)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var enabledFeatures = _extensionManager.EnabledFeatures(descriptor);
-            var features = _extensionManager.LoadFeatures(enabledFeatures);
+            var enabledFeatures = _extensionManager.GetEnabledFeatures(descriptor);
+            var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
             
             // Statup classes are the only types that are automatically added to the blueprint
             var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());
@@ -68,9 +69,9 @@ namespace Orchard.Environment.Shell.Builders
         }
         
         private static IEnumerable<T> BuildBlueprint<T>(
-            IEnumerable<Feature> features,
+            IEnumerable<FeatureEntry> features,
             Func<Type, bool> predicate,
-            Func<Type, Feature, T> selector,
+            Func<Type, FeatureEntry, T> selector,
             IEnumerable<string> excludedTypes)
         {
             // Load types excluding the replaced types
@@ -87,22 +88,22 @@ namespace Orchard.Environment.Shell.Builders
             return typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(type);
         }
 
-        private static DependencyBlueprint BuildModule(Type type, Feature feature)
+        private static DependencyBlueprint BuildModule(Type type, FeatureEntry feature)
         {
             return new DependencyBlueprint
             {
                 Type = type,
-                Feature = feature,
+                Feature = feature.FeatureInfo,
                 Parameters = Enumerable.Empty<ShellParameter>()
             };
         }
         
-        private static DependencyBlueprint BuildDependency(Type type, Feature feature, ShellDescriptor descriptor)
+        private static DependencyBlueprint BuildDependency(Type type, FeatureEntry feature, ShellDescriptor descriptor)
         {
             return new DependencyBlueprint
             {
                 Type = type,
-                Feature = feature,
+                Feature = feature.FeatureInfo,
                 Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()
             };
         }

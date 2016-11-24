@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Orchard.ContentManagement.Metadata.Models
 {
-    public class ContentPartDefinition
+    public class ContentPartDefinition : ContentDefinition
     {
         public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JObject settings)
         {
@@ -25,8 +25,6 @@ namespace Orchard.ContentManagement.Metadata.Models
             Settings = new JObject();
         }
 
-        public string Name { get; private set; }
         public IEnumerable<ContentPartFieldDefinition> Fields { get; private set; }
-        public JObject Settings { get; set; }
     }
 }

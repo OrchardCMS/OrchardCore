@@ -6,14 +6,11 @@ namespace Orchard.Environment.Shell
     {
         public IEnumerable<ShellSettings> LoadSettings()
         {
-            var shellSettings = new List<ShellSettings>();
-            shellSettings.Add(new ShellSettings
+            yield return new ShellSettings
             {
                 Name = "Default",
                 State = Models.TenantState.Running
-            });
-
-            return shellSettings;
+            };
         }
 
         public void SaveSettings(ShellSettings shellSettings)

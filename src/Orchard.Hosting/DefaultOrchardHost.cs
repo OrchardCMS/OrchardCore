@@ -60,7 +60,7 @@ namespace Orchard.Hosting
                     if (_shellContexts == null)
                     {
                         _shellContexts = new ConcurrentDictionary<string, ShellContext>();
-                        CreateAndRegisterShells();
+                        CreateAndRegisterShellsAsync().Wait();
                     }
                 }
             }
@@ -72,7 +72,7 @@ namespace Orchard.Hosting
         {
             return _shellContexts.GetOrAdd(settings.Name, tenant =>
             {
-                var shellContext = CreateShellContext(settings);
+                var shellContext = CreateShellContextAsync(settings).Result;
                 RegisterShell(shellContext);
 
                 return shellContext;
@@ -85,7 +85,7 @@ namespace Orchard.Hosting
             ReloadShellContext(settings);
         }
 
-        void CreateAndRegisterShells()
+        async Task CreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -95,7 +95,12 @@ namespace Orchard.Hosting
             // Load all extensions and features so that the controllers are
             // registered in ITypeFeatureProvider and their areas defined in the application
             // conventions.
-            _extensionManager.LoadFeatures(_extensionManager.AvailableFeatures());
+            _extensionManager
+                .GetExtensions()
+                .Features
+                .InvokeAsync(
+                    f => _extensionManager.LoadFeatureAsync(f), _logger)
+                .Wait();
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
@@ -124,7 +129,7 @@ namespace Orchard.Hosting
             // No settings, run the Setup.
             else
             {
-                var setupContext = CreateSetupContext();
+                var setupContext = await CreateSetupContextAsync();
                 RegisterShell(setupContext);
             }
 
@@ -163,7 +168,7 @@ namespace Orchard.Hosting
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
-        public ShellContext CreateShellContext(ShellSettings settings)
+        public async Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
             if (settings.State == TenantState.Uninitialized)
             {
@@ -172,7 +177,7 @@ namespace Orchard.Hosting
                     _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
                 }
 
-                return _shellContextFactory.CreateSetupContext(settings);
+                return await _shellContextFactory.CreateSetupContextAsync(settings);
             }
             else if (settings.State == TenantState.Disabled)
             {
@@ -190,7 +195,7 @@ namespace Orchard.Hosting
                     _logger.LogDebug("Creating shell context for tenant {0}", settings.Name);
                 }
 
-                return _shellContextFactory.CreateShellContext(settings);
+                return await _shellContextFactory.CreateShellContextAsync(settings);
             }
             else
             {
@@ -201,14 +206,14 @@ namespace Orchard.Hosting
         /// <summary>
         /// Creates a transient shell for the default tenant's setup.
         /// </summary>
-        private ShellContext CreateSetupContext()
+        private async Task<ShellContext> CreateSetupContextAsync()
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            return _shellContextFactory.CreateSetupContext(ShellHelper.BuildDefaultUninitializedShell);
+            return await _shellContextFactory.CreateSetupContextAsync(ShellHelper.BuildDefaultUninitializedShell);
         }
 
         /// <summary>
@@ -263,7 +268,7 @@ namespace Orchard.Hosting
         /// </summary>
         private bool CanCreateShell(ShellSettings shellSettings)
         {
-            return 
+            return
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing ||
@@ -275,7 +280,7 @@ namespace Orchard.Hosting
         /// </summary>
         private bool CanRegisterShell(ShellSettings shellSettings)
         {
-            return 
+            return
                 shellSettings.State == TenantState.Running ||
                 shellSettings.State == TenantState.Uninitialized ||
                 shellSettings.State == TenantState.Initializing;

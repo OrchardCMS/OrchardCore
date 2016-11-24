@@ -22,26 +22,23 @@ namespace Orchard.Demo
 
             routes.MapAreaRoute(
                 name: "Home",
-                area: "Orchard.Demo",
+                areaName: "Orchard.Demo",
                 template: "Home/Index",
-                controller: "Home",
-                action: "Index"
+                defaults: new { controller = "Home", action = "Index" }
             );
 
             routes.MapAreaRoute(
                 name: "Display",
-                area: "Orchard.Demo",
+                areaName: "Orchard.Demo",
                 template: "Home/Display/{id}",
-                controller: "Home",
-                action: "Display"
+                defaults: new { controller = "Home", action = "Display" }
             );
 
             routes.MapAreaRoute(
                 name: "Error",
-                area: "Orchard.Demo",
+                areaName: "Orchard.Demo",
                 template: "Home/IndexError",
-                controller: "Home",
-                action: "IndexError"
+                defaults: new { controller = "Home", action = "IndexError" }
             );
 
             builder.UseMiddleware<NonBlockingMiddleware>();

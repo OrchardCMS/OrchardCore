@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Folders;
 using Orchard.Environment.Extensions.Loaders;
+using Orchard.Environment.Extensions.Manifests;
 
 namespace Orchard.Environment.Extensions
 {
@@ -18,15 +18,19 @@ namespace Orchard.Environment.Extensions
             string rootProbingName,
             string dependencyProbingDirectoryName)
         {
+            services.AddSingleton<IManifestBuilder, ManifestBuilder>();
+            services.AddSingleton<IManifestProvider, ManifestProvider>();
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<ManifestOptions>, ManifestOptionsSetup>());
+
+            services.AddSingleton<IExtensionProvider, ExtensionProvider>();
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
                 services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
-                services.AddSingleton<IExtensionHarvester, ExtensionHarvester>();
 
                 services.TryAddEnumerable(
-                    ServiceDescriptor.Transient<IConfigureOptions<ExtensionHarvestingOptions>, ExtensionHarvestingOptionsSetup>());
+                    ServiceDescriptor.Transient<IConfigureOptions<ExtensionOptions>, ExtensionOptionsSetup>());
 
-                services.AddSingleton<IExtensionLocator, ExtensionLocator>();
 
                 services.AddSingleton<IExtensionLoader, AmbientExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
@@ -41,6 +45,8 @@ namespace Orchard.Environment.Extensions
                 services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
 
+            services.AddSingleton<IFeatureManager, FeatureManager>();
+
             return services;
         }
 
@@ -50,6 +56,16 @@ namespace Orchard.Environment.Extensions
             services.TryAddTransient<IFeatureHash, FeatureHash>();
 
             return services;
+        }
+
+        public static IServiceCollection AddExtensionLocation(
+            this IServiceCollection services,
+            string subPath)
+        {
+            return services.Configure<ExtensionOptions>(configureOptions: options =>
+            {
+                options.SearchPaths.Add(subPath);
+            });
         }
     }
 }

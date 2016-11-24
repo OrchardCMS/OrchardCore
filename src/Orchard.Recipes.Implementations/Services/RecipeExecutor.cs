@@ -124,6 +124,8 @@ namespace Orchard.Recipes.Services
                             shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
                             using (var scope = shellContext.CreateServiceScope())
                             {
+                                var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
+
                                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
                                 // The recipe might have added some deferred tasks to process

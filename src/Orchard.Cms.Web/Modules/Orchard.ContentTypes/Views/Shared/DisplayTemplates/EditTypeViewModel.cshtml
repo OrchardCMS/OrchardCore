@@ -6,11 +6,11 @@
     @Model.DisplayName
     @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
     {
-        <span class="label label-default label-pill pull-xs-right" title="Stereotype">@settings.Stereotype</span>
+        <span class="label label-default label-pill float-xs-right" title="Stereotype">@settings.Stereotype</span>
     }
 
 
-<div class="pull-xs-right">
+<div class="float-xs-right">
     @if (settings.Creatable)
     {
         <a asp-route-area="Orchard.Contents" asp-route-action="Create" asp-route-id="@Model.Name" class="btn btn-success btn-sm" role="button">@T["Create New {0}", Model.DisplayName]</a>

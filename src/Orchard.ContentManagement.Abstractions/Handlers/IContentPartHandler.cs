@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Orchard.ContentManagement.Handlers
+﻿namespace Orchard.ContentManagement.Handlers
 {
     /// <summary>
     /// An implementation of this class is called for all the parts of a content item.
@@ -25,6 +23,6 @@ namespace Orchard.ContentManagement.Handlers
         void Unpublished(PublishContentContext context, ContentPart part);
         void Removing(RemoveContentContext context, ContentPart part);
         void Removed(RemoveContentContext context, ContentPart part);
-        void GetContentItemMetadata(ContentItemMetadataContext context, ContentPart part);
+        void GetContentItemAspect(ContentItemAspectContext context, ContentPart part);
     }
 }

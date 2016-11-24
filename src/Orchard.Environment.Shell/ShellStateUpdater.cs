@@ -3,15 +3,17 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.State;
 using Orchard.Events;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Manifests;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell
 {
     public interface IShellStateUpdater
     {
-        void ApplyChanges();
+        Task ApplyChanges();
     }
 
     public class ShellStateUpdater : IShellStateUpdater
@@ -40,41 +42,39 @@ namespace Orchard.Environment.Shell
 
         public ILogger Logger { get; set; }
 
-        public void ApplyChanges()
+        public async Task ApplyChanges()
         {
             if (Logger.IsEnabled(LogLevel.Information))
             {
                 Logger.LogInformation("Applying changes for for shell '{0}'", _settings.Name);
             }
 
-            var shellState = _stateManager.GetShellStateAsync().Result;
+            var shellState = await _stateManager.GetShellStateAsync();
 
             // start with description of all declared features in order - order preserved with all merging
-            var orderedFeatureDescriptors = _extensionManager.AvailableFeatures();
+            var orderedFeatureDescriptors = _extensionManager.GetExtensions().Features;
 
             // merge feature state into ordered list
             var orderedFeatureDescriptorsAndStates = orderedFeatureDescriptors
-                .Select(featureDescriptor => new
+                .Select(featureInfo => new
                 {
-                    FeatureDescriptor = featureDescriptor,
-                    FeatureState = shellState.Features.FirstOrDefault(s => s.Name == featureDescriptor.Id),
+                    FeatureDescriptor = featureInfo,
+                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == featureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
                 .ToArray();
 
             // get loaded feature information
-            var loadedFeatures = _extensionManager.LoadFeatures(orderedFeatureDescriptorsAndStates.Select(entry => entry.FeatureDescriptor)).ToArray();
-
+            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptorsAndStates
+                .Select(x => _extensionManager.LoadFeatureAsync(x.FeatureDescriptor))
+                .ToArray());
+            
             // merge loaded feature information into ordered list
             var loadedEntries = orderedFeatureDescriptorsAndStates.Select(
                 entry => new
                 {
-                    Feature = loadedFeatures.SingleOrDefault(f => f.Descriptor == entry.FeatureDescriptor)
-                              ?? new Feature
-                              {
-                                  Descriptor = entry.FeatureDescriptor,
-                                  ExportedTypes = Enumerable.Empty<Type>()
-                              },
+                    Feature = loadedFeatures.SingleOrDefault(f => f.FeatureInfo == entry.FeatureDescriptor)
+                              ?? new NonCompiledFeatureEntry(entry.FeatureDescriptor),
                     entry.FeatureDescriptor,
                     entry.FeatureState,
                 }).ToList();
@@ -85,22 +85,14 @@ namespace Orchard.Environment.Shell
             // create additional stub entries for the sake of firing state change events on missing features
             var allEntries = loadedEntries.Concat(additionalState.Select(featureState =>
             {
-                var featureDescriptor = new FeatureDescriptor
-                {
-                    Id = featureState.Name,
-                    Extension = new ExtensionDescriptor
-                    {
-                        Id = featureState.Name
-                    }
-                };
+                var featureDescriptor = new InternalFeatureInfo(
+                    featureState.Id,
+                    new InternalExtensionInfo(featureState.Id)
+                    );
                 return new
                 {
-                    Feature = new Feature
-                    {
-                        Descriptor = featureDescriptor,
-                        ExportedTypes = Enumerable.Empty<Type>(),
-                    },
-                    FeatureDescriptor = featureDescriptor,
+                    Feature = (FeatureEntry)new NonCompiledFeatureEntry(featureDescriptor),
+                    FeatureDescriptor = (IFeatureInfo)featureDescriptor,
                     FeatureState = featureState
                 };
             })).ToArray();
@@ -110,12 +102,12 @@ namespace Orchard.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Disabling feature '{0}'", entry.Feature.Descriptor.Id);
+                    Logger.LogInformation("Disabling feature '{0}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabling(entry.Feature));
-                _stateManager.UpdateEnabledState(entry.FeatureState, ShellFeatureState.State.Down);
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabled(entry.Feature));
+                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabling(entry.Feature.FeatureInfo));
+                await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
+                _eventBus.Notify<IFeatureEventHandler>(x => x.Disabled(entry.Feature.FeatureInfo));
             }
 
             // lower installed states in reverse order
@@ -123,12 +115,12 @@ namespace Orchard.Environment.Shell
             {
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Uninstalling feature '{0}'", entry.Feature.Descriptor.Id);
+                    Logger.LogInformation("Uninstalling feature '{0}'", entry.Feature.FeatureInfo.Id);
                 }
 
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalling(entry.Feature));
-                _stateManager.UpdateInstalledState(entry.FeatureState, ShellFeatureState.State.Down);
-                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalled(entry.Feature));
+                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalling(entry.Feature.FeatureInfo));
+                await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Down);
+                _eventBus.Notify<IFeatureEventHandler>(x => x.Uninstalled(entry.Feature.FeatureInfo));
             }
 
             // raise install and enabled states in order
@@ -138,23 +130,23 @@ namespace Orchard.Environment.Shell
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Installing feature '{0}'", entry.Feature.Descriptor.Id);
+                        Logger.LogInformation("Installing feature '{0}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installing(entry.Feature));
-                    _stateManager.UpdateInstalledState(entry.FeatureState, ShellFeatureState.State.Up);
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installed(entry.Feature));
+                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installing(entry.Feature.FeatureInfo));
+                    await _stateManager.UpdateInstalledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
+                    _eventBus.Notify<IFeatureEventHandler>(x => x.Installed(entry.Feature.FeatureInfo));
                 }
                 if (entry.FeatureState.EnableState == ShellFeatureState.State.Rising)
                 {
                     if (Logger.IsEnabled(LogLevel.Information))
                     {
-                        Logger.LogInformation("Enabling feature '{0}'", entry.Feature.Descriptor.Id);
+                        Logger.LogInformation("Enabling feature '{0}'", entry.Feature.FeatureInfo.Id);
                     }
 
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabling(entry.Feature));
-                    _stateManager.UpdateEnabledState(entry.FeatureState, ShellFeatureState.State.Up);
-                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabled(entry.Feature));
+                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabling(entry.Feature.FeatureInfo));
+                    await _stateManager.UpdateEnabledStateAsync(entry.FeatureState, ShellFeatureState.State.Up);
+                    _eventBus.Notify<IFeatureEventHandler>(x => x.Enabled(entry.Feature.FeatureInfo));
                 }
             }
         }
@@ -165,5 +157,4 @@ namespace Orchard.Environment.Shell
                    state.EnableState == ShellFeatureState.State.Rising;
         }
     }
-
 }

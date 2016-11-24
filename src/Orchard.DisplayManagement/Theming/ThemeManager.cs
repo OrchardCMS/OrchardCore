@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.DisplayManagement.Theming
 {
@@ -11,7 +10,7 @@ namespace Orchard.DisplayManagement.Theming
         private readonly IEnumerable<IThemeSelector> _themeSelectors;
         private readonly IExtensionManager _extensionManager;
 
-        private ExtensionDescriptor _theme;
+        private IExtensionInfo _theme;
 
         public ThemeManager(
             IEnumerable<IThemeSelector> themeSelectors, 
@@ -21,7 +20,7 @@ namespace Orchard.DisplayManagement.Theming
             _extensionManager = extensionManager;
         }
 
-        public async Task<ExtensionDescriptor> GetThemeAsync()
+        public async Task<IExtensionInfo> GetThemeAsync()
         {
             // For performance reason, processes the current theme only once per scope (request).
             // This can't be cached as each request gets a different value.
@@ -50,7 +49,7 @@ namespace Orchard.DisplayManagement.Theming
                     var t = _extensionManager.GetExtension(theme.ThemeName);
                     if (t != null)
                     {
-                        return _theme = t;
+                        return _theme = new ThemeExtensionInfo(t);
                     }
                 }
 

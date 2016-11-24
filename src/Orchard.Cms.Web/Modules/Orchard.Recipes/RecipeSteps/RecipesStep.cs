@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Recipes.RecipeSteps
 {
@@ -49,7 +49,7 @@ namespace Orchard.Recipes.RecipeSteps
                     var recipes = recipesDictionary.ContainsKey(recipe.ExecutionId) ? recipesDictionary[recipe.ExecutionId] : default(IDictionary<string, RecipeDescriptor>);
                     if (recipes == null)
                     {
-                        recipes = recipesDictionary[recipe.ExecutionId] = HarvestRecipes(recipe.ExecutionId);
+                        recipes = recipesDictionary[recipe.ExecutionId] = await HarvestRecipes(recipe.ExecutionId);
                     }
 
                     if (!recipes.ContainsKey(recipe.Name))
@@ -67,11 +67,12 @@ namespace Orchard.Recipes.RecipeSteps
             }
         }
 
-        private IDictionary<string, RecipeDescriptor> HarvestRecipes(string extensionId)
+        private async Task<IDictionary<string, RecipeDescriptor>> HarvestRecipes(string extensionId)
         {
             try
             {
-                return _recipeHarvester.HarvestRecipesAsync(extensionId).Result.ToDictionary(x => x.Name);
+                var recipes = await _recipeHarvester.HarvestRecipesAsync(extensionId);
+                return recipes.ToDictionary(x => x.Name);
             }
             catch (ArgumentException ex)
             {

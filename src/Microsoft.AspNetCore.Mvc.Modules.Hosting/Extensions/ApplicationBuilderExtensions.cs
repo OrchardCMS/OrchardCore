@@ -1,15 +1,15 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Orchard;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing;
+using System.IO;
+using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -31,12 +31,13 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             builder.UseStaticFiles();
 
             // TODO: configure the location and parameters (max-age) per module.
-            foreach(var extension in extensionManager.AvailableExtensions())
+            var availableExtensions = extensionManager.GetExtensions();
+            foreach (var extension in availableExtensions)
             {
-                var contentPath = Path.Combine(hostingEnvironment.ContentRootPath, extension.Location, extension.Id, "Content");
+                var contentPath = Path.Combine(extension.ExtensionFileInfo.PhysicalPath, "Content");
                 if (Directory.Exists(contentPath))
                 {
-                    builder.UseStaticFiles(new StaticFileOptions()
+                    builder.UseStaticFiles(new StaticFileOptions
                     {
                         RequestPath = "/" + extension.Id,
                         FileProvider = new PhysicalFileProvider(contentPath)
@@ -56,18 +57,16 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             using (logger.BeginScope("Loading extensions"))
             {
-                Parallel.ForEach(extensionManager.AvailableFeatures(), feature =>
+                availableExtensions.InvokeAsync(async ae =>
                 {
-                    try
+                    var extensionEntry = await extensionManager.LoadExtensionAsync(ae);
+
+                    if (!extensionEntry.IsError)
                     {
-                        var extensionEntry = extensionManager.LoadExtension(feature.Extension);
-                        applicationPartManager.ApplicationParts.Add(new AssemblyPart(extensionEntry.Assembly));
+                        var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
+                        applicationPartManager.ApplicationParts.Add(assemblyPart);
                     }
-                    catch (Exception e)
-                    {
-                        logger.LogCritical("Could not load an extension", feature.Extension, e);
-                    }
-                });
+                }, logger).Wait();
             }
 
             return builder;

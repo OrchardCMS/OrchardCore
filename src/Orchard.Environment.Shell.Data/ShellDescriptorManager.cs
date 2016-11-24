@@ -67,38 +67,11 @@ namespace Orchard.Environment.Shell.Data.Descriptors
                 shellDescriptorRecord.SerialNumber++;
             }
 
-            shellDescriptorRecord.Features.Clear();
-
-            foreach (var feature in enabledFeatures)
-            {
-                shellDescriptorRecord.Features.Add(new ShellFeature { Name = feature.Name });
-            }
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Enabled features for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", enabledFeatures.Select(feature => feature.Name)));
-            }
-
-            shellDescriptorRecord.Parameters.Clear();
-
-            foreach (var parameter in parameters)
-            {
-                shellDescriptorRecord.Parameters.Add(new ShellParameter
-                {
-                    Component = parameter.Component,
-                    Name = parameter.Name,
-                    Value = parameter.Value
-                });
-            }
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Parameters for shell '{0}' set: {1}.", _shellSettings.Name, string.Join(", ", parameters.Select(parameter => parameter.Name + "-" + parameter.Value)));
-            }
+            shellDescriptorRecord.Features = enabledFeatures.ToList();
+            shellDescriptorRecord.Parameters = parameters.ToList();
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-
                 _logger.LogInformation("Shell descriptor updated for shell '{0}'.", _shellSettings.Name);
             }
 

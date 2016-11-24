@@ -9,12 +9,12 @@ using Orchard.Admin;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Modules.Models;
 using Orchard.Modules.Services;
 using Orchard.Modules.ViewModels;
 using Orchard.Mvc;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Modules.Controllers
 {
@@ -25,6 +25,7 @@ namespace Orchard.Modules.Controllers
         private readonly IExtensionManager _extensionManager;
         private readonly IFeatureManager _featureManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
 
@@ -34,6 +35,7 @@ namespace Orchard.Modules.Controllers
             IFeatureManager featureManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellDescriptorManager shellDescriptorManager,
+            IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             INotifier notifier)
         {
@@ -41,6 +43,7 @@ namespace Orchard.Modules.Controllers
             _extensionManager = extensionManager;
             _featureManager = featureManager;
             _shellDescriptorManager = shellDescriptorManager;
+            _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
 
@@ -51,12 +54,12 @@ namespace Orchard.Modules.Controllers
 
         public async Task<ActionResult> Index()
         {
-            IEnumerable<ModuleEntry> modules = _extensionManager.AvailableExtensions()
-                .Where(extensionDescriptor => DefaultExtensionTypes.IsModule(extensionDescriptor.ExtensionType))
-                .OrderBy(extensionDescriptor => extensionDescriptor.Name)
+            IEnumerable<ModuleEntry> modules = _extensionManager.GetExtensions()
+                .Where(extensionDescriptor => extensionDescriptor.Manifest.IsModule())
+                .OrderBy(extensionDescriptor => extensionDescriptor.Manifest.Name)
                 .Select(extensionDescriptor => new ModuleEntry { Descriptor = extensionDescriptor });
             
-            var features = await _featureManager.GetEnabledFeaturesAsync();
+            var features = await _shellFeaturesManager.GetEnabledFeaturesAsync();
             var installModules = features.FirstOrDefault(f => f.Id == "PackagingServices") != null;
 
             modules = modules.ToList();
@@ -91,23 +94,29 @@ namespace Orchard.Modules.Controllers
 
             //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
             var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
-            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var availableFeatures = _extensionManager.GetExtensions().Features;
 
-            IEnumerable<ModuleFeature> features = availableFeatures
-                .Where(f => !DefaultExtensionTypes.IsTheme(f.Extension.ExtensionType))
-                .Select(f => new ModuleFeature
+
+            var moduleFeatures = new List<ModuleFeature>();
+            foreach (var moduleFeatureInfo in availableFeatures.Where(f => !f.Extension.Manifest.IsTheme()))
+            {
+                var dependentFeatures = await _moduleService.GetDependentFeaturesAsync(moduleFeatureInfo.Id);
+
+                var moduleFeature = new ModuleFeature
                 {
-                    Descriptor = f,
-                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Name == f.Id),
+                    Descriptor = moduleFeatureInfo,
+                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Id == moduleFeatureInfo.Id),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
-                    DependentFeatures = _moduleService.GetDependentFeatures(f.Id).Where(x => x.Id != f.Id).ToList()
-                })
-                .ToList();
+                    DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList()
+                };
+
+                moduleFeatures.Add(moduleFeature);
+            }
 
             return View(new FeaturesViewModel
             {
-                Features = features,
+                Features = moduleFeatures,
                 IsAllowed = ExtensionIsAllowed
             });
         }
@@ -128,53 +137,46 @@ namespace Orchard.Modules.Controllers
 
             if (ModelState.IsValid)
             {
-                var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+                var availableFeatures = _extensionManager.GetExtensions().Features;
                 var features = availableFeatures.Where(feature => ExtensionIsAllowed(feature.Extension)).ToList();
                 var selectedFeatures = features.Where(x => featureIds.Contains(x.Id)).ToList();
-                var allEnabledFeatures = await _featureManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesEnabled = allEnabledFeatures.Where(x => featureIds.Contains(x.Id)).Select(x => x.Id).ToList();
-                var allDisabledFeatures = await _featureManager.GetDisabledFeaturesAsync(); //features.Where(x => !x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
-                var idFeaturesDisabled = allDisabledFeatures.Where(x => featureIds.Contains(x.Id)).Select(x => x.Id).ToList();
+                var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
+                var idFeaturesEnabled = allEnabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
+                var allDisabledFeatures = await _shellFeaturesManager.GetDisabledFeaturesAsync(); // DisabledFeaturesAsync //features.Where(x => !x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
+                var idFeaturesDisabled = allDisabledFeatures.Where(x => featureIds.Contains(x.Id)).ToList();
 
                 switch (bulkAction)
                 {
                     case FeaturesBulkAction.None:
                         break;
                     case FeaturesBulkAction.Enable:
-                        //_moduleService.EnableFeatures(featuresToDisable, force == true);
-
-                        var enabledFeatures = await _featureManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (string featureId in enabledFeatures.ToList())
+                        var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
+                        foreach (var feature in enabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
                         break;
                     case FeaturesBulkAction.Disable:
-                        //_moduleService.DisableFeatures(enabledFeatures, force == true);
-
-                        var disabledFeatures = await _featureManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (string featureId in disabledFeatures.ToList())
+                        var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
+                        foreach (var feature in disabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
                     case FeaturesBulkAction.Toggle:
-                        //_moduleService.EnableFeatures(idFeaturesDisabled, force == true);
-                        //_moduleService.DisableFeatures(idFeaturesEnabled, force == true);
-
-                        var enabledFeaturesToggle = await _featureManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
-                        foreach (string featureId in enabledFeaturesToggle.ToList())
+                        var enabledFeaturesToggle = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
+                        foreach (var feature in enabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
 
-                        var disabledFeaturesToggle = await _featureManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
-                        foreach (string featureId in disabledFeaturesToggle.ToList())
+                        var disabledFeaturesToggle = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
+                        foreach (var feature in disabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures.Single(f => f.Id.Equals(featureId, StringComparison.OrdinalIgnoreCase)).Name;
+                            var featureName = availableFeatures[feature.Id].Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
@@ -207,7 +209,7 @@ namespace Orchard.Modules.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
-            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var availableFeatures = _extensionManager.GetExtensions().Features;
             var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
             
             if (feature == null)
@@ -221,7 +223,7 @@ namespace Orchard.Modules.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _featureManager.DisableFeaturesAsync(new[] { feature.Id }, force: true);
+            await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
             _notifier.Success(T["{0} was disabled", feature.Name ?? feature.Id]);
 
@@ -231,7 +233,7 @@ namespace Orchard.Modules.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
-            var availableFeatures = await _featureManager.GetAvailableFeaturesAsync();
+            var availableFeatures = _extensionManager.GetExtensions().Features;
             var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
 
             if (feature == null)
@@ -245,7 +247,7 @@ namespace Orchard.Modules.Controllers
 
             var nextUrl = Url.Action(nameof(Features));
 
-            await _featureManager.EnableFeaturesAsync(new[] { feature.Id }, force: true);
+            await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
             _notifier.Success(T["{0} was enabled", feature.Name ?? feature.Id]);
 
@@ -255,7 +257,7 @@ namespace Orchard.Modules.Controllers
         /// <summary>
         /// Checks whether the module is allowed for the current tenant
         /// </summary>
-        private bool ExtensionIsAllowed(ExtensionDescriptor extensionDescriptor)
+        private bool ExtensionIsAllowed(IExtensionInfo extensionDescriptor)
         {
             return true; //_shellSettings.Modules.Length == 0 || _shellSettings.Modules.Contains(extensionDescriptor.Id);
         }

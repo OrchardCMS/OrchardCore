@@ -19,7 +19,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
             // Always vary by theme
 
             var theme = await _themeManager.GetThemeAsync();
-            entries.Add(new CacheContextEntry("theme", theme.Name));
+            entries.Add(new CacheContextEntry("theme", theme.Id));
         }
     }
 }

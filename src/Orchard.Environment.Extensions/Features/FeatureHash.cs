@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Orchard.Environment.Cache;
+using Orchard.Environment.Shell;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -9,12 +10,12 @@ namespace Orchard.Environment.Extensions.Features
     {
         private const string FeatureHashCacheKey = "FeatureHash:Features";
 
-        private readonly IFeatureManager _featureManager;
+        private readonly IShellFeaturesManager _featureManager;
         private readonly IMemoryCache _memoryCache;
         private readonly ISignal _signal;
 
         public FeatureHash(
-            IFeatureManager featureManager,
+            IShellFeaturesManager featureManager,
             IMemoryCache memoryCache,
             ISignal signal)
         {
@@ -31,10 +32,11 @@ namespace Orchard.Environment.Extensions.Features
                 return serial;
             }
 
-            // Calculate a hash of all enabled features' name
-            serial = (await _featureManager.GetEnabledFeaturesAsync())
-                .OrderBy(x => x.Name)
-                .Aggregate(0, (a, f) => a * 7 + f.Name.GetHashCode());
+            // Calculate a hash of all enabled features' id
+            var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+            serial = enabledFeatures
+                .OrderBy(x => x.Id)
+                .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
 
             var options = new MemoryCacheEntryOptions()
                 .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
@@ -50,16 +52,16 @@ namespace Orchard.Environment.Extensions.Features
             bool enabled;
             if (!_memoryCache.TryGetValue(cacheKey, out enabled))
             {
-                enabled = 
-                    (await _featureManager.GetEnabledFeaturesAsync())
-                    .Any(x => x.Name.Equals(featureId));
+                var enabledFeatures = await _featureManager.GetEnabledFeaturesAsync();
+                enabled =
+                    enabledFeatures
+                        .Any(x => x.Id.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()
                     .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
 
                 _memoryCache.Set(cacheKey, enabled, options);
             }
-
 
             return enabled ? 1 : 0;
         }

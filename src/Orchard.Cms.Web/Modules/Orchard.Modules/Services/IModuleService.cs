@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Modules.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Modules.Services {
     public interface IModuleService {
@@ -9,33 +9,33 @@ namespace Orchard.Modules.Services {
         /// Retrieves an enumeration of the available features together with its state (enabled / disabled).
         /// </summary>
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
-        Task<IEnumerable<ModuleFeature>> GetAvailableFeatures();
+        Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync();
 
         /// <summary>
         /// Enables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be enabled.</param>
-        void EnableFeatures(IEnumerable<string> featureIds);
+        Task EnableFeaturesAsync(IEnumerable<string> featureIds);
 
         /// <summary>
         /// Enables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
-        void EnableFeatures(IEnumerable<string> featureIds, bool force);
+        Task EnableFeaturesAsync(IEnumerable<string> featureIds, bool force);
 
         /// <summary>
         /// Disables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
-        void DisableFeatures(IEnumerable<string> featureIds);
+        Task DisableFeaturesAsync(IEnumerable<string> featureIds);
 
         /// <summary>
         /// Disables a list of features.
         /// </summary>
         /// <param name="featureIds">The IDs for the features to be disabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
-        void DisableFeatures(IEnumerable<string> featureIds, bool force);
+        Task DisableFeaturesAsync(IEnumerable<string> featureIds, bool force);
 
         ///// <summary>
         ///// Determines if an extension was recently installed.
@@ -49,6 +49,6 @@ namespace Orchard.Modules.Services {
         /// </summary>
         /// <param name="featureId">ID of a feature.</param>
         /// <returns>List of dependent feature descriptors.</returns>
-        IEnumerable<FeatureDescriptor> GetDependentFeatures(string featureId);
+        Task<IEnumerable<IFeatureInfo>> GetDependentFeaturesAsync(string featureId);
     }
 }

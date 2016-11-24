@@ -23,10 +23,9 @@ namespace Orchard.Diagnostics
 
             routes.MapAreaRoute(
                 name: "Diagnostics.Error",
-                area: "Orchard.Diagnostics",
+                areaName: "Orchard.Diagnostics",
                 template: "Error",
-                controller: "Diagnostics",
-                action: "Error"
+                defaults: new { controller = "Diagnostics", action = "Error" }
             );
         }
 

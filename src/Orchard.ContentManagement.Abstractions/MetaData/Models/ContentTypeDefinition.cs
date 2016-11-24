@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Orchard.ContentManagement.Metadata.Models
 {
-    public class ContentTypeDefinition
+    public class ContentTypeDefinition : ContentDefinition
     {
         public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JObject settings)
         {
@@ -28,12 +28,9 @@ namespace Orchard.ContentManagement.Metadata.Models
             Settings = new JObject();
         }
 
-        [StringLength(128)]
-        public string Name { get; private set; }
         [Required, StringLength(1024)]
         public string DisplayName { get; private set; }
         public IEnumerable<ContentTypePartDefinition> Parts { get; private set; }
-        public JObject Settings { get; private set; }
 
         /// <summary>
         /// Returns the <see cref="DisplayName"/> value of the type if defined,

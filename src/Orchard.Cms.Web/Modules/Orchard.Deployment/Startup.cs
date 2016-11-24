@@ -40,18 +40,16 @@ namespace Orchard.Deployment
         {
             routes.MapAreaRoute(
                 name: "DeleteStep",
-                area: "Orchard.Deployment",
+                areaName: "Orchard.Deployment",
                 template: "Deployment/DeploymentPlan/{id}/Step/{stepId}/Delete",
-                controller: "Step",
-                action: "Delete"
+                defaults: new { controller = "Step", action = "Delete" }
             );
 
             routes.MapAreaRoute(
                 name: "ExecutePlan",
-                area: "Orchard.Deployment",
+                areaName: "Orchard.Deployment",
                 template: "Deployment/DeploymentPlan/{id}/Type/{type}/Execute",
-                controller: "DeploymentPlan",
-                action: "Execute"
+                defaults: new { controller = "DeploymentPlan", action = "Execute" }
             );
         }
     }

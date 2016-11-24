@@ -241,7 +241,7 @@ namespace Orchard.Roles.Controllers
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Descriptor.Id;
+                var featureName = feature.Id;
                 var permissions = permissionProvider.GetPermissions();
                 foreach (var permission in permissions)
                 {

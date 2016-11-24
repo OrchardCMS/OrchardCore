@@ -4,18 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
     public class ShapeAlterationBuilder
     {
-        Feature _feature;
+        IFeatureInfo _feature;
         readonly string _shapeType;
         readonly string _bindingName;
         readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
 
-        public ShapeAlterationBuilder(Feature feature, string shapeType)
+        public ShapeAlterationBuilder(IFeatureInfo feature, string shapeType)
         {
             _feature = feature;
             _bindingName = shapeType;
@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        public ShapeAlterationBuilder From(Feature feature)
+        public ShapeAlterationBuilder From(IFeatureInfo feature)
         {
             _feature = feature;
             return this;

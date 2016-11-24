@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
@@ -19,9 +12,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NuGet.Packaging;
 using Orchard.Environment.Extensions.Compilers;
-using Orchard.Environment.Extensions.FileSystem;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Localization;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions
 {
@@ -97,33 +95,33 @@ namespace Orchard.Environment.Extensions
             return metadataReferences;
         }
 
-        public Assembly LoadAmbientExtension(ExtensionDescriptor descriptor)
+        public Assembly LoadAmbientExtension(IExtensionInfo extensionInfo)
         {
-            if (IsAmbientExtension(descriptor))
+            if (IsAmbientExtension(extensionInfo))
             {
-                return Assembly.Load(new AssemblyName(descriptor.Id));
+                return Assembly.Load(new AssemblyName(extensionInfo.Id));
             }
 
             return null;
         }
 
-        public Assembly LoadPrecompiledExtension(ExtensionDescriptor descriptor)
+        public Assembly LoadPrecompiledExtension(IExtensionInfo extensionInfo)
         {
-            if (IsAmbientExtension(descriptor))
+            if (IsAmbientExtension(extensionInfo))
             {
                 return null;
             }
 
-            var projectContext = GetProjectContext(descriptor);
+            var projectContext = GetProjectContext(extensionInfo);
 
             if (!IsPrecompiledContext(projectContext))
             {
                 return null;
             }
 
-            if (IsAssemblyLoaded(descriptor.Id))
+            if (IsAssemblyLoaded(extensionInfo.Id))
             {
-                return _loadedAssemblies[descriptor.Id].Value;
+                return _loadedAssemblies[extensionInfo.Id].Value;
             }
 
             if (projectContext != null)
@@ -132,43 +130,40 @@ namespace Orchard.Environment.Extensions
             }
             else
             {
-                LoadPrecompiledModule(descriptor);
+                LoadPrecompiledModule(extensionInfo);
             }
 
-            return IsAssemblyLoaded(descriptor.Id) ? _loadedAssemblies[descriptor.Id].Value : null;
+            return IsAssemblyLoaded(extensionInfo.Id) ? _loadedAssemblies[extensionInfo.Id].Value : null;
         }
 
-        public Assembly LoadDynamicExtension(ExtensionDescriptor descriptor)
+        public Assembly LoadDynamicExtension(IExtensionInfo extensionInfo)
         {
-            if (IsAmbientExtension(descriptor))
+            if (IsAmbientExtension(extensionInfo))
             {
                 return null;
             }
 
-            var projectContext = GetProjectContext(descriptor);
+            var projectContext = GetProjectContext(extensionInfo);
 
             if (!IsDynamicContext(projectContext))
             {
                 return null;
             }
 
-            if (IsAssemblyLoaded(descriptor.Id))
+            if (IsAssemblyLoaded(extensionInfo.Id))
             {
-                return _loadedAssemblies[descriptor.Id].Value;
+                return _loadedAssemblies[extensionInfo.Id].Value;
             }
 
             CompileProject(projectContext);
             LoadProject(projectContext);
 
-            return IsAssemblyLoaded(descriptor.Id) ? _loadedAssemblies[descriptor.Id].Value : null;
+            return IsAssemblyLoaded(extensionInfo.Id) ? _loadedAssemblies[extensionInfo.Id].Value : null;
         }
 
-        internal ProjectContext GetProjectContext(ExtensionDescriptor descriptor)
+        internal ProjectContext GetProjectContext(IExtensionInfo extensionInfo)
         {
-            var fileInfo = _hostingEnvironment
-                .GetExtensionFileInfo(descriptor);
-
-            return GetProjectContextFromPath(fileInfo.PhysicalPath);
+            return GetProjectContextFromPath(extensionInfo.ExtensionFileInfo.PhysicalPath);
         }
 
         internal ProjectContext GetProjectContextFromPath(string projectPath)
@@ -512,11 +507,11 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        internal void LoadPrecompiledModule(ExtensionDescriptor descriptor)
+        internal void LoadPrecompiledModule(IExtensionInfo extensionInfo)
         {
-            var fileInfo = _hostingEnvironment.GetExtensionFileInfo(descriptor);
+            var fileInfo = extensionInfo.ExtensionFileInfo;
             var assemblyFolderPath = Path.Combine(fileInfo.PhysicalPath, Constants.BinDirectoryName);
-            var assemblyPath = Path.Combine(assemblyFolderPath, CompilerUtility.GetAssemblyFileName(descriptor.Id));
+            var assemblyPath = Path.Combine(assemblyFolderPath, CompilerUtility.GetAssemblyFileName(extensionInfo.Id));
 
             // default runtime assemblies: "bin/{assembly}.dll"
             var runtimeAssemblies = Directory.GetFiles(assemblyFolderPath,
@@ -647,9 +642,9 @@ namespace Orchard.Environment.Extensions
             return runtimeIds.Distinct();
         }
 
-        private bool IsAmbientExtension (ExtensionDescriptor descriptor)
+        private bool IsAmbientExtension (IExtensionInfo extensionInfo)
         {
-             return IsAmbientAssembly(descriptor.Id);
+             return IsAmbientAssembly(extensionInfo.Id);
         }
 
         private bool IsDynamicContext (ProjectContext context)

@@ -75,7 +75,7 @@ namespace Orchard.DisplayManagement.Views
             }
 
             // Parse group placement.
-            _groupId = placement.GetGroup();
+            _groupId = placement.GetGroup() ?? _groupId;
 
             // If the shape's group doesn't match the currently rendered one, return
             if (!String.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))

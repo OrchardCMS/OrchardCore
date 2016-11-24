@@ -54,10 +54,10 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         [Fact]
         public void GroupShouldBeParsed()
         {
-            Assert.Equal("", new PlacementInfo { Location = "Content" }.GetGroup());
-            Assert.Equal("", new PlacementInfo { Location = "Content:5" }.GetGroup());
-            Assert.Equal("", new PlacementInfo { Location = "Content:5#Tab1" }.GetGroup());
-            Assert.Equal("", new PlacementInfo { Location = "Content:5.1#Tab1" }.GetGroup());
+            Assert.Equal(null, new PlacementInfo { Location = "Content" }.GetGroup());
+            Assert.Equal(null, new PlacementInfo { Location = "Content:5" }.GetGroup());
+            Assert.Equal(null, new PlacementInfo { Location = "Content:5#Tab1" }.GetGroup());
+            Assert.Equal(null, new PlacementInfo { Location = "Content:5.1#Tab1" }.GetGroup());
             Assert.Equal("Group1", new PlacementInfo { Location = "Content:5@Group1" }.GetGroup());
             Assert.Equal("Group1", new PlacementInfo { Location = "Content:5@Group1#Tab1" }.GetGroup());
             Assert.Equal("Group1", new PlacementInfo { Location = "Content:5#Tab1@Group1" }.GetGroup());

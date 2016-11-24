@@ -1,21 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Orchard.DisplayManagement.Descriptors;
+﻿using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions.Models;
+using System.Threading.Tasks;
+using System;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Tests.Stubs
 {
-    public class TestShapeTable : ShapeTable
-    {
-        public override IDictionary<string, ShapeBinding> Bindings { get; set; }
-    }
-
     public class TestShapeTableManager : IShapeTableManager
     {
-        private readonly TestShapeTable _defaultShapeTable;
+        private readonly ShapeTable _defaultShapeTable;
 
-        public TestShapeTableManager(TestShapeTable defaultShapeTable)
+        public TestShapeTableManager(ShapeTable defaultShapeTable)
         {
             _defaultShapeTable = defaultShapeTable;
         }
@@ -28,11 +23,11 @@ namespace Orchard.Tests.Stubs
 
     public class MockThemeManager : IThemeManager
     {
-        ExtensionDescriptor _dec;
-        public MockThemeManager(ExtensionDescriptor des) {
+        IExtensionInfo _dec;
+        public MockThemeManager(IExtensionInfo des) {
             _dec = des;
         }
-        public Task<ExtensionDescriptor> GetThemeAsync()
+        public Task<IExtensionInfo> GetThemeAsync()
         {
             return Task.Run(() => _dec);
         }

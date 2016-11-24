@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Models;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
@@ -22,24 +19,11 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public int Order => 20;
 
-        public void ExtensionActivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
-        {
-        }
-
-        public void ExtensionDeactivated(ExtensionLoadingContext ctx, ExtensionDescriptor extension)
-        {
-        }
-
-        public bool IsCompatibleWithModuleReferences(ExtensionDescriptor extension, IEnumerable<ExtensionProbeEntry> references)
-        {
-            return true;
-        }
-
-        public ExtensionEntry Load(ExtensionDescriptor descriptor)
+        public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
             try
             {
-                var assembly = _extensionLibraryService.LoadAmbientExtension(descriptor);
+                var assembly = _extensionLibraryService.LoadAmbientExtension(extensionInfo);
 
                 if (assembly == null)
                 {
@@ -48,12 +32,12 @@ namespace Orchard.Environment.Extensions.Loaders
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Loaded referenced ambient extension \"{0}\": assembly name=\"{1}\"", descriptor.Name, assembly.FullName);
+                    _logger.LogInformation("Loaded referenced ambient extension \"{0}\": assembly name=\"{1}\"", extensionInfo.Id, assembly.FullName);
                 }
 
                 return new ExtensionEntry
                 {
-                    Descriptor = descriptor,
+                    ExtensionInfo = extensionInfo,
                     Assembly = assembly,
                     ExportedTypes = assembly.ExportedTypes
                 };
@@ -62,19 +46,6 @@ namespace Orchard.Environment.Extensions.Loaders
             {
                 return null;
             }
-        }
-
-        public ExtensionProbeEntry Probe(ExtensionDescriptor descriptor)
-        {
-            return null;
-        }
-
-        public void ReferenceActivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
-        {
-        }
-
-        public void ReferenceDeactivated(ExtensionLoadingContext context, ExtensionReferenceProbeEntry referenceEntry)
-        {
         }
     }
 }

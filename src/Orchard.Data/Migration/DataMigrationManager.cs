@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration.Records;
+using Orchard.Environment.Extensions;
+using Orchard.Localization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration.Records;
-using Orchard.Environment.Extensions;
-using Orchard.Localization;
 using YesSql.Core.Services;
 
 namespace Orchard.Data.Migration
@@ -75,7 +75,7 @@ namespace Orchard.Data.Migration
                 return (GetCreateMethod(dataMigration) != null);
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Descriptor.Id).ToList();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
         }
 
         public async Task Uninstall(string feature)
@@ -110,44 +110,41 @@ namespace Orchard.Data.Migration
             }
         }
 
-        public async Task UpdateAsync(IEnumerable<string> features)
+        public async Task UpdateAsync(IEnumerable<string> featureIds)
         {
-            foreach (var feature in features)
+            foreach (var featureId in featureIds)
             {
-                if (!_processedFeatures.Contains(feature))
+                if (!_processedFeatures.Contains(featureId))
                 {
-                    await UpdateAsync(feature);
+                    await UpdateAsync(featureId);
                 }
             }
         }
 
-        public async Task UpdateAsync(string feature)
+        public async Task UpdateAsync(string featureId)
         {
-            if (_processedFeatures.Contains(feature))
+            if (_processedFeatures.Contains(featureId))
             {
                 return;
             }
 
-            _processedFeatures.Add(feature);
+            _processedFeatures.Add(featureId);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Updating feature: {0}", feature);
+                _logger.LogInformation("Updating feature: {0}", featureId);
             }
 
             // proceed with dependent features first, whatever the module it's in
-            var dependencies = _extensionManager.AvailableFeatures()
-                .Where(f => String.Equals(f.Id, feature, StringComparison.OrdinalIgnoreCase))
-                .Where(f => f.Dependencies != null)
+            var dependencies = _extensionManager.GetExtensions().Features
+                .Where(f => f.Id == featureId)
+                .Where(f => f.Dependencies.Any())
                 .SelectMany(f => f.Dependencies)
                 .ToList();
 
-            foreach (var dependency in dependencies)
-            {
-                await UpdateAsync(dependency);
-            }
+            await UpdateAsync(dependencies);
 
-            var migrations = GetDataMigrations(feature);
+            var migrations = GetDataMigrations(featureId);
 
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
@@ -195,7 +192,7 @@ namespace Orchard.Data.Migration
                             {
                                 if (_logger.IsEnabled(LogLevel.Information))
                                 {
-                                    _logger.LogInformation("Applying migration for {0} from version {1}.", feature, current);
+                                    _logger.LogInformation("Applying migration for {0} from version {1}.", featureId, current);
                                 }
                                 current = (int)lookupTable[current].Invoke(migration, new object[0]);
                             }
@@ -205,7 +202,7 @@ namespace Orchard.Data.Migration
                                 {
                                     throw;
                                 }
-                                _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", feature, current);
+                                _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", featureId, current);
                                 throw;
                             }
                         }
@@ -224,9 +221,9 @@ namespace Orchard.Data.Migration
                         {
                             throw;
                         }
-                        _logger.LogError(0, "Error while running migration version {0} for {1}.", current, feature);
+                        _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
                         _session.Cancel();
-                        throw new OrchardException(T("Error while running migration version {0} for {1}.", current, feature), ex);
+                        throw new OrchardException(T("Error while running migration version {0} for {1}.", current, featureId), ex);
                     }
                     finally
                     {
@@ -248,10 +245,10 @@ namespace Orchard.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
         /// </summary>
-        private IEnumerable<IDataMigration> GetDataMigrations(string feature)
+        private IEnumerable<IDataMigration> GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
-                    .Where(dm => String.Equals(_typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Descriptor.Id, feature, StringComparison.OrdinalIgnoreCase))
+                    .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
                     .ToList();
 
             //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {
@@ -324,11 +321,11 @@ namespace Orchard.Data.Migration
         {
             var featuresThatNeedUpdate = await GetFeaturesThatNeedUpdateAsync();
 
-            foreach (var feature in featuresThatNeedUpdate)
+            foreach (var featureId in featuresThatNeedUpdate)
             {
                 try
                 {
-                    await UpdateAsync(feature);
+                    await UpdateAsync(featureId);
                 }
                 catch (Exception ex)
                 {
@@ -337,7 +334,7 @@ namespace Orchard.Data.Migration
                         throw;
                     }
 
-                    _logger.LogError("Could not run migrations automatically on " + feature, ex);
+                    _logger.LogError("Could not run migrations automatically on " + featureId, ex);
                 }
             }
         }

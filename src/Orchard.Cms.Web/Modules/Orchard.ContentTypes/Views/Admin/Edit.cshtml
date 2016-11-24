@@ -35,7 +35,7 @@
                 {
                     <li class="list-group-item">
                         @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
-                        <div class="pull-md-right">
+                        <div class="float-md-right">
                             <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                             <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                         </div>
@@ -59,12 +59,12 @@
 
                     @if (part != typePart)
                     {
-                    @if (!String.IsNullOrEmpty(part.Description()))
+                        @if (!String.IsNullOrEmpty(part.Description()))
                         {
                             <span class="hint">@T["— {0}", part.Description()]</span>
                         }
 
-                        <div class="pull-md-right">
+                        <div class="float-md-right">
                             <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                             <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                         </div>
