@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Models;
 using Orchard.Environment.Extensions.Utility;
+using Orchard.Environment.Shell;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -20,8 +21,8 @@ namespace Orchard.DisplayManagement.Descriptors
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
+        private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
-        private readonly IFeatureManager _featureManager;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
@@ -29,23 +30,23 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
+            IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
-            IFeatureManager featureManager,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
         {
             _bindingStrategies = bindingStrategies;
+            _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
-            _featureManager = featureManager;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
         }
 
-        public ShapeTable GetShapeTable(string themeName)
+        public ShapeTable GetShapeTable(string themeId)
         {
-            var cacheKey = $"ShapeTable:{themeName}";
+            var cacheKey = $"ShapeTable:{themeId}";
 
             ShapeTable shapeTable;
             if (!_memoryCache.TryGetValue(cacheKey, out shapeTable))
@@ -56,13 +57,13 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
 
                 var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
-                    _shapeDescriptors.Select(kv => kv.Value.Feature.Descriptor.Id).Distinct().ToList();
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    Feature strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
-                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Descriptor.Id))
+                    if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
                         continue;
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
@@ -75,10 +76,10 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledFeatureIds = _featureManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
+                var enabledFeatureIds = _shellFeaturesManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
 
                 var descriptors = _shapeDescriptors
-                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeName, enabledFeatureIds))
+                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(DescriptorHasDependency, GetPriority)
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
@@ -107,14 +108,14 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations)
         {
-            var alterationSets = builtAlterations.GroupBy(a => a.Feature.Descriptor.Id + a.ShapeType);
+            var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
             foreach (var alterations in alterationSets)
             {
                 var firstAlteration = alterations.First();
 
                 var key = bindingStrategy.GetType().Name
-                    + firstAlteration.Feature.Descriptor.Id
+                    + firstAlteration.Feature.Id
                     + firstAlteration.ShapeType.ToLower();
 
                 if (!_shapeDescriptors.ContainsKey(key))
@@ -135,84 +136,87 @@ namespace Orchard.DisplayManagement.Descriptors
             }
         }
 
-        private static int GetPriority(KeyValuePair<string, FeatureShapeDescriptor> shapeDescriptor)
+        private static double GetPriority(KeyValuePair<string, FeatureShapeDescriptor> shapeDescriptor)
         {
-            return shapeDescriptor.Value.Feature.Descriptor.Priority;
+            return shapeDescriptor.Value.Feature.Priority;
         }
 
         private bool DescriptorHasDependency(KeyValuePair<string, FeatureShapeDescriptor> item, KeyValuePair<string, FeatureShapeDescriptor> subject)
         {
-            return _extensionManager.HasDependency(item.Value.Feature.Descriptor, subject.Value.Feature.Descriptor);
+            return item.Value.Feature.DependencyOn(subject.Value.Feature);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
         {
-            return IsEnabledModuleOrRequestedTheme(descriptor?.Feature?.Descriptor, themeName, enabledFeatureIds);
+            return IsEnabledModuleOrRequestedTheme(descriptor?.Feature, themeName, enabledFeatureIds);
         }
 
-        private bool IsEnabledModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
+        private bool IsEnabledModuleOrRequestedTheme(IFeatureInfo feature, string themeName, List<string> enabledFeatureIds)
         {
-            var id = descriptor?.Id;
-            var extensionType = descriptor?.Extension?.ExtensionType;
+            var test1 = IsModuleOrRequestedTheme(feature, themeName);
+            var test2 = feature?.Extension?.Manifest.IsCore() ?? false;
+            var test3 = enabledFeatureIds.Contains(feature?.Id);
+            var test4 = enabledFeatureIds.Contains(null);
 
-            return IsModuleOrRequestedTheme(descriptor, themeName) && (DefaultExtensionTypes.IsCore(extensionType)
-                || enabledFeatureIds.Contains(id));
+            var test = IsModuleOrRequestedTheme(feature, themeName)
+                && ((feature?.Extension?.Manifest.IsCore() ?? false)
+                || enabledFeatureIds.Contains(feature?.Id));
+
+            return test;
         }
 
-        private bool IsModuleOrRequestedTheme(FeatureDescriptor descriptor, string themeName)
+        private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
         {
-            if (descriptor?.Extension == null)
+            if (feature?.Extension == null)
             {
                 return false;
             }
 
-            var extensionType = descriptor.Extension.ExtensionType;
-
-            if(DefaultExtensionTypes.IsCore(extensionType))
+            if (feature.Extension.Manifest.IsCore())
             {
                 // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
                 return true;
             }
 
-            if (DefaultExtensionTypes.IsModule(extensionType))
+            if (feature.Extension.Manifest.IsModule())
             {
                 return true;
             }
 
-            if (DefaultExtensionTypes.IsTheme(extensionType))
+            if (feature.Extension.Manifest.IsTheme())
             {
                 // A null theme means we are looking for any shape in any module or theme
-                if (String.IsNullOrEmpty(themeName))
+                if (String.IsNullOrEmpty(themeId))
                 {
                     return true;
                 }
 
                 // alterations from themes must be from the given theme or a base theme
-                var featureName = descriptor.Id;
-                return string.IsNullOrEmpty(featureName) || featureName == themeName || IsBaseTheme(featureName, themeName);
+                var featureId = feature.Id;
+                return string.IsNullOrEmpty(featureId) || featureId == themeId || IsBaseTheme(featureId, themeId);
             }
 
             return false;
         }
 
-        private bool IsBaseTheme(string featureName, string themeName)
+        private bool IsBaseTheme(string featureId, string themeId)
         {
             // determine if the given feature is a base theme of the given theme
-            var availableFeatures = _extensionManager.AvailableFeatures();
+            var availableFeatures = _extensionManager.GetExtensions().Features;
 
-            var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeName);
-            while (themeFeature != null)
+            var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeId);
+            while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())
             {
-                var baseTheme = themeFeature.Extension.BaseTheme;
-                if (string.IsNullOrEmpty(baseTheme))
+                var themeExtensionInfo = new ThemeExtensionInfo(themeFeature.Extension);
+                if (!themeExtensionInfo.HasBaseTheme())
                 {
                     return false;
                 }
-                if (featureName == baseTheme)
+                if (themeExtensionInfo.IsBaseThemeFeature(featureId))
                 {
                     return true;
                 }
-                themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == baseTheme);
+                themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeExtensionInfo.BaseTheme);
             }
             return false;
         }

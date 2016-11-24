@@ -43,7 +43,7 @@ namespace Orchard.DisplayManagement.Descriptors
             return this;
         }
 
-        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext,Task<IHtmlContent>>> binder)
+        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext, Task<IHtmlContent>>> binder)
         {
             // schedule the configuration
             return Configure(descriptor =>

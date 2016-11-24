@@ -3,21 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions.Models;
 using Microsoft.AspNetCore.Html;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
     public class FeatureShapeDescriptor : ShapeDescriptor
     {
-        public FeatureShapeDescriptor(Feature feature, string shapeType)
+        public FeatureShapeDescriptor(IFeatureInfo feature, string shapeType)
         {
             Feature = feature;
             ShapeType = shapeType;
         }
 
-        public Feature Feature { get; private set; }
+        public IFeatureInfo Feature { get; private set; }
     }
 
     public class ShapeDescriptorIndex : ShapeDescriptor

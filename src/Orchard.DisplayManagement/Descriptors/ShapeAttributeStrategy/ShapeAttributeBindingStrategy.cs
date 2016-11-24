@@ -17,7 +17,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Models;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -48,8 +48,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var serviceType = shapeProvider.GetType();
 
-                Feature feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
-                if (builder.ExcludedFeatureIds.Contains(feature.Descriptor.Id))
+                IFeatureInfo feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
+                if (builder.ExcludedFeatureIds.Contains(feature.Id))
                     continue;
 
                 foreach (var method in serviceType.GetMethods())
@@ -108,7 +108,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         {
             var htmlContent = invoke as IHtmlContent;
 
-            if(htmlContent != null)
+            if (htmlContent != null)
             {
                 return htmlContent;
             }
@@ -169,7 +169,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             if (result == null)
                 return null;
 
-            if(parameter.ParameterType.IsAssignableFrom(result.GetType()))
+            if (parameter.ParameterType.IsAssignableFrom(result.GetType()))
             {
                 return result;
             }

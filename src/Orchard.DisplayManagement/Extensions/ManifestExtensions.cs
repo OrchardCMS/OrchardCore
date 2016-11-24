@@ -14,5 +14,10 @@ namespace Orchard.DisplayManagement
         {
             return manifestInfo.Type.Equals("theme", StringComparison.OrdinalIgnoreCase);
         }
+
+        public static bool IsCore(this IManifestInfo manifestInfo)
+        {
+            return string.IsNullOrEmpty(manifestInfo.Type);
+        }
     }
 }
