@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+﻿using System;
+using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
 
@@ -25,5 +26,6 @@ namespace Orchard.Environment.Extensions
         public string SubPath => _subPath;
         public IManifestInfo Manifest => _manifestInfo;
         public IFeatureInfoList Features => _features;
+        public bool Exists => _fileInfo.Exists && _manifestInfo.Exists;
     }
 }

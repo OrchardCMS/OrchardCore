@@ -92,20 +92,20 @@ namespace Orchard.Modules.Controllers
                 return Unauthorized();
             }
 
-            //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
-            var shellDescriptor = await _shellDescriptorManager.GetShellDescriptorAsync();
-            var availableFeatures = _extensionManager.GetExtensions().Features;
-
+            var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
             var moduleFeatures = new List<ModuleFeature>();
-            foreach (var moduleFeatureInfo in availableFeatures.Where(f => !f.Extension.Manifest.IsTheme()))
+            foreach (var moduleFeatureInfo in _extensionManager
+                .GetExtensions()
+                .Features
+                .Where(f => !f.Extension.Manifest.IsTheme()))
             {
-                var dependentFeatures = await _moduleService.GetDependentFeaturesAsync(moduleFeatureInfo.Id);
-
+                var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id);
+                
                 var moduleFeature = new ModuleFeature
                 {
                     Descriptor = moduleFeatureInfo,
-                    IsEnabled = shellDescriptor.Features.Any(sf => sf.Id == moduleFeatureInfo.Id),
+                    IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
                     //IsRecentlyInstalled = _moduleService.IsRecentlyInstalled(f.Extension),
                     //NeedsUpdate = featuresThatNeedUpdate.Contains(f.Id),
                     DependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id).ToList()

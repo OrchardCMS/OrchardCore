@@ -75,11 +75,13 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
             }
+
             public IFileInfo ExtensionFileInfo { get; set; }
             public IFeatureInfoList Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
+            public bool Exists => true;
         }
 
         private class TestThemeExtensionInfo : IExtensionInfo
@@ -142,6 +144,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
+            public bool Exists => true;
         }
 
         public DefaultShapeTableManagerTests()
@@ -196,6 +199,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public TestExtensionManager(IEnumerable<IFeatureInfo> features) {
                 _features = features;
             }
+
+            public IFeatureInfoList GetDependentFeatures(string featureId)
+            {
+                throw new NotImplementedException();
+            }
+
             public IExtensionInfo GetExtension(string extensionId)
             {
                 return _features.Select(x => x.Extension).First(x => x.Id == extensionId);
