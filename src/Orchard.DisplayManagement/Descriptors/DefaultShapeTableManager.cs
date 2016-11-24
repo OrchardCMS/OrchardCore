@@ -153,16 +153,9 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool IsEnabledModuleOrRequestedTheme(IFeatureInfo feature, string themeName, List<string> enabledFeatureIds)
         {
-            var test1 = IsModuleOrRequestedTheme(feature, themeName);
-            var test2 = feature?.Extension?.Manifest.IsCore() ?? false;
-            var test3 = enabledFeatureIds.Contains(feature?.Id);
-            var test4 = enabledFeatureIds.Contains(null);
-
-            var test = IsModuleOrRequestedTheme(feature, themeName)
+            return IsModuleOrRequestedTheme(feature, themeName)
                 && ((feature?.Extension?.Manifest.IsCore() ?? false)
                 || enabledFeatureIds.Contains(feature?.Id));
-
-            return test;
         }
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
