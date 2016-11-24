@@ -5,6 +5,8 @@
 <div id="previewUrl" style="display:none" data-value="@Url.Action("Index", "Preview", new { area = "Orchard.ContentPreview" })" ></div>
 <div id="contentItemType" style="display:none" data-value="@Model.ContentItem.ContentType"></div>
 
+<script depends-on="admin" at="Foot" asp-src="~/Orchard.ContentPreview/Scripts/jquery-resizable.min.js"></script>
+
 <script at="Foot">
 
     $(function () {
@@ -17,9 +19,16 @@
         var contentItemType = $(document.getElementById('contentItemType')).data('value');
         var contentPreviewContainer = document.getElementById('contentPreviewContainer');
         var contentPreviewContent = document.getElementById('contentPreviewContent');
+        var editBody = document.getElementsByClassName('edit-body');
         var editSidebar = document.getElementsByClassName('edit-sidebar');
+        var editSidebarHandler = document.getElementsByClassName('edit-sidebar-handler');
 
         hidePreview();
+
+        $(".edit-body").resizable({
+            handleSelector: ".edit-sidebar-handler",
+            resizeHeight: false
+        });
 
         $(previewButton).on('click', function (event) {
             event.preventDefault();
@@ -58,12 +67,18 @@
             $(previewButton).text($(previewButton).data("stop"));
             renderPreview();
             $(editSidebar).css('visibility', 'visible');
+            $(editSidebarHandler).css('visibility', 'visible');
+            $(editBody).css('width', localStorage.getItem('editBody:width'));
             $(contentPreviewNavigation).show();
         }
 
         function hidePreview() {
+            // save column size 
+            localStorage.setItem('editBody:width', $(editBody).css('width'))
             $(previewButton).text($(previewButton).data("start"));
             $(editSidebar).css('visibility', 'hidden');
+            $(editSidebarHandler).css('visibility', 'hidden');
+            $(editBody).css('width', '100%');
             $(contentPreviewNavigation).hide();
             $(contentPreviewContent).empty();
             iframe = null;

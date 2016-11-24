@@ -47,9 +47,48 @@ namespace Orchard.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
-                // Include custom script url
+                RequireSettings setting;
 
-                var setting = _resourceManager.Include("script", Src, DebugSrc);
+                if (String.IsNullOrEmpty(DependsOn))
+                {
+                    // Include custom script url
+                    setting = _resourceManager.Include("script", Src, DebugSrc);
+                }
+                else
+                {
+                    // Anonymous declaration with dependencies, then display
+                    var name = Guid.NewGuid().ToString();
+
+                    var definition = _resourceManager.InlineManifest.DefineScript(name);
+                    definition.SetUrl(Src, DebugSrc);
+
+                    if (!String.IsNullOrEmpty(Version))
+                    {
+                        definition.SetVersion(Version);
+                    }
+
+                    if (!String.IsNullOrEmpty(CdnSrc))
+                    {
+                        definition.SetCdn(CdnSrc, DebugCdnSrc);
+                    }
+
+                    if (!String.IsNullOrEmpty(Culture))
+                    {
+                        definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    }
+
+                    if (!String.IsNullOrEmpty(DependsOn))
+                    {
+                        definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    }
+
+                    if (!String.IsNullOrEmpty(Version))
+                    {
+                        definition.SetVersion(Version);
+                    }
+
+                    setting = _resourceManager.RegisterResource("script", name);
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -133,6 +172,31 @@ namespace Orchard.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Version))
                 {
                     definition.SetVersion(Version);
+                }
+                
+                // If At is specified then we also render it
+                if (At != ResourceLocation.Unspecified)
+                {
+                    var setting = _resourceManager.RegisterResource("script", Name);
+
+                    setting.AtLocation(At);
+
+                    if (!String.IsNullOrEmpty(Condition))
+                    {
+                        setting.UseCondition(Condition);
+                    }
+
+                    setting.UseDebugMode(Debug);
+
+                    if (!String.IsNullOrEmpty(Culture))
+                    {
+                        setting.UseCulture(Culture);
+                    }
+
+                    foreach (var attribute in output.Attributes)
+                    {
+                        setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                    }
                 }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
