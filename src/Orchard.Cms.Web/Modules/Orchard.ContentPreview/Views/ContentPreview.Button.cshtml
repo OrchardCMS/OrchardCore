@@ -94,8 +94,16 @@
             delayTask = null;
         }
 
+        function createIframe() {
+            iframe = document.createElement('iframe');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('width', '100%');
+            iframe.setAttribute('scrolling', 'yes');
+            iframe.setAttribute('height', document.body.scrollHeight + 'px');
+            contentPreviewContent.appendChild(iframe);
+        }
+        
         function renderPreview() {
-
             // Preview is not open
             if (!enabled) {
                 return;
@@ -107,31 +115,37 @@
             if (rendering) {
                 return;
             }
-
+            
             // Pump renderPreview calls
             while (renderRequested) {
-
                 renderRequested = false;
                 rendering = true;
-
                 var data = form.serialize();
                 $.post(previewUrl + "?id=" + contentItemType, data)
                     .done(function (data) {
-                        
-                        if (!iframe) {
-                            iframe = document.createElement('iframe');
-                            iframe.setAttribute('frameborder', '0');
-                            iframe.setAttribute('width', '100%');
-                            iframe.setAttribute('scrolling', 'yes');
-                            iframe.setAttribute('height', document.body.scrollHeight + 'px');
-                            contentPreviewContent.appendChild(iframe);
 
+                        if (!iframe) {
+                            createIframe();
                             iframe.contentWindow.document.open();
                             iframe.contentWindow.document.close();
                         }
 
                         iframe.contentWindow.document.body.innerHTML = '';
                         iframe.contentWindow.document.write(data);
+
+                        if (iframe.contentWindow.document.body.innerHTML == '') {
+                            // the the html is invalid we need to rebuild an iframe or it fails to render
+                            $(contentPreviewContent).empty();
+
+                            createIframe();
+
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.write(data);
+                            iframe.contentWindow.document.close();
+                        }
+                        else {
+                            // body rendered successfully
+                        }
                     })
                     .fail(function () {
                         // An error occured, like validation
