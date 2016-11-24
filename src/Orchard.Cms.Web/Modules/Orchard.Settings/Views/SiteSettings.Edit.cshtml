@@ -1,0 +1,7 @@
+﻿@model SiteSettingsViewModel
+
+<fieldset class="form-group" asp-validation-class-for="SiteName">
+    <label asp-for="SiteName">@T["Site name"] <span asp-validation-for="SiteName"></span></label>
+    <input asp-for="SiteName" class="form-control" />
+    <span class="hint">@T["The site name."]</span>
+</fieldset>

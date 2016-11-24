@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Orchard;
 using Orchard.ContentManagement;
 using Orchard.Indexing;
+using Orchard.Settings;
 
 namespace Lucene
 {
@@ -24,6 +25,7 @@ namespace Lucene
         private readonly IIndexingTaskManager _indexTaskManager;
         private readonly IEnumerable<IContentItemIndexHandler> _indexHandlers;
         private readonly IContentManager _contentManager;
+        private readonly ISiteService _siteService;
 
         public LuceneIndexingService(
             LuceneIndexingState indexingState, 
@@ -31,6 +33,7 @@ namespace Lucene
             IIndexingTaskManager indexTaskManager,
             IEnumerable<IContentItemIndexHandler> indexHandlers,
             IContentManager contentManager,
+            ISiteService siteService,
             ILogger<LuceneIndexingService> logger)
         {
             _indexingState = indexingState;
@@ -38,6 +41,7 @@ namespace Lucene
             _indexTaskManager = indexTaskManager;
             _indexHandlers = indexHandlers;
             _contentManager = contentManager;
+            _siteService = siteService;
 
             Logger = logger;
         }
@@ -141,6 +145,12 @@ namespace Lucene
             _indexProvider.CreateIndex(indexName);
 
             ResetIndex(indexName);
+        }
+
+        public async Task<LuceneSettings> GetLuceneSettingsAsync()
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            return siteSettings.As<LuceneSettings>();
         }
     }
 }

@@ -1,31 +1,13 @@
-﻿using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Util;
+﻿using Lucene.Net.Util;
 
 namespace Lucene
 {
     public class LuceneSettings
     {
-        // TODO: Load settings from database
+        public static LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
 
-        public Analyzer GetAnalyzer()
-        {
-            return new StandardAnalyzer(GetVersion());
-        }
+        public string SearchIndex { get; set; }
 
-        public string GetDefaultSearchIndex()
-        {
-            return "Search";
-        }
-
-        public LuceneVersion GetVersion()
-        {
-            return LuceneVersion.LUCENE_48;
-        }
-
-        public string[] GetSearchFields()
-        {
-            return new string[] { "Content.ContentItemMetadata.DisplayText", "Content.BodyAspect.Body" };
-        }
+        public string[] SearchFields { get; set; } = new string[0];
     }
 }

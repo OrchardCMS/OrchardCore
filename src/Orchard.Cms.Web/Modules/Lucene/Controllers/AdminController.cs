@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -18,13 +19,11 @@ namespace Lucene.Controllers
         private readonly LuceneIndexProvider _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
-        private readonly LuceneSettings _luceneSettings;
         private readonly INotifier _notifier;
 
         public AdminController(
             LuceneIndexProvider luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
-            LuceneSettings luceneSettings,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
@@ -34,7 +33,6 @@ namespace Lucene.Controllers
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
-            _luceneSettings = luceneSettings;
             _notifier = notifier;
             S = s;
             H = h;
@@ -192,7 +190,9 @@ namespace Lucene.Controllers
                 return View(model);
             }
 
-            var queryParser = new QueryParser(_luceneSettings.GetVersion(), "", _luceneSettings.GetAnalyzer());
+            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+
+            var queryParser = new QueryParser(LuceneSettings.DefaultVersion, "", new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(model.Query);
 
             _luceneIndexProvider.Search(model.IndexName, searcher =>
