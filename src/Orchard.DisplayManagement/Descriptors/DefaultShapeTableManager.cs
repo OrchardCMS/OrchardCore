@@ -70,9 +70,6 @@ namespace Orchard.DisplayManagement.Descriptors
                     bindingStrategy.Discover(builder);
                     var builtAlterations = builder.BuildAlterations();
 
-                    if (builtAlterations.Count() == 0)
-                        continue;
-
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
@@ -154,8 +151,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private bool IsEnabledModuleOrRequestedTheme(IFeatureInfo feature, string themeName, List<string> enabledFeatureIds)
         {
             return IsModuleOrRequestedTheme(feature, themeName)
-                && ((feature?.Extension?.Manifest.IsCore() ?? false)
-                || enabledFeatureIds.Contains(feature?.Id));
+                && ((feature?.Extension?.Manifest.IsCore() ?? false) || enabledFeatureIds.Contains(feature?.Id));
         }
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
