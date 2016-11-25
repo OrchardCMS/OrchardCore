@@ -43,5 +43,10 @@ namespace Orchard.Tests.Stubs
         {
             throw new NotImplementedException();
         }
+
+        public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

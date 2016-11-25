@@ -239,6 +239,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             {
                 return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
+
+            public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class TestShapeProvider : IShapeTableProvider
