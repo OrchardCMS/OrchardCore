@@ -43,7 +43,7 @@ namespace Orchard.DisplayManagement.Descriptors
             return this;
         }
 
-        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext,Task<IHtmlContent>>> binder)
+        public ShapeAlterationBuilder BoundAs(string bindingSource, Func<ShapeDescriptor, Func<DisplayContext, Task<IHtmlContent>>> binder)
         {
             // schedule the configuration
             return Configure(descriptor =>
@@ -55,19 +55,21 @@ namespace Orchard.DisplayManagement.Descriptors
                     ShapeDescriptor = descriptor,
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
-                    BindingAsync = displayContext =>
-                    {
-                        // when used, first realize the actual target once
-                        if (target == null)
-                            target = binder(descriptor);
+                };
 
-                        // and execute the re
-                        return target(displayContext);
-                    }
+                binding.BindingAsync = displayContext =>
+                {
+                    // when used, first realize the actual target once
+                    if (target == null)
+                        target = binder(binding.ShapeDescriptor);
+
+                    // and execute the re
+                    return target(displayContext);
                 };
 
                 // ShapeDescriptor.Bindings is a case insensitive dictionary
                 descriptor.Bindings[_bindingName] = binding;
+                descriptor.BindingSources.Add(bindingSource);
             });
         }
 

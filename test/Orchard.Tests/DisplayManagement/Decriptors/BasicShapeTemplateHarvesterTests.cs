@@ -1,5 +1,5 @@
-﻿using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using System.Linq;
+﻿using System.Linq;
+using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
@@ -32,7 +32,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             VerifyShapeType("Views", "Hello.World", "Hello_World");
         }
-
 
         [Fact]
         public void DefaultItemsContentTemplate()

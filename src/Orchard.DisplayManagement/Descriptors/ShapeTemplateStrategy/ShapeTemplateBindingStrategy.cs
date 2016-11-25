@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,16 +20,10 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
-    public class ShapeTemplateBindingStrategy : IShapeTableProvider
+    public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
@@ -73,7 +73,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
 
             var activeExtensions = Once(enabledFeatures);
 
@@ -101,11 +102,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                     if (!directoryInfo.Exists)
                     {
-                        return new {
+                        return new
+                        {
                             harvesterInfo.harvester,
                             subPath,
                             virtualPath,
-                            files = new IFileInfo[0] };
+                            files = new IFileInfo[0]
+                        };
                     }
 
                     var matches = matcher

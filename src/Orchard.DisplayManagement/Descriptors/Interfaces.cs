@@ -13,6 +13,10 @@ namespace Orchard.DisplayManagement.Descriptors
         void Discover(ShapeTableBuilder builder);
     }
 
+    public interface IShapeTableHarvester : IShapeTableProvider
+    {
+    }
+
     public interface IShapeTableEventHandler : IEventHandler
     {
         void ShapeTableCreated(ShapeTable shapeTable);
