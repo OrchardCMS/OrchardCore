@@ -65,7 +65,7 @@ namespace Orchard.Environment.Extensions.Features
         /// <returns></returns>
         private static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
         {
-            return item.DependencyOn(subject);
+            return item.HasDependency(subject);
         }
 
         private static double GetPriority(IFeatureInfo featureInfo)

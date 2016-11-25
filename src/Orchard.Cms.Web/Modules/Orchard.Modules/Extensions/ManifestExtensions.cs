@@ -1,5 +1,5 @@
-﻿using Orchard.Environment.Extensions;
-using System;
+﻿using System;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Modules
 {
@@ -13,6 +13,11 @@ namespace Orchard.Modules
         public static bool IsTheme(this IManifestInfo manifestInfo)
         {
             return manifestInfo.Type.Equals("theme", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsCore(this IManifestInfo manifestInfo)
+        {
+            return string.IsNullOrEmpty(manifestInfo.Type);
         }
     }
 }
