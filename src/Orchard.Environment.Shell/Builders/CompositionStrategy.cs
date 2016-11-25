@@ -38,7 +38,10 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var enabledFeatures = descriptor.Features.SelectMany(shellFeature => _extensionManager.GetDependentFeatures(shellFeature.Id));
+            var enabledFeatures = descriptor
+                .Features
+                .SelectMany(shellFeature => _extensionManager.GetDependentFeatures(shellFeature.Id));
+
             var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
             
             // Statup classes are the only types that are automatically added to the blueprint
