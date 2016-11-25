@@ -17,6 +17,5 @@ namespace Orchard.Environment.Shell
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features);
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(
             ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force);
-        Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId);
     }
 }

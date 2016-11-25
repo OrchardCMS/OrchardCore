@@ -1,27 +1,22 @@
 ﻿using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace Orchard.Environment.Extensions
 {
     public class EmptyExtensionInfoList : IExtensionInfoList
     {
-        private readonly IDictionary<string, IExtensionInfo> _emptyDictionary =
-            new Dictionary<string, IExtensionInfo>();
-
-        public IExtensionInfo this[int index]
-        {
-            get
-            {
-                throw new System.IndexOutOfRangeException();
-            }
-        }
+        /// <summary>
+        /// A shared instance of <see cref="EmptyExtensionInfoList"/> 
+        /// </summary>
+        public static EmptyExtensionInfoList Singleton { get; } = new EmptyExtensionInfoList();
 
         public IExtensionInfo this[string key]
         {
             get
             {
-                return _emptyDictionary[key];
+                throw new System.IndexOutOfRangeException();
             }
         }
 
@@ -31,18 +26,15 @@ namespace Orchard.Environment.Extensions
         {
             get
             {
-                return new EmptyFeatureInfoList();
+                return EmptyFeatureInfoList.Singleton;
             }
         }
 
-        public IEnumerator<IExtensionInfo> GetEnumerator()
-        {
-            return _emptyDictionary.Values.GetEnumerator();
-        }
+        /// <summary>Returns an enumerator that iterates through the collection.</summary>
+        /// <returns>An enumerator to an empty collection.</returns>
+        public IEnumerator<IExtensionInfo> GetEnumerator() => Enumerable.Empty<IExtensionInfo>().GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _emptyDictionary.Values.GetEnumerator();
-        }
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

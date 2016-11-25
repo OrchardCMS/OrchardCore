@@ -56,10 +56,5 @@ namespace Orchard.Environment.Shell
         {
             return await _shellDescriptorFeaturesManager.DisableFeaturesAsync(await GetCurrentShell(), features, force);
         }
-
-        public async Task<IEnumerable<string>> GetDependentFeaturesAsync(string featureId)
-        {
-            return await _shellDescriptorFeaturesManager.GetDependentFeaturesAsync(await GetCurrentShell(), featureId);
-        }
     }
 }

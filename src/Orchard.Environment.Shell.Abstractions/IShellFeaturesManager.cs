@@ -12,6 +12,5 @@ namespace Orchard.Environment.Shell
         Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features);
         Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force);
-        Task<IEnumerable<string>> GetDependentFeaturesAsync(string featureId);
     }
 }

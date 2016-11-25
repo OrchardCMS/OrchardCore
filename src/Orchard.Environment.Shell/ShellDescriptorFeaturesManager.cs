@@ -49,8 +49,7 @@ namespace Orchard.Environment.Shell
                               featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
 
             var featuresToEnable = features
-                .Select(feature => EnableFeature(feature, availableFeatures, false))
-                .SelectMany(ies => ies)
+                .SelectMany(feature => GetFeaturesToEnable(feature, false))
                 .Distinct()
                 .ToList();
 
@@ -94,12 +93,10 @@ namespace Orchard.Environment.Shell
         /// <returns>An enumeration with the disabled feature IDs.</returns>
         public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(ShellDescriptor shellDescriptor, IEnumerable<IFeatureInfo> features, bool force)
         {
-            var featuresToDisable = new List<IFeatureInfo>();
-            foreach (var feature in features)
-            {
-                var disabled = await DisableFeatureAsync(shellDescriptor, feature, force);
-                featuresToDisable.AddRange(disabled);
-            }
+            var featuresToDisable = features
+                .SelectMany(feature => GetFeaturesToDisable(shellDescriptor, feature, force))
+                .Distinct()
+                .ToList();
 
             if (featuresToDisable.Count > 0)
             {
@@ -127,81 +124,18 @@ namespace Orchard.Environment.Shell
         }
 
         /// <summary>
-        /// Lists all enabled features that depend on a given feature.
-        /// </summary>
-        /// <param name="featureId">feature to check.</param>
-        /// <returns>An enumeration with dependent feature IDs.</returns>
-        public Task<IEnumerable<string>> GetDependentFeaturesAsync(ShellDescriptor shellDescriptor, string featureId)
-        {
-            var getEnabledDependants =
-                new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
-                    (currentFeatureId, fs) => fs
-                        .Where(f => 
-                                f.Value && 
-                                f.Key.Dependencies.Contains(currentFeatureId)
-                               )
-                        .ToDictionary(f => f.Key, f => f.Value));
-
-            var extensions = _extensionManager.GetExtensions();
-            var enabledFeatures = _extensionManager.GetEnabledFeatures(shellDescriptor);
-
-            IDictionary<IFeatureInfo, bool> availableFeatures = extensions
-                .Features
-                .ToDictionary(featureDescriptor => featureDescriptor,
-                                featureDescriptor => enabledFeatures.Any(shellFeature => shellFeature.Id == featureDescriptor.Id));
-
-            var affectedFeastures = GetAffectedFeatures(featureId, availableFeatures, getEnabledDependants);
-
-            return Task.FromResult(affectedFeastures);
-        }
-
-        /// <summary>
         /// Enables a feature.
         /// </summary>
         /// <param name="featureId">The ID of the feature to be enabled.</param>
         /// <param name="availableFeatures">A dictionary of the available feature descriptors and their current state (enabled / disabled).</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
         /// <returns>An enumeration of the enabled features.</returns>
-        private IEnumerable<IFeatureInfo> EnableFeature(
+        private IEnumerable<IFeatureInfo> GetFeaturesToEnable(
             IFeatureInfo featureInfo, 
-            IDictionary<IFeatureInfo, bool> availableFeatures, 
             bool force)
         {
-            var getDisabledDependencies =
-                new Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>>(
-                    (currentFeatureId, featuresState) =>
-                    {
-                        KeyValuePair<IFeatureInfo, bool> feature = featuresState.Single(featureState => featureState.Key.Id == currentFeatureId);
-
-                        // Retrieve disabled dependencies for the current feature
-                        return feature.Key.Dependencies
-                                      .Select(fId =>
-                                      {
-                                          var states = featuresState.Where(featureState => featureState.Key.Id == fId).ToList();
-
-                                          if (states.Count == 0)
-                                          {
-                                              throw new OrchardException(T["Failed to get state for feature {0}", fId]);
-                                          }
-
-                                          if (states.Count > 1)
-                                          {
-                                              throw new OrchardException(T["Found {0} states for feature {1}", states.Count, fId]);
-                                          }
-
-                                          return states[0];
-                                      })
-                                      .Where(featureState => !featureState.Value)
-                                      .ToDictionary(f => f.Key, f => f.Value);
-                    });
-
-            IEnumerable<string> affectedFeatures = 
-                GetAffectedFeatures(featureInfo.Id, availableFeatures, getDisabledDependencies);
-
             var featuresToEnable = _extensionManager
-                .GetExtensions()
-                .Features
-                .Where(x => affectedFeatures.Contains(x.Id))
+                .GetDependentFeatures(featureInfo.Id)
                 .ToList();
 
             if (featuresToEnable.Count > 1 && !force)
@@ -225,18 +159,12 @@ namespace Orchard.Environment.Shell
         /// <param name="featureId">The ID of the feature to be enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
         /// <returns>An enumeration of the disabled features.</returns>
-        private async Task<IEnumerable<IFeatureInfo>> DisableFeatureAsync(ShellDescriptor shellDescriptor, IFeatureInfo featureInfo, bool force)
+        private IEnumerable<IFeatureInfo> GetFeaturesToDisable(ShellDescriptor shellDescriptor, IFeatureInfo featureInfo, bool force)
         {
-            IEnumerable<string> affectedFeatures = 
-                await GetDependentFeaturesAsync(shellDescriptor, featureInfo.Id);
+            var affectedFeatures =
+                _extensionManager.GetDependentFeatures(featureInfo.Id).ToList();
 
-            var featuresToDisable = _extensionManager
-                .GetExtensions()
-                .Features
-                .Where(x => affectedFeatures.Contains(x.Id))
-                .ToList();
-
-            if (featuresToDisable.Count > 1 && !force)
+            if (affectedFeatures.Count > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -244,34 +172,11 @@ namespace Orchard.Environment.Shell
                 }
                 if (FeatureDependencyNotification != null)
                 {
-                    FeatureDependencyNotification("If {0} is disabled, then you'll also need to disable {1}.", featureInfo, featuresToDisable.Where(f => f.Id != featureInfo.Id));
+                    FeatureDependencyNotification("If {0} is disabled, then you'll also need to disable {1}.", featureInfo, affectedFeatures.Where(f => f.Id != featureInfo.Id));
                 }
             }
 
-            return featuresToDisable;
-        }
-
-        private static IEnumerable<string> GetAffectedFeatures(
-            string featureId, 
-            IDictionary<IFeatureInfo, bool> features,
-            Func<string, IDictionary<IFeatureInfo, bool>, IDictionary<IFeatureInfo, bool>> getAffectedDependencies)
-        {
-            var dependencies = new HashSet<string>() { featureId };
-            var stack = new Stack<IDictionary<IFeatureInfo, bool>>();
-
-            stack.Push(getAffectedDependencies(featureId, features));
-
-            while (stack.Count > 0)
-            {
-                var next = stack.Pop();
-                foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency.Key.Id)))
-                {
-                    dependencies.Add(dependency.Key.Id);
-                    stack.Push(getAffectedDependencies(dependency.Key.Id, features));
-                }
-            }
-
-            return dependencies;
+            return affectedFeatures;
         }
     }
 }

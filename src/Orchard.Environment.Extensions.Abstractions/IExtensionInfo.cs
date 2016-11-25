@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
-using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
 {
@@ -11,12 +10,14 @@ namespace Orchard.Environment.Extensions
         /// </summary>
         string Id { get; }
 
+        IFileInfo ExtensionFileInfo { get; }
+
         /// <summary>
         /// The path to the extension
         /// </summary>
-        IFileInfo ExtensionFileInfo { get; }
-
         string SubPath { get; }
+
+        bool Exists { get; }
 
         /// <summary>
         /// The manifest file of the extension

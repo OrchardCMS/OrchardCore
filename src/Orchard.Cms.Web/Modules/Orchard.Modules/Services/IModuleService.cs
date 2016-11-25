@@ -43,12 +43,5 @@ namespace Orchard.Modules.Services {
         ///// <param name="extensionDescriptor">The extension descriptor.</param>
         ///// <returns>True if the feature was recently installed; false otherwise.</returns>
         //Task<bool> IsRecentlyInstalledAsync(ExtensionDescriptor extensionDescriptor);
-
-        /// <summary>
-        /// Gets a list of dependent features of a given feature.
-        /// </summary>
-        /// <param name="featureId">ID of a feature.</param>
-        /// <returns>List of dependent feature descriptors.</returns>
-        Task<IEnumerable<IFeatureInfo>> GetDependentFeaturesAsync(string featureId);
     }
 }

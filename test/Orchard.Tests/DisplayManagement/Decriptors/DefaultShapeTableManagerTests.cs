@@ -75,11 +75,13 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
             }
+
             public IFileInfo ExtensionFileInfo { get; set; }
             public IFeatureInfoList Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
+            public bool Exists => true;
         }
 
         private class TestThemeExtensionInfo : IExtensionInfo
@@ -142,6 +144,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
+            public bool Exists => true;
         }
 
         public DefaultShapeTableManagerTests()
@@ -157,12 +160,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
             var baseThemeFeatureExtensionInfo = new TestThemeExtensionInfo("BaseTheme");
-            var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features[0]);
+            var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features.First());
 
             var features = new[] {
-                theme1FeatureExtensionInfo.Features[0],
-                derivedThemeFeatureExtensionInfo.Features[0],
-                baseThemeFeatureExtensionInfo.Features[0]
+                theme1FeatureExtensionInfo.Features.First(),
+                derivedThemeFeatureExtensionInfo.Features.First(),
+                baseThemeFeatureExtensionInfo.Features.First()
             };
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
@@ -196,6 +199,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public TestExtensionManager(IEnumerable<IFeatureInfo> features) {
                 _features = features;
             }
+
+            public IFeatureInfoList GetDependentFeatures(string featureId)
+            {
+                throw new NotImplementedException();
+            }
+
             public IExtensionInfo GetExtension(string extensionId)
             {
                 return _features.Select(x => x.Extension).First(x => x.Id == extensionId);
@@ -204,6 +213,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public IExtensionInfoList GetExtensions()
             {
                 return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
+            }
+
+            public IFeatureInfoList GetFeatures(string[] featureIds)
+            {
+                throw new NotImplementedException();
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)

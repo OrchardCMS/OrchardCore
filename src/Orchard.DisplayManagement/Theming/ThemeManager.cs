@@ -47,7 +47,7 @@ namespace Orchard.DisplayManagement.Theming
                 foreach (var theme in themeResults)
                 {
                     var t = _extensionManager.GetExtension(theme.ThemeName);
-                    if (t != null)
+                    if (t.Exists)
                     {
                         return _theme = new ThemeExtensionInfo(t);
                     }

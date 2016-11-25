@@ -21,7 +21,6 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionLoader _extensionLoader;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
             = new ConcurrentDictionary<string, Task<ExtensionEntry>>();
@@ -43,9 +42,10 @@ namespace Orchard.Environment.Extensions
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
-            _logger = logger;
+            L = logger;
             T = localizer;
         }
+        public ILogger L { get; set; }
         public IStringLocalizer T { get; set; }
 
         public IExtensionInfo GetExtension(string extensionId)
@@ -91,6 +91,44 @@ namespace Orchard.Environment.Extensions
             return _extensionInfoList;
         }
 
+        public IFeatureInfoList GetDependentFeatures(string featureId) {
+            var getDependants =
+                new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                    (currentFeature, fs) => fs
+                        .Where(f =>
+                                f.Dependencies.Any(dep => dep == currentFeature.Id)
+                               ).ToArray());
+
+            var extensions = GetExtensions();
+            var dependentFeatures = 
+                GetDependentFeatures(extensions.Features[featureId], extensions.Features.ToArray(), getDependants);
+
+            return new FeatureInfoList(dependentFeatures);
+        }
+
+        private IList<IFeatureInfo> GetDependentFeatures(
+            IFeatureInfo feature,
+            IFeatureInfo[] features,
+            Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> getAffectedDependencies)
+        {
+            var dependencies = new HashSet<IFeatureInfo>() { feature };
+            var stack = new Stack<IFeatureInfo[]>();
+
+            stack.Push(getAffectedDependencies(feature, features));
+
+            while (stack.Count > 0)
+            {
+                var next = stack.Pop();
+                foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
+                {
+                    dependencies.Add(dependency);
+                    stack.Push(getAffectedDependencies(dependency, features));
+                }
+            }
+
+            return dependencies.ToList();
+        }
+
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
@@ -99,9 +137,10 @@ namespace Orchard.Environment.Extensions
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
-                if (extension.IsError && _logger.IsEnabled(LogLevel.Warning))
+                if (extension.IsError && L.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("No suitable loader found for extension \"{0}\"", id);
+                    
+                    L.LogError("No suitable loader found for extension \"{0}\"", id);
                 }
 
                 return await Task.FromResult(extension);
@@ -127,7 +166,7 @@ namespace Orchard.Environment.Extensions
 
                 foreach (var type in extensionTypes)
                 {
-                    string sourceFeature = GetSourceFeatureNameForType(type, feature.Extension.Id);
+                    string sourceFeature = GetSourceFeatureNameForType(type, feature.Id);
                     if (sourceFeature == id)
                     {
                         featureTypes.Add(type);
