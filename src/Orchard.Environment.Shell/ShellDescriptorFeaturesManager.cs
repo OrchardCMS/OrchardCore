@@ -135,7 +135,7 @@ namespace Orchard.Environment.Shell
             bool force)
         {
             var featuresToEnable = _extensionManager
-                .GetDependentFeatures(featureInfo.Id)
+                .GetFeatureDependencies(featureInfo.Id)
                 .ToList();
 
             if (featuresToEnable.Count > 1 && !force)
@@ -161,8 +161,9 @@ namespace Orchard.Environment.Shell
         /// <returns>An enumeration of the disabled features.</returns>
         private IEnumerable<IFeatureInfo> GetFeaturesToDisable(ShellDescriptor shellDescriptor, IFeatureInfo featureInfo, bool force)
         {
-            var affectedFeatures =
-                _extensionManager.GetDependentFeatures(featureInfo.Id).ToList();
+            var affectedFeatures = _extensionManager
+                .GetFeatureDependencies(featureInfo.Id)
+                .ToList();
 
             if (affectedFeatures.Count > 1 && !force)
             {

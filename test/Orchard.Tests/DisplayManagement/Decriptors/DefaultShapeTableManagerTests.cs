@@ -200,7 +200,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 _features = features;
             }
 
-            public IFeatureInfoList GetDependentFeatures(string featureId)
+            public IFeatureInfoList GetFeatureDependencies(string featureId)
             {
                 throw new NotImplementedException();
             }

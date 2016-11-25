@@ -9,7 +9,7 @@ namespace Orchard.Tests.Stubs
 {
     public class StubExtensionManager : IExtensionManager
     {
-        public IFeatureInfoList GetDependentFeatures(string featureId)
+        public IFeatureInfoList GetFeatureDependencies(string featureId)
         {
             throw new NotImplementedException();
         }

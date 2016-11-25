@@ -91,30 +91,19 @@ namespace Orchard.Environment.Extensions
             return _extensionInfoList;
         }
 
-        public IFeatureInfoList GetDependentFeatures(string featureId) {
-            var getDependants =
-                new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
-                    (currentFeature, fs) => fs
-                        .Where(f =>
-                                f.Dependencies.Any(dep => dep == currentFeature.Id)
-                               ).ToArray());
+        public IFeatureInfoList GetFeatureDependencies(string featureId) {
+            var features = GetExtensions().Features;
 
-            var extensions = GetExtensions();
-            var dependentFeatures = 
-                GetDependentFeatures(extensions.Features[featureId], extensions.Features.ToArray(), getDependants);
+            var feature = features.FirstOrDefault(x => x.Id == featureId);
+            if (feature == null)
+            {
+                return EmptyFeatureInfoList.Singleton;
+            }
 
-            return new FeatureInfoList(dependentFeatures);
-        }
-
-        private IList<IFeatureInfo> GetDependentFeatures(
-            IFeatureInfo feature,
-            IFeatureInfo[] features,
-            Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> getAffectedDependencies)
-        {
             var dependencies = new HashSet<IFeatureInfo>() { feature };
             var stack = new Stack<IFeatureInfo[]>();
 
-            stack.Push(getAffectedDependencies(feature, features));
+            stack.Push(features.Where(x => feature.DependencyOn(x)).ToArray());
 
             while (stack.Count > 0)
             {
@@ -122,11 +111,11 @@ namespace Orchard.Environment.Extensions
                 foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                 {
                     dependencies.Add(dependency);
-                    stack.Push(getAffectedDependencies(dependency, features));
+                    stack.Push(features.Where(x => dependency.DependencyOn(x)).ToArray());
                 }
             }
 
-            return dependencies.ToList();
+            return new FeatureInfoList(dependencies.Distinct().ToArray());
         }
 
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)

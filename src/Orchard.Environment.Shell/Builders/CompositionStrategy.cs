@@ -40,7 +40,9 @@ namespace Orchard.Environment.Shell.Builders
 
             var enabledFeatures = descriptor
                 .Features
-                .SelectMany(shellFeature => _extensionManager.GetDependentFeatures(shellFeature.Id));
+                .SelectMany(shellFeature => _extensionManager.GetFeatureDependencies(shellFeature.Id))
+                .Distinct()
+                .ToArray();
 
             var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
             
