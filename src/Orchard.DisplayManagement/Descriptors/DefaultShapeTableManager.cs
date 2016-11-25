@@ -140,6 +140,29 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool DescriptorHasDependency(KeyValuePair<string, FeatureShapeDescriptor> item, KeyValuePair<string, FeatureShapeDescriptor> subject)
         {
+            if (item.Value.Feature.Extension.Manifest.IsTheme())
+            {
+                if (subject.Value.Feature.Extension.Manifest.IsCore())
+                {
+                    return true;
+                }
+
+                if (subject.Value.Feature.Extension.Manifest.IsModule())
+                {
+                    return true;
+                }
+
+                if (subject.Value.Feature.Extension.Manifest.IsTheme())
+                {
+                    var theme = new ThemeExtensionInfo(item.Value.Feature.Extension);
+
+                    if (theme.HasBaseTheme())
+                    {
+                        return theme.BaseTheme == subject.Value.Feature.Id;
+                    }
+                }
+            }
+
             return item.Value.Feature.DependencyOn(subject.Value.Feature);
         }
 

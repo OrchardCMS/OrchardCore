@@ -72,10 +72,17 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.Add(memConfigSrc1);
 
-                Features = new FeatureInfoList(new List<IFeatureInfo>());
-
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "module");
+
+                var features =
+                    new List<IFeatureInfo>()
+                    {
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                    };
+
+                Features = new FeatureInfoList(features);
             }
+
             public IFileInfo ExtensionFileInfo { get; set; }
             public IFeatureInfoList Features { get; set; }
             public string Id { get; set; }
@@ -130,7 +137,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
                 Features = new FeatureInfoList(features);
@@ -157,7 +164,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 
-            var testFeatureExtensionInfo = new TestThemeExtensionInfo("Testing");
+            var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
             var baseThemeFeatureExtensionInfo = new TestThemeExtensionInfo("BaseTheme");
             var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features[0]);
