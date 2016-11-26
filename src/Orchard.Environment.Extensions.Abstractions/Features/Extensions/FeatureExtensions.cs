@@ -4,9 +4,11 @@ namespace Orchard.Environment.Extensions.Features
 {
     public static class FeatureExtensions
     {
-        public static bool DependencyOn(this IFeatureInfo observer, IFeatureInfo subject)
+        public static bool ObserverHasADependencyOnSubject(this IExtensionManager extensionManager, IFeatureInfo observer, IFeatureInfo subject)
         {
-            return observer.Dependencies.Any(x => x == subject.Id);
+            return extensionManager
+                .GetDependentFeatures(observer.Id, extensionManager.GetExtensions().Features.ToArray())
+                .Contains(subject);
         }
     }
 }

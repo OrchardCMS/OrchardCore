@@ -104,7 +104,7 @@ namespace Orchard.Environment.Extensions
             var dependencies = new HashSet<IFeatureInfo>() { feature };
             var stack = new Stack<IFeatureInfo[]>();
 
-            stack.Push(features.Where(x => feature.DependencyOn(x)).ToArray());
+            stack.Push(features.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
 
             while (stack.Count > 0)
             {
@@ -112,11 +112,11 @@ namespace Orchard.Environment.Extensions
                 foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                 {
                     dependencies.Add(dependency);
-                    stack.Push(features.Where(x => dependency.DependencyOn(x)).ToArray());
+                    stack.Push(features.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
                 }
             }
 
-            return new FeatureInfoList(dependencies.Distinct().ToArray());
+            return new FeatureInfoList(dependencies.Distinct().ToList());
         }
 
         public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)

@@ -116,12 +116,12 @@ namespace Orchard.Hosting
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(string.Format("A tenant could not be started: {0}", settings.Name), ex);
+
                         if (ex.IsFatal())
                         {
                             throw;
                         }
-
-                        _logger.LogError(string.Format("A tenant could not be started: {0}", settings.Name), ex);
                     }
                 });
             }

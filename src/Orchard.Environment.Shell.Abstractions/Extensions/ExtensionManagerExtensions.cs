@@ -10,15 +10,17 @@ namespace Orchard.Environment.Shell
     {
         public static IEnumerable<IFeatureInfo> GetEnabledFeatures(this IExtensionManager extensionManager, ShellDescriptor shellDescriptor)
         {
-            return shellDescriptor.Features.SelectMany(shellFeature => extensionManager.GetFeatureDependencies(shellFeature.Id)).Distinct();
+            return shellDescriptor
+                .Features
+                .SelectMany(shellFeature => extensionManager.GetFeatureDependencies(shellFeature.Id)).Distinct();
         }
 
         public static IEnumerable<IFeatureInfo> GetDisabledFeatures(this IExtensionManager extensionManager, ShellDescriptor shellDescriptor)
         {
             var extensions = extensionManager.GetExtensions();
-            var features = extensions.Features;
+            var enabledFeatures = extensionManager.GetEnabledFeatures(shellDescriptor);
 
-            return features.Where(fd => shellDescriptor.Features.All(sf => sf.Id != fd.Id));
+            return extensions.Features.Except(enabledFeatures);
         }
     }
 }

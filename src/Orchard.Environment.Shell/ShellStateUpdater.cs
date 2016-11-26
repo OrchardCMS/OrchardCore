@@ -8,6 +8,7 @@ using Orchard.Events;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
 using System.Threading.Tasks;
+using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Shell
 {
@@ -52,7 +53,11 @@ namespace Orchard.Environment.Shell
             var shellState = await _stateManager.GetShellStateAsync();
 
             // start with description of all declared features in order - order preserved with all merging
-            var orderedFeatureDescriptors = _extensionManager.GetExtensions().Features;
+            var allUnorderedFeatures = _extensionManager.GetExtensions().Features.ToArray();
+            var orderedFeatureDescriptors = allUnorderedFeatures
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => _extensionManager.GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub), 
+                    (fi2) => fi2.Priority);
 
             // merge feature state into ordered list
             var orderedFeatureDescriptorsAndStates = orderedFeatureDescriptors

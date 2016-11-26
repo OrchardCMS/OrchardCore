@@ -163,7 +163,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
             }
 
-            return item.Value.Feature.DependencyOn(subject.Value.Feature);
+            return _extensionManager.ObserverHasADependencyOnSubject(item.Value.Feature, subject.Value.Feature);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration.Records;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Utility;
 using Orchard.Localization;
 using System;
 using System.Collections.Generic;
@@ -136,11 +137,12 @@ namespace Orchard.Data.Migration
             }
 
             // proceed with dependent features first, whatever the module it's in
-            var dependencies = _extensionManager.GetExtensions().Features
-                .Where(f => f.Id == featureId)
-                .Where(f => f.Dependencies.Any())
-                .SelectMany(f => f.Dependencies)
-                .ToList();
+            var dependencies = _extensionManager
+                .GetDependentFeatures(
+                    featureId, 
+                    _extensionManager.GetExtensions().Features.ToArray())
+                .Where(x => x.Id != featureId)
+                .Select(x => x.Id);
 
             await UpdateAsync(dependencies);
 

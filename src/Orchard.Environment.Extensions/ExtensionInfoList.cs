@@ -17,11 +17,6 @@ namespace Orchard.Environment.Extensions
         {
             get { return _extensions.First(x => x.Id == key); }
         }
-        
-        public int Count
-        {
-            get { return _extensions.Count; }
-        }
 
         private IFeatureInfoList _features;
 
