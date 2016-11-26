@@ -7,17 +7,12 @@ namespace Orchard.DisplayManagement
     {
         public static bool IsModule(this IManifestInfo manifestInfo)
         {
-            return manifestInfo.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false;
+            return manifestInfo?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false;
         }
 
         public static bool IsTheme(this IManifestInfo manifestInfo)
         {
-            return manifestInfo.Type?.Equals("theme", StringComparison.OrdinalIgnoreCase) ?? false;
-        }
-
-        public static bool IsCore(this IManifestInfo manifestInfo)
-        {
-            return string.IsNullOrEmpty(manifestInfo.Type);
+            return manifestInfo?.Type?.Equals("theme", StringComparison.OrdinalIgnoreCase) ?? false;
         }
     }
 }

@@ -142,7 +142,7 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             if (item.Value.Feature.Extension.Manifest.IsTheme())
             {
-                if (subject.Value.Feature.Extension.Manifest.IsCore())
+                if (subject.Value.Feature.Id == "Core")
                 {
                     return true;
                 }
@@ -173,8 +173,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool IsEnabledModuleOrRequestedTheme(IFeatureInfo feature, string themeName, List<string> enabledFeatureIds)
         {
-            return IsModuleOrRequestedTheme(feature, themeName)
-                && ((feature?.Extension?.Manifest.IsCore() ?? false) || enabledFeatureIds.Contains(feature?.Id));
+            return IsModuleOrRequestedTheme(feature, themeName) && (feature?.Id == "Core" || enabledFeatureIds.Contains(feature?.Id));
         }
 
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)
@@ -184,9 +183,9 @@ namespace Orchard.DisplayManagement.Descriptors
                 return false;
             }
 
-            if (feature.Extension.Manifest.IsCore())
+            if (feature.Id == "Core")
             {
-                // O2: The alteration must be coming from a library, e.g. Orchard.DisplayManagement
+                // O2: The feature must be coming from a core library, e.g. Orchard.DisplayManagement
                 return true;
             }
 

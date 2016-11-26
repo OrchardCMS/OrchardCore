@@ -138,7 +138,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
                     };
 
                 Features = new FeatureInfoList(features);

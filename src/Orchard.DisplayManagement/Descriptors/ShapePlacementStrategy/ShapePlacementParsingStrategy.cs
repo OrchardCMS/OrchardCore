@@ -139,10 +139,5 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
             //}
         }
-
-        private bool FeatureIsTheme(IFeatureInfo fd)
-        {
-            return fd.Extension.Manifest.IsTheme();
-        }
     }
 }
