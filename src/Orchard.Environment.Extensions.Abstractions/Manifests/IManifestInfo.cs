@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.Environment.Extensions
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Orchard.Environment.Extensions;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.DisplayManagement.Theming
 {

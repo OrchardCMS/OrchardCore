@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
