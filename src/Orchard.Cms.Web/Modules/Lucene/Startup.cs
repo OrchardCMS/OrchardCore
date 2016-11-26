@@ -8,6 +8,7 @@ using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Security.Permissions;
 using Orchard.Settings.Services;
 
 namespace Lucene
@@ -25,6 +26,7 @@ namespace Lucene
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<LuceneIndexProvider>();
 
             services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();

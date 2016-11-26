@@ -18,6 +18,7 @@ using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
+using Orchard.Security.Permissions;
 using Orchard.Title.Handlers;
 using Orchard.Tokens;
 using YesSql.Core.Indexes;
@@ -31,6 +32,7 @@ namespace Orchard.Autoroute
         {
             // Autoroute Part
             services.AddScoped<IContentPartDisplayDriver, AutoroutePartDisplay>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<ContentPart, AutoroutePart>();
             services.AddScoped<IContentPartHandler, AutoroutePartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
