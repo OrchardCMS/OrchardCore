@@ -7,7 +7,7 @@ namespace Orchard.Settings.Services
 {
     public interface ISetupEventHandler : IEventHandler
     {
-        Task Setup(string userName);
+        Task Setup(string siteName, string userName);
     }
 
     /// <summary>
@@ -22,12 +22,13 @@ namespace Orchard.Settings.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task Setup(string userName)
+        public async Task Setup(string siteName, string userName)
         {
             var siteService = _serviceProvider.GetRequiredService<ISiteService>();
 
             // Updating site settings
             var siteSettings = await siteService.GetSiteSettingsAsync();
+            siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
             await siteService.UpdateSiteSettingsAsync(siteSettings);
 
