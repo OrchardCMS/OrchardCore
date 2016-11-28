@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -24,6 +25,9 @@ namespace Orchard.Hosting.Mvc.Razor
     /// </summary>
     public class DefaultRoslynCompilationService : ICompilationService
     {
+        private readonly ConcurrentDictionary<string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private readonly Object _syncLock = new Object();
+
         // error CS0234: The type or namespace name 'C' does not exist in the namespace 'N' (are you missing
         // an assembly reference?)
         private const string CS0234 = nameof(CS0234);
@@ -63,11 +67,14 @@ namespace Orchard.Hosting.Mvc.Razor
                 throw new ArgumentNullException(nameof(fileInfo));
             }
 
+            string pdbPath = null;
             string assemblyPath = null;
             if (!fileInfo.FileInfo.Name.StartsWith("_"))
             {
-                var name = Path.GetFileNameWithoutExtension(fileInfo.FileInfo.Name) + ".Precompiled.dll";
-                assemblyPath = Path.Combine(Path.GetDirectoryName(fileInfo.FileInfo.PhysicalPath), name);
+                var name = Path.GetFileNameWithoutExtension(fileInfo.FileInfo.Name) + ".Precompiled";
+                var assemblyFolderPath = Path.GetDirectoryName(fileInfo.FileInfo.PhysicalPath);
+                assemblyPath = Path.Combine(assemblyFolderPath, name + ".dll");
+                pdbPath = Path.Combine(assemblyFolderPath, name + ".pdb");
             }
 
             Type type;
@@ -108,18 +115,22 @@ namespace Orchard.Hosting.Mvc.Razor
                         assembly = LoadAssembly(assemblyStream, pdbStream);
                         type = assembly.GetExportedTypes().FirstOrDefault(a => !a.IsNested);
 
-                        if (assemblyPath != null && !File.Exists(assemblyPath))
+                        if (assemblyPath != null && !_loadedAssemblies.ContainsKey(assemblyPath))
                         {
                             assemblyStream.Seek(0, SeekOrigin.Begin);
                             pdbStream.Seek(0, SeekOrigin.Begin);
 
-                            lock (this)
+                            lock (_syncLock)
                             {
-                                if (!File.Exists(assemblyPath))
+                                if (!_loadedAssemblies.ContainsKey(assemblyPath))
                                 {
                                     using (var assemblyFileStream = File.OpenWrite(assemblyPath))
                                     {
                                         assemblyStream.CopyTo(assemblyFileStream);
+                                    }
+                                    using (var pdbFileStream = File.OpenWrite(pdbPath))
+                                    {
+                                        pdbStream.CopyTo(pdbFileStream);
                                     }
                                 }
                             }
@@ -131,6 +142,7 @@ namespace Orchard.Hosting.Mvc.Razor
             }
             else
             {
+                _loadedAssemblies[assemblyPath] = true;
                 assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
                 type = assembly.GetExportedTypes().FirstOrDefault(a => !a.IsNested);
             }
