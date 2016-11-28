@@ -1,0 +1,88 @@
+@model Orchard.ContentFields.Settings.LinkFieldSettings
+@using Orchard.ContentFields.Settings
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Label">@T["Label"]</label>
+        <input asp-for="Label" class="form-control" />
+        <span class="hint">@T["The label associated to the link."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="TargetMode">@T["Target"]</label>
+        <select asp-for="TargetMode" class="form-control">
+            <option value="@TargetMode.None" selected="@(Model.TargetMode == TargetMode.None)">@T["No target"]</option>
+            <option value="@TargetMode.NewWindow" selected="@(Model.TargetMode == TargetMode.NewWindow)">@T["Open link in new window"]</option>
+            <option value="@TargetMode.Parent" selected="@(Model.TargetMode == TargetMode.Parent)">@T["Open link in the parent frameset"]</option>
+            <option value="@TargetMode.Top" selected="@(Model.TargetMode == TargetMode.Top)">@T["Open link in the full body of the window"]</option>
+            <option value="@TargetMode.UserChoice" selected="@(Model.TargetMode == TargetMode.UserChoice)">@T["Allow the user to choose"]</option>
+        </select>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-md">
+        <input asp-for="Required" type="checkbox" checked="@Model.Required" />
+        <label asp-for="Required" class="forcheckbox">@T["Required"]</label>
+        <span class="hint">@T["Whether the url is required."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="LinkTextMode">@T["Link text"]</label>
+        <select asp-for="LinkTextMode" class="form-control">
+            <option value="@LinkTextMode.Optional" selected="@(Model.LinkTextMode == LinkTextMode.Optional)">@T["Optional"]</option>
+            <option value="@LinkTextMode.Required" selected="@(Model.LinkTextMode == LinkTextMode.Required)">@T["Required"]</option>
+            <option value="@LinkTextMode.Static" selected="@(Model.LinkTextMode == LinkTextMode.Static)">@T["Static"]</option>@*id = Html.FieldIdFor(m => m.LinkTextMode) + "-static"*@
+            <option value="@LinkTextMode.Url" selected="@(Model.LinkTextMode == LinkTextMode.Url)">@T["Url"]</option>
+        </select>
+        <span class="hint">@T["Define how the title field should behave in the editor."]</span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-md">
+        @*data-controllerid="@(Html.FieldIdFor(m => m.LinkTextMode) + "-static"]"*@
+        <input asp-for="StaticText" type="text" class="form-control" />
+        <span class="hint">@T["The title to display for the link."]</span>
+        <span asp-validation-for="StaticText" class="text-danger"></span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="UrlPlaceholder">@T["Watermark (placeholder) for the url"]</label>
+        <input asp-for="UrlPlaceholder" type="text" class="form-control" />
+        <span class="hint">@T["A hint to display when the input of url is empty. (optional)"]</span>
+        <span asp-validation-for="UrlPlaceholder" class="text-danger"></span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="TextPlaceholder">@T["Watermark (placeholder) for the text of the link"]</label>
+        <input asp-for="TextPlaceholder" type="text" class="form-control" />
+        <span class="hint">@T["A hint to display when the input of text is empty. (optional)"]</span>
+        <span asp-validation-for="TextPlaceholder" class="text-danger"></span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="DefaultValue">@T["Default value"]</label>
+        <input asp-for="DefaultValue" type="text" class="form-control" />
+        <span class="hint">@T["A valid url proposed  when creating a content item, i.e. http://orchardproject.net, /content/file.pdf, ... (optional)"]</span>
+        <span asp-validation-for="DefaultValue" class="text-danger"></span>
+    </div>
+</fieldset>
+<fieldset class="form-group">
+    <div class="row col-lg">
+        <label asp-for="TextDefaultValue">@T["Link text default value"]</label>
+        <input asp-for="TextDefaultValue" type="text" class="form-control" />
+        <span class="hint">@T["The default link text proposed when creating a content item. (optional)"]</span>
+        <span asp-validation-for="TextDefaultValue" class="text-danger"></span>
+    </div>
+</fieldset>

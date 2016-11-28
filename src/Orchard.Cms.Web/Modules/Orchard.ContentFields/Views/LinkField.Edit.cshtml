@@ -1,0 +1,63 @@
+﻿@model Orchard.ContentFields.ViewModels.EditLinkFieldViewModel
+@using Orchard.ContentFields.Settings;
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+}
+
+@{
+    string target = String.Empty;
+    switch (settings.TargetMode)
+    {
+        case TargetMode.NewWindow:
+            target = "_blank";
+            break;
+        case TargetMode.Parent:
+            target = "_parent";
+            break;
+        case TargetMode.Top:
+            target = "_top";
+            break;
+    }
+
+    var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultValue);
+    var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.TextDefaultValue);
+}
+<div>
+    <label asp-for="Value">@settings.Label</label>
+    @if (!string.IsNullOrWhiteSpace(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+    <fieldset class="form-group">
+        <div class="row col-md">
+            <label asp-for="Value" @if (settings.Required) { <text> class="required" </text>        }>@T["Url"]</label>
+            <input asp-for="Value" type="url" class="form-control" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+            <span class="hint">@T["A valid url, i.e. http://orchardproject.net, /content/file.pdf, ..."]</span>
+        </div>
+    </fieldset>
+    @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
+    {
+        <fieldset class="form-group">
+            <div class="row col-md">
+                <label asp-for="Text" @if (settings.LinkTextMode == LinkTextMode.Required) { <text> class="required" </text>     }>@T["Link text"]</label>
+                <input asp-for="Text" type="text" class="form-control" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
+                <span class="hint">@T["The text of the link. If left empty, the url will be used instead."]</span>
+            </div>
+        </fieldset>
+    }
+
+    @if (settings.TargetMode == TargetMode.UserChoice)
+    {
+        <fieldset class="form-group">
+            <div class="row col-md">
+                <label asp-for="Target">@T["Target"]</label>
+                <input asp-for="Target" type="text" class="form-control" />
+                <span class="help-block">@T["A valid HTML target attribute value. e.g., _blank, _parent, _top, or an anchor. "]</span>
+            </div>
+        </fieldset>
+    }
+    else
+    {
+        <input asp-for="Target" type="hidden" />
+    }
+</div>

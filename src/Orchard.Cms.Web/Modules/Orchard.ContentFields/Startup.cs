@@ -18,7 +18,12 @@ namespace Orchard.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
-            
+
+            services.AddSingleton<ContentField, LinkField>();
+            services.AddScoped<IContentFieldDisplayDriver, LinkFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
+
             services.AddSingleton<ContentField, TextField>();
             services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
