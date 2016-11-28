@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
@@ -74,6 +75,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                 var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
+
+            services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
 
             // Register the configuration object for modules to register options with it
             if (configuration != null)
