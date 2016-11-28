@@ -25,7 +25,6 @@ namespace Orchard.Hosting.Mvc.Razor
     /// </summary>
     public class DefaultRoslynCompilationService : ICompilationService
     {
-        private readonly ConcurrentDictionary<string, bool> _loadedAssemblies = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         private readonly Object _syncLock = new Object();
 
         // error CS0234: The type or namespace name 'C' does not exist in the namespace 'N' (are you missing
@@ -115,19 +114,21 @@ namespace Orchard.Hosting.Mvc.Razor
                         assembly = LoadAssembly(assemblyStream, pdbStream);
                         type = assembly.GetExportedTypes().FirstOrDefault(a => !a.IsNested);
 
-                        if (assemblyPath != null && !_loadedAssemblies.ContainsKey(assemblyPath))
+                        if (assemblyPath != null)
                         {
-                            assemblyStream.Seek(0, SeekOrigin.Begin);
-                            pdbStream.Seek(0, SeekOrigin.Begin);
-
                             lock (_syncLock)
                             {
-                                if (!_loadedAssemblies.ContainsKey(assemblyPath))
+                                if (!File.Exists(assemblyPath) || fileInfo.FileInfo.LastModified
+                                    > File.GetLastWriteTimeUtc(assemblyPath))
                                 {
+                                    assemblyStream.Seek(0, SeekOrigin.Begin);
+                                    pdbStream.Seek(0, SeekOrigin.Begin);
+
                                     using (var assemblyFileStream = File.OpenWrite(assemblyPath))
                                     {
                                         assemblyStream.CopyTo(assemblyFileStream);
                                     }
+
                                     using (var pdbFileStream = File.OpenWrite(pdbPath))
                                     {
                                         pdbStream.CopyTo(pdbFileStream);
@@ -142,9 +143,29 @@ namespace Orchard.Hosting.Mvc.Razor
             }
             else
             {
-                _loadedAssemblies[assemblyPath] = true;
-                assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyPath);
-                type = assembly.GetExportedTypes().FirstOrDefault(a => !a.IsNested);
+                using (var assemblyFileStream = File.OpenRead(assemblyPath))
+                {
+                    using (var pdbFileStream = File.OpenRead(pdbPath))
+                    {
+                        using (var assemblyStream = new MemoryStream())
+                        {
+                            using (var pdbStream = new MemoryStream())
+                            {
+                                assemblyFileStream.Seek(0, SeekOrigin.Begin);
+                                pdbFileStream.Seek(0, SeekOrigin.Begin);
+
+                                assemblyFileStream.CopyTo(assemblyStream);
+                                pdbFileStream.CopyTo(pdbStream);
+
+                                assemblyStream.Seek(0, SeekOrigin.Begin);
+                                pdbStream.Seek(0, SeekOrigin.Begin);
+
+                                assembly = LoadAssembly(assemblyStream, pdbStream);
+                                type = assembly.GetExportedTypes().FirstOrDefault(a => !a.IsNested);
+                            }
+                        }
+                    }
+                }
             }
 
             return new CompilationResult(type);
