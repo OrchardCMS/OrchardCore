@@ -77,12 +77,12 @@ namespace Orchard.Setup.Controllers
 
             if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
             {
-                ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider"]);
+                ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider."]);
             }
 
             if (String.IsNullOrEmpty(model.Password))
             {
-                ModelState.AddModelError(nameof(model.Password), T["The password is required"]);
+                ModelState.AddModelError(nameof(model.Password), T["The password is required."]);
             }
 
             if (model.Password != model.PasswordConfirmation)
