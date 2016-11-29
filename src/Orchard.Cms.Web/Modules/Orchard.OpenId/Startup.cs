@@ -1,70 +1,64 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenIddict;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
+using Orchard.OpenId.Drivers;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
+using Orchard.OpenId.Settings;
 using Orchard.Security;
-using Orchard.Settings;
+using Orchard.Settings.Services;
+using Orchard.SiteSettings;
 using Orchard.Users.Models;
 using System;
-using System.IO;
 using YesSql.Core.Indexes;
 
 namespace Orchard.OpenId
 {
     public class Startup : StartupBase
     {
-        private const string CertificateFileName = "Certificate.pfx";
-
-        private readonly string _certificateFullPath;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly string _tenantUrlPrefix;
-        private readonly string _tenantName;
+        private readonly ILogger<Startup> _logger;
 
         public Startup(
-            ShellSettings shellSettings,
-            IOptions<ShellOptions> options,
-            IHostingEnvironment environment,
-            ILoggerFactory loggerFactory,
-            IDataProtectionProvider dataProtectionProvider)
+            ShellSettings shellSettings,            
+            IDataProtectionProvider dataProtectionProvider,
+            ILogger<Startup> logger)
         {
-            _tenantName = shellSettings.Name;
-            _tenantUrlPrefix = shellSettings.RequestUrlPrefix;
-            _dataProtectionProvider = dataProtectionProvider.CreateProtector(_tenantName);
-            _certificateFullPath = Path.Combine(
-                environment.ContentRootPath,
-                options.Value.ShellsRootContainerName,
-                options.Value.ShellsContainerName,
-                shellSettings.Name,
-                CertificateFileName);
+            _dataProtectionProvider = dataProtectionProvider.CreateProtector(shellSettings.Name);
+            _logger = logger;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var tenantUrl = serviceProvider.GetRequiredService<ISiteService>().GetSiteSettingsAsync().Result.BaseUrl + _tenantUrlPrefix;
+            var siteSettingsGroupProvider = serviceProvider.GetService<SiteSettingsGroupProvider>();
+            var t = serviceProvider.GetService<IStringLocalizer<Startup>>();
+            siteSettingsGroupProvider.Add("open id", t["Open Id"]);
 
+            var openIdService  = serviceProvider.GetService<IOpenIdService>();
+            var openIdSettings = openIdService.GetOpenIdSettingsAsync().Result;
+            if (!openIdService.IsValidOpenIdSettings(openIdSettings))
+            {
+                _logger.LogWarning("Orchard.OpenId module has invalid settings.");
+                return;
+            }
+        
             builder.UseOpenIddict();
 
-            builder.UseJwtBearerAuthentication(new JwtBearerOptions()
+            if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-#if DEBUG
-                RequireHttpsMetadata = false,
-#endif
-                Audience = tenantUrl,
-                Authority = tenantUrl
-            });
+                builder.UseJwtBearerAuthentication();
+            }
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -73,6 +67,11 @@ namespace Orchard.OpenId
             services.AddScoped<IIndexProvider, OpenIdApplicationIndexProvider>();
             services.AddScoped<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
+            services.AddScoped<IOpenIdService, OpenIdService>();
+            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIddictConfigureOptions>();
+            services.AddScoped<IConfigureOptions<JwtBearerOptions>, JwtBearerConfigureOptions>();
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
@@ -84,43 +83,19 @@ namespace Orchard.OpenId
                 .AddTokenStore<OpenIdTokenStore>()
                 .AddUserStore<OpenIdUserStore>()
                 .AddUserManager<OpenIdUserManager>()
-
                 .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
                 .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
                 .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
                 .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
-
                 .AllowPasswordFlow()
                 .AllowClientCredentialsFlow()
                 .AllowAuthorizationCodeFlow()
                 .AllowRefreshTokenFlow()
-
                 .UseDataProtectionProvider(_dataProtectionProvider)
-                .UseJsonWebTokens()
-
                 .RequireClientIdentification()
-
-                // Use the advanced ApplicationCanDisplayErrors = true option to allow AccessController
-                // to handle OpenID Connect error responses and render them in a custom error view.
-                .Configure(options => options.ApplicationCanDisplayErrors = true);
-
-#if DEBUG
-            builder.DisableHttpsRequirement()
+                .Configure(options => options.ApplicationCanDisplayErrors = true)
+                .DisableHttpsRequirement()
                 .AddEphemeralSigningKey();
-#else
-            // On production, using a X.509 certificate stored in the machine store is recommended.
-            // You can generate a self-signed certificate using Pluralsight's self-cert utility:
-            // https://s3.amazonaws.com/pluralsight-free/keith-brown/samples/SelfCert.zip
-
-            if (File.Exists(_certificateFullPath))
-            {
-                using (FileStream stream = File.Open(_certificateFullPath, FileMode.Open))
-                {
-                    //I need a password for opening the certificate ¿should I store this password in clear text on db? in the mean time I use a fixed password
-                    builder.AddSigningCertificate(stream, "password");
-                }
-            }
-#endif
         }
     }
 }
