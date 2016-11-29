@@ -6,3 +6,18 @@
     <input asp-for="Title" class="form-control" />
     <span class="hint">@T["The title of the content item."]</span>
 </fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Title)')
+        .on('input', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', function (event) {
+            // handle backspace
+            if (event.keyCode == 46) {
+                $(document).trigger('contentpreview:render');
+            }
+        });
+    });
+</script>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Orchard.ResourceManagement.TagHelpers
@@ -36,34 +35,36 @@ namespace Orchard.ResourceManagement.TagHelpers
             switch (Type)
             {
                 case ResourceType.Meta:
-                    output.Content.SetHtmlContent(_resourceManager.RenderMeta());
+                    _resourceManager.RenderMeta(output.Content);
                     break;
 
                 case ResourceType.HeadLink:
-                    output.Content.SetHtmlContent(_resourceManager.RenderHeadLink());
+                    _resourceManager.RenderHeadLink(output.Content);
                     break;
 
                 case ResourceType.Stylesheet:
-                    output.Content.SetHtmlContent(_resourceManager.RenderStylesheet(defaultSettings));
+                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
                     break;
 
                 case ResourceType.HeadScript:
-                    output.Content.SetHtmlContent(_resourceManager.RenderHeadScript(defaultSettings));
+                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
                     break;
 
                 case ResourceType.FootScript:
-                    output.Content.SetHtmlContent(_resourceManager.RenderFootScript(defaultSettings));
+                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
                     break;
 
                 case ResourceType.Header:
-                    output.Content.SetHtmlContent(_resourceManager.RenderMeta());
-                    output.Content.SetHtmlContent(_resourceManager.RenderHeadLink());
-                    output.Content.SetHtmlContent(_resourceManager.RenderStylesheet(defaultSettings));
-                    output.Content.SetHtmlContent(_resourceManager.RenderHeadScript(defaultSettings));
+                    var htmlBuilder = new HtmlContentBuilder();
+
+                    _resourceManager.RenderMeta(output.Content);
+                    _resourceManager.RenderHeadLink(output.Content);
+                    _resourceManager.RenderStylesheet(output.Content, defaultSettings);
+                    _resourceManager.RenderHeadScript(output.Content, defaultSettings);
                     break;
 
                 case ResourceType.Footer:
-                    output.Content.SetHtmlContent(_resourceManager.RenderFootScript(defaultSettings));
+                    _resourceManager.RenderFootScript(output.Content, defaultSettings);
                     break;
 
                 default:
