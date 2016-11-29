@@ -25,7 +25,10 @@ namespace Orchard.OpenId.Services
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
         {
             if (settings == null)
+            {
                 modelState.AddModelError("", "Settings are not stablished");
+                return false;
+            }
 
             if (settings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
