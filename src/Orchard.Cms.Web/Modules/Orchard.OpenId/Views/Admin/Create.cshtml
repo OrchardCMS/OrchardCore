@@ -5,7 +5,8 @@
 <h1>@RenderTitleSegments(T["Create OpenId Application"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
         <span asp-validation-for="ClientId" class="text-danger">@T["The Client Id is required."]</span>
@@ -16,38 +17,60 @@
         <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
         <input asp-for="DisplayName" class="form-control" autofocus />
     </div>
-    <div class="form-group" asp-validation-class-for="RedirectUri">
-        <label asp-for="RedirectUri">@T["Redirect URI"]</label>
-        <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect URI is required."]</span>
-        <input asp-for="RedirectUri" class="form-control" autofocus />
+    <div class="form-group" asp-validation-class-for="ClientSecret">
+        <label asp-for="ClientSecret">@T["Client Secret"]</label>
+        <span asp-validation-for="ClientSecret" class="text-danger">@T["The Client Secret is required."]</span>
+        <input asp-for="ClientSecret" class="form-control" autofocus />
     </div>
-    <div class="form-group" asp-validation-class-for="LogoutRedirectUri">
-        <label asp-for="LogoutRedirectUri">@T["Logout Redirect URI"]</label>
-        <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect URI is required."]</span>
-        <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
+
+    <div class="form-group" asp-validation-class-for="ConfirmClientSecret">
+        <label asp-for="ConfirmClientSecret">@T["Confirm Client Secret"]</label>
+        <span asp-validation-for="ConfirmClientSecret" class="text-danger">@T["The Confirm Client Secret is required."]</span>
+        <input asp-for="ConfirmClientSecret" class="form-control" autofocus />
     </div>
-    <div class="form-group" asp-validation-class-for="Password">
-        <label asp-for="Password">@T["Password"]</label>
-        <span asp-validation-for="Password" class="text-danger">@T["The Password is required."]</span>
-        <input asp-for="Password" class="form-control" autofocus />
-    </div>
-    <div class="form-group" asp-validation-class-for="ConfirmPassword">
-        <label asp-for="ConfirmPassword">@T["Confirm Password"]</label>
-        <span asp-validation-for="Password" class="text-danger">@T["The Confirm Password is required."]</span>
-        <input asp-for="ConfirmPassword" class="form-control" autofocus />
-    </div>
+    @{
+        var hintPublicClasses = Model.Type == ClientType.Public ? "hint" : "hint collapse";
+        var hintConfidentialClasses = Model.Type == ClientType.Confidential ? "hint" : "hint collapse";
+    }
     <div class="form-group">
-        <label asp-for="Type">@T["Type"]</label>                
+        <label asp-for="Type">@T["Type"]</label>
         <select asp-for="Type" class="form-control">
             <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
             <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
-        </select>        
+        </select>
+        <div class="@hintPublicClasses">@T["Authorization Code Flow and Refresh Code Flow are allowed. It allows offline access through Refresh Flow."]</div>
+        <div class="@hintPublicClasses">@T["Authorization Code Flow allows an user to authenticate from an insecure app redirecting the user to the Authorize url in the Identity Server fo providing his credentials."]</div>
+        <div class="@hintPublicClasses">@T["Authorization Requests Url: https:// /Orchard.OpenId/Access/Authorize Token Requests Url: https:// /Orchard.OpenId/Access/Token"]</div>
+        <div class="@hintPublicClasses">@T["Token Request Parameters: grant_type ('authorization_code'), client_id, client_secret, resource ('https://yourresourceserver') , scope ('openid, profile, roles, offline_access')"]</div>
+        <div class="@hintConfidentialClasses">@T["Password Flow and Client Credentials Flow are allowed."]</div>
+        <div class="@hintConfidentialClasses">@T["Password Flow allows an app to authenticate as an Orchard user providing its username and password Client. This flows allow offline access providing a refresh token."]</div>
+        <div class="@hintConfidentialClasses">@T["Client Credentials allows an app to authenticate without user credentials. Its permissions are set using the roles assigned to the app at the bottom of this screen. Offline access is not allowed."]</div>
+        <div class="@hintConfidentialClasses">@T["Token Requests Url: https:// /Orchard.OpenId/Access/Token"]</div>
+        <div class="@hintConfidentialClasses">@T["Token Request Parameters: grant_type (['password'|'client_credentials']), client_id, client_secret, username, password, resource ('https://yourresourceserver') , scope ('openid, profile, roles, offline_access')"]</div>
     </div>
-    
     @{
-        var classes = Model.Type == ClientType.Public ? "form-group collapse" : "form-group";
+        var classes = Model.Type == ClientType.Public ? "form-group" : "form-group collapse";
     }
-    <div class="@classes"  id="RoleGroup" name="RoleGroup">
+    <div class="@classes" asp-validation-class-for="RedirectUri">
+        <label asp-for="RedirectUri">@T["Redirect Uri"]</label>
+        <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect Uri is required."]</span>
+        <input asp-for="RedirectUri" class="form-control" autofocus />
+    </div>
+    <div class="@classes" asp-validation-class-for="LogoutRedirectUri">
+        <label asp-for="LogoutRedirectUri">@T["Logout Redirect Uri"]</label>
+        <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
+        <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
+    </div>
+    <div class="@classes" asp-validation-class-for="SkipConsent">
+        <label class="form-check-label">
+            <input asp-for="SkipConsent" type="checkbox" class="form-check-input" checked="@Model.SkipConsent" /> @T["Skip user-consent screen"]
+        </label>
+        <div class="hint">@T["It skips the user-consent screen after login in identity server. When identy server and resource server are the same you usually want to skip this screen."]</div>
+    </div>
+    @{
+        classes = Model.Type == ClientType.Public ? "form-group collapse" : "form-group";
+    }
+    <div class="@classes" id="RoleGroup" name="RoleGroup">
         <h6>@T["Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
@@ -58,12 +81,12 @@
                     <input type="hidden" asp-for="RoleEntries[i].Name" />
                     @Model.RoleEntries[i].Name
                 </label>
-            </div>            
-        }        
+            </div>
+        }
     </div>
     <fieldset>
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Create"]</button>
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
             <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
         </div>
     </fieldset>
@@ -72,6 +95,11 @@
 //<![CDATA[
     $("#Type").change(function () {
         $("#RoleGroup").toggle("slow");
+        $("#SkipConsent").parent().parent().toggle("slow");
+        $("#RedirectUri").parent().toggle("slow");
+        $("#LogoutRedirectUri").parent().toggle("slow");
+        $("#Type").siblings(".hint").toggle("slow");
     });
 //]]>
 </script>
+

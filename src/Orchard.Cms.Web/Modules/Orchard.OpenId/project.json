@@ -7,7 +7,8 @@
     "Orchard.Data": "2.0.0-*",
     "Orchard.Roles": "2.0.0-*",
     "Orchard.Users": "2.0.0-*",
-    "OpenIddict.Mvc": "1.0.0-alpha2-*"
+    "OpenIddict.Mvc": "1.0.0-alpha2-*",
+    "Orchard.SiteSettings.Core": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

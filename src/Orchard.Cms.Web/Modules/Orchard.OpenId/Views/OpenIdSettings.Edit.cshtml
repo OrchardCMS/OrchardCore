@@ -1,0 +1,132 @@
+﻿@using Orchard.OpenId.ViewModels
+@using Orchard.OpenId.Settings;
+@using System.Security.Cryptography.X509Certificates
+@model OpenIdSettingsViewModel
+
+    <fieldset class="form-group" asp-validation-class-for="TestingModeEnabled">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="TestingModeEnabled" class="form-check-input"  />@T["Enable Testing Mode"]
+            </label>
+        </div>
+        <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
+</fieldset>
+    @{
+        var jwtHintClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint collapse" : "hint";
+        var jwtEncryptedClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint" : "hint collapse";
+    }
+    <fieldset class="form-group" asp-validation-class-for="DefaultTokenFormat">
+        <label asp-for="DefaultTokenFormat">@T["Token Format"] <span asp-validation-for="DefaultTokenFormat"></span></label>
+        <select asp-for="DefaultTokenFormat" class="form-control">
+            @foreach (OpenIdSettings.TokenFormat format in Enum.GetValues(typeof(OpenIdSettings.TokenFormat)))
+            {
+                <option value="@format" selected="@(Model.DefaultTokenFormat == format)">@format.ToString()</option>
+            }
+        </select>
+        <span class="@jwtHintClasses" id="jwtHint">@T["If you are using a self-signed certificate for SSL keep in mind JWT requires the client has the SSL certificate registered as a trusted certificate."]</span>
+        <span class="@jwtEncryptedClasses" id="encryptedHint">@T["Encrypted format relies on .Net Data Protection API. It allows the use of a self-signed certificate for SSL without needing it to be registered as trusted in the client."]</span>
+    </fieldset>
+
+    @{
+        var authorityAudienceClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "form-group collapse" : "form-group";
+    }
+    <fieldset class="@authorityAudienceClasses" asp-validation-class-for="Authority">
+        <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
+        <input asp-for="Authority" class="form-control" />
+        <span class="hint">@T["The base url of the identity server (this site). In production this base url have to use https schema. Recommended Value:"] @Model.SslBaseUrl</span>
+    </fieldset>
+
+    <fieldset class="@authorityAudienceClasses" asp-validation-class-for="Audience">
+        <label asp-for="Audience">@T["Audience"] <span asp-validation-for="Audience"></span></label>
+        <input asp-for="Audience" class="form-control" />
+        <span class="hint">@T["Base urls sepparated by commas of the resource servers for which this identity server issues JWT tokens. If you are providing tokens for accessing resources on this site Audience should be equal to Authority url. In production those urls should use https schema."]</span>
+    </fieldset>
+
+    @{
+        var certificateclasses = Model.TestingModeEnabled ? "form-group collapse" : "form-group";
+    }
+    <fieldset class="@certificateclasses" asp-validation-class-for="CertificateStoreLocation">
+        <label asp-for="CertificateStoreLocation">@T["Certificate Store Location"] <span asp-validation-for="CertificateStoreLocation"></span></label>
+        <select asp-for="CertificateStoreLocation" class="form-control">
+            @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
+            {
+                <option value="@location" selected="@(Model.CertificateStoreLocation == location)">@location.ToString()</option>
+            }
+        </select>
+        <span class="hint">@T["Select the certificate location."]</span>
+    </fieldset>
+
+    <fieldset class="@certificateclasses" asp-validation-class-for="CertificateStoreLocation">
+        <label asp-for="CertificateStoreName">@T["Certificate Store Name"] <span asp-validation-for="CertificateStoreName"></span></label>
+        <select asp-for="CertificateStoreName" class="form-control">
+            @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
+            {
+                <option value="@store" selected="@(Model.CertificateStoreName == store)">@store.ToString()</option>
+            }
+        </select>
+        <span class="hint">@T["Select the certificate store."]</span>
+    </fieldset>
+
+    <fieldset class="@certificateclasses" asp-validation-class-for="CertificateThumbPrint">
+    @if (Model.AvailableCertificates.Any())
+    {
+
+        <label asp-for="CertificateThumbPrint">@T["Certificate"] <span asp-validation-for="CertificateThumbPrint"></span></label>
+        <select asp-for="CertificateThumbPrint" class="form-control">
+            @foreach (var certificate in Model.AvailableCertificates)
+            {
+                var selectedCertificate = Model.CertificateThumbPrint == certificate.ThumbPrint
+                                           && Model.CertificateStoreLocation.HasValue && Model.CertificateStoreLocation.Value == certificate.StoreLocation
+                                           && Model.CertificateStoreName.HasValue && Model.CertificateStoreName == certificate.StoreName;
+                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                {
+                    <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                    </option>
+                    continue;
+                }
+                var friendlyName = certificate.FriendlyName;
+                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                {
+                    friendlyName = "No Friendly Name";
+                }
+                <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                    @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                </option>
+            }
+        </select>
+        <span class="hint">@T["Select the certificate for signing tokens."]</span>
+    }
+    else
+    {
+        <div class="alert alert-warning" asp-validation-for="CertificateThumbPrint">@T["You need to add a certificate to your server for setting up Open Id module."]</div>
+    }
+    </fieldset>
+
+
+
+<script at="Foot" type="text/javascript">
+//<![CDATA[
+    $("#TestingModeEnabled").change(function () {
+        $("#CertificateStoreLocation").parent().toggle("slow");
+        $("#CertificateStoreName").parent().toggle("slow");
+        $("#CertificateThumbPrint").parent().toggle("slow");
+    });
+    $("#DefaultTokenFormat").change(function () {
+        $("#jwtHint").toggle();        
+        $("#encryptedHint").toggle();
+        $("#Authority").parent().toggle("slow");
+        $("#Audience").parent().toggle("slow");        
+    });
+    $("#CertificateThumbPrint").children('option').hide();
+    $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show()
+
+    $("#CertificateStoreLocation").change(function () {
+        $("#CertificateThumbPrint").children('option').hide();
+        $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $(this).val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show()
+    })
+     $("#CertificateStoreName").change(function () {
+        $("#CertificateThumbPrint").children('option').hide();
+        $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $(this).val() + "]").show()
+    })
+//]]>
+</script>
