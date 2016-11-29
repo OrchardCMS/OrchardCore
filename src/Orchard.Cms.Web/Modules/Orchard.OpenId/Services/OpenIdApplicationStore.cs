@@ -122,7 +122,8 @@ namespace Orchard.OpenId.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return Task.Run(()=>_session.Delete(application),cancellationToken);
+            _session.Delete(application);
+            return Task.CompletedTask;
         }
     }
 }
