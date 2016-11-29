@@ -1,14 +1,7 @@
 @model Orchard.Lists.ViewModels.ListPartSettingsViewModel
 
 <fieldset class="form-group">
-    <div class="row col-sm">
-        <label asp-for="ContainedContentType">@T["Contained Content Type"]</label>
-        <select asp-for="ContainedContentType" class="form-control">
-            @foreach (var contentType in Model.ContentTypes.AllKeys)
-            {
-                <option value="@contentType" selected="@(Model.ContainedContentType == contentType)">@Model.ContentTypes[contentType]</option>
-            }
-        </select>
-        <span class="hint">@T["The content type that this list can contain, e.g. Blog Post for a Blog."]</span>
-    </div>
+    <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
+    <span class="hint">@T["The content types that this list can contain, e.g. Blog Post for a Blog."]</span>
+    @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
 </fieldset>

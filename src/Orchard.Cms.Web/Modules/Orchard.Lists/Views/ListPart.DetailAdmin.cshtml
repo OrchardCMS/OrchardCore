@@ -2,10 +2,22 @@
 
 @{
     IEnumerable<dynamic> contentItems = Model.ContentItems;
-    ContentTypeDefinition containedContentTypeDefinition = Model.ContainedContentTypeDefinition;
+    IEnumerable<ContentTypeDefinition> containedContentTypeDefinitions = Model.ContainedContentTypeDefinitions;
 }
 <p>
-    <a class="btn btn-primary" role="button" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@T["Create new {0}", containedContentTypeDefinition.DisplayName]</a>
+    <div class="dropdown open">
+        <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Create"]
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            @foreach (var containedContentTypeDefinition in containedContentTypeDefinitions)
+            {
+                <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
+            }
+        </div>
+    </div>
+
 </p>
 
 @if (contentItems.Any())
