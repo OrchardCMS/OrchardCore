@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
@@ -17,7 +18,6 @@ using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
-using Orchard.Environment.Extensions.Manifests;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {

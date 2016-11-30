@@ -4,13 +4,10 @@ using Microsoft.AspNetCore.Mvc.Modules.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Data;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
-using Orchard.Environment.Shell.Descriptor.Models;
-using System.IO;
 
 namespace Orchard.Cms.Web
 {
