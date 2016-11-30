@@ -17,12 +17,12 @@
     <div class="properties">
         <div class="head">
             <div class="description">
-                <h2 @Html.Raw(moduleClasses)>
-                    @module.Descriptor.Name<span> - @T["Version:"] @(!String.IsNullOrEmpty(module.Descriptor.Version) ? module.Descriptor.Version : T["1.0"].Value)</span>
-                </h2>
-                @if (!String.IsNullOrEmpty(module.Descriptor.Description))
+                @*<h2 @Html.Raw(moduleClasses)>
+                    @module.Descriptor.Id<span> - @T["Version:"] @(!String.IsNullOrEmpty(module.Descriptor.Manifest.Version) ? module.Descriptor.Manifest.Version : T["1.0"].Value)</span>
+                </h2>*@
+                @if (!String.IsNullOrEmpty(module.Descriptor.Manifest.Description))
                 {
-                    <p>@module.Descriptor.Description</p>
+                    <p>@module.Descriptor.Manifest.Description</p>
                 }
             </div>
         </div>
@@ -39,13 +39,13 @@
         <ul class="pageStatus">
             @{ var features = module.Descriptor.Features; }
             <li>@T["Features:"] @String.Join(", ", features.Select(f => String.IsNullOrEmpty(f.Name) ? f.Id : f.Name).ToArray())</li>
-            <li>@T["Author: {0}", !String.IsNullOrEmpty(module.Descriptor.Author) ? module.Descriptor.Author : T["Unknown"].ToString()]</li>
+            @*<li>@T["Author: {0}", !String.IsNullOrEmpty(module.Descriptor.Manifest.Author) ? module.Descriptor.Manifest.Author : T["Unknown"].ToString()]</li>*@
             <li>
                 @T["Website:"]
-                @if (!String.IsNullOrEmpty(module.Descriptor.WebSite))
-                { <a href="@module.Descriptor.WebSite">@module.Descriptor.WebSite</a> }
+               @*@if (!String.IsNullOrEmpty(module.Descriptor.Manifest.WebSite))
+                { <a href="@module.Descriptor.Manifest.WebSite">@module.Descriptor.Manifest.WebSite</a> }
                 else
-                { @T["Unknown"].ToString() }
+                { @T["Unknown"].ToString() }*@
             </li>
         </ul>
     </div>
