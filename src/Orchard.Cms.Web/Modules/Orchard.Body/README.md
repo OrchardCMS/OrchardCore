@@ -55,3 +55,10 @@ Sample content:
 You can override the HTML editor for the `Default` editor by creating a shape file named 
 `Body.Editor.cshtml`. The Wysiwyg editor is defined by using the file named 
 `Body-Wysiwyg.Editor.cshtml`.
+
+## CREDITS
+
+### Trumbowyg
+https://github.com/Alex-D/Trumbowyg
+Copyright (c) 2012-2016 Alexandre Demode (Alex-D)
+License: MIT
