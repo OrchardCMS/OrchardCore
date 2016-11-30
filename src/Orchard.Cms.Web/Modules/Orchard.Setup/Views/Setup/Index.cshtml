@@ -1,6 +1,8 @@
 ﻿@using Orchard.Setup.Controllers
 @using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Html
 @using Orchard.Utility
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model Orchard.Setup.ViewModels.SetupViewModel
 
@@ -8,40 +10,40 @@
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
     var options = identityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
-    var separator = HtmlString.Empty;
+    IHtmlContent separator = HtmlString.Empty;
     
     if (options.Password.RequireNonAlphanumeric)
     {
-        passwordOptions.AppendHtml(separator).AppenHtml(T["one non-alphanumeric"]);
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
         separator = T[", "];
     }
     
     if (options.Password.RequireUppercase)
     {
-        passwordOptions.AppendHtml(separator).AppenHtml(T["one uppercase"]);
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
         separator = T[", "];
     }
     
     if (options.Password.RequireLowercase)
     {
-        passwordOptions.AppendHtml(separator).AppenHtml(T["one lowercase"]);
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
         separator = T[", "];
     }
     
     if (options.Password.RequireDigit)
     {
-        passwordOptions.AppendHtml(separator).AppenHtml(T["one digit"]);
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
         separator = T[", "];
     }
     
-    if (separator != HtmlString.Emtpy)
+    if (separator != HtmlString.Empty)
     {
         separator = T[" and "];
     }
 
-    passwordOptions.AppendHtml(separator).AppenHtml(T["{0} characters", options.Password.RequiredLength));
+    passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
 
-    var passwordTooltip = T["Password must have at least {0}."] passwordOptions
+    var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
 
 <form asp-action="Index">
