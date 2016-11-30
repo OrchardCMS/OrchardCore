@@ -1,8 +1,49 @@
 ﻿@using Orchard.Setup.Controllers
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Html
+@using Orchard.Utility
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
+@inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model Orchard.Setup.ViewModels.SetupViewModel
+
 @{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
+    var options = identityOptions.Value;
+    var passwordOptions = new HtmlContentBuilder();
+    IHtmlContent separator = HtmlString.Empty;
+    
+    if (options.Password.RequireNonAlphanumeric)
+    {
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one non-alphanumeric"]);
+        separator = T[", "];
+    }
+    
+    if (options.Password.RequireUppercase)
+    {
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one uppercase"]);
+        separator = T[", "];
+    }
+    
+    if (options.Password.RequireLowercase)
+    {
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one lowercase"]);
+        separator = T[", "];
+    }
+    
+    if (options.Password.RequireDigit)
+    {
+        passwordOptions.AppendHtml(separator).AppendHtml(T["one digit"]);
+        separator = T[", "];
+    }
+    
+    if (separator != HtmlString.Empty)
+    {
+        separator = T[" and "];
+    }
+
+    passwordOptions.AppendHtml(separator).AppendHtml(T["{0} characters in total", options.Password.RequiredLength]);
+
+    var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
 }
 
 <form asp-action="Index">
@@ -16,8 +57,8 @@
         <fieldset class="form-group col-md-6" asp-validation-class-for="SiteName">
             <div>
                 <label asp-for="SiteName">@T["What is the name of your site?"]</label>
-                <span asp-validation-for="SiteName" class="text-danger">@T["This site name is required."]</span>
                 <input asp-for="SiteName" class="form-control" autofocus />
+                <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
@@ -76,8 +117,8 @@
         {
         <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
             <label asp-for="TablePrefix">@T["Table Prefix"]</label>
-            <span asp-validation-for="TablePrefix" class="text-danger"></span>
             <input asp-for="TablePrefix" class="form-control" />
+            <span asp-validation-for="TablePrefix" class="text-danger"></span>
         </div>
         }
     </div>
@@ -91,8 +132,8 @@
     <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
         <div class="form-group col-xs-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
-            <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <input asp-for="ConnectionString" class="form-control" />
+            <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
         </div>
     </fieldset>
@@ -104,27 +145,28 @@
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="AdminUserName">
             <label asp-for="AdminUserName">@T["User name"]</label>
-            <span asp-validation-for="AdminUserName" class="text-danger">@T["The user name is required."]</span>
             <input asp-for="AdminUserName" class="form-control" />
+            <span asp-validation-for="AdminUserName" class="text-danger">@T["The user name is required."]</span>
         </div>
         <div class="form-group col-md-6" asp-validation-class-for="AdminEmail">
             <label for="AdminEmail">@T["Email"]</label>
-            <span asp-validation-for="AdminEmail" class="text-danger">@T["The email is invalid."]</span>
             <input asp-for="AdminEmail" class="form-control" type="email"/>
+            <span asp-validation-for="AdminEmail" class="text-danger">@T["The email is invalid."]</span>
         </div>
     </div>
 
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Password">
             <label asp-for="Password">@T["Password"]</label>
+            <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
+            <div id="passwordStrength"></div>
             <span asp-validation-for="Password" class="text-danger"></span>
-            <input asp-for="Password" type="password" class="form-control" />
         </div>
 
         <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
             <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             <input asp-for="PasswordConfirmation" type="password" class="form-control" />
+            <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
         </div>
     </div>
     <fieldset>
@@ -133,3 +175,22 @@
         </div>
     </fieldset>
 </form>
+<script src="~/Orchard.Setup/Scripts/setup.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //<![CDATA[
+    $(function(){
+        $('#Password').strength({
+            minLength: @(options.Password.RequiredLength),
+            upperCase: @(options.Password.RequireUppercase ? "true" : "false"),
+            lowerCase: @(options.Password.RequireLowercase ? "true" : "false"),
+            numbers: @(options.Password.RequireDigit ? "true" : "false"),
+            specialchars: @(options.Password.RequireNonAlphanumeric ? "true" : "false"),
+            target: '#passwordStrength',
+            style: "margin-top: 7px; height: 7px; border-radius: 5px"
+        });
+        $('#Password').popover({
+            trigger: 'focus'
+        })
+    })
+    //]]>
+</script>
