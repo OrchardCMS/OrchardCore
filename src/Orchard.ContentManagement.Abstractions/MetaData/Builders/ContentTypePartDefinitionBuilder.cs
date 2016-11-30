@@ -41,6 +41,12 @@ namespace Orchard.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentTypePartDefinitionBuilder WithSetting(string name, string[] values)
+        {
+            _settings[name] = new JArray(values);
+            return this;
+        }
+
         public abstract ContentTypePartDefinition Build();
     }
 }

@@ -54,7 +54,7 @@ namespace Orchard.Lists.Drivers
 
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
-                    shape.ContainedContentTypeDefinition = GetContainedContentType(listPart);
+                    shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                 })
                 .Location("DetailAdmin", "Content:10"),
 
@@ -73,7 +73,7 @@ namespace Orchard.Lists.Drivers
 
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
-                    shape.ContainedContentTypeDefinition = GetContainedContentType(listPart);
+                    shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
                 })
                 .Location("Detail", "Content:10")
             );
@@ -90,12 +90,12 @@ namespace Orchard.Lists.Drivers
             return containedItems;
         }
 
-        private ContentTypeDefinition GetContainedContentType(ListPart listPart)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPart listPart)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            var contentType = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentType;
-            return _contentDefinitionManager.GetTypeDefinition(contentType);
+            var contentTypes = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentTypes;
+            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }
 }

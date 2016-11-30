@@ -1,4 +1,4 @@
-@model Orchard.ContentTypes.ViewModels.CreateTypeViewModel
+@model CreateTypeViewModel
 
 <h1>@RenderTitleSegments(T["New Content Type"])</h1>
 
@@ -8,7 +8,7 @@
     <fieldset class="form-group row">
         <div class="col-md">
             <label asp-for="DisplayName">@T["Display Name"]</label>
-            <input asp-for="DisplayName" class="form-control" />
+            <input asp-for="DisplayName" class="form-control" autofocus/>
             <span class="hint">@T["Name of the type as it will be displayed in screens."]</span>
         </div>
     </fieldset>
