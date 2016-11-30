@@ -1,32 +1,47 @@
 ﻿@using Orchard.Setup.Controllers
 @using Microsoft.AspNetCore.Builder
 @using Orchard.Utility
-@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model Orchard.Setup.ViewModels.SetupViewModel
+
 @{
     var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
-    List<string> passwordOptions = new List<string>();
-    IdentityOptions options = identityOptions.Value;
+    var options = identityOptions.Value;
+    var passwordOptions = new HtmlContentBuilder();
+    var separator = HtmlString.Empty;
+    
     if (options.Password.RequireNonAlphanumeric)
     {
-        passwordOptions.Add(T["one non-alphanumeric"].Value);
+        passwordOptions.AppendHtml(separator).AppenHtml(T["one non-alphanumeric"]);
+        separator = T[", "];
     }
+    
     if (options.Password.RequireUppercase)
     {
-        passwordOptions.Add(T["one uppercase"].Value);
+        passwordOptions.AppendHtml(separator).AppenHtml(T["one uppercase"]);
+        separator = T[", "];
     }
+    
     if (options.Password.RequireLowercase)
     {
-        passwordOptions.Add(T["one lowercase"].Value);
+        passwordOptions.AppendHtml(separator).AppenHtml(T["one lowercase"]);
+        separator = T[", "];
     }
+    
     if (options.Password.RequireDigit)
     {
-        passwordOptions.Add(T["one digit"].Value);
+        passwordOptions.AppendHtml(separator).AppenHtml(T["one digit"]);
+        separator = T[", "];
     }
-    passwordOptions.Add(string.Format(T["{0} characters"].Value, options.Password.RequiredLength));
+    
+    if (separator != HtmlString.Emtpy)
+    {
+        separator = T[" and "];
+    }
 
-    string passwordTooltip = string.Format(T["Password must have at least {0}."].Value, string.Join(T[", "].Value, passwordOptions.ToArray()).ReplaceLastOccurrence(T[", "].Value, T[" and "].Value));
+    passwordOptions.AppendHtml(separator).AppenHtml(T["{0} characters", options.Password.RequiredLength));
+
+    var passwordTooltip = T["Password must have at least {0}."] passwordOptions
 }
 
 <form asp-action="Index">
@@ -163,10 +178,10 @@
     $(function(){
         $('#Password').bootstrapStrength({
             minLength: @(options.Password.RequiredLength),
-            upperCase: @(Convert.ToInt16(options.Password.RequireUppercase)),
-            lowerCase: @(Convert.ToInt16(options.Password.RequireLowercase)),
-            numbers: @(Convert.ToInt16(options.Password.RequireDigit)),
-            specialchars: @(Convert.ToInt16(options.Password.RequireNonAlphanumeric)),
+            upperCase: @(options.Password.RequireUppercase ? 1 : 0),
+            lowerCase: @(options.Password.RequireLowercase ? 1 : 0),
+            numbers: @(options.Password.RequireDigit ? 1 : 0),
+            specialchars: @(options.Password.RequireNonAlphanumeric ? 1 : 0),
             slimBar: true,
             striped: false
         });
