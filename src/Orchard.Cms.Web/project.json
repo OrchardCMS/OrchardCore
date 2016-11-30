@@ -15,7 +15,13 @@
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "System.Dynamic.Runtime": "4.3.0",
-    "Microsoft.Extensions.Localization.Abstractions": "1.1.0"
+    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
+
+    "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Design": {
+      "version": "1.1.0-*",
+      "target": "package",
+      "type": "build"
+    }
   },
   "runtimeOptions": {
     "configProperties": {
@@ -37,7 +43,7 @@
     }
   },
   "frameworks": {
-    "netcoreapp1.1": {
+    "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
           "version": "1.1.0-*",
@@ -51,7 +57,8 @@
     }
   },
   "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-*"
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-*",
+    "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Tools": "1.1.0-*"
   },
   "packExclude": [
     "node_modules",

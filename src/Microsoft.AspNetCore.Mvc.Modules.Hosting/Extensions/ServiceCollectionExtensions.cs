@@ -76,8 +76,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
 
-            services.AddSingleton<ICompilationService, DefaultRoslynCompilationService>();
-
             // Register the configuration object for modules to register options with it
             if (configuration != null)
             {
