@@ -4,8 +4,8 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    //var displayText = ContentManager.GetItemMetadata(contentItem).DisplayText;
+    var displayText = ContentManager.GetItemMetadata(contentItem).DisplayText;
 }
 
-<h1>@RenderTitleSegments(/*displayText*/)</h1>
+<h1>@RenderTitleSegments(displayText)</h1>
 @Display(Model)

@@ -1,5 +1,5 @@
-@*@{ Layout.Title = T("Create New Content").ToString(); }*@
+@{ Layout.Title = T("Create New Content").ToString(); }
 
 @foreach (var type in Model.ContentTypes) {
-    <p>@Html.ActionLink((string)type.DisplayName, "Create", new { Area = "Contents", Id = (string)type.Name, ContainerId = Model.ContainerId, ReturnUrl = @Context.Request.Query["ReturnUrl"] })</p>
+    <p>@Html.ActionLink((string)type.DisplayName, "Create", new { Area = "Contents", Id = (string)type.Name, ContainerId = Model.ContainerId, ReturnUrl = Request.QueryString["ReturnUrl"] })</p>
 }
