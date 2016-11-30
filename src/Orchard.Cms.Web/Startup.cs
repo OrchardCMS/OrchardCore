@@ -55,7 +55,7 @@ namespace Orchard.Cms.Web
         public void ConfigureMvc(IMvcBuilder builder)
         {
             var serviceProvider = builder.Services.BuildServiceProvider();
-            var env = builder.Services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
+            var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
             var services = new ServiceCollection();
             services.AddSingleton<IHostingEnvironment>(env);
