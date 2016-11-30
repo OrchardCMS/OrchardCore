@@ -45,11 +45,11 @@ namespace Orchard.Body.Drivers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(bodyPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(BodyPart));
-            var settings = contentTypePartDefinition.Settings.ToObject<BodyPartSettings>();
+            var settings = contentTypePartDefinition.GetSettings<BodyPartSettings>();
 
-            model.RenderTokens = settings.RenderTokens;
             model.Body = bodyPart.Body;
             model.BodyPart = bodyPart;
+            model.TypePartSettings = settings;
 
             return Task.CompletedTask;
         }

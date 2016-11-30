@@ -1,23 +1,20 @@
 ﻿@using Orchard.Body.ViewModels;
 @model BodyPartViewModel
 
-<fieldset class="form-group">
-    <label asp-for="Body">@T["Body"]</label>
-    <textarea asp-for="Body" rows="10" class="form-control"></textarea>
-    <span class="hint">@T["The body of the content item."]</span>
-</fieldset>
+@{ 
 
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.Body)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', function (event) {
-            // handle backspace
-            if (event.keyCode == 46) {
-                $(document).trigger('contentpreview:render');
-            }
-        });
-    });
-</script>
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shapeType = "Body_Editor";
+
+    if (!String.IsNullOrEmpty(Model.TypePartSettings.Editor))
+    {
+        shapeType += "__" + Model.TypePartSettings.Editor;
+    }
+
+    var shape = Model as Orchard.DisplayManagement.IShape;
+
+    shape.Metadata.Type = shapeType;
+    shape.Metadata.Alternates.Clear();
+}
+
+@Display(Model)
