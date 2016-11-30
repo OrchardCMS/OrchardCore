@@ -15,7 +15,9 @@
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "System.Dynamic.Runtime": "4.3.0",
-    "Microsoft.Extensions.Localization.Abstractions": "1.1.0"
+    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
+    "DasMulli.Win32.ServiceUtils": "1.0.1",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0"
   },
   "runtimeOptions": {
     "configProperties": {
