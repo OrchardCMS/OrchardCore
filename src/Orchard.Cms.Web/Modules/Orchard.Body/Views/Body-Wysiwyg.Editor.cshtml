@@ -1,0 +1,28 @@
+﻿@using Orchard.Body.ViewModels;
+@model BodyPartViewModel
+
+<script name="trumbowyg" depends-on="admin" asp-src="~/Orchard.Body/Scripts/trumbowyg.min.js" debug-src="~/Orchard.Body/Scripts/trumbowyg.js" at="Foot"></script>
+<style name="trumbowyg" asp-src="~/Orchard.Body/Styles/trumbowyg.min.css" debug-src="~/Orchard.Body/Styles/trumbowyg.css"></style>
+<style name="trumbowyg"></style>
+
+<fieldset class="form-group">
+    <label asp-for="Body">@T["Body"]</label>
+    <textarea asp-for="Body" rows="10" class="form-control"></textarea>
+    <span class="hint">@T["The body of the content item."]</span>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Body)')
+        .on('input', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', function (event) {
+            // handle backspace
+            if (event.keyCode == 46) {
+                $(document).trigger('contentpreview:render');
+            }
+        })
+        .trumbowyg();
+    });
+</script>

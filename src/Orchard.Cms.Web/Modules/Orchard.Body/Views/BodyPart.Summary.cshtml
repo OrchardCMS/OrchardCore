@@ -4,7 +4,7 @@
 @{
     string body = Model.Body;
 
-    if (Model.RenderTokens)
+    if (Model.TypePartSettings.RenderTokens)
     {
         var context = Tokenizer.CreateViewModel().Content(Model.BodyPart.ContentItem);
         body = Tokenizer.Tokenize(body, context);

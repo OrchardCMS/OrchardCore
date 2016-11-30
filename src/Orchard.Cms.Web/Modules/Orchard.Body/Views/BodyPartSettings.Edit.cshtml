@@ -6,3 +6,13 @@
         <span class="hint">@T["Check to render the tokens present in the body."]</span>
     </label>
 </fieldset>
+
+<div class="row">
+    <fieldset class="form-group col-xs-6">
+        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+        <select asp-for="Editor" class="form-control">
+            <option value="" selected="@String.IsNullOrEmpty(Model.Editor)">@T["Standard"]</option>
+            <option value="Wysiwyg" selected="@(Model.Editor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
+        </select>
+    </fieldset>
+</div>

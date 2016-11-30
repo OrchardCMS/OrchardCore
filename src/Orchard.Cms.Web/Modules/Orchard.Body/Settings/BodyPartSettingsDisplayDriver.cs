@@ -19,9 +19,10 @@ namespace Orchard.Body.Settings
 
             return Shape<BodyPartSettingsViewModel>("BodyPartSettings_Edit", model =>
             {
-                var settings = contentTypePartDefinition.Settings.ToObject<BodyPartSettings>();
+                var settings = contentTypePartDefinition.GetSettings<BodyPartSettings>();
 
                 model.RenderTokens = settings.RenderTokens;
+                model.Editor = settings.Editor;
                 model.BodyPartSettings = settings;
 
                 return Task.CompletedTask;
@@ -37,9 +38,10 @@ namespace Orchard.Body.Settings
 
             var model = new BodyPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.RenderTokens);
-
-            context.Builder.WithSetting(nameof(BodyPartSettings.RenderTokens), model.RenderTokens.ToString());
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.RenderTokens, m => m.Editor))
+            {
+                context.Builder.WithSettings(new BodyPartSettings { RenderTokens = model.RenderTokens, Editor = model.Editor });
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
