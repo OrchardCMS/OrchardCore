@@ -159,6 +159,7 @@
         <div class="form-group col-md-6" asp-validation-class-for="Password">
             <label asp-for="Password">@T["Password"]</label>
             <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
+            <div id="passwordStrength"></div>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
@@ -178,14 +179,14 @@
 <script type="text/javascript">
     //<![CDATA[
     $(function(){
-        $('#Password').bootstrapStrength({
+        $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
-            upperCase: @(options.Password.RequireUppercase ? 1 : 0),
-            lowerCase: @(options.Password.RequireLowercase ? 1 : 0),
-            numbers: @(options.Password.RequireDigit ? 1 : 0),
-            specialchars: @(options.Password.RequireNonAlphanumeric ? 1 : 0),
-            slimBar: true,
-            striped: false
+            upperCase: @(options.Password.RequireUppercase ? "true" : "false"),
+            lowerCase: @(options.Password.RequireLowercase ? "true" : "false"),
+            numbers: @(options.Password.RequireDigit ? "true" : "false"),
+            specialchars: @(options.Password.RequireNonAlphanumeric ? "true" : "false"),
+            target: '#passwordStrength',
+            style: "margin-top: 7px; height: 7px; border-radius: 5px"
         });
         $('#Password').popover({
             trigger: 'focus'
