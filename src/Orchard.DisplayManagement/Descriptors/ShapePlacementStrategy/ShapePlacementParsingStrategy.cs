@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using System;
-using System.IO;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableProvider
+    public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
         private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;
@@ -33,7 +34,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result
+                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
+
             foreach (var featureDescriptor in enabledFeatures)
             {
                 ProcessFeatureDescriptor(builder, featureDescriptor);
@@ -135,11 +138,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
             //normalizedPath = VirtualPathUtility.AppendTrailingSlash(normalizedPath);
             //return ctx => (ctx.Path.Equals(normalizedPath, StringComparison.OrdinalIgnoreCase)) && predicate(ctx);
             //}
-        }
-
-        private bool FeatureIsTheme(IFeatureInfo fd)
-        {
-            return fd.Extension.Manifest.IsTheme();
         }
     }
 }

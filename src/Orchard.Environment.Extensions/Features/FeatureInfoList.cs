@@ -1,7 +1,7 @@
-﻿using Orchard.Environment.Extensions.Utility;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Extensions.Features
 {
@@ -9,7 +9,8 @@ namespace Orchard.Environment.Extensions.Features
     {
         private readonly IList<IFeatureInfo> _features;
 
-        public FeatureInfoList(IList<IFeatureInfo> features) {
+        public FeatureInfoList(IList<IFeatureInfo> features)
+        {
             _features = features
                 .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
                 .ToList();
@@ -32,7 +33,8 @@ namespace Orchard.Environment.Extensions.Features
 
         private IExtensionInfoList _extensions;
 
-        public IExtensionInfoList Extensions {
+        public IExtensionInfoList Extensions
+        {
             get
             {
                 if (_extensions == null)
