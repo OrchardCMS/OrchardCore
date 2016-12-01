@@ -1,0 +1,23 @@
+﻿@using Orchard.Markdown.ViewModels;
+@model MarkdownPartViewModel
+
+<fieldset class="form-group">
+    <label asp-for="Markdown">@T["Body"]</label>
+    <textarea asp-for="Markdown" rows="10" class="form-control"></textarea>
+    <span class="hint">@T["The body of the content item, in Markdown format."]</span>
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Markdown)')
+        .on('input', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', function (event) {
+            // handle backspace
+            if (event.keyCode == 46) {
+                $(document).trigger('contentpreview:render');
+            }
+        });
+    });
+</script>

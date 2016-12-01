@@ -1,0 +1,20 @@
+﻿@using Orchard.Markdown.ViewModels;
+@model MarkdownPartViewModel
+
+@{ 
+
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shapeType = "Markdown_Editor";
+
+    if (!String.IsNullOrEmpty(Model.TypePartSettings.Editor))
+    {
+        shapeType += "__" + Model.TypePartSettings.Editor;
+    }
+
+    var shape = Model as Orchard.DisplayManagement.IShape;
+
+    shape.Metadata.Type = shapeType;
+    shape.Metadata.Alternates.Clear();
+}
+
+@Display(Model)
