@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
+using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.ProjectModel.Graph;
@@ -29,27 +29,15 @@ namespace Orchard.Environment.Extensions.Compilers
         private static readonly Lazy<RuntimeLibrary> _nativePDBWriter = new Lazy<RuntimeLibrary>(GetNativePDBWriter);
         private static readonly Lazy<HashSet<string>> _ambientLibraries = new Lazy<HashSet<string>>(GetAmbientLibraries);
         private static readonly ConcurrentDictionary<string, bool> _compiledLibraries = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-        private static readonly Lazy<string> _entryAssemblyName = new Lazy<string>(GetEntryAssemblyName);
-        private static readonly Lazy<string> _runtimeDirectory = new Lazy<string>(GetRuntimeDirectory);
+        private readonly string _applicationName;
 
-        public CSharpExtensionCompiler()
+        public CSharpExtensionCompiler(string applicationName)
         {
+            _applicationName = applicationName;
             Diagnostics = new List<string>();
         }
 
-        public static string EntryAssemblyName => _entryAssemblyName.Value;
-        public static string RuntimeDirectory => _runtimeDirectory.Value;
         public IList<string> Diagnostics { get; private set; }
-
-        private static string GetRuntimeDirectory()
-        {
-            return Paths.GetParentFolderPath(typeof(CSharpExtensionCompiler).GetTypeInfo().Assembly.Location);
-        }
-
-        private static string GetEntryAssemblyName()
-        {
-            return DependencyContext.Default?.RuntimeLibraries.First().Name;
-        }
 
         private static RuntimeLibrary GetCscLibrary()
         {
@@ -136,6 +124,9 @@ namespace Orchard.Environment.Extensions.Compilers
             var sourceFiles = new List<string>();
             var resources = new List<string>();
 
+            // Get the runtime directory
+            var runtimeDirectory = ApplicationEnvironment.ApplicationBasePath;
+
             foreach (var dependency in dependencies)
             {
                 sourceFiles.AddRange(dependency.SourceReferences.Select(s => s.GetTransformedFile(intermediateOutputPath)));
@@ -172,7 +163,7 @@ namespace Orchard.Environment.Extensions.Compilers
                     var assetFileName = CompilerUtility.GetAssemblyFileName(library.Identity.Name);
 
                     // Search in the runtime directory
-                    var assetResolvedPath = Path.Combine(RuntimeDirectory, assetFileName);
+                    var assetResolvedPath = Path.Combine(runtimeDirectory, assetFileName);
 
                     if (!File.Exists(assetResolvedPath))
                     {
@@ -205,7 +196,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
                         // Search in the runtime directory
                         var relativeFolderPath = isRuntimeAsset ? String.Empty : CompilerUtility.RefsDirectoryName;
-                        var assetResolvedPath = Path.Combine(RuntimeDirectory, relativeFolderPath, assetFileName);
+                        var assetResolvedPath = Path.Combine(runtimeDirectory, relativeFolderPath, assetFileName);
 
                         if (!File.Exists(assetResolvedPath))
                         {
@@ -273,7 +264,7 @@ namespace Orchard.Environment.Extensions.Compilers
                 {
                     // Search in the regular project output path, fallback to the runtime directory
                     references.AddRange(dependency.CompilationAssemblies.Select(r => File.Exists(r.ResolvedPath)
-                        ? r.ResolvedPath : Path.Combine(RuntimeDirectory, r.FileName)));
+                        ? r.ResolvedPath : Path.Combine(runtimeDirectory, r.FileName)));
                 }
                 else
                 {
@@ -417,8 +408,8 @@ namespace Orchard.Environment.Extensions.Compilers
             File.WriteAllLines(rsp, allArgs);
 
             // Locate runtime config files
-            var runtimeConfigPath = Path.Combine(RuntimeDirectory, EntryAssemblyName + FileNameSuffixes.RuntimeConfigJson);
-            var cscRuntimeConfigPath = Path.Combine(RuntimeDirectory, "csc" + FileNameSuffixes.RuntimeConfigJson);
+            var runtimeConfigPath = Path.Combine(runtimeDirectory, _applicationName + FileNameSuffixes.RuntimeConfigJson);
+            var cscRuntimeConfigPath = Path.Combine(runtimeDirectory, "csc" + FileNameSuffixes.RuntimeConfigJson);
 
             // Automatically create the csc runtime config file
             if (Files.IsNewer(runtimeConfigPath, cscRuntimeConfigPath))
@@ -433,11 +424,11 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Locate csc.dll and the csc.exe asset
-            var cscDllPath = Path.Combine(RuntimeDirectory, CompilerUtility.GetAssemblyFileName("csc"));
+            var cscDllPath = Path.Combine(runtimeDirectory, CompilerUtility.GetAssemblyFileName("csc"));
 
             // Search in the runtime directory
             var cscRelativePath = Path.Combine("runtimes", "any", "native", "csc.exe");
-            var cscExePath = Path.Combine(RuntimeDirectory, cscRelativePath);
+            var cscExePath = Path.Combine(runtimeDirectory, cscRelativePath);
 
             // Fallback to the packages storage
             if (!File.Exists(cscExePath) && !String.IsNullOrEmpty(context.PackagesDirectory))
@@ -459,7 +450,7 @@ namespace Orchard.Environment.Extensions.Compilers
             }
 
             // Locate the csc dependencies file
-            var cscDepsPath = Path.Combine(RuntimeDirectory, "csc.deps.json");
+            var cscDepsPath = Path.Combine(runtimeDirectory, "csc.deps.json");
 
             // Automatically create csc.deps.json
             if (NativePDBWriter != null && Files.IsNewer(cscDllPath, cscDepsPath))
@@ -501,7 +492,7 @@ namespace Orchard.Environment.Extensions.Compilers
                                 var pdbResolvedPath = Path.Combine(context.PackagesDirectory,
                                     NativePDBWriter.Name, NativePDBWriter.Version, assetPath);
 
-                                var pdbOutputPath = Path.Combine(RuntimeDirectory, assetPath);
+                                var pdbOutputPath = Path.Combine(runtimeDirectory, assetPath);
 
                                 // Store the pdb writer in the runtime directory
                                 if (Files.IsNewer(pdbResolvedPath, pdbOutputPath))
@@ -517,7 +508,7 @@ namespace Orchard.Environment.Extensions.Compilers
 
             // Execute CSC!
             var result = Command.Create("csc.dll", new string[] { $"-noconfig", "@" + $"{rsp}" })
-                .WorkingDirectory(RuntimeDirectory)
+                .WorkingDirectory(runtimeDirectory)
                 .OnErrorLine(line => Diagnostics.Add(line))
                 .OnOutputLine(line => Diagnostics.Add(line))
                 .Execute();
