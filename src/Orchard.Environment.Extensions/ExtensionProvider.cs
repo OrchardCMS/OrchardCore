@@ -2,7 +2,6 @@
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
-using System;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions
@@ -37,7 +36,7 @@ namespace Orchard.Environment.Extensions
         public IExtensionInfo GetExtensionInfo(string subPath)
         {
             var manifest = _manifestBuilder.GetManifest(subPath);
-            
+
             if (!manifest.Exists)
             {
                 return null;

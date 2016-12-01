@@ -48,5 +48,40 @@ namespace Orchard.Tests.Stubs
         {
             throw new NotImplementedException();
         }
+
+        IExtensionInfo IExtensionManager.GetExtension(string extensionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        IExtensionInfoList IExtensionManager.GetExtensions()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ExtensionEntry> IExtensionManager.LoadExtensionAsync(IExtensionInfo extensionInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        IFeatureInfoList IExtensionManager.GetFeatureDependencies(string featureId)
+        {
+            throw new NotImplementedException();
+        }
+
+        IFeatureInfoList IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync(IFeatureInfo[] featuresToLoad)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

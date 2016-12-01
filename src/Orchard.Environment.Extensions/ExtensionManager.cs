@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
+using Orchard.Environment.Extensions.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -183,7 +184,45 @@ namespace Orchard.Environment.Extensions
             });
         }
 
-        public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        {
+            var allUnorderedFeatures = GetExtensions().Features.ToArray();
+
+            var orderedFeatureDescriptors = allUnorderedFeatures
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
+                    (fi) => fi.Priority)
+                .Distinct();
+
+            // get loaded feature information
+            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptors
+                .Select(feature => LoadFeatureAsync(feature))
+                .ToArray());
+
+            return loadedFeatures.AsEnumerable();
+        }
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IFeatureInfo[] featuresToLoad)
+        {
+            var allUnorderedFeatures = GetExtensions().Features.ToArray();
+
+            var allUnorderedFeaturesToLoadIncludingDependencies =
+                featuresToLoad.SelectMany(feature => GetFeatureDependencies(feature.Id));
+
+            var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
+                    (fi) => fi.Priority)
+                .Distinct();
+
+            // get loaded feature information
+            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptors
+                .Select(feature => LoadFeatureAsync(feature))
+                .ToArray());
+
+            return loadedFeatures.AsEnumerable();
+        }
+
+        private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
             return _features.GetOrAdd(feature.Id, async (id) =>
             {

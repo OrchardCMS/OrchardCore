@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
 {
@@ -12,6 +13,7 @@ namespace Orchard.Environment.Extensions
 
         IFeatureInfoList GetFeatureDependencies(string featureId);
         IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch);
-        Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature);
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IFeatureInfo[] featuresToLoad);
     }
 }

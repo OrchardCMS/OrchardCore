@@ -39,8 +39,8 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             var enabledFeatures = _extensionManager.GetEnabledFeatures(descriptor);
-            var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
-            
+            var features = await _extensionManager.LoadFeaturesAsync(enabledFeatures.ToArray());
+
             // Statup classes are the only types that are automatically added to the blueprint
             var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());
 
@@ -67,7 +67,7 @@ namespace Orchard.Environment.Shell.Builders
             }
             return result;
         }
-        
+
         private static IEnumerable<T> BuildBlueprint<T>(
             IEnumerable<FeatureEntry> features,
             Func<Type, bool> predicate,
@@ -97,7 +97,7 @@ namespace Orchard.Environment.Shell.Builders
                 Parameters = Enumerable.Empty<ShellParameter>()
             };
         }
-        
+
         private static DependencyBlueprint BuildDependency(Type type, FeatureEntry feature, ShellDescriptor descriptor)
         {
             return new DependencyBlueprint

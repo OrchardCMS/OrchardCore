@@ -50,28 +50,17 @@ namespace Orchard.Environment.Shell
                 Logger.LogInformation("Applying changes for for shell '{0}'", _settings.Name);
             }
 
+            var loadedFeatures = await _extensionManager.LoadFeaturesAsync();
+
             var shellState = await _stateManager.GetShellStateAsync();
 
-            // start with description of all declared features in order - order preserved with all merging
-            var allUnorderedFeatures = _extensionManager.GetExtensions().Features.ToArray();
-            var orderedFeatureDescriptors = allUnorderedFeatures
-                .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => _extensionManager.GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
-                    (fi2) => fi2.Priority);
-
-            // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptors
-                .Select(feature => _extensionManager.LoadFeatureAsync(feature))
-                .ToArray());
-
             // merge feature state into ordered list
-            var loadedEntries = orderedFeatureDescriptors
-                .Select(featureInfo => new
+            var loadedEntries = loadedFeatures
+                .Select(fe => new
                 {
-                    Feature = loadedFeatures.SingleOrDefault(f => f.FeatureInfo == featureInfo)
-                              ?? new NonCompiledFeatureEntry(featureInfo),
-                    FeatureDescriptor = featureInfo,
-                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == featureInfo.Id),
+                    Feature = fe,
+                    FeatureDescriptor = fe.FeatureInfo,
+                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == fe.FeatureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
                 .ToArray();
