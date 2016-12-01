@@ -52,39 +52,6 @@ namespace Orchard.Modules.Controllers
 
         public IHtmlLocalizer T { get; }
 
-        public async Task<ActionResult> Index()
-        {
-            IEnumerable<ModuleEntry> modules = _extensionManager.GetExtensions()
-                .Where(extensionDescriptor => extensionDescriptor.Manifest.IsModule())
-                .OrderBy(extensionDescriptor => extensionDescriptor.Manifest.Name)
-                .Select(extensionDescriptor => new ModuleEntry { Descriptor = extensionDescriptor });
-            
-            var features = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-            var installModules = features.FirstOrDefault(f => f.Id == "PackagingServices") != null;
-
-            modules = modules.ToList();
-            foreach (ModuleEntry moduleEntry in modules)
-            {
-                moduleEntry.IsRecentlyInstalled = false; //_moduleService.IsRecentlyInstalled(moduleEntry.Descriptor);
-                moduleEntry.CanUninstall = installModules;
-
-                //if (_extensionDisplayEventHandler != null)
-                //{
-                //    foreach (string notification in _extensionDisplayEventHandler.Displaying(moduleEntry.Descriptor, ControllerContext.RequestContext))
-                //    {
-                //        moduleEntry.Notifications.Add(notification);
-                //    }
-                //}
-            }
-
-            var model = new ModulesIndexViewModel { 
-                Modules = modules,
-                InstallModules = installModules
-            };
-
-            return View(model);
-        }
-
         public async Task<ActionResult> Features()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures)) // , T["Not allowed to manage features."]

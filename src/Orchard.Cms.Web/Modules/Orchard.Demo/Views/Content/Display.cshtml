@@ -4,7 +4,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var displayText = ContentManager.GetItemMetadata(contentItem).DisplayText;
+    var displayText = ContentManager.PopulateAspect(contentItem, new ContentItemMetadata()).DisplayText;
 }
 
 <h1>@RenderTitleSegments(displayText)</h1>
