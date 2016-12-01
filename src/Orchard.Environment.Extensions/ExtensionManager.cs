@@ -135,7 +135,7 @@ namespace Orchard.Environment.Extensions
                         .Where(f =>
                                 f.Dependencies.Any(dep => dep == currentFeature.Id)
                                ).ToArray());
-            
+
             var dependentFeatures =
                 GetDependentFeatures(feature, featuresToSearch, getDependants);
 
@@ -169,17 +169,17 @@ namespace Orchard.Environment.Extensions
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
-            return _extensions.GetOrAdd(extensionInfo.Id, async id =>
+            return _extensions.GetOrAdd(extensionInfo.Id, id =>
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
                 if (extension.IsError && L.IsEnabled(LogLevel.Warning))
                 {
-                    
+
                     L.LogError("No suitable loader found for extension \"{0}\"", id);
                 }
 
-                return await Task.FromResult(extension);
+                return Task.FromResult(extension);
             });
         }
 
