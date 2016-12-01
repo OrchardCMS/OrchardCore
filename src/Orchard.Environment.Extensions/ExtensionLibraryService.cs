@@ -642,12 +642,12 @@ namespace Orchard.Environment.Extensions
             return runtimeIds.Distinct();
         }
 
-        private bool IsAmbientExtension (IExtensionInfo extensionInfo)
+        private bool IsAmbientExtension(IExtensionInfo extensionInfo)
         {
-             return IsAmbientAssembly(extensionInfo.Id);
+            return IsAmbientAssembly(extensionInfo.Id);
         }
 
-        private bool IsDynamicContext (ProjectContext context)
+        private bool IsDynamicContext(ProjectContext context)
         {
             if (context == null)
             {
@@ -658,7 +658,7 @@ namespace Orchard.Environment.Extensions
             return CompilerUtility.GetCompilationSources(context, compilationOptions).Any();
         }
 
-        private bool IsPrecompiledContext (ProjectContext context)
+        private bool IsPrecompiledContext(ProjectContext context)
         {
             return context == null || !IsDynamicContext(context);
         }
@@ -718,8 +718,7 @@ namespace Orchard.Environment.Extensions
 
         private void PopulateRuntimeFolder(string assetPath, string relativeFolderPath = null)
         {
-            var runtimeDirectory = Paths.GetParentFolderPath(CSharpExtensionCompiler.EntryAssembly.Location);
-            PopulateBinaryFolder(runtimeDirectory, assetPath, relativeFolderPath);
+            PopulateBinaryFolder(CSharpExtensionCompiler.RuntimeDirectory, assetPath, relativeFolderPath);
         }
     }
 }
