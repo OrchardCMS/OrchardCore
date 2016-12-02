@@ -4,11 +4,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class BasicShapeTemplateHarvester : IShapeTemplateHarvester
     {
-        public const string BasePath = "Views/Shared/Shapes/";
+        public const string BasePath = BasePathWithoutTrailingSlash + "/";
+        public const string BasePathWithoutTrailingSlash = "Views/Shared/Shapes";
 
         public IEnumerable<string> SubPaths()
         {
-            return new[] { "Views/Shared/Shapes", BasePath + "Items", BasePath + "Parts", BasePath + "Fields", BasePath + "Elements" };
+            return new[] { BasePathWithoutTrailingSlash,
+                BasePath + "Items",
+                BasePath + "Parts",
+                BasePath + "Fields",
+                BasePath + "Elements"
+            };
         }
 
         public IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info)
