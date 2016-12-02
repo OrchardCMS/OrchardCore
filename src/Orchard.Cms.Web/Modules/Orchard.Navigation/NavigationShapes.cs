@@ -9,18 +9,18 @@ using Orchard.Utility;
 
 namespace Orchard.Navigation
 {
-    public class MenuShapes : IShapeTableProvider
+    public class NavigationShapes : IShapeTableProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MenuShapes(IHttpContextAccessor httpContextAccessor)
+        public NavigationShapes(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("Menu")
+            builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
                     var menu = displaying.Shape;
@@ -28,7 +28,7 @@ namespace Orchard.Navigation
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
                     menu.Classes.Add("menu");
-                    menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
+                    menu.Metadata.Alternates.Add("Navigation__" + EncodeAlternateElement(menuName));
                 })
                 .OnProcessing(processing =>
                 {
@@ -72,7 +72,7 @@ namespace Orchard.Navigation
 
                 });
 
-            builder.Describe("MenuItem")
+            builder.Describe("NavigationItem")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
@@ -80,24 +80,24 @@ namespace Orchard.Navigation
                     var menuName = menu.MenuName;
                     int level = menuItem.Level;
 
-                    menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("NavigationItem__level__" + level);
+                    menuItem.Metadata.Alternates.Add("NavigationItem__" + EncodeAlternateElement(menuName));
+                    menuItem.Metadata.Alternates.Add("NavigationItem__" + EncodeAlternateElement(menuName) + "__level__" + level);
                 });
 
-            builder.Describe("MenuItemLink")
+            builder.Describe("NavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
                     int level = menuItem.Level;
 
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
+                    menuItem.Metadata.Alternates.Add("NavigationItemLink__level__" + level);
 
-                    // MenuItemLink__[MenuName] e.g. MenuItemLink-Main-Menu
-                    // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-Main-Menu-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    // NavigationItemLink__[MenuName] e.g. NavigationItemLink-Main-Menu
+                    // NavigationItemLink__[MenuName]__level__[level] e.g. NavigationItemLink-Main-Menu-level-2
+                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName));
+                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
                 });
         }
 

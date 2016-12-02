@@ -4,6 +4,7 @@ using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.Lists.Drivers;
 using Orchard.Menu.Handlers;
 using Orchard.Menu.Models;
@@ -15,6 +16,7 @@ namespace Orchard.Menu
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IShapeTableProvider, MenuShapes>();
 
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();

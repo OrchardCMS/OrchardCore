@@ -11,7 +11,7 @@ namespace Orchard.Navigation
         {
             services.AddNavigation();
 
-            services.AddScoped<IShapeTableProvider, MenuShapes>();
+            services.AddScoped<IShapeTableProvider, NavigationShapes>();
             services.AddScoped<IShapeTableProvider, PagerShapesTableProvider>();
             services.AddShapeAttributes<PagerShapes>();
         }
