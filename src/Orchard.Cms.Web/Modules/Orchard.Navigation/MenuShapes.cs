@@ -90,31 +90,14 @@ namespace Orchard.Navigation
                 {
                     var menuItem = displaying.Shape;
                     string menuName = menuItem.Menu.MenuName;
-                    string contentType = null;
                     int level = menuItem.Level;
 
                     menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
-
-                    // MenuItemLink__[ContentType] e.g. MenuItemLink-HtmlMenuItem
-                    // MenuItemLink__[ContentType]__level__[level] e.g. MenuItemLink-HtmlMenuItem-level-2
-                    if (contentType != null)
-                    {
-                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(contentType));
-                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(contentType) + "__level__" + level);
-                    }
 
                     // MenuItemLink__[MenuName] e.g. MenuItemLink-Main-Menu
                     // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-Main-Menu-level-2
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName));
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
-
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem
-                    // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem-level-2
-                    if (contentType != null)
-                    {
-                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType));
-                        menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType) + "__level__" + level);
-                    }
                 });
         }
 
