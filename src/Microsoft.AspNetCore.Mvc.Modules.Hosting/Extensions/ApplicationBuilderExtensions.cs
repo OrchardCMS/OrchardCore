@@ -1,15 +1,15 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Orchard;
 using Orchard.Environment.Extensions;
 using Orchard.Hosting;
 using Orchard.Hosting.Web.Routing;
-using System.IO;
-using System.Linq;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -57,16 +57,23 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             using (logger.BeginScope("Loading extensions"))
             {
-                availableExtensions.InvokeAsync(async ae =>
+                Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
                 {
-                    var extensionEntry = await extensionManager.LoadExtensionAsync(ae);
-
-                    if (!extensionEntry.IsError)
+                    try
                     {
-                        var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
-                        applicationPartManager.ApplicationParts.Add(assemblyPart);
+                        var extensionEntry = extensionManager.LoadExtensionAsync(ae).Result;
+
+                        if (!extensionEntry.IsError)
+                        {
+                            var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
+                            applicationPartManager.ApplicationParts.Add(assemblyPart);
+                        }
                     }
-                }, logger).Wait();
+                    catch (Exception e)
+                    {
+                        logger.LogCritical("Could not load an extension", ae, e);
+                    }
+                });
             }
 
             return builder;

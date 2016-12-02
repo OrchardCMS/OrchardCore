@@ -1,8 +1,16 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.CodeAnalysis;
 using Microsoft.DotNet.Cli.Compiler.Common;
 using Microsoft.DotNet.Cli.Utils;
 using Microsoft.DotNet.InternalAbstractions;
+using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.DotNet.ProjectModel;
 using Microsoft.DotNet.ProjectModel.Compilation;
 using Microsoft.DotNet.ProjectModel.Graph;
@@ -13,13 +21,6 @@ using Microsoft.Extensions.Options;
 using NuGet.Packaging;
 using Orchard.Environment.Extensions.Compilers;
 using Orchard.Localization;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 
 namespace Orchard.Environment.Extensions
 {
@@ -177,7 +178,7 @@ namespace Orchard.Environment.Extensions
         internal void CompileProject(ProjectContext context)
         {
 
-            var compiler = new CSharpExtensionCompiler();
+            var compiler = new CSharpExtensionCompiler(_hostingEnvironment.ApplicationName);
             var success = compiler.Compile(context, Configuration, _probingFolderPath);
             var diagnostics = compiler.Diagnostics;
 
@@ -642,12 +643,12 @@ namespace Orchard.Environment.Extensions
             return runtimeIds.Distinct();
         }
 
-        private bool IsAmbientExtension (IExtensionInfo extensionInfo)
+        private bool IsAmbientExtension(IExtensionInfo extensionInfo)
         {
-             return IsAmbientAssembly(extensionInfo.Id);
+            return IsAmbientAssembly(extensionInfo.Id);
         }
 
-        private bool IsDynamicContext (ProjectContext context)
+        private bool IsDynamicContext(ProjectContext context)
         {
             if (context == null)
             {
@@ -658,7 +659,7 @@ namespace Orchard.Environment.Extensions
             return CompilerUtility.GetCompilationSources(context, compilationOptions).Any();
         }
 
-        private bool IsPrecompiledContext (ProjectContext context)
+        private bool IsPrecompiledContext(ProjectContext context)
         {
             return context == null || !IsDynamicContext(context);
         }
@@ -718,8 +719,7 @@ namespace Orchard.Environment.Extensions
 
         private void PopulateRuntimeFolder(string assetPath, string relativeFolderPath = null)
         {
-            var runtimeDirectory = Paths.GetParentFolderPath(CSharpExtensionCompiler.EntryAssembly.Location);
-            PopulateBinaryFolder(runtimeDirectory, assetPath, relativeFolderPath);
+            PopulateBinaryFolder(ApplicationEnvironment.ApplicationBasePath, assetPath, relativeFolderPath);
         }
     }
 }
