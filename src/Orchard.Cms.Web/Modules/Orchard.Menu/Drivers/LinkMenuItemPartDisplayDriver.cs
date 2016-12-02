@@ -23,12 +23,6 @@ namespace Orchard.Lists.Drivers
         public override IDisplayResult Display(LinkMenuItemPart part, BuildPartDisplayContext context)
         {
             return Combine(
-                Shape<ValueModel<LinkMenuItemPart>>("LinkMenuItemPart", model =>
-                {
-                    model.Value = part;
-                    return Task.CompletedTask;
-                })
-                .Location("Detail", "Content:10"),
                 Shape("LinkMenuItemPart_Admin", shape =>
                 {
                     shape.MenuItemPart = part;

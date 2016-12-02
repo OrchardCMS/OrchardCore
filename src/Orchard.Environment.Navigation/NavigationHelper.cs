@@ -40,7 +40,7 @@ namespace Orchard.Environment.Navigation
         /// <returns>The menu item shape.</returns>
         public static dynamic BuildMenuItemShape(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem)
         {
-            var menuItemShape = shapeFactory.MenuItem()
+            var menuItemShape = shapeFactory.NavigationItem()
                 .Text(menuItem.Text)
                 .Id(menuItem.Id)
                 .Href(menuItem.Href)

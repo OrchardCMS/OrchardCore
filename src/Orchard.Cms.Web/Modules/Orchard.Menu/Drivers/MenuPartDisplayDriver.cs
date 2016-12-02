@@ -35,17 +35,15 @@ namespace Orchard.Lists.Drivers
             _contentManager = contentManager;
         }
 
-        public override IDisplayResult Display(MenuPart part, BuildPartDisplayContext context)
-        {
-            return Combine(
-                Shape("MenuPart", shape =>
-                {
-                    shape.Foo = "Bar";
-                    return Task.CompletedTask;
-                })
-                .Location("Detail", "Content:10")
-            );
-        }
+        //public override IDisplayResult Display(MenuPart part, BuildPartDisplayContext context)
+        //{
+        //    return Shape<ValueModel<MenuPart>>("MenuPart", model =>
+        //        {
+        //            model.Value = part;
+        //            return Task.CompletedTask;
+        //        })
+        //        .Location("Detail", "Content:10");
+        //}
 
         public override IDisplayResult Edit(MenuPart part)
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -68,8 +69,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
                 var serviceProvider = services.BuildServiceProvider();
-                var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
+                var extensionManager = serviceProvider.GetService<IExtensionManager>();
+                
+                var expander = new ModuleViewLocationExpander(extensionManager.GetExtensions().Select(x => x.Id).ToArray());
+                options.ViewLocationExpanders.Add(expander);
+
+                var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
+
                 (serviceProvider as IDisposable)?.Dispose();
             });
 
