@@ -25,7 +25,7 @@ namespace Orchard.DisplayManagement.Extensions
         public IFileInfo ExtensionFileInfo => _extensionInfo.ExtensionFileInfo;
         public string SubPath => _extensionInfo.SubPath;
         public IManifestInfo Manifest => _extensionInfo.Manifest;
-        public IFeatureInfoList Features => _extensionInfo.Features;
+        public IEnumerable<IFeatureInfo> Features => _extensionInfo.Features;
         public bool Exists => _extensionInfo.Exists;
 
         public string BaseTheme => _baseTheme;

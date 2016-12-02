@@ -92,14 +92,14 @@ namespace Orchard.Environment.Extensions
             return _extensionInfoList;
         }
 
-        public IFeatureInfoList GetFeatureDependencies(string featureId)
+        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
             var features = GetExtensions().Features;
 
             var feature = features.FirstOrDefault(x => x.Id == featureId);
             if (feature == null)
             {
-                return EmptyFeatureInfoList.Singleton;
+                return Enumerable.Empty<IFeatureInfo>();
             }
 
             var dependencies = new HashSet<IFeatureInfo>() { feature };
@@ -117,17 +117,17 @@ namespace Orchard.Environment.Extensions
                 }
             }
 
-            return new FeatureInfoList(dependencies.Distinct().ToList());
+            return dependencies.Distinct();
         }
 
-        public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
         {
             var features = GetExtensions().Features;
 
             var feature = features.FirstOrDefault(x => x.Id == featureId);
             if (feature == null)
             {
-                return EmptyFeatureInfoList.Singleton;
+                return Enumerable.Empty<IFeatureInfo>();
             }
 
             var getDependants =
@@ -137,10 +137,8 @@ namespace Orchard.Environment.Extensions
                                 f.Dependencies.Any(dep => dep == currentFeature.Id)
                                ).ToArray());
 
-            var dependentFeatures =
+            return
                 GetDependentFeatures(feature, featuresToSearch, getDependants);
-
-            return new FeatureInfoList(dependentFeatures);
         }
 
         private IList<IFeatureInfo> GetDependentFeatures(

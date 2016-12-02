@@ -8,7 +8,7 @@ namespace Orchard.Environment.Extensions
     public class EmptyExtensionInfoList : IExtensionInfoList
     {
         /// <summary>
-        /// A shared instance of <see cref="EmptyExtensionInfoList"/> 
+        /// A shared instance of <see cref="EmptyExtensionInfoList"/>
         /// </summary>
         public static EmptyExtensionInfoList Singleton { get; } = new EmptyExtensionInfoList();
 
@@ -22,11 +22,11 @@ namespace Orchard.Environment.Extensions
 
         public int Count => 0;
 
-        public IFeatureInfoList Features
+        public IEnumerable<IFeatureInfo> Features
         {
             get
             {
-                return EmptyFeatureInfoList.Singleton;
+                return Enumerable.Empty<IFeatureInfo>();
             }
         }
 

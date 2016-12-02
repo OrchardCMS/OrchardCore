@@ -14,7 +14,7 @@ namespace Orchard.Environment.Extensions.Features
         private static string CategoryKey = "Category";
         private static string DescriptionKey = "Description";
 
-        public IFeatureInfoList GetFeatures(
+        public IEnumerable<IFeatureInfo> GetFeatures(
             IExtensionInfo extensionInfo,
             IManifestInfo manifestInfo)
         {
@@ -29,11 +29,11 @@ namespace Orchard.Environment.Extensions.Features
                     var featureId = featureSection.Key;
 
                     var featureDetails = featureSection.GetChildren().ToDictionary(x => x.Key, v => v.Value);
-                    
+
                     var featureName =
                         featureDetails.ContainsKey(NameKey) ?
                             featureDetails[NameKey] : manifestInfo.Name;
-                    
+
                     var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
                         featureDetails[DependenciesKey]
                             .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
@@ -47,8 +47,8 @@ namespace Orchard.Environment.Extensions.Features
                             double.Parse(featureDetails[PriorityKey]) :
                             (manifestFeatureDetails.ContainsKey(PriorityKey) ? double.Parse(manifestFeatureDetails[PriorityKey]) : 0D);
 
-                    var featureCategory = 
-                        featureDetails.ContainsKey(CategoryKey) ? 
+                    var featureCategory =
+                        featureDetails.ContainsKey(CategoryKey) ?
                             featureDetails[CategoryKey] :
                             (manifestFeatureDetails.ContainsKey(CategoryKey) ? manifestFeatureDetails[CategoryKey] : null);
 
@@ -101,7 +101,7 @@ namespace Orchard.Environment.Extensions.Features
                 features.Add(featureInfo);
             }
 
-            return new FeatureInfoList(features);
+            return features;
         }
     }
 }

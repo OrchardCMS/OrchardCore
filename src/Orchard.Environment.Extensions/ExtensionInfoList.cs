@@ -18,17 +18,16 @@ namespace Orchard.Environment.Extensions
             get { return _extensions.First(x => x.Id == key); }
         }
 
-        private IFeatureInfoList _features;
+        private IEnumerable<IFeatureInfo> _features;
 
-        public IFeatureInfoList Features {
+        public IEnumerable<IFeatureInfo> Features {
             get
             {
                 if (_features == null)
                 {
-                    _features = new FeatureInfoList(
+                    _features =
                         _extensions
-                            .SelectMany(x => x.Features)
-                            .ToList());
+                            .SelectMany(x => x.Features);
                 }
 
                 return _features;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
@@ -10,7 +11,7 @@ namespace Orchard.Environment.Extensions
         private readonly IFileInfo _fileInfo;
         private readonly string _subPath;
         private readonly IManifestInfo _manifestInfo;
-        private readonly IFeatureInfoList _features;
+        private readonly IEnumerable<IFeatureInfo> _features;
 
         public InternalExtensionInfo(string subPath)
         {
@@ -18,14 +19,14 @@ namespace Orchard.Environment.Extensions
 
             _fileInfo = new NotFoundFileInfo(subPath);
             _manifestInfo = new NotFoundManifestInfo(subPath);
-            _features = EmptyFeatureInfoList.Singleton;
+            _features = Enumerable.Empty<IFeatureInfo>();
         }
-        
+
         public string Id => _fileInfo.Name;
         public IFileInfo ExtensionFileInfo => _fileInfo;
         public string SubPath => _subPath;
         public IManifestInfo Manifest => _manifestInfo;
-        public IFeatureInfoList Features => _features;
+        public IEnumerable<IFeatureInfo> Features => _features;
         public bool Exists => _fileInfo.Exists && _manifestInfo.Exists;
     }
 }

@@ -9,7 +9,7 @@ namespace Orchard.Tests.Stubs
 {
     public class StubExtensionManager : IExtensionManager
     {
-        public IFeatureInfoList GetFeatureDependencies(string featureId)
+        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
             throw new NotImplementedException();
         }
@@ -44,7 +44,7 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
         {
             throw new NotImplementedException();
         }
@@ -64,12 +64,12 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        IFeatureInfoList IExtensionManager.GetFeatureDependencies(string featureId)
+        IEnumerable<IFeatureInfo> IExtensionManager.GetFeatureDependencies(string featureId)
         {
             throw new NotImplementedException();
         }
 
-        IFeatureInfoList IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        IEnumerable<IFeatureInfo> IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
         {
             throw new NotImplementedException();
         }

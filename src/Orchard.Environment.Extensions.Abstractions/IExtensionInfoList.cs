@@ -6,6 +6,6 @@ namespace Orchard.Environment.Extensions
     public interface IExtensionInfoList : IEnumerable<IExtensionInfo>
     {
         IExtensionInfo this[string key] { get; }
-        IFeatureInfoList Features { get; }
+        IEnumerable<IFeatureInfo> Features { get; }
     }
 }

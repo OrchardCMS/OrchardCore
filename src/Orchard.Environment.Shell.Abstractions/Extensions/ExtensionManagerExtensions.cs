@@ -12,7 +12,8 @@ namespace Orchard.Environment.Shell
         {
             return shellDescriptor
                 .Features
-                .SelectMany(shellFeature => extensionManager.GetFeatureDependencies(shellFeature.Id)).Distinct();
+                .SelectMany(shellFeature => extensionManager.GetFeatureDependencies(shellFeature.Id))
+                .Distinct();
         }
 
         public static IEnumerable<IFeatureInfo> GetDisabledFeatures(this IExtensionManager extensionManager, ShellDescriptor shellDescriptor)

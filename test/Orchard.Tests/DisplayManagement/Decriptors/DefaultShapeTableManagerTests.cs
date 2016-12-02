@@ -80,11 +80,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
-                Features = new FeatureInfoList(features);
+                Features = features;
             }
 
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IFeatureInfoList Features { get; set; }
+            public IEnumerable<IFeatureInfo> Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
@@ -114,7 +114,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
-                Features = new FeatureInfoList(features);
+                Features = features;
 
                 Id = name;
             }
@@ -135,19 +135,17 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
-                var features =
+                Features =
                     new List<IFeatureInfo>()
                     {
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
                     };
 
-                Features = new FeatureInfoList(features);
-
                 Id = name;
             }
 
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IFeatureInfoList Features { get; set; }
+            public IEnumerable<IFeatureInfo> Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
@@ -254,7 +252,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 _features = features;
             }
 
-            public IFeatureInfoList GetFeatureDependencies(string featureId)
+            public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
             {
                 throw new NotImplementedException();
             }
@@ -269,7 +267,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
             }
 
-            public IFeatureInfoList GetFeatures(string[] featureIds)
+            public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIds)
             {
                 throw new NotImplementedException();
             }
@@ -294,7 +292,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
 
-            public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+            public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
             {
                 throw new NotImplementedException();
             }
@@ -314,12 +312,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
-            IFeatureInfoList IExtensionManager.GetFeatureDependencies(string featureId)
+            IEnumerable<IFeatureInfo> IExtensionManager.GetFeatureDependencies(string featureId)
             {
                 throw new NotImplementedException();
             }
 
-            IFeatureInfoList IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+            IEnumerable<IFeatureInfo> IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
             {
                 throw new NotImplementedException();
             }
