@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.DisplayManagement.ModelBinding;
@@ -85,7 +86,7 @@ namespace Orchard.Menu.Controllers
             else
             {
                 // Look for the target menu item in the hierarchy
-                var parentMenuItem = FindMenuItem(menu, menuItemId);
+                var parentMenuItem = FindMenuItem(menu.Content, menuItemId);
 
                 // Couldn't find targetted menu item
                 if (parentMenuItem == null)
@@ -93,9 +94,16 @@ namespace Orchard.Menu.Controllers
                     return NotFound();
                 }
 
-                var menuItemsList = parentMenuItem.GetOrCreate<MenuItemsListPart>();
-                menuItemsList.MenuItems.Add(contentItem);
-                menuItemsList.Update();
+                var menuItems = parentMenuItem?.MenuItemsListPart?.MenuItems as JArray;
+
+                if (menuItems == null)
+                {
+                    parentMenuItem["MenuItemsListPart"] = new JObject(
+                        new JProperty("MenuItems", menuItems = new JArray())
+                        );
+                }
+
+                menuItems.Add(JObject.FromObject(contentItem));
             }
 
             _session.Save(menu);
@@ -103,23 +111,23 @@ namespace Orchard.Menu.Controllers
             return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
         }
 
-        private ContentItem FindMenuItem(ContentItem contentItem, int menuItemId)
+        private JObject FindMenuItem(JObject contentItem, int menuItemId)
         {
-            if (contentItem.ContentItemId == menuItemId)
+            if (contentItem["ContentItemId"]?.Value<int>() == menuItemId)
             {
                 return contentItem;
             }
 
-            var menuItems = contentItem.As<MenuItemsListPart>()?.MenuItems;
-
-            if (menuItems == null)
+            if (contentItem.GetValue("MenuItemsListPart") == null)
             {
                 return null;
             }
 
-            ContentItem result;
+            var menuItems = (JArray) contentItem["MenuItemsListPart"]["MenuItems"];
 
-            foreach(var menuItem in menuItems)
+            JObject result;
+
+            foreach(JObject menuItem in menuItems)
             {
                 // Search in inner menu items
                 result = FindMenuItem(menuItem, menuItemId);

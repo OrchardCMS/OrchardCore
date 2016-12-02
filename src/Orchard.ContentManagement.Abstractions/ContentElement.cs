@@ -43,23 +43,18 @@ namespace Orchard.ContentManagement
         /// </summary>
         public T Get<T>(string name) where T : ContentElement
         {
-            JToken value;
-            if (Data.TryGetValue(name, out value))
+            var obj = Data[name] as JObject;
+
+            if (obj == null)
             {
-                var obj = value as JObject;
-                if (obj == null)
-                {
-                    return default(T);
-                }
-
-                var result = obj.ToObject<T>();
-                result.Data = obj;
-                result.ContentItem = ((IContent)this).ContentItem;
-
-                return result;
+                return default(T);
             }
 
-            return default(T);
+            var result = obj.ToObject<T>();
+            result.Data = obj;
+            result.ContentItem = ((IContent)this).ContentItem;
+
+            return result;
         }
 
         public T GetOrCreate<T>() where T : ContentElement, new()

@@ -63,7 +63,7 @@ namespace Orchard.ContentManagement
 
         public static void Update(this ContentElement contentElement)
         {
-            contentElement.Data.Merge(JObject.FromObject(contentElement));
+            contentElement.Data.Merge(JObject.FromObject(contentElement), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
         }
 
         private static ContentElement AlterContentElement<T>(this ContentElement contentElement, string propertyName, Action<T> action) where T : ContentElement

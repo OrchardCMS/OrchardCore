@@ -9,30 +9,36 @@
 @inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject Orchard.DisplayManagement.ModelBinding.IModelUpdaterAccessor ModelUpdaterAccessor
 
-@if (Model.Content != null)
-{
-    <div class="alert alert-info">
-        @Display(Model.Content)
-        <div class="float-xs-right">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems" data-menuitemid="@Model.ContentItem.ContentItemId">
-                @T["Add Menu Item"]
+<div class="card">
+    <div class="card-block">
+        <div class="card-title">
+            @if (Model.Content != null)
+            {
+                @Display(Model.Content)
+            }
+
+            <button type="button" class="btn btn-primary btn-sm float-xs-right" data-toggle="modal" data-target="#modalMenuItems" data-menuitemid="@Model.ContentItem.ContentItemId">
+                @T["+"]
             </button>
         </div>
-    </div>
-}
+        @{
+            ContentItem contentItem = Model.ContentItem;
+            var menuItems = contentItem.As<MenuItemsListPart>();
 
-@{
-    ContentItem contentItem = Model.ContentItem;
-    var menuItems = contentItem.As<MenuItemsListPart>();
+            if (menuItems != null)
+            {
+                var updater = ModelUpdaterAccessor.ModelUpdater;
 
-    if (menuItems != null)
-    {
-        var updater = ModelUpdaterAccessor.ModelUpdater;
-
-        @foreach (var menuItem in menuItems.MenuItems)
-        {
-            var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-            @Display(menuItemShape);
+                @foreach (var menuItem in menuItems.MenuItems)
+                {
+                    var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                    @Display(menuItemShape);
+                }
+            }
         }
-    }
-}
+
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalMenuItems" data-menuitemid="@Model.ContentItem.ContentItemId">
+            @T["+"]
+        </button>
+    </div>
+</div>
