@@ -62,6 +62,11 @@ namespace Orchard.ContentManagement
             return default(T);
         }
 
+        public T GetOrCreate<T>() where T : ContentElement, new()
+        {
+            return GetOrCreate<T>(typeof(T).Name);
+        }
+
         public T GetOrCreate<T>(string name) where T : ContentElement, new()
         {
             JToken value;

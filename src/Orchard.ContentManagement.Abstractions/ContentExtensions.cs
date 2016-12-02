@@ -61,10 +61,9 @@ namespace Orchard.ContentManagement
             return contentPart;
         }
 
-        public static ContentItem Update(this ContentItem contentItem, ContentPart contentPart)
+        public static void Update(this ContentElement contentElement)
         {
-            contentItem.Data[contentPart.GetType().Name] = JObject.FromObject(contentPart);
-            return contentItem;
+            contentElement.Data.Merge(JObject.FromObject(contentElement));
         }
 
         private static ContentElement AlterContentElement<T>(this ContentElement contentElement, string propertyName, Action<T> action) where T : ContentElement
