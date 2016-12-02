@@ -106,7 +106,7 @@ namespace Orchard.ContentManagement.Display
 
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
 
-            var actualShapeType = stereotype ?? "Content" + "_Edit";
+            var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
@@ -138,7 +138,7 @@ namespace Orchard.ContentManagement.Display
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var stereotype = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Stereotype;
-            var actualShapeType = stereotype ?? "Content" + "_Edit";
+            var actualShapeType = (stereotype ?? "Content") + "_Edit";
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;

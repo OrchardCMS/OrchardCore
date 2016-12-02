@@ -1,0 +1,92 @@
+﻿@*
+    This template is used to render the editor for a Menu content item.
+    It render the hierarchy of the menu items.
+    The shape is created from MenuPartDisplayDriver
+*@
+
+@model MenuPartEditViewModel
+@inject IContentManager ContentManager
+@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject Orchard.DisplayManagement.ModelBinding.IModelUpdaterAccessor ModelUpdaterAccessor
+@inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
+
+@using Orchard.ContentManagement.Metadata.Settings;
+
+@{
+    var updater = ModelUpdaterAccessor.ModelUpdater;
+    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "MenuItem");
+    var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
+}
+
+<nav class="admin-toolbar">
+    <div class="nav navbar-nav">
+        <div class="pull-xs-right">
+            <!-- Button trigger modal -->
+            <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
+                @T["Add Menu Item"]
+            </button>
+        </div>
+    </div>
+</nav>
+
+<fieldset class="form-group" asp-validation-class-for="Name">
+    <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
+    <input asp-for="Name" class="form-control" />
+    <span class="hint">@T["The name of the menu."]</span>
+</fieldset>
+
+@foreach(var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
+{
+    var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+    @Display(menuItemShape);
+}
+
+<!-- Modal -->
+<div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">@T["Available Menu Items"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var type in menuItemContentTypes)
+                    {
+                        var menuItem = ContentManager.New(type.Name);
+                        var thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
+                        thumbnail.MenuItemType = type.Name;
+                        thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
+                        <div class="col-sm-6">
+                            @Display(thumbnail)
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    var menuItemId;
+
+    $('#modalMenuItems').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        menuItemId = button.data('menuitemid') // Extract info from data-* attributes
+    })
+
+    $('.thumbnail-link-create').on('click', function () {
+        // there is no value for a new root menu item
+        if (menuItemId) {
+            var link = $(this);
+            var href = link.attr('href');
+            href += '&menuitemid=' + menuItemId;
+            link.attr('href', href);
+        }
+    });
+</script>

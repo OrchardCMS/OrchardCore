@@ -1,0 +1,41 @@
+﻿<style asp-src="~/Orchard.Contents/Styles/Contents.min.css" debug-src="~/Orchard.Contents/Styles/Contents.css"></style>
+
+<div class="edit-container">
+    <div class="edit-body">
+        <div class="edit-item-primary">
+            @if (Model.Content != null)
+            {
+                <div class="edit-item-content">
+                    @Display(Model.Content)
+                </div>
+            }
+        </div>
+        <div class="edit-item-parts">
+            @if (Model.Parts != null)
+            {
+                @Display(Model.Parts)
+            }
+        </div>
+
+        <div class="edit-item-secondary group">
+            @if (Model.Actions != null)
+            {
+                <div class="edit-item-actions form-group">
+                    @Display(Model.Actions)
+                </div>
+            }
+        </div>
+    </div>
+@if (Model.Sidebar != null)
+{
+    <div class="edit-sidebar-handler"></div>
+    <div class="edit-sidebar group">
+        @Display(Model.Sidebar)
+    </div>
+}
+</div>
+
+@if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+{
+    @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+}
