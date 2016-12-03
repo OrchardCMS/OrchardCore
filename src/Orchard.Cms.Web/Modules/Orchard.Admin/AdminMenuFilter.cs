@@ -36,6 +36,11 @@ namespace Orchard.Admin
                 return;
             }
 
+            if (filterContext.HttpContext.Response.StatusCode != 200)
+            {
+                return;
+            }
+
             // Populate main nav
             IShape menuShape = _shapeFactory.Create("Navigation",
                 Arguments.From(new

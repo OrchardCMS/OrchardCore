@@ -1,14 +1,18 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Diagnostics
 {
     public class Startup : StartupBase
     {
+        private readonly FileExtensionContentTypeProvider _contentTypeProvider = new FileExtensionContentTypeProvider();
+
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var env = serviceProvider.GetService<IHostingEnvironment>();
@@ -20,6 +24,21 @@ namespace Orchard.Diagnostics
 
             // c.f. https://docs.asp.net/en/latest/fundamentals/error-handling.html#id3
             app.UseStatusCodePagesWithReExecute("/Error", "?status={0}");
+
+            app.Use((context, next) =>
+            {
+                string contentType;
+                if (_contentTypeProvider.TryGetContentType(context.Request.Path, out contentType))
+                {
+                    var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
+                    if (statusCodePagesFeature != null)
+                    {
+                        statusCodePagesFeature.Enabled = false;
+                    }
+                }
+
+                return next();
+            });
 
             routes.MapAreaRoute(
                 name: "Diagnostics.Error",
