@@ -5,6 +5,7 @@ using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Localization;
@@ -60,7 +61,7 @@ namespace Orchard.ContentFields.Fields
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Value))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("Url is required for {0}.", settings.Label));
+                    updater.ModelState.AddModelError(GetPrefix(context), T("The url is required for {0}.", context.PartFieldDefinition.DisplayName()));
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Value) && !Uri.IsWellFormedUriString(field.Value, UriKind.RelativeOrAbsolute))
                 {
@@ -68,7 +69,11 @@ namespace Orchard.ContentFields.Fields
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("Text is required for {0}.", settings.Label));
+                    updater.ModelState.AddModelError(GetPrefix(context), T("The link text is required for {0}.", context.PartFieldDefinition.DisplayName()));
+                }
+                else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.TextDefaultValue))
+                {
+                    updater.ModelState.AddModelError(GetPrefix(context), T("The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()));
                 }
             }
 

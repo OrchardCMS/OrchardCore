@@ -3,11 +3,9 @@ namespace Orchard.ContentFields.Settings
     public class LinkFieldSettings
     {
         public string Hint { get; set; }
-        public string Label { get; set; }
         public bool Required { get; set; }
         public TargetMode TargetMode { get; set; }
         public LinkTextMode LinkTextMode { get; set; }
-        public string StaticText { get; set; }
         public string UrlPlaceholder { get; set; }
         public string TextPlaceholder { get; set; }
         public string DefaultValue { get; set; }

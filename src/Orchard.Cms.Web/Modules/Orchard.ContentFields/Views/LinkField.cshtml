@@ -4,12 +4,12 @@
 
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
-    string name = settings.Label;
+    string name = Model.PartFieldDefinition.DisplayName();
     string text = Model.Field.Text;
     switch (settings.LinkTextMode)
     {
         case LinkTextMode.Static:
-            text = settings.StaticText;
+            text = settings.TextDefaultValue;
             break;
         case LinkTextMode.Url:
             text = Model.Field.Value;
@@ -24,5 +24,5 @@
 }
 <p class="link-field">
     <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
-    <span class="value"><a href="@Model.Field.Value" @if (!string.IsNullOrWhiteSpace(Model.Field.Target)) { <text> target="@Model.Field.Target" </text>  }>@text</a></span>
+    <span class="value"><a href="@Model.Field.Value" @if (!string.IsNullOrWhiteSpace(Model.Field.Target)) { <text> target="@Model.Field.Target" </text> }>@text</a></span>
 </p>
