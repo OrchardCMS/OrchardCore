@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -68,11 +69,17 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
-                var expander = new ModuleViewLocationExpander();
+                var serviceProvider = services.BuildServiceProvider();
+                var extensionManager = serviceProvider.GetService<IExtensionManager>();
+
+                var expander = new ModuleViewLocationExpander(extensionManager.GetExtensions());
+   
                 options.ViewLocationExpanders.Add(expander);
 
                 var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
+
+                (serviceProvider as IDisposable)?.Dispose();
             });
 
             // Register the configuration object for modules to register options with it
