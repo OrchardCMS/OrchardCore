@@ -76,7 +76,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
    
                 options.ViewLocationExpanders.Add(expander);
 
-                var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
+                var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
 
                 (serviceProvider as IDisposable)?.Dispose();
