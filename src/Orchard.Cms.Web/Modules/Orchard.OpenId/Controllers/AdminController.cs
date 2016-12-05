@@ -117,9 +117,6 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(_H["Open Id settings are not properly configured."]);
 
             if (model.Type == ClientType.Public)
             {
@@ -160,17 +157,37 @@ namespace Orchard.OpenId.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-        
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Create(string returnUrl = null)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
+                return Unauthorized();
+
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                _notifier.Warning(_H["Open Id settings are not properly configured."]);
+
+            var roles = await _roleProvider.GetRoleNamesAsync();
+
+            var model = new CreateOpenIdApplicationViewModel()
+            {
+                RoleEntries = roles.Select(r => new RoleEntry() { Name = r }).ToList()
+            };
+
+
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateOpenIdApplicationViewModel model, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(_H["Open Id settings are not properly configured."]);
-
+            
             if (model.Type == ClientType.Public)
             {
                 if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
