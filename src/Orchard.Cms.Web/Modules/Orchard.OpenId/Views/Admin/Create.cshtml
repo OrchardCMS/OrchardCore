@@ -5,8 +5,7 @@
 <h1>@RenderTitleSegments(T["Create OpenId Application"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+<form asp-action="Create" method="post">
     <div class="form-group" asp-validation-class-for="ClientId">
         <label asp-for="ClientId">@T["Client Id"]</label>
         <span asp-validation-for="ClientId" class="text-danger">@T["The Client Id is required."]</span>
