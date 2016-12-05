@@ -166,5 +166,10 @@ namespace Orchard.Demo.Controllers
                 ViewContext = new ViewContext()
             };
         }
+
+        public IActionResult ShapePerformance()
+        {
+            return View();
+        }
     }
 }
