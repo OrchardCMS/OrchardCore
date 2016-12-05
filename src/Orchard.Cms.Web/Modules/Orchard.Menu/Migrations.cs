@@ -19,6 +19,7 @@ namespace Orchard.Menu
                 .Draftable()
                 .Creatable()
                 .WithPart("MenuPart")
+                .WithPart("IdentityPart")
                 .WithPart("MenuItemsListPart")
             );
 
