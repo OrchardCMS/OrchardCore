@@ -33,18 +33,26 @@ namespace Orchard.OpenId
             if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
                 openIddictOptions.AccessTokenHandler = new JwtSecurityTokenHandler();
 
-            if (!openIdSettings.TestingModeEnabled && openIdSettings.CertificateStoreLocation.HasValue && openIdSettings.CertificateStoreName.HasValue && !string.IsNullOrEmpty(openIdSettings.CertificateThumbPrint))
+            if (openIdSettings.TestingModeEnabled)
             {
-                try
+                openIddictOptions.SigningCredentials.AddEphemeralKey();
+                openIddictOptions.AllowInsecureHttp = true;
+            }
+            else
+            {
+                openIddictOptions.AllowInsecureHttp = false;
+                if (openIdSettings.CertificateStoreLocation.HasValue && openIdSettings.CertificateStoreName.HasValue && !string.IsNullOrEmpty(openIdSettings.CertificateThumbPrint))
                 {
-                    openIddictOptions.AllowInsecureHttp = false;
-                    openIddictOptions.SigningCredentials.Clear();
-                    openIddictOptions.SigningCredentials.AddCertificate(openIdSettings.CertificateThumbPrint, openIdSettings.CertificateStoreName.Value, openIdSettings.CertificateStoreLocation.Value);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError("Orchard.OpenId module needs you provide a valid signing certificate.", e);
-                    throw e;
+                    try
+                    {
+
+                        openIddictOptions.SigningCredentials.AddCertificate(openIdSettings.CertificateThumbPrint, openIdSettings.CertificateStoreName.Value, openIdSettings.CertificateStoreLocation.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError("Orchard.OpenId module needs you provide a valid signing certificate.", e);
+                        throw e;
+                    }
                 }
             }
         }

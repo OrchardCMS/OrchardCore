@@ -14,8 +14,10 @@ using Orchard.Environment.Shell;
 using Orchard.OpenId.Drivers;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
+using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
+using Orchard.Recipes;
 using Orchard.Security;
 using Orchard.Settings.Services;
 using Orchard.SiteSettings;
@@ -70,14 +72,13 @@ namespace Orchard.OpenId
 
             services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
             services.AddScoped<IOpenIdService, OpenIdService>();
-            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIddictConfigureOptions>();
-            services.AddScoped<IConfigureOptions<JwtBearerOptions>, JwtBearerConfigureOptions>();
+            services.AddRecipeExecutionStep<OpenIdSettingsStep>();
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
             services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
             services.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
-            
+
             var builder = services.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
                 .AddApplicationStore<OpenIdApplicationStore>()
                 .AddTokenStore<OpenIdTokenStore>()
@@ -93,9 +94,11 @@ namespace Orchard.OpenId
                 .AllowRefreshTokenFlow()
                 .UseDataProtectionProvider(_dataProtectionProvider)
                 .RequireClientIdentification()
-                .Configure(options => options.ApplicationCanDisplayErrors = true)
-                .DisableHttpsRequirement()
-                .AddEphemeralSigningKey();
+                .Configure(options => options.ApplicationCanDisplayErrors = true);
+
+            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIddictConfigureOptions>();
+            services.AddScoped<IConfigureOptions<JwtBearerOptions>, JwtBearerConfigureOptions>();
+
         }
     }
 }
