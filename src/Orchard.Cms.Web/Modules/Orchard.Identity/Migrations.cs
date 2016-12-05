@@ -23,6 +23,10 @@ namespace Orchard.Identity
 
             SchemaBuilder.CreateMapIndexTable(nameof(IdentityPartIndex), table => table
                 .Column<string>("Identifier", col => col.WithLength(36))
+                .Column<int>("ContentItemId")
+                .Column<int>("Latest")
+                .Column<int>("Number")
+                .Column<int>("Published")
             );
 
             return 1;

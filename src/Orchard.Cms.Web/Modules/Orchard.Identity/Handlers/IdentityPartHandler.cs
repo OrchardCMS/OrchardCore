@@ -16,13 +16,18 @@ namespace Orchard.Identity.Handlers
         {
             context.For<ContentItemMetadata>(contentItemMetadata =>
             {
-                contentItemMetadata.Identity.Add("Identifier", part.Identifier);
+                contentItemMetadata.Identity.Add("Identifier", part.Identity);
+
+                if (!String.IsNullOrEmpty(part.Name))
+                {
+                    contentItemMetadata.DisplayText = part.Name;
+                }
             });
         }
 
         protected void AssignIdentity(IdentityPart part)
         {
-            part.Identifier = Guid.NewGuid().ToString("n");
+            part.Identity = Guid.NewGuid().ToString("n");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,16 +37,28 @@ namespace Orchard.Menu
                     dynamic menu = processing.Shape;
                     string menuName = menu.MenuName;
                     int contentItemId = menu.ContentItemId;
+                    string identity = menu.Identity;
 
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                     // events and thus this code can be cached.
 
                     var httpContext = _httpContextAccessor.HttpContext;
-                    var contentManager = httpContext.RequestServices.GetService<IContentManager>();
                     var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
 
-                    var menuContentItem = contentManager.GetAsync(contentItemId).Result;
+                    ContentItem menuContentItem = null;
+
+                    if (contentItemId > 0)
+                    {
+                        var contentManager = httpContext.RequestServices.GetService<IContentManager>();
+                        menuContentItem = contentManager.GetAsync(contentItemId).Result;
+                    }
+                    else if (!String.IsNullOrEmpty(identity))
+                    {
+                        var contentIdentityManager = httpContext.RequestServices.GetService<IContentIdentityManager>();
+                        menuContentItem = contentIdentityManager.LoadContentItemAsync("identifier", identity).Result;
+                    }
+
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
                     if (menuItems == null)

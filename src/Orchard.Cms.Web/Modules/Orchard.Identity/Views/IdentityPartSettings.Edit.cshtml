@@ -1,0 +1,29 @@
+@model Orchard.Identity.Settings.IdentityPartSettingsViewModel
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="ShowIdentityEditor" type="checkbox" class="form-check-input" checked="@Model.ShowIdentityEditor" /> @T["Display identity editor"]
+        <span class="hint">@T["Check to render the identity editor."]</span>
+    </label>
+</fieldset>
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="AllowCustomIdentity" type="checkbox" class="form-check-input" checked="@Model.AllowCustomIdentity" /> @T["Allow custom identity"]
+        <span class="hint">@T["Check to allow users to enter a custom identifier."]</span>
+    </label>
+</fieldset>
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="AllowChangeIdentity" type="checkbox" class="form-check-input" checked="@Model.AllowChangeIdentity" /> @T["Allow identity change"]
+        <span class="hint">@T["Check to allow users to change the identity once it has been set. <em>Use with care as some other parts of the system might already be using this identifier</em>."]</span>
+    </label>
+</fieldset>
+
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="ShowNameEditor" type="checkbox" class="form-check-input" checked="@Model.ShowNameEditor" /> @T["Show Name editor"]
+        <span class="hint">@T["Check to allow users to set a friendly name for the content item."]</span>
+    </label>
+</fieldset>

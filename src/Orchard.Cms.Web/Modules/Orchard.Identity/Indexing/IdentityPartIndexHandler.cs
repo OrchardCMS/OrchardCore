@@ -10,7 +10,7 @@ namespace Orchard.Identity.Indexing
         {
             var options = DocumentIndexOptions.Store;
 
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Identifier, DocumentIndex.Types.Text, options));
+            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(part.Identity, DocumentIndex.Types.Text, options));
 
             return Task.CompletedTask;
         }
