@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
-using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.Display.Models;
-using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
-using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Menu.Models;
 using Orchard.Menu.ViewModels;
-using YesSql.Core.Services;
 
 namespace Orchard.Lists.Drivers
 {
@@ -35,31 +27,18 @@ namespace Orchard.Lists.Drivers
             _contentManager = contentManager;
         }
 
-        //public override IDisplayResult Display(MenuPart part, BuildPartDisplayContext context)
-        //{
-        //    return Shape<ValueModel<MenuPart>>("MenuPart", model =>
-        //        {
-        //            model.Value = part;
-        //            return Task.CompletedTask;
-        //        })
-        //        .Location("Detail", "Content:10");
-        //}
-
         public override IDisplayResult Edit(MenuPart part)
         {
             return Shape<MenuPartEditViewModel>("MenuPart_Edit", model =>
             {
                 model.MenuPart = part;
-                model.Name = part.Name;
                 return Task.CompletedTask;
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
+        public override Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(part, Prefix, x => x.Name);
-
-            return Edit(part);
+            return base.UpdateAsync(part, updater);
         }
     }
 }

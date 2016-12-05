@@ -4,7 +4,9 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
-    "Orchard.Indexing.Abstractions": "2.0.0-*"
+    "Orchard.Indexing.Abstractions": "2.0.0-*",
+    "Orchard.ContentTypes.Abstractions": "2.0.0-*",
+    "Orchard.DisplayManagement": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"
