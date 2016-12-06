@@ -33,8 +33,7 @@ namespace Orchard.Menu
                 .OnProcessing(processing =>
                 {
                     dynamic menu = processing.Shape;
-                    string menuName = menu.MenuName;
-                    int contentItemId = menu.ContentItemId;
+                    int contentItemId = menu.ContentItemId ?? 0;
                     string identity = menu.Identity;
 
                     // Menu population is executed when processing the shape so that its value
@@ -43,12 +42,12 @@ namespace Orchard.Menu
 
                     var httpContext = _httpContextAccessor.HttpContext;
                     var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
+                    var contentManager = httpContext.RequestServices.GetService<IContentManager>();
 
                     ContentItem menuContentItem = null;
 
                     if (contentItemId > 0)
                     {
-                        var contentManager = httpContext.RequestServices.GetService<IContentManager>();
                         menuContentItem = contentManager.GetAsync(contentItemId).Result;
                     }
                     else if (!String.IsNullOrEmpty(identity))
@@ -56,6 +55,8 @@ namespace Orchard.Menu
                         var contentIdentityManager = httpContext.RequestServices.GetService<IContentIdentityManager>();
                         menuContentItem = contentIdentityManager.GetAsync(new ContentIdentity("identifier", identity)).Result;
                     }
+
+                    menu.MenuName = contentManager.PopulateAspect<ContentItemMetadata>(menuContentItem).DisplayText;
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
@@ -74,7 +75,6 @@ namespace Orchard.Menu
                             ContentItem = contentItem,
                             Level = 0,
                             Menu = menu,
-                            MenuName = menuName
                         }));
 
                         menu.Items.Add(shape);
