@@ -14,16 +14,16 @@ namespace Orchard.Identity.Services
             _session = session;
         }
 
-        public async Task<ContentItem> LoadContentItemAsync(string key, string value)
+        public Task<ContentItem> GetAsync(string key, string value)
         {
 
             if (key != "identifier")
             {
-                return null;
+                return Task.FromResult<ContentItem>(null);
             }
             else
             {
-                return await _session.QueryAsync<ContentItem, IdentityPartIndex>(x => x.Identifier == value && x.Published == true && x.Latest == true).FirstOrDefault();
+                return _session.QueryAsync<ContentItem, IdentityPartIndex>(x => x.Identifier == value && x.Published == true && x.Latest == true).FirstOrDefault();
             }
         }
     }

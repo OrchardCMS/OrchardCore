@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
@@ -36,9 +40,69 @@ namespace Orchard.Lists.Drivers
             });
         }
 
-        public override Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
         {
-            return base.UpdateAsync(part, updater);
+            var model = new MenuPartEditViewModel();
+
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy))
+            {
+                var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
+
+                var newHierarchy = JArray.Parse(model.Hierarchy);
+
+                var menuItems = new JArray();
+
+                foreach (var item in newHierarchy)
+                {
+                    menuItems.Add(ProcessItem(originalMenuItems, item as JObject));
+                }
+
+                part.ContentItem.Content["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+            }
+
+            return Edit(part);
+        }
+
+        /// <summary>
+        /// Clone the content items at the specific index.
+        /// </summary>
+        private JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
+        {
+            ContentItem menuItem = null;
+
+            foreach(var index in indexes)
+            {
+                menuItem = menuItems.MenuItems[index];
+                menuItems = menuItem.As<MenuItemsListPart>();
+            }
+
+            var newObj = JObject.Parse(JsonConvert.SerializeObject(menuItem));
+            if (newObj["MenuItemsListPart"] != null)
+            {
+                newObj["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", new JArray()));
+            }
+
+            return newObj;
+        }
+        
+        private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
+        {
+            var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
+
+            var children = item["children"] as JArray;
+
+            if (children != null)
+            {
+                var menuItems = new JArray();
+
+                for (var i = 0; i < children.Count; i++)
+                {
+                    menuItems.Add(ProcessItem(originalItems, children[i] as JObject));
+                    contentItem["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+                }
+            }
+
+            return contentItem;
         }
     }
 }

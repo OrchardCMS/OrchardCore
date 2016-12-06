@@ -5,7 +5,7 @@ namespace Orchard.Menu.ViewModels
 {
     public class MenuPartEditViewModel
     {
-        public string Name { get; set; }
+        public string Hierarchy { get; set; }
 
         [BindNever]
         public MenuPart MenuPart { get; set; }
