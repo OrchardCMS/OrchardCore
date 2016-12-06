@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Extensions;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Mvc.Razor
@@ -21,17 +23,21 @@ namespace Orchard.Hosting.Mvc.Razor
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var result = new List<string>();
-
-            var extensionManager = context.ActionContext.HttpContext.RequestServices.GetService<IExtensionManager>();
             var shellFeaturesManager = context.ActionContext.HttpContext.RequestServices.GetService<IShellFeaturesManager>();
+            var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
 
-            var availableFeatures = extensionManager.GetExtensions().Features;
-            var enabledFeatures = shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+            // GetEnabledFeaturesAsync() updated to be ordered by deps and priorities
+            var orderedFeatures = shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+            var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
 
-            var features = availableFeatures.Where(af => enabledFeatures.Any(ef => af.Id == ef.Id));
-            var extensions = features.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension).Reverse();
+            var extensions = new List<IExtensionInfo>();
+            var theme = themeManager.GetThemeAsync().Result;
 
+            extensions.Add(theme);
+            extensions.AddRange(GetBaseThemes(theme, orderedExtensions));
+            extensions.AddRange(orderedExtensions.Where(e => !e.Manifest.IsTheme()).Reverse());
+
+            var result = new List<string>();
             foreach (var extension in extensions)
             {
                 var viewsPath = Path.Combine(Path.DirectorySeparatorChar + extension.SubPath,
@@ -42,8 +48,48 @@ namespace Orchard.Hosting.Mvc.Razor
             }
 
             result.AddRange(viewLocations);
-
             return result;
+        }
+
+        private IEnumerable<IExtensionInfo> GetBaseThemes(IExtensionInfo theme, IEnumerable<IExtensionInfo> extensions)
+        {
+            if (theme.Id.Equals("TheAdmin", StringComparison.OrdinalIgnoreCase))
+            {
+                // Special case: conceptually, the base themes of "TheAdmin" is the list of all enabled themes.
+                // This is so that any enabled theme can have controller/action/views in the Admin of the site.
+                return extensions.Where(e => e.Manifest.IsTheme() && e.Id != "TheAdmin");
+            }
+            else
+            {
+                var list = new List<IExtensionInfo>();
+                var theTheme = new ThemeExtensionInfo(theme);
+                while (true)
+                {
+                    if (theme == null)
+                        break;
+
+                    if (!theTheme.HasBaseTheme())
+                        break;
+
+                    var baseExtension = extensions.FirstOrDefault(e => theTheme.IsBaseThemeFeature(e.Id));
+                    if (baseExtension == null)
+                    {
+                        break;
+                    }
+
+                    // Protect against potential infinite loop
+                    if (list.Contains(baseExtension))
+                    {
+                        break;
+                    }
+
+                    list.Add(baseExtension);
+
+                    theme = baseExtension;
+                }
+
+                return list;
+            }
         }
     }
 }
