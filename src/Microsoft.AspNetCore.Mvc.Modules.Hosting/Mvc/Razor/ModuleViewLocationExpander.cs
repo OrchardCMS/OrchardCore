@@ -3,24 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell;
 
 namespace Orchard.Hosting.Mvc.Razor
 {
     public class ModuleViewLocationExpander : IViewLocationExpander
     {
-        private readonly IEnumerable<IExtensionInfo> _extensions;
-
-        public ModuleViewLocationExpander() : this(new ExtensionInfoList(new List<IExtensionInfo>()))
-        {
-        }
-
-        public ModuleViewLocationExpander(IExtensionInfoList extensions)
-        {
-            _extensions = extensions.Features.Where(x => x.Id == x.Extension.Id)
-                .Select(x => x.Extension).Reverse();
-        }
-
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
@@ -32,7 +23,16 @@ namespace Orchard.Hosting.Mvc.Razor
         {
             var result = new List<string>();
 
-            foreach (var extension in _extensions)
+            var extensionManager = context.ActionContext.HttpContext.RequestServices.GetService<IExtensionManager>();
+            var shellFeaturesManager = context.ActionContext.HttpContext.RequestServices.GetService<IShellFeaturesManager>();
+
+            var availableFeatures = extensionManager.GetExtensions().Features;
+            var enabledFeatures = shellFeaturesManager.GetEnabledFeaturesAsync().Result;
+
+            var features = availableFeatures.Where(af => enabledFeatures.Any(ef => af.Id == ef.Id));
+            var extensions = features.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension).Reverse();
+
+            foreach (var extension in extensions)
             {
                 var viewsPath = Path.Combine(Path.DirectorySeparatorChar + extension.SubPath,
                     "Views", context.AreaName != extension.Id ? context.AreaName : String.Empty);

@@ -69,13 +69,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
-                var serviceProvider = services.BuildServiceProvider();
-                var extensionManager = serviceProvider.GetService<IExtensionManager>();
-
-                var expander = new ModuleViewLocationExpander(extensionManager.GetExtensions());
-   
+                var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
 
+                var serviceProvider = services.BuildServiceProvider();
                 var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
 
