@@ -13,7 +13,9 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Body)')
+        $('#@Html.IdFor(m => m.Body)').trumbowyg();
+
+        $('.trumbowyg-editor')
         .on('input', function () {
             $(document).trigger('contentpreview:render');
         })
@@ -23,6 +25,6 @@
                 $(document).trigger('contentpreview:render');
             }
         })
-        .trumbowyg();
+
     });
 </script>
