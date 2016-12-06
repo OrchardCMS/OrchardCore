@@ -159,10 +159,8 @@ namespace Orchard.Environment.Shell
         /// <returns>An enumeration of the disabled features.</returns>
         private IEnumerable<IFeatureInfo> GetFeaturesToDisable(IFeatureInfo featureInfo, bool force)
         {
-            var features = _extensionManager.GetExtensions().Features;
-
             var affectedFeatures = _extensionManager
-                .GetDependentFeatures(featureInfo.Id, features.Select(x => x.Id).ToArray())
+                .GetDependentFeatures(featureInfo.Id)
                 .ToList();
 
             if (affectedFeatures.Count > 1 && !force)

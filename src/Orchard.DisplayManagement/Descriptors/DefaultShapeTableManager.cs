@@ -163,9 +163,8 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
             }
 
-            var featureIds = _extensionManager.GetExtensions().Features.Select(x => x.Id).ToArray();
             return _extensionManager
-                .GetDependentFeatures(item.Value.Feature.Id, featureIds)
+                .GetDependentFeatures(item.Value.Feature.Id)
                 .Contains(subject.Value.Feature);
         }
 

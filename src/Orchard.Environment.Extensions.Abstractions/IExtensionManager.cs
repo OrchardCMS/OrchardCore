@@ -12,7 +12,7 @@ namespace Orchard.Environment.Extensions
         Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
         IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId);
-        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, string[] featureIdsToSearch);
+        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId);
         Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
         Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad);
     }

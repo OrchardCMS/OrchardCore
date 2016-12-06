@@ -60,7 +60,6 @@ namespace Orchard.Modules.Controllers
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
-            var enabledFeatureIds = enabledFeatures.Select(x => x.Id).ToArray();
 
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
@@ -69,7 +68,7 @@ namespace Orchard.Modules.Controllers
                 .Where(f => !f.Extension.Manifest.IsTheme()))
             {
                 var dependentFeatures = _extensionManager
-                    .GetDependentFeatures(moduleFeatureInfo.Id, enabledFeatureIds);
+                    .GetDependentFeatures(moduleFeatureInfo.Id);
 
                 var moduleFeature = new ModuleFeature
                 {
