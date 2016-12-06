@@ -186,7 +186,7 @@ namespace Orchard.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge(contentItem.Content);
+            menuItem.Merge(contentItem.Content, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
 
             _session.Save(menu);
 

@@ -61,6 +61,14 @@ namespace Orchard.ContentManagement
         TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
     }
 
+    public static class ContentManagerExtensions
+    {
+        public static TAspect PopulateAspect<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
+        {
+            return contentManager.PopulateAspect(content, new TAspect());
+        }
+    }
+
     public class VersionOptions
     {
         /// <summary>

@@ -148,7 +148,7 @@ namespace Orchard.DisplayManagement.TagHelpers
                 nextIsUpper = false;
             }
 
-            return "";
+            return result.ToString();
         }
     }
 }
