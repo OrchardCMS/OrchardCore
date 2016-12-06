@@ -4,6 +4,6 @@ namespace Orchard.ContentManagement
 {
     public interface IContentIdentityManager
     {
-        Task<ContentItem> LoadContentItemAsync(string key, string value);
+        Task<ContentItem> GetAsync(ContentIdentity identity);
     }
 }

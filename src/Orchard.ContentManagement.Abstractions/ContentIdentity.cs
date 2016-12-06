@@ -17,6 +17,11 @@ namespace Orchard.ContentManagement
         {
         }
 
+        public ContentIdentity(string name, string value)
+        {
+            Add(name, value);
+        }
+
         public void Add(string name, string value)
         {
             if (_identities == null)

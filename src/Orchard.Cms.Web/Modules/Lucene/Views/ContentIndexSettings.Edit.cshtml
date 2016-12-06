@@ -2,8 +2,8 @@
 
 <fieldset class="form-group">
     <div class="form-check">
-        <label class="form-check-label" data-toggle="collapse" data-target="#index-settings">
-            <input asp-for="ContentIndexSettings.Included"  type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Included" /> @T["Include this element index"]
+        <label class="form-check-label">
+            <input asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Included" /> @T["Include this element index"]
             <span class="hint">@T["Check to include the value of this element in the index."]</span>
         </label>
     </div>

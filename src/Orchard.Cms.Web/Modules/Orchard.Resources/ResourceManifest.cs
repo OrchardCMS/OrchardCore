@@ -14,6 +14,13 @@ namespace Orchard.Resources
                 ;
 
             manifest
+                .DefineScript("jquery-ui")
+                .SetDependencies("jQuery")
+                .SetUrl("/Orchard.Resources/Scripts/jquery-ui.min.js", "/Orchard.Resources/Scripts/jquery-ui.js")
+                .SetCdn("http://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+                ;
+
+            manifest
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery")
                 .SetUrl("/Orchard.Resources/Scripts/bootstrap.min.js", "/Orchard.Resources/Scripts/bootstrap.js")

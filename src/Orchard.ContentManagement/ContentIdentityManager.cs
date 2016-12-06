@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement
@@ -14,14 +12,18 @@ namespace Orchard.ContentManagement
             _providers = providers;
         }
 
-        public async Task<ContentItem> LoadContentItemAsync(string key, string value)
+        public async Task<ContentItem> GetAsync(ContentIdentity identity)
         {
             foreach(var provider in _providers)
             {
-                var contentItem = await provider.LoadContentItemAsync(key, value);
-                if (contentItem != null)
+                foreach(var name in identity.Names)
                 {
-                    return contentItem;
+                    var contentItem = await provider.GetAsync(name, identity.Get(name));
+
+                    if (contentItem != null)
+                    {
+                        return contentItem;
+                    }
                 }
             }
 

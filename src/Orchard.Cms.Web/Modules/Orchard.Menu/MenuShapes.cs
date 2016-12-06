@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.DisplayManagement;
@@ -56,7 +54,7 @@ namespace Orchard.Menu
                     else if (!String.IsNullOrEmpty(identity))
                     {
                         var contentIdentityManager = httpContext.RequestServices.GetService<IContentIdentityManager>();
-                        menuContentItem = contentIdentityManager.LoadContentItemAsync("identifier", identity).Result;
+                        menuContentItem = contentIdentityManager.GetAsync(new ContentIdentity("identifier", identity)).Result;
                     }
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;

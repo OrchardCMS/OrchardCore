@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.Contents.ViewComponents
@@ -12,22 +10,34 @@ namespace Orchard.Contents.ViewComponents
     public class DisplayContentItemViewComponent : ViewComponent
     {
         private readonly IContentManager _contentManager;
+        private readonly IContentIdentityManager _contentIdentityManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IModelUpdaterAccessor _modelUpdaterAccessor;
 
         public DisplayContentItemViewComponent(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IModelUpdaterAccessor modelUpdaterAccessor)
+            IModelUpdaterAccessor modelUpdaterAccessor,
+            IContentIdentityManager contentIdentityManager)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _modelUpdaterAccessor = modelUpdaterAccessor;
+            _contentIdentityManager = contentIdentityManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int contentItemId, string displayType = null)
+        public async Task<IViewComponentResult> InvokeAsync(int contentItemId = 0, ContentIdentity identity = null, string displayType = null)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId);
+            ContentItem contentItem = null;
+
+            if (contentItemId != 0)
+            {
+                contentItem = await _contentManager.GetAsync(contentItemId);
+            }
+            else if (identity != null)
+            {
+                contentItem = await _contentIdentityManager.GetAsync(identity);
+            }
 
             if (contentItem == null)
             {

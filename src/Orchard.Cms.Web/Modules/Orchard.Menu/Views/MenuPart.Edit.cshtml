@@ -4,6 +4,9 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
+<script asp-src="~/Orchard.Menu/Scripts/menu.js" at="Foot" depends-on="admin"></script>
+<style asp-src="~/Orchard.Menu/Styles/menu.min.css" debug-src="~/Orchard.Menu/Styles/menu.css"></style>
+
 @model MenuPartEditViewModel
 @inject IContentManager ContentManager
 @inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -16,25 +19,26 @@
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
+    var index = 0;
 }
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-        <div class="pull-xs-right">
-            <!-- Button trigger modal -->
-            <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
-                @T["Add Menu Item"]
-            </button>
-        </div>
-    </div>
+    <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
+        @T["Add Menu Item"]
+    </button>
 </nav>
 
-@foreach(var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
-{
-    var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-    menuItemShape.MenuPart = Model.MenuPart;
-    @Display(menuItemShape);
-}
+<p>
+    <ol id="menu">
+        @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
+        {
+            var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+            menuItemShape.MenuPart = Model.MenuPart;
+            menuItemShape.Index = index++;
+            @Display(menuItemShape);
+        }
+    </ol>
+</p>
 
 <!-- Modal -->
 <div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -67,8 +71,12 @@
     </div>
 </div>
 
+<input asp-for="Hierarchy" type="hidden" value="" />
+<div id="msg-leave"style="display:none" data>@T["You have reordered the navigation."]</div>
+
 <script at="Foot">
     var menuItemId;
+    var confirmLeave;
 
     $('#modalMenuItems').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget) // Button that triggered the modal
@@ -84,4 +92,30 @@
             link.attr('href', href);
         }
     });
+
+    $(function () {
+        $('#menu')
+            .nestedSortable({
+                handle: 'div.menu-item-title',
+                items: 'li.menu-item',
+                toleranceElement: '> div.menu-item-title',
+                relocate: function () {
+                    confirmLeave = true;
+                    $('#@Html.IdFor(m => m.Hierarchy)').attr('value', JSON.stringify($('#menu').nestedSortable('toHierarchy')));
+                }
+            });
+
+        window.onbeforeunload = function () {
+            if (confirmLeave) {
+                return $('#msg-leave').text();
+            }
+        }
+
+        $('#menu').closest("form").on('submit', function (e) {
+            confirmLeave = false;
+            window.onbeforeunload = function () { };
+        });
+    });
+
+
 </script>
