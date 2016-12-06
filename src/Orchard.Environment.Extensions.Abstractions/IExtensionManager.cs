@@ -12,8 +12,8 @@ namespace Orchard.Environment.Extensions
         Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
         IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId);
-        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch);
+        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, string[] featureIdsToSearch);
         Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
-        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IFeatureInfo[] featuresToLoad);
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad);
     }
 }

@@ -163,7 +163,10 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
             }
 
-            return _extensionManager.ObserverHasADependencyOnSubject(item.Value.Feature, subject.Value.Feature);
+            var featureIds = _extensionManager.GetExtensions().Features.Select(x => x.Id).ToArray();
+            return _extensionManager
+                .GetDependentFeatures(item.Value.Feature.Id, featureIds)
+                .Contains(subject.Value.Feature);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)

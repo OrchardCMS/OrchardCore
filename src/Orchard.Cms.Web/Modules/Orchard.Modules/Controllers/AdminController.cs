@@ -60,6 +60,7 @@ namespace Orchard.Modules.Controllers
             }
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var enabledFeatureIds = enabledFeatures.Select(x => x.Id).ToArray();
 
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
@@ -67,8 +68,9 @@ namespace Orchard.Modules.Controllers
                 .Features
                 .Where(f => !f.Extension.Manifest.IsTheme()))
             {
-                var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id, enabledFeatures.ToArray());
-                
+                var dependentFeatures = _extensionManager
+                    .GetDependentFeatures(moduleFeatureInfo.Id, enabledFeatureIds);
+
                 var moduleFeature = new ModuleFeature
                 {
                     Descriptor = moduleFeatureInfo,
@@ -178,7 +180,7 @@ namespace Orchard.Modules.Controllers
         {
             var availableFeatures = _extensionManager.GetExtensions().Features;
             var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
-            
+
             if (feature == null)
             {
                 return NotFound();

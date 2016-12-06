@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;

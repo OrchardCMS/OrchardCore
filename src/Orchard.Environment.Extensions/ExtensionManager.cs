@@ -120,7 +120,7 @@ namespace Orchard.Environment.Extensions
             return dependencies.Distinct();
         }
 
-        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, string[] featureIdsToSearch)
         {
             var features = GetExtensions().Features;
 
@@ -129,6 +129,8 @@ namespace Orchard.Environment.Extensions
             {
                 return Enumerable.Empty<IFeatureInfo>();
             }
+
+            var featuresToSearch = features.Where(f => featureIdsToSearch.Contains(f.Id)).ToArray();
 
             var getDependants =
                 new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
@@ -185,10 +187,11 @@ namespace Orchard.Environment.Extensions
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
             var allUnorderedFeatures = GetExtensions().Features.ToArray();
+            var allUnorderedFeatureIds = GetExtensions().Features.Select(x => x.Id).ToArray();
 
             var orderedFeatureDescriptors = allUnorderedFeatures
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatureIds).Contains(fiSub),
                     (fi) => fi.Priority)
                 .Distinct();
 
@@ -199,16 +202,18 @@ namespace Orchard.Environment.Extensions
 
             return loadedFeatures.AsEnumerable();
         }
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IFeatureInfo[] featuresToLoad)
+
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             var allUnorderedFeatures = GetExtensions().Features.ToArray();
+            var allUnorderedFeatureIds = GetExtensions().Features.Select(x => x.Id).ToArray();
 
             var allUnorderedFeaturesToLoadIncludingDependencies =
-                featuresToLoad.SelectMany(feature => GetFeatureDependencies(feature.Id));
+                featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
 
             var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatureIds).Contains(fiSub),
                     (fi) => fi.Priority)
                 .Distinct();
 
