@@ -5,6 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
@@ -36,7 +37,7 @@ namespace Orchard.DisplayManagement
                 options.FileProviders.Add(new ThemingFileProvider());
             });
 
-            services.AddScoped<IFeatureBuilderEvents, >
+            services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
         }
