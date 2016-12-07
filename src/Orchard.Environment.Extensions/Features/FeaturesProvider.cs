@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Orchard.Environment.Extensions.Features
 {
-    public class FeaturesProvider : IFeatureProvider
+    public class FeaturesProvider : IFeaturesProvider
     {
         public const string FeatureProviderCacheKey = "FeatureProvider:Features";
 

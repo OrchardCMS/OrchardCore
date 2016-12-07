@@ -15,19 +15,16 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
-        private readonly IFeatureManager _featureManager;
         private readonly IHostingEnvironment _hostingEnviroment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
-            IFeatureManager featureManager,
             IHostingEnvironment hostingEnviroment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
-            _featureManager = featureManager;
             _hostingEnviroment = hostingEnviroment;
             _shellFeaturesManager = shellFeaturesManager;
         }

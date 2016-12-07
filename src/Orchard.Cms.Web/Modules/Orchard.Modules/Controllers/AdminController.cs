@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.Admin;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Modules.Models;
 using Orchard.Modules.Services;
 using Orchard.Modules.ViewModels;
 using Orchard.Mvc;
-using Orchard.Environment.Shell;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Modules.Controllers
 {
@@ -23,7 +22,6 @@ namespace Orchard.Modules.Controllers
     {
         private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IFeatureManager _featureManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
@@ -32,7 +30,6 @@ namespace Orchard.Modules.Controllers
         public AdminController(
             IModuleService moduleService,
             IExtensionManager extensionManager,
-            IFeatureManager featureManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
@@ -41,7 +38,6 @@ namespace Orchard.Modules.Controllers
         {
             _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _featureManager = featureManager;
             _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;

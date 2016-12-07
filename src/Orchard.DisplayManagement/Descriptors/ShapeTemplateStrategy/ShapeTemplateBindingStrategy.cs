@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,6 +14,12 @@ using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -30,14 +30,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
-        private readonly IFeatureManager _featureManager;
-        private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
-            IFeatureManager featureManager,
-            IExtensionManager extensionManager,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
@@ -45,8 +41,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
-            _featureManager = featureManager;
-            _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _viewEngine = options;

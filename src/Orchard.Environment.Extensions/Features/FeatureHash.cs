@@ -39,7 +39,7 @@ namespace Orchard.Environment.Extensions.Features
                 .Aggregate(0, (a, f) => a * 7 + f.Id.GetHashCode());
 
             var options = new MemoryCacheEntryOptions()
-                .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
+                .AddExpirationToken(_signal.GetToken(FeaturesProvider.FeatureProviderCacheKey));
 
             _memoryCache.Set(FeatureHashCacheKey, serial, options);
 
@@ -48,7 +48,7 @@ namespace Orchard.Environment.Extensions.Features
 
         public async Task<int> GetFeatureHashAsync(string featureId)
         {
-            var cacheKey = FeatureHashCacheKey + ":" + featureId;
+            var cacheKey = string.Format("{0}:{1}", FeatureHashCacheKey, featureId);
             bool enabled;
             if (!_memoryCache.TryGetValue(cacheKey, out enabled))
             {
@@ -58,7 +58,7 @@ namespace Orchard.Environment.Extensions.Features
                         .Any(x => x.Id.Equals(featureId));
 
                 var options = new MemoryCacheEntryOptions()
-                    .AddExpirationToken(_signal.GetToken(FeatureManager.FeatureManagerCacheKey));
+                    .AddExpirationToken(_signal.GetToken(FeaturesProvider.FeatureProviderCacheKey));
 
                 _memoryCache.Set(cacheKey, enabled, options);
             }

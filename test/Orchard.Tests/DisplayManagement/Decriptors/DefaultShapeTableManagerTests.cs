@@ -158,7 +158,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
@@ -291,12 +290,12 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
             {
-                throw new NotImplementedException();
+                return _features.Where(x => featureIdsToLoad.Contains(x.Id));
             }
 
             public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
             {
-                throw new NotImplementedException();
+                return _features.Where(x => x.Dependencies.Contains(featureId));
             }
 
             public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()

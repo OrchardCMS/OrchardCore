@@ -45,14 +45,12 @@ namespace Orchard.Environment.Extensions
                 services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
 
-            services.AddSingleton<IFeatureManager, FeatureManager>();
-
             return services;
         }
 
         public static IServiceCollection AddExtensionManager(this IServiceCollection services)
         {
-            services.TryAddScoped<IFeatureManager, FeatureManager>();
+            services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
             services.TryAddTransient<IFeatureHash, FeatureHash>();
 
             return services;
