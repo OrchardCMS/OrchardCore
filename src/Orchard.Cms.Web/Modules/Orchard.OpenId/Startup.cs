@@ -14,10 +14,8 @@ using Orchard.Environment.Shell;
 using Orchard.OpenId.Drivers;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
-using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
-using Orchard.Recipes;
 using Orchard.Security;
 using Orchard.Settings.Services;
 using Orchard.SiteSettings;
@@ -72,7 +70,6 @@ namespace Orchard.OpenId
 
             services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
             services.AddScoped<IOpenIdService, OpenIdService>();
-            services.AddRecipeExecutionStep<OpenIdSettingsStep>();
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
