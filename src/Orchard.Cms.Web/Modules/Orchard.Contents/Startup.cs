@@ -39,18 +39,42 @@ namespace Orchard.Contents
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "DisplayContent",
+                name: "DisplayContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/Item/Display/{contentItemId}",
+                template: "Contents/ContentItems/{contentItemId}",
                 defaults: new {controller = "Item", action = "Display" }
             );
 
             routes.MapAreaRoute(
-                name: "PreviewContent",
+                name: "PreviewContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/Item/Preview/{contentItemId}",
+                template: "Contents/ContentItems/{contentItemId}/Preview",
                 defaults: new { controller = "Item", action = "Preview" }
             );
+
+            // Admin
+            routes.MapAreaRoute(
+                name: "EditContentItem",
+                areaName: "Orchard.Contents",
+                template: "Contents/ContentItems/{contentItemId}/Edit",
+                defaults: new { controller = "Admin", action = "Edit" }
+            );
+
+            routes.MapAreaRoute(
+                name: "CreateContentItem",
+                areaName: "Orchard.Contents",
+                template: "Contents/ContentTypes/{id}/Create",
+                defaults: new { controller = "Admin", action = "Create" }
+            );
+
+            routes.MapAreaRoute(
+                name: "ListContentItems",
+                areaName: "Orchard.Contents",
+                template: "Contents/ContentItems",
+                defaults: new { controller = "Admin", action = "List" }
+            );
+
+
         }
     }
 }

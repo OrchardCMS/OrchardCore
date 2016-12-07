@@ -494,7 +494,7 @@ namespace Orchard.Contents.Controllers
 
             if (returnUrl == null)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "Id", contentItem.ContentItemId } });
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
             }
             else
             {
