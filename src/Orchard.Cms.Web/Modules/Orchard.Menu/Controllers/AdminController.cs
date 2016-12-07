@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
+using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Menu.Models;
@@ -18,6 +20,7 @@ namespace Orchard.Menu.Controllers
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
 
@@ -26,12 +29,14 @@ namespace Orchard.Menu.Controllers
             IContentManager contentManager,
             IAuthorizationService authorizationService,
             IContentItemDisplayManager contentItemDisplayManager,
+            IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
             H = h;
@@ -70,7 +75,18 @@ namespace Orchard.Menu.Controllers
                 return Unauthorized();
             }
 
-            var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            ContentItem menu;
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+
+            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            }
+            else
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+            }
 
             if (menu == null)
             {
@@ -161,7 +177,18 @@ namespace Orchard.Menu.Controllers
                 return Unauthorized();
             }
 
-            var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            ContentItem menu;
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+
+            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            }
+            else
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+            }
 
             if (menu == null)
             {
@@ -201,7 +228,18 @@ namespace Orchard.Menu.Controllers
                 return Unauthorized();
             }
 
-            var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            ContentItem menu;
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+
+            if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
+            }
+            else
+            {
+                menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.DraftRequired);
+            }
 
             if (menu == null)
             {
