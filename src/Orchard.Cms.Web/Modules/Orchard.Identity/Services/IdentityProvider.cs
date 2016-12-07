@@ -23,7 +23,7 @@ namespace Orchard.Identity.Services
             }
             else
             {
-                return _session.QueryAsync<ContentItem, IdentityPartIndex>(x => x.Identifier == value && x.Published == true && x.Latest == true).FirstOrDefault();
+                return _session.QueryAsync<ContentItem, IdentityPartIndex>(x => x.Identifier == value && x.Published == true).FirstOrDefault();
             }
         }
     }
