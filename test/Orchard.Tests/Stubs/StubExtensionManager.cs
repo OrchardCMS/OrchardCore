@@ -9,7 +9,7 @@ namespace Orchard.Tests.Stubs
 {
     public class StubExtensionManager : IExtensionManager
     {
-        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
             throw new NotImplementedException();
         }
@@ -24,62 +24,32 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
+        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
-        {
-            throw new NotImplementedException();
-        }
-
-        IExtensionInfo IExtensionManager.GetExtension(string extensionId)
-        {
-            throw new NotImplementedException();
-        }
-
-        IExtensionInfoList IExtensionManager.GetExtensions()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<ExtensionEntry> IExtensionManager.LoadExtensionAsync(IExtensionInfo extensionInfo)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<IFeatureInfo> IExtensionManager.GetFeatureDependencies(string featureId)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<IFeatureInfo> IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync(IFeatureInfo[] featuresToLoad)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             throw new NotImplementedException();
         }

@@ -9,6 +9,7 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Utility;
 using Orchard.Environment.Shell;
+using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -215,7 +216,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private bool IsBaseTheme(string featureId, string themeId)
         {
             // determine if the given feature is a base theme of the given theme
-            var availableFeatures = _extensionManager.GetExtensions().Features;
+            var availableFeatures = _extensionManager.GetFeatures();
 
             var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeId);
             while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())

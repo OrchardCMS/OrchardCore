@@ -212,10 +212,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetEnabledFeaturesAsync()
             {
-                var extensions = _extensionManager.GetExtensions();
-                var features = extensions.Features;
-
-                return Task.FromResult(features.AsEnumerable());
+                return Task.FromResult(_extensionManager.GetFeatures());
             }
 
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
@@ -267,11 +264,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
             }
 
-            public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIds)
-            {
-                throw new NotImplementedException();
-            }
-
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
             {
                 throw new NotImplementedException();
@@ -292,42 +284,27 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
 
-            public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+            public IEnumerable<IFeatureInfo> GetFeatures()
+            {
+                return _features;
+            }
+
+            public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
             {
                 throw new NotImplementedException();
             }
 
-            IExtensionInfo IExtensionManager.GetExtension(string extensionId)
+            public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
             {
                 throw new NotImplementedException();
             }
 
-            IExtensionInfoList IExtensionManager.GetExtensions()
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            Task<ExtensionEntry> IExtensionManager.LoadExtensionAsync(IExtensionInfo extensionInfo)
-            {
-                throw new NotImplementedException();
-            }
-
-            IEnumerable<IFeatureInfo> IExtensionManager.GetFeatureDependencies(string featureId)
-            {
-                throw new NotImplementedException();
-            }
-
-            IEnumerable<IFeatureInfo> IExtensionManager.GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync()
-            {
-                throw new NotImplementedException();
-            }
-
-            Task<IEnumerable<FeatureEntry>> IExtensionManager.LoadFeaturesAsync(IFeatureInfo[] featuresToLoad)
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
             {
                 throw new NotImplementedException();
             }

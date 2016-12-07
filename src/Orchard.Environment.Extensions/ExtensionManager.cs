@@ -94,7 +94,7 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            var features = GetExtensions().Features;
+            var features = GetFeatures();
 
             var feature = features.FirstOrDefault(x => x.Id == featureId);
             if (feature == null)
@@ -122,7 +122,7 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            var features = GetExtensions().Features;
+            var features = GetFeatures();
 
             var feature = features.FirstOrDefault(x => x.Id == featureId);
             if (feature == null)
@@ -184,7 +184,7 @@ namespace Orchard.Environment.Extensions
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            var allUnorderedFeatures = GetExtensions().Features.ToArray();
+            var allUnorderedFeatures = GetFeatures().ToArray();
 
             var orderedFeatureDescriptors = allUnorderedFeatures
                 .OrderByDependenciesAndPriorities(
@@ -199,8 +199,20 @@ namespace Orchard.Environment.Extensions
 
             return loadedFeatures.AsEnumerable();
         }
+        public IEnumerable<IFeatureInfo> GetFeatures()
+        {
+            var allUnorderedFeatures = GetExtensions().Features.ToArray();
 
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+            var orderedFeatureDescriptors = allUnorderedFeatures
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                    (fi) => fi.Priority)
+                .Distinct();
+
+            return orderedFeatureDescriptors;
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
             var allUnorderedFeatures = GetExtensions().Features.ToArray();
 
@@ -213,8 +225,15 @@ namespace Orchard.Environment.Extensions
                     (fi) => fi.Priority)
                 .Distinct();
 
+            return orderedFeatureDescriptors;
+        }
+
+        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        {
+            var features = GetFeatures(featureIdsToLoad);
+
             // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptors
+            var loadedFeatures = await Task.WhenAll(features
                 .Select(feature => LoadFeatureAsync(feature))
                 .ToArray());
 

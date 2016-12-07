@@ -34,8 +34,7 @@ namespace Orchard.Modules.Recipes.Executors
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
-            var extensions = _extensionManager.GetExtensions();
-            var features = extensions.Features;
+            var features = _extensionManager.GetFeatures();
 
             foreach (var featureId in step.Disable)
             {
@@ -72,7 +71,7 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
                 }
 
-                var featuresToEnable = extensions.Features.Where(x => step.Enable.Contains(x.Id)).ToList();
+                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }

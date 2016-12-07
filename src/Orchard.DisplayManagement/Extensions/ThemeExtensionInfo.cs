@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Extensions
 {
