@@ -29,6 +29,8 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary<string, Task<FeatureEntry>> _features
             = new ConcurrentDictionary<string, Task<FeatureEntry>>();
 
+        private IDictionary<string, IExtensionInfo> _extensionsById;
+
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
@@ -51,14 +53,14 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo GetExtension(string extensionId)
         {
-            return GetExtensions()[extensionId];
+            GetExtensions(); // initialize
+
+            return _extensionsById[extensionId];
         }
 
-        private IExtensionInfoList _extensionInfoList;
-
-        public IExtensionInfoList GetExtensions()
+        public IEnumerable<IExtensionInfo> GetExtensions()
         {
-            if (_extensionInfoList == null)
+            if (_extensionsById == null)
             {
                 var extensionsById = new Dictionary<string, IExtensionInfo>();
 
@@ -86,10 +88,10 @@ namespace Orchard.Environment.Extensions
                     }
                 }
 
-                _extensionInfoList = new ExtensionInfoList(extensionsById.Values.ToList());
+                _extensionsById = extensionsById;
             }
 
-            return _extensionInfoList;
+            return _extensionsById.Values;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
@@ -201,7 +203,9 @@ namespace Orchard.Environment.Extensions
         }
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            var allUnorderedFeatures = GetExtensions().Features.ToArray();
+            GetExtensions(); // Initialize
+
+            var allUnorderedFeatures = _extensionsById.Values.SelectMany(x => x.Features);
 
             var orderedFeatureDescriptors = allUnorderedFeatures
                 .OrderByDependenciesAndPriorities(
@@ -214,7 +218,9 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allUnorderedFeatures = GetExtensions().Features.ToArray();
+            GetExtensions(); // Initialize
+
+            var allUnorderedFeatures = _extensionsById.Values.SelectMany(x => x.Features);
 
             var allUnorderedFeaturesToLoadIncludingDependencies =
                 featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));

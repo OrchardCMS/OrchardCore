@@ -8,7 +8,7 @@ namespace Orchard.Environment.Extensions
     public interface IExtensionManager
     {
         IExtensionInfo GetExtension(string extensionId);
-        IExtensionInfoList GetExtensions();
+        IEnumerable<IExtensionInfo> GetExtensions();
         Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
         IEnumerable<IFeatureInfo> GetFeatures();
