@@ -68,7 +68,7 @@ namespace Orchard.Menu.Controllers
 
         [HttpPost]
         [ActionName("Create")]
-        public async Task<IActionResult> CreatePost(string id, int menuContentItemId, int menuItemId)
+        public async Task<IActionResult> CreatePost(string id, string menuContentItemId, string menuItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
@@ -102,7 +102,7 @@ namespace Orchard.Menu.Controllers
                 return View(model);
             }
 
-            if (menuItemId == 0)
+            if (menuItemId == null)
             {
                 // Use the menu as the parent if no target is specified
                 menu.Alter<MenuItemsListPart>(part => part.MenuItems.Add(contentItem));
@@ -135,7 +135,7 @@ namespace Orchard.Menu.Controllers
             return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
         }
 
-        public async Task<IActionResult> Edit(int menuContentItemId, int menuItemId)
+        public async Task<IActionResult> Edit(string menuContentItemId, string menuItemId)
         {
             var menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
 
@@ -170,7 +170,7 @@ namespace Orchard.Menu.Controllers
 
         [HttpPost]
         [ActionName("Edit")]
-        public async Task<IActionResult> EditPost(int menuContentItemId, int menuItemId)
+        public async Task<IActionResult> EditPost(string menuContentItemId, string menuItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
@@ -221,7 +221,7 @@ namespace Orchard.Menu.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int menuContentItemId, int menuItemId)
+        public async Task<IActionResult> Delete(string menuContentItemId, string menuItemId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
@@ -263,9 +263,9 @@ namespace Orchard.Menu.Controllers
             return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
         }
 
-        private JObject FindMenuItem(JObject contentItem, int menuItemId)
+        private JObject FindMenuItem(JObject contentItem, string menuItemId)
         {
-            if (contentItem["ContentItemId"]?.Value<int>() == menuItemId)
+            if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
             {
                 return contentItem;
             }

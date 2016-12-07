@@ -27,7 +27,7 @@ namespace Orchard.Autoroute.Routing
             {
                 // Matching route value, lookup for the id
 
-                int contentItemId = int.Parse(context.Values["id"]?.ToString());
+                string contentItemId = context.Values["id"]?.ToString();
                 string path;
 
                 if (_entries.TryGetPath(contentItemId, out path))
@@ -50,7 +50,7 @@ namespace Orchard.Autoroute.Routing
 
             var path = requestPath.ToString().Substring(_prefix.Length);
 
-            int contentItemId;
+            string contentItemId;
 
             if(_entries.TryGetContentItemId(path, out contentItemId))
             {

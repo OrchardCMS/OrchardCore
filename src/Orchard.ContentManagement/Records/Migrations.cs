@@ -8,7 +8,7 @@ namespace Orchard.ContentManagement.Records
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
-                .Column<int>("ContentItemId")
+                .Column<string>("ContentItemId", c => c.Unique().WithLength(32))
                 .Column<int>("Latest")
                 .Column<int>("Number")
                 .Column<int>("Published")

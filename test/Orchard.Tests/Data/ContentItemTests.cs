@@ -11,7 +11,7 @@ namespace Orchard.Tests.Data
         {
             var contentItem = new ContentItem();
             contentItem.Id = 1;
-            contentItem.ContentItemId = 2;
+            contentItem.ContentItemId = "2";
             contentItem.ContentType = "Page";
             contentItem.Latest = true;
             contentItem.Published = true;

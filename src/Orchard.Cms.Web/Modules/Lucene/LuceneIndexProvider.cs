@@ -59,7 +59,7 @@ namespace Lucene
             }
         }
 
-        public void DeleteDocuments(string indexName, IEnumerable<int> contentItemIds)
+        public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
         {
             // FOR DEBUG ONLY
             //foreach (var documentId in documentIds)
@@ -76,7 +76,7 @@ namespace Lucene
             using (var directory = FSDirectory.Open(path))
             using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
             {
-                iwriter.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x.ToString())).ToArray());
+                iwriter.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
             }
         }
 

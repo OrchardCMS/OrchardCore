@@ -41,14 +41,14 @@ namespace Orchard.Contents
             routes.MapAreaRoute(
                 name: "DisplayContent",
                 areaName: "Orchard.Contents",
-                template: "Contents/Item/Display/{id}",
+                template: "Contents/Item/Display/{contentItemId}",
                 defaults: new {controller = "Item", action = "Display" }
             );
 
             routes.MapAreaRoute(
                 name: "PreviewContent",
                 areaName: "Orchard.Contents",
-                template: "Contents/Item/Preview/{id}",
+                template: "Contents/Item/Preview/{contentItemId}",
                 defaults: new { controller = "Item", action = "Preview" }
             );
         }

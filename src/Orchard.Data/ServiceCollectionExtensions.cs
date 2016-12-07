@@ -81,14 +81,6 @@ namespace Orchard.Data
                 return store;
             });
 
-            services.AddSingleton<LinearBlockIdGenerator>(sp =>
-            {
-                var store = sp.GetService<IStore>();
-                var configuration = store.Configuration;
-                var idGenerator = new LinearBlockIdGenerator(configuration.ConnectionFactory, 20, configuration.TablePrefix);
-                return idGenerator;
-            });
-
             services.AddScoped<ISession>(sp =>
             {
                 var store = sp.GetService<IStore>();

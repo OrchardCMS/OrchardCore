@@ -6,7 +6,7 @@ namespace Orchard.ContentManagement.Records
 {
     public class AutoroutePartIndex : MapIndex
     {
-        public int ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
         public string Path { get; set; }
     }
 

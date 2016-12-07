@@ -21,7 +21,7 @@ namespace Orchard.Autoroute
                 .WithDescription("Provides a custom url for your content item."));
 
             SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table
-                .Column<int>("ContentItemId")
+                .Column<string>("ContentItemId", c => c.WithLength(32))
                 .Column<string>("Path", col => col.WithLength(1024))
             );
 

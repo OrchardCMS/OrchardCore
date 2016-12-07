@@ -5,9 +5,9 @@ namespace Orchard.ContentManagement
 {
     public class DefaultContentManagerSession : IContentManagerSession
     {
-        private readonly IDictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
-        private readonly IDictionary<Tuple<int, int>, ContentItem> _itemByContentItemId = new Dictionary<Tuple<int, int>, ContentItem>();
-        private readonly IDictionary<int, ContentItem> _publishedItemsById = new Dictionary<int, ContentItem>();
+        private readonly Dictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
+        private readonly Dictionary<Tuple<string, int>, ContentItem> _itemByContentItemId = new Dictionary<Tuple<string, int>, ContentItem>();
+        private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
 
         private bool _hasItems;
 
@@ -18,7 +18,7 @@ namespace Orchard.ContentManagement
             _itemByVersionId.Add(item.Id, item);
             _itemByContentItemId.Add(Tuple.Create(item.ContentItemId, item.Number), item);
 
-            // is it the Published version ?
+            // is it the  Published version ?
             if (item.Published)
             {
                 _publishedItemsById[item.ContentItemId] = item;
@@ -36,7 +36,7 @@ namespace Orchard.ContentManagement
             return _itemByVersionId.TryGetValue(id, out item);
         }
 
-        public bool RecallContentItemId(int contentItemId, int versionNumber, out ContentItem item)
+        public bool RecallContentItemId(string contentItemId, int versionNumber, out ContentItem item)
         {
             if (!_hasItems)
             {
@@ -47,7 +47,7 @@ namespace Orchard.ContentManagement
             return _itemByContentItemId.TryGetValue(Tuple.Create(contentItemId, versionNumber), out item);
         }
 
-        public bool RecallPublishedItemId(int id, out ContentItem item)
+        public bool RecallPublishedItemId(string id, out ContentItem item)
         {
             if (!_hasItems)
             {

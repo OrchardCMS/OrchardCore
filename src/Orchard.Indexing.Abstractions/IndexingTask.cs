@@ -11,7 +11,7 @@ namespace Orchard.Indexing
     public class IndexingTask
     {
         public int Id { get; set; }
-        public int ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
         public DateTimeOffset CreatedUtc { get; set; }
         public IndexingTaskTypes Type { get; set; }
     }

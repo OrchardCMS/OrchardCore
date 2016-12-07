@@ -21,7 +21,7 @@ namespace Orchard.Lists
                 .WithDescription("Add a list behavior."));
 
             SchemaBuilder.CreateMapIndexTable(nameof(ContainedPartIndex), table => table
-                .Column<int>("ListContentItemId")
+                .Column<string>("ListContentItemId", c => c.WithLength(32))
                 .Column<int>("Order")
             );
 

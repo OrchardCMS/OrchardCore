@@ -6,7 +6,7 @@ namespace Orchard.ContentManagement.Records
     public class ContentItemIndex : MapIndex
     {
         public int DocumentId { get; set; }
-        public int ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }

@@ -14,7 +14,7 @@ namespace Orchard.Lists.Models
         /// <summary>
         /// The content item id of the list owning this content item.
         /// </summary>
-        public int ListContentItemId { get; set; }
+        public string ListContentItemId { get; set; }
 
         /// <summary>
         /// The order of this content item in the list.

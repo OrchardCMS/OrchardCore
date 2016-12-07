@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
-using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using YesSql.Core.Services;
@@ -17,29 +16,24 @@ namespace Orchard.ContentManagement
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
-        private readonly LinearBlockIdGenerator _idGenerator;
+        private readonly IdGenerator _idGenerator;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> handlers,
             ISession session,
-            ILogger<DefaultContentManager> logger,
-            LinearBlockIdGenerator idGenerator)
+            IdGenerator idGenerator,
+            ILogger<DefaultContentManager> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
             Handlers = handlers;
             _session = session;
-            _contentManagerSession = new DefaultContentManagerSession();
             _idGenerator = idGenerator;
+            _contentManagerSession = new DefaultContentManagerSession();
             _logger = logger;
         }
 
         public IEnumerable<IContentHandler> Handlers { get; private set; }
-
-        public IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions()
-        {
-            return _contentDefinitionManager.ListTypeDefinitions();
-        }
 
         public ContentItem New(string contentType)
         {
@@ -66,7 +60,7 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.ContentItemId = (int)_idGenerator.GetNextId("contentitem");
+            context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId();
 
             Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
 
@@ -83,12 +77,12 @@ namespace Orchard.ContentManagement
             return context3.ContentItem;
         }
 
-        public async Task<ContentItem> GetAsync(int contentItemId)
+        public async Task<ContentItem> GetAsync(string contentItemId)
         {
             return await GetAsync(contentItemId, VersionOptions.Published);
         }
 
-        public async Task<ContentItem> GetAsync(int contentItemId, VersionOptions options)
+        public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
             ContentItem contentItem = null;
 

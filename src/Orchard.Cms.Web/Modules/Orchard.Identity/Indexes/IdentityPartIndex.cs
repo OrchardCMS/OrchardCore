@@ -8,7 +8,7 @@ namespace Orchard.Identity.Indexes
     public class IdentityPartIndex : MapIndex
     {
         public string Identifier { get; set; }
-        public int ContentItemId { get; set; }
+        public string ContentItemId { get; set; }
         public int Number { get; set; }
         public bool Published { get; set; }
         public bool Latest { get; set; }

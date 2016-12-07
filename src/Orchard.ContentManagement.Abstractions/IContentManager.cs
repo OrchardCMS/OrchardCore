@@ -9,8 +9,6 @@ namespace Orchard.ContentManagement
     /// </summary>
     public interface IContentManager
     {
-        IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions();
-
         /// <summary>
         /// Instantiates a new content item with the specified type
         /// </summary>
@@ -19,7 +17,6 @@ namespace Orchard.ContentManagement
         /// </remarks>
         /// <param name="contentType">The name of the content type</param>
         ContentItem New(string contentType);
-
 
         /// <summary>
         /// Creates (persists) a new content item
@@ -37,15 +34,15 @@ namespace Orchard.ContentManagement
         /// <summary>
         /// Gets the content item with the specified id
         /// </summary>
-        /// <param name="id">Numeric id of the content item</param>
-        Task<ContentItem> GetAsync(int id);
+        /// <param name="id">The id content item id to load</param>
+        Task<ContentItem> GetAsync(string id);
 
         /// <summary>
         /// Gets the content item with the specified id and version
         /// </summary>
-        /// <param name="id">Numeric id of the content item</param>
+        /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
-        Task<ContentItem> GetAsync(int id, VersionOptions options);
+        Task<ContentItem> GetAsync(string id, VersionOptions options);
 
         /// <summary>
         /// Removes <see cref="ContentItem.Latest"/> and <see cref="ContentItem.Published"/> flags
@@ -54,10 +51,8 @@ namespace Orchard.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         Task RemoveAsync(ContentItem contentItem);
-
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
-
         TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
     }
 

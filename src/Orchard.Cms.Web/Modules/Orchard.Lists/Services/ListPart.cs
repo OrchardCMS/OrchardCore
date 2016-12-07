@@ -42,7 +42,7 @@ namespace Orchard.Lists.Services
                 }
 
                 // Show contained elements for the specified list
-                else if(viewModel.ListContentItemId != 0)
+                else if(viewModel.ListContentItemId != null)
                 {
                     query.With<ContainedPartIndex>(x => x.ListContentItemId == viewModel.ListContentItemId);
                 }
@@ -53,6 +53,6 @@ namespace Orchard.Lists.Services
     public class ListPartContentAdminFilterModel
     {
         public bool ShowListContentTypes { get; set; }
-        public int ListContentItemId { get; set; }
+        public string ListContentItemId { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace Orchard.Menu
                 .OnProcessing(processing =>
                 {
                     dynamic menu = processing.Shape;
-                    int contentItemId = menu.ContentItemId ?? 0;
+                    string contentItemId = menu.ContentItemId;
                     string identity = menu.Identity;
 
                     // Menu population is executed when processing the shape so that its value
@@ -46,7 +46,7 @@ namespace Orchard.Menu
 
                     ContentItem menuContentItem = null;
 
-                    if (contentItemId > 0)
+                    if (contentItemId != null)
                     {
                         menuContentItem = contentManager.GetAsync(contentItemId).Result;
                     }

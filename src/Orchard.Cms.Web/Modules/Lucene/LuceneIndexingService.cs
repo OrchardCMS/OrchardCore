@@ -88,7 +88,7 @@ namespace Lucene
 
                         if (index.Value < task.Id)
                         {
-                            _indexProvider.DeleteDocuments(index.Key, new int[] { task.ContentItemId });
+                            _indexProvider.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
                         }
                     }
 

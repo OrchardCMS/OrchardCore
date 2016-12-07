@@ -15,11 +15,14 @@ namespace Orchard.ContentManagement
         }
 
         /// <summary>
-        /// The unique identifier of the current version.
+        /// The primary key in the database.
         /// </summary>
         public int Id { get; set; }
 
-        public int ContentItemId { get; set; }
+        /// <summary>
+        /// The logical identifier of the content item.
+        /// </summary>
+        public string ContentItemId { get; set; }
 
         /// <summary>
         /// The content type of the content item.
@@ -57,7 +60,7 @@ namespace Orchard.ContentManagement
         public DateTimeOffset? CreatedUtc { get; set; }
 
         /// <summary>
-        /// The name of the user who last modified this content item.
+        /// The name of the user who last modified this content item version.
         /// </summary>
         public string ModifiedBy { get; set; }
     }

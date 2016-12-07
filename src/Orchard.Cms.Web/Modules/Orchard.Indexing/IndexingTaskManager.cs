@@ -87,7 +87,7 @@ namespace Orchard.Indexing.Services
             {
                 var table = $"{_tablePrefix }{ nameof(IndexingTask)}";
 
-                var contentItemIds = new HashSet<int>();
+                var contentItemIds = new HashSet<string>();
 
                 // Remove duplicate tasks, only keep the last one
                 for (var i = localQueue.Count; i > 0; i--)

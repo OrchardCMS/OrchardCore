@@ -81,7 +81,7 @@ namespace Orchard.Demo.Controllers
 
             _logger.LogInformation("This is some log");
 
-            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", id = contentItem.ContentItemId });
+            return RedirectToAction("Display", "Home", new { area = "Orchard.Demo", contentItemId = contentItem.ContentItemId });
         }
 
         public ActionResult Tag()
@@ -96,22 +96,22 @@ namespace Orchard.Demo.Controllers
             return RedirectToAction("Tag", "Home", new { area = "Orchard.Demo" });
         }
 
-        public async Task<ActionResult> Display(int id)
+        public async Task<ActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
                 return NotFound();
             }
 
-            return View(contentItem);
+            return View("Display", contentItem);
         }
 
 
-        public async Task<ActionResult> DisplayShape(int id)
+        public async Task<ActionResult> DisplayShape(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {

@@ -9,7 +9,7 @@ namespace Orchard.Indexing
         {
             SchemaBuilder.CreateTable(nameof(IndexingTask), table => table
                 .Column<int>(nameof(IndexingTask.Id), col => col.PrimaryKey().Identity())
-                .Column<int>(nameof(IndexingTask.ContentItemId))
+                .Column<string>(nameof(IndexingTask.ContentItemId), c => c.WithLength(32))
                 .Column<DateTimeOffset>(nameof(IndexingTask.CreatedUtc), col => col.NotNull())
                 .Column<int>(nameof(IndexingTask.Type))
             );

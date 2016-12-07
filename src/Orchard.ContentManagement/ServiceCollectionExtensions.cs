@@ -26,6 +26,7 @@ namespace Orchard.ContentManagement
             services.AddSingleton<IContentPartFactory, ContentPartFactory>();
             services.AddSingleton<IContentFieldFactory, ContentFieldFactory>();
             services.AddScoped<IContentIdentityManager, ContentIdentityManager>();
+            services.AddSingleton<IdGenerator>();
 
             return services;
         }

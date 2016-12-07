@@ -26,11 +26,11 @@ namespace Orchard.Contents.ViewComponents
             _contentIdentityManager = contentIdentityManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int contentItemId = 0, ContentIdentity identity = null, string displayType = null)
+        public async Task<IViewComponentResult> InvokeAsync(string contentItemId = null, ContentIdentity identity = null, string displayType = null)
         {
             ContentItem contentItem = null;
 
-            if (contentItemId != 0)
+            if (contentItemId != null)
             {
                 contentItem = await _contentManager.GetAsync(contentItemId);
             }
