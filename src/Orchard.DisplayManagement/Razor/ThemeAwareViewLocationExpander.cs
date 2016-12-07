@@ -17,13 +17,6 @@ namespace Orchard.DisplayManagement.Razor
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
-            string test = "Test";
-            if (context.Values.ContainsKey("Test"))
-            {
-                test = test + "x";
-            }
-
-            context.Values["Test"] = test;
         }
 
         /// <inheritdoc />
