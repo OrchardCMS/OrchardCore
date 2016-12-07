@@ -1,18 +1,31 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions.Features
 {
-    public class FeatureManager : IFeatureManager
+    public class FeaturesProvider : IFeatureProvider
     {
-        public const string FeatureManagerCacheKey = "FeatureManager:Features";
+        public const string FeatureProviderCacheKey = "FeatureProvider:Features";
 
         private static string NameKey = "Name";
         private static string PriorityKey = "Priority";
         private static string DependenciesKey = "Dependencies";
         private static string CategoryKey = "Category";
         private static string DescriptionKey = "Description";
+
+        private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
+
+        private readonly ILogger L;
+
+        public FeaturesProvider(
+            IEnumerable<IFeatureBuilderEvents> featureBuilderEvents,
+            ILogger<FeaturesProvider> logger)
+        {
+            _featureBuilderEvents = featureBuilderEvents;
+            L = logger;
+        }
 
         public IEnumerable<IFeatureInfo> GetFeatures(
             IExtensionInfo extensionInfo,
@@ -57,6 +70,21 @@ namespace Orchard.Environment.Extensions.Features
                             featureDetails[DescriptionKey] :
                             (manifestFeatureDetails.ContainsKey(DescriptionKey) ? manifestFeatureDetails[DescriptionKey] : null);
 
+                    _featureBuilderEvents.Invoke(fbe => fbe.Building(
+                        new FeatureBuildingContext
+                        {
+                            FeatureId = featureId,
+                            FeatureName = featureName,
+                            Category = featureCategory,
+                            Description = featureDescription,
+                            ExtensionInfo = extensionInfo,
+                            FeatureDetails = featureDetails,
+                            ManifestDetails = manifestFeatureDetails,
+                            ManifestInfo = manifestInfo,
+                            Priority = featurePriority,
+                            FeatureDependencyIds = featureDependencyIds
+                        }), L);
+
                     var featureInfo = new FeatureInfo(
                         featureId,
                         featureName,
@@ -65,6 +93,8 @@ namespace Orchard.Environment.Extensions.Features
                         featureDescription,
                         extensionInfo,
                         featureDependencyIds);
+
+                    _featureBuilderEvents.Invoke(fbe => fbe.Built(featureInfo), L);
 
                     features.Add(featureInfo);
                 }
@@ -89,6 +119,20 @@ namespace Orchard.Environment.Extensions.Features
 
                 var featureDescription = featureDetails.ContainsKey(DescriptionKey) ? featureDetails[DescriptionKey] : null;
 
+                _featureBuilderEvents.Invoke(fbe => fbe.Building(
+                    new FeatureBuildingContext
+                    {
+                        FeatureId = featureId,
+                        FeatureName = featureName,
+                        Category = featureCategory,
+                        Description = featureDescription,
+                        ExtensionInfo = extensionInfo,
+                        FeatureDetails = featureDetails,
+                        ManifestDetails = featureDetails,
+                        ManifestInfo = manifestInfo,
+                        Priority = featurePriority
+                    }), L);
+
                 var featureInfo = new FeatureInfo(
                     featureId,
                     featureName,
@@ -97,6 +141,8 @@ namespace Orchard.Environment.Extensions.Features
                     featureDescription,
                     extensionInfo,
                     featureDependencyIds);
+
+                _featureBuilderEvents.Invoke(fbe => fbe.Built(featureInfo), L);
 
                 features.Add(featureInfo);
             }

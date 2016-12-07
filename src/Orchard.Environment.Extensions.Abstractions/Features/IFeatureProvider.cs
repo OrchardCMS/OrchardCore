@@ -2,7 +2,7 @@
 
 namespace Orchard.Environment.Extensions.Features
 {
-    public interface IFeatureManager
+    public interface IFeatureProvider
     {
         IEnumerable<IFeatureInfo> GetFeatures(
             IExtensionInfo extensionInfo,

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Orchard.Environment.Extensions
@@ -10,7 +11,7 @@ namespace Orchard.Environment.Extensions
     {
         private readonly IFileProvider _fileProvider;
         private readonly IManifestBuilder _manifestBuilder;
-        private readonly IFeatureManager _featureManager;
+        private readonly IFeaturesProvider _featuresProvider;
 
         /// <summary>
         /// Initializes a new instance of a ExtensionProvider at the given root directory.
@@ -21,11 +22,11 @@ namespace Orchard.Environment.Extensions
         public ExtensionProvider(
             IHostingEnvironment hostingEnvironment,
             IManifestBuilder manifestBuilder,
-            IFeatureManager featureManager)
+            IEnumerable<IFeaturesProvider> featureProviders)
         {
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
             _manifestBuilder = manifestBuilder;
-            _featureManager = featureManager;
+            _featuresProvider = new CompositeFeaturesProvider(featureProviders);
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Orchard.Environment.Extensions
                 .First(content => content.Name == name);
 
             return new ExtensionInfo(extension, subPath, manifest, (ei) => {
-                return _featureManager.GetFeatures(ei, manifest);
+                return _featuresProvider.GetFeatures(ei, manifest);
             });
         }
     }
