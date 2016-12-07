@@ -19,7 +19,7 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public IExtensionInfoList GetExtensions()
+        public IEnumerable<IExtensionInfo> GetExtensions()
         {
             throw new NotImplementedException();
         }

@@ -258,9 +258,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return _features.Select(x => x.Extension).First(x => x.Id == extensionId);
             }
 
-            public IExtensionInfoList GetExtensions()
+            public IEnumerable<IExtensionInfo> GetExtensions()
             {
-                return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
+                return _features.Select(x => x.Extension);
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
