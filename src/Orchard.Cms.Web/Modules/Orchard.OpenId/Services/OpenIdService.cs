@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Linq;
 using Orchard.OpenId.Settings;
 using Orchard.Settings;
 using System;
@@ -6,22 +8,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using YesSql.Core.Services;
 
 namespace Orchard.OpenId.Services
 {
     public class OpenIdService : IOpenIdService
     {
+        private readonly ISession _session;
         private readonly ISiteService _siteService;
-        public OpenIdService(ISiteService siteService)
+        private readonly IMemoryCache _memoryCache;
+        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache, ISession session)
         {
             _siteService = siteService;
+            _memoryCache = memoryCache;
+            _session = session;
         }
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<OpenIdSettings>();
-        }
+            var result = siteSettings.As<OpenIdSettings>();
 
+            if (result == null)
+            {
+                result = new OpenIdSettings();
+            }
+            return result;
+        }
+        public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
+        {
+            var siteSettings = await _session.QueryAsync<Orchard.Settings.SiteSettings>().FirstOrDefault();
+            siteSettings.Properties[typeof(OpenIdSettings).Name] = JObject.FromObject(openIdSettings);
+            _session.Save(siteSettings);
+            _memoryCache.Set("Site", siteSettings);
+        }
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
         {
             if (settings == null)
