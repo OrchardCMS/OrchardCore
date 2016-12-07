@@ -4,19 +4,26 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
+using Orchard.Settings;
 
-namespace Orchard.Hosting.Mvc.Razor
+namespace Orchard.DisplayManagement.Razor
 {
-    public class ModuleViewLocationExpander : IViewLocationExpander
+    public class ThemeAwareViewLocationExpander : IViewLocationExpander
     {
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
+            string test = "Test";
+            if (context.Values.ContainsKey("Test"))
+            {
+                test = test + "x";
+            }
+
+            context.Values["Test"] = test;
         }
 
         /// <inheritdoc />
@@ -25,16 +32,18 @@ namespace Orchard.Hosting.Mvc.Razor
         {
             var shellFeaturesManager = context.ActionContext.HttpContext.RequestServices.GetService<IShellFeaturesManager>();
             var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
+            var siteService = context.ActionContext.HttpContext.RequestServices.GetService<ISiteService>();
 
-            // GetEnabledFeaturesAsync() updated to be ordered by deps and priorities
             var orderedFeatures = shellFeaturesManager.GetEnabledFeaturesAsync().Result;
             var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
 
             var extensions = new List<IExtensionInfo>();
             var theme = themeManager.GetThemeAsync().Result;
+            var site = siteService.GetSiteSettingsAsync().Result;
+            var adminThemeId = (string)site.Properties["CurrentAdminThemeName"];
 
             extensions.Add(theme);
-            extensions.AddRange(GetBaseThemes(theme, orderedExtensions));
+            extensions.AddRange(GetBaseThemes(theme, adminThemeId, orderedExtensions));
             extensions.AddRange(orderedExtensions.Where(e => !e.Manifest.IsTheme()).Reverse());
 
             var result = new List<string>();
@@ -51,33 +60,30 @@ namespace Orchard.Hosting.Mvc.Razor
             return result;
         }
 
-        private IEnumerable<IExtensionInfo> GetBaseThemes(IExtensionInfo theme, IEnumerable<IExtensionInfo> extensions)
+        private IEnumerable<IExtensionInfo> GetBaseThemes(IExtensionInfo theme, string adminThemeId, IEnumerable<IExtensionInfo> extensions)
         {
-            if (theme.Id.Equals("TheAdmin", StringComparison.OrdinalIgnoreCase))
+            if (theme.Id.Equals(adminThemeId, StringComparison.OrdinalIgnoreCase))
             {
-                // Special case: conceptually, the base themes of "TheAdmin" is the list of all enabled themes.
-                // This is so that any enabled theme can have controller/action/views in the Admin of the site.
-                return extensions.Where(e => e.Manifest.IsTheme() && e.Id != "TheAdmin");
+                return extensions.Where(e => e.Manifest.IsTheme() && e.Id != adminThemeId);
             }
             else
             {
                 var list = new List<IExtensionInfo>();
-                var theTheme = new ThemeExtensionInfo(theme);
+                var themeInfo = new ThemeExtensionInfo(theme);
                 while (true)
                 {
                     if (theme == null)
                         break;
 
-                    if (!theTheme.HasBaseTheme())
+                    if (!themeInfo.HasBaseTheme())
                         break;
 
-                    var baseExtension = extensions.FirstOrDefault(e => theTheme.IsBaseThemeFeature(e.Id));
+                    var baseExtension = extensions.FirstOrDefault(e => themeInfo.IsBaseThemeFeature(e.Id));
                     if (baseExtension == null)
                     {
                         break;
                     }
 
-                    // Protect against potential infinite loop
                     if (list.Contains(baseExtension))
                     {
                         break;

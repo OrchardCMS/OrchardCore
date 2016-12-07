@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -17,7 +16,6 @@ using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
-using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
@@ -69,13 +67,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
-                var expander = new ModuleViewLocationExpander();
-                options.ViewLocationExpanders.Add(expander);
-
                 var serviceProvider = services.BuildServiceProvider();
                 var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
-
                 (serviceProvider as IDisposable)?.Dispose();
             });
 

@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Hosting.Mvc.Razor;
 
 namespace Orchard.Cms.Web
 {
@@ -31,9 +30,6 @@ namespace Orchard.Cms.Web
 
             builder.AddRazorOptions(options =>
             {
-                var expander = new ModuleViewLocationExpander();
-                options.ViewLocationExpanders.Add(expander);
-
                 var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
