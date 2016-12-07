@@ -260,7 +260,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IExtensionInfo> GetExtensions()
             {
-                return _features.Select(x => x.Extension);
+                return _features.Select(x => x.Extension).Distinct();
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
