@@ -28,7 +28,7 @@ namespace Orchard.Contents.Indexing
                     DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
             }
 
-            var contentItemMetadata = _contentManager.PopulateAspect(context.ContentItem, new ContentItemMetadata());
+            var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(context.ContentItem);
 
             if (contentItemMetadata?.DisplayText != null)
             {

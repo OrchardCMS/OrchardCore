@@ -375,7 +375,7 @@ namespace Orchard.Contents.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            var adminRouteValues = _contentManager.PopulateAspect(contentItem, new ContentItemMetadata()).AdminRouteValues;
+            var adminRouteValues = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem).AdminRouteValues;
             return RedirectToRoute(adminRouteValues);
         }
 

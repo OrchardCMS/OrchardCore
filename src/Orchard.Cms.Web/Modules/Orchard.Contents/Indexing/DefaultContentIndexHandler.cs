@@ -11,7 +11,7 @@ namespace Orchard.Contents.Indexing
                 "Content.ContentItem.ContentItemId",
                 new DocumentIndex.DocumentIndexEntry(
                     context.ContentItem.ContentItemId, 
-                    DocumentIndex.Types.Integer, 
+                    DocumentIndex.Types.Text, 
                     DocumentIndexOptions.Store));
 
             context.DocumentIndex.Entries.Add(

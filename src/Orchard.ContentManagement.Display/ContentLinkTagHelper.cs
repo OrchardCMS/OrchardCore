@@ -78,7 +78,7 @@ namespace Orchard.ContentManagement.Display
             if (DisplayFor != null)
             {
                 contentItem = DisplayFor;
-                metadata = _contentManager.PopulateAspect(DisplayFor, new ContentItemMetadata());
+                metadata = _contentManager.PopulateAspect<ContentItemMetadata>(DisplayFor);
 
                 if (metadata.DisplayRouteValues == null)
                 {
@@ -90,7 +90,7 @@ namespace Orchard.ContentManagement.Display
             else if (EditFor != null)
             {
                 contentItem = EditFor;
-                metadata = _contentManager.PopulateAspect(EditFor, new ContentItemMetadata());
+                metadata = _contentManager.PopulateAspect<ContentItemMetadata>(EditFor);
 
                 if (metadata.EditorRouteValues == null)
                 {
@@ -102,7 +102,7 @@ namespace Orchard.ContentManagement.Display
             else if (AdminFor != null)
             {
                 contentItem = AdminFor;
-                metadata = _contentManager.PopulateAspect(AdminFor, new ContentItemMetadata());
+                metadata = _contentManager.PopulateAspect<ContentItemMetadata>(AdminFor);
 
                 if (metadata.AdminRouteValues == null)
                 {
@@ -114,7 +114,7 @@ namespace Orchard.ContentManagement.Display
             else if (RemoveFor != null)
             {
                 contentItem = RemoveFor;
-                metadata = _contentManager.PopulateAspect(RemoveFor, new ContentItemMetadata());
+                metadata = _contentManager.PopulateAspect<ContentItemMetadata>(RemoveFor);
 
                 if (metadata.RemoveRouteValues == null)
                 {
@@ -126,7 +126,7 @@ namespace Orchard.ContentManagement.Display
             else if (CreateFor != null)
             {
                 contentItem = CreateFor;
-                metadata = _contentManager.PopulateAspect(CreateFor, new ContentItemMetadata());
+                metadata = _contentManager.PopulateAspect<ContentItemMetadata>(CreateFor);
 
                 if (metadata.CreateRouteValues == null)
                 {
