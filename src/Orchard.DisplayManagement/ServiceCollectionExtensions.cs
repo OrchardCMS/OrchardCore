@@ -5,6 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
@@ -14,6 +15,7 @@ using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
+using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement
 {
@@ -34,6 +36,8 @@ namespace Orchard.DisplayManagement
             {
                 options.FileProviders.Add(new ThemingFileProvider());
             });
+
+            services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
         }

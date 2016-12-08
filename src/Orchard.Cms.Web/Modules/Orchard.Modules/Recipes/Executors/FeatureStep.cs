@@ -34,11 +34,11 @@ namespace Orchard.Modules.Recipes.Executors
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
 
-            var extensions = _extensionManager.GetExtensions();
+            var features = _extensionManager.GetFeatures();
 
             foreach (var featureId in step.Disable)
             {
-                if (!extensions.Features.Any(x => x.Id == featureId))
+                if (features.Any(x => x.Id == featureId))
                 {
                     throw new InvalidOperationException(string.Format("Could not disable feature {0} because it was not found.", featureId));
                 }
@@ -46,7 +46,7 @@ namespace Orchard.Modules.Recipes.Executors
 
             foreach (var featureId in step.Enable)
             {
-                if (!extensions.Features.Any(x => x.Id == featureId))
+                if (!features.Any(x => x.Id == featureId))
                 {
                     throw new InvalidOperationException(string.Format("Could not enable feature {0} because it was not found.", featureId));
                 }
@@ -59,7 +59,7 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
                 }
 
-                var featuresToDisable = extensions.Features.Where(x => step.Disable.Contains(x.Id)).ToList();
+                var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
 
                 await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
             }
@@ -71,7 +71,7 @@ namespace Orchard.Modules.Recipes.Executors
                     Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
                 }
 
-                var featuresToEnable = extensions.Features.Where(x => step.Enable.Contains(x.Id)).ToList();
+                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }

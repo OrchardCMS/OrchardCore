@@ -38,14 +38,9 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var enabledFeatures = descriptor
-                .Features
-                .SelectMany(shellFeature => _extensionManager.GetFeatureDependencies(shellFeature.Id))
-                .Distinct()
-                .ToArray();
+            var features = await _extensionManager
+                .LoadFeaturesAsync(descriptor.Features.Select(x => x.Id).ToArray());
 
-            var features = await Task.WhenAll(enabledFeatures.Select(ef => _extensionManager.LoadFeatureAsync(ef)));
-            
             // Statup classes are the only types that are automatically added to the blueprint
             var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());
 
@@ -72,7 +67,7 @@ namespace Orchard.Environment.Shell.Builders
             }
             return result;
         }
-        
+
         private static IEnumerable<T> BuildBlueprint<T>(
             IEnumerable<FeatureEntry> features,
             Func<Type, bool> predicate,
@@ -102,7 +97,7 @@ namespace Orchard.Environment.Shell.Builders
                 Parameters = Enumerable.Empty<ShellParameter>()
             };
         }
-        
+
         private static DependencyBlueprint BuildDependency(Type type, FeatureEntry feature, ShellDescriptor descriptor)
         {
             return new DependencyBlueprint

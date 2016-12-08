@@ -80,11 +80,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
-                Features = new FeatureInfoList(features);
+                Features = features;
             }
 
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IFeatureInfoList Features { get; set; }
+            public IEnumerable<IFeatureInfo> Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
@@ -114,7 +114,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
                     };
 
-                Features = new FeatureInfoList(features);
+                Features = features;
 
                 Id = name;
             }
@@ -135,19 +135,17 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(configurationBuilder.Build(), "theme");
 
-                var features =
+                Features =
                     new List<IFeatureInfo>()
                     {
                         {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
                     };
 
-                Features = new FeatureInfoList(features);
-
                 Id = name;
             }
 
             public IFileInfo ExtensionFileInfo { get; set; }
-            public IFeatureInfoList Features { get; set; }
+            public IEnumerable<IFeatureInfo> Features { get; set; }
             public string Id { get; set; }
             public IManifestInfo Manifest { get; set; }
             public string SubPath { get; set; }
@@ -160,7 +158,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddScoped<IFeatureManager, StubFeatureManager>();
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
@@ -214,10 +211,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetEnabledFeaturesAsync()
             {
-                var extensions = _extensionManager.GetExtensions();
-                var features = extensions.Features;
-
-                return Task.FromResult(features.AsEnumerable());
+                return Task.FromResult(_extensionManager.GetFeatures());
             }
 
             Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
@@ -254,7 +248,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 _features = features;
             }
 
-            public IFeatureInfoList GetFeatureDependencies(string featureId)
+            public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
             {
                 throw new NotImplementedException();
             }
@@ -264,14 +258,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return _features.Select(x => x.Extension).First(x => x.Id == extensionId);
             }
 
-            public IExtensionInfoList GetExtensions()
+            public IEnumerable<IExtensionInfo> GetExtensions()
             {
-                return new ExtensionInfoList(_features.Select(x => x.Extension).ToList());
-            }
-
-            public IFeatureInfoList GetFeatures(string[] featureIds)
-            {
-                throw new NotImplementedException();
+                return _features.Select(x => x.Extension).Distinct();
             }
 
             public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
@@ -294,7 +283,27 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
             }
 
-            public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+            public IEnumerable<IFeatureInfo> GetFeatures()
+            {
+                return _features;
+            }
+
+            public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+            {
+                return _features.Where(x => featureIdsToLoad.Contains(x.Id));
+            }
+
+            public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
+            {
+                return _features.Where(x => x.Dependencies.Contains(featureId));
+            }
+
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
             {
                 throw new NotImplementedException();
             }

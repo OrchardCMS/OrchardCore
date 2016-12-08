@@ -9,7 +9,7 @@ namespace Orchard.Tests.Stubs
 {
     public class StubExtensionManager : IExtensionManager
     {
-        public IFeatureInfoList GetFeatureDependencies(string featureId)
+        public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
             throw new NotImplementedException();
         }
@@ -19,7 +19,22 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public IExtensionInfoList GetExtensions()
+        public IEnumerable<IExtensionInfo> GetExtensions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
             throw new NotImplementedException();
         }
@@ -29,22 +44,12 @@ namespace Orchard.Tests.Stubs
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ExtensionEntry>> LoadExtensionsAsync(IEnumerable<IExtensionInfo> extensionInfos)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch)
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             throw new NotImplementedException();
         }

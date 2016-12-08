@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Environment.Extensions
@@ -27,6 +28,6 @@ namespace Orchard.Environment.Extensions
         /// <summary>
         /// List of features in extension
         /// </summary>
-        IFeatureInfoList Features { get; }
+        IEnumerable<IFeatureInfo> Features { get; }
     }
 }

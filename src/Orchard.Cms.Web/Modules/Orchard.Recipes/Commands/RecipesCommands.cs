@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Localization;
 using Orchard.Environment.Commands;
-using Orchard.Environment.Extensions;
 using Orchard.Recipes.Services;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,15 +9,12 @@ namespace Orchard.Recipes.Commands
     public class RecipesCommands : DefaultCommandHandler
     {
         private readonly IRecipeHarvester _recipeHarvester;
-        private readonly IExtensionManager _extensionManager;
 
         public RecipesCommands(
             IRecipeHarvester recipeHarvester,
-            IExtensionManager extensionManager,
             IStringLocalizer<RecipesCommands> localizer) : base(localizer)
         {
             _recipeHarvester = recipeHarvester;
-            _extensionManager = extensionManager;
         }
 
         [CommandHelp("recipes harvest <extensionId>", "\tDisplays a list of available recipes for a specific extension.")]

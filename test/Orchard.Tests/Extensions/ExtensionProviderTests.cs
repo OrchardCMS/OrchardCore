@@ -8,6 +8,7 @@ using Orchard.Tests.Stubs;
 using System.IO;
 using Xunit;
 using System;
+using System.Linq;
 
 namespace Orchard.Tests.Extensions
 {
@@ -26,7 +27,7 @@ namespace Orchard.Tests.Extensions
                             new IManifestProvider[] { new ManifestProvider(HostingEnvrionment) },
                             HostingEnvrionment,
                             new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt", Type = "module" })),
-                        new FeatureManager());
+                        new[] { new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>()) });
 
         [Fact]
         public void ThatGetExtensionInfoShouldReturnExtensionWhenManifestIsPresent()

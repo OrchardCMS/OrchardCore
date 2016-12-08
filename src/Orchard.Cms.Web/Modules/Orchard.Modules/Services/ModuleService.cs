@@ -44,7 +44,7 @@ namespace Orchard.Modules.Services
             var enabledFeatures = 
                 await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
-            var availableFeatures = _extensionManager.GetExtensions().Features;
+            var availableFeatures = _extensionManager.GetFeatures();
 
             return availableFeatures
                 .Select(f => AssembleModuleFromDescriptor(f, enabledFeatures
@@ -68,8 +68,7 @@ namespace Orchard.Modules.Services
         public async Task EnableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
             var featuresToEnable = _extensionManager
-                .GetExtensions()
-                .Features
+                .GetFeatures()
                 .Where(x => featureIds.Contains(x.Id));
 
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
@@ -96,8 +95,7 @@ namespace Orchard.Modules.Services
         public async Task DisableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
             var featuresToDisable = _extensionManager
-                .GetExtensions()
-                .Features
+                .GetFeatures()
                 .Where(x => featureIds.Contains(x.Id));
 
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);

@@ -8,6 +8,7 @@ using Orchard.Events;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Manifests;
 using System.Threading.Tasks;
+using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Shell
 {
@@ -49,35 +50,20 @@ namespace Orchard.Environment.Shell
                 Logger.LogInformation("Applying changes for for shell '{0}'", _settings.Name);
             }
 
+            var loadedFeatures = await _extensionManager.LoadFeaturesAsync();
+
             var shellState = await _stateManager.GetShellStateAsync();
 
-            // start with description of all declared features in order - order preserved with all merging
-            var orderedFeatureDescriptors = _extensionManager.GetExtensions().Features;
-
             // merge feature state into ordered list
-            var orderedFeatureDescriptorsAndStates = orderedFeatureDescriptors
-                .Select(featureInfo => new
+            var loadedEntries = loadedFeatures
+                .Select(fe => new
                 {
-                    FeatureDescriptor = featureInfo,
-                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == featureInfo.Id),
+                    Feature = fe,
+                    FeatureDescriptor = fe.FeatureInfo,
+                    FeatureState = shellState.Features.FirstOrDefault(s => s.Id == fe.FeatureInfo.Id),
                 })
                 .Where(entry => entry.FeatureState != null)
                 .ToArray();
-
-            // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptorsAndStates
-                .Select(x => _extensionManager.LoadFeatureAsync(x.FeatureDescriptor))
-                .ToArray());
-            
-            // merge loaded feature information into ordered list
-            var loadedEntries = orderedFeatureDescriptorsAndStates.Select(
-                entry => new
-                {
-                    Feature = loadedFeatures.SingleOrDefault(f => f.FeatureInfo == entry.FeatureDescriptor)
-                              ?? new NonCompiledFeatureEntry(entry.FeatureDescriptor),
-                    entry.FeatureDescriptor,
-                    entry.FeatureState,
-                }).ToList();
 
             // find feature state that is beyond what's currently available from modules
             var additionalState = shellState.Features.Except(loadedEntries.Select(entry => entry.FeatureState));
@@ -89,6 +75,7 @@ namespace Orchard.Environment.Shell
                     featureState.Id,
                     new InternalExtensionInfo(featureState.Id)
                     );
+
                 return new
                 {
                     Feature = (FeatureEntry)new NonCompiledFeatureEntry(featureDescriptor),

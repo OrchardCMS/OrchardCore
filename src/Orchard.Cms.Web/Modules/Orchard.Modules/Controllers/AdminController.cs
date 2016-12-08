@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.Admin;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Modules.Models;
 using Orchard.Modules.Services;
 using Orchard.Modules.ViewModels;
 using Orchard.Mvc;
-using Orchard.Environment.Shell;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Orchard.Modules.Controllers
 {
@@ -23,7 +22,6 @@ namespace Orchard.Modules.Controllers
     {
         private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IFeatureManager _featureManager;
         private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
@@ -32,7 +30,6 @@ namespace Orchard.Modules.Controllers
         public AdminController(
             IModuleService moduleService,
             IExtensionManager extensionManager,
-            IFeatureManager featureManager,
             IHtmlLocalizer<AdminController> localizer,
             IShellDescriptorManager shellDescriptorManager,
             IShellFeaturesManager shellFeaturesManager,
@@ -41,7 +38,6 @@ namespace Orchard.Modules.Controllers
         {
             _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _featureManager = featureManager;
             _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
@@ -63,12 +59,12 @@ namespace Orchard.Modules.Controllers
 
             var moduleFeatures = new List<ModuleFeature>();
             foreach (var moduleFeatureInfo in _extensionManager
-                .GetExtensions()
-                .Features
+                .GetFeatures()
                 .Where(f => !f.Extension.Manifest.IsTheme()))
             {
-                var dependentFeatures = _extensionManager.GetDependentFeatures(moduleFeatureInfo.Id, enabledFeatures.ToArray());
-                
+                var dependentFeatures = _extensionManager
+                    .GetDependentFeatures(moduleFeatureInfo.Id);
+
                 var moduleFeature = new ModuleFeature
                 {
                     Descriptor = moduleFeatureInfo,
@@ -104,7 +100,7 @@ namespace Orchard.Modules.Controllers
 
             if (ModelState.IsValid)
             {
-                var availableFeatures = _extensionManager.GetExtensions().Features;
+                var availableFeatures = _extensionManager.GetFeatures();
                 var features = availableFeatures.Where(feature => ExtensionIsAllowed(feature.Extension)).ToList();
                 var selectedFeatures = features.Where(x => featureIds.Contains(x.Id)).ToList();
                 var allEnabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync(); //features.Where(x => x.IsEnabled && featureIds.Contains(x.Id)).Select(x => x.Descriptor.Id).ToList();
@@ -120,7 +116,7 @@ namespace Orchard.Modules.Controllers
                         var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
                         foreach (var feature in enabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures[feature.Id].Name;
+                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
                         break;
@@ -128,7 +124,7 @@ namespace Orchard.Modules.Controllers
                         var disabledFeatures = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
                         foreach (var feature in disabledFeatures.ToList())
                         {
-                            var featureName = availableFeatures[feature.Id].Name;
+                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
@@ -136,14 +132,14 @@ namespace Orchard.Modules.Controllers
                         var enabledFeaturesToggle = await _shellFeaturesManager.EnableFeaturesAsync(idFeaturesDisabled, force == true);
                         foreach (var feature in enabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures[feature.Id].Name;
+                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
                             _notifier.Success(T["{0} was enabled", featureName]);
                         }
 
                         var disabledFeaturesToggle = await _shellFeaturesManager.DisableFeaturesAsync(idFeaturesEnabled, force == true);
                         foreach (var feature in disabledFeaturesToggle.ToList())
                         {
-                            var featureName = availableFeatures[feature.Id].Name;
+                            var featureName = availableFeatures.First(fi => fi.Id == feature.Id).Name;
                             _notifier.Success(T["{0} was disabled", featureName]);
                         }
                         break;
@@ -176,9 +172,8 @@ namespace Orchard.Modules.Controllers
         [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
-            var availableFeatures = _extensionManager.GetExtensions().Features;
-            var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
-            
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+
             if (feature == null)
             {
                 return NotFound();
@@ -200,8 +195,7 @@ namespace Orchard.Modules.Controllers
         [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
-            var availableFeatures = _extensionManager.GetExtensions().Features;
-            var feature = availableFeatures.FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
+            var feature = _extensionManager.GetFeatures().FirstOrDefault(f => ExtensionIsAllowed(f.Extension) && f.Id == id);
 
             if (feature == null)
             {

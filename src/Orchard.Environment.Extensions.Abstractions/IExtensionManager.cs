@@ -1,17 +1,21 @@
 ﻿using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
 {
     public interface IExtensionManager
     {
         IExtensionInfo GetExtension(string extensionId);
-        IExtensionInfoList GetExtensions();
+        IEnumerable<IExtensionInfo> GetExtensions();
         Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
-        IFeatureInfoList GetFeatureDependencies(string featureId);
-        IFeatureInfoList GetDependentFeatures(string featureId, IFeatureInfo[] featuresToSearch);
-        Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature);
+        IEnumerable<IFeatureInfo> GetFeatures();
+        IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad);
+        IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId);
+        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId);
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
+        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad);
     }
 }

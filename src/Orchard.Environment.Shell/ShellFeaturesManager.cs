@@ -4,6 +4,7 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Orchard.Environment.Shell
 {
@@ -29,7 +30,10 @@ namespace Orchard.Environment.Shell
 
         public async Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
         {
-            return _extensionManager.GetEnabledFeatures(await GetCurrentShell());
+            var shellDescriptor = await GetCurrentShell();
+
+            return _extensionManager.GetFeatures(
+                shellDescriptor.Features.Select(x => x.Id).ToArray());
         }
 
         public async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
@@ -44,7 +48,14 @@ namespace Orchard.Environment.Shell
 
         public async Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
         {
-            return _extensionManager.GetDisabledFeatures(await GetCurrentShell());
+            var shellDescriptor = await GetCurrentShell();
+
+            var enabledFeatures = _extensionManager.GetFeatures(
+                shellDescriptor.Features.Select(x => x.Id).ToArray());
+
+            var allFeatures = _extensionManager.GetFeatures();
+
+            return allFeatures.Except(enabledFeatures);
         }
 
         public async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
