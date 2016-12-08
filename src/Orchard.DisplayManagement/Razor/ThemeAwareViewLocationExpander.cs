@@ -29,7 +29,7 @@ namespace Orchard.DisplayManagement.Razor
             var siteService = context.ActionContext.HttpContext.RequestServices.GetService<ISiteService>();
             var site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
-            var orderedFeatures = extensionManager.GetExtensions().Features;
+            var orderedFeatures = extensionManager.GetFeatures();
             var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
             var extension = orderedExtensions.FirstOrDefault(e => e.Id == context.AreaName);
 
