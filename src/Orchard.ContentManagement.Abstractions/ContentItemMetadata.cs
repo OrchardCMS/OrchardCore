@@ -1,18 +1,11 @@
 ﻿using Microsoft.AspNetCore.Routing;
-using System;
 using System.Collections.Generic;
 
 namespace Orchard.ContentManagement
 {
     public class ContentItemMetadata
     {
-        public ContentItemMetadata()
-        {
-            Identity = new ContentIdentity();
-        }
-
         public string DisplayText { get; set; }
-        public ContentIdentity Identity { get; set; }
         public RouteValueDictionary DisplayRouteValues { get; set; }
         public RouteValueDictionary EditorRouteValues { get; set; }
         public RouteValueDictionary CreateRouteValues { get; set; }
