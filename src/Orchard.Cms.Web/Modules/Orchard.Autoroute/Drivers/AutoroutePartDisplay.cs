@@ -47,7 +47,7 @@ namespace Orchard.Autoroute.Drivers
                 if (homeRoute["area"]?.ToString() == "Orchard.Contents" &&
                     homeRoute["controller"]?.ToString() == "Item" &&
                     homeRoute["action"]?.ToString() == "Display" &&
-                    autoroutePart.ContentItem.ContentItemId == homeRoute["id"]?.ToString())
+                    autoroutePart.ContentItem.ContentItemId == homeRoute["contentItemId"]?.ToString())
                 {
                     model.IsHomepage = true;
                 }

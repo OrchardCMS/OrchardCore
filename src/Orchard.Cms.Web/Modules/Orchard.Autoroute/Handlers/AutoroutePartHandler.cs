@@ -44,7 +44,7 @@ namespace Orchard.Title.Handlers
                 homeRoute["area"] = "Orchard.Contents";
                 homeRoute["controller"] = "Item";
                 homeRoute["action"] = "Display";
-                homeRoute["id"] = context.ContentItem.ContentItemId;
+                homeRoute["contentItemId"] = context.ContentItem.ContentItemId;
 
                 // Once we too the flag into account we can dismiss it.
                 part.SetHomepage = false;

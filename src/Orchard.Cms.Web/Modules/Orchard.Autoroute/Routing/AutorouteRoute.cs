@@ -23,11 +23,11 @@ namespace Orchard.Autoroute.Routing
             if (context.Values["area"]?.ToString() == "Orchard.Contents" &&
                 context.Values["controller"]?.ToString() == "Item" &&
                 context.Values["action"]?.ToString() == "Display" &&
-                context.Values["id"] != null)
+                context.Values["contentItemId"] != null)
             {
                 // Matching route value, lookup for the id
 
-                string contentItemId = context.Values["id"]?.ToString();
+                string contentItemId = context.Values["contentItemId"]?.ToString();
                 string path;
 
                 if (_entries.TryGetPath(contentItemId, out path))
@@ -57,7 +57,7 @@ namespace Orchard.Autoroute.Routing
                 context.RouteData.Values["area"] = "Orchard.Contents";
                 context.RouteData.Values["controller"] = "Item";
                 context.RouteData.Values["action"] = "Display";
-                context.RouteData.Values["id"] = contentItemId;
+                context.RouteData.Values["contentItemId"] = contentItemId;
 
                 context.RouteData.Routers.Add(_target);
                 return _target.RouteAsync(context);
