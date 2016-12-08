@@ -44,7 +44,7 @@ namespace Orchard.Menu.Controllers
 
         public IHtmlLocalizer H { get; set; }
 
-        public async Task<IActionResult> Create(string id, int menuContentItemId, int menuItemId)
+        public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -132,7 +132,7 @@ namespace Orchard.Menu.Controllers
 
             _session.Save(menu);
 
-            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
+            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", contentItemId = menuContentItemId });
         }
 
         public async Task<IActionResult> Edit(string menuContentItemId, string menuItemId)
@@ -217,7 +217,7 @@ namespace Orchard.Menu.Controllers
 
             _session.Save(menu);
 
-            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
+            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", contentItemId = menuContentItemId });
         }
 
         [HttpPost]
@@ -260,7 +260,7 @@ namespace Orchard.Menu.Controllers
 
             _notifier.Success(H["Menu item deleted successfully"]);
 
-            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", id = menuContentItemId });
+            return RedirectToAction("Edit", "Admin", new { area = "Orchard.Contents", contentItemId = menuContentItemId });
         }
 
         private JObject FindMenuItem(JObject contentItem, string menuItemId)

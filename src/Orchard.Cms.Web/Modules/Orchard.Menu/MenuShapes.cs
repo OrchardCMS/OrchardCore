@@ -5,7 +5,6 @@ using Orchard.ContentManagement;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Menu.Models;
-using Orchard.Utility;
 
 namespace Orchard.Menu
 {
@@ -24,11 +23,13 @@ namespace Orchard.Menu
                 .OnDisplaying(displaying =>
                 {
                     var menu = displaying.Shape;
-                    string menuName = menu.MenuName;
+                    string contentItemId = menu.ContentItemId;
 
-                    menu.Classes.Add("menu-" + menuName.HtmlClassify());
-                    menu.Classes.Add("menu");
-                    menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(menuName));
+                    if (!String.IsNullOrEmpty(contentItemId))
+                    {
+                        menu.Classes.Add("menu");
+                        menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(contentItemId));
+                    }
                 })
                 .OnProcessing(processing =>
                 {
@@ -88,7 +89,6 @@ namespace Orchard.Menu
                     var menuItem = displaying.Shape;
                     ContentItem menuContentItem = menuItem.ContentItem;
                     var menu = menuItem.Menu;
-                    var menuName = menu.MenuName;
                     int level = menuItem.Level;
 
                     var httpContext = _httpContextAccessor.HttpContext;
@@ -108,54 +108,56 @@ namespace Orchard.Menu
                             ContentItem = contentItem,
                             Level = 0,
                             Menu = menu,
-                            MenuName = menuName
                         }));
 
                         menuItem.Items.Add(shape);
                     }
-                    var contentType = menuContentItem.ContentType;
+
+                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentItemId = EncodeAlternateElement(menuContentItem.ContentItem.ContentItemId);
 
                     menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__level__" + level);
 
                     // MenuItem__[ContentType] e.g. MenuItem-HtmlMenuItem
                     // MenuItem__[ContentType]__level__[level] e.g. MenuItem-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(contentType));
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(contentType) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType + "__level__" + level);
 
                     // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-Main-Menu-HtmlMenuItem
                     // MenuItem__[MenuName]__[ContentType] e.g. MenuItem-Main-Menu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType));
-                    menuItem.Metadata.Alternates.Add("MenuItem__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__" + encodedContentType);
+                    menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentItemId + "__" + encodedContentType + "__level__" + level);
                 });
 
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
-                    string menuName = menuItem.Menu.MenuName;
                     int level = menuItem.Level;
 
                     ContentItem menuContentItem = menuItem.ContentItem;
-                    var contentType = menuContentItem.ContentType;
+
+                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentItemId = EncodeAlternateElement(menuContentItem.ContentItem.ContentItemId);
 
                     menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
 
                     // MenuItemLink__[ContentType] e.g. MenuItemLink-HtmlMenuItem
                     // MenuItemLink__[ContentType]__level__[level] e.g. MenuItemLink-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(contentType));
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(contentType) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + level);
 
                     // MenuItemLink__[MenuName] e.g. MenuItemLink-Main-Menu
                     // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-Main-Menu-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__level__" + level);
 
                     // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem
                     // MenuItemLink__[MenuName]__[ContentType] e.g. MenuItemLink-Main-Menu-HtmlMenuItem-level-2
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType));
-                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + EncodeAlternateElement(menuName) + "__" + EncodeAlternateElement(contentType) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__" + encodedContentType);
+                    menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentItemId + "__" + encodedContentType + "__level__" + level);
                 });
         }
 

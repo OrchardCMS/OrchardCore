@@ -38,7 +38,7 @@ namespace Orchard.Contents
                 .Permission(Permissions.EditOwnContent)
                 .AddClass("content")
                 .Add(T["Content Items"], "1", contentItems => contentItems
-                    .Action("List", "Admin", new { area = "Orchard.Contents", id = "" })
+                    .Action("List", "Admin", new { area = "Orchard.Contents" })
                     .LocalNav())
                 );
 
