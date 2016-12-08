@@ -35,16 +35,13 @@ namespace Orchard.Recipes.RecipeSteps
 
             foreach(var command in step.Commands)
             {
-                Logger.LogInformation("Executing command: {0}", command);
-                using (var memoryStream = new MemoryStream())
+                Logger.LogInformation("Executing command: {0}", command);                
+                using (var output = new StringWriter())
                 {
-                    using (var output = new StreamWriter(memoryStream))
-                    {
-                        var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
-                        commandParameters.Output = output;
-                        _commandManager.ExecuteAsync(commandParameters);
-                        Logger.LogInformation("{0}", output);
-                    }
+                    var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
+                    commandParameters.Output = output;
+                    _commandManager.ExecuteAsync(commandParameters);
+                    Logger.LogInformation("{0}", output);
                 }
                 Logger.LogInformation("Executed command: {0}", command);
             }
