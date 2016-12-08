@@ -9,12 +9,14 @@ namespace Orchard.Indexing
         {
             SchemaBuilder.CreateTable(nameof(IndexingTask), table => table
                 .Column<int>(nameof(IndexingTask.Id), col => col.PrimaryKey().Identity())
-                .Column<string>(nameof(IndexingTask.ContentItemId), c => c.WithLength(32))
+                .Column<string>(nameof(IndexingTask.ContentItemId), c => c.WithLength(26))
                 .Column<DateTimeOffset>(nameof(IndexingTask.CreatedUtc), col => col.NotNull())
                 .Column<int>(nameof(IndexingTask.Type))
             );
 
-            // TODO: Add an index on ContentItemId as this is used in a where clause
+            SchemaBuilder.AlterTable(nameof(IndexingTask), table => table
+                .CreateIndex("IDX_IndexingTask_ContentItemId", "ContentItemId")
+            );
 
             return 1;
         }
