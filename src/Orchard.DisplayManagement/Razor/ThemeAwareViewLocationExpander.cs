@@ -17,36 +17,47 @@ namespace Orchard.DisplayManagement.Razor
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
+            var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
+            context.Values["Theme"] = themeManager.GetThemeAsync().Result.Id;
         }
 
         /// <inheritdoc />
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var shellFeaturesManager = context.ActionContext.HttpContext.RequestServices.GetService<IShellFeaturesManager>();
+            var extensionManager = context.ActionContext.HttpContext.RequestServices.GetService<IExtensionManager>();
             var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
             var siteService = context.ActionContext.HttpContext.RequestServices.GetService<ISiteService>();
-
-            var orderedFeatures = shellFeaturesManager.GetEnabledFeaturesAsync().Result;
-            var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
-
-            var extensions = new List<IExtensionInfo>();
-            var theme = themeManager.GetThemeAsync().Result;
             var site = siteService.GetSiteSettingsAsync().Result;
+
+            var orderedFeatures = extensionManager.GetExtensions().Features;
+            var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
+            var extension = orderedExtensions.FirstOrDefault(e => e.Id == context.AreaName);
+
+            var themes = new List<IExtensionInfo>();
+            var currentTheme = themeManager.GetThemeAsync().Result;
             var adminThemeId = (string)site.Properties["CurrentAdminThemeName"];
 
-            extensions.Add(theme);
-            extensions.AddRange(GetBaseThemes(theme, adminThemeId, orderedExtensions));
-            extensions.AddRange(orderedExtensions.Where(e => !e.Manifest.IsTheme()).Reverse());
-
+            themes.Add(currentTheme);
+            themes.AddRange(GetBaseThemes(currentTheme, adminThemeId, orderedExtensions));
             var result = new List<string>();
-            foreach (var extension in extensions)
-            {
-                var viewsPath = Path.Combine(Path.DirectorySeparatorChar + extension.SubPath,
-                    "Views", context.AreaName != extension.Id ? context.AreaName : String.Empty);
 
-                result.Add(Path.Combine(viewsPath, "{1}", "{0}.cshtml"));
-                result.Add(Path.Combine(viewsPath, "Shared", "{0}.cshtml"));
+            foreach (var theme in themes)
+            {
+                var themeViewsPath = Path.Combine(Path.DirectorySeparatorChar + theme.SubPath,
+                    "Views", context.AreaName != theme.Id ? context.AreaName : String.Empty);
+
+                result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
+                result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
+            }
+
+            if (extension != null)
+            {
+                var extensionViewsPath = Path.Combine(Path.DirectorySeparatorChar
+                    + extension.SubPath, "Views");
+
+                result.Add(Path.Combine(extensionViewsPath, "{1}", "{0}.cshtml"));
+                result.Add(Path.Combine(extensionViewsPath, "Shared", "{0}.cshtml"));
             }
 
             result.AddRange(viewLocations);
@@ -55,36 +66,35 @@ namespace Orchard.DisplayManagement.Razor
 
         private IEnumerable<IExtensionInfo> GetBaseThemes(IExtensionInfo theme, string adminThemeId, IEnumerable<IExtensionInfo> extensions)
         {
-            if (theme.Id.Equals(adminThemeId, StringComparison.OrdinalIgnoreCase))
+            if (theme?.Id.Equals(adminThemeId, StringComparison.OrdinalIgnoreCase) ?? false)
             {
                 return extensions.Where(e => e.Manifest.IsTheme() && e.Id != adminThemeId);
             }
             else
             {
                 var list = new List<IExtensionInfo>();
+
+                if (theme == null)
+                {
+                    return list;
+                }
+
                 var themeInfo = new ThemeExtensionInfo(theme);
+
                 while (true)
                 {
-                    if (theme == null)
-                        break;
-
                     if (!themeInfo.HasBaseTheme())
                         break;
 
-                    var baseExtension = extensions.FirstOrDefault(e => themeInfo.IsBaseThemeFeature(e.Id));
-                    if (baseExtension == null)
+                    var baseTheme = extensions.FirstOrDefault(e => themeInfo.IsBaseThemeFeature(e.Id));
+
+                    if (baseTheme == null || list.Contains(baseTheme))
                     {
                         break;
                     }
 
-                    if (list.Contains(baseExtension))
-                    {
-                        break;
-                    }
-
-                    list.Add(baseExtension);
-
-                    theme = baseExtension;
+                    list.Add(baseTheme);
+                    theme = baseTheme;
                 }
 
                 return list;
