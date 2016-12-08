@@ -37,7 +37,7 @@ namespace Orchard.OpenId.Services
         public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
         {
             var siteSettings = await _session.QueryAsync<Orchard.Settings.SiteSettings>().FirstOrDefault();
-            siteSettings.Properties[typeof(OpenIdSettings).Name] = JObject.FromObject(openIdSettings);
+            siteSettings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
             _session.Save(siteSettings);
             _memoryCache.Set("Site", siteSettings);
         }

@@ -32,34 +32,14 @@ namespace Orchard.OpenId.Recipes
             var model = recipeContext.RecipeStep.Step.ToObject<OpenIdSettingsStepModel>();
 
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            if (model.TestingModeEnabled.HasValue)
-            {
-                openIdSettings.TestingModeEnabled = model.TestingModeEnabled.Value;
-            }
-            if (model.DefaultTokenFormat.HasValue)
-            {
-                openIdSettings.DefaultTokenFormat = model.DefaultTokenFormat.Value;
-            }
-            if (!string.IsNullOrEmpty(model.Audience))
-            {
-                openIdSettings.Audience = model.Audience;
-            }
-            if (!string.IsNullOrEmpty(model.Authority))
-            {
-                openIdSettings.Authority = model.Authority;
-            }
-            if (model.CertificateStoreLocation.HasValue)
-            {
-                openIdSettings.CertificateStoreLocation = model.CertificateStoreLocation.Value;
-            }
-            if (model.CertificateStoreName.HasValue)
-            {
-                openIdSettings.CertificateStoreName = model.CertificateStoreName.Value;
-            }
-            if (!string.IsNullOrEmpty(model.CertificateThumbPrint))
-            {
-                openIdSettings.CertificateThumbPrint = model.CertificateThumbPrint;
-            }
+            openIdSettings.TestingModeEnabled = model.TestingModeEnabled;
+            openIdSettings.DefaultTokenFormat = model.DefaultTokenFormat;
+            openIdSettings.Audience = model.Audience;
+            openIdSettings.Authority = model.Authority;
+            openIdSettings.CertificateStoreLocation = model.CertificateStoreLocation;
+            openIdSettings.CertificateStoreName = model.CertificateStoreName;
+            openIdSettings.CertificateThumbPrint = model.CertificateThumbPrint;
+            
             await _openIdService.UpdateOpenIdSettingsAsync(openIdSettings);
 
         }
@@ -67,12 +47,12 @@ namespace Orchard.OpenId.Recipes
 
     public class OpenIdSettingsStepModel
     {
-        public bool? TestingModeEnabled { get; set; }
-        public TokenFormat? DefaultTokenFormat { get; set; }
+        public bool TestingModeEnabled { get; set; } = true;
+        public TokenFormat DefaultTokenFormat { get; set; } = TokenFormat.JWT;
         public string Authority { get; set; }
         public string Audience { get; set; }
-        public StoreLocation? CertificateStoreLocation { get; set; }
-        public StoreName? CertificateStoreName { get; set; }
+        public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
+        public StoreName CertificateStoreName { get; set; } = StoreName.My;
         public string CertificateThumbPrint { get; set; }
     }
 }
