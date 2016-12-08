@@ -25,7 +25,7 @@ namespace Orchard.Users.Services
             bool result = true;
             if (string.IsNullOrWhiteSpace(user.UserName))
             {
-                reportError("UserName", T["An user name is required."]);
+                reportError("UserName", T["A user name is required."]);
                 result = false;
             }
             if (string.IsNullOrWhiteSpace(user.UserName))
