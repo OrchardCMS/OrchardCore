@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
 using Orchard.Settings;
 
 namespace Orchard.DisplayManagement.Razor
