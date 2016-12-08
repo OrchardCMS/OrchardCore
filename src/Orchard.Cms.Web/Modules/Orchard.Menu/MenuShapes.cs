@@ -36,6 +36,11 @@ namespace Orchard.Menu
                     string contentItemId = menu.ContentItemId;
                     string identity = menu.Identity;
 
+                    if (String.IsNullOrEmpty(contentItemId))
+                    {
+                        return;
+                    }
+
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                     // events and thus this code can be cached.
@@ -44,16 +49,11 @@ namespace Orchard.Menu
                     var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
                     var contentManager = httpContext.RequestServices.GetService<IContentManager>();
 
-                    ContentItem menuContentItem = null;
+                    ContentItem menuContentItem = menuContentItem = contentManager.GetAsync(contentItemId).Result;
 
-                    if (contentItemId != null)
+                    if (menuContentItem == null)
                     {
-                        menuContentItem = contentManager.GetAsync(contentItemId).Result;
-                    }
-                    else if (!String.IsNullOrEmpty(identity))
-                    {
-                        var contentIdentityManager = httpContext.RequestServices.GetService<IContentIdentityManager>();
-                        menuContentItem = contentIdentityManager.GetAsync(new ContentIdentity("identifier", identity)).Result;
+                        return;
                     }
 
                     menu.MenuName = contentManager.PopulateAspect<ContentItemMetadata>(menuContentItem).DisplayText;

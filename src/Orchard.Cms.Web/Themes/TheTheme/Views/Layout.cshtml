@@ -39,8 +39,8 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
 
-                @*@Display(New.Menu(Identity: "main-menu"))*@
-                <menu identity="main-menu" />
+                @*@Display(New.Menu(ContentItemId: "main-menu"))*@
+                <menu contentItemId="main-menu" />
 
                 <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
                     <ul class="nav navbar-nav navbar-right">
