@@ -5,6 +5,7 @@ using Orchard.Environment.Commands;
 using Orchard.Environment.Commands.Parameters;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System.IO;
 
 namespace Orchard.Recipes.RecipeSteps
 {
@@ -35,11 +36,16 @@ namespace Orchard.Recipes.RecipeSteps
             foreach(var command in step.Commands)
             {
                 Logger.LogInformation("Executing command: {0}", command);
-
-                var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
-
-                _commandManager.ExecuteAsync(commandParameters);
-
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var output = new StreamWriter(memoryStream))
+                    {
+                        var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
+                        commandParameters.Output = output;
+                        _commandManager.ExecuteAsync(commandParameters);
+                        Logger.LogInformation("{0}", output);
+                    }
+                }
                 Logger.LogInformation("Executed command: {0}", command);
             }
 

@@ -16,6 +16,8 @@ using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
 using YesSql.Core.Indexes;
+using Orchard.Users.Commands;
+using Orchard.Environment.Commands;
 
 namespace Orchard.Users
 {
@@ -79,8 +81,10 @@ namespace Orchard.Users
             services.AddScoped<IIndexProvider, UserIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<SetupEventHandler>();
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
+            services.AddScoped<ICommandHandler, UserCommands>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
