@@ -25,17 +25,17 @@ namespace Orchard.Users.Services
             bool result = true;
             if (string.IsNullOrWhiteSpace(user.UserName))
             {
-                reportError("UserName", T["You must provide an user name."]);
+                reportError("UserName", T["An user name is required."]);
                 result = false;
             }
             if (string.IsNullOrWhiteSpace(user.UserName))
             {
-                reportError("Password", T["You must provide a password."]);
+                reportError("Password", T["A password is required."]);
                 result = false;
             }
             if (string.IsNullOrWhiteSpace(user.Email))
             {
-                reportError("Email", T["You must provide an email."]);
+                reportError("Email", T["An email is required."]);
                 result = false;
             }
 
