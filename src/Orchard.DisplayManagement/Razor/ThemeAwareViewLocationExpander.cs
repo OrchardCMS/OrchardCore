@@ -17,7 +17,7 @@ namespace Orchard.DisplayManagement.Razor
         public void PopulateValues(ViewLocationExpanderContext context)
         {
             var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
-            context.Values["Theme"] = themeManager.GetThemeAsync().Result.Id;
+            context.Values["Theme"] = themeManager.GetThemeAsync().GetAwaiter().GetResult().Id;
         }
 
         /// <inheritdoc />
@@ -27,14 +27,14 @@ namespace Orchard.DisplayManagement.Razor
             var extensionManager = context.ActionContext.HttpContext.RequestServices.GetService<IExtensionManager>();
             var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
             var siteService = context.ActionContext.HttpContext.RequestServices.GetService<ISiteService>();
-            var site = siteService.GetSiteSettingsAsync().Result;
+            var site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 
             var orderedFeatures = extensionManager.GetExtensions().Features;
             var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
             var extension = orderedExtensions.FirstOrDefault(e => e.Id == context.AreaName);
 
             var themes = new List<IExtensionInfo>();
-            var currentTheme = themeManager.GetThemeAsync().Result;
+            var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
             var adminThemeId = (string)site.Properties["CurrentAdminThemeName"];
 
             themes.Add(currentTheme);
