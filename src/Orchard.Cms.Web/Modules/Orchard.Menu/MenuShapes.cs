@@ -23,21 +23,20 @@ namespace Orchard.Menu
                 .OnDisplaying(displaying =>
                 {
                     var menu = displaying.Shape;
-                    string contentItemId = menu.ContentItemId;
+                    string identifier = menu.ContentItemId ?? menu.Alias;
 
-                    if (!String.IsNullOrEmpty(contentItemId))
+                    if (!String.IsNullOrEmpty(identifier))
                     {
                         menu.Classes.Add("menu");
-                        menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(contentItemId));
+                        menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(identifier));
                     }
                 })
                 .OnProcessing(processing =>
                 {
-                    dynamic menu = processing.Shape;
-                    string contentItemId = menu.ContentItemId;
-                    string identity = menu.Identity;
+                    var menu = processing.Shape;
+                    string identifier = menu.ContentItemId ?? menu.Alias;
 
-                    if (String.IsNullOrEmpty(contentItemId))
+                    if (String.IsNullOrEmpty(identifier))
                     {
                         return;
                     }
@@ -49,8 +48,13 @@ namespace Orchard.Menu
                     var httpContext = _httpContextAccessor.HttpContext;
                     var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
                     var contentManager = httpContext.RequestServices.GetService<IContentManager>();
+                    var aliasManager = httpContext.RequestServices.GetService<IContentAliasManager>();
 
-                    ContentItem menuContentItem = menuContentItem = contentManager.GetAsync(contentItemId).Result;
+                    string contentItemId = menu.Alias != null
+                        ? aliasManager.GetContentItemIdAsync(menu.Alias).GetAwaiter().GetResult()
+                        : menu.ContentItemId;
+
+                    ContentItem menuContentItem = contentManager.GetAsync(contentItemId).GetAwaiter().GetResult();
 
                     if (menuContentItem == null)
                     {
