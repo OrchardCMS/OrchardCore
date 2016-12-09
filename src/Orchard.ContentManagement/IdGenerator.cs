@@ -2,12 +2,12 @@
 
 namespace Orchard.ContentManagement
 {
-    public class IdGenerator
+    public class DefaultContentItemIdGenerator : IContentItemIdGenerator
     {
         // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
         private static readonly string _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz";
 
-        public string GenerateUniqueId()
+        public string GenerateUniqueId(ContentItem contentItem)
         {
             // Generate a base32 Guid value
             var guid = Guid.NewGuid().ToString("N");

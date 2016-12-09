@@ -16,13 +16,13 @@ namespace Orchard.ContentManagement
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly DefaultContentManagerSession _contentManagerSession;
-        private readonly IdGenerator _idGenerator;
+        private readonly IContentItemIdGenerator _idGenerator;
 
         public DefaultContentManager(
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> handlers,
             ISession session,
-            IdGenerator idGenerator,
+            IContentItemIdGenerator idGenerator,
             ILogger<DefaultContentManager> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
@@ -60,7 +60,7 @@ namespace Orchard.ContentManagement
                 ContentItem = context.Builder.Build()
             };
 
-            context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId();
+            context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
 
