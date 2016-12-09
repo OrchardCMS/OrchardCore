@@ -29,7 +29,16 @@ namespace Orchard.Environment.Extensions
         private readonly ConcurrentDictionary<string, Task<FeatureEntry>> _features
             = new ConcurrentDictionary<string, Task<FeatureEntry>>();
 
+        private ConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _featureDependencies
+            = new ConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
+
+        private ConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _dependentFeatures
+            = new ConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
+
         private IDictionary<string, IExtensionInfo> _extensionsById;
+
+        private ConcurrentBag<IFeatureInfo> _allOrderedFeatureInfos;
+        private ConcurrentBag<IFeatureInfo> _allUnorderedFeatureInfos;
 
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
@@ -96,54 +105,58 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            var features = GetFeatures();
-
-            var feature = features.FirstOrDefault(x => x.Id == featureId);
-            if (feature == null)
+            return _dependentFeatures.GetOrAdd(featureId, (key) =>
             {
-                return Enumerable.Empty<IFeatureInfo>();
-            }
+                var unorderedFeatures = GetAllUnorderedFeatures();
 
-            var dependencies = new HashSet<IFeatureInfo>() { feature };
-            var stack = new Stack<IFeatureInfo[]>();
-
-            stack.Push(features.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
-
-            while (stack.Count > 0)
-            {
-                var next = stack.Pop();
-                foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
+                if (feature == null)
                 {
-                    dependencies.Add(dependency);
-                    stack.Push(features.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                    return Enumerable.Empty<IFeatureInfo>();
                 }
-            }
 
-            return dependencies.Distinct();
+                var dependencies = new HashSet<IFeatureInfo>() { feature };
+                var stack = new Stack<IFeatureInfo[]>();
+
+                stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+
+                while (stack.Count > 0)
+                {
+                    var next = stack.Pop();
+                    foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
+                    {
+                        dependencies.Add(dependency);
+                        stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                    }
+                }
+
+                return dependencies.Distinct();
+            });
         }
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return GetDependentFeatures(featureId, GetFeatures());
-        }
-
-        private IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IEnumerable<IFeatureInfo> features)
-        {
-            var feature = features.FirstOrDefault(x => x.Id == featureId);
-            if (feature == null)
+            return _dependentFeatures.GetOrAdd(featureId, (key) =>
             {
-                return Enumerable.Empty<IFeatureInfo>();
-            }
+                var unorderedFeatures = GetAllUnorderedFeatures();
 
-            var getDependants =
-                new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
-                    (currentFeature, fs) => fs
-                        .Where(f =>
-                                f.Dependencies.Any(dep => dep == currentFeature.Id)
-                               ).ToArray());
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
+                if (feature == null)
+                {
+                    return Enumerable.Empty<IFeatureInfo>();
+                }
 
-            return
-                GetDependentFeatures(feature, features.ToArray(), getDependants);
+                var getDependants =
+                    new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                        (currentFeature, fs) => fs
+                            .Where(f =>
+                                    f.Dependencies.Any(dep => dep == currentFeature.Id)
+                                   ).ToArray());
+
+                return
+                    GetDependentFeatures(feature, unorderedFeatures.ToArray(), getDependants);
+
+            });
         }
 
         private IList<IFeatureInfo> GetDependentFeatures(
@@ -189,44 +202,40 @@ namespace Orchard.Environment.Extensions
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            var allUnorderedFeatures = AllUnorderedFeatures();
-
-            var orderedFeatureDescriptors = allUnorderedFeatures
-                .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                    (fi) => fi.Priority)
-                .Distinct();
-
             // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(orderedFeatureDescriptors
+            var loadedFeatures = await Task.WhenAll(GetFeatures()
                 .Select(feature => LoadFeatureAsync(feature))
                 .ToArray());
 
             return loadedFeatures.AsEnumerable();
         }
+
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            var allUnorderedFeatures = AllUnorderedFeatures();
+            if (_allOrderedFeatureInfos == null)
+            {
+                var allUnorderedFeatures = GetAllUnorderedFeatures();
 
-            var orderedFeatureDescriptors = allUnorderedFeatures
-                .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
-                    (fi) => fi.Priority)
-                .Distinct();
+                var orderedFeatureDescriptors = allUnorderedFeatures
+                            .OrderByDependenciesAndPriorities(
+                                (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                                (fi) => fi.Priority)
+                            .Distinct();
 
-            return orderedFeatureDescriptors;
+                _allOrderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
+            }
+
+            return _allOrderedFeatureInfos;
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allUnorderedFeatures = AllUnorderedFeatures();
-
             var allUnorderedFeaturesToLoadIncludingDependencies =
                 featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
 
             var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
                     (fi) => fi.Priority)
                 .Distinct();
 
@@ -276,11 +285,16 @@ namespace Orchard.Environment.Extensions
             });
         }
 
-        private IEnumerable<IFeatureInfo> AllUnorderedFeatures()
+        private IEnumerable<IFeatureInfo> GetAllUnorderedFeatures()
         {
-            GetExtensions();
+            if (_allUnorderedFeatureInfos == null)
+            {
+                GetExtensions();
 
-            return _extensionsById.Values.SelectMany(x => x.Features);
+                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(_extensionsById.Values.SelectMany(x => x.Features).Distinct());
+            }
+
+            return _allUnorderedFeatureInfos;
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
