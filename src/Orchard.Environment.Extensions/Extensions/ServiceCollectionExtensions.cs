@@ -27,6 +27,7 @@ namespace Orchard.Environment.Extensions
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
                 services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+                services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
 
                 services.TryAddEnumerable(
                     ServiceDescriptor.Transient<IConfigureOptions<ExtensionOptions>, ExtensionOptionsSetup>());
@@ -50,7 +51,6 @@ namespace Orchard.Environment.Extensions
 
         public static IServiceCollection AddExtensionManager(this IServiceCollection services)
         {
-            services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
             services.TryAddTransient<IFeatureHash, FeatureHash>();
 
             return services;

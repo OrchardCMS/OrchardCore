@@ -124,8 +124,11 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            var features = GetFeatures();
+            return GetDependentFeatures(featureId, GetFeatures());
+        }
 
+        private IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId, IEnumerable<IFeatureInfo> features)
+        {
             var feature = features.FirstOrDefault(x => x.Id == featureId);
             if (feature == null)
             {
@@ -186,7 +189,7 @@ namespace Orchard.Environment.Extensions
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            var allUnorderedFeatures = GetFeatures().ToArray();
+            var allUnorderedFeatures = AllUnorderedFeatures();
 
             var orderedFeatureDescriptors = allUnorderedFeatures
                 .OrderByDependenciesAndPriorities(
@@ -203,13 +206,11 @@ namespace Orchard.Environment.Extensions
         }
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            GetExtensions(); // Initialize
-
-            var allUnorderedFeatures = _extensionsById.Values.SelectMany(x => x.Features);
+            var allUnorderedFeatures = AllUnorderedFeatures();
 
             var orderedFeatureDescriptors = allUnorderedFeatures
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
                     (fi) => fi.Priority)
                 .Distinct();
 
@@ -218,16 +219,14 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            GetExtensions(); // Initialize
-
-            var allUnorderedFeatures = _extensionsById.Values.SelectMany(x => x.Features);
+            var allUnorderedFeatures = AllUnorderedFeatures();
 
             var allUnorderedFeaturesToLoadIncludingDependencies =
                 featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
 
             var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id, allUnorderedFeatures).Contains(fiSub),
                     (fi) => fi.Priority)
                 .Distinct();
 
@@ -275,6 +274,13 @@ namespace Orchard.Environment.Extensions
 
                 return new CompiledFeatureEntry(feature, featureTypes);
             });
+        }
+
+        private IEnumerable<IFeatureInfo> AllUnorderedFeatures()
+        {
+            GetExtensions();
+
+            return _extensionsById.Values.SelectMany(x => x.Features);
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
