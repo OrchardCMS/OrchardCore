@@ -7,27 +7,28 @@ using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
+using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
         private readonly ShellSettings _shellSettings;
 
         public AccountController(
-            UserManager<User> userManager,
+            IUserService userService,
             SignInManager<User> signInManager,
             ShellSettings shellSettings,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
-            _userManager = userManager;
+            _userService = userService;
             _shellSettings = shellSettings;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _logger = logger;
@@ -97,8 +98,7 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var user = new User { UserName = model.UserName, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                if (await _userService.CreateUserAsync(user, model.Password, (key,message) => ModelState.AddModelError(key,message)))
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
@@ -109,11 +109,6 @@ namespace Orchard.Users.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 

@@ -18,6 +18,7 @@ using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
 using YesSql.Core.Services;
+using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers
 {
@@ -33,6 +34,7 @@ namespace Orchard.Users.Controllers
         private readonly RoleManager<Role> _roleManager;
         private readonly IRoleProvider _roleProvider;
         private readonly INotifier _notifier;
+        private readonly IUserService _userService;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -44,7 +46,8 @@ namespace Orchard.Users.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            INotifier notifier
+            INotifier notifier,
+            IUserService userService
             )
         {
             _notifier = notifier;
@@ -57,6 +60,7 @@ namespace Orchard.Users.Controllers
             _authorizationService = authorizationService;
             _session = session;
             _userManager = userManager;
+            _userService = userService;
         }
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
@@ -159,37 +163,18 @@ namespace Orchard.Users.Controllers
         public async Task<IActionResult> Create(CreateUserViewModel model)
         {
             CleanViewModel(model);
-
-            if (ModelState.IsValid)
-            {
-                if (await _userManager.FindByNameAsync(model.UserName) != null)
-                {
-                    ModelState.AddModelError(string.Empty, T["The user name is already used."]);
-                }
-
-                if (await _userManager.FindByEmailAsync(model.Email) != null)
-                {
-                    ModelState.AddModelError(string.Empty, T["The email is already used."]);
-                }
-            }
-
+            
             if (ModelState.IsValid)
             {
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
                 var user = new User { UserName = model.UserName, Email = model.Email, RoleNames = roleNames };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                if (await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
                     _notifier.Success(TH["User created successfully"]);
                     return RedirectToAction(nameof(Index));
                 }
 
                 _session.Cancel();
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
             }
 
             // If we got this far, something failed, redisplay form

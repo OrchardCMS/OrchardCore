@@ -124,8 +124,8 @@ namespace Orchard.Setup.Controllers
             {
                 SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
-                AdminUsername = model.AdminUserName,
-                AdminEmail = model.AdminEmail,
+                AdminUsername = model.UserName,
+                AdminEmail = model.Email,
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe

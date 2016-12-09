@@ -5,6 +5,7 @@ using Orchard.Environment.Commands;
 using Orchard.Environment.Commands.Parameters;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System.IO;
 
 namespace Orchard.Recipes.RecipeSteps
 {
@@ -28,22 +29,22 @@ namespace Orchard.Recipes.RecipeSteps
 
         public override string Name { get { return "Command"; } }
 
-        public override Task ExecuteAsync(RecipeExecutionContext context)
+        public override async Task ExecuteAsync(RecipeExecutionContext context)
         {
             var step = context.RecipeStep.Step.ToObject<InternalStep>();
 
             foreach(var command in step.Commands)
             {
-                Logger.LogInformation("Executing command: {0}", command);
-
-                var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
-
-                _commandManager.ExecuteAsync(commandParameters);
-
+                Logger.LogInformation("Executing command: {0}", command);                
+                using (var output = new StringWriter())
+                {
+                    var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
+                    commandParameters.Output = output;
+                    await _commandManager.ExecuteAsync(commandParameters);
+                    Logger.LogInformation("{0}", output);
+                }
                 Logger.LogInformation("Executed command: {0}", command);
             }
-
-            return Task.CompletedTask;
         }
 
         private class InternalStep
