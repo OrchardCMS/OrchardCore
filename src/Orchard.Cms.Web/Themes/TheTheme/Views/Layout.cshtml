@@ -39,7 +39,7 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
 
-                @*@Display(New.Menu(ContentItemId: "main-menu"))*@
+                @*@await DisplayAsync(New.Menu(ContentItemId: "main-menu"))*@
                 <menu alias="main-menu" cache-id="main-menu" cache-duration="00:05:00" />
 
                 <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
@@ -71,7 +71,7 @@
     </nav>
 
     <div class="container">
-        @RenderBody()
+        @await RenderBodyAsync()
     </div><!-- /.container -->
 
     <div class="container">

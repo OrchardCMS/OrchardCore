@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -28,54 +26,33 @@ namespace Orchard.DisplayManagement.Implementation
 
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
-            try
-            {
-                result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
-            }
-            catch (AggregateException ae)
-            {
-                // Unwrap the aggregate exception
-                throw ae.GetBaseException();
-            }
+            result = InvokeAsync(null, Arguments.From(args, binder.CallInfo.ArgumentNames));
 
             return true;
         }
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            try
-            {
-                result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames)).Result;
-            }
-            catch (AggregateException ae)
-            {
-                // Unwrap the aggregate exception
-                throw ae.GetBaseException();
-            }
-
+            result = InvokeAsync(binder.Name, Arguments.From(args, binder.CallInfo.ArgumentNames));
+            
             return true;
         }
 
-        public async Task<object> InvokeAsync(string name, INamedEnumerable<object> parameters)
+        public Task<IHtmlContent> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
             if (!string.IsNullOrEmpty(name))
             {
-                return await ShapeTypeExecuteAsync(name, parameters);
+                return ShapeTypeExecuteAsync(name, parameters);
             }
 
             if (parameters.Positional.Count() == 1)
             {
-                return await ShapeExecuteAsync(parameters.Positional.First());
+                return ShapeExecuteAsync(parameters.Positional.First());
             }
 
             if (parameters.Positional.Any())
             {
-                var htmlContents = await ShapeExecuteAsync(parameters.Positional);
-                var htmlContentBuilder = new HtmlContentBuilder();
-                foreach (var htmlContent in htmlContents)
-                {
-                    htmlContentBuilder.AppendHtml(htmlContent);
-                }
+                return ShapeExecuteAsync(parameters.Positional);
             }
 
             // zero args - no display to execute
@@ -87,33 +64,28 @@ namespace Orchard.DisplayManagement.Implementation
             var shape = _shapeFactory.Create(name, parameters);
             return ShapeExecuteAsync(shape);
         }
-
-        public Task<IHtmlContent> ShapeExecuteAsync(Shape shape)
-        {
-            // disambiguates the call to ShapeExecute(object) as Shape also implements IEnumerable
-            return ShapeExecuteAsync((object)shape);
-        }
-
-        public async Task<IHtmlContent> ShapeExecuteAsync(object shape)
+        
+        public Task<IHtmlContent> ShapeExecuteAsync(object shape)
         {
             if (shape == null)
             {
-                return new HtmlString(string.Empty);
+                return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
-            var context = new DisplayContext { Display = this, Value = shape, ViewContext = ViewContext };
-            return await _displayManager.ExecuteAsync(context);
+            var context = new DisplayContext { DisplayAsync = this, Value = shape, ViewContext = ViewContext };
+            return _displayManager.ExecuteAsync(context);
         }
 
-        public async Task<IEnumerable<IHtmlContent>> ShapeExecuteAsync(IEnumerable<object> shapes)
+        public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<object> shapes)
         {
-            var result = new List<IHtmlContent>();
+            var htmlContentBuilder = new HtmlContentBuilder();
+
             foreach (var shape in shapes)
             {
-                result.Add(await ShapeExecuteAsync(shape));
+                htmlContentBuilder.AppendHtml(await ShapeExecuteAsync(shape));
             }
 
-            return result;
+            return htmlContentBuilder;
         }
     }
 }

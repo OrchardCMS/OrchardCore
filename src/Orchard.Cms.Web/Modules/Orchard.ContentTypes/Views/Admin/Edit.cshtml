@@ -23,7 +23,7 @@
 
     <input type="hidden" asp-for="Name" />
 
-    @Display(Model.Editor)
+    @await DisplayAsync(Model.Editor)
 
     <fieldset class="form-group">
         <h3>@T["Fields"]</h3>

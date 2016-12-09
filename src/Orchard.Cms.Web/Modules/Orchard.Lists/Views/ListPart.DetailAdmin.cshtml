@@ -26,7 +26,7 @@
     @foreach (var contentItemSummary in contentItems)
     {
         <li class="list-group-item">
-            @Display(contentItemSummary)
+            @await DisplayAsync(contentItemSummary)
         </li>
     }
 </ul>

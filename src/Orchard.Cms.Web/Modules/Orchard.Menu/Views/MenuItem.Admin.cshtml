@@ -21,7 +21,7 @@
     <div class="menu-item menu-item-title list-group-item">
         @if (Model.Content != null)
         {
-            @Display(Model.Content)
+            @await DisplayAsync(Model.Content)
         }
 
         <div class="float-xs-right">
@@ -61,7 +61,7 @@
                 var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
                 menuItemShape.MenuPart = Model.MenuPart;
                 menuItemShape.Index = Model.Index + "-" + index++;
-                @Display(menuItemShape);
+                @await DisplayAsync(menuItemShape);
             }
         }
     </ol>

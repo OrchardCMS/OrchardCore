@@ -8,7 +8,7 @@
 
     foreach (var item in Model.Items)
     {
-        tag.InnerHtml.AppendHtml(Display(item));
+        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
     }
 }
 

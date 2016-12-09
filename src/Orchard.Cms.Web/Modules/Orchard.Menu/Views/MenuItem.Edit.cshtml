@@ -6,14 +6,14 @@
             @if (Model.Content != null)
             {
                 <div class="edit-item-content">
-                    @Display(Model.Content)
+                    @await DisplayAsync(Model.Content)
                 </div>
             }
         </div>
         <div class="edit-item-parts">
             @if (Model.Parts != null)
             {
-                @Display(Model.Parts)
+                @await DisplayAsync(Model.Parts)
             }
         </div>
 
@@ -21,7 +21,7 @@
             @if (Model.Actions != null)
             {
                 <div class="edit-item-actions form-group">
-                    @Display(Model.Actions)
+                    @await DisplayAsync(Model.Actions)
                 </div>
             }
         </div>
@@ -30,7 +30,7 @@
 {
     <div class="edit-sidebar-handler"></div>
     <div class="edit-sidebar group">
-        @Display(Model.Sidebar)
+        @await DisplayAsync(Model.Sidebar)
     </div>
 }
 </div>

@@ -29,7 +29,7 @@ SHAPES (Arguments)
 
 @for (int i = 0; i < iterations; i++)
 {
-    buffer.AppendHtml(Display(New.Fake(Value: i.ToString())));
+    buffer.AppendHtml(await DisplayAsync(New.Fake(Value: i.ToString())));
 }
 
 @sw.Elapsed.TotalMilliseconds ms
@@ -44,7 +44,7 @@ SHAPES (Method call)
 
 @for (int i = 0; i < iterations; i++)
 {
-    buffer.AppendHtml(Display(New.Fake().Value(i.ToString())));
+    buffer.AppendHtml(await DisplayAsync(New.Fake().Value(i.ToString())));
 }
 
 @sw.Elapsed.TotalMilliseconds ms
@@ -62,7 +62,7 @@ SHAPES (Reuse instance)
 
 @for (int i = 0; i < iterations; i++)
 {
-    buffer.AppendHtml(Display(shape));
+    buffer.AppendHtml(await DisplayAsync(shape));
 }
 
 @sw.Elapsed.TotalMilliseconds ms
@@ -99,7 +99,7 @@ SHAPES (Cached)
     shape = New.Fake().Value(i.ToString());
     shape.Metadata.Cache("fake");
 
-    buffer.AppendHtml(Display(shape));
+    buffer.AppendHtml(await DisplayAsync(shape));
 }
 
 @sw.Elapsed.TotalMilliseconds ms

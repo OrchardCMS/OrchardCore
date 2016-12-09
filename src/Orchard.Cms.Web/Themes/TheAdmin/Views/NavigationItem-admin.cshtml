@@ -42,13 +42,13 @@
         tag.InnerHtml.AppendHtml("<ul>");
         foreach (var item in Model.Items)
         {
-            tag.InnerHtml.AppendHtml(Display(item));
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
         tag.InnerHtml.AppendHtml("</ul>");
     }
     else
     {
-        tag.InnerHtml.AppendHtml(Display(Model));
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }
 }
 @tag

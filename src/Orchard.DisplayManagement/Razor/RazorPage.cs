@@ -70,10 +70,10 @@ namespace Orchard.DisplayManagement.Razor
         /// Renders a shape.
         /// </summary>
         /// <param name="shape">The shape.</param>
-        public IHtmlContent Display(dynamic shape)
+        public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
             EnsureDisplayHelper();
-            return (IHtmlContent)_displayHelper(shape);
+            return (Task<IHtmlContent>)_displayHelper(shape);
         }
 
         private dynamic _themeLayout;
@@ -197,11 +197,9 @@ namespace Orchard.DisplayManagement.Razor
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        protected new IHtmlContent RenderBody()
+        protected Task<IHtmlContent> RenderBodyAsync()
         {
-            // Overrides the base RenderBody method to render the Layout's Content zone instead.
-
-            return Display(ThemeLayout.Content);
+            return DisplayAsync(ThemeLayout.Content);
         }
 
         /// <summary>
@@ -223,8 +221,7 @@ namespace Orchard.DisplayManagement.Razor
                 throw new InvalidOperationException("Zone not found: " + name);
             }
 
-            IHtmlContent result = Display(zone);
-            return Task.FromResult(result);
+            return DisplayAsync(zone);
         }
     }
 

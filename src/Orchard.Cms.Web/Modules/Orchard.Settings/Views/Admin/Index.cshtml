@@ -6,5 +6,5 @@
 <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     <input asp-for="GroupId" type="hidden" />
     @Html.ValidationSummary()
-    @Display(Model.Shape)
+    @await DisplayAsync(Model.Shape)
 </form>

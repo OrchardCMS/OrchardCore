@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
@@ -17,8 +18,8 @@ namespace Orchard.DisplayManagement.Shapes
         }
 
         [Shape]
-        public IHtmlContent List(
-            dynamic Display,
+        public async Task<IHtmlContent> List(
+            dynamic DisplayAsync,
             IEnumerable<dynamic> Items,
             string Tag,
             string Id,
@@ -82,7 +83,7 @@ namespace Orchard.DisplayManagement.Shapes
 
                 // Give the item shape the possibility to alter its container tag
                 // by rendering them before rendering the containing list.
-                var itemContent = Display(item);
+                var itemContent = await DisplayAsync(item);
 
                 itemTag.InnerHtml.AppendHtml(itemContent);
                 listTag.InnerHtml.AppendHtml(itemTag);

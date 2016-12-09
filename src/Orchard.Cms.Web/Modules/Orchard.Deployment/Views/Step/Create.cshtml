@@ -4,7 +4,7 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
-    @Display(Model.Editor)
+    @await DisplayAsync(Model.Editor)
 
     <input type="hidden" asp-for="DeploymentPlanId" />
     <input type="hidden" asp-for="DeploymentStepId" />

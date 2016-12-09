@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using Orchard.DisplayManagement.Shapes;
+using System.Threading.Tasks;
 
 namespace Orchard.Navigation
 {
@@ -144,7 +145,7 @@ namespace Orchard.Navigation
         public IStringLocalizer T { get; set; }
 
         [Shape]
-        public IHtmlContent Pager_Links(Shape Shape, dynamic Display, dynamic New,
+        public Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
             int Page,
             int PageSize,
@@ -287,64 +288,64 @@ namespace Orchard.Navigation
                 Shape.Add(New.Pager_Last(Value: lastText, RouteValues: new RouteValueDictionary(routeData), Pager: Shape));
             }
 
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Links";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_First(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_First(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_Previous(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_Previous(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_CurrentPage(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_CurrentPage(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
             ((dynamic)Shape).Tag.AddCssClass("active");
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_Next(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_Next(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_Last(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_Last(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
-        public IHtmlContent Pager_Link(IHtmlHelper Html, Shape Shape, dynamic Display, object Value)
+        public Task<IHtmlContent> Pager_Link(IHtmlHelper Html, Shape Shape, dynamic DisplayAsync, object Value)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "ActionLink";
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         [Shape]
@@ -374,12 +375,12 @@ namespace Orchard.Navigation
         }
 
         [Shape]
-        public IHtmlContent Pager_Gap(Shape Shape, dynamic Display)
+        public Task<IHtmlContent> Pager_Gap(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
             Shape.Metadata.Type = "Pager_Link";
             ((dynamic)Shape).Tag.AddCssClass("disabled");
-            return Display(Shape);
+            return DisplayAsync(Shape);
         }
 
         static IHtmlContent CoerceHtmlString(object value)

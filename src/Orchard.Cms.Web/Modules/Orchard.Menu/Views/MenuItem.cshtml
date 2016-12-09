@@ -5,7 +5,7 @@
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "MenuItemLink";
 
-    tag.InnerHtml.AppendHtml(Display(Model));
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
     if ((bool)Model.HasItems)
     {
@@ -13,7 +13,7 @@
 
         foreach (var item in Model.Items)
         {
-            tag.InnerHtml.AppendHtml(Display(item));
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
 
         tag.InnerHtml.AppendHtml("</ul>");

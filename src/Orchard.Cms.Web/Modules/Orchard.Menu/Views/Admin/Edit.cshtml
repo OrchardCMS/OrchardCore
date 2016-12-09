@@ -14,7 +14,7 @@
 
 <form asp-action="Edit" sp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     @Html.ValidationSummary()
-    @Display(Model)
+    @await DisplayAsync(Model)
 
     <input type="hidden" name="MenuContentItemId" value="@Model.MenuContentItemId" />
     <input type="hidden" name="MenuItemId" value="@Model.MenuItemId" />

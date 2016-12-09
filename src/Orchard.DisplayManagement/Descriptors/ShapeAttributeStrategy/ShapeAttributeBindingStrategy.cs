@@ -23,6 +23,16 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
     public class ShapeAttributeBindingStrategy : IShapeTableHarvester
     {
+        private static readonly ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>> _getters =
+            new ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>>();
+
+        private static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
+            new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
+
+        private static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
+            new ConcurrentDictionary<Type, Func<dynamic, object>>();
+
+
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IServiceProvider _serviceProvider;
@@ -95,8 +105,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             // Resolve the service the method is declared on
             var returnValue = methodInfo.Invoke(serviceInstance, arguments.ToArray());
 
-            // If the shape returns a value, write it to the stream
-            if (methodInfo.ReturnType != typeof(void))
+            if (methodInfo.ReturnType == typeof(Task<IHtmlContent>))
+            {
+                return (Task<IHtmlContent>)returnValue;
+            }
+            else if (methodInfo.ReturnType == typeof(IHtmlContent))
+            {
+                return Task.FromResult((IHtmlContent)returnValue);
+            }
+            else if (methodInfo.ReturnType != typeof(void))
             {
                 return Task.FromResult(CoerceHtmlContent(returnValue));
             }
@@ -123,9 +140,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return displayContext.Value;
             }
 
-            if (String.Equals(parameter.Name, "Display", StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
             {
-                return displayContext.Display;
+                return displayContext.DisplayAsync;
             }
 
             if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
@@ -176,16 +193,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             return Convert.ChangeType(result, parameter.ParameterType);
         }
-
-
-        static readonly ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>> _getters =
-            new ConcurrentDictionary<string, CallSite<Func<CallSite, object, dynamic>>>();
-
-        static readonly ConcurrentDictionary<MethodInfo, ParameterInfo[]> _parameters =
-            new ConcurrentDictionary<MethodInfo, ParameterInfo[]>();
-
-        static readonly ConcurrentDictionary<Type, Func<dynamic, object>> _converters =
-            new ConcurrentDictionary<Type, Func<dynamic, object>>();
 
         static Func<dynamic, object> CompileConverter(Type targetType)
         {

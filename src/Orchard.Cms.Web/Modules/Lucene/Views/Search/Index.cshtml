@@ -18,7 +18,7 @@
         @foreach (var contentItem in Model.ContentItems)
         {
             <li class="list-group-item">
-                @Display(await DisplayManager.BuildDisplayAsync(contentItem, null))
+                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null))
             </li>
         }
     </ul>
@@ -32,4 +32,4 @@ else
     var pager = New.Pager(Model.Pager).ShowNext(Model.HasMoreResults);
 }
 
-@Display(pager)
+@await DisplayAsync(pager)

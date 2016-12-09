@@ -35,7 +35,7 @@
             var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
             menuItemShape.MenuPart = Model.MenuPart;
             menuItemShape.Index = index++;
-            @Display(menuItemShape);
+            @await DisplayAsync(menuItemShape);
         }
     </ol>
 </p>
@@ -59,7 +59,7 @@
                         thumbnail.MenuItemType = type.Name;
                         thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
                         <div class="col-sm-6">
-                            @Display(thumbnail)
+                            @await DisplayAsync(thumbnail)
                         </div>
                     }
                 </div>

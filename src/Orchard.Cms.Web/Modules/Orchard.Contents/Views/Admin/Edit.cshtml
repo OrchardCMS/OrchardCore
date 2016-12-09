@@ -14,5 +14,5 @@
 
 <form asp-action="Edit" asp-route-contentitemid="@contentItem.ContentItemId" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     @Html.ValidationSummary()
-    @Display(Model)
+    @await DisplayAsync(Model)
 </form>

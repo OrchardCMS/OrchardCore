@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Theming
                         ThemeLayout.Content.Add(body);
                     }
 
-                    @Display(ThemeLayout)
+                    @await DisplayAsync(ThemeLayout)
                 ");
         }
         public IDirectoryContents GetDirectoryContents(string subpath)

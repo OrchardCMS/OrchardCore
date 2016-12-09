@@ -31,7 +31,7 @@
                 item.DeploymentPlanId = Model.DeploymentPlan.Id;
 
                 <li class="list-group-item">
-                    @Display(item)
+                    @await DisplayAsync(item)
                 </li>
             }
         </ul>
@@ -61,7 +61,7 @@
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
                         <div class="col-sm-6">
-                            @Display(thumbnail.Value)
+                            @await DisplayAsync(thumbnail.Value)
                         </div>
                     }
                     </div>
