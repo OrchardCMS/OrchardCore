@@ -217,10 +217,10 @@ namespace Orchard.Environment.Extensions
                 var allUnorderedFeatures = GetAllUnorderedFeatures();
 
                 var orderedFeatureDescriptors = allUnorderedFeatures
-                            .OrderByDependenciesAndPriorities(
-                                (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                                (fi) => fi.Priority)
-                            .Distinct();
+                    .OrderByDependenciesAndPriorities(
+                        (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                        (fi) => fi.Priority)
+                    .Distinct();
 
                 _allOrderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
             }
@@ -289,9 +289,7 @@ namespace Orchard.Environment.Extensions
         {
             if (_allUnorderedFeatureInfos == null)
             {
-                GetExtensions();
-
-                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(_extensionsById.Values.SelectMany(x => x.Features).Distinct());
+                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(GetExtensions().SelectMany(x => x.Features).Distinct());
             }
 
             return _allUnorderedFeatureInfos;
