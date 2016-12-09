@@ -29,7 +29,7 @@ namespace Orchard.Recipes.RecipeSteps
 
         public override string Name { get { return "Command"; } }
 
-        public override Task ExecuteAsync(RecipeExecutionContext context)
+        public override async Task ExecuteAsync(RecipeExecutionContext context)
         {
             var step = context.RecipeStep.Step.ToObject<InternalStep>();
 
@@ -40,13 +40,11 @@ namespace Orchard.Recipes.RecipeSteps
                 {
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
                     commandParameters.Output = output;
-                    _commandManager.ExecuteAsync(commandParameters);
+                    await _commandManager.ExecuteAsync(commandParameters);
                     Logger.LogInformation("{0}", output);
                 }
                 Logger.LogInformation("Executed command: {0}", command);
             }
-
-            return Task.CompletedTask;
         }
 
         private class InternalStep
