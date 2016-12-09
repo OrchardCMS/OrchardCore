@@ -313,6 +313,7 @@ namespace Orchard.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.Latest = true;
+            buildingContentItem.Data = existingContentItem.Data;
 
             var context = new VersionContentContext
             {

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Orchard.ContentManagement
 {
     /// <summary>
-    /// Reprensents the list of logical identities of a <see cref="ContentItem"/>.
+    /// Represents the list of logical identities of a <see cref="ContentItem"/>.
     /// </summary>
     [JsonConverter(typeof(ContentIdentityConverter))]
     public class ContentIdentity : IEquatable<ContentIdentity>
@@ -15,6 +15,11 @@ namespace Orchard.ContentManagement
 
         public ContentIdentity()
         {
+        }
+
+        public ContentIdentity(string name, string value)
+        {
+            Add(name, value);
         }
 
         public void Add(string name, string value)

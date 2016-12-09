@@ -10,7 +10,7 @@ namespace Orchard.ContentPreview.Drivers
         public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
             return Combine(
-                Shape("ContentPreview_Button", contentItem).Location("Actions:before"),
+                Shape("ContentPreview_Button", contentItem).Location("Actions:after"),
                 Shape("ContentPreview_Container", contentItem).Location("Sidebar")
                 );
         }

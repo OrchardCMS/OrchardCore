@@ -41,6 +41,7 @@
         "Orchard.Identity",
         "Orchard.Indexing",
         "Orchard.Lists",
+        "Orchard.Menu",
         "Orchard.Title",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",

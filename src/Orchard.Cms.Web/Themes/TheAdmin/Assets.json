@@ -2,7 +2,8 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/scss/TheAdmin.scss"
+      "Assets/scss/TheAdmin.scss",
+      "../../Modules/Orchard.Resources/Content/Styles/jquery-ui.css"
     ],
     "output": "Content/Styles/TheAdmin.css"
   },
@@ -11,6 +12,7 @@
       "../../Modules/Orchard.Resources/Assets/jQuery/jquery-3.1.0.js",
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/tether.js",
       "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
+      "../../Modules/Orchard.Resources/Content/Scripts/jquery-ui.js",
       "Assets/js/*.js"
     ],
     "output": "Content/Scripts/TheAdmin.js"

@@ -8,6 +8,11 @@ namespace Orchard.Identity.Indexes
     public class IdentityPartIndex : MapIndex
     {
         public string Identifier { get; set; }
+        public int ContentItemId { get; set; }
+        public int Number { get; set; }
+        public bool Published { get; set; }
+        public bool Latest { get; set; }
+
     }
 
     public class IdentityPartIndexProvider : IndexProvider<ContentItem>
@@ -17,12 +22,17 @@ namespace Orchard.Identity.Indexes
             context.For<IdentityPartIndex>()
                 .Map(contentItem =>
                 {
-                    var identifier = contentItem.As<IdentityPart>()?.Identifier;
+                    var identifier = contentItem.As<IdentityPart>()?.Identity;
                     if (!String.IsNullOrEmpty(identifier))
                     {
                         return new IdentityPartIndex
                         {
-                            Identifier = identifier
+                            Identifier = identifier,
+                            Latest = contentItem.Latest,
+                            Number = contentItem.Number,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+
                         };
                     }
 

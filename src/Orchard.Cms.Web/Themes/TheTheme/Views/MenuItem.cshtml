@@ -1,0 +1,30 @@
+﻿@{
+    TagBuilder tag = Tag(Model, "li");
+
+    if ((bool)Model.HasItems)
+    {
+        tag.AddCssClass("dropdown");
+    }
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "MenuItemLink";
+
+    tag.InnerHtml.AppendHtml(Display(Model));
+
+    if ((bool)(Model.HasItems))
+    {
+        TagBuilder parentTag = Tag(Model, "ul");
+        parentTag.AddCssClass("dropdown-menu");
+
+        foreach (var item in Model.Items)
+        {
+            item.ParentTag = parentTag;
+            parentTag.InnerHtml.AppendHtml(Display(item));
+        }
+
+        tag.InnerHtml.AppendHtml(parentTag);
+    }
+}
+
+@tag

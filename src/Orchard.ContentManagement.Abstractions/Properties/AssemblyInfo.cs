@@ -17,3 +17,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("258c4d94-8bbf-4b10-8e17-5376bb4ce4d5")]
+
+[assembly:InternalsVisibleTo("Orchard.ContentManagement")]
