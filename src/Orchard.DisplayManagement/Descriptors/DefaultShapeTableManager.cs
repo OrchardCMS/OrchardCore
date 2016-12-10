@@ -74,7 +74,8 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledFeatureIds = _shellFeaturesManager.GetEnabledFeaturesAsync().Result.Select(fd => fd.Id).ToList();
+                var enabledFeatureIds = _shellFeaturesManager.GetEnabledFeaturesAsync()
+                    .GetAwaiter().GetResult().Select(f => f.Id).ToList();
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
@@ -164,9 +165,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 }
             }
 
-            return _extensionManager
-                .GetDependentFeatures(item.Value.Feature.Id)
-                .Contains(subject.Value.Feature);
+            return item.Value.Feature.Dependencies?.Contains(subject.Value.Feature.Id) ?? false;
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
@@ -218,7 +217,7 @@ namespace Orchard.DisplayManagement.Descriptors
             // determine if the given feature is a base theme of the given theme
             var availableFeatures = _extensionManager.GetFeatures();
 
-            var themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeId);
+            var themeFeature = availableFeatures.SingleOrDefault(f => f.Id == themeId);
             while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())
             {
                 var themeExtensionInfo = new ThemeExtensionInfo(themeFeature.Extension);
@@ -230,7 +229,7 @@ namespace Orchard.DisplayManagement.Descriptors
                 {
                     return true;
                 }
-                themeFeature = availableFeatures.SingleOrDefault(fd => fd.Id == themeExtensionInfo.BaseTheme);
+                themeFeature = availableFeatures.SingleOrDefault(f => f.Id == themeExtensionInfo.BaseTheme);
             }
             return false;
         }

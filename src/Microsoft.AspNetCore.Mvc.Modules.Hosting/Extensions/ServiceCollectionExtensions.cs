@@ -16,7 +16,6 @@ using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
-using Orchard.Hosting.Mvc.Razor;
 using Orchard.Hosting.Routing;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
@@ -68,11 +67,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 
             services.Configure<RazorViewEngineOptions>(configureOptions: options =>
             {
-                var expander = new ModuleViewLocationExpander();
-                options.ViewLocationExpanders.Add(expander);
-
-                var extensionLibraryService = services.BuildServiceProvider().GetService<IExtensionLibraryService>();
+                var serviceProvider = services.BuildServiceProvider();
+                var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
+                (serviceProvider as IDisposable)?.Dispose();
             });
 
             // Register the configuration object for modules to register options with it

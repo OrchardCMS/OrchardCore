@@ -35,6 +35,8 @@ namespace Orchard.DisplayManagement
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new ThemingFileProvider());
+                var expander = new ThemeAwareViewLocationExpander();
+                options.ViewLocationExpanders.Add(expander);
             });
 
             services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
