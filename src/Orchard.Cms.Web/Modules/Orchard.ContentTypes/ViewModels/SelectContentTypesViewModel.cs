@@ -25,6 +25,7 @@ namespace Orchard.ContentTypes.ViewModels
                         IsSelected = selectedContentTypes.Contains(x.Name),
                         ContentTypeDefinition = x
                     })
+                .OrderBy(type => type.ContentTypeDefinition.DisplayName)
                 .ToArray();
 
             return contentTypes;
