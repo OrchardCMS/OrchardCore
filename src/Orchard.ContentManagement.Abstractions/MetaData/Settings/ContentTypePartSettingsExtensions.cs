@@ -13,5 +13,10 @@ namespace Orchard.ContentManagement.Metadata.Settings
         {
             return builder.WithSetting(nameof(ContentTypePartSettings.Description), description);
         }
+
+        public static ContentTypePartDefinitionBuilder WithPosition(this ContentTypePartDefinitionBuilder builder, string position)
+        {
+            return builder.WithSetting(nameof(ContentTypePartSettings.Position), position);
+        }
     }
 }

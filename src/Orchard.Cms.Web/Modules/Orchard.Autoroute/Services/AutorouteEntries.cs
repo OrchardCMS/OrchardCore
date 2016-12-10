@@ -6,21 +6,21 @@ namespace Orchard.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
-        private readonly Dictionary<int, string> _paths;
-        private readonly Dictionary<string, int> _contentItemIds;
+        private readonly Dictionary<string, string> _paths;
+        private readonly Dictionary<string, string> _contentItemIds;
 
         public AutorouteEntries()
         {
-            _paths = new Dictionary<int, string>();
-            _contentItemIds = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            _paths = new Dictionary<string, string>();
+            _contentItemIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public bool TryGetContentItemId(string path, out int contentItemId)
+        public bool TryGetContentItemId(string path, out string contentItemId)
         {
             return _contentItemIds.TryGetValue(path, out contentItemId);
         }
 
-        public bool TryGetPath(int contentItemId, out string path)
+        public bool TryGetPath(string contentItemId, out string path)
         {
             return _paths.TryGetValue(contentItemId, out path);
         }

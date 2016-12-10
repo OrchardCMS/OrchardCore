@@ -12,19 +12,19 @@
 
 <article>
 <header>
-    @Display(Model.Header)
+    @await DisplayAsync(Model.Header)
     @if (Model.Meta != null)
     {
         <div class="metadata">
-            @Display(Model.Meta)
+            @await DisplayAsync(Model.Meta)
         </div>
     }
 </header>
-@Display(Model.Content)
+@await DisplayAsync(Model.Content)
 @if (Model.Footer != null)
 {
     <footer>
-        @Display(Model.Footer)
+        @await DisplayAsync(Model.Footer)
     </footer>
 }
 </article>

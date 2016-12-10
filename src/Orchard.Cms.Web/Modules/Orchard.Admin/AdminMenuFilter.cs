@@ -37,7 +37,7 @@ namespace Orchard.Admin
             }
 
             // Populate main nav
-            IShape menuShape = _shapeFactory.Create("Menu",
+            IShape menuShape = _shapeFactory.Create("Navigation",
                 Arguments.From(new
                 {
                     MenuName = "admin",

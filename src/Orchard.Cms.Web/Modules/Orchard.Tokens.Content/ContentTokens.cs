@@ -16,7 +16,7 @@ namespace Orchard.Tokens
 
                 ContentItem contentItem = context.Content;
 
-                string title = contentManager.PopulateAspect(contentItem, new ContentItemMetadata()).DisplayText;
+                string title = contentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText;
 
                 var slug = title?.ToLower().Replace(" ", "-");
                 output.Write(slug);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Orchard.DisplayManagement.Descriptors;
@@ -12,25 +13,19 @@ namespace Orchard.DisplayManagement.Zones
     public class ZoneShapes : IShapeAttributeProvider
     {
         [Shape]
-        public IHtmlContent Zone(dynamic Display, dynamic Shape)
+        public async Task<IHtmlContent> Zone(dynamic DisplayAsync, dynamic Shape)
         {
-            var htmlContents = new List<IHtmlContent>();
+            var htmlContentBuilder = new HtmlContentBuilder();
             foreach (var item in Shape)
             {
-                htmlContents.Add(Display(item));
-            }
-
-            var htmlContentBuilder = new HtmlContentBuilder();
-            foreach (var htmlContent in htmlContents)
-            {
-                htmlContentBuilder.AppendHtml(htmlContent);
+                htmlContentBuilder.AppendHtml(await DisplayAsync(item));
             }
 
             return htmlContentBuilder;
         }
 
         [Shape]
-        public IHtmlContent ContentZone(dynamic Display, dynamic Shape)
+        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape)
         {
             var htmlContents = new List<IHtmlContent>();
 
@@ -47,7 +42,7 @@ namespace Orchard.DisplayManagement.Zones
                     tabBuilder.Attributes["data-tab"] = tabName;
                     foreach (var item in tab)
                     {
-                        tabBuilder.InnerHtml.AppendHtml(Display(item));
+                        tabBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
                     }
                     htmlContents.Add(tabBuilder);
                 }
@@ -56,7 +51,7 @@ namespace Orchard.DisplayManagement.Zones
             {
                 foreach (var item in tabbed[0])
                 {
-                    htmlContents.Add(Display(item));
+                    htmlContents.Add(await DisplayAsync(item));
                 }
             }
 

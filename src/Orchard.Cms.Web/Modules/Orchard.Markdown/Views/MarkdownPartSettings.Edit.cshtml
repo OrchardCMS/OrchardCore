@@ -24,7 +24,7 @@
             {
                 dynamic shape = Factory.Create(markdownEditorShape);
                 shape.Editor = Model.Editor;
-                @Display(shape)
+                @await DisplayAsync(shape)
             }
         </select>
     </fieldset>

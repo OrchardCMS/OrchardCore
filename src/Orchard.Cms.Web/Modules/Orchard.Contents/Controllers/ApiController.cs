@@ -19,9 +19,9 @@ namespace Orchard.Content.Controllers
             _contentManager = contentManager;
         }
 
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {

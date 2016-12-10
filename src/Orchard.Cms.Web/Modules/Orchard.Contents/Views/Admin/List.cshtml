@@ -70,10 +70,10 @@
     @foreach (var contentItemSummary in Model.ContentItems)
     {
     <li class="list-group-item">
-        @Display(contentItemSummary) 
+        @await DisplayAsync(contentItemSummary) 
     </li>
     }
 </ul>
 
-@Display(Model.Pager)
+@await DisplayAsync(Model.Pager)
 }

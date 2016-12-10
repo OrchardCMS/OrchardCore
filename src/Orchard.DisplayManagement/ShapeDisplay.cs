@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement
 {
@@ -26,7 +26,7 @@ namespace Orchard.DisplayManagement
             return DisplayAsync((object)shape);
         }
 
-        public async Task<IHtmlContent> DisplayAsync(object shape)
+        public Task<IHtmlContent> DisplayAsync(object shape)
         {
             var viewContext = new ViewContext
             {
@@ -35,20 +35,19 @@ namespace Orchard.DisplayManagement
 
             var display = _displayHelperFactory.CreateHelper(viewContext);
 
-            return (await ((DisplayHelper)display).ShapeExecuteAsync(shape));
+            return ((DisplayHelper)display).ShapeExecuteAsync(shape);
         }
 
-        public async Task<IHtmlContent> DisplayAsync(IEnumerable<object> shapes)
+        public Task<IHtmlContent> DisplayAsync(IEnumerable<object> shapes)
         {
-            var htmlContents = new List<IHtmlContent>();
-            var htmlContentBuilder = new HtmlContentBuilder();
-
-            foreach (var shape in shapes)
+            var viewContext = new ViewContext
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync(shape));
-            }
+                HttpContext = _httpContextAccessor.HttpContext,
+            };
 
-            return htmlContentBuilder;
+            var display = _displayHelperFactory.CreateHelper(viewContext);
+
+            return ((DisplayHelper)display).ShapeExecuteAsync(shapes);
         }
     }
 }

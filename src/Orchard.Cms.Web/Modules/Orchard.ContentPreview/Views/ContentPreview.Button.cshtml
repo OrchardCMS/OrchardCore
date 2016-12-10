@@ -6,6 +6,7 @@
 <div id="contentItemType" style="display:none" data-value="@Model.ContentItem.ContentType"></div>
 
 <script depends-on="admin" at="Foot" asp-src="~/Orchard.ContentPreview/Scripts/jquery-resizable.min.js"></script>
+<style asp-src="~/Orchard.ContentPreview/Styles/contentpreview.css"></style>
 
 <script at="Foot">
 
@@ -25,7 +26,7 @@
 
         hidePreview();
 
-        $(".edit-body").resizable({
+        $(".edit-body").resizable2({
             handleSelector: ".edit-sidebar-handler",
             resizeHeight: false
         });

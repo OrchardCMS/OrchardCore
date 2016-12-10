@@ -29,6 +29,5 @@ namespace Orchard.ContentManagement.Metadata.Settings
         {
             return builder.WithSetting("Stereotype", stereotype);
         }
-
     }
 }

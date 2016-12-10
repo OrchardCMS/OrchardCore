@@ -3,7 +3,6 @@ using System.Linq;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
 using Orchard.Autoroute.Services;
-using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Settings;
@@ -45,7 +44,7 @@ namespace Orchard.Title.Handlers
                 homeRoute["area"] = "Orchard.Contents";
                 homeRoute["controller"] = "Item";
                 homeRoute["action"] = "Display";
-                homeRoute["id"] = context.ContentItemId;
+                homeRoute["contentItemId"] = context.ContentItem.ContentItemId;
 
                 // Once we too the flag into account we can dismiss it.
                 part.SetHomepage = false;
@@ -88,15 +87,7 @@ namespace Orchard.Title.Handlers
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
             }
         }
-
-        public override void GetContentItemAspect(ContentItemAspectContext context, AutoroutePart part)
-        {
-            context.For<ContentItemMetadata>(contentItemMetadata =>
-            {
-                contentItemMetadata.Identity.Add("Alias", part.Path);
-            });
-        }
-
+        
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>

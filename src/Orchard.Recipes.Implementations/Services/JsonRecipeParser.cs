@@ -14,8 +14,8 @@ namespace Orchard.Recipes.Services
         {
             var serializer = new JsonSerializer();
 
-            StreamReader streamReader = new StreamReader(recipeStream);
-            JsonTextReader reader = new JsonTextReader(streamReader);
+            var streamReader = new StreamReader(recipeStream);
+            var reader = new JsonTextReader(streamReader);
             return serializer.Deserialize<RecipeDescriptor>(reader);
         }
 
@@ -36,8 +36,8 @@ namespace Orchard.Recipes.Services
         {
             var serializer = new JsonSerializer();
 
-            StreamReader streamReader = new StreamReader(stream);
-            JsonTextReader reader = new JsonTextReader(streamReader);
+            var streamReader = new StreamReader(stream);
+            var reader = new JsonTextReader(streamReader);
 
             // Go to Steps, then iterate.
             while (reader.Read())
@@ -50,6 +50,7 @@ namespace Orchard.Recipes.Services
                         if (reader.Depth == 2)
                         {
                             var child = JToken.Load(reader);
+
                             await stepActionAsync(descriptor, new RecipeStepDescriptor
                             {
                                 Id = (stepId++).ToString(CultureInfo.InvariantCulture),
@@ -61,5 +62,7 @@ namespace Orchard.Recipes.Services
                 }
             }
         }
+
+        
     }
 }

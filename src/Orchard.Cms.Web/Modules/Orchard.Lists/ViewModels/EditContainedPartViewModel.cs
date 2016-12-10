@@ -2,6 +2,6 @@ namespace Orchard.Lists.ViewModels
 {
     public class EditContainedPartViewModel
     {
-        public int ContainerId { get; set; }
+        public string ContainerId { get; set; }
     }
 }

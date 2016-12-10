@@ -87,7 +87,7 @@ namespace Lucene.Controllers
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.SearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
-            List<int> contentItemIds = new List<int>();
+            var contentItemIds = new List<string>();
 
             _luceneIndexProvider.Search(indexName, searcher =>
             {
@@ -100,7 +100,7 @@ namespace Lucene.Controllers
                 foreach (var hit in hits.ScoreDocs)
                 {
                     var d = searcher.Doc(hit.Doc, IdSet);
-                    contentItemIds.Add(Convert.ToInt32(d.GetField("ContentItemId").StringValue));
+                    contentItemIds.Add(d.GetField("ContentItemId").StringValue);
                 }
             });
 

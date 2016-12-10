@@ -38,7 +38,7 @@ namespace Orchard.Contents
                 .Permission(Permissions.EditOwnContent)
                 .AddClass("content")
                 .Add(T["Content Items"], "1", contentItems => contentItems
-                    .Action("List", "Admin", new { area = "Orchard.Contents", id = "" })
+                    .Action("List", "Admin", new { area = "Orchard.Contents" })
                     .LocalNav())
                 );
 
@@ -50,7 +50,7 @@ namespace Orchard.Contents
                     foreach (var contentTypeDefinition in contentTypes)
                     {
                         var ci = _contentManager.New(contentTypeDefinition.Name);
-                        var cim = _contentManager.PopulateAspect(ci, new ContentItemMetadata());
+                        var cim = _contentManager.PopulateAspect<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item

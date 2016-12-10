@@ -8,7 +8,7 @@
 @if (Model.Content != null)
 {
     <fieldset class="form-group">
-        @Display(Model.Content)
+        @await DisplayAsync(Model.Content)
     </fieldset>
 }
 

@@ -3,7 +3,7 @@
 
 <form asp-action="Edit" method="post">
     @Html.ValidationSummary()
-    @Display(Model)
+    @await DisplayAsync(Model)
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

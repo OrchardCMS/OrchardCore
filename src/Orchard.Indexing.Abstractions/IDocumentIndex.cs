@@ -5,7 +5,7 @@ namespace Orchard.Indexing
 {
     public class DocumentIndex
     {
-        public DocumentIndex(int contentItemId)
+        public DocumentIndex(string contentItemId)
         {
             ContentItemId = contentItemId;
         }
@@ -37,7 +37,7 @@ namespace Orchard.Indexing
             Entries[name] = new DocumentIndexEntry(value, Types.Number, options);
         }
 
-        public int ContentItemId { get; }
+        public string ContentItemId { get; }
 
         public enum Types
         {

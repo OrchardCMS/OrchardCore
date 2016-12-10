@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -69,7 +70,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             {
                 var serviceProvider = services.BuildServiceProvider();
                 var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
+
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
+
                 (serviceProvider as IDisposable)?.Dispose();
             });
 

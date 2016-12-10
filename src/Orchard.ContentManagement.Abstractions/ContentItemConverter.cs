@@ -42,7 +42,7 @@ namespace Orchard.ContentManagement
                 }
                 else if (p.Name == nameof(ContentItem.ContentItemId))
                 {
-                    contentItem.ContentItemId = (int)p.Value;
+                    contentItem.ContentItemId = (string)p.Value;
                 }
                 else if (p.Name == nameof(ContentItem.ContentType))
                 {

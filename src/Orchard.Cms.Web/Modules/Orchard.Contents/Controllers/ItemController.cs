@@ -25,14 +25,14 @@ namespace Orchard.Contents.Controllers
         }
 
         // /Contents/Item/Display/72
-        public async Task<IActionResult> Display(int id, int? version)
+        public async Task<IActionResult> Display(string contentItemId, int? version)
         {
             if (version.HasValue)
             {
-                return await Preview(id, version);
+                return await Preview(contentItemId, version);
             }
 
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
 
             if (contentItem == null)
             {
@@ -51,9 +51,9 @@ namespace Orchard.Contents.Controllers
 
         // /Contents/Item/Preview/72
         // /Contents/Item/Preview/72?version=5
-        public async Task<IActionResult> Preview(int id, int? version)
+        public async Task<IActionResult> Preview(string contentItemId, int? version)
         {
-            if (id == 0)
+            if (contentItemId == null)
             {
                 return NotFound();
             }
@@ -65,7 +65,7 @@ namespace Orchard.Contents.Controllers
                 versionOptions = VersionOptions.Number((int)version);
             }
 
-            var contentItem = await _contentManager.GetAsync(id, versionOptions);
+            var contentItem = await _contentManager.GetAsync(contentItemId, versionOptions);
 
             if (contentItem == null)
             {

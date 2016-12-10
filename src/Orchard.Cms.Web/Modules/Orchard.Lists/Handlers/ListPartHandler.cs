@@ -16,7 +16,7 @@ namespace Orchard.Lists.Drivers
                     {"Area", "Orchard.Contents"},
                     {"Controller", "Admin"},
                     {"Action", "Display"},
-                    {"Id", context.ContentItem.ContentItemId}
+                    {"ContentItemId", context.ContentItem.ContentItemId}
                 };
             });
         }

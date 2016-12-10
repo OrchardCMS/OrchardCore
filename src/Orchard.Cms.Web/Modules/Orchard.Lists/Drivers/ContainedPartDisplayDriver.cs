@@ -36,7 +36,7 @@ namespace Orchard.Lists.Drivers
             }
 
             var viewModel = new EditContainedPartViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null)
             {
                 // We are editing a content item that needs to be added to a container
                 // so we render the container id as part of the form
@@ -47,7 +47,7 @@ namespace Orchard.Lists.Drivers
             return null;
         }
 
-        private IDisplayResult BuildShape(int containerId)
+        private IDisplayResult BuildShape(string containerId)
         {
             return Shape("ListPart_ContainerId", shape =>
             {
@@ -61,7 +61,7 @@ namespace Orchard.Lists.Drivers
         {
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != 0)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null)
             {
                 model.Weld<ContainedPart>();
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);

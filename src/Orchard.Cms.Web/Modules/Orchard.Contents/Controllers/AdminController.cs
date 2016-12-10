@@ -375,13 +375,13 @@ namespace Orchard.Contents.Controllers
                 return LocalRedirect(returnUrl);
             }
 
-            var adminRouteValues = _contentManager.PopulateAspect(contentItem, new ContentItemMetadata()).AdminRouteValues;
+            var adminRouteValues = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem).AdminRouteValues;
             return RedirectToRoute(adminRouteValues);
         }
 
-        public async Task<IActionResult> Display(int id)
+        public async Task<IActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
 
             if (contentItem == null)
             {
@@ -398,9 +398,9 @@ namespace Orchard.Contents.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
                 return NotFound();
@@ -417,9 +417,9 @@ namespace Orchard.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [FormValueRequired("submit.Save")]
-        public Task<IActionResult> EditPOST(int id, string returnUrl)
+        public Task<IActionResult> EditPOST(string contentItemId, string returnUrl)
         {
-            return EditPOST(id, returnUrl, async contentItem =>
+            return EditPOST(contentItemId, returnUrl, async contentItem =>
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -430,9 +430,9 @@ namespace Orchard.Contents.Controllers
 
         [HttpPost, ActionName("Edit")]
         [Mvc.FormValueRequired("submit.Publish")]
-        public async Task<IActionResult> EditAndPublishPOST(int id, string returnUrl)
+        public async Task<IActionResult> EditAndPublishPOST(string contentItemId, string returnUrl)
         {
-            var content = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (content == null)
                 return NotFound();
@@ -442,12 +442,12 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            return await EditPOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
+            return await EditPOST(contentItemId, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
         }
 
-        private async Task<IActionResult> EditPOST(int id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
@@ -494,7 +494,7 @@ namespace Orchard.Contents.Controllers
 
             if (returnUrl == null)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "Id", contentItem.ContentItemId } });
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
             }
             else
             {
@@ -529,9 +529,9 @@ namespace Orchard.Contents.Controllers
         //}
 
         [HttpPost]
-        public async Task<IActionResult> Remove(int id, string returnUrl)
+        public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
@@ -553,9 +553,9 @@ namespace Orchard.Contents.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Publish(int id, string returnUrl)
+        public async Task<IActionResult> Publish(string contentItemId, string returnUrl)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
             if (contentItem == null)
             {
                 return NotFound();
@@ -583,9 +583,9 @@ namespace Orchard.Contents.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Unpublish(int id, string returnUrl)
+        public async Task<IActionResult> Unpublish(string contentItemId, string returnUrl)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
             if (contentItem == null)
             {
                 return NotFound();

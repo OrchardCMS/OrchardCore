@@ -2,7 +2,7 @@
 {
     public struct AutorouteEntry
     {
-        public int ContentItemId;
+        public string ContentItemId;
         public string Path;
     }
 }

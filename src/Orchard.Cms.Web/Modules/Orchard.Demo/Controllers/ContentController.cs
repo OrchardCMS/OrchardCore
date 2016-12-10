@@ -24,9 +24,9 @@ namespace Orchard.Demo.Controllers
             _session = session;
         }
 
-        public async Task<ActionResult> Display(int id)
+        public async Task<ActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
@@ -38,9 +38,9 @@ namespace Orchard.Demo.Controllers
         }
 
         [Admin]
-        public async Task<ActionResult> Edit(int id)
+        public async Task<ActionResult> Edit(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
@@ -52,9 +52,9 @@ namespace Orchard.Demo.Controllers
         }
 
         [Admin, HttpPost, ActionName("Edit")]
-        public async Task<ActionResult> EditPost(int id)
+        public async Task<ActionResult> EditPost(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
@@ -70,7 +70,7 @@ namespace Orchard.Demo.Controllers
             }
 
             _session.Save(contentItem);
-            return RedirectToAction("Edit", id);
+            return RedirectToAction("Edit", contentItemId);
 
 
         }

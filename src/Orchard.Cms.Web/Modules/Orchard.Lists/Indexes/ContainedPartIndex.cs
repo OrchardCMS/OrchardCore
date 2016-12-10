@@ -6,7 +6,7 @@ namespace Orchard.Lists.Indexes
 {
     public class ContainedPartIndex : MapIndex
     {
-        public int ListContentItemId { get; set; }
+        public string ListContentItemId { get; set; }
         public int Order { get; set; }
     }
 

@@ -76,7 +76,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Creating(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -97,7 +97,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Created(CreateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -172,7 +172,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             // This method is called on Get()
             // Adds all the missing parts to a content item based on the content type definition.
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -209,7 +209,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Loaded(LoadContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -230,7 +230,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Publishing(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -250,7 +250,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Published(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -270,7 +270,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Removing(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -290,7 +290,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Removed(RemoveContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -310,7 +310,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Unpublishing(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -330,7 +330,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Unpublished(PublishContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -350,7 +350,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Updating(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -370,7 +370,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Updated(UpdateContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
