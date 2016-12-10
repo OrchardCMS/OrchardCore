@@ -16,6 +16,7 @@ using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Hosting.Mvc.Razor;
 
 namespace Orchard.DisplayManagement
 {
@@ -35,7 +36,8 @@ namespace Orchard.DisplayManagement
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new ThemingFileProvider());
-                var expander = new ThemeAwareViewLocationExpander();
+                //var expander = new ThemeAwareViewLocationExpander();
+                var expander = new ModuleViewLocationExpander();
                 options.ViewLocationExpanders.Add(expander);
             });
 

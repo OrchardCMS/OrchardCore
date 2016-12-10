@@ -221,8 +221,7 @@ namespace Orchard.Environment.Extensions
 
                 var orderedFeatureDescriptors = allUnorderedFeatures
                     .OrderByDependenciesAndPriorities(
-                        //(fiObv, fiSub) => fiObv.Dependencies?.Contains(fiSub.Id) ?? false,
-                        HasDependency,
+                        (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
                         (fi) => fi.Priority)
                     .Distinct();
 
@@ -234,40 +233,18 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allDependencies = featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
-            var orderedFeatureDescriptors = GetFeatures().Where(f => allDependencies.Any(d => d.Id == f.Id));
+            var allUnorderedFeaturesToLoadIncludingDependencies =
+                featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
+
+            var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
+                             .OrderByDependenciesAndPriorities(
+                                 (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                                 (fi) => fi.Priority)
+                            .Distinct();
 
             return orderedFeatureDescriptors;
         }
-
-        internal static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
-        {
-            if (item.Extension.Manifest?.Type?.Equals("theme", StringComparison.OrdinalIgnoreCase) ?? false)
-            {
-                if (subject.Id == "Core")
-                {
-                    return true;
-                }
-
-                if (subject.Extension?.Manifest?.Type?.Equals("module", StringComparison.OrdinalIgnoreCase) ?? false)
-                {
-                    return true;
-                }
-
-                if (subject.Extension.Manifest?.Type?.Equals("theme", StringComparison.OrdinalIgnoreCase) ?? false)
-                {
-                    var baseTheme = item.Extension.Manifest?.ConfigurationRoot["basetheme"];
-
-                    if (baseTheme != null && baseTheme.Length != 0)
-                    {
-                        return baseTheme == subject.Id;
-                    }
-                }
-            }
-
-            return item.Dependencies?.Contains(subject.Id) ?? false;
-        }
-
+        
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             var features = GetFeatures(featureIdsToLoad);
