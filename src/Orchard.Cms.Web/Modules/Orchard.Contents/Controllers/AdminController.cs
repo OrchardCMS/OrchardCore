@@ -447,7 +447,7 @@ namespace Orchard.Contents.Controllers
 
         private async Task<IActionResult> EditPOST(int id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(id, VersionOptions.Latest);
 
             if (contentItem == null)
             {
@@ -457,6 +457,19 @@ namespace Orchard.Contents.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
                 return Unauthorized();
+            }
+
+            ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var draftRequired = contentItem.Published && typeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable;
+
+            if (draftRequired)
+            {
+                contentItem = await _contentManager.GetAsync(id, VersionOptions.DraftRequired);
+
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
             }
 
             //string previousRoute = null;
@@ -477,6 +490,11 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
+            if (!draftRequired)
+            {
+                _session.Save(contentItem);
+            }
+
             await conditionallyPublish(contentItem);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
@@ -485,8 +503,6 @@ namespace Orchard.Contents.Controllers
             //{
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
-
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                 ? T["Your content has been saved."]

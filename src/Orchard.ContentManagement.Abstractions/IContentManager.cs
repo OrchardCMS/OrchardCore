@@ -20,7 +20,6 @@ namespace Orchard.ContentManagement
         /// <param name="contentType">The name of the content type</param>
         ContentItem New(string contentType);
 
-
         /// <summary>
         /// Creates (persists) a new content item
         /// </summary>

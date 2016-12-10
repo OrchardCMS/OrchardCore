@@ -108,5 +108,10 @@ namespace Orchard.ContentManagement
                    content.ContentItem.Published == false ||
                    (content.ContentItem.Published && content.ContentItem.Latest == false);
         }
+
+        public static bool IsLatest(this IContent content)
+        {
+            return content.ContentItem != null && content.ContentItem.Latest;
+        }
     }
 }
