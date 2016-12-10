@@ -17,10 +17,15 @@ namespace Orchard.Autoroute.Services
         public Task<string> GetContentItemIdAsync(string alias)
         {
             string contentItemId;
-            
-            if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+
+            if (alias.StartsWith("slug:"))
             {
-                return Task.FromResult(contentItemId);
+                alias = alias.Substring(5);
+
+                if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+                {
+                    return Task.FromResult(contentItemId);
+                }
             }
 
             return Task.FromResult<string>(null);

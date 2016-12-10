@@ -18,8 +18,15 @@ namespace Orchard.Alias.Services
         
         public async Task<string> GetContentItemIdAsync(string alias)
         {
-            var aliasPartIndex = await _session.QueryAsync<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefault();
-            return aliasPartIndex?.ContentItemId;
+            if (alias.StartsWith("alias:"))
+            {
+                alias = alias.Substring(6);
+
+                var aliasPartIndex = await _session.QueryAsync<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefault();
+                return aliasPartIndex?.ContentItemId;
+            }
+
+            return null;
         }
     }
 }
