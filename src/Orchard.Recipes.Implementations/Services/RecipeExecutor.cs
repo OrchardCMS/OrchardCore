@@ -1,19 +1,20 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
 using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.Recipes.Services
 {
@@ -110,11 +111,14 @@ namespace Orchard.Recipes.Services
                                 }
 
                                 var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
+                                var interpreters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeInterpreter>>();
 
                                 if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
                                 {
                                     throw new OrchardException(T["Recipe cancelled, application is restarting"]);
                                 }
+
+                                EvaluateJsonTree(interpreters, recipeStep.Step);
 
                                 await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
                             }
@@ -148,6 +152,46 @@ namespace Orchard.Recipes.Services
                 await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.ExecutionFailedAsync(executionId, recipeDescriptor));
 
                 throw;
+            }
+        }
+
+        private void EvaluateJsonTree(IEnumerable<IRecipeInterpreter> interpreters, JToken node)
+        {
+            var items = node as IEnumerable<JToken>;
+
+            switch (node.Type)
+            {
+                case JTokenType.Array:
+                    foreach (var token in (JArray)node)
+                    {
+                        EvaluateJsonTree(interpreters, token);
+                    }
+                    break;
+                case JTokenType.Object:
+                    foreach (var property in (JObject)node)
+                    {
+                        if (property.Value.Type == JTokenType.String)
+                        {
+                            var value = property.Value.Value<string>();
+
+                            if (value.StartsWith("[") && value.EndsWith("]"))
+                            {
+                                value = value.Trim('[', ']');
+                                foreach (var interpreter in interpreters)
+                                {
+                                    if (interpreter.TryEvaluate(value, out value))
+                                    {
+                                        node[property.Key] = new JValue(value);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            EvaluateJsonTree(interpreters, property.Value);
+                        }
+                    }
+                    break;
             }
         }
     }

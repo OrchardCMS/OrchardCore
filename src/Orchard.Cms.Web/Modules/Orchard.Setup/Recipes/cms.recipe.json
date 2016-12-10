@@ -30,6 +30,7 @@
 
         // Content Management
         "Lucene",
+        "Orchard.Alias",
         "Orchard.Autoroute",
         "Orchard.Body",
         "Orchard.ContentFields",
@@ -63,6 +64,33 @@
         "Controller": "Home",
         "Area": "Orchard.Demo"
       }
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentType": "Menu",
+          "ContentItemId": "[uuid()]",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "MenuPart": {},
+          "TitlePart": { "Title": "Main Menu" },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[uuid()]",
+                "LinkMenuItemPart": {
+                  "Name": "Home",
+                  "Url": "~/"
+                }
+              }
+            ]
+          },
+          "AliasPart": { "Alias": "main-menu" }
+        }
+      ]
     }
   ]
 }

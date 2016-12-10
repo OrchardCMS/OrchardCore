@@ -100,21 +100,19 @@ namespace Orchard.Menu
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
-                    if (menuItems == null)
+                    if (menuItems != null)
                     {
-                        return;
-                    }
-
-                    foreach (var contentItem in menuItems)
-                    {
-                        dynamic shape = shapeFactory.Create("MenuItem", Arguments.From(new
+                        foreach (var contentItem in menuItems)
                         {
-                            ContentItem = contentItem,
-                            Level = 0,
-                            Menu = menu,
-                        }));
+                            dynamic shape = shapeFactory.Create("MenuItem", Arguments.From(new
+                            {
+                                ContentItem = contentItem,
+                                Level = 0,
+                                Menu = menu,
+                            }));
 
-                        menuItem.Items.Add(shape);
+                            menuItem.Items.Add(shape);
+                        }
                     }
 
                     var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
