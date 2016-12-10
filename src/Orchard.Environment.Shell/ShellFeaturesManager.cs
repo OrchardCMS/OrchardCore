@@ -31,9 +31,6 @@ namespace Orchard.Environment.Shell
         public async Task<IEnumerable<IFeatureInfo>> GetEnabledFeaturesAsync()
         {
             var shellDescriptor = await GetCurrentShell();
-
-            // Because shellDescriptor.Features already contains all features and their dependencies
-            // So, as done in O1, here i think no need to call GetFeatures(string[] featureIdsToLoad)
             return _extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id));
         }
 
@@ -50,9 +47,6 @@ namespace Orchard.Environment.Shell
         public async Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync()
         {
             var shellDescriptor = await GetCurrentShell();
-
-            // Because shellDescriptor.Features already contains all features and their dependencies
-            // So, as done in O1, here i think no need to call GetFeatures(string[] featureIdsToLoad)
             return _extensionManager.GetFeatures().Where(f => shellDescriptor.Features.All(sf => sf.Id != f.Id));
         }
 

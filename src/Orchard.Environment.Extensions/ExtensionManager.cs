@@ -13,9 +13,6 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
 
-// Because there are different options I asked Sebastien how to organize using directives
-// Sebastien told me that at Microsoft they put all System directives at the beginning.
-
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
@@ -26,17 +23,17 @@ namespace Orchard.Environment.Extensions
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        private readonly ConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
-            = new ConcurrentDictionary<string, Task<ExtensionEntry>>();
+        private readonly ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>> _extensions
+            = new ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>>();
 
-        private readonly ConcurrentDictionary<string, Task<FeatureEntry>> _features
-            = new ConcurrentDictionary<string, Task<FeatureEntry>>();
+        private readonly ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>> _features
+            = new ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>>();
 
         private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private ConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _dependentFeatures
-            = new ConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
+        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
+            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
         private IDictionary<string, IExtensionInfo> _extensionsById;
 
@@ -108,20 +105,10 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            // Note: it was the wrong dictionary.
-
-            // I've learned from Sebastien that here, even if only one value is used,
-            // the factory can be executed multiple times. One solution is to use lazy.
-            // See below as an example for this dictionary (not done for other ones).
-
-            // But here things now are cached and fast, so maybe not worth to do this
-            // I think I will revert this change, I just keep it there as an example
-
             return _featureDependencies.GetOrAdd(featureId,
                 new Lazy<IEnumerable<IFeatureInfo>>(() =>
             {
                 var unorderedFeatures = GetAllUnorderedFeatures();
-                //var features = _extensionsById.Values.SelectMany(x => x.Features);
 
                 var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
                 if (feature == null)
@@ -150,11 +137,12 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return _dependentFeatures.GetOrAdd(featureId, (key) =>
+            return _dependentFeatures.GetOrAdd(featureId,
+                 new Lazy<IEnumerable<IFeatureInfo>>(() =>
             {
                 var unorderedFeatures = GetAllUnorderedFeatures();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
@@ -170,7 +158,7 @@ namespace Orchard.Environment.Extensions
                 return
                     GetDependentFeatures(feature, unorderedFeatures.ToArray(), getDependants);
 
-            });
+            })).Value;
         }
 
         private IList<IFeatureInfo> GetDependentFeatures(
@@ -200,18 +188,19 @@ namespace Orchard.Environment.Extensions
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
-            return _extensions.GetOrAdd(extensionInfo.Id, id =>
+            return _extensions.GetOrAdd(extensionInfo.Id,
+                new Lazy<Task<ExtensionEntry>>(() =>
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
                 if (extension.IsError && L.IsEnabled(LogLevel.Warning))
                 {
 
-                    L.LogError("No suitable loader found for extension \"{0}\"", id);
+                    L.LogError("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
                 }
 
                 return Task.FromResult(extension);
-            });
+            })).Value;
         }
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
@@ -230,18 +219,10 @@ namespace Orchard.Environment.Extensions
             {
                 var allUnorderedFeatures = GetAllUnorderedFeatures();
 
-                // When resolving dependencies we need to go through the dependencies graph.
-                // But when we just order things, with the OrderBy utility, it's not the same.
-                // Because all features and their dependencies are already in the collection.
-                // And OrderByDependenciesAndPriorities() will do the job for all of them.
-                // This according to the hasDependency and getPriority func we pass.
-                // So I think here we don't need GetDependentFeatures().
-
                 var orderedFeatureDescriptors = allUnorderedFeatures
                     .OrderByDependenciesAndPriorities(
-                        // The hasDependency func could be this if only explicit dependencies
                         //(fiObv, fiSub) => fiObv.Dependencies?.Contains(fiSub.Id) ?? false,
-                        HasDependency, // see below
+                        HasDependency,
                         (fi) => fi.Priority)
                     .Distinct();
 
@@ -253,27 +234,11 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            // I think there is no need to order things if we use GetFeatures() which is ordered
             var allDependencies = featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
             var orderedFeatureDescriptors = GetFeatures().Where(f => allDependencies.Any(d => d.Id == f.Id));
 
             return orderedFeatureDescriptors;
         }
-
-        // Temporary code just given as an example to show how implicit dependencies are done in O1.
-        // This ordering is important in different places e.g for the calling order of some handlers.
-        // Another goal is not to rewrite this code when we use OrderByDependenciesAndPriorities() elsewhere.
-        // So we would need to add it to the interface, but it's not the right place to be aware of theming.
-
-        // I've seen the ThemeFeatureBuilderEvents where the BaseTheme is implemented.
-        // But we also need the implicit dependencies of a theme on all other modules.
-        // We just need them to order things, not when loading / enabling a feature.
-
-        // Maybe add to the feature interface an HasDependency property which is a Func.
-        // Then in a builder event we could init it to do the right job if it is a theme.
-
-        // The property could be an array of func, then we could add a specific one when building.
-        // So the global HasDependency could call all of them, and return true as soon one return true.
 
         internal static bool HasDependency(IFeatureInfo item, IFeatureInfo subject)
         {
@@ -317,9 +282,10 @@ namespace Orchard.Environment.Extensions
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            return _features.GetOrAdd(feature.Id, async (id) =>
-            {
-                var loadedExtension = await LoadExtensionAsync(feature.Extension);
+            return _features.GetOrAdd(feature.Id,
+                new Lazy<Task<FeatureEntry>>(async () =>
+                {
+                    var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
                 if (loadedExtension.IsError)
                 {
@@ -335,7 +301,7 @@ namespace Orchard.Environment.Extensions
                 foreach (var type in extensionTypes)
                 {
                     string sourceFeature = GetSourceFeatureNameForType(type, feature.Id);
-                    if (sourceFeature == id)
+                    if (sourceFeature == feature.Id)
                     {
                         featureTypes.Add(type);
                         _typeFeatureProvider.TryAdd(type, feature);
@@ -343,7 +309,7 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return new CompiledFeatureEntry(feature, featureTypes);
-            });
+            })).Value;
         }
 
         private IEnumerable<IFeatureInfo> GetAllUnorderedFeatures()
