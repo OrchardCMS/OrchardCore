@@ -16,50 +16,67 @@ namespace Orchard.DisplayManagement.Razor
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
-            var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
-            context.Values["Theme"] = themeManager.GetThemeAsync().GetAwaiter().GetResult().Id;
+            var themeManager = context
+                .ActionContext
+                .HttpContext
+                .RequestServices
+                .GetService<IThemeManager>();
+
+            if (themeManager != null)
+            {
+                context.Values["Theme"] = themeManager.GetThemeAsync().GetAwaiter().GetResult().Id;
+            }
         }
 
         /// <inheritdoc />
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var extensionManager = context.ActionContext.HttpContext.RequestServices.GetService<IExtensionManager>();
-            var themeManager = context.ActionContext.HttpContext.RequestServices.GetService<IThemeManager>();
-            var siteService = context.ActionContext.HttpContext.RequestServices.GetService<ISiteService>();
-            var site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-
-            var orderedFeatures = extensionManager.GetFeatures();
-            var orderedExtensions = orderedFeatures.Where(f => f.Id == f.Extension.Id).Select(f => f.Extension);
-            var extension = orderedExtensions.FirstOrDefault(e => e.Id == context.AreaName);
-
-            var themes = new List<IExtensionInfo>();
-            var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
-            var adminThemeId = (string)site.Properties["CurrentAdminThemeName"];
-
-            themes.Add(currentTheme);
-            themes.AddRange(GetBaseThemes(currentTheme, adminThemeId, orderedExtensions));
             var result = new List<string>();
 
-            foreach (var theme in themes)
+            var themeManager = context
+                .ActionContext
+                .HttpContext
+                .RequestServices
+                .GetService<IThemeManager>();
+
+            if (themeManager != null)
             {
-                var themeViewsPath = Path.Combine(Path.DirectorySeparatorChar + theme.SubPath,
-                    "Views", context.AreaName != theme.Id ? context.AreaName : String.Empty);
+                var extensionManager = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<IExtensionManager>();
 
-                result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
-                result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
-            }
+                var siteService = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<ISiteService>();
 
-            if (extension != null)
-            {
-                var extensionViewsPath = Path.Combine(Path.DirectorySeparatorChar
-                    + extension.SubPath, "Views");
+                var themes = new List<IExtensionInfo>();
 
-                result.Add(Path.Combine(extensionViewsPath, "{1}", "{0}.cshtml"));
-                result.Add(Path.Combine(extensionViewsPath, "Shared", "{0}.cshtml"));
+                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
+                themes.Add(currentTheme);
+
+                var site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+                var adminThemeId = (string)site.Properties["CurrentAdminThemeName"];
+                themes.AddRange(GetBaseThemes(currentTheme, adminThemeId, extensionManager.GetExtensions()));
+
+                foreach (var theme in themes)
+                {
+                    var themeViewsPath = Path.Combine(
+                        Path.DirectorySeparatorChar + theme.SubPath,
+                        "Views",
+                        context.AreaName != theme.Id ? context.AreaName : String.Empty);
+
+                    result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
+                    result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
+                }
             }
 
             result.AddRange(viewLocations);
+
             return result;
         }
 
