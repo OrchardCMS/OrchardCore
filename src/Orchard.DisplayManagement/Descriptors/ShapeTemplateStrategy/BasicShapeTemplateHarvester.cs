@@ -4,9 +4,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class BasicShapeTemplateHarvester : IShapeTemplateHarvester
     {
+        public const string BasePath = BasePathWithoutTrailingSlash + "/";
+        public const string BasePathWithoutTrailingSlash = "Views/Shared/Shapes";
+
         public IEnumerable<string> SubPaths()
         {
-            return new[] { "Views", "Views/Items", "Views/Parts", "Views/Fields", "Views/Elements" };
+            return new[] { BasePathWithoutTrailingSlash,
+                BasePath + "Items",
+                BasePath + "Parts",
+                BasePath + "Fields",
+                BasePath + "Elements"
+            };
         }
 
         public IEnumerable<HarvestShapeHit> HarvestShape(HarvestShapeInfo info)
@@ -34,9 +42,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         static string Adjust(string subPath, string fileName, string displayType)
         {
             var leader = "";
-            if (subPath.StartsWith("Views/") && subPath != "Views/Items")
+            if (subPath.StartsWith(BasePath) && subPath != (BasePath + "Items"))
             {
-                leader = subPath.Substring("Views/".Length) + "_";
+                leader = subPath.Substring(BasePath.Length) + "_";
             }
 
             // canonical shape type names must not have - or . to be compatible
