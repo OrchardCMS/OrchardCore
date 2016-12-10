@@ -57,7 +57,7 @@ namespace Orchard.Autoroute
             
             var autorouteRoute = new AutorouteRoute(settings.RequestUrlPrefix, entries, routes.DefaultHandler);
 
-            routes.Routes.Add(autorouteRoute);
+            routes.Routes.Insert(0, autorouteRoute);
         }
     }
 }
