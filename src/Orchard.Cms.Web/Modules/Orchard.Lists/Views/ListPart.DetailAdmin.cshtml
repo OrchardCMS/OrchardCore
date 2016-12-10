@@ -4,34 +4,42 @@
     IEnumerable<dynamic> contentItems = Model.ContentItems;
     IEnumerable<ContentTypeDefinition> containedContentTypeDefinitions = Model.ContainedContentTypeDefinitions;
 }
-<p>
-    <div class="dropdown open">
-        <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Create"]
-        </a>
 
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-            @foreach (var containedContentTypeDefinition in containedContentTypeDefinitions)
-            {
-                <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
-            }
-        </div>
-    </div>
-
-</p>
-
-@if (contentItems.Any())
+@if (containedContentTypeDefinitions == null)
 {
-<ul class="list-group">
-    @foreach (var contentItemSummary in contentItems)
-    {
-        <li class="list-group-item">
-            @await DisplayAsync(contentItemSummary)
-        </li>
-    }
-</ul>
+    <p class="alert alert-danger">
+        <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="Orchard.ContentTypes" asp-route-id="@Model.ContentItem.ContentType" asp-route-name="ListPart">Please specify at least one contained content type.</a>
+    </p>
 }
 else
 {
-    <p class="alert alert-warning">@T["The list is empty"]</p>
+    <p>
+        <div class="dropdown open">
+            <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Create"]
+            </a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                @foreach (var containedContentTypeDefinition in containedContentTypeDefinitions)
+                {
+                    <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="Orchard.Contents" asp-route-ListPart.ContainerId="@Model.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
+                }
+            </div>
+        </div>
+    </p>
+    @if (contentItems.Any())
+    {
+        <ul class="list-group">
+            @foreach (var contentItemSummary in contentItems)
+            {
+                <li class="list-group-item">
+                    @await DisplayAsync(contentItemSummary)
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="alert alert-warning">@T["The list is empty."]</p>
+    }
 }
