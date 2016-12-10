@@ -8,6 +8,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Lists.Drivers;
 using Orchard.Menu.Handlers;
 using Orchard.Menu.Models;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Menu
 {
@@ -17,6 +18,7 @@ namespace Orchard.Menu
         {
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IShapeTableProvider, MenuShapes>();
+            services.AddScoped<IPermissionProvider, Permissions>();
 
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();
