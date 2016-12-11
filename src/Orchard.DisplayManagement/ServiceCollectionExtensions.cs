@@ -8,6 +8,7 @@ using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
+using Orchard.DisplayManagement.LocationExpander;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.DisplayManagement.Razor;
@@ -16,7 +17,6 @@ using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Hosting.Mvc.Razor;
 
 namespace Orchard.DisplayManagement
 {
@@ -33,16 +33,19 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
             services.AddScoped<IFilterMetadata, ModelBinderAccessorFilter>();
 
+            services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, AdminThemeAwareViewLocationExpanderProvider>();
+
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new ThemingFileProvider());
-                var moduleExpander = new ModuleViewLocationExpander();
-                options.ViewLocationExpanders.Add(moduleExpander);
-                var themeExpander = new ThemeAwareViewLocationExpander();
-                options.ViewLocationExpanders.Add(themeExpander);
+                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
             services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+
 
             return services;
         }

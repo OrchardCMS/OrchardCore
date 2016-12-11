@@ -3,11 +3,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
-namespace Orchard.Hosting.Mvc.Razor
+namespace Orchard.DisplayManagement.LocationExpander
 {
-    public class ModuleViewLocationExpander : IViewLocationExpander
+    public class ModuleViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        public double Priority
+        {
+            get
+            {
+                return 5D;
+            }
+        }
+
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
