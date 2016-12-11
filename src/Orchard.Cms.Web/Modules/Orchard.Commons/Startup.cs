@@ -25,6 +25,7 @@ namespace Orchard.Commons
             services.AddDataAccess();
             services.AddBackgroundTasks();
             services.AddResourceManagement();
+            services.AddResultFilters();
             services.AddCaching();
             services.AddShellDescriptorStorage();
             services.AddExtensionManager();
