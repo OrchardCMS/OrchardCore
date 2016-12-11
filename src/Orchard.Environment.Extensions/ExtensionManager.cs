@@ -127,7 +127,7 @@ namespace Orchard.Environment.Extensions
                     foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                     {
                         dependencies.Add(dependency);
-                        stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                        stack.Push(unorderedFeatures.Where(subject => dependency.Dependencies.Any(x => x == subject.Id)).ToArray());
                     }
                 }
 
