@@ -1,0 +1,4 @@
+﻿Name: Sample1
+Author: Nicholas Mayne
+Description: Module with no dependencies
+Version: 1.0.0
