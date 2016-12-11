@@ -6,6 +6,7 @@ using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
+using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.LocationExpander;
@@ -16,6 +17,7 @@ using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement
@@ -37,6 +39,8 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, AdminThemeAwareViewLocationExpanderProvider>();
+
+            services.AddScoped<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
