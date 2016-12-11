@@ -56,21 +56,28 @@ namespace Orchard.Contents
             routes.MapAreaRoute(
                 name: "EditContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentItems/{contentItemId}/Edit",
+                template: "Admin/Contents/ContentItems/{contentItemId}/Edit",
                 defaults: new { controller = "Admin", action = "Edit" }
             );
 
             routes.MapAreaRoute(
                 name: "CreateContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentTypes/{id}/Create",
+                template: "Admin/Contents/ContentTypes/{id}/Create",
                 defaults: new { controller = "Admin", action = "Create" }
+            );
+
+            routes.MapAreaRoute(
+                name: "AdminContentItem",
+                areaName: "Orchard.Contents",
+                template: "Admin/Contents/ContentTypes/{contentItemId}/Display",
+                defaults: new { controller = "Admin", action = "Display" }
             );
 
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentItems",
+                template: "Admin/Contents/ContentItems",
                 defaults: new { controller = "Admin", action = "List" }
             );
 

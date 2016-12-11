@@ -5,10 +5,10 @@
     IEnumerable<ContentTypeDefinition> containedContentTypeDefinitions = Model.ContainedContentTypeDefinitions;
 }
 
-@if (containedContentTypeDefinitions == null)
+@if (!containedContentTypeDefinitions.Any())
 {
-    <p class="alert alert-danger">
-        <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="Orchard.ContentTypes" asp-route-id="@Model.ContentItem.ContentType" asp-route-name="ListPart">Please specify at least one contained content type.</a>
+    <p class="alert alert-warning">
+        <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="Orchard.ContentTypes" asp-route-id="@Model.ContentItem.ContentType" asp-route-name="ListPart">@T["Please specify at least one contained content type."]</a>
     </p>
 }
 else
