@@ -46,7 +46,8 @@ namespace Orchard.Tests.Extensions
         private IExtensionManager ThemeScopedExtensionManager;
         private IExtensionManager ModuleThemeScopedExtensionManager;
 
-        public ExtensionManagerTests() {
+        public ExtensionManagerTests()
+        {
             ModuleScopedExtensionManager = new ExtensionManager(
                 new StubExtensionOptions("TestDependencyModules"),
                 new[] { ModuleProvider },
@@ -80,60 +81,66 @@ namespace Orchard.Tests.Extensions
 
         [Fact]
 
-        public void ShouldReturnExtension() {
+        public void ShouldReturnExtension()
+        {
             var extensions = ModuleScopedExtensionManager.GetExtensions();
 
             Assert.Equal(4, extensions.Count());
         }
 
         [Fact]
-        public void ShouldReturnAllDependenciesIncludingFeatureForAGivenFeatureOrdered() {
+        public void ShouldReturnAllDependenciesIncludingFeatureForAGivenFeatureOrdered()
+        {
             var features = ModuleScopedExtensionManager.GetFeatureDependencies("Sample3");
 
             Assert.Equal(3, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
         }
 
         [Fact]
-        public void ShouldNotReturnFeaturesNotDependentOn() {
+        public void ShouldNotReturnFeaturesNotDependentOn()
+        {
             var features = ModuleScopedExtensionManager.GetFeatureDependencies("Sample2");
 
             Assert.Equal(2, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
         }
 
         [Fact]
-        public void GetDependentFeaturesShouldReturnAllFeaturesThatHaveADependencyOnAFeature() {
+        public void GetDependentFeaturesShouldReturnAllFeaturesThatHaveADependencyOnAFeature()
+        {
             var features = ModuleScopedExtensionManager.GetDependentFeatures("Sample1");
 
             Assert.Equal(4, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
-            Assert.Equal(features.ElementAt(3).Id, "Sample4");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
+            Assert.Equal("Sample4", features.ElementAt(3).Id);
         }
 
         [Fact]
-        public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency() {
+        public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
+        {
             var features = ModuleScopedExtensionManager.GetFeatures();
 
             Assert.Equal(4, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
-            Assert.Equal(features.ElementAt(3).Id, "Sample4");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
+            Assert.Equal("Sample4", features.ElementAt(3).Id);
         }
 
         [Fact]
-        public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrdered() {
+        public void GetFeaturesWithAIdShouldReturnThatFeatureWithDependenciesOrdered()
+        {
             var features = ModuleScopedExtensionManager.GetFeatures(new[] { "Sample2" });
 
             Assert.Equal(2, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
         }
 
 
@@ -143,9 +150,9 @@ namespace Orchard.Tests.Extensions
             var features = ModuleScopedExtensionManager.GetFeatures(new[] { "Sample2", "Sample3" });
 
             Assert.Equal(3, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
         }
 
         [Fact]
@@ -154,9 +161,9 @@ namespace Orchard.Tests.Extensions
             var features = ModuleScopedExtensionManager.GetFeatures(new[] { "Sample4" });
 
             Assert.Equal(3, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample4");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample4", features.ElementAt(2).Id);
         }
 
         /* Theme Base Theme Dependencies */
@@ -167,8 +174,8 @@ namespace Orchard.Tests.Extensions
             var features = ThemeScopedExtensionManager.GetFeatures(new[] { "DerivedThemeSample" });
 
             Assert.Equal(2, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "BaseThemeSample");
-            Assert.Equal(features.ElementAt(1).Id, "DerivedThemeSample");
+            Assert.Equal("BaseThemeSample", features.ElementAt(0).Id);
+            Assert.Equal("DerivedThemeSample", features.ElementAt(1).Id);
         }
 
         [Fact]
@@ -177,32 +184,34 @@ namespace Orchard.Tests.Extensions
             var features = ThemeScopedExtensionManager.GetFeatures(new[] { "DerivedThemeSample2" });
 
             Assert.Equal(3, features.Count());
-            Assert.Equal(features.ElementAt(0).Id, "BaseThemeSample");
-            Assert.Equal(features.ElementAt(1).Id, "BaseThemeSample2");
-            Assert.Equal(features.ElementAt(2).Id, "DerivedThemeSample2");
+            Assert.Equal("BaseThemeSample", features.ElementAt(0).Id);
+            Assert.Equal("BaseThemeSample2", features.ElementAt(1).Id);
+            Assert.Equal("DerivedThemeSample2", features.ElementAt(2).Id);
         }
 
         /* Theme and Module Dependencies */
 
         [Fact]
-        public void GetFeaturesShouldReturnBothThemesAndModules() {
+        public void GetFeaturesShouldReturnBothThemesAndModules()
+        {
             var features = ModuleThemeScopedExtensionManager.GetFeatures();
 
             Assert.Equal(8, features.Count());
         }
 
         [Fact]
-        public void GetFeaturesShouldReturnThemesAfterModules() {
+        public void GetFeaturesShouldReturnThemesAfterModules()
+        {
             var features = ModuleThemeScopedExtensionManager.GetFeatures();
 
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
-            Assert.Equal(features.ElementAt(3).Id, "Sample4");
-            Assert.Equal(features.ElementAt(4).Id, "BaseThemeSample");
-            Assert.Equal(features.ElementAt(5).Id, "BaseThemeSample2");
-            Assert.Equal(features.ElementAt(6).Id, "DerivedThemeSample");
-            Assert.Equal(features.ElementAt(7).Id, "DerivedThemeSample2");
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
+            Assert.Equal("Sample4", features.ElementAt(3).Id);
+            Assert.Equal("BaseThemeSample", features.ElementAt(4).Id);
+            Assert.Equal("BaseThemeSample2", features.ElementAt(5).Id);
+            Assert.Equal("DerivedThemeSample", features.ElementAt(6).Id);
+            Assert.Equal("DerivedThemeSample2", features.ElementAt(7).Id);
 
         }
 
@@ -211,12 +220,11 @@ namespace Orchard.Tests.Extensions
         {
             var features = ModuleThemeScopedExtensionManager.GetFeatures(new[] { "DerivedThemeSample", "Sample3" });
 
-            Assert.Equal(features.ElementAt(0).Id, "Sample1");
-            Assert.Equal(features.ElementAt(1).Id, "Sample2");
-            Assert.Equal(features.ElementAt(2).Id, "Sample3");
-            Assert.Equal(features.ElementAt(3).Id, "BaseThemeSample");
-            Assert.Equal(features.ElementAt(4).Id, "DerivedThemeSample");
-
+            Assert.Equal("Sample1", features.ElementAt(0).Id);
+            Assert.Equal("Sample2", features.ElementAt(1).Id);
+            Assert.Equal("Sample3", features.ElementAt(2).Id);
+            Assert.Equal("BaseThemeSample", features.ElementAt(3).Id);
+            Assert.Equal("DerivedThemeSample", features.ElementAt(4).Id);
         }
     }
 
