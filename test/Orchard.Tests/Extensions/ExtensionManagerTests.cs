@@ -205,6 +205,19 @@ namespace Orchard.Tests.Extensions
             Assert.Equal(features.ElementAt(7).Id, "DerivedThemeSample2");
 
         }
+
+        [Fact]
+        public void GetFeaturesShouldReturnThemesAfterModulesWhenRequestingBoth()
+        {
+            var features = ModuleThemeScopedExtensionManager.GetFeatures(new[] { "DerivedThemeSample", "Sample3" });
+
+            Assert.Equal(features.ElementAt(0).Id, "Sample1");
+            Assert.Equal(features.ElementAt(1).Id, "Sample2");
+            Assert.Equal(features.ElementAt(2).Id, "Sample3");
+            Assert.Equal(features.ElementAt(3).Id, "BaseThemeSample");
+            Assert.Equal(features.ElementAt(4).Id, "DerivedThemeSample");
+
+        }
     }
 
     public class StubExtensionOptions : IOptions<ExtensionOptions>
