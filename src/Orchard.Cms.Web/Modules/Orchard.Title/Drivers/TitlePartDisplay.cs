@@ -13,9 +13,9 @@ namespace Orchard.Title.Drivers
         {
             return Combine(
                 Shape("TitlePart", titlePart)
-                    .Location("Detail", "Content:5"),
+                    .Location("Detail", "Header:5"),
                 Shape("TitlePart_Summary", titlePart)
-                    .Location("Summary", "Content:5")
+                    .Location("Summary", "Header:5")
             );
         }
 
