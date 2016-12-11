@@ -17,14 +17,7 @@ namespace Orchard.DisplayManagement.Theming
         {
             _viewStartFileInfo = new ContentFileInfo("_ViewStart.cshtml", "@{ Layout = \"~/Views/Shared/_Layout.cshtml\"; }");
             _viewImportsFileInfo = new ContentFileInfo("_ViewImports.cshtml", "@inherits Orchard.DisplayManagement.Razor.RazorPage<TModel>");
-            _layoutFileInfo = new ContentFileInfo("_Layout.cshtml", @"
-                    ﻿@{
-                        var body = RenderLayoutBody();
-                        ThemeLayout.Content.Add(body);
-                    }
-
-                    @await DisplayAsync(ThemeLayout)
-                ");
+            _layoutFileInfo = new ContentFileInfo("_Layout.cshtml", @"﻿@{var body = RenderLayoutBody();ThemeLayout.Content.Add(body);}@await DisplayAsync(ThemeLayout)");
         }
         public IDirectoryContents GetDirectoryContents(string subpath)
         {
