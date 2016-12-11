@@ -68,7 +68,7 @@ namespace Orchard.Tests.Extensions
         public void ShouldReturnExtension() {
             var extensions = ModuleScopedExtensionManager.GetExtensions();
 
-            Assert.Equal(6, extensions.Count());
+            Assert.Equal(4, extensions.Count());
         }
 
         [Fact]
