@@ -1,18 +1,22 @@
 ﻿using Orchard.UI;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
+using Orchard.Settings;
 
 namespace Orchard.DisplayManagement.Title
 {
     public class PageTitleBuilder : IPageTitleBuilder
     {
+        private readonly ISiteService _siteService;
+
         private readonly List<PositionalTitlePart> _titleParts;
         private IHtmlContent _titleSeparator;
         private IHtmlContent _title;
 
-        public PageTitleBuilder()
+        public PageTitleBuilder(ISiteService siteService)
         {
+            _siteService = siteService;
+
             _titleParts = new List<PositionalTitlePart>(5);
         }
 
@@ -44,7 +48,7 @@ namespace Orchard.DisplayManagement.Title
 
             if (_titleSeparator == null)
             {
-                _titleSeparator = new HtmlString(" - ");
+                _titleSeparator = new HtmlString(_siteService.GetSiteSettingsAsync().Result.PageTitleSeparator);
             }
 
             _titleParts.Sort(FlatPositionComparer.Instance);
