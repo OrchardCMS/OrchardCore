@@ -94,7 +94,7 @@ namespace Orchard.Lists.Drivers
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            var contentTypes = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentTypes;
+            var contentTypes = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentTypes ?? Enumerable.Empty<string>();
             return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }

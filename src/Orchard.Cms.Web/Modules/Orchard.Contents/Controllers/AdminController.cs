@@ -381,7 +381,7 @@ namespace Orchard.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {
