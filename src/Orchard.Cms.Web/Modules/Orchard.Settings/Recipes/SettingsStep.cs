@@ -59,11 +59,6 @@ namespace Orchard.Settings.Recipes
                 site.PageSize = model.Value<int>("PageSize");
             }
 
-            if (model["PageTitleSeparator"] != null)
-            {
-                site.PageTitleSeparator = model["PageTitleSeparator"].ToString();
-            }
-
             if (model["ResourceDebugMode"] != null)
             {
                 site.ResourceDebugMode = model.Value<ResourceDebugMode>("ResourceDebugMode");

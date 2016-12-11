@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <title>@RenderTitleSegments(T["Orchard"], "before")</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/Content/favicon.ico" />
@@ -15,13 +16,6 @@
     <resources type="HeadLink" />
     <resources type="Stylesheet" />
     <resources type="HeadScript" />
-
-    @{
-        Title.AddSegment(T["Orchard"], "before");
-    }
-
-    <title>@Title.GenerateTitle()</title>
-
     @await RenderSectionAsync("Header", required: false)
 </head>
 <body>

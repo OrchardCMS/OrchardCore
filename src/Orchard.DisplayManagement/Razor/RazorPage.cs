@@ -136,29 +136,16 @@ namespace Orchard.DisplayManagement.Razor
         }
 
         /// <summary>
-        /// Renders the title segments.
-        /// </summary>
-        /// <returns>And <see cref="IHtmlContent"/> representing the title.</returns>
-        public IHtmlContent RenderTitleSegments()
-        {
-            return Title.GenerateTitle();
-        }
-
-        public IHtmlContent RenderTitleSegments(string segment, string position = "0")
-        {
-            return RenderTitleSegments(new HtmlString(HtmlEncoder.Encode(segment)), position);
-        }
-
-        /// <summary>
         /// Adds a segment to the title and returns all segments.
         /// </summary>
         /// <param name="segment">The segment to add to the title.</param>
         /// <param name="position">Optional. The position of the segment in the title.</param>
+        /// <param name="separator">The html string that should separate all segments.</param>
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
-        public IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0")
+        public IHtmlContent RenderTitleSegments(IHtmlContent segment, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegment(segment);
-            return RenderTitleSegments();
+            Title.AddSegment(segment, position);
+            return Title.GenerateTitle(separator);
         }
 
         /// <summary>
@@ -167,10 +154,10 @@ namespace Orchard.DisplayManagement.Razor
         /// <param name="segments">The segments to add to the title.</param>
         /// <param name="position">Optional. The position of the segments in the title.</param>
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
-        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0")
+        public IHtmlContent RenderTitleSegments(IEnumerable<IHtmlContent> segments, string position = "0", IHtmlContent separator = null)
         {
-            Title.AddSegments(segments);
-            return RenderTitleSegments();
+            Title.AddSegments(segments, position);
+            return Title.GenerateTitle(separator);
         }
 
         /// <summary>
