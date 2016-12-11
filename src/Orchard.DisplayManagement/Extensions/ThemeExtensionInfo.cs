@@ -15,7 +15,7 @@ namespace Orchard.DisplayManagement.Extensions
         {
             _extensionInfo = extensionInfo;
 
-            var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["basetheme"];
+            var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["BaseTheme"];
 
             if (baseTheme != null && baseTheme.Length != 0) {
                 _baseTheme = baseTheme.ToString();

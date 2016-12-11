@@ -40,6 +40,20 @@ namespace Orchard.Environment.Extensions
         private ConcurrentBag<IFeatureInfo> _allOrderedFeatureInfos;
         private ConcurrentBag<IFeatureInfo> _allUnorderedFeatureInfos;
 
+        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependantFeaturesFunc =
+            new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                (currentFeature, fs) => fs
+                    .Where(f =>
+                            f.Dependencies.Any(dep => dep == currentFeature.Id)
+                           ).OrderBy(x => x.Id).ToArray());
+
+        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetFeatureDependenciesFunc =
+            new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                (currentFeature, fs) => fs
+                    .Where(f =>
+                            currentFeature.Dependencies.Any(dep => dep == f.Id)
+                           ).OrderBy(x => x.Id).ToArray());
+
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
@@ -108,7 +122,7 @@ namespace Orchard.Environment.Extensions
             return _featureDependencies.GetOrAdd(featureId,
                 new Lazy<IEnumerable<IFeatureInfo>>(() =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures();
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
                 var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
                 if (feature == null)
@@ -119,7 +133,7 @@ namespace Orchard.Environment.Extensions
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
 
-                stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                stack.Push(GetFeatureDependenciesFunc(feature, unorderedFeatures));
 
                 while (stack.Count > 0)
                 {
@@ -127,11 +141,11 @@ namespace Orchard.Environment.Extensions
                     foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                     {
                         dependencies.Add(dependency);
-                        stack.Push(unorderedFeatures.Where(subject => dependency.Dependencies.Any(x => x == subject.Id)).ToArray());
+                        stack.Push(GetFeatureDependenciesFunc(dependency, unorderedFeatures));
                     }
                 }
 
-                return dependencies.Distinct();
+                return dependencies.Reverse();
             })).Value;
         }
 
@@ -148,28 +162,20 @@ namespace Orchard.Environment.Extensions
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
-                var getDependants =
-                    new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
-                        (currentFeature, fs) => fs
-                            .Where(f =>
-                                    f.Dependencies.Any(dep => dep == currentFeature.Id)
-                                   ).ToArray());
-
                 return
-                    GetDependentFeatures(feature, unorderedFeatures.ToArray(), getDependants);
+                    GetDependentFeatures(feature, unorderedFeatures.ToArray());
 
             })).Value;
         }
 
-        private IList<IFeatureInfo> GetDependentFeatures(
+        private IEnumerable<IFeatureInfo> GetDependentFeatures(
             IFeatureInfo feature,
-            IFeatureInfo[] features,
-            Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> getAffectedDependencies)
+            IFeatureInfo[] features)
         {
             var dependencies = new HashSet<IFeatureInfo>() { feature };
             var stack = new Stack<IFeatureInfo[]>();
 
-            stack.Push(getAffectedDependencies(feature, features));
+            stack.Push(GetDependantFeaturesFunc(feature, features));
 
             while (stack.Count > 0)
             {
@@ -177,11 +183,11 @@ namespace Orchard.Environment.Extensions
                 foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                 {
                     dependencies.Add(dependency);
-                    stack.Push(getAffectedDependencies(dependency, features));
+                    stack.Push(GetDependantFeaturesFunc(dependency, features));
                 }
             }
 
-            return dependencies.ToList();
+            return dependencies;
         }
 
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
@@ -221,9 +227,8 @@ namespace Orchard.Environment.Extensions
 
                 var orderedFeatureDescriptors = allUnorderedFeatures
                     .OrderByDependenciesAndPriorities(
-                        (fiObv, fiSub) => fiObv.Dependencies?.Contains(fiSub.Id) ?? false,
-                        (fi) => fi.Priority)
-                    .Distinct();
+                        (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                        (fi) => fi.Priority);
 
                 _allOrderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
             }
@@ -233,12 +238,18 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allDependencies = featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
-            var orderedFeatureDescriptors = GetFeatures().Where(f => allDependencies.Any(d => d.Id == f.Id));
+            var allUnorderedFeaturesToLoadIncludingDependencies = featureIdsToLoad
+                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .Distinct()
+                .ToArray();
 
-            return orderedFeatureDescriptors;
+            return allUnorderedFeaturesToLoadIncludingDependencies
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
+                    (fi) => fi.Priority)
+                .Reverse();
         }
-
+        
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             var features = GetFeatures(featureIdsToLoad);
@@ -287,7 +298,7 @@ namespace Orchard.Environment.Extensions
         {
             if (_allUnorderedFeatureInfos == null)
             {
-                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(GetExtensions().SelectMany(x => x.Features).Distinct());
+                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(GetExtensions().SelectMany(x => x.Features));
             }
 
             return _allUnorderedFeatureInfos;
