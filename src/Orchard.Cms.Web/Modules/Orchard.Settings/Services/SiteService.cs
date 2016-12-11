@@ -42,7 +42,6 @@ namespace Orchard.Settings.Services
                             { 
                                 SiteSalt = Guid.NewGuid().ToString("N"),
                                 SiteName = "My Orchard Project Application",
-                                PageTitleSeparator = " - ",
                                 TimeZone = TimeZoneInfo.Local.Id,
                                 PageSize = 10,
                                 MaxPageSize = 100,
@@ -79,7 +78,6 @@ namespace Orchard.Settings.Services
             existing.MaxPagedCount = site.MaxPagedCount;
             existing.MaxPageSize = site.MaxPageSize;
             existing.PageSize = site.PageSize;
-            existing.PageTitleSeparator = site.PageTitleSeparator;
             existing.Properties = site.Properties;
             existing.ResourceDebugMode = site.ResourceDebugMode;
             existing.SiteName = site.SiteName;
