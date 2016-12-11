@@ -8,9 +8,8 @@ namespace Orchard.DisplayManagement.Extensions
     {
         public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
         {
-            if (subject.Extension.Manifest.IsTheme()) {
-                bool isDependent = !observer.Extension.Manifest.IsTheme();
-                return isDependent;
+            if (observer.Extension.Manifest.IsTheme()) {
+                return !subject.Extension.Manifest.IsTheme();
             }
             return false;
         }

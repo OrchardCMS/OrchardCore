@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
+using System.Threading;
 
 namespace Orchard.Environment.Extensions
 {
@@ -24,22 +25,22 @@ namespace Orchard.Environment.Extensions
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        private readonly ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>> _extensions
-            = new ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>>();
+        private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
+            = new LazyConcurrentDictionary<string, Task<ExtensionEntry>>();
 
-        private readonly ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>> _features
-            = new ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>>();
+        private readonly LazyConcurrentDictionary<string, Task<FeatureEntry>> _features
+            = new LazyConcurrentDictionary<string, Task<FeatureEntry>>();
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _featureDependencies
+            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _dependentFeatures
+            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
 
         private IDictionary<string, IExtensionInfo> _extensionsById;
 
-        private ConcurrentBag<IFeatureInfo> _allOrderedFeatureInfos;
-        private ConcurrentBag<IFeatureInfo> _allUnorderedFeatureInfos;
+        private IList<IFeatureInfo> _allOrderedFeatureInfos;
+        private IList<IFeatureInfo> _allUnorderedFeatureInfos;
 
         private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependantFeaturesFunc =
             new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
@@ -53,7 +54,7 @@ namespace Orchard.Environment.Extensions
                 (currentFeature, fs) => fs
                     .Where(f =>
                             currentFeature.Dependencies.Any(dep => dep == f.Id)
-                           ).OrderBy(x => x.Id).ToArray());
+                           ).OrderByDescending(x => x.Id).ToArray());
 
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
@@ -122,12 +123,11 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            return _featureDependencies.GetOrAdd(featureId,
-                new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            return _featureDependencies.GetOrAdd(featureId, (key) =>
             {
                 var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
@@ -149,26 +149,24 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return dependencies.Reverse();
-            })).Value;
+            });
         }
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return _dependentFeatures.GetOrAdd(featureId,
-                 new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            return _dependentFeatures.GetOrAdd(featureId, (key) =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures();
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
                 return
-                    GetDependentFeatures(feature, unorderedFeatures.ToArray());
-
-            })).Value;
+                    GetDependentFeatures(feature, unorderedFeatures);
+            });
         }
 
         private IEnumerable<IFeatureInfo> GetDependentFeatures(
@@ -197,8 +195,7 @@ namespace Orchard.Environment.Extensions
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
-            return _extensions.GetOrAdd(extensionInfo.Id,
-                new Lazy<Task<ExtensionEntry>>(() =>
+            return _extensions.GetOrAdd(extensionInfo.Id, (key) =>
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
@@ -209,7 +206,7 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return Task.FromResult(extension);
-            })).Value;
+            });
         }
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
@@ -241,14 +238,13 @@ namespace Orchard.Environment.Extensions
             return Order(allUnorderedFeaturesToLoadIncludingDependencies);
         }
 
-        private ConcurrentBag<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
+        private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
         {
-            var orderedFeatureDescriptors = featuresToOrder
+            return featuresToOrder
                 .OrderByDependenciesAndPriorities(
                     (fiObv, fiSub) => HasDependency(fiObv, fiSub),
-                    (fi) => fi.Priority);
-
-            return new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
+                    (fi) => fi.Priority)
+                .ToList();
         }
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
@@ -263,23 +259,23 @@ namespace Orchard.Environment.Extensions
             return loadedFeatures.AsEnumerable();
         }
 
-        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject) {
-            var isDependent = _extensionOrderingStrategy.HasDependency(observer, subject);
+        public bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
+        {
+            var isDependent = _extensionOrderingStrategy.HasDependency(f1, f2);
 
             if (isDependent)
             {
                 return true;
             }
 
-            return GetDependentFeatures(observer.Id).Contains(subject);
+            return GetDependentFeatures(f2.Id).Contains(f1);
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            return _features.GetOrAdd(feature.Id,
-                new Lazy<Task<FeatureEntry>>(async () =>
-                {
-                    var loadedExtension = await LoadExtensionAsync(feature.Extension);
+            return _features.GetOrAdd(feature.Id, async (key) =>
+            {
+                var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
                 if (loadedExtension.IsError)
                 {
@@ -303,14 +299,14 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return new CompiledFeatureEntry(feature, featureTypes);
-            })).Value;
+            });
         }
 
-        private IEnumerable<IFeatureInfo> GetAllUnorderedFeatures()
+        private IList<IFeatureInfo> GetAllUnorderedFeatures()
         {
             if (_allUnorderedFeatureInfos == null)
             {
-                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(GetExtensions().SelectMany(x => x.Features));
+                _allUnorderedFeatureInfos = GetExtensions().SelectMany(x => x.Features).ToList();
             }
 
             return _allUnorderedFeatureInfos;
@@ -323,6 +319,23 @@ namespace Orchard.Environment.Extensions
                 return featureAttribute.FeatureName;
             }
             return extensionId;
+        }
+
+        private class LazyConcurrentDictionary<TKey, TValue>
+        {
+            private readonly ConcurrentDictionary<TKey, Lazy<TValue>> concurrentDictionary;
+
+            public LazyConcurrentDictionary()
+            {
+                this.concurrentDictionary = new ConcurrentDictionary<TKey, Lazy<TValue>>();
+            }
+
+            public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+            {
+                var lazyResult = this.concurrentDictionary.GetOrAdd(key, k => new Lazy<TValue>(() => valueFactory(k), LazyThreadSafetyMode.ExecutionAndPublication));
+
+                return lazyResult.Value;
+            }
         }
     }
 }
