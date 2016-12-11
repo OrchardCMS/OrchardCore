@@ -241,6 +241,7 @@ namespace Orchard.Environment.Extensions
         private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
         {
             return featuresToOrder
+                .OrderBy(x => x.Id)
                 .OrderByDependenciesAndPriorities(
                     (fiObv, fiSub) => HasDependency(fiObv, fiSub),
                     (fi) => fi.Priority)
