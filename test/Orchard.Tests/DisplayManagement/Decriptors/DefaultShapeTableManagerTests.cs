@@ -16,7 +16,6 @@ using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Tests.Stubs;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
@@ -126,7 +125,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                     {"name", name},
                     {"desciption", name},
                     {"type", "theme"},
-                    {"basetheme", baseTheme.Id}
+                    {"basethemes", baseTheme.Id }
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };

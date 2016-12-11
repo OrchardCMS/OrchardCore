@@ -158,9 +158,9 @@ namespace Orchard.DisplayManagement.Descriptors
                 {
                     var theme = new ThemeExtensionInfo(item.Value.Feature.Extension);
 
-                    if (theme.HasBaseTheme())
+                    if (theme.HasBaseThemes())
                     {
-                        return theme.BaseTheme == subject.Value.Feature.Id;
+                        return theme.BaseThemes.Contains(subject.Value.Feature.Id);
                     }
                 }
             }
@@ -215,23 +215,11 @@ namespace Orchard.DisplayManagement.Descriptors
         private bool IsBaseTheme(string featureId, string themeId)
         {
             // determine if the given feature is a base theme of the given theme
-            var availableFeatures = _extensionManager.GetFeatures();
-
-            var themeFeature = availableFeatures.SingleOrDefault(f => f.Id == themeId);
-            while (themeFeature != null && themeFeature.Extension.Manifest.IsTheme())
-            {
-                var themeExtensionInfo = new ThemeExtensionInfo(themeFeature.Extension);
-                if (!themeExtensionInfo.HasBaseTheme())
-                {
-                    return false;
-                }
-                if (themeExtensionInfo.IsBaseThemeFeature(featureId))
-                {
-                    return true;
-                }
-                themeFeature = availableFeatures.SingleOrDefault(f => f.Id == themeExtensionInfo.BaseTheme);
-            }
-            return false;
+            return _extensionManager
+                .GetFeatures(new[] { themeId })
+                .Where(x => x.Extension.Manifest.IsTheme())
+                .Select(fi => new ThemeExtensionInfo(fi.Extension))
+                .Any(x => x.IsBaseThemeFeature(featureId));
         }
     }
 }

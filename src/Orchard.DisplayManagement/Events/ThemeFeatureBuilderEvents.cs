@@ -10,16 +10,14 @@ namespace Orchard.DisplayManagement.Events
         {
             if (context.ExtensionInfo.Manifest.IsTheme())
             {
-                ThemeExtensionInfo extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
+                var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
-                if (extensionInfo.HasBaseTheme())
+                if (extensionInfo.HasBaseThemes())
                 {
-                    if (!context.FeatureDependencyIds.Contains(extensionInfo.BaseTheme))
-                    {
-                        var temp = context.FeatureDependencyIds.ToList();
-                        temp.Add(extensionInfo.BaseTheme);
-                        context.FeatureDependencyIds = temp.ToArray();
-                    }
+                    context.FeatureDependencyIds = context
+                        .FeatureDependencyIds
+                        .Concat(extensionInfo.BaseThemes)
+                        .ToArray();
                 }
 
                 context.ExtensionInfo = extensionInfo;
