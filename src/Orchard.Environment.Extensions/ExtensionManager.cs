@@ -20,6 +20,7 @@ namespace Orchard.Environment.Extensions
         private readonly ExtensionOptions _extensionOptions;
         private readonly IExtensionProvider _extensionProvider;
         private readonly IExtensionLoader _extensionLoader;
+        private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
@@ -58,6 +59,7 @@ namespace Orchard.Environment.Extensions
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
+            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
             IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
@@ -66,6 +68,7 @@ namespace Orchard.Environment.Extensions
             _extensionOptions = optionsAccessor.Value;
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
+            _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
@@ -223,14 +226,7 @@ namespace Orchard.Environment.Extensions
         {
             if (_allOrderedFeatureInfos == null)
             {
-                var allUnorderedFeatures = GetAllUnorderedFeatures();
-
-                var orderedFeatureDescriptors = allUnorderedFeatures
-                    .OrderByDependenciesAndPriorities(
-                        (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                        (fi) => fi.Priority);
-
-                _allOrderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
+                _allOrderedFeatureInfos = Order(GetAllUnorderedFeatures());
             }
 
             return _allOrderedFeatureInfos;
@@ -240,16 +236,21 @@ namespace Orchard.Environment.Extensions
         {
             var allUnorderedFeaturesToLoadIncludingDependencies = featureIdsToLoad
                 .SelectMany(featureId => GetFeatureDependencies(featureId))
-                .Distinct()
-                .ToArray();
+                .Distinct();
 
-            return allUnorderedFeaturesToLoadIncludingDependencies
-                .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                    (fi) => fi.Priority)
-                .Reverse();
+            return Order(allUnorderedFeaturesToLoadIncludingDependencies);
         }
-        
+
+        private ConcurrentBag<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
+        {
+            var orderedFeatureDescriptors = featuresToOrder
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => HasDependency(fiObv, fiSub),
+                    (fi) => fi.Priority);
+
+            return new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
+        }
+
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             var features = GetFeatures(featureIdsToLoad);
@@ -260,6 +261,17 @@ namespace Orchard.Environment.Extensions
                 .ToArray());
 
             return loadedFeatures.AsEnumerable();
+        }
+
+        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject) {
+            var isDependent = _extensionOrderingStrategy.HasDependency(observer, subject);
+
+            if (isDependent)
+            {
+                return true;
+            }
+
+            return GetDependentFeatures(observer.Id).Contains(subject);
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)

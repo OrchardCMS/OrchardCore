@@ -2,6 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Events;
+using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
@@ -40,14 +41,17 @@ namespace Orchard.Tests.Extensions
                 new[] { new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>()) });
 
 
+
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;
+        private IExtensionManager ModuleThemeScopedExtensionManager;
 
         public ExtensionManagerTests() {
             ModuleScopedExtensionManager = new ExtensionManager(
                 new StubExtensionOptions("TestDependencyModules"),
                 new[] { ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
+                Enumerable.Empty<IExtensionOrderingStrategy>(),
                 HostingEnvrionment,
                 null,
                 new NullLogger<ExtensionManager>(),
@@ -57,6 +61,17 @@ namespace Orchard.Tests.Extensions
                 new StubExtensionOptions("TestDependencyModules"),
                 new[] { ThemeProvider },
                 Enumerable.Empty<IExtensionLoader>(),
+                Enumerable.Empty<IExtensionOrderingStrategy>(),
+                HostingEnvrionment,
+                null,
+                new NullLogger<ExtensionManager>(),
+                null);
+
+            ModuleThemeScopedExtensionManager = new ExtensionManager(
+                new StubExtensionOptions("TestDependencyModules"),
+                new[] { ThemeProvider, ModuleProvider },
+                Enumerable.Empty<IExtensionLoader>(),
+                new[] { new ThemeExtensionOrderingStrategy() },
                 HostingEnvrionment,
                 null,
                 new NullLogger<ExtensionManager>(),
@@ -167,6 +182,29 @@ namespace Orchard.Tests.Extensions
             Assert.Equal(features.ElementAt(2).Id, "DerivedThemeSample2");
         }
 
+        /* Theme and Module Dependencies */
+
+        [Fact]
+        public void GetFeaturesShouldReturnBothThemesAndModules() {
+            var features = ModuleThemeScopedExtensionManager.GetFeatures();
+
+            Assert.Equal(8, features.Count());
+        }
+
+        [Fact]
+        public void GetFeaturesShouldReturnThemesAfterModules() {
+            var features = ModuleThemeScopedExtensionManager.GetFeatures();
+
+            Assert.Equal(features.ElementAt(0).Id, "Sample1");
+            Assert.Equal(features.ElementAt(1).Id, "Sample2");
+            Assert.Equal(features.ElementAt(2).Id, "Sample3");
+            Assert.Equal(features.ElementAt(3).Id, "Sample4");
+            Assert.Equal(features.ElementAt(4).Id, "BaseThemeSample");
+            Assert.Equal(features.ElementAt(5).Id, "BaseThemeSample2");
+            Assert.Equal(features.ElementAt(6).Id, "DerivedThemeSample");
+            Assert.Equal(features.ElementAt(7).Id, "DerivedThemeSample2");
+
+        }
     }
 
     public class StubExtensionOptions : IOptions<ExtensionOptions>
