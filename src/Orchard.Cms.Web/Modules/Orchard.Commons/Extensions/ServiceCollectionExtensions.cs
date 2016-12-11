@@ -6,7 +6,7 @@ namespace Orchard.Commons
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddResultFilters(this IServiceCollection services)
+        public static IServiceCollection AddGeneratorTagFilter(this IServiceCollection services)
         {
             services.AddSingleton<IFilterMetadata, MetaGeneratorFilter>();
 
