@@ -17,6 +17,7 @@ using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Events;
 using Xunit;
+using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
 {
@@ -161,6 +162,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            serviceCollection.AddScoped<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
