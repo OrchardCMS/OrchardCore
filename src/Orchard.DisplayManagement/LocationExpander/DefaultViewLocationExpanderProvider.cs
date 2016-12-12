@@ -5,13 +5,7 @@ namespace Orchard.DisplayManagement.LocationExpander
 {
     public class DefaultViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority
-        {
-            get
-            {
-                return 0D;
-            }
-        }
+        public double Priority => 0D;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)

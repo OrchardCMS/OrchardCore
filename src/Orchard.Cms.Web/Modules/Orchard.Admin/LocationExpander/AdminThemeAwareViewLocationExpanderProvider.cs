@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.LocationExpander;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
@@ -12,13 +13,7 @@ namespace Orchard.Admin.LocationExpander
 {
     public class AdminThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority
-        {
-            get
-            {
-                return 15D;
-            }
-        }
+        public double Priority => 15D;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)

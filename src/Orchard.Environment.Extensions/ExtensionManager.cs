@@ -322,20 +322,26 @@ namespace Orchard.Environment.Extensions
             return extensionId;
         }
 
+        // https://blogs.endjin.com/2015/10/using-lazy-and-concurrentdictionary-to-ensure-a-thread-safe-run-once-lazy-loaded-collection/
         private class LazyConcurrentDictionary<TKey, TValue>
         {
-            private readonly ConcurrentDictionary<TKey, Lazy<TValue>> concurrentDictionary;
+            private readonly ConcurrentDictionary<TKey, Lazy<TValue>> _concurrentDictionary;
 
             public LazyConcurrentDictionary()
             {
-                this.concurrentDictionary = new ConcurrentDictionary<TKey, Lazy<TValue>>();
+                _concurrentDictionary = new ConcurrentDictionary<TKey, Lazy<TValue>>();
             }
 
+            // When you call GetOrAdd the valueFactory is not thread safe, this means two threads could make the same
+            // call to underlying components.
+            // Loading features and extensions is expensive and should only be done once
             public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
             {
-                var lazyResult = this.concurrentDictionary.GetOrAdd(key, k => new Lazy<TValue>(() => valueFactory(k), LazyThreadSafetyMode.ExecutionAndPublication));
-
-                return lazyResult.Value;
+                return _concurrentDictionary
+                    .GetOrAdd(
+                        key, 
+                        k => new Lazy<TValue>(() => valueFactory(k), LazyThreadSafetyMode.ExecutionAndPublication))
+                    .Value;
             }
         }
     }
