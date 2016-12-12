@@ -11,10 +11,10 @@ namespace Orchard.Recipes.Services
         private readonly ILogger _logger;
         protected readonly IStringLocalizer T;
 
-        public RecipeExecutionStep(ILoggerFactory loggerFactory,
+        public RecipeExecutionStep(ILogger logger,
             IStringLocalizer stringLocalizer)
         {
-            _logger = loggerFactory.CreateLogger(GetType().Name);
+            _logger = logger;
 
             T = stringLocalizer;
         }

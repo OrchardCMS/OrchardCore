@@ -23,24 +23,20 @@ namespace Orchard.Roles.Recipes
         public RolesStep(RoleManager<Role> roleManager,
                             ITypeFeatureProvider typeFeatureProvider,
                             IEnumerable<IPermissionProvider> permissionProviders,
-                            ILoggerFactory loggerFactory, 
-                            IStringLocalizer<RolesStep> stringLocalizer) : base(loggerFactory, stringLocalizer)
+                            ILogger<RolesStep> logger, 
+                            IStringLocalizer<RolesStep> stringLocalizer) : base(logger, stringLocalizer)
         {
             _roleManager = roleManager;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
         }
 
-        public override string Name
-        {
-            get { return "Roles"; }
-        }
+        public override string Name => "Roles";
 
         public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {
             var model = recipeContext.RecipeStep.Step.ToObject<RolesStepModel>();
-            var validPermissions = GetValidPermissions();
-
+            
             foreach (var roleModel in model.Roles)
             {
                 if (string.IsNullOrWhiteSpace(roleModel.Name)) 
@@ -54,13 +50,8 @@ namespace Orchard.Roles.Recipes
                     role = new Role { RoleName = roleModel.Name };                    
                 }
                 role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                foreach (var permission in roleModel.Permissions)
-                {
-                    if (validPermissions.Contains(permission))
-                    {
-                        role.RoleClaims.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permission });
-                    }
-                }
+                role.RoleClaims.AddRange(roleModel.Permissions.Select(p=>new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
+                
                 if (isNewRole)
                 {
                     await _roleManager.CreateAsync(role);
@@ -70,22 +61,6 @@ namespace Orchard.Roles.Recipes
                     await _roleManager.UpdateAsync(role);
                 }
             }
-        }
-
-        private ICollection<string> GetValidPermissions()
-        {
-            var result = new HashSet<string>();
-            foreach (var permissionProvider in _permissionProviders)
-            {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Id;
-                var permissions = permissionProvider.GetPermissions();
-                foreach (var permission in permissions)
-                {
-                    result.Add(permission.Name);
-                }
-            }
-            return result;
         }
     }
 

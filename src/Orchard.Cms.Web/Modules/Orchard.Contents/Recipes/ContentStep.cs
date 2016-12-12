@@ -14,16 +14,13 @@ namespace Orchard.Contents.Recipes
 
         public ContentStep(
             IContentManager contentManager,
-            ILoggerFactory logger,
+            ILogger<ContentStep> logger,
             IStringLocalizer<ContentStep> localizer) : base(logger, localizer)
         {
             _contentManager = contentManager;
         }
 
-        public override string Name
-        {
-            get { return "Content"; }
-        }
+        public override string Name => "Content";
 
         public override Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {

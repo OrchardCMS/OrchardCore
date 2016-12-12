@@ -17,7 +17,7 @@ namespace Orchard.Recipes.RecipeSteps
         public RecipesStep(
             IRecipeHarvester recipeHarvester,
             IRecipeExecutor recipeManager,
-            ILoggerFactory logger,
+            ILogger<RecipesStep> logger,
             IStringLocalizer<RecipesStep> localizer) : base(logger, localizer)
         {
 
@@ -25,7 +25,7 @@ namespace Orchard.Recipes.RecipeSteps
             _recipeManager = recipeManager;
         }
 
-        public override string Name { get { return "Recipes"; } }
+        public override string Name => "Recipes";
 
         /*
          {

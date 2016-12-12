@@ -18,7 +18,7 @@ namespace Orchard.Recipes.RecipeSteps
         public CommandStep(ICommandManager commandManager,
             ICommandParser commandParser,
             ICommandParametersParser commandParameterParser,
-            ILoggerFactory logger,
+            ILogger<CommandStep> logger,
             IStringLocalizer<CommandStep> localizer) : base(logger, localizer)
         {
 
@@ -27,7 +27,7 @@ namespace Orchard.Recipes.RecipeSteps
             _commandParameterParser = commandParameterParser;
         }
 
-        public override string Name { get { return "Command"; } }
+        public override string Name => "Command";
 
         public override async Task ExecuteAsync(RecipeExecutionContext context)
         {

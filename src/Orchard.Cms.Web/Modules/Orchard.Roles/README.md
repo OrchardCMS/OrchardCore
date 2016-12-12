@@ -6,14 +6,14 @@ A sample of roles configuration step:
 {
     "name": "roles",
     "Roles": [
-		{
-			"Name": "Journalist",
-			"Permissions": [ "PublishContent", "EditContent" ]
-		},
-		{
-			"Name": "Suscriptor",
-			"Permissions": [ ]
-		},
+        {
+            "Name": "Journalist",
+            "Permissions": [ "PublishContent", "EditContent" ]
+        },
+        {
+            "Name": "Suscriptor",
+            "Permissions": [ ]
+        },
     ]
 }
 ```
