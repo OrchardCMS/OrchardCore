@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using Orchard.DisplayManagement.Implementation;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
@@ -31,11 +31,6 @@ namespace Orchard.DisplayManagement.TagHelpers
         {
             _shapeFactory = shapeFactory;
             _displayHelperFactory = displayHelperFactory;
-        }
-
-        public override void Process(TagHelperContext context, TagHelperOutput output)
-        {
-            ProcessAsync(context, output).Wait();
         }
 
         public override async Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
