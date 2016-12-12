@@ -231,11 +231,14 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allUnorderedFeaturesToLoadIncludingDependencies = featureIdsToLoad
-                .SelectMany(featureId => GetFeatureDependencies(featureId))
-                .Distinct();
+            var allDependencies = featureIdsToLoad
+            .SelectMany(featureId => GetFeatureDependencies(featureId))
+            .Distinct();
 
-            return Order(allUnorderedFeaturesToLoadIncludingDependencies);
+            var orderedFeatureDescriptors = GetFeatures()
+                .Where(f => allDependencies.Any(d => d.Id == f.Id));
+
+            return orderedFeatureDescriptors;
         }
 
         private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
