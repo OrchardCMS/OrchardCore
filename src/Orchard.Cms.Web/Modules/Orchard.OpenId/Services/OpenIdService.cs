@@ -8,20 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using YesSql.Core.Services;
 
 namespace Orchard.OpenId.Services
 {
     public class OpenIdService : IOpenIdService
     {
-        private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly IMemoryCache _memoryCache;
-        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache, ISession session)
+        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache)
         {
             _siteService = siteService;
             _memoryCache = memoryCache;
-            _session = session;
         }
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
@@ -36,10 +33,9 @@ namespace Orchard.OpenId.Services
         }
         public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
         {
-            var siteSettings = await _session.QueryAsync<Orchard.Settings.SiteSettings>().FirstOrDefault();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
             siteSettings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
-            _session.Save(siteSettings);
-            _memoryCache.Set("Site", siteSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings);
         }
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
         {
