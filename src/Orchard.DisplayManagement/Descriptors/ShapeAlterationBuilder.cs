@@ -91,29 +91,29 @@ namespace Orchard.DisplayManagement.Descriptors
             });
         }
 
-        public ShapeAlterationBuilder OnDisplaying(Action<ShapeDisplayingContext> action)
+        public ShapeAlterationBuilder OnDisplaying(Action<ShapeDisplayContext> action)
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Displaying ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
+                var existing = descriptor.Displaying ?? Enumerable.Empty<Action<ShapeDisplayContext>>();
                 descriptor.Displaying = existing.Concat(new[] { action });
             });
         }
 
-        public ShapeAlterationBuilder OnProcessing(Action<ShapeDisplayingContext> action)
+        public ShapeAlterationBuilder OnProcessingAsync(Func<ShapeDisplayContext, Task> action)
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Processing ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
-                descriptor.Processing = existing.Concat(new[] { action });
+                var existing = descriptor.ProcessingAsync ?? Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
+                descriptor.ProcessingAsync = existing.Concat(new[] { action });
             });
         }
 
-        public ShapeAlterationBuilder OnDisplayed(Action<ShapeDisplayedContext> action)
+        public ShapeAlterationBuilder OnDisplayed(Action<ShapeDisplayContext> action)
         {
             return Configure(descriptor =>
             {
-                var existing = descriptor.Displayed ?? Enumerable.Empty<Action<ShapeDisplayedContext>>();
+                var existing = descriptor.Displayed ?? Enumerable.Empty<Action<ShapeDisplayContext>>();
                 descriptor.Displayed = existing.Concat(new[] { action });
             });
         }

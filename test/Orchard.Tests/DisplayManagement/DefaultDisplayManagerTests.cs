@@ -51,7 +51,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
-            serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
+            serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
             serviceCollection.AddScoped<IShapeDisplayEvents, TestDisplayEvents>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
@@ -65,11 +65,11 @@ namespace Orchard.Tests.DisplayManagement
 
         class TestDisplayEvents : IShapeDisplayEvents
         {
-            public Action<ShapeDisplayingContext> Displaying = ctx => { };
-            public Action<ShapeDisplayedContext> Displayed = ctx => { };
+            public Action<ShapeDisplayContext> Displaying = ctx => { };
+            public Action<ShapeDisplayContext> Displayed = ctx => { };
 
-            void IShapeDisplayEvents.Displaying(ShapeDisplayingContext context) { Displaying(context); }
-            void IShapeDisplayEvents.Displayed(ShapeDisplayedContext context) { Displayed(context); }
+            void IShapeDisplayEvents.Displaying(ShapeDisplayContext context) { Displaying(context); }
+            void IShapeDisplayEvents.Displayed(ShapeDisplayContext context) { Displayed(context); }
         }
 
         void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
@@ -275,8 +275,8 @@ namespace Orchard.Tests.DisplayManagement
 
             var displayingEventCount = 0;
             var displayedEventCount = 0;
-            descriptor.Displaying = new Action<ShapeDisplayingContext>[] { ctx => { ++displayingEventCount; } };
-            descriptor.Displayed = new Action<ShapeDisplayedContext>[] { ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToString() + "]"); } };
+            descriptor.Displaying = new Action<ShapeDisplayContext>[] { ctx => { ++displayingEventCount; } };
+            descriptor.Displayed = new Action<ShapeDisplayContext>[] { ctx => { ++displayedEventCount; ctx.ChildContent = new HtmlString("[" + ctx.ChildContent.ToString() + "]"); } };
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
 
@@ -313,7 +313,7 @@ namespace Orchard.Tests.DisplayManagement
 
 
             var resultNormally = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
-            descriptorFoo.Displaying = new Action<ShapeDisplayingContext>[] { ctx => ctx.ShapeMetadata.Alternates.Add("Bar") };
+            descriptorFoo.Displaying = new Action<ShapeDisplayContext>[] { ctx => ctx.ShapeMetadata.Alternates.Add("Bar") };
             var resultWithOverride = await displayManager.ExecuteAsync(CreateDisplayContext(shapeFoo));
 
             Assert.Equal("alpha", resultNormally.ToString());

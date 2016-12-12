@@ -60,7 +60,7 @@ namespace Orchard.DisplayManagement
             services.AddShapeAttributes<ZoneShapes>();
             services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
-            services.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
+            services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             services.AddScoped<ILayoutAccessor, LayoutAccessor>();
             services.AddScoped<IThemeManager, ThemeManager>();
             services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();

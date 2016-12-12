@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -34,18 +33,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
 
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
         public ShapeAttributeBindingStrategy(
             IServiceProvider serviceProvider,
-            IHttpContextAccessor httpContextAccessor,
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
             _serviceProvider = serviceProvider;
-            _httpContextAccessor = httpContextAccessor;
             _typeFeatureProvider = typeFeatureProvider;
             _shapeProviders = shapeProviders;
         }
@@ -147,8 +143,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
             {
-                var httpContext = _httpContextAccessor.HttpContext;
-                return httpContext.RequestServices.GetService<IShapeFactory>();
+                return displayContext.ServiceProvider.GetService<IShapeFactory>();
             }
 
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
@@ -156,11 +151,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
             }
 
+            if (String.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
+            {
+                return displayContext;
+            }
+
             if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) &&
                 parameter.ParameterType.IsAssignableFrom(typeof(UrlHelper)))
             {
-                var httpContext = _httpContextAccessor.HttpContext;
-                var urlHelperFactory = httpContext.RequestServices.GetService<IUrlHelperFactory>();
+                var urlHelperFactory = displayContext.ServiceProvider.GetService<IUrlHelperFactory>();
                 return urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
             }
 

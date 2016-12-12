@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,15 +12,18 @@ namespace Orchard.DisplayManagement.Implementation
     {
         private readonly IHtmlDisplay _displayManager;
         private readonly IShapeFactory _shapeFactory;
+        private readonly IServiceProvider _serviceProvider;
 
         public DisplayHelper(
             IHtmlDisplay displayManager,
             IShapeFactory shapeFactory,
-            ViewContext viewContext)
+            ViewContext viewContext,
+            IServiceProvider serviceProvider)
         {
             _displayManager = displayManager;
             _shapeFactory = shapeFactory;
             ViewContext = viewContext;
+            _serviceProvider = serviceProvider;
         }
 
         public ViewContext ViewContext { get; set; }
@@ -72,7 +76,14 @@ namespace Orchard.DisplayManagement.Implementation
                 return Task.FromResult<IHtmlContent>(HtmlString.Empty);
             }
 
-            var context = new DisplayContext { DisplayAsync = this, Value = shape, ViewContext = ViewContext };
+            var context = new DisplayContext
+            {
+                DisplayAsync = this,
+                Value = shape,
+                ViewContext = ViewContext,
+                ServiceProvider = _serviceProvider
+            };
+
             return _displayManager.ExecuteAsync(context);
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.DisplayManagement;
@@ -10,13 +9,6 @@ namespace Orchard.Menu
 {
     public class MenuShapes : IShapeTableProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public MenuShapes(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
@@ -31,9 +23,9 @@ namespace Orchard.Menu
                         menu.Metadata.Alternates.Add("Menu__" + EncodeAlternateElement(identifier));
                     }
                 })
-                .OnProcessing(processing =>
+                .OnProcessingAsync(async context =>
                 {
-                    var menu = processing.Shape;
+                    var menu = context.Shape;
                     string identifier = menu.ContentItemId ?? menu.Alias;
 
                     if (String.IsNullOrEmpty(identifier))
@@ -45,16 +37,15 @@ namespace Orchard.Menu
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                     // events and thus this code can be cached.
 
-                    var httpContext = _httpContextAccessor.HttpContext;
-                    var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
-                    var contentManager = httpContext.RequestServices.GetService<IContentManager>();
-                    var aliasManager = httpContext.RequestServices.GetService<IContentAliasManager>();
+                    var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
 
                     string contentItemId = menu.Alias != null
-                        ? aliasManager.GetContentItemIdAsync(menu.Alias).GetAwaiter().GetResult()
+                        ? await aliasManager.GetContentItemIdAsync(menu.Alias)
                         : menu.ContentItemId;
 
-                    ContentItem menuContentItem = contentManager.GetAsync(contentItemId).GetAwaiter().GetResult();
+                    ContentItem menuContentItem = await contentManager.GetAsync(contentItemId);
 
                     if (menuContentItem == null)
                     {
@@ -88,15 +79,14 @@ namespace Orchard.Menu
                 });
 
             builder.Describe("MenuItem")
-                .OnDisplaying(displaying =>
+                .OnDisplaying(context =>
                 {
-                    var menuItem = displaying.Shape;
+                    var menuItem = context.Shape;
                     ContentItem menuContentItem = menuItem.ContentItem;
                     var menu = menuItem.Menu;
                     int level = menuItem.Level;
 
-                    var httpContext = _httpContextAccessor.HttpContext;
-                    var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
+                    var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 

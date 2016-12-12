@@ -157,16 +157,7 @@ namespace Orchard.Demo.Controllers
 
             return "Check for logs";
         }
-
-        private DisplayContext CreateDisplayContext(Shape shape)
-        {
-            return new DisplayContext
-            {
-                Value = shape,
-                ViewContext = new ViewContext()
-            };
-        }
-
+        
         public IActionResult ShapePerformance()
         {
             return View();
