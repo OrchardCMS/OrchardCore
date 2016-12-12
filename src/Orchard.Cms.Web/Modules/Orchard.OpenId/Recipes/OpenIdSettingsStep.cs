@@ -48,7 +48,7 @@ namespace Orchard.OpenId.Recipes
 
     public class OpenIdSettingsStepModel
     {
-        public bool TestingModeEnabled { get; set; } = true;
+        public bool TestingModeEnabled { get; set; } = false;
         public TokenFormat DefaultTokenFormat { get; set; } = TokenFormat.JWT;
         public string Authority { get; set; }
         public IEnumerable<string> Audience { get; set; }
