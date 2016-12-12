@@ -232,8 +232,8 @@ namespace Orchard.Environment.Extensions
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
             var allDependencies = featureIdsToLoad
-            .SelectMany(featureId => GetFeatureDependencies(featureId))
-            .Distinct();
+                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .Distinct();
 
             var orderedFeatureDescriptors = GetFeatures()
                 .Where(f => allDependencies.Any(d => d.Id == f.Id));
