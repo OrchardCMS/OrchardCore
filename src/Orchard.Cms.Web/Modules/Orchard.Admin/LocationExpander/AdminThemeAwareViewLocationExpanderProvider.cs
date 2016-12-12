@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.LocationExpander;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
 using Orchard.Settings;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Orchard.DisplayManagement.LocationExpander
+namespace Orchard.Admin.LocationExpander
 {
     public class AdminThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Navigation;
 using Orchard.Security.Permissions;
+using Orchard.Admin.LocationExpander;
+using Orchard.DisplayManagement.LocationExpander;
 
 namespace Orchard.Admin
 {
@@ -22,6 +24,8 @@ namespace Orchard.Admin
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();
+
+            services.AddScoped<IViewLocationExpanderProvider, AdminThemeAwareViewLocationExpanderProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

@@ -38,7 +38,6 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, AdminThemeAwareViewLocationExpanderProvider>();
 
             services.AddScoped<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
