@@ -18,9 +18,9 @@ Available settings are:
   + JWT: This format uses signed JWT standard tokens (not encrypted). It requires the SSL certificate being used is accepted as a trusted certificate by the client.
   + Encrypted: This format uses non standard opaque tokens encrypted by the ASP.NET data protection block. 
 + Authority: Orchard url used by orchard to act as an identity server.
-+ Audience: Urls of the resource servers for which the identity server issues valid JWT tokens. (separated by commas) 
-+ Certificate Store Location: CurrentUser/LocalMachine
-+ Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher
++ Audience: Urls of the resource servers for which the identity server issues valid JWT tokens.
++ Certificate Store Location: CurrentUser/LocalMachine https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
++ Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
 + Certificate Thumbprint: The thumbprint of the certificate (It is recommended to not use same certificate it is been used for SSL).
 
 A sample of Open Id Settings recipe step:
@@ -28,11 +28,11 @@ A sample of Open Id Settings recipe step:
 {
       "name": "openidsettings",
       "TestingModeEnabled": false,
-      "DefaultTokenFormat": "JWT",
+      "DefaultTokenFormat": "JWT", //JWT or Encrypted
       "Authority": "https://www.orchardproject.net",
-      "Audience": "https://www.orchardproject.net,https://orchardharvest.org/",
-      "CertificateStoreLocation": "LocalMachine",
-      "CertificateStoreName": "My",
+      "Audience": ["https://www.orchardproject.net","https://orchardharvest.org/"],
+      "CertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
+      "CertificateStoreName": "My", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
       "CertificateThumbPrint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7"
 }
 ```
