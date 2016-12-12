@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Extensions;
@@ -16,12 +12,16 @@ using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
-using Orchard.DisplayManagement.Extensions;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
 {
-    public class DefaultShapeTableManagerTests
+    public class DefaultShapeTableManagerTests : IDisposable
     {
         IServiceProvider _serviceProvider;
 
@@ -515,6 +515,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var table = manager.GetShapeTable("DerivedTheme");
             Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
             Assert.StrictEqual("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
+        }
+
+        public void Dispose()
+        {
+            (_serviceProvider as IDisposable)?.Dispose();
         }
     }
 }
