@@ -18,18 +18,15 @@ namespace Orchard.Modules.Recipes.Executors
         public FeatureStep(
             IExtensionManager extensionManager,
             IShellFeaturesManager shellFeatureManager,
-            ILoggerFactory logger,
+            ILogger<FeatureStep> logger,
             IStringLocalizer<FeatureStep> localizer) : base(logger, localizer)
         {
             _extensionManager = extensionManager;
             _shellFeatureManager = shellFeatureManager;
         }
 
-        public override string Name
-        {
-            get { return "Feature"; }
-        }
-
+        public override string Name => "Feature";
+        
         public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {
             var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();

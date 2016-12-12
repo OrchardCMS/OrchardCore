@@ -17,17 +17,14 @@ namespace Orchard.Themes.Recipes
         public ThemesStep(
             ISiteThemeService siteThemeService,
             IAdminThemeService adminThemeService,
-            ILoggerFactory logger,
+            ILogger<ThemesStep> logger,
             IStringLocalizer<ThemesStep> localizer) : base(logger, localizer)
         {
             _adminThemeService = adminThemeService;
             _siteThemeService = siteThemeService;
         }
 
-        public override string Name
-        {
-            get { return "Themes"; }
-        }
+        public override string Name => "Themes";
 
         public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {

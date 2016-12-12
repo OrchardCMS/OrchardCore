@@ -13,16 +13,13 @@ namespace Orchard.Settings.Recipes
 
         public SettingsStep(
             ISiteService siteService,
-            ILoggerFactory logger,
+            ILogger<SettingsStep> logger,
             IStringLocalizer<ISiteService> localizer) : base(logger, localizer)
         {
             _siteService = siteService;
         }
 
-        public override string Name
-        {
-            get { return "Settings"; }
-        }
+        public override string Name => "Settings";
 
         public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
         {
