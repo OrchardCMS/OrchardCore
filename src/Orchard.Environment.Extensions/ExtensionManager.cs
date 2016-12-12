@@ -272,7 +272,7 @@ namespace Orchard.Environment.Extensions
                 return true;
             }
 
-            return GetDependentFeatures(f2.Id).Contains(f1);
+            return GetFeatureDependencies(f1.Id).Contains(f2);
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
