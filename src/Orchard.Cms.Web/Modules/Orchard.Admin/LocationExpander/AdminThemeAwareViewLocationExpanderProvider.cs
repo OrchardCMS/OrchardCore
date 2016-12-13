@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.LocationExpander;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,11 +33,11 @@ namespace Orchard.Admin.LocationExpander
 
             if (themeManager != null)
             {
-                var extensionManager = context
+                var shellFeaturesManager = context
                     .ActionContext
                     .HttpContext
                     .RequestServices
-                    .GetService<IExtensionManager>();
+                    .GetService<IShellFeaturesManager>();
 
                 var adminService = context
                     .ActionContext
@@ -54,8 +54,8 @@ namespace Orchard.Admin.LocationExpander
                     return Enumerable.Empty<string>();
                 }
 
-                var allOtherEnabledThemesOrdered = extensionManager
-                    .GetFeatures()
+                var allOtherEnabledThemesOrdered = shellFeaturesManager
+                    .GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                     .Select(x => x.Extension)
                     .Where(x => x.Manifest.IsTheme() && x.Id != currentTheme.Id)
                     .ToList();
