@@ -1,0 +1,77 @@
+﻿﻿@inject Orchard.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@RenderTitleSegments(T[site.SiteName], "before")</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheBlogTheme/favicon.ico" />
+
+    <script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
+    <script asp-src="~/TheBlogTheme/Scripts/clean-blog.min.js" debug-src="~/TheBlogTheme/Scripts/clean-blog.js" at="Foot"></script>
+
+    <link rel="stylesheet" href="~/TheBlogTheme/Styles/blog.min.css">
+
+    <!-- Custom Fonts -->
+    <link href="~/TheBlogTheme/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <resources type="Meta" />
+    <resources type="HeadLink" />
+    <resources type="Stylesheet" />
+    <resources type="HeadScript" />
+    @await RenderSectionAsync("Header", required: false)
+</head>
+<body >
+    <nav class="navbar navbar-default  navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    @T["Menu"] <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="~/">@site.SiteName</a>
+            </div>
+
+            <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+
+                @*@await DisplayAsync(New.Menu(ContentItemId: "main-menu"))*@
+                <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" />
+
+            </div><!--/.nav-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/home-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h1>Clean Blog</h1>
+                        <hr class="small">
+                        <span class="subheading">A Clean Blog Theme by Start Bootstrap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        @await RenderBodyAsync()
+    </div><!-- /.container -->
+
+    <div class="container">
+        @await RenderSectionAsync("Footer", required: false)
+    </div>
+
+    <resources type="FootScript" />
+
+</body>
+</html>

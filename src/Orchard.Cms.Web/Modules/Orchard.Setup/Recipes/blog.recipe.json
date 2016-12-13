@@ -1,0 +1,96 @@
+﻿{
+  "name": "Blog",
+  "displayName": "Blog",
+  "description": "Provides a functional Blog with CMS features.",
+  "author": "The Orchard Team",
+  "website": "http://orchardproject.net",
+  "version": "2.0",
+  "issetuprecipe": true,
+  "categories": [ "default" ],
+  "tags": [ "blog" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        // SaaS
+        "Orchard.Admin",
+        "Orchard.Commons",
+        "Orchard.Diagnostics",
+        "Orchard.DynamicCache",
+        "Orchard.Modules",
+        "Orchard.Navigation",
+        "Orchard.Recipes",
+        "Orchard.Resources",
+        "Orchard.Roles",
+        "Orchard.Settings",
+        "Orchard.Tenants",
+        "Orchard.Themes",
+        "Orchard.Users",
+
+        // Content Management
+        "Lucene",
+        "Orchard.Alias",
+        "Orchard.Autoroute",
+        "Orchard.Body",
+        "Orchard.ContentFields",
+        "Orchard.Contents",
+        "Orchard.ContentTypes",
+        "Orchard.Demo",
+        "Orchard.Deployment",
+        "Orchard.Deployment.Remote",
+        "Orchard.Indexing",
+        "Orchard.Lists",
+        "Orchard.Menu",
+        "Orchard.Title",
+        "Orchard.Tokens",
+        "Orchard.Tokens.Content",
+
+        // Themes
+        "TheBlogTheme",
+        "TheAdmin",
+        "SafeMode"
+      ]
+    },
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "TheBlogTheme"
+    },
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Index",
+        "Controller": "Home",
+        "Area": "Orchard.Demo"
+      }
+    },
+    {
+      "name": "content",
+      "Data": [
+        {
+          "ContentType": "Menu",
+          "ContentItemId": "[uuid()]",
+          "Latest": true,
+          "Number": 1,
+          "Published": true,
+          "MenuPart": {},
+          "TitlePart": { "Title": "Main Menu" },
+          "MenuItemsListPart": {
+            "MenuItems": [
+              {
+                "ContentType": "LinkMenuItem",
+                "ContentItemId": "[uuid()]",
+                "LinkMenuItemPart": {
+                  "Name": "Home",
+                  "Url": "~/"
+                }
+              }
+            ]
+          },
+          "AliasPart": { "Alias": "main-menu" }
+        }
+      ]
+    }
+  ]
+}
