@@ -76,7 +76,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledFeatureIds = _shellFeaturesManager
+                var enabledAndOrderedFeatureIds = _shellFeaturesManager
                     .GetEnabledFeaturesAsync()
                     .GetAwaiter()
                     .GetResult()
@@ -84,10 +84,10 @@ namespace Orchard.DisplayManagement.Descriptors
                     .ToList();
 
                 var descriptors = _shapeDescriptors
-                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
+                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledAndOrderedFeatureIds))
                     .OrderByDependenciesAndPriorities(
-                        (fiObv, fiSub) => HasDependency(fiObv.Value.Feature, fiSub.Value.Feature),
-                        (fi) => fi.Value.Feature.Priority
+                        (fiObv, fiSub) => false,
+                        (fi) => enabledAndOrderedFeatureIds.IndexOf(fi.Value.Feature.Id)
                     )
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
@@ -142,16 +142,6 @@ namespace Orchard.DisplayManagement.Descriptors
                     _shapeDescriptors[key] = descriptor;
                 }
             }
-        }
-
-        private static double GetPriority(KeyValuePair<string, FeatureShapeDescriptor> shapeDescriptor)
-        {
-            return shapeDescriptor.Value.Feature.Priority;
-        }
-
-        public bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
-        {
-            return _extensionOrderingStrategy.Compare(f1, f2) > 0 ? true : _extensionManager.GetFeatureDependencies(f1.Id).Contains(f2);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
