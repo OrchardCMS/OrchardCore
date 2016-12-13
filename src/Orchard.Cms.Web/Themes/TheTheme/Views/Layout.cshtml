@@ -1,7 +1,11 @@
-﻿<!DOCTYPE html>
+﻿﻿@inject Orchard.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
+<!DOCTYPE html>
 <html>
 <head>
-    <title>@RenderTitleSegments(T["Orchard"], "before")</title>
+    <title>@RenderTitleSegments(T[site.SiteName], "before")</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/Content/favicon.ico" />
@@ -28,7 +32,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Project name</a>
+                <a class="navbar-brand" href="#">@site.SiteName</a>
             </div>
             <div id="navbar" class="collapse navbar-collapse">
 
