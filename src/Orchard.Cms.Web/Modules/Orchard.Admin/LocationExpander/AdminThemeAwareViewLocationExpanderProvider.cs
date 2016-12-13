@@ -18,7 +18,37 @@ namespace Orchard.Admin.LocationExpander
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
+            var themeManager = context
+                .ActionContext
+                .HttpContext
+                .RequestServices
+                .GetService<IThemeManager>();
 
+            if (themeManager != null)
+            {
+                var adminService = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<IAdminThemeService>();
+
+                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
+                var currentAdminThemeId = adminService.GetAdminThemeNameAsync().GetAwaiter().GetResult();
+
+                if (currentTheme == null || String.IsNullOrWhiteSpace(currentAdminThemeId)
+                    || !currentTheme.Id.Equals(currentAdminThemeId))
+                {
+                    return;
+                }
+
+                var shellSettings = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<ShellSettings>();
+
+                context.Values["Shell"] = shellSettings.Name;
+            }
         }
 
         /// <inheritdoc />
