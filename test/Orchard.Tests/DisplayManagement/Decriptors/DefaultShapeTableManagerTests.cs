@@ -251,7 +251,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
             {
-                throw new NotImplementedException();
+                return _features.Where(x => x.Dependencies.Contains(featureId));
             }
 
             public IExtensionInfo GetExtension(string extensionId)
@@ -296,7 +296,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
             {
-                return _features.Where(x => x.Dependencies.Contains(featureId));
+                throw new NotImplementedException();
             }
 
             public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
