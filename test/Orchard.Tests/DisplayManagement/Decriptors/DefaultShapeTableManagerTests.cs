@@ -251,7 +251,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
             {
-                return _features.Where(x => x.Dependencies.Contains(featureId));
+                var feature = _features.First(x => x.Id == featureId);
+
+                return _features.Where(x => feature.Dependencies.Contains(x.Id));
             }
 
             public IExtensionInfo GetExtension(string extensionId)
