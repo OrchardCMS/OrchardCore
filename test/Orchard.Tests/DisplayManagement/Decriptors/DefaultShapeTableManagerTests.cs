@@ -172,8 +172,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var features = new[] {
                 testFeatureExtensionInfo.Features.First(),
                 theme1FeatureExtensionInfo.Features.First(),
-                derivedThemeFeatureExtensionInfo.Features.First(),
-                baseThemeFeatureExtensionInfo.Features.First()
+                baseThemeFeatureExtensionInfo.Features.First(),
+                derivedThemeFeatureExtensionInfo.Features.First()
             };
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
