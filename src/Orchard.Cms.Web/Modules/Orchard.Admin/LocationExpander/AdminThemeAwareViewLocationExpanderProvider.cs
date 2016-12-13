@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.LocationExpander;
+using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace Orchard.Admin.LocationExpander
 {
     public class AdminThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority => 15D;
+        public double Priority => 10D;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
@@ -23,40 +25,55 @@ namespace Orchard.Admin.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var extensionManager = context
+            var themeManager = context
                 .ActionContext
                 .HttpContext
                 .RequestServices
-                .GetService<IExtensionManager>();
+                .GetService<IThemeManager>();
 
-            var adminService = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetService<IAdminThemeService>();
-
-            var currentAdminThemeId = adminService.GetAdminThemeNameAsync().GetAwaiter().GetResult();
-
-            if (string.IsNullOrWhiteSpace(currentAdminThemeId))
+            if (themeManager != null)
             {
-                return Enumerable.Empty<string>();
-            }
+                var extensionManager = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<IExtensionManager>();
 
-            var currentThemeAndBaseThemesOrdered = extensionManager
-                .GetFeatures(new[] { currentAdminThemeId })
-                .Where(x => x.Extension.Manifest.IsTheme());
+                var adminService = context
+                    .ActionContext
+                    .HttpContext
+                    .RequestServices
+                    .GetService<IAdminThemeService>();
 
-            var result = new List<string>();
+                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
+                var currentAdminThemeId = adminService.GetAdminThemeNameAsync().GetAwaiter().GetResult();
 
-            foreach (var theme in currentThemeAndBaseThemesOrdered)
-            {
-                var themeViewsPath = Path.Combine(
-                    Path.DirectorySeparatorChar + theme.Extension.SubPath,
-                    "Views",
-                    context.AreaName != theme.Id ? context.AreaName : string.Empty);
+                if (currentTheme == null || String.IsNullOrWhiteSpace(currentAdminThemeId)
+                    || !currentTheme.Id.Equals(currentAdminThemeId))
+                {
+                    return Enumerable.Empty<string>();
+                }
 
-                result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
-                result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
+                var allOtherEnabledThemesOrdered = extensionManager
+                    .GetFeatures()
+                    .Select(x => x.Extension)
+                    .Where(x => x.Manifest.IsTheme() && x.Id != currentTheme.Id)
+                    .ToList();
+
+                var result = new List<string>();
+
+                foreach (var theme in allOtherEnabledThemesOrdered)
+                {
+                    var themeViewsPath = Path.Combine(
+                        Path.DirectorySeparatorChar + theme.SubPath,
+                        "Views",
+                        context.AreaName != theme.Id ? context.AreaName : string.Empty);
+
+                    result.Add(Path.Combine(themeViewsPath, "{1}", "{0}.cshtml"));
+                    result.Add(Path.Combine(themeViewsPath, "Shared", "{0}.cshtml"));
+                }
+
+                return result;
             }
 
             return Enumerable.Empty<string>();

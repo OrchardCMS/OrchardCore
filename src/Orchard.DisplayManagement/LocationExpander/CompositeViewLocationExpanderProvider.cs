@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.LocationExpander
                 }
             }
 
-            return locations;
+            return locations.Distinct();
         }
 
         public void PopulateValues(ViewLocationExpanderContext context)
