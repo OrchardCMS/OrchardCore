@@ -22,10 +22,19 @@ namespace Orchard.Environment.Extensions
             _extensionOrderingStrategies = extensionOrderingStrategies.ToArray();
         }
 
-        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
+        public double Priority { get { throw new NotSupportedException(); } }
+
+        public int Compare(IFeatureInfo observer, IFeatureInfo subject)
         {
-            return _extensionOrderingStrategies
-                .Any(s => s.HasDependency(observer, subject));
+            foreach (var strategy in _extensionOrderingStrategies.OrderByDescending(x => x.Priority))
+            {
+                var compare = strategy.Compare(observer, subject);
+                if (compare != 0)
+                {
+                    return compare;
+                }
+            }
+            return 0;
         }
     }
 }

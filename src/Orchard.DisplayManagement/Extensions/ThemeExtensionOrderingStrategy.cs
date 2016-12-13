@@ -6,12 +6,20 @@ namespace Orchard.DisplayManagement.Extensions
 {
     public class ThemeExtensionOrderingStrategy : IExtensionOrderingStrategy
     {
-        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
+
+        public double Priority => 10D;
+
+        public int Compare(IFeatureInfo observer, IFeatureInfo subject)
         {
-            if (observer.Extension.Manifest.IsTheme()) {
-                return !subject.Extension.Manifest.IsTheme();
+            if (observer.Extension.Manifest.IsTheme())
+            {
+                if (subject.Extension.Manifest.IsTheme())
+                {
+                    return -1;
+                }
+                return 1;
             }
-            return false;
+            return 0;
         }
     }
 }

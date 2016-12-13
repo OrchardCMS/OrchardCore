@@ -151,14 +151,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            var isDependent = _extensionOrderingStrategy.HasDependency(f1, f2);
-
-            if (isDependent)
-            {
-                return true;
-            }
-
-            return _extensionManager.GetDependentFeatures(f2.Id).Contains(f1);
+            return _extensionOrderingStrategy.Compare(f1, f2) > 0 ? true : _extensionManager.GetFeatureDependencies(f1.Id).Contains(f2);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)

@@ -4,6 +4,7 @@ namespace Orchard.Environment.Extensions
 {
     public interface IExtensionOrderingStrategy
     {
-        bool HasDependency(IFeatureInfo observer, IFeatureInfo subject);
+        double Priority { get; }
+        int Compare(IFeatureInfo observer, IFeatureInfo subject);
     }
 }
