@@ -54,7 +54,8 @@ namespace Orchard.DisplayManagement.LocationExpander
 
                 var currentThemeAndBaseThemesOrdered = extensionManager
                     .GetFeatures(new[] { currentTheme.Id })
-                    .Where(x => x.Extension.Manifest.IsTheme());
+                    .Where(x => x.Extension.Manifest.IsTheme())
+                    .Reverse();
 
                 var result = new List<string>();
 

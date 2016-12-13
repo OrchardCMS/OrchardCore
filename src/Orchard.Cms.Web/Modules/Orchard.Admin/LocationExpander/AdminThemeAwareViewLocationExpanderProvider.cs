@@ -88,7 +88,7 @@ namespace Orchard.Admin.LocationExpander
                     .GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                     .Select(x => x.Extension)
                     .Where(x => x.Manifest.IsTheme() && x.Id != currentTheme.Id)
-                    .ToList();
+                    .Reverse();
 
                 var result = new List<string>();
 
