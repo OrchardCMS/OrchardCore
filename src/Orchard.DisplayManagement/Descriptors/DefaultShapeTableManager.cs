@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Utility;
 using Orchard.Environment.Shell;
 using System;
 using System.Collections.Concurrent;
@@ -23,7 +22,6 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
-        private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
@@ -41,7 +39,6 @@ namespace Orchard.DisplayManagement.Descriptors
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
-            _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
@@ -85,10 +82,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledAndOrderedFeatureIds))
-                    .OrderByDependenciesAndPriorities(
-                        (fiObv, fiSub) => false,
-                        (fi) => enabledAndOrderedFeatureIds.IndexOf(fi.Value.Feature.Id)
-                    )
+                    .OrderBy((fi) => enabledAndOrderedFeatureIds.IndexOf(fi.Value.Feature.Id))
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
                     (
