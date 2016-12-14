@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Environment.Shell;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
 using Orchard.OpenId.ViewModels;
-using Orchard.Settings;
 using Orchard.Settings.Services;
 using System;
 using System.Threading.Tasks;
@@ -17,18 +15,12 @@ namespace Orchard.OpenId.Drivers
     public class OpenIdSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<OpenIdSettings>
     {
         private readonly IOpenIdService _openIdServices;
-        private readonly ISiteService _siteService;
-        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public OpenIdSiteSettingsDisplayDriver(IOpenIdService openIdServices,
-                                                ISiteService siteService,
-                                                ShellSettings shellSettings,
                                                 IHttpContextAccessor httpContextAccessor)
         {
             _openIdServices = openIdServices;
-            _siteService = siteService;
-            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
         }
 
