@@ -93,7 +93,7 @@ namespace Orchard.Tenants.Controllers
             {
                 ValidateViewModel(model, true);
             }
-
+            
             if (ModelState.IsValid)
             {
                 var shellSettings = new ShellSettings
@@ -342,6 +342,11 @@ namespace Orchard.Tenants.Controllers
             if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
+            }
+
+            if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }
 
             if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
