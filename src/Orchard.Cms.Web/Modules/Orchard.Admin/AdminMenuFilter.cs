@@ -36,8 +36,7 @@ namespace Orchard.Admin
                 return;
             }
 
-            if (filterContext.HttpContext.Response.StatusCode < 200
-                || filterContext.HttpContext.Response.StatusCode >= 300)
+            if (filterContext.HttpContext.Response.StatusCode != 200)
             {
                 return;
             }

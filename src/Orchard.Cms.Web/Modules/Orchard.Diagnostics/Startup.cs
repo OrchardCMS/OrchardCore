@@ -27,17 +27,22 @@ namespace Orchard.Diagnostics
 
             app.Use((context, next) =>
             {
-                string contentType;
-                if (_contentTypeProvider.TryGetContentType(context.Request.Path, out contentType))
+                var builder = next();
+
+                if (context.Response.StatusCode != 200)
                 {
-                    var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
-                    if (statusCodePagesFeature != null)
+                    string contentType;
+                    if (_contentTypeProvider.TryGetContentType(context.Request.Path, out contentType))
                     {
-                        statusCodePagesFeature.Enabled = false;
+                        var statusCodePagesFeature = context.Features.Get<IStatusCodePagesFeature>();
+                        if (statusCodePagesFeature != null)
+                        {
+                            statusCodePagesFeature.Enabled = false;
+                        }
                     }
                 }
 
-                return next();
+                return builder;
             });
 
             routes.MapAreaRoute(
