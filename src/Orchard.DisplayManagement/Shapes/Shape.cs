@@ -85,6 +85,18 @@ namespace Orchard.DisplayManagement.Shapes
             return this;
         }
 
+        public void Remove(string shapeType)
+        {
+            for (var i = 0; i < _items.Count; i++)
+            {
+                var shape = (IShape)_items[i];
+                if (shape.Metadata.Type == shapeType)
+                {
+                    _items.RemoveAt(i);
+                    return;
+                }
+            }
+        }
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {

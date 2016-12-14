@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Cache;
 
@@ -19,6 +20,7 @@ namespace Orchard.DisplayManagement.Views
         private readonly Func<dynamic, Task> _processing;
         private Action<CacheContext> _cache;
         private string _groupId;
+        private Action<ShapeDisplayingContext> _displaying;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, dynamic> shapeBuilder)
             :this(shapeType, shapeBuilder, null)
@@ -96,6 +98,11 @@ namespace Orchard.DisplayManagement.Views
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
+
+            if (_displaying != null)
+            {
+                newShapeMetadata.OnDisplaying(_displaying);
+            }
 
             // The _processing callback is used to delay execution of costly initialization
             // that can be prevented by caching
@@ -206,6 +213,16 @@ namespace Orchard.DisplayManagement.Views
             }
 
             _otherLocations[displayType] = location;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the location to use for a matching display type.
+        /// </summary>
+        public ShapeResult Displaying(Action<ShapeDisplayingContext> displaying)
+        {
+            _displaying = displaying;
+
             return this;
         }
 

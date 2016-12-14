@@ -44,7 +44,7 @@ namespace Orchard.Lists.Drivers
                 Shape("ListPart_DetailAdmin", async shape =>
                 {
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItems(listPart);
+                    var containedItems = await QueryListItemsAsync(listPart);
                     var containedItemsSummaries = new List<dynamic>();
 
                     foreach (var contentItem in containedItems)
@@ -58,28 +58,35 @@ namespace Orchard.Lists.Drivers
                 })
                 .Location("DetailAdmin", "Content:10"),
 
-                Shape("ListPart_Detail", async shape =>
+                Shape("ListPart", async shape =>
                 {
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItems(listPart);
+                    var containedItems = await QueryListItemsAsync(listPart);
                     var containedItemsSummaries = new List<dynamic>();
+                    var listContentType = listPart.ContentItem.ContentType;
 
                     foreach (var contentItem in containedItems)
                     {
                         var itemShape = await contentItemDisplayManager.BuildDisplayAsync(contentItem, context.Updater, "Summary") as IShape;
-                        itemShape.Metadata.Alternates.Add("List_Summary__" + listPart.ContentItem.ContentType);
+                        itemShape.Metadata.Alternates.Add($"ListPart_Summary__{listContentType}");
                         containedItemsSummaries.Add(itemShape);
                     }
 
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                    
+                })
+                .Displaying(displaying =>
+                {
+                    var listContentType = listPart.ContentItem.ContentType;
+                    displaying.Shape.Metadata.Alternates.Add($"ListPart__{listContentType}");
                 })
                 .Location("Detail", "Content:10")
             );
         }
 
-        private async Task<IEnumerable<ContentItem>> QueryListItems(ListPart listPart)
+        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart)
         {
             var query = _session.QueryAsync<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)

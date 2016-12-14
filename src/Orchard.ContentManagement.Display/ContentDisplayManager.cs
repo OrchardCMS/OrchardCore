@@ -13,6 +13,7 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Theming;
 using Orchard.ContentManagement.Handlers;
 using System.Linq;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.ContentManagement.Display
 {
@@ -77,7 +78,12 @@ namespace Orchard.ContentManagement.Display
 
             dynamic itemShape = CreateContentShape(actualShapeType);
             itemShape.ContentItem = contentItem;
-            itemShape.Metadata.DisplayType = actualDisplayType;
+
+            ShapeMetadata metadata = itemShape.Metadata;
+            metadata.DisplayType = actualDisplayType;
+
+            // [Stereotype]_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
+            metadata.Alternates.Add($"{actualShapeType}__{contentItem.ContentType}");
 
             var context = new BuildDisplayContext(
                 itemShape,
