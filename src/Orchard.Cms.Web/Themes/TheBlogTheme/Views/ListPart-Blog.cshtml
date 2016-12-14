@@ -1,0 +1,11 @@
+﻿@{
+    IEnumerable<dynamic> contentItems = Model.ContentItems;
+}
+
+@if (contentItems.Any())
+{
+    @foreach (var contentItemSummary in contentItems)
+    {
+        @await DisplayAsync(contentItemSummary)
+    }
+}
