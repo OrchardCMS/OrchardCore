@@ -159,13 +159,7 @@ namespace Orchard.Setup.Controllers
                 return View(model);
             }
 
-            var urlPrefix = "";
-            if (!String.IsNullOrWhiteSpace(_shellSettings.RequestUrlPrefix))
-            {
-                urlPrefix = _shellSettings.RequestUrlPrefix + "/";
-            }
-
-            return Redirect("~/" + urlPrefix);
+            return Redirect("~/");
         }
     }
 }
