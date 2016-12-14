@@ -11,8 +11,8 @@ namespace Orchard.Hosting.Routing
 
         private readonly ISiteService _siteService;
 
-        public HomePageRoute(string prefix, ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
-            : base(routeBuilder.DefaultHandler, prefix ?? "", inlineConstraintResolver)
+        public HomePageRoute(ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+            : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
         {
             _siteService = siteService;
             _routeBuilder = routeBuilder;
