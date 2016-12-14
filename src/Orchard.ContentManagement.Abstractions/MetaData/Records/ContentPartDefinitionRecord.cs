@@ -13,8 +13,6 @@ namespace Orchard.ContentManagement.Metadata.Records
 
         public string Name { get; set; }
 
-        public bool Hidden { get; set; }
-
         /// <summary>
         /// Gets or sets the settings of a part, like description, or any property that a module would attach
         /// to a part.

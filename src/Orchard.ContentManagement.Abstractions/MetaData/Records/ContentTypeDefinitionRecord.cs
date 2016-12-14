@@ -12,7 +12,6 @@ namespace Orchard.ContentManagement.Metadata.Records
 
         public string Name { get; set; }
         public string DisplayName { get; set; }
-        public bool Hidden { get; set; }
         public JObject Settings { get; set; }
 
         public IList<ContentTypePartDefinitionRecord> ContentTypePartDefinitionRecords { get; set; }

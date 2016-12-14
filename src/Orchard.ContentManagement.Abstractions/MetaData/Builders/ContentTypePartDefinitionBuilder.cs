@@ -47,6 +47,12 @@ namespace Orchard.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentTypePartDefinitionBuilder MergeSettings(JObject settings)
+        {
+            _settings.Merge(settings, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            return this;
+        }
+
         public abstract ContentTypePartDefinition Build();
     }
 }
