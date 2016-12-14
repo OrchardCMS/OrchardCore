@@ -1,4 +1,6 @@
-﻿using Orchard.DisplayManagement.Handlers;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Environment.Shell;
@@ -17,20 +19,22 @@ namespace Orchard.OpenId.Drivers
         private readonly IOpenIdService _openIdServices;
         private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public OpenIdSiteSettingsDisplayDriver(IOpenIdService openIdServices,
                                                 ISiteService siteService,
-                                                ShellSettings shellSettings)
+                                                ShellSettings shellSettings,
+                                                IHttpContextAccessor httpContextAccessor)
         {
             _openIdServices = openIdServices;
             _siteService = siteService;
             _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override IDisplayResult Edit(OpenIdSettings settings, BuildEditorContext context)
         {
-            var sslBaseUrl = new Uri(_siteService.GetSiteSettingsAsync().Result.BaseUrl.Replace("http://", "https://") + _shellSettings.RequestUrlPrefix);
-
+            var requestUrl = _httpContextAccessor.HttpContext.Request.GetDisplayUrl();
             return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
                 {
                     model.TestingModeEnabled = settings.TestingModeEnabled;
@@ -41,7 +45,7 @@ namespace Orchard.OpenId.Drivers
                     model.CertificateStoreName = settings.CertificateStoreName;
                     model.CertificateThumbPrint = settings.CertificateThumbPrint;
                     model.AvailableCertificates = _openIdServices.GetAvailableCertificates();
-                    model.SslBaseUrl = sslBaseUrl.AbsoluteUri.TrimEnd(new[] { '/' });
+                    model.SslBaseUrl = requestUrl.Remove(requestUrl.IndexOf("/Orchard.Settings")).Replace("http://", "https://");
                 }).Location("Content:2").OnGroup("open id");
         }
 

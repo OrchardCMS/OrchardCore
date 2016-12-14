@@ -84,9 +84,7 @@ namespace Orchard.OpenId.Services
                 Uri uri;
                 if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme != "http") && uri.Scheme != "https"))
                 {
-                    var message = "Invalid url.";
-                    if (onlyAllowHttps)
-                        message += " Non https urls are only allowed in testing mode.";
+                    var message = onlyAllowHttps ? T["Invalid url. Non https urls are only allowed in testing mode."] : T["Invalid url."];
                     modelState.AddModelError(modelStateKey, T[message]);
                 }
             }
