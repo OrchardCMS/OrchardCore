@@ -73,7 +73,8 @@ namespace Orchard.Menu
                             Menu = menu,
                         }));
 
-                        menu.Items.Add(shape);
+                        // Don't use Items.Add() or the collection won't be sorted
+                        menu.Add(shape);
                     }
 
                 });
@@ -101,7 +102,8 @@ namespace Orchard.Menu
                                 Menu = menu,
                             }));
 
-                            menuItem.Items.Add(shape);
+                            // Don't use Items.Add() or the collection won't be sorted
+                            menuItem.Add(shape);
                         }
                     }
 
