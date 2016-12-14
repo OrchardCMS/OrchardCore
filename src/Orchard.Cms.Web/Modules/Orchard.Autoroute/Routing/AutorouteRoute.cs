@@ -9,13 +9,11 @@ namespace Orchard.Autoroute.Routing
     {
         private readonly IAutorouteEntries _entries;
         private readonly IRouter _target;
-        private readonly string _prefix;
 
-        public AutorouteRoute(string prefix, IAutorouteEntries entries, IRouter target)
+        public AutorouteRoute(IAutorouteEntries entries, IRouter target)
         {
             _target = target;
             _entries = entries;
-            _prefix = "/" + prefix ?? "";
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
@@ -43,16 +41,9 @@ namespace Orchard.Autoroute.Routing
         {
             var requestPath = context.HttpContext.Request.Path.ToString();
 
-            if (!requestPath.StartsWith(_prefix, StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            var path = requestPath.ToString().Substring(_prefix.Length);
-
             string contentItemId;
 
-            if(_entries.TryGetContentItemId(path, out contentItemId))
+            if(_entries.TryGetContentItemId(requestPath, out contentItemId))
             {
                 context.RouteData.Values["area"] = "Orchard.Contents";
                 context.RouteData.Values["controller"] = "Item";

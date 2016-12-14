@@ -49,13 +49,12 @@ namespace Orchard.Autoroute
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
-            var settings = serviceProvider.GetRequiredService<ShellSettings>();
             var session = serviceProvider.GetRequiredService<ISession>();
-            var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().List().Result;
+            var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().List().GetAwaiter().GetResult();
 
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
             
-            var autorouteRoute = new AutorouteRoute(settings.RequestUrlPrefix, entries, routes.DefaultHandler);
+            var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
 
             routes.Routes.Insert(0, autorouteRoute);
         }

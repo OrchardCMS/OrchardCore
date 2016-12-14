@@ -31,8 +31,9 @@ namespace Orchard.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
-                    _paths[entry.ContentItemId] = entry.Path;
-                    _contentItemIds[entry.Path] = entry.ContentItemId;
+                    var requestPath = "/" + entry.Path;
+                    _paths[entry.ContentItemId] = requestPath;
+                    _contentItemIds[requestPath] = entry.ContentItemId;
                 }
             }
         }
