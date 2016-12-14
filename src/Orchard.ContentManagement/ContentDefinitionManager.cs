@@ -82,12 +82,12 @@ namespace Orchard.ContentManagement
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
         {
-            return GetContentDefinitionRecord().ContentTypeDefinitionRecords.Where(x => !x.Hidden).Select(x => GetTypeDefinition(x.Name)).ToList();
+            return GetContentDefinitionRecord().ContentTypeDefinitionRecords.Select(x => GetTypeDefinition(x.Name)).ToList();
         }
 
         public IEnumerable<ContentPartDefinition> ListPartDefinitions()
         {
-            return GetContentDefinitionRecord().ContentPartDefinitionRecords.Where(x => !x.Hidden).Select(x => GetPartDefinition(x.Name)).ToList();
+            return GetContentDefinitionRecord().ContentPartDefinitionRecords.Select(x => GetPartDefinition(x.Name)).ToList();
         }
 
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)

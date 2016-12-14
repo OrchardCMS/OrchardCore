@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentTypes.Editors;
+using Orchard.ContentTypes.RecipeSteps;
 using Orchard.ContentTypes.Services;
 using Orchard.Environment.Navigation;
+using Orchard.Recipes;
 using Orchard.Security.Permissions;
 
 namespace Orchard.ContentTypes
@@ -26,6 +27,10 @@ namespace Orchard.ContentTypes
             services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
+
+            // TODO: Put in its own feature to be able to execute this recipe without having to enable
+            // Content Types management UI
+            services.AddRecipeExecutionStep<ContentDefinitionStep>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
