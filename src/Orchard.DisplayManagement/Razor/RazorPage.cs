@@ -210,6 +210,16 @@ namespace Orchard.DisplayManagement.Razor
 
             return DisplayAsync(zone);
         }
+
+        public object OrDefault(object text, object other)
+        {
+            if (text == null || Convert.ToString(text) == "")
+            {
+                return other;
+            }
+
+            return text;
+        }
     }
 
     public abstract class RazorPage : RazorPage<dynamic>
