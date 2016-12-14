@@ -36,10 +36,10 @@
         <span class="hint">@T["The base url of the identity server (this site). In production this base url have to use https schema. Recommended Value:"] @Model.SslBaseUrl</span>
     </fieldset>
 
-    <fieldset class="@authorityAudienceClasses" asp-validation-class-for="Audience">
-        <label asp-for="Audience">@T["Audience"] <span asp-validation-for="Audience"></span></label>
-        <input asp-for="Audience" class="form-control" />
-        <span class="hint">@T["Base urls sepparated by commas of the resource servers for which this identity server issues JWT tokens. If you are providing tokens for accessing resources on this site Audience should be equal to Authority url. In production those urls should use https schema."]</span>
+    <fieldset class="@authorityAudienceClasses" asp-validation-class-for="Audiences">
+        <label asp-for="Audiences">@T["Audiences"] <span asp-validation-for="Audiences"></span></label>
+        <input asp-for="Audiences" class="form-control" />
+        <span class="hint">@T["Base urls sepparated by commas of the resource servers for which this identity server issues JWT tokens. If you are providing tokens for accessing resources on this site Audiences should be equal to Authority url. In production those urls should use https schema."]</span>
     </fieldset>
 
     @{

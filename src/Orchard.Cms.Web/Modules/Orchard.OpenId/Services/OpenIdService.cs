@@ -41,29 +41,29 @@ namespace Orchard.OpenId.Services
         {
             if (settings == null)
             {
-                modelState.AddModelError("", "Settings are not stablished");
+                modelState.AddModelError("", "Settings are not stablished.");
                 return false;
             }
 
             if (settings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
                 ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
-                ValidateUrisSchema(settings.Audience.Split(','), !settings.TestingModeEnabled, modelState, "Audience");
+                ValidateUrisSchema(settings.Audiences, !settings.TestingModeEnabled, modelState, "Audience");
             }
 
             if (!settings.TestingModeEnabled)
             {
                 if (settings.CertificateStoreName == null)
                 {
-                    modelState.AddModelError("CertificateStoreName", "A Certificate Store Name is required");
+                    modelState.AddModelError("CertificateStoreName", "A Certificate Store Name is required.");
                 }
                 if (settings.CertificateStoreLocation == null)
                 {
-                    modelState.AddModelError("CertificateStoreLocation", "A Certificate Store Location is required");
+                    modelState.AddModelError("CertificateStoreLocation", "A Certificate Store Location is required.");
                 }
                 if (string.IsNullOrWhiteSpace(settings.CertificateThumbPrint))
                 {
-                    modelState.AddModelError("CertificateThumbPrint", "A certificate is required when testing mode is disabled");
+                    modelState.AddModelError("CertificateThumbPrint", "A certificate is required when testing mode is disabled.");
                 }
             }
             return modelState.IsValid;
@@ -71,14 +71,19 @@ namespace Orchard.OpenId.Services
 
         private static void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
         {
-            foreach (var uriString in uriStrings.Select(a=> a.Trim()))
+            if (uriStrings == null)
+            {
+                modelState.AddModelError(modelStateKey, "Invalid url.");
+                return;
+            }
+            foreach (var uriString in uriStrings.Select(a=> a??"".Trim()))
             {
                 Uri uri;
                 if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme!="http") && uri.Scheme!="https"))
                 {
                     var message = "Invalid url.";
                     if (onlyAllowHttps)
-                        message += " Non https urls are only allowed in testing mode";
+                        message += " Non https urls are only allowed in testing mode.";
                     modelState.AddModelError(modelStateKey, message);
                 }
             }

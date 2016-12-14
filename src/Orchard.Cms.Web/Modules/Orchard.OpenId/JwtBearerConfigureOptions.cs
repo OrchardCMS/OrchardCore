@@ -33,7 +33,7 @@ namespace Orchard.OpenId
                 jwtBearerOptions.AutomaticAuthenticate = true;
                 jwtBearerOptions.AutomaticChallenge = true;
                 jwtBearerOptions.RequireHttpsMetadata = !openIdSettings.TestingModeEnabled;
-                jwtBearerOptions.Audience = openIdSettings.Audience;
+                jwtBearerOptions.Audience = openIdSettings.Audiences!=null?string.Join(",",openIdSettings.Audiences):null;
                 jwtBearerOptions.Authority = openIdSettings.Authority;
             }
         }

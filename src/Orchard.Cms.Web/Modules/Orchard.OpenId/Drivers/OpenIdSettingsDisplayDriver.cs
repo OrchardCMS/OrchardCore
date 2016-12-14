@@ -36,7 +36,7 @@ namespace Orchard.OpenId.Drivers
                     model.TestingModeEnabled = settings.TestingModeEnabled;
                     model.DefaultTokenFormat = settings.DefaultTokenFormat;
                     model.Authority = settings.Authority;
-                    model.Audience = settings.Audience;
+                    model.Audiences = settings.Audiences!=null?string.Join(",",settings.Audiences):null;
                     model.CertificateStoreLocation = settings.CertificateStoreLocation;
                     model.CertificateStoreName = settings.CertificateStoreName;
                     model.CertificateThumbPrint = settings.CertificateThumbPrint;
@@ -51,12 +51,12 @@ namespace Orchard.OpenId.Drivers
 
             await updater.TryUpdateModelAsync(model, Prefix);
             model.Authority = model.Authority ?? "".Trim();
-            model.Audience = model.Audience ?? "".Trim();
+            model.Audiences = model.Audiences ?? "".Trim();
             
             settings.TestingModeEnabled = model.TestingModeEnabled;
             settings.DefaultTokenFormat = model.DefaultTokenFormat;
             settings.Authority = model.Authority;
-            settings.Audience = model.Audience;
+            settings.Audiences = model.Audiences.Split(new char[] { ',' },StringSplitOptions.RemoveEmptyEntries);
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
             settings.CertificateThumbPrint = model.CertificateThumbPrint;

@@ -35,7 +35,7 @@ namespace Orchard.OpenId.Recipes
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             openIdSettings.TestingModeEnabled = model.TestingModeEnabled;
             openIdSettings.DefaultTokenFormat = model.DefaultTokenFormat;
-            openIdSettings.Audience = string.Join(",",model.Audience);
+            openIdSettings.Audiences = model.Audiences;
             openIdSettings.Authority = model.Authority;
             openIdSettings.CertificateStoreLocation = model.CertificateStoreLocation;
             openIdSettings.CertificateStoreName = model.CertificateStoreName;
@@ -51,7 +51,7 @@ namespace Orchard.OpenId.Recipes
         public bool TestingModeEnabled { get; set; } = false;
         public TokenFormat DefaultTokenFormat { get; set; } = TokenFormat.JWT;
         public string Authority { get; set; }
-        public IEnumerable<string> Audience { get; set; }
+        public IEnumerable<string> Audiences { get; set; }
         public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
         public StoreName CertificateStoreName { get; set; } = StoreName.My;
         public string CertificateThumbPrint { get; set; }
