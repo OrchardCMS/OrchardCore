@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿﻿@inject Orchard.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     
@@ -23,7 +27,7 @@
 
         <div class="ta-navbar-top">
             <div class="navbar-header">
-                <a class="navbar-brand" href="/">Orchard</a>
+                <a class="navbar-brand" href="~/">@site.SiteName</a>
             </div>
 
 
