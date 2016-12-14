@@ -18,8 +18,8 @@ namespace Orchard.OpenId.Drivers
         private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
 
-        public OpenIdSiteSettingsDisplayDriver(IOpenIdService openIdServices, 
-                                                ISiteService siteService, 
+        public OpenIdSiteSettingsDisplayDriver(IOpenIdService openIdServices,
+                                                ISiteService siteService,
                                                 ShellSettings shellSettings)
         {
             _openIdServices = openIdServices;
@@ -30,13 +30,13 @@ namespace Orchard.OpenId.Drivers
         public override IDisplayResult Edit(OpenIdSettings settings, BuildEditorContext context)
         {
             var sslBaseUrl = new Uri(_siteService.GetSiteSettingsAsync().Result.BaseUrl.Replace("http://", "https://") + _shellSettings.RequestUrlPrefix);
-            
+
             return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
                 {
                     model.TestingModeEnabled = settings.TestingModeEnabled;
                     model.DefaultTokenFormat = settings.DefaultTokenFormat;
                     model.Authority = settings.Authority;
-                    model.Audiences = settings.Audiences!=null?string.Join(",",settings.Audiences):null;
+                    model.Audiences = settings.Audiences != null ? string.Join(",", settings.Audiences) : null;
                     model.CertificateStoreLocation = settings.CertificateStoreLocation;
                     model.CertificateStoreName = settings.CertificateStoreName;
                     model.CertificateThumbPrint = settings.CertificateThumbPrint;
@@ -52,11 +52,11 @@ namespace Orchard.OpenId.Drivers
             await updater.TryUpdateModelAsync(model, Prefix);
             model.Authority = model.Authority ?? "".Trim();
             model.Audiences = model.Audiences ?? "".Trim();
-            
+
             settings.TestingModeEnabled = model.TestingModeEnabled;
             settings.DefaultTokenFormat = model.DefaultTokenFormat;
             settings.Authority = model.Authority;
-            settings.Audiences = model.Audiences.Split(new char[] { ',' },StringSplitOptions.RemoveEmptyEntries);
+            settings.Audiences = model.Audiences.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             settings.CertificateStoreLocation = model.CertificateStoreLocation;
             settings.CertificateStoreName = model.CertificateStoreName;
             settings.CertificateThumbPrint = model.CertificateThumbPrint;

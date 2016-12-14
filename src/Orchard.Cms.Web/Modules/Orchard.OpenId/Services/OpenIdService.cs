@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using Orchard.OpenId.Settings;
 using Orchard.Settings;
@@ -15,10 +16,12 @@ namespace Orchard.OpenId.Services
     {
         private readonly ISiteService _siteService;
         private readonly IMemoryCache _memoryCache;
-        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache)
+        private readonly IStringLocalizer<OpenIdService> T;
+        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache, IStringLocalizer<OpenIdService> stringLocalizer)
         {
             _siteService = siteService;
             _memoryCache = memoryCache;
+            T = stringLocalizer;
         }
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
@@ -41,7 +44,7 @@ namespace Orchard.OpenId.Services
         {
             if (settings == null)
             {
-                modelState.AddModelError("", "Settings are not stablished.");
+                modelState.AddModelError("", T["Settings are not stablished."]);
                 return false;
             }
 
@@ -55,36 +58,36 @@ namespace Orchard.OpenId.Services
             {
                 if (settings.CertificateStoreName == null)
                 {
-                    modelState.AddModelError("CertificateStoreName", "A Certificate Store Name is required.");
+                    modelState.AddModelError("CertificateStoreName", T["A Certificate Store Name is required."]);
                 }
                 if (settings.CertificateStoreLocation == null)
                 {
-                    modelState.AddModelError("CertificateStoreLocation", "A Certificate Store Location is required.");
+                    modelState.AddModelError("CertificateStoreLocation", T["A Certificate Store Location is required."]);
                 }
                 if (string.IsNullOrWhiteSpace(settings.CertificateThumbPrint))
                 {
-                    modelState.AddModelError("CertificateThumbPrint", "A certificate is required when testing mode is disabled.");
+                    modelState.AddModelError("CertificateThumbPrint", T["A certificate is required when testing mode is disabled."]);
                 }
             }
             return modelState.IsValid;
         }
 
-        private static void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
+        private void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
         {
             if (uriStrings == null)
             {
-                modelState.AddModelError(modelStateKey, "Invalid url.");
+                modelState.AddModelError(modelStateKey, T["Invalid url."]);
                 return;
             }
-            foreach (var uriString in uriStrings.Select(a=> a??"".Trim()))
+            foreach (var uriString in uriStrings.Select(a => a ?? "".Trim()))
             {
                 Uri uri;
-                if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme!="http") && uri.Scheme!="https"))
+                if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme != "http") && uri.Scheme != "https"))
                 {
                     var message = "Invalid url.";
                     if (onlyAllowHttps)
                         message += " Non https urls are only allowed in testing mode.";
-                    modelState.AddModelError(modelStateKey, message);
+                    modelState.AddModelError(modelStateKey, T[message]);
                 }
             }
         }

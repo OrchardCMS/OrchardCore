@@ -13,6 +13,7 @@ using Orchard.Mvc;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -22,12 +23,15 @@ namespace Orchard.OpenId.Controllers
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly SignInManager<User> _signInManager;
         private readonly OpenIddictUserManager<User> _userManager;
+        private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             SignInManager<User> signInManager,
-            OpenIddictUserManager<User> userManager)
+            OpenIddictUserManager<User> userManager,
+            IStringLocalizer<AccessController> stringLocalizer)
         {
+            T = stringLocalizer;
             _applicationManager = applicationManager;
             _signInManager = signInManager;
             _userManager = userManager;
@@ -57,7 +61,7 @@ namespace Orchard.OpenId.Controllers
             return BadRequest(new OpenIdConnectResponse
             {
                 Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
-                ErrorDescription = "The specified grant type is not supported."
+                ErrorDescription = T["The specified grant type is not supported."]
             });
         }
 
@@ -70,7 +74,7 @@ namespace Orchard.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = "The client application is unknown."
+                    ErrorDescription = T["The client application is unknown."]
                 });
             }
 
@@ -96,7 +100,7 @@ namespace Orchard.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = "The username/password couple is invalid."
+                    ErrorDescription = T["The username/password couple is invalid."]
                 });
             }
 
@@ -116,7 +120,7 @@ namespace Orchard.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = "The specified user is not allowed to sign in."
+                    ErrorDescription = T["The specified user is not allowed to sign in."]
                 });
             }
 
@@ -126,7 +130,7 @@ namespace Orchard.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = "The username/password couple is invalid."
+                    ErrorDescription = T["The username/password couple is invalid."]
                 });
             }
 
@@ -141,7 +145,7 @@ namespace Orchard.OpenId.Controllers
                 return BadRequest(new OpenIdConnectResponse
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                    ErrorDescription = "The username/password couple is invalid."
+                    ErrorDescription = T["The username/password couple is invalid."]
                 });
             }
 
@@ -184,7 +188,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = "Details concerning the calling client application cannot be found in the database"
+                    ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
                 });
             }
 
@@ -228,7 +232,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.ServerError,
-                    ErrorDescription = "An internal error has occurred"
+                    ErrorDescription = T["An internal error has occurred"]
                 });
             }
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Orchard.Admin;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using Orchard.OpenId.Services;

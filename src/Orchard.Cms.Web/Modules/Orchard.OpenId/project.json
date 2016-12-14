@@ -8,8 +8,8 @@
     "Orchard.Roles": "2.0.0-*",
     "Orchard.Users": "2.0.0-*",
     "OpenIddict.Mvc": "1.0.0-alpha2-*",
-    "Orchard.Recipes": "2.0.0-*",
-    "Orchard.Settings": "2.0.0-*"
+    "Orchard.Settings": "2.0.0-*",
+    "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
