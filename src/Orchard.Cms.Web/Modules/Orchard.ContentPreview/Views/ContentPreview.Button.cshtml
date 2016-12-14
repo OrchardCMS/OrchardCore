@@ -25,10 +25,13 @@
         var editSidebarHandler = document.getElementsByClassName('edit-sidebar-handler');
 
         hidePreview();
-
-        $(".edit-body").resizable2({
+        
+        $(editBody).resizable2({
             handleSelector: ".edit-sidebar-handler",
-            resizeHeight: false
+            resizeHeight: false,
+            onDragEnd: function () {
+                localStorage.setItem('editBody:width', $(editBody).width());
+            }
         });
 
         $(previewButton).on('click', function (event) {
@@ -69,13 +72,11 @@
             renderPreview();
             $(editSidebar).css('visibility', 'visible');
             $(editSidebarHandler).css('visibility', 'visible');
-            $(editBody).css('width', localStorage.getItem('editBody:width'));
+            $(editBody).width(localStorage.getItem('editBody:width'));
             $(contentPreviewNavigation).show();
         }
 
         function hidePreview() {
-            // save column size 
-            localStorage.setItem('editBody:width', $(editBody).css('width'))
             $(previewButton).text($(previewButton).data("start"));
             $(editSidebar).css('visibility', 'hidden');
             $(editSidebarHandler).css('visibility', 'hidden');
