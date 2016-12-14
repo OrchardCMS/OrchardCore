@@ -11,7 +11,7 @@
     if (Model.HasItems)
     {
         tag.InnerHtml.AppendHtml("<ul>");
-        foreach (var item in Model.Items)
+        foreach (var item in Model)
         {
             tag.InnerHtml.AppendHtml(await DisplayAsync(item));
         }
