@@ -29,7 +29,6 @@ namespace Orchard.ContentManagement
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
             services.AddScoped<IContentAliasManager, ContentAliasManager>();
-            services.AddScoped<IRecipeInterpreter, IdGeneratorRecipeInterpreter>();
 
             return services;
         }

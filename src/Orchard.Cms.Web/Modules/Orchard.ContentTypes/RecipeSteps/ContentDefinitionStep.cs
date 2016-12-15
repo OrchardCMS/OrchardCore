@@ -76,7 +76,8 @@ namespace Orchard.ContentTypes.RecipeSteps
                 {
                     builder.WithField(field.Name, fieldBuilder =>
                     {
-                        fieldBuilder.MergeSettings(part.Settings);
+                        fieldBuilder.OfType(field.FieldName);
+                        fieldBuilder.MergeSettings(field.Settings);
                     });
                 }
             });

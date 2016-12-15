@@ -97,7 +97,8 @@ namespace Orchard.Setup.Services
             {
                 "Orchard.Commons",
                 "Orchard.Modules",
-                "Orchard.Recipes"
+                "Orchard.Recipes",
+                "Orchard.Scripting"
             };
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();

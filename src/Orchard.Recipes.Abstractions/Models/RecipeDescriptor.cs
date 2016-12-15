@@ -15,13 +15,6 @@ namespace Orchard.Recipes.Models
         public DateTime? ExportUtc { get; set; }
         public string[] Categories { get; set; }
         public string[] Tags { get; set; }
-
-        public string RecipeFileName { get; set; }
-        public IFileProvider RecipeFileProvider { get; set; }
-
-        public IFileInfo GetRecipeFile()
-        {
-            return RecipeFileProvider.GetFileInfo(RecipeFileName);
-        }
+        public IFileInfo RecipeFileInfo { get; set; }
     }
 }

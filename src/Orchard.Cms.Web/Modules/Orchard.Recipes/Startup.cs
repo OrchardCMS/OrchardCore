@@ -26,9 +26,6 @@ namespace Orchard.Recipes
 
             services.AddRecipeExecutionStep<CommandStep>();
             services.AddRecipeExecutionStep<RecipesStep>();
-
-            services.AddRecipeOptions();
-            services.AddRecipeExtension<JsonRecipeParser>("*.recipe.json");
         }
     }
 }

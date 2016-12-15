@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
 using Orchard.Environment.Shell;
@@ -15,13 +15,13 @@ using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Recipes.Events;
 using Orchard.Recipes.Models;
+using Orchard.Scripting;
 
 namespace Orchard.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
         private readonly IEventBus _eventBus;
-        private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ILogger _logger;
@@ -32,7 +32,6 @@ namespace Orchard.Recipes.Services
         public RecipeExecutor(
             IEventBus eventBus,
             IRecipeStore recipeStore,
-            IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
@@ -45,7 +44,6 @@ namespace Orchard.Recipes.Services
             _applicationLifetime = applicationLifetime;
             _eventBus = eventBus;
             _recipeStore = recipeStore;
-            _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions.Value;
             _logger = logger;
             T = localizer;
@@ -59,87 +57,94 @@ namespace Orchard.Recipes.Services
 
             try
             {
-                var parsersForFileExtension = _recipeOptions
-                    .RecipeFileExtensions
-                    .Where(rfx => Path.GetExtension(rfx.Key) == Path.GetExtension(recipeDescriptor.GetRecipeFile().PhysicalPath));
+                RecipeResult result = new RecipeResult { ExecutionId = executionId };
+                List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
 
-                using (var stream = recipeDescriptor.GetRecipeFile().CreateReadStream())
+                using (StreamReader file = File.OpenText(recipeDescriptor.RecipeFileInfo.PhysicalPath))
                 {
-                    RecipeResult result = new RecipeResult { ExecutionId = executionId };
-                    List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
-
-                    foreach (var parserForFileExtension in parsersForFileExtension)
+                    using (var reader = new JsonTextReader(file))
                     {
-                        var recipeParser = _recipeParsers.First(x => x.GetType() == parserForFileExtension.Value);
+                        VariablesMethodProvider variablesMethodProvider = null;
 
-                        await recipeParser.ProcessRecipeAsync(stream, (recipe, recipeStep) =>
+                        // Go to Steps, then iterate.
+                        while (reader.Read())
                         {
-                            // TODO, create Result prior to run
-                            stepResults.Add(new RecipeStepResult
+
+                            if (reader.Path == "variables")
                             {
-                                ExecutionId = executionId,
-                                RecipeName = recipeDescriptor.Name,
-                                StepId = recipeStep.Id,
-                                StepName = recipeStep.Name
-                            });
-                            return Task.CompletedTask;
-                        });
-                    }
+                                reader.Read();
 
-                    result.Steps = stepResults;
-                    await _recipeStore.UpdateAsync(result);
-                }
-
-                using (var stream = recipeDescriptor.GetRecipeFile().CreateReadStream())
-                {
-                    foreach (var parserForFileExtension in parsersForFileExtension)
-                    {
-                        var recipeParser = _recipeParsers.First(x => x.GetType() == parserForFileExtension.Value);
-
-                        await recipeParser.ProcessRecipeAsync(stream, async (recipe, recipeStep) =>
-                        {
-                            var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-                            using (var scope = shellContext.CreateServiceScope())
-                            {
-                                if (!shellContext.IsActivated)
-                                {
-                                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
-                                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
-
-                                    shellContext.IsActivated = true;
-                                }
-
-                                var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
-                                var interpreters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeInterpreter>>();
-
-                                if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
-                                {
-                                    throw new OrchardException(T["Recipe cancelled, application is restarting"]);
-                                }
-
-                                EvaluateJsonTree(interpreters, recipeStep.Step);
-
-                                await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                                var variables = JObject.Load(reader);
+                                variablesMethodProvider = new VariablesMethodProvider(variables);
                             }
 
-                            // The recipe execution might have invalidated the shell by enabling new features,
-                            // so the deferred tasks need to run on an updated shell context if necessary.
-                            shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-                            using (var scope = shellContext.CreateServiceScope())
+                            if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                             {
-                                var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
-
-                                var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                                // The recipe might have added some deferred tasks to process
-                                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                                int stepId = 0;
+                                while (reader.Read() && reader.Depth > 1)
                                 {
-                                    var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                                    await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                                    if (reader.Depth == 2)
+                                    {
+                                        var child = JToken.Load(reader);
+
+                                        var recipeStep = new RecipeStepDescriptor
+                                        {
+                                            Id = (stepId++).ToString(),
+                                            Name = child.Value<string>("name"),
+                                            Step = child
+                                        };
+
+                                        var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+                                        using (var scope = shellContext.CreateServiceScope())
+                                        {
+                                            if (!shellContext.IsActivated)
+                                            {
+                                                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
+                                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+
+                                                shellContext.IsActivated = true;
+                                            }
+
+                                            var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
+                                            var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+
+                                            if (variablesMethodProvider != null)
+                                            {
+                                                variablesMethodProvider.ScriptingManager = scriptingManager;
+                                                scriptingManager.GlobalMethodProviders.Add(variablesMethodProvider);
+                                            }
+
+                                            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
+                                            {
+                                                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
+                                            }
+
+                                            EvaluateJsonTree(scriptingManager, recipeStep.Step);
+
+                                            await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                                        }
+
+                                        // The recipe execution might have invalidated the shell by enabling new features,
+                                        // so the deferred tasks need to run on an updated shell context if necessary.
+                                        shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+                                        using (var scope = shellContext.CreateServiceScope())
+                                        {
+                                            var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
+
+                                            var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                                            // The recipe might have added some deferred tasks to process
+                                            if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                                            {
+                                                var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                                                await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                        });
+                        }
                     }
                 }
 
@@ -155,7 +160,7 @@ namespace Orchard.Recipes.Services
             }
         }
 
-        private void EvaluateJsonTree(IEnumerable<IRecipeInterpreter> interpreters, JToken node)
+        private void EvaluateJsonTree(IScriptingManager scriptingManager, JToken node)
         {
             var items = node as IEnumerable<JToken>;
 
@@ -164,7 +169,7 @@ namespace Orchard.Recipes.Services
                 case JTokenType.Array:
                     foreach (var token in (JArray)node)
                     {
-                        EvaluateJsonTree(interpreters, token);
+                        EvaluateJsonTree(scriptingManager, token);
                     }
                     break;
                 case JTokenType.Object:
@@ -174,21 +179,17 @@ namespace Orchard.Recipes.Services
                         {
                             var value = property.Value.Value<string>();
 
-                            if (value.StartsWith("[") && value.EndsWith("]"))
+                            // Evaluate the expression while the result is another expression
+                            while (value.StartsWith("[") && value.EndsWith("]"))
                             {
                                 value = value.Trim('[', ']');
-                                foreach (var interpreter in interpreters)
-                                {
-                                    if (interpreter.TryEvaluate(value, out value))
-                                    {
-                                        node[property.Key] = new JValue(value);
-                                    }
-                                }
+                                value = (scriptingManager.Evaluate(value) ?? "").ToString();
+                                node[property.Key] = new JValue(value);
                             }
                         }
                         else
                         {
-                            EvaluateJsonTree(interpreters, property.Value);
+                            EvaluateJsonTree(scriptingManager, property.Value);
                         }
                     }
                     break;
