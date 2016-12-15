@@ -5,7 +5,8 @@
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "NETStandard.Library": "1.6.1",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*"
+    "Orchard.Hosting": "2.0.0-*",
+    "Orchard.Scripting.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

@@ -15,6 +15,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
 using Orchard.Indexing;
 using Orchard.Recipes;
+using Orchard.Scripting;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Contents
@@ -34,6 +35,8 @@ namespace Orchard.Contents
 
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
+
+            services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

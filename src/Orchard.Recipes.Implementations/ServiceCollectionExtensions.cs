@@ -11,7 +11,6 @@ namespace Orchard.Recipes
 
             services.AddScoped<IRecipeExecutor, RecipeExecutor>();
             {
-                services.AddScoped<IRecipeParser, JsonRecipeParser>();
                 services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
             }
 

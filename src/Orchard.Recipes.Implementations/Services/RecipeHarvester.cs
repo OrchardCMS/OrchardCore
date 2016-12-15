@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Orchard.Environment.Extensions;
 using Orchard.Recipes.Models;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
 
 namespace Orchard.Recipes.Services
 {
@@ -18,18 +18,15 @@ namespace Orchard.Recipes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly IEnumerable<IRecipeParser> _recipeParsers;
         private readonly IOptions<RecipeHarvestingOptions> _recipeOptions;
 
         public RecipeHarvester(IExtensionManager extensionManager,
             IHostingEnvironment hostingEnvironment,
-            IEnumerable<IRecipeParser> recipeParsers,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
             ILogger<RecipeHarvester> logger) {
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
-            _recipeParsers = recipeParsers;
             _recipeOptions = recipeOptions;
 
             T = localizer;
@@ -58,7 +55,7 @@ namespace Orchard.Recipes.Services
             return Enumerable.Empty<RecipeDescriptor>();
         }
 
-        private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(IExtensionInfo extension)
+        private Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(IExtensionInfo extension)
         {
             var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
             var recipeContainerFileInfo = _hostingEnvironment
@@ -69,37 +66,37 @@ namespace Orchard.Recipes.Services
 
             List<RecipeDescriptor> recipeDescriptors = new List<RecipeDescriptor>();
 
-            foreach(var recipeFileExtension in recipeOptions.RecipeFileExtensions)
+            var matcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
+            matcher.AddInclude("*.recipe.json");
+
+            var matches = matcher
+                .Execute(new DirectoryInfoWrapper(new DirectoryInfo(recipeContainerFileInfo.PhysicalPath)))
+                .Files;
+
+            if (matches.Any())
             {
-                var matcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
-                matcher.AddInclude(recipeFileExtension.Key);
+                var result = matches
+                    .Select(match => _hostingEnvironment
+                        .ContentRootFileProvider
+                        .GetFileInfo(Path.Combine(folderSubPath, match.Path))).ToArray();
 
-                var matches = matcher
-                    .Execute(new DirectoryInfoWrapper(new DirectoryInfo(recipeContainerFileInfo.PhysicalPath)))
-                    .Files;
-
-                if (matches.Any())
+                recipeDescriptors.AddRange(result.Select(recipeFile =>
                 {
-                    var result = matches
-                        .Select(match => _hostingEnvironment
-                            .ContentRootFileProvider
-                            .GetFileInfo(Path.Combine(folderSubPath, match.Path))).ToArray();
-
-                    recipeDescriptors.AddRange(await result.InvokeAsync(recipeFile =>
+                    // TODO: Try to optimize by only reading the required metadata instead of the whole file
+                    using (StreamReader file = File.OpenText(recipeFile.PhysicalPath))
                     {
-                        var recipeParser = _recipeParsers.First(x => x.GetType() == recipeFileExtension.Value);
-                        using (var stream = recipeFile.CreateReadStream())
+                        using (var reader = new JsonTextReader(file))
                         {
-                            var recipe = recipeParser.ParseRecipe(stream);
-                            recipe.RecipeFileName = recipeFile.Name;
-                            recipe.RecipeFileProvider = new PhysicalFileProvider(Path.GetDirectoryName(recipeFile.PhysicalPath));
-                            return Task.FromResult(recipe);
+                            JsonSerializer serializer = new JsonSerializer();
+                            var recipeDescriptor = serializer.Deserialize<RecipeDescriptor>(reader);
+                            recipeDescriptor.RecipeFileInfo = recipeFile;
+                            return recipeDescriptor;
                         }
-                    }, Logger));
-                }
+                    }
+                }));
             }
 
-            return recipeDescriptors;
+            return Task.FromResult<IEnumerable<RecipeDescriptor>>(recipeDescriptors);
         }
     }
 }

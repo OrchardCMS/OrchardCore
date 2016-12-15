@@ -16,4 +16,4 @@
     </header>
 </zone>
 
-@Html.Raw(Model.ContentItem.Content.BodyPart.Body)
+@await DisplayAsync(New.BodyAspect(ContentItem: Model.ContentItem))
