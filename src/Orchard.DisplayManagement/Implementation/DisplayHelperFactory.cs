@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -6,11 +7,13 @@ namespace Orchard.DisplayManagement.Implementation
     {
         private readonly IHtmlDisplay _displayManager;
         private readonly IShapeFactory _shapeFactory;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DisplayHelperFactory(IHtmlDisplay displayManager, IShapeFactory shapeFactory)
+        public DisplayHelperFactory(IHtmlDisplay displayManager, IShapeFactory shapeFactory, IServiceProvider serviceProvider)
         {
             _displayManager = displayManager;
             _shapeFactory = shapeFactory;
+            _serviceProvider = serviceProvider;
         }
 
         public dynamic CreateHelper(ViewContext viewContext)
@@ -18,7 +21,8 @@ namespace Orchard.DisplayManagement.Implementation
             return new DisplayHelper(
                 _displayManager,
                 _shapeFactory,
-                viewContext);
+                viewContext,
+                _serviceProvider);
         }
     }
 }

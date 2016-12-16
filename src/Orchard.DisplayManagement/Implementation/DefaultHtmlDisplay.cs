@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -11,22 +12,24 @@ using Orchard.Localization;
 
 namespace Orchard.DisplayManagement.Implementation
 {
-    public class DefaultIHtmlDisplay : IHtmlDisplay
+    public class DefaultHtmlDisplay : IHtmlDisplay
     {
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IEnumerable<IShapeDisplayEvents> _shapeDisplayEvents;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IShapeBindingResolver> _shapeBindingResolvers;
+        private readonly IThemeManager _themeManager;
+        private readonly IServiceProvider _serviceProvider;
+
         private readonly ILogger _logger;
 
-        private readonly IThemeManager _themeManager;
-
-        public DefaultIHtmlDisplay(
+        public DefaultHtmlDisplay(
             IEnumerable<IShapeDisplayEvents> shapeDisplayEvents,
             IEnumerable<IShapeBindingResolver> shapeBindingResolvers,
             IHttpContextAccessor httpContextAccessor,
             IShapeTableManager shapeTableManager,
-            ILogger<DefaultIHtmlDisplay> logger,
+            IServiceProvider serviceProvider,
+            ILogger<DefaultHtmlDisplay> logger,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
@@ -34,6 +37,7 @@ namespace Orchard.DisplayManagement.Implementation
             _httpContextAccessor = httpContextAccessor;
             _shapeBindingResolvers = shapeBindingResolvers;
             _themeManager = themeManager;
+            _serviceProvider = serviceProvider;
 
             _logger = logger;
 
@@ -58,25 +62,26 @@ namespace Orchard.DisplayManagement.Implementation
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
 
-            var displayingContext = new ShapeDisplayingContext
+            var displayContext = new ShapeDisplayContext
             {
                 Shape = shape,
                 ShapeMetadata = shapeMetadata,
-                DisplayContext = context
+                DisplayContext = context,
+                ServiceProvider = _serviceProvider
             };
 
             // Use the same prefix as the shape
             context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix;
 
             // Evaluate global Shape Display Events
-            _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayingContext), _logger);
+            _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayContext), _logger);
 
             // Find base shape association using only the fundamental shape type.
             // Alternates that may already be registered do not affect the "displaying" event calls.
             ShapeBinding shapeBinding;
             if (TryGetDescriptorBinding(shapeMetadata.Type, Enumerable.Empty<string>(), shapeTable, out shapeBinding))
             {
-                shapeBinding.ShapeDescriptor.Displaying.Invoke(action => action(displayingContext), _logger);
+                shapeBinding.ShapeDescriptor.Displaying.Invoke(action => action(displayContext), _logger);
 
                 // copy all binding sources (all templates for this shape) in order to use them as Localization scopes
                 shapeMetadata.BindingSources = shapeBinding.ShapeDescriptor.BindingSources.Where(x => x != null).ToList();
@@ -87,12 +92,12 @@ namespace Orchard.DisplayManagement.Implementation
             }
 
             // invoking ShapeMetadata displaying events
-            shapeMetadata.Displaying.Invoke(action => action(displayingContext), _logger);
+            shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
 
             // use pre-fectched content if available (e.g. coming from specific cache implementation)
-            if (displayingContext.ChildContent != null)
+            if (displayContext.ChildContent != null)
             {
-                shape.Metadata.ChildContent = displayingContext.ChildContent;
+                shape.Metadata.ChildContent = displayContext.ChildContent;
             }
             else
             {
@@ -100,10 +105,10 @@ namespace Orchard.DisplayManagement.Implementation
                 ShapeBinding actualBinding;
                 if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
                 {
-                    shapeBinding.ShapeDescriptor.Processing.Invoke(action => action(displayingContext), _logger);
+                    await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
 
-                    // invoking ShapeMetadata processing events
-                    await shapeMetadata.Processing.InvokeAsync(processing => processing(shape), _logger);
+                    // invoking ShapeMetadata processing events, this includes the Drivers results
+                    await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
 
                     shape.Metadata.ChildContent = await ProcessAsync(actualBinding, shape, context);
                 }
@@ -122,37 +127,29 @@ namespace Orchard.DisplayManagement.Implementation
                 }
             }
 
-            var displayedContext = new ShapeDisplayedContext
-            {
-                Shape = shape,
-                ShapeMetadata = shape.Metadata,
-                ChildContent = shape.Metadata.ChildContent,
-                DisplayContext = context
-            };
-
             _shapeDisplayEvents.Invoke(sde =>
             {
-                var prior = displayedContext.ChildContent = displayedContext.ShapeMetadata.ChildContent;
-                sde.Displayed(displayedContext);
+                var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
+                sde.Displayed(displayContext);
                 // update the child content if the context variable has been reassigned
-                if (prior != displayedContext.ChildContent)
-                    displayedContext.ShapeMetadata.ChildContent = displayedContext.ChildContent;
+                if (prior != displayContext.ChildContent)
+                    displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
             }, _logger);
 
             if (shapeBinding != null)
             {
                 shapeBinding.ShapeDescriptor.Displayed.Invoke(action =>
                 {
-                    var prior = displayedContext.ChildContent = displayedContext.ShapeMetadata.ChildContent;
-                    action(displayedContext);
+                    var prior = displayContext.ChildContent = displayContext.ShapeMetadata.ChildContent;
+                    action(displayContext);
                     // update the child content if the context variable has been reassigned
-                    if (prior != displayedContext.ChildContent)
-                        displayedContext.ShapeMetadata.ChildContent = displayedContext.ChildContent;
+                    if (prior != displayContext.ChildContent)
+                        displayContext.ShapeMetadata.ChildContent = displayContext.ChildContent;
                 }, _logger);
             }
 
             // invoking ShapeMetadata displayed events
-            shapeMetadata.Displayed.Invoke(action => action(displayedContext), _logger);
+            shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
 
             return shape.Metadata.ChildContent;
         }

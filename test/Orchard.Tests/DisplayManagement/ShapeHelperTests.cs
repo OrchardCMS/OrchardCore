@@ -22,7 +22,7 @@ namespace Orchard.Tests.DisplayManagement
 
             serviceCollection.AddLogging();
             serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
-            serviceCollection.AddScoped<IHtmlDisplay, DefaultIHtmlDisplay>();
+            serviceCollection.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();

@@ -71,15 +71,15 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Created); }
         }
-        public override IEnumerable<Action<ShapeDisplayingContext>> Displaying
+        public override IEnumerable<Action<ShapeDisplayContext>> Displaying
         {
             get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displaying); }
         }
-        public override IEnumerable<Action<ShapeDisplayingContext>> Processing
+        public override IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync
         {
-            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Processing); }
+            get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.ProcessingAsync); }
         }
-        public override IEnumerable<Action<ShapeDisplayedContext>> Displayed
+        public override IEnumerable<Action<ShapeDisplayContext>> Displayed
         {
             get { return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Displayed); }
         }
@@ -120,9 +120,9 @@ namespace Orchard.DisplayManagement.Descriptors
             {
                 Creating = Enumerable.Empty<Action<ShapeCreatingContext>>();
                 Created = Enumerable.Empty<Action<ShapeCreatedContext>>();
-                Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
-                Processing = Enumerable.Empty<Action<ShapeDisplayingContext>>();
-                Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
+                Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
+                ProcessingAsync = Enumerable.Empty<Func<ShapeDisplayContext, Task>>();
+                Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
                 Wrappers = new List<string>();
                 BindingSources = new List<string>();
                 Bindings = new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase);
@@ -169,9 +169,9 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public virtual IEnumerable<Action<ShapeCreatingContext>> Creating { get; set; }
         public virtual IEnumerable<Action<ShapeCreatedContext>> Created { get; set; }
-        public virtual IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; set; }
-        public virtual IEnumerable<Action<ShapeDisplayingContext>> Processing { get; set; }
-        public virtual IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; set; }
+        public virtual IEnumerable<Action<ShapeDisplayContext>> Displaying { get; set; }
+        public virtual IEnumerable<Func<ShapeDisplayContext, Task>> ProcessingAsync { get; set; }
+        public virtual IEnumerable<Action<ShapeDisplayContext>> Displayed { get; set; }
 
         public virtual Func<ShapePlacementContext, PlacementInfo> Placement { get; set; }
         public string DefaultPlacement { get; set; }

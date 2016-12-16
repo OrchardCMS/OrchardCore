@@ -35,7 +35,7 @@ namespace Orchard.DynamicCache.Services
             _cacheContextManager = cacheContextManager;
         }
 
-        public void Displaying(ShapeDisplayingContext context)
+        public void Displaying(ShapeDisplayContext context)
         {
             if (context.ShapeMetadata.IsCached && context.ChildContent == null)
             {
@@ -56,7 +56,7 @@ namespace Orchard.DynamicCache.Services
             }
         }
 
-        public void Displayed(ShapeDisplayedContext context)
+        public void Displayed(ShapeDisplayContext context)
         {
             // TODO: Configure duration of sliding expiration
 
