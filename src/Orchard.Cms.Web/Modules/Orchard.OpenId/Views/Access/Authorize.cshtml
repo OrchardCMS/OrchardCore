@@ -3,8 +3,8 @@
 
 <div class="jumbotron">
     <h1>Authorization</h1>
-
-    <p class="lead text-left">Do you want to grant <strong>@Model.ApplicationName</strong> access to your data? (scopes requested: @Model.Scope)</p>
+    
+    <p class="lead text-left">@T["Do you want to grant <strong>{0}</strong> access to your data? (scopes requested: {1})", @Model.ApplicationName, @Model.Scope]</p>
 
     <form method="post">
         @Html.AntiForgeryToken()

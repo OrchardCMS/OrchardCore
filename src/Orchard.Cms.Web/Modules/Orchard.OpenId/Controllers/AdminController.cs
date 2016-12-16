@@ -21,8 +21,8 @@ namespace Orchard.OpenId.Controllers
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer _S;
-        private readonly IHtmlLocalizer<AdminController> _H;
+        private readonly IStringLocalizer<AdminController> T;
+        private readonly IHtmlLocalizer<AdminController> H;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
         private readonly IOpenIdApplicationManager _applicationManager;
@@ -44,8 +44,8 @@ namespace Orchard.OpenId.Controllers
         {
             _shapeFactory = shapeFactory;
             _siteService = siteService;
-            _S = stringLocalizer;
-            _H = htmlLocalizer;
+            T = stringLocalizer;
+            H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
             _roleProvider = roleProvider;
@@ -60,7 +60,7 @@ namespace Orchard.OpenId.Controllers
 
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(_H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["Open Id settings are not properly configured."]);
             
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -86,7 +86,7 @@ namespace Orchard.OpenId.Controllers
                 return Unauthorized();
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(_H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["Open Id settings are not properly configured."]);
             
             var app = await _applicationManager.FindByIdAsync(id);
             if (app == null)
@@ -122,11 +122,11 @@ namespace Orchard.OpenId.Controllers
             {
                 if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
                 {
-                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.LogoutRedirectUri), _S["Logout Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for Public apps."]);
                 }
                 if (string.IsNullOrWhiteSpace(model.RedirectUri))
                 {
-                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.RedirectUri), _S["Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for Public apps."]);
                 }
             }
 
@@ -167,7 +167,7 @@ namespace Orchard.OpenId.Controllers
 
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(_H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["Open Id settings are not properly configured."]);
 
             var roles = await _roleProvider.GetRoleNamesAsync();
 
@@ -192,11 +192,11 @@ namespace Orchard.OpenId.Controllers
             {
                 if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
                 {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.LogoutRedirectUri), _S["Logout Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for Public apps."]);
                 }
                 if (string.IsNullOrWhiteSpace(model.RedirectUri))
                 {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.RedirectUri), _S["Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for Public apps."]);
                 }
             }
 

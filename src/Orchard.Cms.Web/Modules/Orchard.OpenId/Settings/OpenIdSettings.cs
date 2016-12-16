@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Orchard.OpenId.Settings
 {
@@ -8,7 +9,7 @@ namespace Orchard.OpenId.Settings
         public enum TokenFormat { JWT, Encrypted }
         public TokenFormat DefaultTokenFormat { get; set; }
         public string Authority { get; set; }
-        public string Audience { get; set; }
+        public IEnumerable<string> Audiences { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbPrint { get; set; }

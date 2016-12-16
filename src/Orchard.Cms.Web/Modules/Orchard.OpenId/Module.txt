@@ -6,4 +6,5 @@ Version: 2.0.x
 OrchardVersion: 2.0.x
 Description: The OpenId module enables authentication of external apps through Open Id.
 FeatureDescription: OpenId apps management and authentication.
+Dependencies: Orchard.Users, Orchard.Roles
 Category: Core

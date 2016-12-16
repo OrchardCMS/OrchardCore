@@ -14,8 +14,10 @@ using Orchard.Environment.Shell;
 using Orchard.OpenId.Drivers;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
+using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
+using Orchard.Recipes;
 using Orchard.Security;
 using Orchard.Settings.Services;
 using Orchard.SiteSettings;
@@ -31,7 +33,7 @@ namespace Orchard.OpenId
         private readonly ILogger<Startup> _logger;
 
         public Startup(
-            ShellSettings shellSettings,            
+            ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<Startup> logger)
         {
@@ -45,14 +47,14 @@ namespace Orchard.OpenId
             var t = serviceProvider.GetService<IStringLocalizer<Startup>>();
             siteSettingsGroupProvider.Add("open id", t["Open Id"]);
 
-            var openIdService  = serviceProvider.GetService<IOpenIdService>();
+            var openIdService = serviceProvider.GetService<IOpenIdService>();
             var openIdSettings = openIdService.GetOpenIdSettingsAsync().Result;
             if (!openIdService.IsValidOpenIdSettings(openIdSettings))
             {
                 _logger.LogWarning("Orchard.OpenId module has invalid settings.");
                 return;
             }
-        
+
             builder.UseOpenIddict();
 
             if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
@@ -70,6 +72,7 @@ namespace Orchard.OpenId
 
             services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
             services.AddScoped<IOpenIdService, OpenIdService>();
+            services.AddRecipeExecutionStep<OpenIdSettingsStep>();
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
