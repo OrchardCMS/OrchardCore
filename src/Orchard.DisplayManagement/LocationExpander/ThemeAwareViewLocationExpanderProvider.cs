@@ -23,7 +23,12 @@ namespace Orchard.DisplayManagement.LocationExpander
 
             if (themeManager != null)
             {
-                context.Values["Theme"] = themeManager.GetThemeAsync().GetAwaiter().GetResult().Id;
+                var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
+
+                if (currentTheme != null)
+                {
+                    context.Values["Theme"] = currentTheme.Id;
+                }
             }
         }
 
