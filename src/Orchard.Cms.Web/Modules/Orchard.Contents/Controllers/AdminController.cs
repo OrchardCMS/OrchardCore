@@ -92,7 +92,6 @@ namespace Orchard.Contents.Controllers
                     break;
             }
 
-
             if (!string.IsNullOrEmpty(model.TypeName))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);

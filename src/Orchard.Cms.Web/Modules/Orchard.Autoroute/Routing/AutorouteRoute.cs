@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.WebUtilities;
 using Orchard.Autoroute.Services;
 
 namespace Orchard.Autoroute.Routing
@@ -9,6 +11,7 @@ namespace Orchard.Autoroute.Routing
     {
         private readonly IAutorouteEntries _entries;
         private readonly IRouter _target;
+        private static HashSet<string> _keys = new HashSet<string>(new[] { "area", "controller", "action", "contentItemId" }, StringComparer.OrdinalIgnoreCase); 
 
         public AutorouteRoute(IAutorouteEntries entries, IRouter target)
         {
@@ -30,7 +33,18 @@ namespace Orchard.Autoroute.Routing
 
                 if (_entries.TryGetPath(contentItemId, out path))
                 {
-                    return new VirtualPathData(_target, path);
+                    if (context.Values.Count > 4)
+                    {
+                        foreach(var data in context.Values)
+                        {
+                            if (!_keys.Contains(data.Key))
+                            {
+                                path = QueryHelpers.AddQueryString(path, data.Key, data.Value.ToString());
+                            }
+                        }
+                    }
+
+                    return new VirtualPathData(_target, path );
                 }
             }
 

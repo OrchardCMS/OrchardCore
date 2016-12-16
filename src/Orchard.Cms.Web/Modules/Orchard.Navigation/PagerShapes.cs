@@ -300,6 +300,44 @@ namespace Orchard.Navigation
         }
 
         [Shape]
+        public Task<IHtmlContent> PagerSlim(dynamic Shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html,
+            object PreviousText,
+            object NextText,
+            string PreviousClass, 
+            string NextClass)
+        {
+            Shape.Classes.Add("pager");
+            Shape.Metadata.Alternates.Clear();
+            Shape.Metadata.Type = "List";
+
+            var previousText = PreviousText ?? T["<"];
+            var nextText = NextText ?? T[">"];
+
+            var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
+
+            string after = Shape.After;
+            string before = Shape.Before;
+
+            if (before != null)
+            {
+                var beforeRouteData = new RouteValueDictionary(routeData);
+                beforeRouteData["before"] = (string)Shape.Before;
+                Shape.Add(New.Pager_Previous(Value: previousText, RouteValues: beforeRouteData, Pager: Shape));
+                Shape.FirstClass = PreviousClass;
+            }
+
+            if (after != null)
+            {
+                var afterRouteData = new RouteValueDictionary(routeData);
+                afterRouteData["after"] = (string)Shape.After;
+                Shape.Add(New.Pager_Next(Value: nextText, RouteValues: afterRouteData, Pager: Shape));
+                Shape.LastClass = NextClass;
+            }
+
+            return DisplayAsync(Shape);
+        }
+
+        [Shape]
         public Task<IHtmlContent> Pager_First(Shape Shape, dynamic DisplayAsync)
         {
             Shape.Metadata.Alternates.Clear();
