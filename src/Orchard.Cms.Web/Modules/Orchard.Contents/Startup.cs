@@ -73,7 +73,7 @@ namespace Orchard.Contents
             routes.MapAreaRoute(
                 name: "AdminContentItem",
                 areaName: "Orchard.Contents",
-                template: "Admin/Contents/ContentTypes/{contentItemId}/Display",
+                template: "Admin/Contents/ContentItems/{contentItemId}/Display",
                 defaults: new { controller = "Admin", action = "Display" }
             );
 
