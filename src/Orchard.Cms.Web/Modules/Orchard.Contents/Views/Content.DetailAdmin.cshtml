@@ -1,16 +1,18 @@
 ﻿@using Orchard.Utility;
+@using Orchard.ContentManagement
+@inject IContentManager ContentManager
 
 @{
 
     Model.Classes.Add("content-item");
-
-    var contentTypeClassName = ((string)Model.ContentItem.ContentType).HtmlClassify();
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeClassName = contentItem.ContentType.HtmlClassify();
     Model.Classes.Add(contentTypeClassName);
 
     var tag = Tag(Model, "article");
 }
 
-<h1>@RenderTitleSegments(T["Details"])</h1>
+<h1>@RenderTitleSegments(Html.Raw(ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText))</h1>
 
 <article>
     <header>
