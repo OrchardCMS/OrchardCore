@@ -11,7 +11,7 @@ namespace Orchard.OpenId.ViewModels
         public bool TestingModeEnabled { get; set; }
         public TokenFormat DefaultTokenFormat { get; set; }
         public string Authority { get; set; }
-        public string Audience { get; set; }
+        public string Audiences { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbPrint { get; set; }

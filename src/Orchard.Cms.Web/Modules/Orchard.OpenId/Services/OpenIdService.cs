@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using Orchard.OpenId.Settings;
 using Orchard.Settings;
 using System;
@@ -12,59 +15,77 @@ namespace Orchard.OpenId.Services
     public class OpenIdService : IOpenIdService
     {
         private readonly ISiteService _siteService;
-        public OpenIdService(ISiteService siteService)
+        private readonly IMemoryCache _memoryCache;
+        private readonly IStringLocalizer<OpenIdService> T;
+        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache, IStringLocalizer<OpenIdService> stringLocalizer)
         {
             _siteService = siteService;
+            _memoryCache = memoryCache;
+            T = stringLocalizer;
         }
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.As<OpenIdSettings>();
-        }
+            var result = siteSettings.As<OpenIdSettings>();
 
+            if (result == null)
+            {
+                result = new OpenIdSettings();
+            }
+            return result;
+        }
+        public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
+        {
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            siteSettings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+        }
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
         {
             if (settings == null)
             {
-                modelState.AddModelError("", "Settings are not stablished");
+                modelState.AddModelError("", T["Settings are not stablished."]);
                 return false;
             }
 
             if (settings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
                 ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
-                ValidateUrisSchema(settings.Audience.Split(','), !settings.TestingModeEnabled, modelState, "Audience");
+                ValidateUrisSchema(settings.Audiences, !settings.TestingModeEnabled, modelState, "Audience");
             }
 
             if (!settings.TestingModeEnabled)
             {
                 if (settings.CertificateStoreName == null)
                 {
-                    modelState.AddModelError("CertificateStoreName", "A Certificate Store Name is required");
+                    modelState.AddModelError("CertificateStoreName", T["A Certificate Store Name is required."]);
                 }
                 if (settings.CertificateStoreLocation == null)
                 {
-                    modelState.AddModelError("CertificateStoreLocation", "A Certificate Store Location is required");
+                    modelState.AddModelError("CertificateStoreLocation", T["A Certificate Store Location is required."]);
                 }
                 if (string.IsNullOrWhiteSpace(settings.CertificateThumbPrint))
                 {
-                    modelState.AddModelError("CertificateThumbPrint", "A certificate is required when testing mode is disabled");
+                    modelState.AddModelError("CertificateThumbPrint", T["A certificate is required when testing mode is disabled."]);
                 }
             }
             return modelState.IsValid;
         }
 
-        private static void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
+        private void ValidateUrisSchema(IEnumerable<string> uriStrings, bool onlyAllowHttps, ModelStateDictionary modelState, string modelStateKey)
         {
-            foreach (var uriString in uriStrings.Select(a=> a.Trim()))
+            if (uriStrings == null)
+            {
+                modelState.AddModelError(modelStateKey, T["Invalid url."]);
+                return;
+            }
+            foreach (var uriString in uriStrings.Select(a => a ?? "".Trim()))
             {
                 Uri uri;
-                if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme!="http") && uri.Scheme!="https"))
+                if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme != "http") && uri.Scheme != "https"))
                 {
-                    var message = "Invalid url.";
-                    if (onlyAllowHttps)
-                        message += " Non https urls are only allowed in testing mode";
-                    modelState.AddModelError(modelStateKey, message);
+                    var message = onlyAllowHttps ? T["Invalid url. Non https urls are only allowed in testing mode."] : T["Invalid url."];
+                    modelState.AddModelError(modelStateKey, T[message]);
                 }
             }
         }
