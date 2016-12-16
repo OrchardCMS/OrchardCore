@@ -45,7 +45,7 @@ namespace Orchard.Lists.Drivers
             return Combine(
                 Shape("ListPart_DetailAdmin", async shape =>
                 {
-                    var pager = await GetPagerAsync(context.Updater);
+                    var pager = await GetPagerAsync(context.Updater, listPart);
 
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
                     var containedItems = await QueryListItemsAsync(listPart, pager);
@@ -59,12 +59,13 @@ namespace Orchard.Lists.Drivers
                     shape.ContentItems = containedItemsSummaries;
                     shape.ContentItem = listPart.ContentItem;
                     shape.ContainedContentTypeDefinitions = GetContainedContentTypes(listPart);
+                    shape.Pager = context.New.PagerSlim(pager);
                 })
                 .Location("DetailAdmin", "Content:10"),
 
                 Shape("ListPart", async shape =>
                 {
-                    var pager = await GetPagerAsync(context.Updater);
+                    var pager = await GetPagerAsync(context.Updater, listPart);
 
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
                     var containedItems = await QueryListItemsAsync(listPart, pager);
@@ -92,13 +93,13 @@ namespace Orchard.Lists.Drivers
             );
         }
 
-        private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater)
+        private async Task<PagerSlim> GetPagerAsync(IUpdateModel updater, ListPart part)
         {
+            var settings = GetSettings(part);
             PagerSlimParameters pagerParameters = new PagerSlimParameters();
             await updater.TryUpdateModelAsync(pagerParameters);
 
-            // TODO: Use list settings to define page size
-            PagerSlim pager = new PagerSlim(pagerParameters, 10);
+            PagerSlim pager = new PagerSlim(pagerParameters, settings.PageSize);
 
             return pager;
         }
@@ -193,10 +194,16 @@ namespace Orchard.Lists.Drivers
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPart listPart)
         {
+            var settings = GetSettings(listPart);
+            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
+            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+        }
+
+        private ListPartSettings GetSettings(ListPart listPart)
+        {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(listPart.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart", StringComparison.Ordinal));
-            var contentTypes = contentTypePartDefinition.Settings.ToObject<ListPartSettings>().ContainedContentTypes ?? Enumerable.Empty<string>();
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+            return contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
         }
     }
 }
