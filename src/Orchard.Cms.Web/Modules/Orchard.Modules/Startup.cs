@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Modules;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Navigation;
 using Orchard.Modules.Recipes.Executors;
@@ -19,6 +22,17 @@ namespace Orchard.Modules
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // Admin
+            routes.MapAreaRoute(
+                name: "AdminModules",
+                areaName: "Orchard.Modules",
+                template: "Admin/Modules/{action}",
+                defaults: new { controller = "Admin" }
+            );
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Modules;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Navigation;
@@ -22,6 +25,17 @@ namespace Orchard.Themes
             services.AddScoped<IThemeSelector, SiteThemeSelector>();
             services.AddScoped<ISiteThemeService, SiteThemeService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // Admin
+            routes.MapAreaRoute(
+                name: "AdminThemes",
+                areaName: "Orchard.Themes",
+                template: "Admin/Themes/{action}",
+                defaults: new { controller = "Admin" }
+            );
         }
     }
 }

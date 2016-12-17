@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Navigation;
@@ -28,6 +31,17 @@ namespace Orchard.Roles
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            // Admin
+            routes.MapAreaRoute(
+                name: "AdminRoles",
+                areaName: "Orchard.Roles",
+                template: "Admin/Roles/{action}",
+                defaults: new { controller = "Admin" }
+            );
         }
     }
 }
