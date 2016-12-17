@@ -5,16 +5,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
-    <title>@RenderTitleSegments(T["Orchard Admin"],  "before")</title>
+    <title>@RenderTitleSegments(T[site.SiteName], "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/Content/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/TheAdmin/Content/orchard.ico" />
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/TheAdmin/Styles/TheAdmin.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script asp-name="admin" asp-src="/TheAdmin/Scripts/TheAdmin.js" at="Foot"></script>
 
@@ -24,25 +23,23 @@
 </head>
 <body>
     <div class="ta-wrapper">
-
         <div class="ta-navbar-top">
             <div class="navbar-header">
                 <a class="navbar-brand" href="~/">@site.SiteName</a>
             </div>
-
-
             <div class="navbar-content">
                 @await RenderSectionAsync("NavbarTop", required: false)
 
-                <!-- Example of pulled navbar -->
-                <ul class="nav navbar-nav navbar-ri float-xs-right">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                    </li>
-                </ul>
+                <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
+                    <ul class="nav navbar-nav navbar-ri float-xs-right">
+                        <li class="nav-item">
+                            <a class="nav-link"><i class="fa fa-user"></i> @User.Identity.Name</a>
+                        </li>
+                        <li class="nav-item">
+                            <button type="submit" class="btn btn-link nav-link"><i class="fa fa-sign-out"></i> @T["Log off"]</button>
+                        </li>
+                    </ul>
+                </form>
             </div>
         </div>
 
@@ -60,7 +57,7 @@
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]"/>
+    <div id="confirmRemoveMessage" data-value="@T["Are you sure you want to remove this element?"]" />
 
     <resources type="Footer" />
 </body>
