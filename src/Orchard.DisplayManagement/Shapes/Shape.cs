@@ -89,13 +89,27 @@ namespace Orchard.DisplayManagement.Shapes
         {
             for (var i = 0; i < _items.Count; i++)
             {
-                var shape = (IShape)_items[i];
-                if (shape.Metadata.Type == shapeType)
+                var shape = _items[i] as IShape;
+                if (shape != null && shape.Metadata.Type == shapeType)
                 {
                     _items.RemoveAt(i);
                     return;
                 }
             }
+        }
+
+        public IShape Named(string shapeType)
+        {
+            for (var i = 0; i < _items.Count; i++)
+            {
+                var shape = _items[i] as IShape;
+                if (shape != null && shape.Metadata.Type == shapeType)
+                {
+                    return shape;
+                }
+            }
+
+            return null;
         }
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()

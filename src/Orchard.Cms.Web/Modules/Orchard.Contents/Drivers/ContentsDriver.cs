@@ -20,6 +20,7 @@ namespace Orchard.Contents.Drivers
         public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             return Combine(
+                Shape("Contents_Metadata", model).Location("Detail", "Content:before"),
                 Shape("Parts_Contents_Publish", model),
                 Shape("Parts_Contents_Publish_Summary", model),
                 Shape("Parts_Contents_Publish_SummaryAdmin", model)

@@ -28,6 +28,11 @@ namespace Orchard.DisplayManagement
 
         public Task<IHtmlContent> DisplayAsync(object shape)
         {
+            if (shape == null)
+            {
+                return Task.FromResult<IHtmlContent>(HtmlString.Empty);
+            }
+
             var viewContext = new ViewContext
             {
                 HttpContext = _httpContextAccessor.HttpContext,
