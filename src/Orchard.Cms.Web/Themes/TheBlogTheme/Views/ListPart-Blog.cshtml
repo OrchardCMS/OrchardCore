@@ -9,3 +9,11 @@
         @await DisplayAsync(contentItemSummary)
     }
 }
+
+@{ 
+    Model.Pager.PreviousText = T["← Newer Posts"];
+    Model.Pager.NextText = T["Older Posts →"];
+    Model.Pager.PreviousClass = "previous";
+    Model.Pager.NextClass = "next";
+}
+@await DisplayAsync(Model.Pager)

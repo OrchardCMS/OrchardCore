@@ -36,6 +36,7 @@ namespace Orchard.Lists.Settings
             return Shape<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
             {
                 model.ListPartSettings = contentTypePartDefinition.Settings.ToObject<ListPartSettings>();
+                model.PageSize = model.ListPartSettings.PageSize;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ContentTypes = new NameValueCollection();
 
@@ -57,7 +58,7 @@ namespace Orchard.Lists.Settings
 
             var model = new ListPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes, m => m.PageSize);
 
             if (model.ContainedContentTypes == null || model.ContainedContentTypes.Length == 0)
             {
@@ -65,6 +66,7 @@ namespace Orchard.Lists.Settings
             }
             else
             {
+                context.Builder.WithSetting("PageSize", model.PageSize.ToString());
                 context.Builder.ContainedContentTypes(model.ContainedContentTypes);
             }
 

@@ -17,9 +17,14 @@ namespace Orchard.DisplayManagement.ModelBinding
 
         public ModelStateDictionary ModelState => _controller.ModelState;
 
-        public Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix)
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
         {
-            return _controller.TryUpdateModelAsync(model, modelType, prefix);
+            return _controller.TryUpdateModelAsync<TModel>(model);
+        }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
+        {
+            return _controller.TryUpdateModelAsync<TModel>(model, prefix);
         }
 
         public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class

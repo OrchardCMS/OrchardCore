@@ -27,7 +27,9 @@ namespace Orchard.DisplayManagement.Shapes
             IDictionary<string, string> Attributes,
             string ItemTag,
             IEnumerable<string> ItemClasses,
-            IDictionary<string, string> ItemAttributes)
+            IDictionary<string, string> ItemAttributes,
+            string FirstClass,
+            string LastClass)
         {
 
             if (Items == null)
@@ -68,12 +70,12 @@ namespace Orchard.DisplayManagement.Shapes
 
                 if (index == 0)
                 {
-                    itemTag.AddCssClass("first");
+                    itemTag.AddCssClass(FirstClass ?? "first");
                 }
 
                 if (index == count - 1)
                 {
-                    itemTag.AddCssClass("last");
+                    itemTag.AddCssClass(LastClass ?? "last");
                 }
 
                 if (item is IShape)

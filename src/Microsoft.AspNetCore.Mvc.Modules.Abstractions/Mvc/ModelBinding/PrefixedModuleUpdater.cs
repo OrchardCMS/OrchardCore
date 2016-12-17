@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Linq.Expressions;
 
 namespace Orchard.DisplayManagement.ModelBinding
 {
@@ -23,9 +23,14 @@ namespace Orchard.DisplayManagement.ModelBinding
 
         public Func<string, string> Prefix { get; set; }
 
-        public Task<bool> TryUpdateModelAsync(object model, Type modelType, string prefix)
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
         {
-            return _updateModel.TryUpdateModelAsync(model, modelType, Prefix(prefix));
+            return _updateModel.TryUpdateModelAsync(model);
+        }
+
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
+        {
+            return _updateModel.TryUpdateModelAsync(Prefix(prefix));
         }
 
         public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
