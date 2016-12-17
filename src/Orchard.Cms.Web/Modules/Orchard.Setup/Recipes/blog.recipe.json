@@ -257,6 +257,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
+                "PageSize":  10,
                 "ContainedContentTypes": [
                   "BlogPost"
                 ]
