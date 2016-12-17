@@ -38,29 +38,22 @@ namespace Orchard.ContentTypes
             routes.MapAreaRoute(
                 name: "EditField",
                 areaName: "Orchard.ContentTypes",
-                template: "Admin/ContentTypes/EditField/{id}/{name}",
+                template: "Admin/EditField/{id}/{name}",
                 defaults: new { controller = "Admin", action = "EditField" }
             );
 
             routes.MapAreaRoute(
                 name: "EditTypePart",
                 areaName: "Orchard.ContentTypes",
-                template: "Admin/ContentTypes/Edit/{id}/{name}",
+                template: "Admin/Edit/{id}/{name}",
                 defaults: new { controller = "Admin", action = "EditTypePart" }
             );
 
             routes.MapAreaRoute(
                 name: "RemovePart",
                 areaName: "Orchard.ContentTypes",
-                template: "Admin/ContentTypes/RemovePart/{id}/{name}",
+                template: "Admin/RemovePart/{id}/{name}",
                 defaults: new { controller = "Admin", action = "RemovePart" }
-            );
-
-            routes.MapAreaRoute(
-                name: "AdminContentTypes",
-                areaName: "Orchard.ContentTypes",
-                template: "Admin/ContentTypes/{action}",
-                defaults: new { controller = "Admin" }
             );
         }
     }
