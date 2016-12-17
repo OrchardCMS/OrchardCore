@@ -20,7 +20,7 @@ namespace Orchard.DisplayManagement.Views
         private readonly Func<dynamic, Task> _processing;
         private Action<CacheContext> _cache;
         private string _groupId;
-        private Action<ShapeDisplayingContext> _displaying;
+        private Action<ShapeDisplayContext> _displaying;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, dynamic> shapeBuilder)
             :this(shapeType, shapeBuilder, null)
@@ -219,7 +219,7 @@ namespace Orchard.DisplayManagement.Views
         /// <summary>
         /// Sets the location to use for a matching display type.
         /// </summary>
-        public ShapeResult Displaying(Action<ShapeDisplayingContext> displaying)
+        public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
         {
             _displaying = displaying;
 
