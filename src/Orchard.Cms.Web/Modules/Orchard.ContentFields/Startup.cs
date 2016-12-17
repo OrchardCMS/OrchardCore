@@ -14,15 +14,23 @@ namespace Orchard.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            // Boolean Field
             services.AddSingleton<ContentField, BooleanField>();
             services.AddScoped<IContentFieldDisplayDriver, BooleanFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, BooleanFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, BooleanFieldIndexHandler>();
-            
+
+            // Text Field
             services.AddSingleton<ContentField, TextField>();
             services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TextFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TextFieldIndexHandler>();
+
+            // Html Field
+            services.AddSingleton<ContentField, HtmlField>();
+            services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
         }
     }
 }

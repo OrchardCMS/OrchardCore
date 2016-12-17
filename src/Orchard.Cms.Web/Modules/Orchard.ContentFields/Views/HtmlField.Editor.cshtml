@@ -1,0 +1,31 @@
+﻿@model Orchard.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using Orchard.ContentManagement.Metadata.Models
+@using Orchard.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<HtmlFieldSettings>();
+}
+
+<fieldset class="form-group">
+    <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
+    <input asp-for="Html" class="form-control" />
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Html)')
+        .on('input', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', function (event) {
+            // handle backspace
+            if (event.keyCode == 46) {
+                $(document).trigger('contentpreview:render');
+            }
+        });
+    });
+</script>
