@@ -87,7 +87,7 @@ namespace Orchard.Environment.Extensions
                 return _extensionsById[extensionId];
             }
 
-            return null;
+            return new NotFoundExtensionInfo(extensionId);
         }
 
         public IEnumerable<IExtensionInfo> GetExtensions()

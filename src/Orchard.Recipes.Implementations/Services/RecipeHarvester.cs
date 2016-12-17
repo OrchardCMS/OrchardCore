@@ -49,6 +49,7 @@ namespace Orchard.Recipes.Services
         public async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string extensionId)
         {
             var descriptor = _extensionManager.GetExtension(extensionId);
+
             if (descriptor.Exists)
             {
                 return await HarvestRecipesAsync(descriptor);

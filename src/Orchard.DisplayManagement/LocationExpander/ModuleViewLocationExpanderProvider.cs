@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.LocationExpander
             // Get Extension, and then add in the relevant views.
             var extension = extensionManager.GetExtension(context.AreaName);
 
-            if (extension != null)
+            if (extension.Exists)
             {
                 var extensionViewsPath = 
                     Path.Combine(Path.DirectorySeparatorChar + extension.SubPath, "Views");
