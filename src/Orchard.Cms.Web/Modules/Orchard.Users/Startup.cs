@@ -54,7 +54,7 @@ namespace Orchard.Users
             routes.MapAreaRoute(
                 name: "AdminUsers",
                 areaName: "Orchard.Users",
-                template: "Admin/Users/{action}",
+                template: "Admin/Users/{action}/{id?}",
                 defaults: new { controller = "Admin" }
             );
         }

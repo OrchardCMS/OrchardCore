@@ -33,7 +33,7 @@ namespace Orchard.Themes
             routes.MapAreaRoute(
                 name: "AdminThemes",
                 areaName: "Orchard.Themes",
-                template: "Admin/Themes/{action}",
+                template: "Admin/Themes/{action}/{id?}",
                 defaults: new { controller = "Admin" }
             );
         }

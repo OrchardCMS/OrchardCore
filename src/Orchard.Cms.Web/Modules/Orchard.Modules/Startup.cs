@@ -30,7 +30,7 @@ namespace Orchard.Modules
             routes.MapAreaRoute(
                 name: "AdminModules",
                 areaName: "Orchard.Modules",
-                template: "Admin/Modules/{action}",
+                template: "Admin/Modules/{action}/{id?}",
                 defaults: new { controller = "Admin" }
             );
         }

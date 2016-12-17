@@ -39,7 +39,7 @@ namespace Orchard.Settings
             routes.MapAreaRoute(
                 name: "AdminSettings",
                 areaName: "Orchard.Settings",
-                template: "Admin/Settings/{action}",
+                template: "Admin/Settings/{action}/{id?}",
                 defaults: new { controller = "Admin" }
             );
         }
