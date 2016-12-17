@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Orchard.DisplayManagement.Implementation;
-using Microsoft.AspNetCore.Html;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Cache;
 
 namespace Orchard.DisplayManagement.Shapes
@@ -17,9 +17,9 @@ namespace Orchard.DisplayManagement.Shapes
             Wrappers = new List<string>();
             Alternates = new List<string>();
             BindingSources = new List<string>();
-            Displaying = Enumerable.Empty<Action<ShapeDisplayingContext>>();
-            Displayed = Enumerable.Empty<Action<ShapeDisplayedContext>>();
-            Processing = Enumerable.Empty<Func<dynamic, Task>>();
+            Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
+            Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
+            ProcessingAsync = Enumerable.Empty<Func<dynamic, Task>>();
         }
 
         public string Type { get; set; }
@@ -37,37 +37,34 @@ namespace Orchard.DisplayManagement.Shapes
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-        public IEnumerable<Action<ShapeDisplayingContext>> Displaying { get; private set; }
+        public IEnumerable<Action<ShapeDisplayContext>> Displaying { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-        public IEnumerable<Func<dynamic, Task>> Processing { get; private set; }
+        public IEnumerable<Func<dynamic, Task>> ProcessingAsync { get; private set; }
 
         /// <summary>
         /// Event use for a specific shape instance.
         /// </summary>
-        public IEnumerable<Action<ShapeDisplayedContext>> Displayed { get; private set; }
+        public IEnumerable<Action<ShapeDisplayContext>> Displayed { get; private set; }
 
 
         public IList<string> BindingSources { get; set; }
 
-        public void OnDisplaying(Action<ShapeDisplayingContext> action)
+        public void OnDisplaying(Action<ShapeDisplayContext> context)
         {
-            var existing = Displaying ?? Enumerable.Empty<Action<ShapeDisplayingContext>>();
-            Displaying = existing.Concat(new[] { action });
+            Displaying = Displaying.Concat(new[] { context });
         }
 
-        public void OnProcessing(Func<dynamic, Task> processing)
+        public void OnProcessing(Func<dynamic, Task> context)
         {
-            var existing = Processing ?? Enumerable.Empty<Func<dynamic, Task>>();
-            Processing = existing.Concat(new[] { processing });
+            ProcessingAsync = ProcessingAsync.Concat(new[] { context });
         }
 
-        public void OnDisplayed(Action<ShapeDisplayedContext> action)
+        public void OnDisplayed(Action<ShapeDisplayContext> context)
         {
-            var existing = Displayed ?? Enumerable.Empty<Action<ShapeDisplayedContext>>();
-            Displayed = existing.Concat(new[] { action });
+            Displayed = Displayed.Concat(new[] { context });
         }
 
         /// <summary>

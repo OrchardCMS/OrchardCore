@@ -1,31 +1,27 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Encodings.Web;
+using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
-using System.Threading.Tasks;
 
 namespace Orchard.Navigation
 {
     public class PagerShapesTableProvider : IShapeTableProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public PagerShapesTableProvider(
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<PagerShapes> localizer)
+        public PagerShapesTableProvider(IStringLocalizer<PagerShapes> localizer)
         {
-            _httpContextAccessor = httpContextAccessor;
-
             T = localizer;
         }
 
@@ -131,14 +127,8 @@ namespace Orchard.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public PagerShapes(
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<PagerShapes> localizer)
+        public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
-            _httpContextAccessor = httpContextAccessor;
-
             T = localizer;
         }
 
@@ -147,6 +137,7 @@ namespace Orchard.Navigation
         [Shape]
         public Task<IHtmlContent> Pager_Links(Shape Shape, dynamic DisplayAsync, dynamic New,
             IHtmlHelper Html,
+            DisplayContext DisplayContext, 
             int Page,
             int PageSize,
             double TotalItemCount,
@@ -181,18 +172,25 @@ namespace Orchard.Navigation
             var lastText = LastText ?? T[">>"];
             var gapText = GapText ?? T["..."];
 
+            var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
+
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
-            var queryString = _httpContextAccessor.HttpContext.Request.Query;
-            if (queryString != null)
+
+            if (httpContext != null)
             {
-                foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
+                var queryString = httpContext.Request.Query;
+                if (queryString != null)
                 {
-                    routeData[key] = queryString[key];
+                    foreach (var key in from string key in queryString.Keys where key != null && !routeData.ContainsKey(key) let value = queryString[key] select key)
+                    {
+                        routeData[key] = queryString[key];
+                    }
                 }
             }
 
             // specific cross-requests route data can be passed to the shape directly (e.g., Orchard.Users)
-            var shapeRoute = (object) ((dynamic)Shape).RouteData;
+            var shapeRoute = (object)((dynamic)Shape).RouteData;
 
             if (shapeRoute != null)
             {
@@ -213,7 +211,7 @@ namespace Orchard.Navigation
                         routeData[rd.Key] = rd.Value;
                     }
                 }
-            }
+            }            
 
             int firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             int lastPage = Math.Min(totalPageCount, Page + (int)(numberOfPagesToShow / 2));

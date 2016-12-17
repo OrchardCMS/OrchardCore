@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,13 +12,6 @@ namespace Orchard.Navigation
 {
     public class NavigationShapes : IShapeTableProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public NavigationShapes(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Navigation")
@@ -30,9 +24,9 @@ namespace Orchard.Navigation
                     menu.Classes.Add("menu");
                     menu.Metadata.Alternates.Add("Navigation__" + EncodeAlternateElement(menuName));
                 })
-                .OnProcessing(processing =>
+                .OnProcessingAsync(context =>
                 {
-                    dynamic menu = processing.Shape;
+                    dynamic menu = context.Shape;
                     string menuName = menu.MenuName;
 
                     // Menu population is executed when processing the shape so that its value
@@ -41,27 +35,32 @@ namespace Orchard.Navigation
 
                     if ((bool)menu.HasItems)
                     {
-                        return;
+                        return Task.CompletedTask;
                     }
 
-                    var httpContext = _httpContextAccessor.HttpContext;
-                    var navigationManager = httpContext.RequestServices.GetService<INavigationManager>();
-                    var shapeFactory = httpContext.RequestServices.GetService<IShapeFactory>();
+                    var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
+                    var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
+                    var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, processing.DisplayContext.ViewContext);
+                    IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
 
-                    // adding query string parameters
-                    RouteData route = menu.RouteData;
-                    var routeData = new RouteValueDictionary(route.Values);
-                    var query = httpContext.Request.Query;
+                    var httpContext = httpContextAccessor.HttpContext;
 
-                    if (query != null)
+                    if (httpContext != null)
                     {
-                        foreach (var pair in query)
+                        // adding query string parameters
+                        RouteData route = menu.RouteData;
+                        var routeData = new RouteValueDictionary(route.Values);
+                        var query = httpContext.Request.Query;
+
+                        if (query != null)
                         {
-                            if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                            foreach (var pair in query)
                             {
-                                routeData[pair.Key] = pair.Value;
+                                if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                {
+                                    routeData[pair.Key] = pair.Value;
+                                }
                             }
                         }
                     }
@@ -70,6 +69,7 @@ namespace Orchard.Navigation
 
                     NavigationHelper.PopulateMenu(shapeFactory, menu, menu, menuItems);
 
+                    return Task.CompletedTask;
                 });
 
             builder.Describe("NavigationItem")
