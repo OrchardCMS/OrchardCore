@@ -64,7 +64,11 @@ namespace Orchard.DisplayManagement.Views
                 // Look for mapped display type locations
                 if (_otherLocations != null)
                 {
-                    _otherLocations.TryGetValue(displayType, out _defaultLocation);
+                    string displayTypePlacement;
+                    if(_otherLocations.TryGetValue(displayType, out displayTypePlacement))
+                    {
+                        _defaultLocation = displayTypePlacement;
+                    }
                 }
 
                 placement = new Descriptors.PlacementInfo() { Location = _defaultLocation };
