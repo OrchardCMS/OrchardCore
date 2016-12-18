@@ -8,5 +8,9 @@
       "Assets/Bootstrap/Js/bootstrap.js"
     ],
     "output": "Content/Scripts/bootstrap.js"
+  },
+  {
+    "inputs": [ "Assets/font-awesome/scss/font-awesome.scss" ],
+    "output": "Content/Styles/font-awesome.css"
   }
 ]
