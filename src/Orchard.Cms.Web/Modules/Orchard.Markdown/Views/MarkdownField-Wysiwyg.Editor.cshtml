@@ -1,0 +1,45 @@
+﻿@model Orchard.ContentFields.ViewModels.EditMarkdownFieldViewModel
+@using Orchard.ContentManagement.Metadata.Models
+@using Orchard.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<MarkdownFieldSettings>();
+}
+
+<script name="simplemde" depends-on="admin" asp-src="/Orchard.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
+<style name="simplemde" asp-src="/Orchard.Markdown/Styles/simplemde.min.css"></style>
+<style name="simplemde"></style>
+
+
+<fieldset class="form-group">
+    <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Markdown" class="form-control"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Markdown)')
+        .on('input', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', function (event) {
+            // handle backspace
+            if (event.keyCode == 46) {
+                $(document).trigger('contentpreview:render');
+            }
+        });
+
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
+            forceSync: true
+        });
+
+        simplemde.codemirror.on('change', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>

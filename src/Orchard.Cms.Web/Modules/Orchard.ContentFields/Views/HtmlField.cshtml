@@ -1,0 +1,6 @@
+﻿@model Orchard.ContentFields.ViewModels.DisplayHtmlFieldViewModel
+@using Orchard.ContentManagement.Metadata.Models
+
+<div>
+    @Model.PartFieldDefinition.DisplayName(): @Html.Raw(Model.Field.Html)
+</div>

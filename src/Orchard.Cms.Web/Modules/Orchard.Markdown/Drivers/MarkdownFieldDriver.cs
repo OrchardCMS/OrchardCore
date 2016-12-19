@@ -7,11 +7,11 @@ using Orchard.DisplayManagement.Views;
 
 namespace Orchard.ContentFields.Fields
 {
-    public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
+    public class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
     {
-        public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(MarkdownField field, BuildFieldDisplayContext context)
         {
-            return Shape<DisplayTextFieldViewModel>("TextField", model =>
+            return Shape<DisplayMarkdownFieldViewModel>("MarkdownField", model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -21,21 +21,20 @@ namespace Orchard.ContentFields.Fields
             .Location("SummaryAdmin", "");
         }
 
-        public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
+        public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)
         {
-            return Shape<EditTextFieldViewModel>("TextField_Edit", model =>
+            return Shape<EditMarkdownFieldViewModel>("MarkdownField_Edit", model =>
             {
-                model.Text = field.Text;
-
+                model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MarkdownField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Text);
+            await updater.TryUpdateModelAsync(field, Prefix, f => f.Markdown);
 
             return Edit(field, context);
         }

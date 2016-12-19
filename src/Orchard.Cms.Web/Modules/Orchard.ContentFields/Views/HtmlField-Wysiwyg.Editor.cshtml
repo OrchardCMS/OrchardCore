@@ -1,21 +1,29 @@
-﻿@using Orchard.Body.ViewModels;
-@model BodyPartViewModel
+﻿@model Orchard.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using Orchard.ContentManagement.Metadata.Models
+@using Orchard.ContentFields.Settings;
+
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<HtmlFieldSettings>();
+}
 
 <script name="trumbowyg" depends-on="admin" asp-src="/Orchard.Resources/Scripts/trumbowyg.min.js" debug-src="/Orchard.Resources/Scripts/trumbowyg.js" at="Foot"></script>
 <style name="trumbowyg" asp-src="/Orchard.Resources/Styles/trumbowyg.min.css" debug-src="/Orchard.Resources/Styles/trumbowyg.css"></style>
 <style name="trumbowyg"></style>
 
 <fieldset class="form-group">
-    <label asp-for="Body">@T["Body"]</label>
-    <textarea asp-for="Body" rows="10" class="form-control"></textarea>
-    <span class="hint">@T["The body of the content item."]</span>
+    <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Html" class="form-control"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </fieldset>
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Body)').trumbowyg();
+        $('#@Html.IdFor(m => m.Html)').trumbowyg();
 
-        $('.trumbowyg-editor')
+        $('#@Html.IdFor(m => m.Html)')
         .on('input', function () {
             $(document).trigger('contentpreview:render');
         })
@@ -24,7 +32,6 @@
             if (event.keyCode == 46) {
                 $(document).trigger('contentpreview:render');
             }
-        })
-
+        });
     });
 </script>

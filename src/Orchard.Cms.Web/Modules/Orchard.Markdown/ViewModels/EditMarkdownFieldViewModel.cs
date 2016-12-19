@@ -4,9 +4,10 @@ using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentFields.ViewModels
 {
-    public class DisplayTextFieldViewModel
+    public class EditMarkdownFieldViewModel
     {
-        public TextField Field { get; set; }
+        public string Markdown { get; set; }
+        public MarkdownField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     }

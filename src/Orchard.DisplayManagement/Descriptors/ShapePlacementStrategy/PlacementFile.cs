@@ -18,7 +18,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
         [JsonProperty(PropertyName = "differentiator")]
         public string Differentiator { get; set; }
 
-        [JsonProperty(PropertyName = "alernates")]
+        [JsonProperty(PropertyName = "alternates")]
         public string[] Alternates { get; set; }
 
         [JsonProperty(PropertyName = "wrappers")]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions.Features;
 
@@ -144,7 +145,16 @@ namespace Orchard.DisplayManagement.Descriptors
 
     public class ShapePlacementContext
     {
-        public IShape Shape { get; set; }
+        public ShapePlacementContext(string shapeType, string displayType, string differentiator, IShape zoneShape)
+        {
+            ShapeType = shapeType;
+            DisplayType = displayType;
+            Differentiator = differentiator;
+            ZoneShape = ZoneShape;
+        }
+
+        public IShape ZoneShape { get; set; }
+        public string ShapeType { get; set; }
         public string DisplayType { get; set; }
         public string Differentiator { get; set; }
 

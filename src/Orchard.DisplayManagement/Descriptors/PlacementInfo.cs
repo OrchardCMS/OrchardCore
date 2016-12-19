@@ -1,17 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
         private static readonly char[] Delimiters = { ':', '#', '@' };
-
-        public PlacementInfo()
-        {
-            Alternates = Enumerable.Empty<string>();
-            Wrappers = Enumerable.Empty<string>();
-        }
 
         public string Location { get; set; }
         public string Source { get; set; }

@@ -7,17 +7,17 @@ using Orchard.DisplayManagement.Views;
 namespace Orchard.ContentFields.Settings
 {
 
-    public class TextFieldSettingsDriver : ContentPartFieldDisplayDriver<TextField>
+    public class MarkdownFieldSettingsDriver : ContentPartFieldDisplayDriver<MarkdownField>
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Shape<TextFieldSettings>("TextFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
+            return Shape<MarkdownFieldSettings>("MarkdownFieldSettings_Edit", model => partFieldDefinition.Settings.Populate(model))
                 .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-            var model = new TextFieldSettings();
+            var model = new MarkdownFieldSettings();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 

@@ -13,5 +13,5 @@ namespace Orchard.DisplayManagement.Handlers
     /// </param>
     /// <param name="displayType">The display type the content item owning the shape is rendered with.</param>
     /// <returns>The <see cref="PlacementInfo"/> to use or <see cref="null"/> if this function is not concerned.</returns>
-    public delegate PlacementInfo FindPlacementDelegate(IShape shape, string differentiator, string displayType);
+    public delegate PlacementInfo FindPlacementDelegate(string shapeType, string differentiator, string displayType, IBuildShapeContext context);
 }

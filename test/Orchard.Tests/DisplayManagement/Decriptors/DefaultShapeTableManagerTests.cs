@@ -384,24 +384,24 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         [Fact]
         public void DescribedPlacementIsReturnedIfNotNull()
         {
-            var shapeDetail = new Shape { Metadata = new ShapeMetadata { DisplayType = "Detail" } };
-            var shapeSummary = new Shape { Metadata = new ShapeMetadata { DisplayType = "Summary" } };
-            var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello1").From(TestFeature())
-                    .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
-                    .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary" ? new PlacementInfo { Location = "" } : null);
+                    .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
+                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = "" } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
-            var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
-            var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
-            var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
+            var result1 = hello.Placement(shapeDetail);
+            var result2 = hello.Placement(shapeSummary);
+            var result3 = hello.Placement(shapeTitle);
             hello.DefaultPlacement = "Header:5";
-            var result4 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
-            var result5 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
-            var result6 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
+            var result4 = hello.Placement(shapeDetail);
+            var result5 = hello.Placement(shapeSummary);
+            var result6 = hello.Placement(shapeTitle);
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
@@ -414,24 +414,24 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         [Fact]
         public void TwoArgumentVariationDoesSameThing()
         {
-            var shapeDetail = new Shape { Metadata = new ShapeMetadata { DisplayType = "Detail" } };
-            var shapeSummary = new Shape { Metadata = new ShapeMetadata { DisplayType = "Summary" } };
-            var shapeTile = new Shape { Metadata = new ShapeMetadata { DisplayType = "Tile" } };
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello2").From(TestFeature())
-                    .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
-                    .Placement(ctx => ctx.Shape.Metadata.DisplayType == "Summary", new PlacementInfo { Location = "" });
+                    .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
+                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = "" });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
-            var result1 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
-            var result2 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
-            var result3 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
+            var result1 = hello.Placement(shapeDetail);
+            var result2 = hello.Placement(shapeSummary);
+            var result3 = hello.Placement(shapeTitle);
             hello.DefaultPlacement = "Header:5";
-            var result4 = hello.Placement(new ShapePlacementContext { Shape = shapeDetail });
-            var result5 = hello.Placement(new ShapePlacementContext { Shape = shapeSummary });
-            var result6 = hello.Placement(new ShapePlacementContext { Shape = shapeTile });
+            var result4 = hello.Placement(shapeDetail);
+            var result5 = hello.Placement(shapeSummary);
+            var result6 = hello.Placement(shapeTitle);
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
