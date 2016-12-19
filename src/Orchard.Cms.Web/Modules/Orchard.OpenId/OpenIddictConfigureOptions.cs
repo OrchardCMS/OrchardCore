@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AspNet.Security.OpenIdConnect.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict;
@@ -38,22 +39,56 @@ namespace Orchard.OpenId
                 openIddictOptions.SigningCredentials.AddEphemeralKey();
                 openIddictOptions.AllowInsecureHttp = true;
             }
-            else
+            else if(openIdSettings.CertificateStoreLocation.HasValue && openIdSettings.CertificateStoreName.HasValue && !string.IsNullOrEmpty(openIdSettings.CertificateThumbPrint))
             {
-                openIddictOptions.AllowInsecureHttp = false;
-                if (openIdSettings.CertificateStoreLocation.HasValue && openIdSettings.CertificateStoreName.HasValue && !string.IsNullOrEmpty(openIdSettings.CertificateThumbPrint))
+                try
                 {
-                    try
-                    {
-
-                        openIddictOptions.SigningCredentials.AddCertificate(openIdSettings.CertificateThumbPrint, openIdSettings.CertificateStoreName.Value, openIdSettings.CertificateStoreLocation.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError("Orchard.OpenId module needs you provide a valid signing certificate.", e);
-                        throw e;
-                    }
+                    openIddictOptions.AllowInsecureHttp = false;
+                    openIddictOptions.SigningCredentials.Clear();
+                    openIddictOptions.SigningCredentials.AddCertificate(openIdSettings.CertificateThumbPrint, openIdSettings.CertificateStoreName.Value, openIdSettings.CertificateStoreLocation.Value);
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError("Orchard.OpenId module needs you provide a valid signing certificate.", e);
+                    throw e;
+                }
+            }
+
+            if (openIdSettings.EnableAuthorizationEndpoint)
+            {
+                openIddictOptions.AuthorizationEndpointPath = "/Orchard.OpenId/Access/Authorize";
+            }
+            if (openIdSettings.EnableTokenEndpoint)
+            {
+                openIddictOptions.TokenEndpointPath = "/Orchard.OpenId/Access/Token";
+            }
+            if (openIdSettings.EnableLogoutEndpoint)
+            {
+                openIddictOptions.LogoutEndpointPath = "/Orchard.OpenId/Access/Logout";
+            }
+            if (openIdSettings.EnableUserInfoEndpoint)
+            {
+                openIddictOptions.UserinfoEndpointPath = "/Orchard.OpenId/Access/Userinfo";
+            }
+            if (openIdSettings.AllowPasswordFlow)
+            {
+                openIddictOptions.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
+            }
+            if (openIdSettings.AllowClientCredentialsFlow)
+            {
+                openIddictOptions.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            }
+            if (openIdSettings.AllowAuthorizationCodeFlow || openIdSettings.AllowHybridFlow)
+            {
+                openIddictOptions.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            }
+            if (openIdSettings.AllowRefreshTokenFlow)
+            {
+                openIddictOptions.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+            }
+            if (openIdSettings.AllowImplicitFlow || openIdSettings.AllowHybridFlow)
+            {
+                openIddictOptions.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
             }
         }
     }

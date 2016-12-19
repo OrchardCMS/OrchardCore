@@ -69,6 +69,45 @@ namespace Orchard.OpenId.Services
                     modelState.AddModelError("CertificateThumbPrint", T["A certificate is required when testing mode is disabled."]);
                 }
             }
+
+            if (settings.AllowPasswordFlow && !settings.EnableTokenEndpoint)
+            {
+                modelState.AddModelError("AllowPasswordFlow", "Password Flow cannot be enabled if Token Endpoint is disabled");
+                return false;
+            }
+            if (settings.AllowClientCredentialsFlow && !settings.EnableTokenEndpoint)
+            {
+                modelState.AddModelError("AllowClientCredentialsFlow", "Client Credentials Flow cannot be enabled if Token Endpoint is disabled");
+                return false;
+            }
+            if (settings.AllowAuthorizationCodeFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
+            {
+                modelState.AddModelError("AllowAuthorizationCodeFlow", "Authorization Code Flow cannot be enabled if Authorization Endpoint and Token Endpoint are disabled");
+                return false;
+            }
+            if (settings.AllowHybridFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
+            {
+                modelState.AddModelError("AllowAuthorizationHybridFlow", "Authorization Hybrid cannot be enabled if Authorization Endpoint and Token Endpoint are disabled");
+                return false;
+            }
+            if (settings.AllowRefreshTokenFlow)
+            {
+                if (!settings.EnableTokenEndpoint)
+                {
+                    modelState.AddModelError("AllowRefreshTokenFlow", "Refresh Token Flow cannot be enabled if Token Endpoint is disabled");
+                    return false;
+                }
+                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
+                {
+                    modelState.AddModelError("AllowRefreshTokenFlow", "Refresh Token Flow only can be enabled if Password Flow, Authorization Code Flow or Hybrid Flow are enabled");
+                    return false;
+                }
+            }
+            if (settings.AllowImplicitFlow && !settings.EnableAuthorizationEndpoint)
+            {
+                modelState.AddModelError("AllowImplicitFlow", "Allow Implicit Flow cannot be enabled if Authorization Endpoint is disabled");
+                return false;
+            }
             return modelState.IsValid;
         }
 

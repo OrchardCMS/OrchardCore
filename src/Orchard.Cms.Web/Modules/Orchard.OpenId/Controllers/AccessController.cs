@@ -24,17 +24,23 @@ namespace Orchard.OpenId.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly OpenIddictUserManager<User> _userManager;
         private readonly IStringLocalizer<AccessController> T;
+        private readonly IOpenIdService _openIdService;
+        private readonly IOpenIdApplicationManager _openIdApplicationManager;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             SignInManager<User> signInManager,
             OpenIddictUserManager<User> userManager,
-            IStringLocalizer<AccessController> stringLocalizer)
+            IStringLocalizer<AccessController> stringLocalizer,
+            IOpenIdService openIdService,
+            IOpenIdApplicationManager openIdApplicationManager)
         {
             T = stringLocalizer;
             _applicationManager = applicationManager;
             _signInManager = signInManager;
             _userManager = userManager;
+            _openIdService = openIdService;
+            _openIdApplicationManager = openIdApplicationManager;
         }
 
         [AllowAnonymous, HttpPost]
@@ -48,14 +54,43 @@ namespace Orchard.OpenId.Controllers
             // which is required for this stateless OAuth2/OIDC token endpoint to work correctly.
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT
             // return an authentication cookie or try to establish an ASP.NET Core session.
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
+            if (application == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
+                });
+            }
 
-            if (request.IsPasswordGrantType())
+            var isPasswordGrantType = request.IsPasswordGrantType() && openIdSettings.AllowPasswordFlow && application != null && application.AllowPasswordFlow;
+            var isClientCredentialsType = (request.IsClientCredentialsGrantType() && openIdSettings.AllowClientCredentialsFlow && application != null && application.AllowClientCredentialsFlow);
+            var isHybridFlow = (request.IsHybridFlow() && openIdSettings.AllowHybridFlow && application != null && application.AllowHybridFlow);
+            var isAuthorizationCodeFlow = (request.IsAuthorizationCodeFlow() && openIdSettings.AllowAuthorizationCodeFlow && application != null && application.AllowAuthorizationCodeFlow);
+            var isRefreshTokenGrantType = (request.IsRefreshTokenGrantType() && openIdSettings.AllowRefreshTokenFlow && application != null && application.AllowRefreshTokenFlow);
+            
+
+            if (isPasswordGrantType)
             {
                 return await ExchangePasswordGrantType(request);
             }
-            else if (request.IsClientCredentialsGrantType())
+            else if (isClientCredentialsType)
             {
                 return await ExchangeClientCredentialsGrantType(request);
+            }
+            else if (isAuthorizationCodeFlow)
+            {
+
+            }
+            else if (isHybridFlow)
+            {
+
+            }
+            else if (isRefreshTokenGrantType)
+            {
+
             }
 
             return BadRequest(new OpenIdConnectResponse
@@ -192,16 +227,30 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
-            if (application.SkipConsent)
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            var isAuthorizationCodeFlow = (request.IsAuthorizationCodeFlow() && openIdSettings.AllowAuthorizationCodeFlow && application != null && application.AllowAuthorizationCodeFlow);
+            var isHybridFlow = (request.IsHybridFlow() && openIdSettings.AllowHybridFlow && application != null && application.AllowHybridFlow);
+            var isImplicitFlow = (request.IsImplicitFlow() && openIdSettings.AllowImplicitFlow && application != null && application.AllowImplicitFlow);
+
+            if (isAuthorizationCodeFlow || isHybridFlow || isImplicitFlow)
             {
-                return await IssueAccessIdentityTokens(request);
+                if (application.SkipConsent)
+                {
+                    return await IssueAccessIdentityTokens(request);
+                }
+
+                return View(new AuthorizeViewModel
+                {
+                    ApplicationName = application.DisplayName,
+                    RequestId = request.RequestId,
+                    Scope = request.Scope
+                });
             }
 
-            return View(new AuthorizeViewModel
+            return BadRequest(new OpenIdConnectResponse
             {
-                ApplicationName = application.DisplayName,
-                RequestId = request.RequestId,
-                Scope = request.Scope
+                Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
+                ErrorDescription = T["The specified grant type is not supported."]
             });
         }
 

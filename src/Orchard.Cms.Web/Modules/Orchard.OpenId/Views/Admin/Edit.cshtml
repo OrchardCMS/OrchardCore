@@ -1,7 +1,10 @@
 ﻿@model EditOpenIdApplicationViewModel
 @using Orchard.OpenId.ViewModels;
 @using Orchard.OpenId.Models;
-
+@using Orchard.OpenId.Settings;
+@{
+    var openIdSettings = ViewData["OpenIdSettings"] as OpenIdSettings;
+}
 @if (Model.Id == null)
 {
     <h1>@RenderTitleSegments(T["Create OpenId Application"])</h1>
@@ -24,50 +27,126 @@ else
         <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
         <input asp-for="DisplayName" class="form-control" autofocus />
     </div>
-    @{
-        var hintPublicClasses = Model.Type == ClientType.Public ? "hint" : "hint collapse";
-        var hintConfidentialClasses = Model.Type == ClientType.Confidential ? "hint" : "hint collapse";
-    }
     <div class="form-group">
         <label asp-for="Type">@T["Type"]</label>
         <select asp-for="Type" class="form-control">
             <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
             <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
         </select>
-        <div class="@hintPublicClasses">@T["Authorization Code Flow and Refresh Code Flow are allowed. It allows offline access through Refresh Flow."]</div>
-        <div class="@hintPublicClasses">@T["Authorization Code Flow allows an user to authenticate from an insecure app redirecting the user to the Authorize url in the Identity Server fo providing his credentials."]</div>
-        <div class="@hintPublicClasses">@T["Authorization Requests Url: https://baseUrl/Orchard.OpenId/Access/Authorize Token Requests Url: https:// /Orchard.OpenId/Access/Token"]</div>
-        <div class="@hintPublicClasses">@T["Token Request Parameters: grant_type ('authorization_code'), client_id, client_secret, resource ('https://your_resource_server') , scope ('openid, profile, roles, offline_access')"]</div>
-        <div class="@hintConfidentialClasses">@T["Password Flow and Client Credentials Flow are allowed."]</div>
-        <div class="@hintConfidentialClasses">@T["Password Flow allows an app to authenticate as an Orchard user providing its username and password Client. This flows allow offline access providing a refresh token."]</div>
-        <div class="@hintConfidentialClasses">@T["Client Credentials allows an app to authenticate without user credentials. Its permissions are set using the roles assigned to the app at the bottom of this screen. Offline access is not allowed."]</div>
-        <div class="@hintConfidentialClasses">@T["Token Requests Url: https://baseUrl/Orchard.OpenId/Access/Token"]</div>
-        <div class="@hintConfidentialClasses">@T["Token Request Parameters: grant_type (['password'|'client_credentials']), client_id, client_secret, username, password, resource ('https://your_resource_server') , scope ('openid, profile, roles, offline_access')"]</div>
+        <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
+    
+    <h3>Flows</h3>
     @{
-        var classes = Model.Type == ClientType.Public ? "form-group" : "form-group collapse";
+        var allowAuthorizationCodeFlowClasses = openIdSettings.AllowAuthorizationCodeFlow ? "form-group" : "form-group collapse";
+        var allowAuthorizationCodeFlowHintsClasses = Model.AllowAuthorizationCodeFlow ? "hint" : "hint collapse";
     }
-    <div class="@classes" asp-validation-class-for="RedirectUri">
+    <fieldset class="@allowAuthorizationCodeFlowClasses" asp-validation-class-for="AllowAuthorizationCodeFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowAuthorizationCodeFlow" class="form-check-input" />@T["Allow Authorization Code Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></div>
+        <div id="AllowAuthorizationCodeFlowRecommendedHint" class="@allowAuthorizationCodeFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'code', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") resource = '@openIdSettings.Authority', scope ('openid, profile, roles@(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    @{
+        var allowHybridFlowClasses = openIdSettings.AllowHybridFlow ? "form-group" : "form-group collapse";
+        var allowHybridFlowHintsClasses = Model.AllowHybridFlow ? "hint" : "hint collapse";
+    }
+    <fieldset class="@allowHybridFlowClasses" asp-validation-class-for="AllowHybridFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowHybridFlow" class="form-check-input" />@T["Allow Hybrid Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></div>
+        <div id="AllowHybridFlowRecommendedHint" class="@allowHybridFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'code id_token', client_id, client_secret, resource = '@openIdSettings.Authority', scope ('openid, profile, roles@(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    @{
+        var allowImplicitFlowClasses = openIdSettings.AllowImplicitFlow ? "form-group" : "form-group collapse";
+        var allowImplicitFlowHintsClasses = Model.AllowImplicitFlow ? "hint" : "hint collapse";
+    }
+    <fieldset class="@allowImplicitFlowClasses" asp-validation-class-for="AllowImplicitFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowImplicitFlow" class="form-check-input" />@T["Allow Implicit Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></div>
+        <div id="AllowImplicitFlowRecommendedHint" class="@allowImplicitFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'id_token token', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") redirect_uri ='', nonce, resource = '@openIdSettings.Authority' , scope ('openid, profile, roles')</div>
+    </fieldset>
+
+    @{
+        var allowPasswordFlowClasses = openIdSettings.AllowPasswordFlow ? "form-group" : "form-group collapse";
+        var allowPasswordFlowHintsClasses = Model.AllowImplicitFlow ? "hint" : "hint collapse";
+    }
+    <fieldset class="@allowPasswordFlowClasses" asp-validation-class-for="AllowPasswordFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowPasswordFlow" class="form-check-input" />@T["Allow Password Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></div>
+        <div id="AllowPasswordFlowRecommendedHint" class="@allowPasswordFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'password', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") username, password, resource = '@openIdSettings.Authority' , scope ('openid, profile, roles @(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    @{
+        var allowClientCredentialsFlowClasses = openIdSettings.AllowClientCredentialsFlow ? "form-group" : "form-group collapse";
+        var allowClientCredentialsFlowHintsClasses = Model.AllowClientCredentialsFlow ? "hint" : "hint collapse";
+    }
+    <fieldset class="@allowClientCredentialsFlowClasses" asp-validation-class-for="AllowClientCredentialsFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowClientCredentialsFlow" class="form-check-input" />@T["Allow Client Credentials Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></div>
+        <div id="AllowClientCredentialsFlowRecommendedHint" class="@allowClientCredentialsFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'client_credentials', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") resource = '@openIdSettings.Authority' , scope ('openid, profile, roles')</div>
+    </fieldset>
+
+    @{
+        var allowRefreshTokenFlowClasses = openIdSettings.AllowRefreshTokenFlow ? "form-group" : "form-group collapse";
+        var allowRefreshTokenFlowHintsClasses = Model.AllowRefreshTokenFlow ? "hint" : "hint collapse";
+        var disableRefreshTokenFlow = (Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow || Model.AllowHybridFlow) ? null : "";
+    }
+    <fieldset class="@allowRefreshTokenFlowClasses" asp-validation-class-for="AllowRefreshTokenFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="AllowRefreshTokenFlow" class="form-check-input" disabled=@disableRefreshTokenFlow />@T["Allow Refresh Token Flow"]
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></div>
+        <div id="AllowRefreshTokenFlowRecommendedHint" class="@allowRefreshTokenFlowHintsClasses">@T["Recommended Parameters:"] grant_type = 'refresh_token', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") refresh_token</div>
+    </fieldset>
+
+    @{
+        var redirectClasses = Model.AllowImplicitFlow || Model.AllowAuthorizationCodeFlow || Model.AllowHybridFlow ? "form-group" : "form-group collapse";
+    }
+    <div class="@redirectClasses" asp-validation-class-for="RedirectUri">
         <label asp-for="RedirectUri">@T["Redirect Uri"]</label>
         <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect Uri is required."]</span>
         <input asp-for="RedirectUri" class="form-control" autofocus />
     </div>
-    <div class="@classes" asp-validation-class-for="LogoutRedirectUri">
+    <div class="@redirectClasses" asp-validation-class-for="LogoutRedirectUri">
         <label asp-for="LogoutRedirectUri">@T["Logout Redirect Uri"]</label>
         <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
         <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
     </div>
-    <div class="@classes" asp-validation-class-for="SkipConsent">
+    <div class="@redirectClasses" asp-validation-class-for="SkipConsent">
         <label class="form-check-label">
             <input asp-for="SkipConsent" type="checkbox" class="form-check-input" checked="@Model.SkipConsent" /> @T["Skip user-consent screen"]
         </label>
-        <div class="hint">@T["It skips the user-consent screen after login in identity server. When identy server and resource server are the same you usually want to skip this screen."]</div>
+        <div class="hint">@T["It skips the user-consent screen after login in identity server."]</div>
     </div>
+
     @{
-        classes = Model.Type == ClientType.Public ? "form-group collapse" : "form-group";
+        var rolesClasses = Model.AllowClientCredentialsFlow ? "form-group" : "form-group collapse";
     }
-    <div class="@classes" id="RoleGroup" name="RoleGroup">
-        <h6>@T["Roles"]</h6>
+    <div class="@rolesClasses" id="RoleGroup" name="RoleGroup">
+        <h6>@T["Client Credentials Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             <div class="form-check">
@@ -90,12 +169,92 @@ else
 <script at="Foot" type="text/javascript">
 //<![CDATA[
     $("#Type").change(function () {
-        $("#RoleGroup").toggle("slow");
-        $("#SkipConsent").parent().parent().toggle("slow");
-        $("#RedirectUri").parent().toggle("slow");
-        $("#LogoutRedirectUri").parent().toggle("slow");
-        $("#Type").siblings(".hint").toggle("slow");
+        var allowPasswordFlowRecommendedHint = $("#AllowPasswordFlowRecommendedHint");
+        var allowAuthorizationCodeFlowRecommendedHint = $("#AllowAuthorizationCodeFlowRecommendedHint");
+        var allowHybridFlowRecommendedHint = $("#AllowHybridFlowRecommendedHint");
+        var allowImplicitFlowRecommendedHint = $("#AllowImplicitFlowRecommendedHint");
+        var allowRefreshTokenFlowHintsClasses = $("#AllowRefreshTokenFlowRecommendedHint");
+
+        if ($(this).val() === '@ClientType.Confidential') {
+            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace("client_id, ", "client_id, client_secret, ");
+            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace("client_id,", "client_id, client_secret, ");
+            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id,", "client_id, client_secret, ");
+            allowImplicitFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id,", "client_id, client_secret, ");
+            allowRefreshTokenFlowHintsClasses[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id,", "client_id, client_secret, ");
+        }
+        else {
+            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace("client_id, client_secret, ", "client_id, ");
+            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace("client_id, client_secret, ", "client_id, ");
+            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id, client_secret, ", "client_id, ");
+            allowImplicitFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id, client_secret, ", "client_id, ");
+            allowRefreshTokenFlowHintsClasses[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("client_id, client_secret, ", "client_id, ");
+        }
     });
+    $("#AllowClientCredentialsFlow").change(function () {
+        var roleGroup = $("#RoleGroup");
+        $("#RoleGroup").toggle("slow");
+        $("#AllowClientCredentialsFlowRecommendedHint").toggle("slow");
+    });
+    $("#AllowPasswordFlow").change(function () {
+        refreshAllowRefreshTokenFlowVisibility();
+        $("#AllowPasswordFlowRecommendedHint").toggle("slow");
+    });
+    $("#AllowAuthorizationCodeFlow").change(function () {
+        refreshAllowRefreshTokenFlowVisibility();
+        refreshRedirectSettings();
+        $("#AllowAuthorizationCodeFlowRecommendedHint").toggle("slow");
+    });
+    $("#AllowImplicitFlow").change(function () {
+        refreshRedirectSettings();
+        $("#AllowImplicitFlowRecommendedHint").toggle("slow");
+    });
+    $("#AllowHybridFlow").change(function () {
+        refreshAllowRefreshTokenFlowVisibility();
+        refreshRedirectSettings();
+        $("#AllowHybridFlowRecommendedHint").toggle("slow");
+    });
+    $("#AllowRefreshTokenFlow").change(function () {
+        var allowPasswordFlowRecommendedHint = $("#AllowPasswordFlowRecommendedHint");
+        var allowAuthorizationCodeFlowRecommendedHint = $("#AllowAuthorizationCodeFlowRecommendedHint");
+        var allowHybridFlowRecommendedHint = $("#AllowHybridFlowRecommendedHint");
+        if ($(this).is(':checked')) {
+            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
+            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
+            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
+        }
+        else {
+            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace(", offline_access", "");
+            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace(", offline_access", "");
+            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace(", offline_access", "");
+        }
+    });
+    function refreshAllowRefreshTokenFlowVisibility() {
+        var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+
+        if (($("#AllowPasswordFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+            allowRefreshTokenFlow.removeAttr("disabled");
+        }
+        else {
+            allowRefreshTokenFlow.attr('disabled', true);
+            allowRefreshTokenFlow.prop("checked", false);
+        }
+    }
+    function refreshRedirectSettings() {
+        var skipConsent = $("#SkipConsent");
+        var redirectUri = $("#RedirectUri");
+        var logoutRedirectUri = $("#LogoutRedirectUri");
+
+        if (($("#AllowImplicitFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+            skipConsent.parent().parent().show();
+            logoutRedirectUri.parent().show();
+            redirectUri.parent().show();
+        }
+        else {
+            skipConsent.prop("checked", false);
+            skipConsent.parent().parent().hide();
+            logoutRedirectUri.parent().hide();
+            redirectUri.parent().hide();
+        }
+    }
 //]]>
 </script>
-

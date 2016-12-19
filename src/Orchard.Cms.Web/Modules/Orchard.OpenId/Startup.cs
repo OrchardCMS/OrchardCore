@@ -33,7 +33,7 @@ namespace Orchard.OpenId
         private readonly ILogger<Startup> _logger;
 
         public Startup(
-            ShellSettings shellSettings,
+            ShellSettings shellSettings,            
             IDataProtectionProvider dataProtectionProvider,
             ILogger<Startup> logger)
         {
@@ -50,13 +50,21 @@ namespace Orchard.OpenId
                 _logger.LogWarning("Orchard.OpenId module has invalid settings.");
                 return;
             }
-
+        
             builder.UseOpenIddict();
 
             if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
                 builder.UseJwtBearerAuthentication();
             }
+
+            // Admin
+            routes.MapAreaRoute(
+                name: "AdminOpenId",
+                areaName: "Orchard.OpenId",
+                template: "Admin/OpenIdApps/{action}/{id?}",
+                defaults: new { controller = "Admin" }
+            );
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -70,6 +78,7 @@ namespace Orchard.OpenId
             services.AddScoped<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
 
+
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
             services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
@@ -80,21 +89,10 @@ namespace Orchard.OpenId
                 .AddTokenStore<OpenIdTokenStore>()
                 .AddUserStore<OpenIdUserStore>()
                 .AddUserManager<OpenIdUserManager>()
-                .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
-                .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
-                .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
-                .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
-                .AllowPasswordFlow()
-                .AllowClientCredentialsFlow()
-                .AllowAuthorizationCodeFlow()
-                .AllowRefreshTokenFlow()
                 .UseDataProtectionProvider(_dataProtectionProvider)
-                .RequireClientIdentification()
-                .Configure(options => options.ApplicationCanDisplayErrors = true);
-
+                .RequireClientIdentification();
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIddictConfigureOptions>();
             services.AddScoped<IConfigureOptions<JwtBearerOptions>, JwtBearerConfigureOptions>();
-
         }
     }
 }

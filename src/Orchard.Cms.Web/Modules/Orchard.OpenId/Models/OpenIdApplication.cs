@@ -61,6 +61,13 @@ namespace Orchard.OpenId.Models
         /// Gets or sets the RoleNames assined to the app.
         /// </summary>
         public List<string> RoleNames { get; set; } = new List<string>();
+
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
     }
 
     public enum ClientType
