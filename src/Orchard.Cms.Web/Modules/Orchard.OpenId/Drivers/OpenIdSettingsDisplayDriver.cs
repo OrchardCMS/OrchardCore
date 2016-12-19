@@ -41,23 +41,27 @@ namespace Orchard.OpenId.Drivers
                 }).Location("Content:2").OnGroup("open id");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(OpenIdSettings settings, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(OpenIdSettings settings, IUpdateModel updater, string groupId)
         {
-            var model = new OpenIdSettingsViewModel();
+            if (groupId == "open id")
+            {
+                var model = new OpenIdSettingsViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix);
-            model.Authority = model.Authority ?? "".Trim();
-            model.Audiences = model.Audiences ?? "".Trim();
+                await updater.TryUpdateModelAsync(model, Prefix);
+                model.Authority = model.Authority ?? "".Trim();
+                model.Audiences = model.Audiences ?? "".Trim();
 
-            settings.TestingModeEnabled = model.TestingModeEnabled;
-            settings.DefaultTokenFormat = model.DefaultTokenFormat;
-            settings.Authority = model.Authority;
-            settings.Audiences = model.Audiences.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            settings.CertificateStoreLocation = model.CertificateStoreLocation;
-            settings.CertificateStoreName = model.CertificateStoreName;
-            settings.CertificateThumbPrint = model.CertificateThumbPrint;
+                settings.TestingModeEnabled = model.TestingModeEnabled;
+                settings.DefaultTokenFormat = model.DefaultTokenFormat;
+                settings.Authority = model.Authority;
+                settings.Audiences = model.Audiences.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.CertificateStoreLocation = model.CertificateStoreLocation;
+                settings.CertificateStoreName = model.CertificateStoreName;
+                settings.CertificateThumbPrint = model.CertificateThumbPrint;
 
-            _openIdServices.IsValidOpenIdSettings(settings, updater.ModelState);
+                _openIdServices.IsValidOpenIdSettings(settings, updater.ModelState);
+            }
+
             return Edit(settings);
         }
     }
