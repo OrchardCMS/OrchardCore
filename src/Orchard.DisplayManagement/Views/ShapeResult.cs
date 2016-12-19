@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
@@ -58,20 +59,26 @@ namespace Orchard.DisplayManagement.Views
             // Look into specific implementations of placements (like placement.info files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
+            // Look for mapped display type locations
+            if (_otherLocations != null)
+            {
+                string displayTypePlacement;
+                if (_otherLocations.TryGetValue(displayType, out displayTypePlacement))
+                {
+                    _defaultLocation = displayTypePlacement;
+                }
+            }
+
             // If no placement is found, use the default location
             if (placement == null)
             {
-                // Look for mapped display type locations
-                if (_otherLocations != null)
-                {
-                    string displayTypePlacement;
-                    if(_otherLocations.TryGetValue(displayType, out displayTypePlacement))
-                    {
-                        _defaultLocation = displayTypePlacement;
-                    }
-                }
-
-                placement = new Descriptors.PlacementInfo() { Location = _defaultLocation };
+                placement = new PlacementInfo() { Location = _defaultLocation };
+            }
+            else if (placement.Location == null)
+            {
+                // If a placement was found without actual location, use the default.
+                // It can happen when just setting alternates or wrappers for instance.
+                placement.Location = _defaultLocation;
             }
 
             // If there are no placement or it's explicitely noop then stop rendering execution
@@ -131,7 +138,7 @@ namespace Orchard.DisplayManagement.Views
 
             if (placement.Alternates != null)
             {
-                foreach (var alternate in placement.Alternates)
+                foreach (var alternate in placement?.Alternates)
                 {
                     newShapeMetadata.Alternates.Add(alternate);
                 }
