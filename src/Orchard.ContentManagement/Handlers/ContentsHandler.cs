@@ -1,14 +1,17 @@
-﻿using Orchard.Services;
+﻿using Microsoft.AspNetCore.Http;
+using Orchard.Services;
 
 namespace Orchard.ContentManagement.Handlers
 {
     public class UpdateContentsHandler : ContentHandlerBase
     {
         private readonly IClock _clock;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UpdateContentsHandler(IClock clock)
+        public UpdateContentsHandler(IClock clock, IHttpContextAccessor httpContextAccessor)
         {
             _clock = clock;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override void Initializing(InitializingContentContext context)
@@ -22,6 +25,11 @@ namespace Orchard.ContentManagement.Handlers
         {
             var utcNow = _clock.UtcNow;
             context.ContentItem.ModifiedUtc = utcNow;
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext?.User?.Identity?.IsAuthenticated ?? false)
+            {
+                context.ContentItem.ModifiedBy = httpContext.User.Identity.Name;
+            }
         }
 
         public override void Versioning(VersionContentContext context)
