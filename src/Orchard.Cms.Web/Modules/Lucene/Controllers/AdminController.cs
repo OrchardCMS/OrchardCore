@@ -146,28 +146,30 @@ namespace Lucene.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Delete(AdminEditViewModel model)
+        public async Task<ActionResult> Delete(string id)
         {
+            string indexName = id;
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Unauthorized();
             }
 
-            if (!_luceneIndexProvider.Exists(model.IndexName))
+            if (!_luceneIndexProvider.Exists(indexName))
             {
                 return NotFound();
             }
 
             try
             {
-                _luceneIndexProvider.DeleteIndex(model.IndexName);
+                _luceneIndexProvider.DeleteIndex(indexName);
 
-                _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
+                _notifier.Success(H["Index <em>{0}</em> deleted successfully", indexName]);
             }
             catch(Exception e)
             {
                 _notifier.Error(H["An error occurred while deleting the index"]);
-                Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                Logger.LogError("An error occurred while deleting the index " + indexName, e);
             }
 
             return RedirectToAction("Index");
