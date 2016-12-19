@@ -28,22 +28,21 @@ namespace Orchard.DisplayManagement
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
 
-            context.FindPlacement = (shape, differentiator, displayType) => FindPlacementImpl(shapeTable, shape, differentiator, displayType);
+            context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => FindPlacementImpl(shapeTable, shapeType, differentiator, displayType, context);
         }
 
-        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, IShape shape, string differentiator, string displayType)
+        private static PlacementInfo FindPlacementImpl(ShapeTable shapeTable, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {
             ShapeDescriptor descriptor;
-            var shapeType = shape.Metadata.Type;
 
             if (shapeTable.Descriptors.TryGetValue(shapeType, out descriptor))
             {
-                var placementContext = new ShapePlacementContext
-                {
-                    Shape = shape,
-                    DisplayType = displayType,
-                    Differentiator = differentiator
-                };
+                var placementContext = new ShapePlacementContext(
+                    shapeType,
+                    displayType,
+                    differentiator,
+                    context.Shape
+                );
 
                 var placement = descriptor.Placement(placementContext);
                 if (placement != null)
@@ -54,7 +53,6 @@ namespace Orchard.DisplayManagement
             }
 
             return null;
-
         }
 
         protected dynamic CreateContentShape(string actualShapeType)

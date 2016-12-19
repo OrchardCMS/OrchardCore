@@ -23,7 +23,7 @@ namespace Orchard.DisplayManagement.Handlers
         public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
 
-        private static PlacementInfo FindDefaultPlacement(IShape shape, string differentiator, string displayType)
+        private static PlacementInfo FindDefaultPlacement(string shapeType, string differentiator, string displayType, IBuildShapeContext context)
         {
             return null;
         }
