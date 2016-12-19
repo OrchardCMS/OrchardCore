@@ -386,7 +386,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
             var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
-            var shapeTile = new ShapePlacementContext("Foo", "Title", "", null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello1").From(TestFeature())
@@ -397,11 +397,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
             var result1 = hello.Placement(shapeDetail);
             var result2 = hello.Placement(shapeSummary);
-            var result3 = hello.Placement(shapeTile);
+            var result3 = hello.Placement(shapeTitle);
             hello.DefaultPlacement = "Header:5";
             var result4 = hello.Placement(shapeDetail);
             var result5 = hello.Placement(shapeSummary);
-            var result6 = hello.Placement(shapeTile);
+            var result6 = hello.Placement(shapeTitle);
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
@@ -416,7 +416,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
             var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
-            var shapeTile = new ShapePlacementContext("Foo", "Title", "", null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello2").From(TestFeature())
@@ -427,11 +427,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
             var result1 = hello.Placement(shapeDetail);
             var result2 = hello.Placement(shapeSummary);
-            var result3 = hello.Placement(shapeTile);
+            var result3 = hello.Placement(shapeTitle);
             hello.DefaultPlacement = "Header:5";
             var result4 = hello.Placement(shapeDetail);
             var result5 = hello.Placement(shapeSummary);
-            var result6 = hello.Placement(shapeTile);
+            var result6 = hello.Placement(shapeTitle);
 
             Assert.Equal("Main", result1.Location);
             Assert.Empty(result2.Location);
