@@ -12,6 +12,9 @@ using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Indexing;
 using Orchard.Tokens;
+using Orchard.ContentFields.Fields;
+using Orchard.ContentFields.Settings;
+using Orchard.ContentFields.Indexing;
 
 namespace Orchard.Markdown
 {
@@ -26,6 +29,12 @@ namespace Orchard.Markdown
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownPartIndexHandler>();
             services.AddScoped<IContentPartHandler, MarkdownPartHandler>();
+
+            // Markdown Field
+            services.AddSingleton<ContentField, MarkdownField>();
+            services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
             services.AddNullTokenizer();
         }
