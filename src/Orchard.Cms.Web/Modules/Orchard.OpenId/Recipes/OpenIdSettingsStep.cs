@@ -15,7 +15,7 @@ namespace Orchard.OpenId.Recipes
         private readonly IOpenIdService _openIdService;
         
         public OpenIdSettingsStep(IOpenIdService openIdService,
-            ILoggerFactory logger,
+            ILogger<OpenIdSettingsStep> logger,
             IStringLocalizer<OpenIdSettingsStep> localizer) : base(logger, localizer)
         {
             _openIdService = openIdService;
