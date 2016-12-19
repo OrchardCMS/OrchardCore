@@ -114,6 +114,29 @@ namespace Orchard.ResourceManagement.TagHelpers
                 {
                     definition.SetDependencies(Dependencies.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 }
+
+                // Also include the style
+
+                var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+                if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+
+                setting.UseCdn(UseCdn);
+
+                if (!String.IsNullOrEmpty(Condition))
+                {
+                    setting.UseCondition(Condition);
+                }
+
+                setting.UseDebugMode(Debug);
+
+                if (!String.IsNullOrEmpty(Culture))
+                {
+                    setting.UseCulture(Culture);
+                }
             }
 
             output.TagName = null;
