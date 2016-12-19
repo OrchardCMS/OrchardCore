@@ -19,11 +19,6 @@ namespace Orchard.ContentManagement.Handlers
             var utcNow = _clock.UtcNow;
             context.ContentItem.CreatedUtc = utcNow;
             context.ContentItem.ModifiedUtc = utcNow;
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext.User.Identity.IsAuthenticated)
-            {
-                context.ContentItem.ModifiedBy = httpContext.User.Identity.Name;
-            }
         }
 
         public override void Updating(UpdateContentContext context)
@@ -31,7 +26,7 @@ namespace Orchard.ContentManagement.Handlers
             var utcNow = _clock.UtcNow;
             context.ContentItem.ModifiedUtc = utcNow;
             var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext.User.Identity.IsAuthenticated)
+            if (httpContext?.User?.Identity?.IsAuthenticated ?? false)
             {
                 context.ContentItem.ModifiedBy = httpContext.User.Identity.Name;
             }
