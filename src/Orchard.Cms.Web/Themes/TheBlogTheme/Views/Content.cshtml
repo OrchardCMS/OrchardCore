@@ -15,5 +15,5 @@
         </div>
     </header>
 </zone>
-
+@await DisplayAsync(Model.Content.Named("Contents_Metadata"))
 @await DisplayAsync(New.BodyAspect(ContentItem: Model.ContentItem))
