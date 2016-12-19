@@ -29,7 +29,7 @@ namespace Orchard.Demo.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> GetAuthorizedById([FromServices] IContentManager contentManager, int id)
+        public async Task<IActionResult> GetAuthorizedById([FromServices] IContentManager contentManager, string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
                 return Unauthorized();
