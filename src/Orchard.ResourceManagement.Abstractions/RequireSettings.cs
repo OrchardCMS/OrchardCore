@@ -23,6 +23,7 @@ namespace Orchard.ResourceManagement
             get { return _attributes ?? (_attributes = new Dictionary<string, string>()); }
             set { _attributes = value; }
         }
+
         public bool HasAttributes
         {
             get { return _attributes != null && _attributes.Any(a => a.Value != null); }

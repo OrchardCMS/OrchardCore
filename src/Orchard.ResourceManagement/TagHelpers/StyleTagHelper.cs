@@ -87,6 +87,11 @@ namespace Orchard.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
+
+                if (!String.IsNullOrEmpty(Version))
+                {
+                    setting.UseVersion(Version);
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {

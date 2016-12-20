@@ -178,13 +178,15 @@ namespace Orchard.ResourceManagement
             if(!String.IsNullOrEmpty(settings.Version))
             {
                 // Specific version, filter
-                var upper = GetUpperBoundVersion(new Version(settings.Version));
+                var upper = GetUpperBoundVersion(settings.Version);
+                var lower = GetLowerBoundVersion(settings.Version);
                 resources = from r in resources
                             let version = r.Version != null ? new Version(r.Version) : null
-                            where version < upper
+                            where lower <= version && version < upper 
                             select r;
             }
 
+            // Use the highest version of all matches
             resource = (from r in resources
                         let version = r.Version != null ? new Version(r.Version) : null
                         orderby version descending
@@ -199,13 +201,15 @@ namespace Orchard.ResourceManagement
                 if (!String.IsNullOrEmpty(settings.Version))
                 {
                     // Specific version, filter
-                    var upper = GetUpperBoundVersion(new Version(settings.Version));
+                    var upper = GetUpperBoundVersion(settings.Version);
+                    var lower = GetLowerBoundVersion(settings.Version);
                     resources = from r in resources
                                 let version = r.Version != null ? new Version(r.Version) : null
-                                where version < upper
+                                where lower <= version && version < upper
                                 select r;
                 }
 
+                // Use the highest version of all matches
                 resource = (from r in resources
                             let version = r.Version != null ? new Version(r.Version) : null
                             orderby version descending
@@ -222,26 +226,59 @@ namespace Orchard.ResourceManagement
                     resource = FindResource(settings, false);
                 }
             }
+
             return resource;
         }
 
-        private Version GetUpperBoundVersion(Version version)
+        /// <summary>
+        /// Returns the upper bound value of a required version number.
+        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0 
+        /// </summary>
+        private Version GetUpperBoundVersion(string minimumVersion)
         {
-            if (version.Build != 0)
+            Version version;
+
+            if (!Version.TryParse(minimumVersion, out version))
+            {
+                // Is is a single number?
+                int major;
+                if (int.TryParse(minimumVersion, out major))
+                {
+                    return new Version(major + 1, 0, 0);
+                }                
+            }
+
+            if (version.Build != -1)
             {
                 return new Version(version.Major, version.Minor, version.Build + 1);
             }
 
-            if (version.Minor != 0)
+            if (version.Minor != -1)
             {
                 return new Version(version.Major, version.Minor + 1, 0);
             }
+            
+            return version;
+        }
 
-            if (version.Major != 0)
+        /// <summary>
+        /// Returns the lower bound value of a required version number.
+        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0 
+        /// </summary>
+        private Version GetLowerBoundVersion(string minimumVersion)
+        {
+            Version version;
+
+            if (!Version.TryParse(minimumVersion, out version))
             {
-                return new Version(version.Major + 1, 0, 0);
+                // Is is a single number?
+                int major;
+                if (int.TryParse(minimumVersion, out major))
+                {
+                    return new Version(major, 0, 0);
+                }
             }
-
+            
             return version;
         }
 
@@ -312,8 +349,9 @@ namespace Orchard.ResourceManagement
                 var resource = FindResource(settings);
                 if (resource == null)
                 {
-                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, "A '{1}' named '{0}' could not be found.", settings.Name, settings.Type));
+                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}.");
                 }
+
                 ExpandDependencies(resource, settings, allResources);
             }
             requiredResources = (from DictionaryEntry entry in allResources
