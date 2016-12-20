@@ -34,7 +34,7 @@ namespace Orchard.Settings.Controllers
 
         public async Task<IActionResult> Index(string groupId)
         {
-            if (! await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
             {
                 return Unauthorized();
             }
@@ -43,7 +43,7 @@ namespace Orchard.Settings.Controllers
 
             viewModel.GroupId = groupId;
             viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(this, groupId);
-            
+
             return View(viewModel);
         }
 
@@ -67,7 +67,7 @@ namespace Orchard.Settings.Controllers
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
                 _notifier.Success(H["Site settings updated successfully."]);
-                
+
                 return RedirectToAction(nameof(Index), new { groupId });
             }
 

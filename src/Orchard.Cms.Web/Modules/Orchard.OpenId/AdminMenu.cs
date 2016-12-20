@@ -27,6 +27,14 @@ namespace Orchard.OpenId
                         .Permission(Permissions.ManageOpenIdApplications)
                         .LocalNav()
                     )
+                )
+                .Add(T["Design"], design => design
+                    .Add(T["Settings"], settings => settings
+                        .Add(T["Open Id"], "10", entry => entry
+                            .Action("Index", "Admin", new { area = "Orchard.Settings", groupId = "open id" })
+                            .LocalNav()
+                        )
+                    )
                 );
         }
     }
