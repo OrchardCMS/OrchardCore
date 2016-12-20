@@ -16,21 +16,21 @@ namespace Orchard.Environment.Extensions.Manifests
             _fileProvider = hostingEnvironment.ContentRootFileProvider;
         }
 
-        public int Priority { get { return 0; } }
+        public double Priority { get { return 100D; } }
 
         public IConfigurationBuilder GetManifestConfiguration(
             IConfigurationBuilder configurationBuilder, 
-            string subPath)
+            string filePath)
         {
             // TODO.. (ngm) are there any better checks for IsYaml
-            var extension = Path.GetExtension(subPath);
+            var extension = Path.GetExtension(filePath);
 
             if (!extension.Equals(".txt", StringComparison.OrdinalIgnoreCase))
             {
                 return configurationBuilder;
             }
 
-            var manifestFileInfo = _fileProvider.GetFileInfo(subPath);
+            var manifestFileInfo = _fileProvider.GetFileInfo(filePath);
 
             if (!manifestFileInfo.Exists)
             {
@@ -39,7 +39,7 @@ namespace Orchard.Environment.Extensions.Manifests
 
             return
                 configurationBuilder
-                    .AddYamlFile(_fileProvider, subPath, true, false);
+                    .AddYamlFile(_fileProvider, filePath, true, false);
         }
     }
 }

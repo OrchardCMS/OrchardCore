@@ -12,11 +12,11 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
-            IOptions<ExtensionOptions> optionsAccessor,
+            IOptions<ExtensionExpanderOptions> optionsAccessor,
             IExtensionLibraryService extensionLibraryService,
             ILogger<DynamicExtensionLoader> logger)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.SearchPaths.ToArray();
+            ExtensionsSearchPaths = optionsAccessor.Value.Options.Select(x => x.SearchPath).ToArray();
             _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }

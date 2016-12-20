@@ -1,0 +1,4 @@
+﻿Name: Site 1 Theme Sample
+Author: Nicholas Mayne
+Description: Theme for Site 1
+Version: 1.0.0

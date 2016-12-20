@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Orchard.Environment.Extensions
 {
-    public class ExtensionInfo : IExtensionInfo
+    public class ShellExtensionInfo : IExtensionInfo
     {
         private readonly string _id;
         private readonly IFileInfo _fileInfo;
@@ -13,7 +13,7 @@ namespace Orchard.Environment.Extensions
         private readonly IManifestInfo _manifestInfo;
         private readonly IEnumerable<IFeatureInfo> _features;
 
-        public ExtensionInfo(
+        public ShellExtensionInfo(
             string id,
             IFileInfo fileInfo,
             string subPath,
