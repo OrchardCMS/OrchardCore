@@ -276,7 +276,7 @@ namespace Orchard.ResourceManagement
                 tagBuilder.MergeAttributes(Attributes);
             }
 
-            if (settings.Attributes != null)
+            if (settings.HasAttributes)
             {
                 tagBuilder.MergeAttributes(settings.Attributes);
             }
