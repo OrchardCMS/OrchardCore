@@ -29,7 +29,7 @@ namespace Lucene.Settings
 
             return Shape<ContentIndexSettingsViewModel>("ContentIndexSettings_Edit", model =>
             {
-                model.ContentIndexSettings = contentTypePartDefinition.Settings.ToObject<ContentIndexSettings>();
+                model.ContentIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 
                 return Task.CompletedTask;
             }).Location("Content");
