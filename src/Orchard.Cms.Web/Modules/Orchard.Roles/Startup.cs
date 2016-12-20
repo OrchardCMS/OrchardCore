@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
+using Orchard.Recipes;
+using Orchard.Roles.Recipes;
 using Orchard.Roles.Services;
 using Orchard.Security;
 using Orchard.Security.Permissions;
@@ -19,6 +21,7 @@ namespace Orchard.Roles
             services.TryAddScoped<RoleManager<Role>>();
             services.TryAddScoped<IRoleStore<Role>, RoleStore>();
             services.TryAddScoped<IRoleProvider, RoleStore>();
+            services.AddRecipeExecutionStep<RolesStep>();
 
             services.AddScoped<RoleUpdater>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<RoleUpdater>());

@@ -17,7 +17,9 @@ namespace Orchard.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content");
+            .Location("Content")
+            .Location("SummaryAdmin", "");
+            ;
         }
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)

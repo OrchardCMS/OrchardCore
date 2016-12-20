@@ -92,7 +92,6 @@ namespace Orchard.Contents.Controllers
                     break;
             }
 
-
             if (!string.IsNullOrEmpty(model.TypeName))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.TypeName);
@@ -381,7 +380,7 @@ namespace Orchard.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {

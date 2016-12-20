@@ -15,6 +15,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
 using Orchard.Indexing;
 using Orchard.Recipes;
+using Orchard.Scripting;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Contents
@@ -34,6 +35,8 @@ namespace Orchard.Contents
 
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
+
+            services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -56,21 +59,28 @@ namespace Orchard.Contents
             routes.MapAreaRoute(
                 name: "EditContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentItems/{contentItemId}/Edit",
+                template: "Admin/Contents/ContentItems/{contentItemId}/Edit",
                 defaults: new { controller = "Admin", action = "Edit" }
             );
 
             routes.MapAreaRoute(
                 name: "CreateContentItem",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentTypes/{id}/Create",
+                template: "Admin/Contents/ContentTypes/{id}/Create",
                 defaults: new { controller = "Admin", action = "Create" }
+            );
+
+            routes.MapAreaRoute(
+                name: "AdminContentItem",
+                areaName: "Orchard.Contents",
+                template: "Admin/Contents/ContentItems/{contentItemId}/Display",
+                defaults: new { controller = "Admin", action = "Display" }
             );
 
             routes.MapAreaRoute(
                 name: "ListContentItems",
                 areaName: "Orchard.Contents",
-                template: "Contents/ContentItems",
+                template: "Admin/Contents/ContentItems",
                 defaults: new { controller = "Admin", action = "List" }
             );
 

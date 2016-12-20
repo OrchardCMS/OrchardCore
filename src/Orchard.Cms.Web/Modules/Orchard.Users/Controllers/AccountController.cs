@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Shell;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
 using Orchard.Users.Services;
@@ -18,18 +17,15 @@ namespace Orchard.Users.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
-        private readonly ShellSettings _shellSettings;
 
         public AccountController(
             IUserService userService,
             SignInManager<User> signInManager,
-            ShellSettings shellSettings,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
             _userService = userService;
-            _shellSettings = shellSettings;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _logger = logger;
         }
@@ -125,7 +121,7 @@ namespace Orchard.Users.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation(4, "User logged out.");
 
-            return Redirect("~/" + _shellSettings.RequestUrlPrefix);
+            return Redirect("~/");
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -136,7 +132,7 @@ namespace Orchard.Users.Controllers
             }
             else
             {
-                return Redirect("~/" + _shellSettings.RequestUrlPrefix);
+                return Redirect("~/");
             }
         }
     }

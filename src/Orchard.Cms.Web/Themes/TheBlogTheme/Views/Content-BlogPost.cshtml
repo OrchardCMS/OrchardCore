@@ -1,0 +1,25 @@
+﻿<zone name="Header">
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('@OrDefault(Model.ContentItem.Content.BlogPost.HeaderImageUrl.Text, "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg")')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>@Model.ContentItem.Content.TitlePart.Title</h1>
+                        <h2 class="subheading">
+                            @Model.ContentItem.Content.BlogPost.Subtitle.Text
+                        </h2>
+                        <span class="meta">
+                            @T["Posted by {0} on {1}",
+                                Html.Raw($"<a href=\"#\">{Model.ContentItem.Content.ModifiedBy}</a>"),
+                                (object)Model.ContentItem.CreatedUtc.ToString("MMMM dd, yyyy")]
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</zone>
+
+@await DisplayAsync(New.BodyAspect(ContentItem: Model.ContentItem))

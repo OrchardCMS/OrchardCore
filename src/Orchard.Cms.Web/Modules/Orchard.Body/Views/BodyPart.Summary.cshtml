@@ -1,5 +1,6 @@
 ﻿@model Orchard.Body.ViewModels.BodyPartViewModel
 @inject Orchard.Tokens.Services.ITokenizer Tokenizer
+@using Orchard.Utility
 
 @{
     string body = Model.Body;
@@ -11,4 +12,4 @@
     }
 }
 
-@body.Substring(0, Math.Min(body.Length, 200))
+@Html.Raw(body.RemoveTags(true).Ellipsize(200))

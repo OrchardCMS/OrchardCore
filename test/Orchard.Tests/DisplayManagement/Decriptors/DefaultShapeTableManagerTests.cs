@@ -354,8 +354,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
         {
             Action<ShapeCreatingContext> cb1 = x => { };
             Action<ShapeCreatedContext> cb2 = x => { };
-            Action<ShapeDisplayingContext> cb3 = x => { };
-            Action<ShapeDisplayedContext> cb4 = x => { };
+            Action<ShapeDisplayContext> cb3 = x => { };
+            Action<ShapeDisplayContext> cb4 = x => { };
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Foo").From(TestFeature())

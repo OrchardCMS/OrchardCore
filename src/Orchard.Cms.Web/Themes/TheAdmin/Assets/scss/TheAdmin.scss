@@ -34,7 +34,7 @@ $left-navigation-expand-width: 15em;
     .ta-content {
         @extend .container-fluid;
         margin-left: 0;
-        margin-top: $top-nav-height - 24px; // can't explain the -24px, there is a gap before the top margin
+        margin-top: $top-nav-height;
         padding-top: 1em;
         border-left: 1px solid rgba(0, 0, 0, 0.05);
     }

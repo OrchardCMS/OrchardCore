@@ -23,7 +23,7 @@ namespace Orchard.Body.Drivers
         {
             return Combine(
                 Shape<BodyPartViewModel>("BodyPart", m => BuildViewModel(m, bodyPart))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content:5"),
                 Shape<BodyPartViewModel>("BodyPart_Summary", m => BuildViewModel(m, bodyPart))
                     .Location("Summary", "Content:10")
             );

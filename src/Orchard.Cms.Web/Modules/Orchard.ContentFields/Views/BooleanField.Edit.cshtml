@@ -13,3 +13,12 @@
         }
     </label>
 </fieldset>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.Value)')
+        .change(function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+</script>

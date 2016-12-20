@@ -56,6 +56,16 @@ namespace Orchard.Hosting.Web.Routing
 
             RequestDelegate pipeline;
 
+            // Define a PathBase for the current request that is the RequestUrlPrefix.
+            // This will allow any view to reference ~/ as the tenant's base url.
+
+            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            {
+                string requestPrefix = "/" + shellSettings.RequestUrlPrefix;
+                httpContext.Request.PathBase = requestPrefix;
+                httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(requestPrefix.Length);
+            }
+
             if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))
             {
                 // Building a pipeline can't be done by two requests
@@ -72,7 +82,7 @@ namespace Orchard.Hosting.Web.Routing
                     }
                 }
             }
-
+            
             await pipeline.Invoke(httpContext);
         }
 
@@ -84,18 +94,10 @@ namespace Orchard.Hosting.Web.Routing
 
             IApplicationBuilder appBuilder = new ApplicationBuilder(serviceProvider);
 
-            string routePrefix = "";
-            if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-            {
-                routePrefix = shellSettings.RequestUrlPrefix + "/";
-            }
-
             var routeBuilder = new RouteBuilder(appBuilder)
             {
                 DefaultHandler = serviceProvider.GetRequiredService<MvcRouteHandler>()
             };
-
-            var prefixedRouteBuilder = new PrefixedRouteBuilder(routePrefix, routeBuilder, inlineConstraintResolver);
 
             // Register one top level TenantRoute per tenant. Each instance contains all the routes
             // for this tenant.
@@ -107,13 +109,12 @@ namespace Orchard.Hosting.Web.Routing
 
             foreach (var startup in startups)
             {
-                startup.Configure(appBuilder, prefixedRouteBuilder, serviceProvider);
+                startup.Configure(appBuilder, routeBuilder, serviceProvider);
             }
 
-
             // The default route is added to each tenant as a template route, with a prefix
-            prefixedRouteBuilder.Routes.Add(new Route(
-                prefixedRouteBuilder.DefaultHandler,
+            routeBuilder.Routes.Add(new Route(
+                routeBuilder.DefaultHandler,
                 "Default",
                 "{area:exists}/{controller}/{action}/{id?}",
                 null,
@@ -128,10 +129,10 @@ namespace Orchard.Hosting.Web.Routing
             if (siteService != null)
             {
                 // Add home page route
-                routeBuilder.Routes.Add(new HomePageRoute(shellSettings.RequestUrlPrefix, siteService, routeBuilder, inlineConstraintResolver));
+                routeBuilder.Routes.Add(new HomePageRoute(siteService, routeBuilder, inlineConstraintResolver));
             }
 
-            var router = prefixedRouteBuilder.Build();
+            var router = routeBuilder.Build();
 
             appBuilder.UseRouter(router);
 

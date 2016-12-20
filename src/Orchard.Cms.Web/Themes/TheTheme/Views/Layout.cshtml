@@ -1,9 +1,14 @@
-﻿<!DOCTYPE html>
+﻿﻿@inject Orchard.Settings.ISiteService SiteService
+@{
+    var site = await SiteService.GetSiteSettingsAsync();
+}
+<!DOCTYPE html>
 <html>
 <head>
+    <title>@RenderTitleSegments(T[site.SiteName], "before")</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/Content/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/TheTheme/Content/favicon.ico" />
 
     <script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
 
@@ -15,17 +20,9 @@
     <resources type="HeadLink" />
     <resources type="Stylesheet" />
     <resources type="HeadScript" />
-
-    @{
-        Title.AddSegment(T["Orchard"], "before");
-    }
-
-    <title>@Title.GenerateTitle()</title>
-
     @await RenderSectionAsync("Header", required: false)
 </head>
-<body >
-
+<body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -35,7 +32,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Project name</a>
+                <a class="navbar-brand" href="#">@site.SiteName</a>
             </div>
             <div id="navbar" class="collapse navbar-collapse">
 

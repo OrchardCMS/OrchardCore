@@ -17,7 +17,7 @@ namespace Orchard.Resources
                 .DefineScript("jquery-ui")
                 .SetDependencies("jQuery")
                 .SetUrl("/Orchard.Resources/Scripts/jquery-ui.min.js", "/Orchard.Resources/Scripts/jquery-ui.js")
-                .SetCdn("http://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+                .SetCdn("https://code.jquery.com/ui/1.12.1/jquery-ui.min.js", "https://code.jquery.com/ui/1.12.1/jquery-ui.js")
                 ;
 
             manifest

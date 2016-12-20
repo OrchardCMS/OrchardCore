@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -8,16 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Orchard.Data.Migration;
+using Orchard.Environment.Commands;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
+using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
 using YesSql.Core.Indexes;
-using Orchard.Users.Commands;
-using Orchard.Environment.Commands;
 
 namespace Orchard.Users
 {
@@ -74,8 +73,8 @@ namespace Orchard.Users
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
-                options.Cookies.ApplicationCookie.LoginPath = new PathString(_tenantPrefix.TrimEnd('/') + "/Orchard.Users/Account/Login/");
-                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString(_tenantPrefix.TrimEnd('/') + "/Orchard.Users/Account/Login/");
+                options.Cookies.ApplicationCookie.LoginPath = "/Orchard.Users/Account/Login/";
+                options.Cookies.ApplicationCookie.AccessDeniedPath = "/Orchard.Users/Account/Login/";
             });
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();
