@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.Environment.Extensions;
@@ -16,12 +12,16 @@ using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Events;
-using Orchard.Tests.Stubs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Orchard.Tests.DisplayManagement.Decriptors
 {
-    public class DefaultShapeTableManagerTests
+    public class DefaultShapeTableManagerTests : IDisposable
     {
         IServiceProvider _serviceProvider;
 
@@ -126,7 +126,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                     {"name", name},
                     {"desciption", name},
                     {"type", "theme"},
-                    {"basetheme", baseTheme.Id}
+                    {"basetheme", baseTheme.Id }
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
@@ -162,6 +162,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
+            serviceCollection.AddSingleton<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
@@ -171,8 +172,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var features = new[] {
                 testFeatureExtensionInfo.Features.First(),
                 theme1FeatureExtensionInfo.Features.First(),
-                derivedThemeFeatureExtensionInfo.Features.First(),
-                baseThemeFeatureExtensionInfo.Features.First()
+                baseThemeFeatureExtensionInfo.Features.First(),
+                derivedThemeFeatureExtensionInfo.Features.First()
             };
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
@@ -250,7 +251,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
             {
-                throw new NotImplementedException();
+                var feature = _features.First(x => x.Id == featureId);
+
+                return _features.Where(x => feature.Dependencies.Contains(x.Id));
             }
 
             public IExtensionInfo GetExtension(string extensionId)
@@ -295,7 +298,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
             {
-                return _features.Where(x => x.Dependencies.Contains(featureId));
+                throw new NotImplementedException();
             }
 
             public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
@@ -514,6 +517,11 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var table = manager.GetShapeTable("DerivedTheme");
             Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
             Assert.StrictEqual("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
+        }
+
+        public void Dispose()
+        {
+            (_serviceProvider as IDisposable)?.Dispose();
         }
     }
 }

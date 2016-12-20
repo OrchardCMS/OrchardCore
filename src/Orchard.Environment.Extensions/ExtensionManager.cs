@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
+using System.Threading;
 
 namespace Orchard.Environment.Extensions
 {
@@ -20,30 +21,46 @@ namespace Orchard.Environment.Extensions
         private readonly ExtensionOptions _extensionOptions;
         private readonly IExtensionProvider _extensionProvider;
         private readonly IExtensionLoader _extensionLoader;
+        private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        private readonly ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>> _extensions
-            = new ConcurrentDictionary<string, Lazy<Task<ExtensionEntry>>>();
+        private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
+            = new LazyConcurrentDictionary<string, Task<ExtensionEntry>>();
 
-        private readonly ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>> _features
-            = new ConcurrentDictionary<string, Lazy<Task<FeatureEntry>>>();
+        private readonly LazyConcurrentDictionary<string, Task<FeatureEntry>> _features
+            = new LazyConcurrentDictionary<string, Task<FeatureEntry>>();
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _featureDependencies
+            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
 
-        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _dependentFeatures
+            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
 
         private IDictionary<string, IExtensionInfo> _extensionsById;
 
-        private ConcurrentBag<IFeatureInfo> _allOrderedFeatureInfos;
-        private ConcurrentBag<IFeatureInfo> _allUnorderedFeatureInfos;
+        private IList<IFeatureInfo> _allOrderedFeatureInfos;
+        private IList<IFeatureInfo> _allUnorderedFeatureInfos;
+
+        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependantFeaturesFunc =
+            new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                (currentFeature, fs) => fs
+                    .Where(f =>
+                            f.Dependencies.Any(dep => dep == currentFeature.Id)
+                           ).OrderBy(x => x.Id).ToArray());
+
+        private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetFeatureDependenciesFunc =
+            new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
+                (currentFeature, fs) => fs
+                    .Where(f =>
+                            currentFeature.Dependencies.Any(dep => dep == f.Id)
+                           ).OrderByDescending(x => x.Id).ToArray());
 
         public ExtensionManager(
             IOptions<ExtensionOptions> optionsAccessor,
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
+            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
             IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
@@ -52,6 +69,7 @@ namespace Orchard.Environment.Extensions
             _extensionOptions = optionsAccessor.Value;
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
+            _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
             _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
@@ -64,7 +82,12 @@ namespace Orchard.Environment.Extensions
         {
             GetExtensions(); // initialize
 
-            return _extensionsById[extensionId];
+            if (_extensionsById.ContainsKey(extensionId))
+            {
+                return _extensionsById[extensionId];
+            }
+
+            return new NotFoundExtensionInfo(extensionId);
         }
 
         public IEnumerable<IExtensionInfo> GetExtensions()
@@ -105,12 +128,11 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            return _featureDependencies.GetOrAdd(featureId,
-                new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            return _featureDependencies.GetOrAdd(featureId, (key) =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures();
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
@@ -119,7 +141,7 @@ namespace Orchard.Environment.Extensions
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
 
-                stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                stack.Push(GetFeatureDependenciesFunc(feature, unorderedFeatures));
 
                 while (stack.Count > 0)
                 {
@@ -127,49 +149,39 @@ namespace Orchard.Environment.Extensions
                     foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                     {
                         dependencies.Add(dependency);
-                        stack.Push(unorderedFeatures.Where(subject => feature.Dependencies.Any(x => x == subject.Id)).ToArray());
+                        stack.Push(GetFeatureDependenciesFunc(dependency, unorderedFeatures));
                     }
                 }
 
-                return dependencies.Distinct();
-            })).Value;
+                return dependencies.Reverse();
+            });
         }
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return _dependentFeatures.GetOrAdd(featureId,
-                 new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            return _dependentFeatures.GetOrAdd(featureId, (key) =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures();
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == featureId);
+                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
-                var getDependants =
-                    new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
-                        (currentFeature, fs) => fs
-                            .Where(f =>
-                                    f.Dependencies.Any(dep => dep == currentFeature.Id)
-                                   ).ToArray());
-
                 return
-                    GetDependentFeatures(feature, unorderedFeatures.ToArray(), getDependants);
-
-            })).Value;
+                    GetDependentFeatures(feature, unorderedFeatures);
+            });
         }
 
-        private IList<IFeatureInfo> GetDependentFeatures(
+        private IEnumerable<IFeatureInfo> GetDependentFeatures(
             IFeatureInfo feature,
-            IFeatureInfo[] features,
-            Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> getAffectedDependencies)
+            IFeatureInfo[] features)
         {
             var dependencies = new HashSet<IFeatureInfo>() { feature };
             var stack = new Stack<IFeatureInfo[]>();
 
-            stack.Push(getAffectedDependencies(feature, features));
+            stack.Push(GetDependantFeaturesFunc(feature, features));
 
             while (stack.Count > 0)
             {
@@ -177,19 +189,18 @@ namespace Orchard.Environment.Extensions
                 foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                 {
                     dependencies.Add(dependency);
-                    stack.Push(getAffectedDependencies(dependency, features));
+                    stack.Push(GetDependantFeaturesFunc(dependency, features));
                 }
             }
 
-            return dependencies.ToList();
+            return dependencies;
         }
 
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             // Results are cached so that there is no mismatch when loading an assembly twice.
             // Otherwise the same types would not match.
-            return _extensions.GetOrAdd(extensionInfo.Id,
-                new Lazy<Task<ExtensionEntry>>(() =>
+            return _extensions.GetOrAdd(extensionInfo.Id, (key) =>
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
@@ -200,7 +211,7 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return Task.FromResult(extension);
-            })).Value;
+            });
         }
 
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
@@ -217,15 +228,7 @@ namespace Orchard.Environment.Extensions
         {
             if (_allOrderedFeatureInfos == null)
             {
-                var allUnorderedFeatures = GetAllUnorderedFeatures();
-
-                var orderedFeatureDescriptors = allUnorderedFeatures
-                    .OrderByDependenciesAndPriorities(
-                        (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                        (fi) => fi.Priority)
-                    .Distinct();
-
-                _allOrderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(orderedFeatureDescriptors);
+                _allOrderedFeatureInfos = Order(GetAllUnorderedFeatures());
             }
 
             return _allOrderedFeatureInfos;
@@ -233,18 +236,26 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
-            var allUnorderedFeaturesToLoadIncludingDependencies =
-                featureIdsToLoad.SelectMany(featureId => GetFeatureDependencies(featureId));
+            var allDependencies = featureIdsToLoad
+                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .Distinct();
 
-            var orderedFeatureDescriptors = allUnorderedFeaturesToLoadIncludingDependencies
-                             .OrderByDependenciesAndPriorities(
-                                 (fiObv, fiSub) => GetDependentFeatures(fiObv.Id).Contains(fiSub),
-                                 (fi) => fi.Priority)
-                            .Distinct();
+            var orderedFeatureDescriptors = GetFeatures()
+                .Where(f => allDependencies.Any(d => d.Id == f.Id));
 
             return orderedFeatureDescriptors;
         }
-        
+
+        private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
+        {
+            return featuresToOrder
+                .OrderBy(x => x.Id)
+                .OrderByDependenciesAndPriorities(
+                    (fiObv, fiSub) => HasDependency(fiObv, fiSub),
+                    (fi) => fi.Priority)
+                .ToList();
+        }
+
         public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             var features = GetFeatures(featureIdsToLoad);
@@ -257,12 +268,16 @@ namespace Orchard.Environment.Extensions
             return loadedFeatures.AsEnumerable();
         }
 
+        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
+        {
+            return _extensionOrderingStrategy.Compare(f1, f2) > 0 ? true : GetFeatureDependencies(f1.Id).Contains(f2);
+        }
+
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
         {
-            return _features.GetOrAdd(feature.Id,
-                new Lazy<Task<FeatureEntry>>(async () =>
-                {
-                    var loadedExtension = await LoadExtensionAsync(feature.Extension);
+            return _features.GetOrAdd(feature.Id, async (key) =>
+            {
+                var loadedExtension = await LoadExtensionAsync(feature.Extension);
 
                 if (loadedExtension.IsError)
                 {
@@ -286,14 +301,14 @@ namespace Orchard.Environment.Extensions
                 }
 
                 return new CompiledFeatureEntry(feature, featureTypes);
-            })).Value;
+            });
         }
 
-        private IEnumerable<IFeatureInfo> GetAllUnorderedFeatures()
+        private IList<IFeatureInfo> GetAllUnorderedFeatures()
         {
             if (_allUnorderedFeatureInfos == null)
             {
-                _allUnorderedFeatureInfos = new ConcurrentBag<IFeatureInfo>(GetExtensions().SelectMany(x => x.Features).Distinct());
+                _allUnorderedFeatureInfos = GetExtensions().SelectMany(x => x.Features).ToList();
             }
 
             return _allUnorderedFeatureInfos;
@@ -306,6 +321,29 @@ namespace Orchard.Environment.Extensions
                 return featureAttribute.FeatureName;
             }
             return extensionId;
+        }
+
+        // https://blogs.endjin.com/2015/10/using-lazy-and-concurrentdictionary-to-ensure-a-thread-safe-run-once-lazy-loaded-collection/
+        private class LazyConcurrentDictionary<TKey, TValue>
+        {
+            private readonly ConcurrentDictionary<TKey, Lazy<TValue>> _concurrentDictionary;
+
+            public LazyConcurrentDictionary()
+            {
+                _concurrentDictionary = new ConcurrentDictionary<TKey, Lazy<TValue>>();
+            }
+
+            // When you call GetOrAdd the valueFactory is not thread safe, this means two threads could make the same
+            // call to underlying components.
+            // Loading features and extensions is expensive and should only be done once
+            public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+            {
+                return _concurrentDictionary
+                    .GetOrAdd(
+                        key, 
+                        k => new Lazy<TValue>(() => valueFactory(k), LazyThreadSafetyMode.ExecutionAndPublication))
+                    .Value;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Orchard.Environment.Extensions.Features;
+﻿using Orchard.DisplayManagement.Extensions;
+using Orchard.Environment.Extensions.Features;
 using System.Linq;
 
 namespace Orchard.DisplayManagement.Events
@@ -7,16 +8,19 @@ namespace Orchard.DisplayManagement.Events
     {
         public override void Building(FeatureBuildingContext context)
         {
-            var baseTheme = context.ExtensionInfo.Manifest.ConfigurationRoot["basetheme"];
-
-            if (baseTheme != null && baseTheme.Length != 0)
+            if (context.ExtensionInfo.Manifest.IsTheme())
             {
-                if (!context.FeatureDependencyIds.Contains(baseTheme))
+                var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
+
+                if (extensionInfo.HasBaseTheme())
                 {
-                    var temp = context.FeatureDependencyIds.ToList();
-                    temp.Add(baseTheme);
-                    context.FeatureDependencyIds = temp.ToArray();
+                    context.FeatureDependencyIds = context
+                        .FeatureDependencyIds
+                        .Concat(new [] { extensionInfo.BaseTheme })
+                        .ToArray();
                 }
+
+                context.ExtensionInfo = extensionInfo;
             }
         }
     }

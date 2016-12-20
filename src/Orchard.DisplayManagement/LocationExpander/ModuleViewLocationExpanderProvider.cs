@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell;
-using System.Linq;
-using System.IO;
 using Orchard.Environment.Extensions;
+using System.Collections.Generic;
+using System.IO;
+using System;
 
-namespace Orchard.Hosting.Mvc.Razor
+namespace Orchard.DisplayManagement.LocationExpander
 {
-    public class ModuleViewLocationExpander : IViewLocationExpander
+    public class ModuleViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        public double Priority => 5D;
+
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
         {
@@ -21,16 +22,16 @@ namespace Orchard.Hosting.Mvc.Razor
         {
             var result = new List<string>();
 
-            var extensionsManager = context
+            var extensionManager = context
                 .ActionContext
                 .HttpContext
                 .RequestServices
                 .GetService<IExtensionManager>();
 
             // Get Extension, and then add in the relevant views.
-            var extension = extensionsManager.GetExtension(context.AreaName);
+            var extension = extensionManager.GetExtension(context.AreaName);
 
-            if (extension != null)
+            if (extension.Exists)
             {
                 var extensionViewsPath = 
                     Path.Combine(Path.DirectorySeparatorChar + extension.SubPath, "Views");

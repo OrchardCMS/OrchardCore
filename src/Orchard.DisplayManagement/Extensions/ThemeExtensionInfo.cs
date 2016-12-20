@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.DisplayManagement.Extensions
 {
@@ -14,11 +16,11 @@ namespace Orchard.DisplayManagement.Extensions
         public ThemeExtensionInfo(IExtensionInfo extensionInfo)
         {
             _extensionInfo = extensionInfo;
-
+            
             var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["basetheme"];
 
             if (baseTheme != null && baseTheme.Length != 0) {
-                _baseTheme = baseTheme.ToString();
+                _baseTheme = baseTheme.Trim().ToString();
             }
         }
 
@@ -32,11 +34,11 @@ namespace Orchard.DisplayManagement.Extensions
         public string BaseTheme => _baseTheme;
 
         public bool HasBaseTheme() {
-            return _baseTheme != null;
+            return !string.IsNullOrWhiteSpace(_baseTheme);
         }
 
         public bool IsBaseThemeFeature(string featureId) {
-            return featureId == _baseTheme;
+            return HasBaseTheme() && featureId == _baseTheme;
         }
     }
 }

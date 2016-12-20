@@ -119,28 +119,31 @@ namespace Orchard.Environment.Extensions.Features
 
                 var featureDescription = featureDetails.ContainsKey(DescriptionKey) ? featureDetails[DescriptionKey] : null;
 
+                var context = new FeatureBuildingContext
+                {
+                    FeatureId = featureId,
+                    FeatureName = featureName,
+                    Category = featureCategory,
+                    Description = featureDescription,
+                    ExtensionInfo = extensionInfo,
+                    FeatureDetails = featureDetails,
+                    ManifestDetails = featureDetails,
+                    ManifestInfo = manifestInfo,
+                    Priority = featurePriority,
+                    FeatureDependencyIds = featureDependencyIds
+                };
+
                 _featureBuilderEvents.Invoke(fbe => fbe.Building(
-                    new FeatureBuildingContext
-                    {
-                        FeatureId = featureId,
-                        FeatureName = featureName,
-                        Category = featureCategory,
-                        Description = featureDescription,
-                        ExtensionInfo = extensionInfo,
-                        FeatureDetails = featureDetails,
-                        ManifestDetails = featureDetails,
-                        ManifestInfo = manifestInfo,
-                        Priority = featurePriority
-                    }), L);
+                    context), L);
 
                 var featureInfo = new FeatureInfo(
-                    featureId,
-                    featureName,
-                    featurePriority,
-                    featureCategory,
-                    featureDescription,
-                    extensionInfo,
-                    featureDependencyIds);
+                    context.FeatureId,
+                    context.FeatureName,
+                    context.Priority,
+                    context.Category,
+                    context.Description,
+                    context.ExtensionInfo,
+                    context.FeatureDependencyIds);
 
                 _featureBuilderEvents.Invoke(fbe => fbe.Built(featureInfo), L);
 

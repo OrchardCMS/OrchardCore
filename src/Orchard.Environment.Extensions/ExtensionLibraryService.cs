@@ -514,6 +514,11 @@ namespace Orchard.Environment.Extensions
             var assemblyFolderPath = Path.Combine(fileInfo.PhysicalPath, Constants.BinDirectoryName);
             var assemblyPath = Path.Combine(assemblyFolderPath, CompilerUtility.GetAssemblyFileName(extensionInfo.Id));
 
+            if (!Directory.Exists(assemblyFolderPath))
+            {
+                return;
+            }
+
             // default runtime assemblies: "bin/{assembly}.dll"
             var runtimeAssemblies = Directory.GetFiles(assemblyFolderPath,
                 "*" + FileNameSuffixes.DotNet.DynamicLib, SearchOption.TopDirectoryOnly);
