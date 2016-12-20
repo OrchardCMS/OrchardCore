@@ -12,7 +12,7 @@ Named resources are well-known scripts and stylesheets that are described in a m
 and optionally a version. The __Orchard.Resources__ modules provides some commonly used ones:
 
 | Name | Type | Versions | Dependencies |
---------------------------
+| ---- | ---- | -------- | ------------ |
 | jQuery | Script | 1.12.4 | - |
 | jQuery | Script | 2.2.4 | - |
 | jQuery | Script | 3.1.1 | - |
