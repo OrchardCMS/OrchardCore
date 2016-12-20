@@ -11,6 +11,7 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
 using System;
 using System.Collections.Generic;
@@ -162,6 +163,8 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
+
+            serviceCollection.AddSingleton(new ShellBlueprint { Dependencies = Enumerable.Empty<DependencyBlueprint>() });
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");

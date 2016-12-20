@@ -31,7 +31,7 @@ namespace Orchard.Environment.Shell.Builders.Models
                 return item.Feature;
             }
 
-            return null;
+            return CoreFeature;
         }
     }
 
