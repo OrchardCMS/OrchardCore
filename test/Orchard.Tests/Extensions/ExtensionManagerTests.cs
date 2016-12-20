@@ -178,17 +178,6 @@ namespace Orchard.Tests.Extensions
             Assert.Equal("DerivedThemeSample", features.ElementAt(1).Id);
         }
 
-        [Fact]
-        public void GetFeaturesShouldReturnCorrectThemeHeirarchyWithMultipleBaseThemes()
-        {
-            var features = ThemeScopedExtensionManager.GetFeatures(new[] { "DerivedThemeSample2" });
-
-            Assert.Equal(3, features.Count());
-            Assert.Equal("BaseThemeSample", features.ElementAt(0).Id);
-            Assert.Equal("BaseThemeSample2", features.ElementAt(1).Id);
-            Assert.Equal("DerivedThemeSample2", features.ElementAt(2).Id);
-        }
-
         /* Theme and Module Dependencies */
 
         [Fact]

@@ -12,11 +12,11 @@ namespace Orchard.DisplayManagement.Events
             {
                 var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
-                if (extensionInfo.HasBaseThemes())
+                if (extensionInfo.HasBaseTheme())
                 {
                     context.FeatureDependencyIds = context
                         .FeatureDependencyIds
-                        .Concat(extensionInfo.BaseThemes)
+                        .Concat(new [] { extensionInfo.BaseTheme })
                         .ToArray();
                 }
 

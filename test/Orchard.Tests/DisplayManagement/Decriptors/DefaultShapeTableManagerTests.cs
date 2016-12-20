@@ -126,7 +126,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                     {"name", name},
                     {"desciption", name},
                     {"type", "theme"},
-                    {"basethemes", baseTheme.Id }
+                    {"basetheme", baseTheme.Id }
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
