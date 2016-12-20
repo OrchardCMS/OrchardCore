@@ -9,7 +9,6 @@ namespace Orchard.Environment.Extensions.Loaders
         private readonly ILogger _logger;
 
         public DynamicExtensionLoader(
-            IOptions<ExtensionExpanderOptions> optionsAccessor,
             IExtensionLibraryService extensionLibraryService,
             ILogger<DynamicExtensionLoader> logger)
         {
