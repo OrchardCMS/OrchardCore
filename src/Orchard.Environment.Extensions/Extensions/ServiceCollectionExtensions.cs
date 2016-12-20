@@ -26,7 +26,6 @@ namespace Orchard.Environment.Extensions
             services.AddSingleton<IExtensionProvider, ExtensionProvider>();
             services.AddSingleton<IExtensionManager, ExtensionManager>();
             {
-                services.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
                 services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
 
                 services.TryAddEnumerable(

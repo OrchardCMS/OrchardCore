@@ -17,6 +17,7 @@ using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 using Orchard.Settings;
 using YesSql.Core.Services;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.Roles.Controllers
 {
@@ -29,14 +30,13 @@ namespace Orchard.Roles.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly RoleManager<Role> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleProvider _roleProvider;
+        private readonly ShellBlueprint _shellBlueprint;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer<AdminController> TH;
 
         public AdminController(
             IAuthorizationService authorizationService,
-            ITypeFeatureProvider typeFeatureProvider,
             ISession session,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -44,6 +44,7 @@ namespace Orchard.Roles.Controllers
             IShapeFactory shapeFactory,
             RoleManager<Role> roleManager,
             IRoleProvider roleProvider,
+            ShellBlueprint shellBlueprint,
             INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
             )
@@ -51,7 +52,7 @@ namespace Orchard.Roles.Controllers
             TH = htmlLocalizer;
             _notifier = notifier;
             _roleProvider = roleProvider;
-            _typeFeatureProvider = typeFeatureProvider;
+            _shellBlueprint = shellBlueprint;
             _permissionProviders = permissionProviders;
             _roleManager = roleManager;
             _shapeFactory = shapeFactory;
@@ -240,7 +241,7 @@ namespace Orchard.Roles.Controllers
             var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
             foreach (var permissionProvider in _permissionProviders)
             {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
+                var feature = _shellBlueprint.GetFeatureForDependency(permissionProvider.GetType());
                 var featureName = feature.Id;
                 var permissions = permissionProvider.GetPermissions();
                 foreach (var permission in permissions)

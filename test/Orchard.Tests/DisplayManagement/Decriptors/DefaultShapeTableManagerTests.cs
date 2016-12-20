@@ -161,7 +161,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
-            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
             serviceCollection.AddSingleton<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");

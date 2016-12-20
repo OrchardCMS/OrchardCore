@@ -17,15 +17,12 @@ namespace Orchard.Environment.Shell.Builders
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _environment;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         public CompositionStrategy(
             IHostingEnvironment environment,
             IExtensionManager extensionManager,
-            ITypeFeatureProvider typeFeatureProvider,
             ILogger<CompositionStrategy> logger)
         {
-            _typeFeatureProvider = typeFeatureProvider;
             _environment = environment;
             _extensionManager = extensionManager;
             _logger = logger;

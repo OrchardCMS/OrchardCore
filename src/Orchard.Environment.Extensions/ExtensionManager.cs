@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Orchard.Environment.Extensions
 {
@@ -23,7 +23,6 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionLoader _extensionLoader;
         private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
             = new LazyConcurrentDictionary<string, Task<ExtensionEntry>>();
@@ -62,7 +61,6 @@ namespace Orchard.Environment.Extensions
             IEnumerable<IExtensionLoader> extensionLoaders,
             IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
             IHostingEnvironment hostingEnvironment,
-            ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
         {
@@ -71,7 +69,6 @@ namespace Orchard.Environment.Extensions
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
             _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
             _hostingEnvironment = hostingEnvironment;
-            _typeFeatureProvider = typeFeatureProvider;
             L = logger;
             T = localizer;
         }
@@ -296,7 +293,6 @@ namespace Orchard.Environment.Extensions
                     if (sourceFeature == feature.Id)
                     {
                         featureTypes.Add(type);
-                        _typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
 

@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Orchard.Environment.Extensions;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.Hosting.Routing
 {
@@ -9,11 +8,11 @@ namespace Orchard.Hosting.Routing
     /// </summary>
     public class ModuleAreaRouteConstraintApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly ShellBlueprint _shellBlueprint;
 
-        public ModuleAreaRouteConstraintApplicationModelProvider(ITypeFeatureProvider typeFeatureProvider)
+        public ModuleAreaRouteConstraintApplicationModelProvider(ShellBlueprint shellBlueprint)
         {
-            _typeFeatureProvider = typeFeatureProvider;
+            _shellBlueprint = shellBlueprint;
         }
 
         public int Order
@@ -28,7 +27,7 @@ namespace Orchard.Hosting.Routing
         {
             foreach (var controller in context.Result.Controllers)
             {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(controller.ControllerType.AsType());
+                var feature = _shellBlueprint.GetFeatureForDependency(controller.ControllerType.AsType());
                 if (feature != null)
                 {
                     controller.RouteValues.Add("area", feature.Extension.Id);

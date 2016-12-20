@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Security;
+using Orchard.Security.Permissions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Security;
-using Orchard.Security.Permissions;
-using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Roles.Services
 {
@@ -16,17 +16,17 @@ namespace Orchard.Roles.Services
     {
         private readonly RoleManager<Role> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly ShellBlueprint _shellBlueprint;
 
         public RoleUpdater(
             RoleManager<Role> roleManager,
             IEnumerable<IPermissionProvider> permissionProviders,
-            ITypeFeatureProvider typeFeatureProvider,
+            ShellBlueprint shellBlueprint,
             ILogger<RoleUpdater> logger)
         {
-            _typeFeatureProvider = typeFeatureProvider;
             _roleManager = roleManager;
             _permissionProviders = permissionProviders;
+            _shellBlueprint = shellBlueprint;
 
             Logger = logger;
         }
@@ -70,7 +70,7 @@ namespace Orchard.Roles.Services
         {
             // when another module is being enabled, locate matching permission providers
             var providersForEnabledModule = _permissionProviders
-                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType()).Id == feature.Id);
+                .Where(x => _shellBlueprint.GetFeatureForDependency(x.GetType()).Id == feature.Id);
 
             if (Logger.IsEnabled(LogLevel.Debug))
             {
