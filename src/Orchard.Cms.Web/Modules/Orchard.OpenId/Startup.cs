@@ -43,10 +43,6 @@ namespace Orchard.OpenId
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var siteSettingsGroupProvider = serviceProvider.GetService<SiteSettingsGroupProvider>();
-            var t = serviceProvider.GetService<IStringLocalizer<Startup>>();
-            siteSettingsGroupProvider.Add("open id", t["Open Id"]);
-
             var openIdService = serviceProvider.GetService<IOpenIdService>();
             var openIdSettings = openIdService.GetOpenIdSettingsAsync().Result;
             if (!openIdService.IsValidOpenIdSettings(openIdSettings))
