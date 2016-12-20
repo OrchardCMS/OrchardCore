@@ -26,7 +26,7 @@
 <ul class="list-group">
     @foreach (var document in Model.Documents)
     {
-        var contentItemId = Convert.ToInt32(document.GetField("ContentItemId").StringValue);
+        var contentItemId = document.GetField("ContentItemId").StringValue;
         var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
         
         <li class="list-group-item">
