@@ -5,7 +5,7 @@ using Orchard.Admin;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
+using Orchard.Hosting.ShellBuilders;
 using Orchard.Modules.Models;
 using Orchard.Modules.Services;
 using Orchard.Modules.ViewModels;
@@ -22,7 +22,7 @@ namespace Orchard.Modules.Controllers
     {
         private readonly IModuleService _moduleService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
+        private readonly ShellSettings _currentShellSettings;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -31,14 +31,14 @@ namespace Orchard.Modules.Controllers
             IModuleService moduleService,
             IExtensionManager extensionManager,
             IHtmlLocalizer<AdminController> localizer,
-            IShellDescriptorManager shellDescriptorManager,
+            ShellSettings currentShellSettings,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             INotifier notifier)
         {
             _moduleService = moduleService;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
+            _currentShellSettings = currentShellSettings;
             _shellFeaturesManager = shellFeaturesManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -220,7 +220,26 @@ namespace Orchard.Modules.Controllers
         /// </summary>
         private bool ExtensionIsAllowed(IExtensionInfo extensionDescriptor)
         {
+            if (extensionDescriptor is ShellExtensionInfo)
+            {
+                if (IsDefaultShell())
+                {
+                    return true;
+                }
+
+                var ed = ((ShellExtensionInfo)extensionDescriptor);
+                if (!string.Equals(ed.ShellName, _currentShellSettings.Name, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
             return true; //_shellSettings.Modules.Length == 0 || _shellSettings.Modules.Contains(extensionDescriptor.Id);
+        }
+
+        private bool IsDefaultShell()
+        {
+            return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -380,7 +380,7 @@ namespace Orchard.Tenants.Controllers
 
         private bool IsDefaultShell()
         {
-            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.Ordinal);
         }
     }
 }
