@@ -67,10 +67,6 @@ namespace Orchard.OpenId.Controllers
 
             var isPasswordGrantType = request.IsPasswordGrantType() && openIdSettings.AllowPasswordFlow && application != null && application.AllowPasswordFlow;
             var isClientCredentialsType = (request.IsClientCredentialsGrantType() && openIdSettings.AllowClientCredentialsFlow && application != null && application.AllowClientCredentialsFlow);
-            var isHybridFlow = (request.IsHybridFlow() && openIdSettings.AllowHybridFlow && application != null && application.AllowHybridFlow);
-            var isAuthorizationCodeFlow = (request.IsAuthorizationCodeFlow() && openIdSettings.AllowAuthorizationCodeFlow && application != null && application.AllowAuthorizationCodeFlow);
-            var isRefreshTokenGrantType = (request.IsRefreshTokenGrantType() && openIdSettings.AllowRefreshTokenFlow && application != null && application.AllowRefreshTokenFlow);
-            
 
             if (isPasswordGrantType)
             {
