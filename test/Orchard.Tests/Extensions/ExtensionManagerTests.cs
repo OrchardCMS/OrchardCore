@@ -54,7 +54,6 @@ namespace Orchard.Tests.Extensions
                 Enumerable.Empty<IExtensionLoader>(),
                 Enumerable.Empty<IExtensionOrderingStrategy>(),
                 HostingEnvrionment,
-                null,
                 new NullLogger<ExtensionManager>(),
                 null);
 
@@ -64,7 +63,6 @@ namespace Orchard.Tests.Extensions
                 Enumerable.Empty<IExtensionLoader>(),
                 Enumerable.Empty<IExtensionOrderingStrategy>(),
                 HostingEnvrionment,
-                null,
                 new NullLogger<ExtensionManager>(),
                 null);
 
@@ -74,7 +72,6 @@ namespace Orchard.Tests.Extensions
                 Enumerable.Empty<IExtensionLoader>(),
                 new[] { new ThemeExtensionOrderingStrategy() },
                 HostingEnvrionment,
-                null,
                 new NullLogger<ExtensionManager>(),
                 null);
         }
