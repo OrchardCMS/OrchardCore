@@ -80,18 +80,6 @@ namespace Orchard.OpenId.Controllers
             {
                 return await ExchangeClientCredentialsGrantType(request);
             }
-            else if (isAuthorizationCodeFlow)
-            {
-
-            }
-            else if (isHybridFlow)
-            {
-
-            }
-            else if (isRefreshTokenGrantType)
-            {
-
-            }
 
             return BadRequest(new OpenIdConnectResponse
             {
