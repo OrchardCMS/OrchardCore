@@ -7,6 +7,7 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Settings;
 using Orchard.Hosting.Services;
 using Orchard.Services;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Hosting
 {
@@ -34,6 +35,7 @@ namespace Orchard.Hosting
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
                 {
                     services.AddSingleton<ICompositionStrategy, CompositionStrategy>();
+                    services.AddSingleton<IExtensionProvider, ShellExtensionProvider>();
 
                     services.AddSingleton<IShellContainerFactory, ShellContainerFactory>();
                 }

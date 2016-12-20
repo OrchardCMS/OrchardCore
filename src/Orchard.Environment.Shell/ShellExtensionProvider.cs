@@ -57,7 +57,7 @@ namespace Orchard.Environment.Extensions
             var shellName = subShellPath.Remove(subShellPath.IndexOf(Path.DirectorySeparatorChar));
             var id = string.Format("{0}_{1}", shellName, name);
 
-            return new ShellExtensionInfo(id, extension, subPath, manifestInfo, (mi, ei) => {
+            return new ShellExtensionInfo(id, shellName, extension, subPath, manifestInfo, (mi, ei) => {
                 return _featuresProvider.GetFeatures(ei, mi);
             });
         }
