@@ -33,24 +33,24 @@ From the class you want to use the API in, inject the `Orchard.ResourceManagemen
 
 #### Register a named resource
 
-```
+```csharp
 var settings = resourceManager.RegisterResource("script", "bootstrap")
 ```
 
 The result of this call is an object of type `RequireSettings` that is used to pass more parameters to the required resource.
 
 ##### Place the resource at the beginning of the HTML document
-```
+```csharp
 settings.AtHead();
 ```
 
 ##### Place the resource at the end of the HTML document
-```
+```csharp
 settings.AtFoot();
 ```
 
 ##### Set the version to use
-```
+```csharp
 settings.UseVersion("3.3");
 ```
 
@@ -59,25 +59,25 @@ This will use the latest availabe version between `3.3` and `3.4`. If the versio
 #### Register custom script
 
 At the beginning of the HTML document:
-```
+```csharp
 resourceManager.RegisterHeadScript("<script>alert('Hello')</script>');
 ```
 
 At the end of the HTML document:
 
-```
+```csharp
 resourceManager.RegisterFootScript("<script>alert('Hello')</script>');
 ```
 
 ### Add custom meta tag
 
-```
+```csharp
 resourceManager.RegisterMeta(new MetaEntry { Content = "Orchard", Name = "generator" });
 ```
 
 You can also add more content to an existing tag like this:
 
-```
+```csharp
 resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard" }, ",");
 ```
 
@@ -88,13 +88,13 @@ From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper 
 #### Register a named resource
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
-```
+```html
 <script asp-name="bootstrap"></script>
 ```
 
 And for a stylesheet:
 
-```
+```html
 <style asp-name="bootstrap"></style>
 ```
 
@@ -102,7 +102,7 @@ And for a stylesheet:
 ##### Force the CDN
 You can force a resource to be used from its CDN. By default the behavior is defined by configuration.
 
-```
+```html
 <script asp-name="bootstrap" use-cdn="true"></script>
 ```
 
@@ -110,13 +110,13 @@ You can force a resource to be used from its CDN. By default the behavior is def
 This example will use the latest available version with a Major version of `3`, like `3.3.7`. If the version is not specified
 the greatest one is always used.
 
-```
+```html
 <script asp-name="bootstrap" version="3"></script>
 ```
 
 ##### Specify location
 By default all scripts are rendered in the footer. You can override it like this:
-```
+```html
 <script asp-name="bootstrap" at="Head"></script>
 ```
 
@@ -125,7 +125,7 @@ Styles on the opposite are always injected in the header section of the HTML doc
 #### Inline definition
 You can declare a new resource directly from a view, and it will be injected only once even if the view is called multiple time.
 
-```
+```html
 <script asp-name="foo" asp-src="foo.min.js?v=1.0" debug-src="foo.js?v=1.0" depends-on="baz-1.0" version="1.0"></script>
 ```
 
@@ -134,6 +134,6 @@ the one with the highest number would be used.
 
 You can also do the same for a stylesheet:
 
-```
+```html
 <style asp-src="bar.min.css" debug-src="bar.css"></style>
 ```

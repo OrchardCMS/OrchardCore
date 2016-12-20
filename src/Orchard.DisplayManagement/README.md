@@ -11,7 +11,7 @@ placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
-```
+```csharp
 {
   "TextField": [ ... ],
   "Parts_Contents_Publish" : [ ... ]
@@ -36,7 +36,7 @@ Placement information consists of:
 - `shape` (Optional): A subtitution shape type.
 
 
-```
+```json
 {
   "TextField": [ 
     {

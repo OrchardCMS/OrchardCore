@@ -16,7 +16,7 @@ This modules provides common content fields.
 
 From a `Content` template, you can reference a field's value like this:
 
-```
+```csharp
 var fieldValue = contentItem.Content.Article.MyField.Text;
 ```
 
@@ -40,7 +40,7 @@ Create a class inheriting from `ContentField` that will represent the state of y
 the content item. Json.NET classes can be used to customize the serialization.
 
 Example:
-```
+```csharp
 public class TextField : ContentField
 {
     public string Text { get; set; }
@@ -49,7 +49,7 @@ public class TextField : ContentField
 ```
 
 This class needs to be registered in the DI like this:
-```
+```csharp
 services.AddSingleton<ContentField, TextField>();
 ```
 
@@ -62,7 +62,7 @@ Create a class inheriting from `ContentFieldDisplayDriver<TextField>` and implem
 `Display`, `Edit` and `DisplayAsync` by looking at examples from this module.
 
 This class needs to be registered in the DI like this:
-```
+```csharp
 services.AddScoped<IContentFieldDisplayDriver, TextFieldDisplayDriver>();
 ```
 
@@ -75,7 +75,7 @@ This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Optio
 
 This template will need to render an `<option>` tag. Here is an example for a Wysiwig options on the 
 Html Field:
-```
+```csharp
 @{
     string currentEditor = Model.Editor;
 }

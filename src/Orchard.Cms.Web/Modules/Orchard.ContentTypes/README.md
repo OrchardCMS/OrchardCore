@@ -18,7 +18,7 @@ The editor returns the selection as a `string[]` on the model.
 
 #### Sample
 
-```
+```csharp
 @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
 
 ```
