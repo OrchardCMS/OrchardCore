@@ -190,12 +190,11 @@ namespace Orchard.OpenId.Controllers
                 RoleEntries = roles.Select(r => new RoleEntry() { Name = r }).ToList()
             };
 
-
             ViewData["OpenIdSettings"] = openIdSettings;
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateOpenIdApplicationViewModel model, string returnUrl = null)

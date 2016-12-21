@@ -49,8 +49,8 @@ namespace Orchard.OpenId
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("Orchard.OpenId module needs you provide a valid signing certificate.", e);
-                    throw e;
+                    _logger.LogError("A valid signing certificate is required for Orchard.OpenId module.", e);
+                    throw;
                 }
             }
 

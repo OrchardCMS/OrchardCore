@@ -33,7 +33,7 @@ namespace Orchard.OpenId
         private readonly ILogger<Startup> _logger;
 
         public Startup(
-            ShellSettings shellSettings,            
+            ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<Startup> logger)
         {
@@ -50,7 +50,7 @@ namespace Orchard.OpenId
                 _logger.LogWarning("Orchard.OpenId module has invalid settings.");
                 return;
             }
-        
+
             builder.UseOpenIddict();
 
             if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)

@@ -30,7 +30,4 @@ namespace Orchard.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
     }
-
-
-
 }

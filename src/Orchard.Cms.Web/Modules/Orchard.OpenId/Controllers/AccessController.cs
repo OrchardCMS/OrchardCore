@@ -64,16 +64,39 @@ namespace Orchard.OpenId.Controllers
                     ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
                 });
             }
-
-            var isPasswordGrantType = request.IsPasswordGrantType() && openIdSettings.AllowPasswordFlow && application != null && application.AllowPasswordFlow;
-            var isClientCredentialsType = (request.IsClientCredentialsGrantType() && openIdSettings.AllowClientCredentialsFlow && application != null && application.AllowClientCredentialsFlow);
-
-            if (isPasswordGrantType)
+            
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
             {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Offline scope is not allowed for this OpenId Application"]
+                });
+            }
+
+            if (request.IsPasswordGrantType())
+            {
+                if (!application.AllowPasswordFlow)
+                {
+                    return View("Error", new ErrorViewModel
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidClient,
+                        ErrorDescription = T["Password Flow is not allowed for this OpenId Application"]
+                    });
+                }
                 return await ExchangePasswordGrantType(request);
             }
-            else if (isClientCredentialsType)
+            
+            if (request.IsClientCredentialsGrantType())
             {
+                if (!application.AllowClientCredentialsFlow)
+                {
+                    return View("Error", new ErrorViewModel
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidClient,
+                        ErrorDescription = T["Client Credentials Flow is not allowed for this OpenId Application"]
+                    });
+                }
                 return await ExchangeClientCredentialsGrantType(request);
             }
 
@@ -211,30 +234,54 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            var isAuthorizationCodeFlow = (request.IsAuthorizationCodeFlow() && openIdSettings.AllowAuthorizationCodeFlow && application != null && application.AllowAuthorizationCodeFlow);
-            var isHybridFlow = (request.IsHybridFlow() && openIdSettings.AllowHybridFlow && application != null && application.AllowHybridFlow);
-            var isImplicitFlow = (request.IsImplicitFlow() && openIdSettings.AllowImplicitFlow && application != null && application.AllowImplicitFlow);
-
-            if (isAuthorizationCodeFlow || isHybridFlow || isImplicitFlow)
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
             {
-                if (application.SkipConsent)
+                return View("Error", new ErrorViewModel
                 {
-                    return await IssueAccessIdentityTokens(request);
-                }
-
-                return View(new AuthorizeViewModel
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Offline scope is not allowed for this Open Id Application"]
+                });
+            }
+            
+            if (request.IsAuthorizationCodeFlow() && !application.AllowPasswordFlow)
+            {
+                return View("Error", new ErrorViewModel
                 {
-                    ApplicationName = application.DisplayName,
-                    RequestId = request.RequestId,
-                    Scope = request.Scope
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Password Flow is not allowed for this Open Id Application"]
                 });
             }
 
-            return BadRequest(new OpenIdConnectResponse
+            if (request.IsImplicitFlow() && !application.AllowImplicitFlow)
             {
-                Error = OpenIdConnectConstants.Errors.UnsupportedResponseType,
-                ErrorDescription = T["The specified grant type is not supported."]
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Implicit Flow is not allowed for this Open Id Application"]
+                });
+            }
+
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            // Note: It is needed to check openIdSettings.AllowHybridFlow because OpenIddict doesn't have an specific configuration for AllowHybridFlow.             
+            if (request.IsHybridFlow() && (!openIdSettings.AllowHybridFlow || !application.AllowHybridFlow))
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Hybrid Flow is not allowed for this Open Id Application"]
+                });
+            }
+
+            if (application.SkipConsent)
+            {
+                return await IssueAccessIdentityTokens(request);
+            }
+
+            return View(new AuthorizeViewModel
+            {
+                ApplicationName = application.DisplayName,
+                RequestId = request.RequestId,
+                Scope = request.Scope
             });
         }
 
