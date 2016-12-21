@@ -1,9 +1,8 @@
 ﻿@using Orchard.Body.ViewModels;
 @model BodyPartViewModel
 
-<script name="trumbowyg" depends-on="admin" asp-src="/Orchard.Resources/Scripts/trumbowyg.min.js" debug-src="/Orchard.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style name="trumbowyg" asp-src="/Orchard.Resources/Styles/trumbowyg.min.css" debug-src="/Orchard.Resources/Styles/trumbowyg.css"></style>
-<style name="trumbowyg"></style>
+<script asp-name="trumbowyg" depends-on="admin" asp-src="/Orchard.Resources/Scripts/trumbowyg.min.js" debug-src="/Orchard.Resources/Scripts/trumbowyg.js" at="Foot"></script>
+<style asp-name="trumbowyg" asp-src="/Orchard.Resources/Styles/trumbowyg.min.css" debug-src="/Orchard.Resources/Styles/trumbowyg.css"></style>
 
 <fieldset class="form-group">
     <label asp-for="Body">@T["Body"]</label>
