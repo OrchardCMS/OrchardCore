@@ -65,10 +65,10 @@ namespace Orchard.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
-                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
+                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Key);
             }
 
             // Add a default configuration if none has been provided
