@@ -22,7 +22,7 @@ namespace Lucene
 
             builder
                 .Add(T["Design"], "10", design => design
-                    .AddClass("menu-design")
+                    .AddClass("menu-design").Id("design")
                     .Add(T["Site"], "10", import => import
                         .Add(T["Lucene Indexes"], "7", indexes => indexes
                             .Action("Index", "Admin", new { area = "Lucene" })

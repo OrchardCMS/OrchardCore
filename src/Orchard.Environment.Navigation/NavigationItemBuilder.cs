@@ -49,9 +49,9 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public NavigationItemBuilder Id(string idHint)
+        public NavigationItemBuilder Id(string id)
         {
-            _item.Id = idHint;
+            _item.Id = id;
             return this;
         }
 

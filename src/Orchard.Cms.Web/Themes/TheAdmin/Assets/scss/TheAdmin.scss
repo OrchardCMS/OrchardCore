@@ -7,8 +7,8 @@
 
 
 $top-nav-height: 55px;
-$left-navigation-width: 5em;
-$left-navigation-expand-width: 15em;
+$left-navigation-width: 260px;
+/*$left-navigation-expand-width: 15em;*/
 
 // Layout
 // -----------------------------
@@ -21,6 +21,7 @@ $left-navigation-expand-width: 15em;
         min-height: $top-nav-height;
     }
 
+    // The menu is hidden for sm
     .ta-left-sidebar {
         @extend .bg-faded;
         @extend .hidden-sm-down;
@@ -29,6 +30,94 @@ $left-navigation-expand-width: 15em;
         z-index: 1;
         position: fixed;
         top: $top-nav-height;
+        background-color: $gray-dark;
+
+        ul {
+            padding-left: 0;
+        }
+
+        li.active > label > .chevron {
+            transform: rotate(-90deg);
+            transition-duration: 0.2s;
+        }
+
+        li > label > .chevron {
+            transition-duration: 0.2s;
+        }
+
+        // Hide native checkbox */
+        input[type=checkbox] {
+	        position: absolute;
+	        opacity: 0;
+        }
+
+        input[type=checkbox] + label + ul {
+            max-height:0;
+            opacity: 0;
+            transition: max-height 0.2s, opacity 0.2s, cubic-bezier(0, 1, 0.5, 1);
+
+            // Hide chevrons when the containing ul is hidden
+            li > label > .chevron {
+                display: none;
+            }
+        }
+
+        input[type=checkbox]:checked + label + ul {
+	        overflow-y: hidden;
+	        max-height: 500px; /* approximate max height */
+            opacity: 1;
+            transition: max-height 0.5s, opacity 0.5s, cubic-bezier(0, 1, 0.5, 1);
+
+            // Hide chevrons when the containing ul is open
+            li > label > .chevron {
+                display: block;
+            }
+        }
+
+        // Make each line a block
+        label, a {
+	        position: relative;
+	        display: block;
+            margin: 0;
+        }
+
+        nav > ul {
+                display: block;
+                white-space: nowrap;
+
+                li {
+                    position: relative;
+                    margin: 0;
+                    padding: 0;
+                    display: list-item;
+                    list-style: none;
+                    line-height: 2.5em;
+                }
+            }
+
+        .chevron {
+            float: right;
+            margin-right: 15px;
+        }
+
+        .icon {
+            padding-right: 10px;
+        }
+
+        li label,
+        li a,
+        li a:hover,
+        li a:active,
+        li a:visited {
+            color: $gray-lighter;
+            text-decoration: none;
+            padding-left: 1em;
+        }
+
+        li a:hover, li label:hover,
+        li.active > a, li.active > label  {
+            background-color: $gray;
+        }
     }
 
     .ta-content {
@@ -39,9 +128,10 @@ $left-navigation-expand-width: 15em;
         border-left: 1px solid rgba(0, 0, 0, 0.05);
     }
 
+    // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(md) {
         .ta-content {
-            margin-left: $left-navigation-width + $left-navigation-expand-width;
+            margin-left: $left-navigation-width;
         }
     }
 }
@@ -114,219 +204,6 @@ label .field-validation-error::before {
     @extend .alert-danger;
 }
 
-// Navigation
-// ------------------------------
-
-.ta-left-sidebar .menu-admin {
-    @extend .bg-faded;
-    left:0;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    z-index: 10;
-    overflow: hidden;
-}
-
-.menu-admin input[type=checkbox],
-.menu-admin input[type=radio] {
-	/* hide native checkbox */
-	position: absolute;
-	opacity: 0;
-}
-.menu-admin ul label, .menu-admin ul a {
-	position: relative;
-	display: block;
-    margin: 0;
-}
-
-.menu-admin > li > ul label,
-.menu-admin > li > ul a {
-	position: relative;
-	display: block;
-	padding: 0.5em;
-    margin: 0;
-	font-size: 1rem;
-}
-
-.menu-admin {
-    list-style: none;
-    margin-left: 0;
-    padding-left: 0;
-}
-
-.menu-admin ul {
-    list-style: none;
-    padding-left: 0;
-    margin-left: 0;
-}
-
-.menu-admin li {
-    padding: 0;
-    margin: 0;
-    line-height: 1rem;
-}
-
-.menu-admin a:hover,
-.menu-admin label:hover {
-    cursor: pointer;
-}
-
-.menu-admin > li a,
-.menu-admin > li a:hover,
-.menu-admin > li a:active,
-.menu-admin > li a:visited {
-    color: $gray-dark;
-    text-decoration: none;
-}
-
-.menu-admin > li > ul {
-    position: fixed;
-    top: $top-nav-height;
-    left: $left-navigation-width;
-    height: 100%;
-    width: $left-navigation-expand-width;
-}
-
-.menu-admin > li > ul a.active,
-.menu-admin > li > ul a:active,
-.menu-admin > li > ul a:focus {
-    @extend .bg-faded;
-    color: $gray-dark;
-}
-
-.menu-admin > li > ul a:hover,
-.menu-admin > li > ul label:hover {
-    background-color: $tag-default-bg;
-    color: $tag-link-hover-color;
-}
-
-.menu-admin ul label::before {
-  /* arrow icon */
-  content: "\f0da";
-  font-family: "FontAwesome";
-  padding-right: 0.5em;
-}
-
-.menu-admin ul input[type=checkbox]:checked + label::before {
-  /* rotate icon */
-  content: "\f0d7";
-}
-
-$navigation-gap: 1em;
-.menu-admin ul > li {
-    /*padding-left: $navigation-gap;*/
-}
-
-.menu-admin ul > li > ul > li > a  {
-    padding-left: 2*$navigation-gap;
-}
-
-.menu-admin ul > li > ul > li > ul > li > a  {
-    padding-left: 3*$navigation-gap;
-}
-
-.menu-admin ul > li > ul > li > ul > li > ul > li > a {
-    padding-left: 4*$navigation-gap;
-}
-
-ul.menu-admin ul {
-	/* by default hide all sub menus */
-	display: none;
-}
-
-.menu-admin input[type=checkbox]:checked + label + ul,
-.menu-admin input[type=checkbox]:checked + label:nth-of-type(n) + ul,
-.menu-admin input[type=radio]:checked + label + ul,
-.menu-admin input[type=radio]:checked + label:nth-of-type(n) + ul {
-	/* use label:nth-of-type(n) to fix a bug on safari (<= 8.0.8) with multiple adjacent-sibling selectors*/
-	/* show children when item is checked */
-	display: block;
-}
-
-.menu-admin > li > label > span {
-    top: 2em;
-    position: relative;
-    text-align: center;
-    display: block;
-    padding-top: 1em;
-    font-size: 0.8em;
-}
-
-.menu-admin > li > label {
-    margin:0;
-}
-
-// Top menu links are just showing the icons, and are square
-.menu-admin > li > label {
-    display: block;
-    height: $left-navigation-width;
-    width: $left-navigation-width;
-    position: relative;
-    transition: background 0.1s ease-in-out;
-}
-
-// When a root link is hovered, highlight it
-.menu-admin > li:hover {
-    > label::before,
-    > label > span {
-    color: $brand-primary;
-    }
-}
-
-.menu-admin > li > label::before {
-    color: $gray-dark;
-    font-size: 2em;
-    font-family: "FontAwesome";
-    display:block;
-    position: relative;
-    text-align: center;
-    top: 0.7em;
-    left:0;
-    padding: 0;
-    margin:0;
-}
-
-// Add a top border to the first root link
-.menu-admin > li:first-child > label {
-    /*border-top: 1px solid rgba(0, 0, 0, 0.05);*/
-}
-
-// Icons
-
-.menu-admin > li.content > a::before,
-.menu-admin > li.content > label::before {
-    content: "\f187";
-}
-
-.menu-admin > li.new > a::before,
-.menu-admin > li.new > label::before {
-    content: "\f044";
-}
-
-.menu-admin > li.content-definition > a::before,
-.menu-admin > li.content-definition > label::before {
-    content: "\f1b2";
-}
-
-.menu-admin > li.themes > a::before,
-.menu-admin > li.themes > label::before {
-    content: "\f083";
-}
-
-.menu-admin > li.modules > a::before,
-.menu-admin > li.modules > label::before {
-    content: "\f12e";
-}
-
-.menu-admin > li.demo > a::before,
-.menu-admin > li.demo > label::before {
-    content: "\f292";
-}
-
-.menu-admin > li.menu-design > a::before,
-.menu-admin > li.menu-design > label::before {
-    content: "\f013";
-}
 
 // Pager
 // ------------------------------

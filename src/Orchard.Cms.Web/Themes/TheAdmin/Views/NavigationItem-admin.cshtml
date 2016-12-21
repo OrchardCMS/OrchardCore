@@ -4,6 +4,45 @@
     // Morphing the shape to keep Model untouched
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "NavigationItemLink";
+    Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
+
+    // Render sub-items (MenuItem)
+    if (Model.HasItems)
+    {
+        tag.AddCssClass("dropdown");
+        
+        // Radio
+        var radio = new TagBuilder("input");
+        radio.Attributes["type"] = "checkbox";
+        radio.Attributes["id"] = "id" + Model.GetHashCode();
+        radio.Attributes["name"] = "group-" + Model.Parent.GetHashCode();
+        radio.TagRenderMode = TagRenderMode.SelfClosing;
+        tag.InnerHtml.AppendHtml(radio);
+
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+        tag.InnerHtml.AppendHtml("<ul>");
+        foreach (var item in Model)
+        {
+            tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+        tag.InnerHtml.AppendHtml("</ul>");
+    }
+    else
+    {
+        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+    }
+}
+
+@tag
+
+
+@*@{
+    TagBuilder tag = Tag(Model, "li");
+
+    // Morphing the shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemLink";
 
     // Render sub-items (MenuItem)
     if (Model.HasItems)
@@ -51,4 +90,4 @@
         tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }
 }
-@tag
+@tag*@
