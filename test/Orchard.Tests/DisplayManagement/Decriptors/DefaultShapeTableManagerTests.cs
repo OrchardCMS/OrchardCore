@@ -164,7 +164,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
-            serviceCollection.AddSingleton(new ShellBlueprint { Dependencies = Enumerable.Empty<DependencyBlueprint>() });
+            serviceCollection.AddSingleton(new ShellBlueprint { Dependencies = new Dictionary<Type, DependencyBlueprint>() });
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");

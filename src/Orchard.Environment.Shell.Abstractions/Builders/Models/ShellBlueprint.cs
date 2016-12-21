@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Orchard.Environment.Shell.Descriptor.Models;
+﻿using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using System.Linq;
-using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell.Descriptor.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Builders.Models
 {
@@ -20,15 +19,13 @@ namespace Orchard.Environment.Shell.Builders.Models
         public ShellSettings Settings { get; set; }
         public ShellDescriptor Descriptor { get; set; }
 
-        public IEnumerable<DependencyBlueprint> Dependencies { get; set; }
+        public IDictionary<Type, DependencyBlueprint> Dependencies { get; set; }
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
-            var item = Dependencies.FirstOrDefault(x => x.Type == dependency);
-
-            if (item != null)
+            if (Dependencies.ContainsKey(dependency))
             {
-                return item.Feature;
+                return Dependencies[dependency].Feature;
             }
 
             return CoreFeature;

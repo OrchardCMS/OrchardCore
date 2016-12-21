@@ -55,7 +55,7 @@ namespace Orchard.Environment.Shell.Builders
             {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = uniqueDependencies.Values
+                Dependencies = uniqueDependencies
             };
 
             if (_logger.IsEnabled(LogLevel.Debug))
