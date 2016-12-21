@@ -8,7 +8,8 @@
 
 $top-nav-height: 55px;
 $left-navigation-width: 260px;
-/*$left-navigation-expand-width: 15em;*/
+$border-content: 1px solid rgba(0, 0, 0, 0.05);
+$link-padding: $font-size-root;
 
 // Layout
 // -----------------------------
@@ -17,20 +18,30 @@ $left-navigation-width: 260px;
 
     .ta-navbar-top {
         @extend .bg-faded;
-        @extend .navbar, .navbar-fixed-top;
+        @extend .navbar, .navbar-light, .navbar-fixed-top;
         min-height: $top-nav-height;
     }
 
+    // Menu toggling button
+    #navbar-toggler {
+        @extend .navbar-toggler, .hidden-sm-up;
+    }
+
+    // Icons in the main nav bar
+    #navbar-content {
+        @extend .hidden-xs-down;
+    }
+
     // The menu is hidden for sm
-    .ta-left-sidebar {
+    #ta-left-sidebar {
         @extend .bg-faded;
-        @extend .hidden-sm-down;
         width: $left-navigation-width;
         height: 100%;
         z-index: 1;
         position: fixed;
         top: $top-nav-height;
-        background-color: $gray-dark;
+        color: $gray-dark;
+        border-right: $border-content;
 
         // Remove padding/margin from all uls
         ul {
@@ -112,14 +123,23 @@ $left-navigation-width: 260px;
         li a:hover,
         li a:active,
         li a:visited {
-            color: $gray-lighter;
+            color: $gray;
             text-decoration: none;
-            padding-left: 1em;
+            padding-left: $link-padding;
         }
 
-        li a:hover, li label:hover,
-        li.active > a, li.active > label  {
+        // Hovering the navigation items
+        li a:hover, li label:hover {
             background-color: $gray;
+            color: $gray-lightest;
+            border-left: 4px solid $gray-dark;
+            padding-left: $link-padding - 4px;
+        }
+
+        // Current page
+        li.active > a  {
+            background-color: $gray-light;
+            color: $gray-lightest;
         }
     }
 
@@ -128,14 +148,30 @@ $left-navigation-width: 260px;
         margin-left: 0;
         margin-top: $top-nav-height;
         padding-top: 1em;
-        border-left: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: $border-content;
     }
 
     // When the screen is bigger than md, add a margin of the size of the menu
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up(sm) {
         .ta-content {
             margin-left: $left-navigation-width;
         }
+    }
+    
+    @include media-breakpoint-down(xs) {
+        #ta-left-sidebar {
+            left: -$left-navigation-width;
+        }
+
+        .collapsing {
+            /*margin-left: 0;
+            transition: margin-left 0.5s ease-in-out;*/
+        }
+
+        .in {
+            /*margin-left:0;*/
+        }
+
     }
 }
 

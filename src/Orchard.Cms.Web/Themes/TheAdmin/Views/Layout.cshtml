@@ -24,10 +24,10 @@
 <body>
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="~/">@site.SiteName</a>
-            </div>
-            <div class="navbar-content">
+            <a class="navbar-brand" href="~/">@site.SiteName</a>
+            <button id="navbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation"></button>
+
+            <div id="navbar-content">
                 @await RenderSectionAsync("NavbarTop", required: false)
 
                 <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="ta-left-sidebar">
+        <div id="ta-left-sidebar">
             @await RenderSectionAsync("Navigation", required: false)
         </div>
 
