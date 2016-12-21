@@ -32,16 +32,19 @@ $left-navigation-width: 260px;
         top: $top-nav-height;
         background-color: $gray-dark;
 
+        // Remove padding/margin from all uls
         ul {
-            padding-left: 0;
+            margin:0;
+            padding:0;
         }
 
-        li.active > label > .chevron {
+        // Rotate the chevron's icon when the menu is active
+        input[type=checkbox]:checked + label > .chevron > i {
             transform: rotate(-90deg);
             transition-duration: 0.2s;
         }
 
-        li > label > .chevron {
+        input[type=checkbox] + label > .chevron > i {
             transition-duration: 0.2s;
         }
 
@@ -54,7 +57,7 @@ $left-navigation-width: 260px;
         input[type=checkbox] + label + ul {
             max-height:0;
             opacity: 0;
-            transition: max-height 0.2s, opacity 0.2s, cubic-bezier(0, 1, 0.5, 1);
+            transition: max-height 0.2s, opacity 0.2s, ease-in-out;
 
             // Hide chevrons when the containing ul is hidden
             li > label > .chevron {
@@ -66,7 +69,7 @@ $left-navigation-width: 260px;
 	        overflow-y: hidden;
 	        max-height: 500px; /* approximate max height */
             opacity: 1;
-            transition: max-height 0.5s, opacity 0.5s, cubic-bezier(0, 1, 0.5, 1);
+            transition: max-height 0.5s, opacity 0.5s, ease-in-out;
 
             // Hide chevrons when the containing ul is open
             li > label > .chevron {
@@ -97,7 +100,7 @@ $left-navigation-width: 260px;
 
         .chevron {
             float: right;
-            margin-right: 15px;
+            padding-right: 15px;
         }
 
         .icon {
