@@ -35,13 +35,6 @@ namespace Orchard.Roles
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // Admin
-            routes.MapAreaRoute(
-                name: "AdminRoles",
-                areaName: "Orchard.Roles",
-                template: "Admin/Roles/{action}/{id?}",
-                defaults: new { controller = "Admin" }
-            );
         }
     }
 }

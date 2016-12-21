@@ -26,13 +26,6 @@ namespace Orchard.Modules
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // Admin
-            routes.MapAreaRoute(
-                name: "AdminModules",
-                areaName: "Orchard.Modules",
-                template: "Admin/Modules/{action}/{id?}",
-                defaults: new { controller = "Admin" }
-            );
         }
     }
 }

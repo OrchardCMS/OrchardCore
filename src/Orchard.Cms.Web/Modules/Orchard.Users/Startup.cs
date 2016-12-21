@@ -42,21 +42,6 @@ namespace Orchard.Users
                 .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
                 .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
                 ;
-
-            routes.MapAreaRoute(
-                name: "UsersAccount",
-                areaName: "Orchard.Users",
-                template: "Users/Account/{action}",
-                defaults: new { controller = "Account" }
-            );
-
-            // Admin
-            routes.MapAreaRoute(
-                name: "AdminUsers",
-                areaName: "Orchard.Users",
-                template: "Admin/Users/{action}/{id?}",
-                defaults: new { controller = "Admin" }
-            );
         }
 
         public override void ConfigureServices(IServiceCollection services)

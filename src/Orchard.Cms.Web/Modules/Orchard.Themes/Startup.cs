@@ -29,13 +29,6 @@ namespace Orchard.Themes
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // Admin
-            routes.MapAreaRoute(
-                name: "AdminThemes",
-                areaName: "Orchard.Themes",
-                template: "Admin/Themes/{action}/{id?}",
-                defaults: new { controller = "Admin" }
-            );
         }
     }
 }

@@ -16,13 +16,6 @@ namespace Orchard.Tenants
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // Admin
-            routes.MapAreaRoute(
-                name: "AdminTenants",
-                areaName: "Orchard.Tenants",
-                template: "Admin/Tenants/{action}/{id?}",
-                defaults: new { controller = "Admin" }
-            );
         }
     }
 }
