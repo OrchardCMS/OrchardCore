@@ -44,16 +44,7 @@ namespace Orchard.Admin
                     RouteData = filterContext.RouteData,
                 }));
 
-            // Enable shape caching
-            menuShape.Metadata
-                .Cache("menu-admin")
-                .AddContext("user.roles")
-                .AddDependency("features")
-                .AddDependency("types") // This should go in a Displaying Shape event in the Contents module
-                ;
-
             _layoutAccessor.GetLayout().Navigation.Add(menuShape);
-
         }
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
