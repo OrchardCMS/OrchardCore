@@ -30,7 +30,7 @@ namespace Orchard.OpenId.Drivers
             return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
                 {
                     model.TestingModeEnabled = settings.TestingModeEnabled;
-                    model.DefaultTokenFormat = settings.DefaultTokenFormat;
+                    model.AccessTokenFormat = settings.AccessTokenFormat;
                     model.Authority = settings.Authority;
                     model.Audiences = settings.Audiences != null ? string.Join(",", settings.Audiences) : null;
                     model.CertificateStoreLocation = settings.CertificateStoreLocation;
@@ -52,7 +52,7 @@ namespace Orchard.OpenId.Drivers
                 model.Audiences = model.Audiences ?? "".Trim();
 
                 settings.TestingModeEnabled = model.TestingModeEnabled;
-                settings.DefaultTokenFormat = model.DefaultTokenFormat;
+                settings.AccessTokenFormat = model.AccessTokenFormat;
                 settings.Authority = model.Authority;
                 settings.Audiences = model.Audiences.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 settings.CertificateStoreLocation = model.CertificateStoreLocation;

@@ -15,31 +15,34 @@ namespace Orchard.OpenId.Services
     public class OpenIdService : IOpenIdService
     {
         private readonly ISiteService _siteService;
-        private readonly IMemoryCache _memoryCache;
         private readonly IStringLocalizer<OpenIdService> T;
-        public OpenIdService(ISiteService siteService, IMemoryCache memoryCache, IStringLocalizer<OpenIdService> stringLocalizer)
+
+        public OpenIdService(ISiteService siteService, IStringLocalizer<OpenIdService> stringLocalizer)
         {
             _siteService = siteService;
-            _memoryCache = memoryCache;
             T = stringLocalizer;
         }
+
         public async Task<OpenIdSettings> GetOpenIdSettingsAsync()
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var result = siteSettings.As<OpenIdSettings>();
+            var settings = await _siteService.GetSiteSettingsAsync();
 
+            var result = settings.As<OpenIdSettings>();
             if (result == null)
             {
                 result = new OpenIdSettings();
             }
+
             return result;
         }
+
         public async Task UpdateOpenIdSettingsAsync(OpenIdSettings openIdSettings)
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            siteSettings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+            var settings = await _siteService.GetSiteSettingsAsync();
+            settings.Properties[nameof(OpenIdSettings)] = JObject.FromObject(openIdSettings);
+            await _siteService.UpdateSiteSettingsAsync(settings);
         }
+
         public bool IsValidOpenIdSettings(OpenIdSettings settings, ModelStateDictionary modelState)
         {
             if (settings == null)
@@ -48,7 +51,7 @@ namespace Orchard.OpenId.Services
                 return false;
             }
 
-            if (settings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
+            if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
             {
                 ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
                 ValidateUrisSchema(settings.Audiences, !settings.TestingModeEnabled, modelState, "Audience");
@@ -79,7 +82,7 @@ namespace Orchard.OpenId.Services
                 modelState.AddModelError(modelStateKey, T["Invalid url."]);
                 return;
             }
-            foreach (var uriString in uriStrings.Select(a => a ?? "".Trim()))
+            foreach (var uriString in uriStrings.Select(a => (a ?? "").Trim()))
             {
                 Uri uri;
                 if (!Uri.TryCreate(uriString, UriKind.Absolute, out uri) || ((onlyAllowHttps || uri.Scheme != "http") && uri.Scheme != "https"))

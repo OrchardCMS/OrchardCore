@@ -1,22 +1,24 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Orchard.OpenId.Services;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using Orchard.OpenId.Services;
-using System.Security.Cryptography.X509Certificates;
 using static Orchard.OpenId.Settings.OpenIdSettings;
-using System.Collections.Generic;
 
 namespace Orchard.OpenId.Recipes
 {
     public class OpenIdSettingsStep : RecipeExecutionStep
     {
         private readonly IOpenIdService _openIdService;
-        
-        public OpenIdSettingsStep(IOpenIdService openIdService,
+
+        public OpenIdSettingsStep(
+            IOpenIdService openIdService,
             ILogger<OpenIdSettingsStep> logger,
-            IStringLocalizer<OpenIdSettingsStep> localizer) : base(logger, localizer)
+            IStringLocalizer<OpenIdSettingsStep> localizer)
+            : base(logger, localizer)
         {
             _openIdService = openIdService;
         }
@@ -26,28 +28,27 @@ namespace Orchard.OpenId.Recipes
             get { return "OpenIdSettings"; }
         }
 
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public override async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var model = recipeContext.RecipeStep.Step.ToObject<OpenIdSettingsStepModel>();
+            var model = context.RecipeStep.Step.ToObject<OpenIdSettingsStepModel>();
 
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            openIdSettings.TestingModeEnabled = model.TestingModeEnabled;
-            openIdSettings.DefaultTokenFormat = model.DefaultTokenFormat;
-            openIdSettings.Audiences = model.Audiences;
-            openIdSettings.Authority = model.Authority;
-            openIdSettings.CertificateStoreLocation = model.CertificateStoreLocation;
-            openIdSettings.CertificateStoreName = model.CertificateStoreName;
-            openIdSettings.CertificateThumbPrint = model.CertificateThumbPrint;
-            
-            await _openIdService.UpdateOpenIdSettingsAsync(openIdSettings);
+            var settings = await _openIdService.GetOpenIdSettingsAsync();
+            settings.TestingModeEnabled = model.TestingModeEnabled;
+            settings.AccessTokenFormat = model.AccessTokenFormat;
+            settings.Audiences = model.Audiences;
+            settings.Authority = model.Authority;
+            settings.CertificateStoreLocation = model.CertificateStoreLocation;
+            settings.CertificateStoreName = model.CertificateStoreName;
+            settings.CertificateThumbPrint = model.CertificateThumbPrint;
 
+            await _openIdService.UpdateOpenIdSettingsAsync(settings);
         }
     }
 
     public class OpenIdSettingsStepModel
     {
         public bool TestingModeEnabled { get; set; } = false;
-        public TokenFormat DefaultTokenFormat { get; set; } = TokenFormat.JWT;
+        public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.Encrypted;
         public string Authority { get; set; }
         public IEnumerable<string> Audiences { get; set; }
         public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
