@@ -8,11 +8,13 @@ using Orchard.ContentManagement.Display;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Contents.Drivers;
+using Orchard.Contents.Feeds.Builders;
 using Orchard.Contents.Handlers;
 using Orchard.Contents.Indexing;
 using Orchard.Contents.Recipes;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
+using Orchard.Feeds;
 using Orchard.Indexing;
 using Orchard.Recipes;
 using Orchard.Scripting;
@@ -37,6 +39,10 @@ namespace Orchard.Contents
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
 
             services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
+
+            // Feeds
+            // TODO: Move to feature
+            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

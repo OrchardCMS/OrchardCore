@@ -8,7 +8,8 @@
     "Orchard.Settings": "2.0.0-*",
     "Orchard.Navigation": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
-    "Orchard.Scripting.Abstractions": "2.0.0-*"
+    "Orchard.Scripting.Abstractions": "2.0.0-*",
+    "Orchard.Feeds.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

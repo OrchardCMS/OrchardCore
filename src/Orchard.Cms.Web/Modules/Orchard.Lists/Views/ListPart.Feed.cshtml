@@ -1,0 +1,17 @@
+﻿@using Orchard.ResourceManagement
+@using Orchard.ContentManagement
+
+@inject IResourceManager ResourceManager
+@inject IContentManager ContentManager
+
+@{ 
+    ContentItem contentItem = Model.ContentItem;
+    var contentItemMetadata = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+    ResourceManager.RegisterLink(new LinkEntry
+    {
+        Rel = "alternate",
+        Type = "application/rss+xml",
+        Title = contentItemMetadata.DisplayText,
+        Href = Url.Action("Index", "Feed", new { area = "Orchard.Feeds", ContentItemId = contentItem.ContentItemId })
+    });
+}
