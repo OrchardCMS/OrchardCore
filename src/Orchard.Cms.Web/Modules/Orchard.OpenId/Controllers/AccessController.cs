@@ -4,16 +4,16 @@ using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using OpenIddict;
-using OpenIddict.Mvc;
 using Orchard.Mvc;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
-using Microsoft.Extensions.Localization;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -40,14 +40,23 @@ namespace Orchard.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
-        public async Task<IActionResult> Token(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request)
+        public async Task<IActionResult> Token()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override
             // the global antiforgery token validation policy applied by Orchard.Hosting.Web,
             // which is required for this stateless OAuth2/OIDC token endpoint to work correctly.
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT
             // return an authentication cookie or try to establish an ASP.NET Core session.
+
+            var request = HttpContext.GetOpenIdConnectRequest();
+            if (request == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = T["The authorization server is not correctly configured."]
+                });
+            }
 
             if (request.IsPasswordGrantType())
             {
@@ -169,16 +178,25 @@ namespace Orchard.OpenId.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Authorize(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request,
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
+        public async Task<IActionResult> Authorize()
         {
+            var response = HttpContext.GetOpenIdConnectResponse();
             if (response != null)
             {
                 return View("Error", new ErrorViewModel
                 {
                     Error = response.Error,
                     ErrorDescription = response.ErrorDescription
+                });
+            }
+
+            var request = HttpContext.GetOpenIdConnectRequest();
+            if (request == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = T["The authorization server is not correctly configured."]
                 });
             }
 
@@ -207,16 +225,25 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Accept")]
-        public async Task<IActionResult> Accept(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectRequest request,
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
+        public async Task<IActionResult> Accept()
         {
+            var response = HttpContext.GetOpenIdConnectResponse();
             if (response != null)
             {
                 return View("Error", new ErrorViewModel
                 {
                     Error = response.Error,
                     ErrorDescription = response.ErrorDescription
+                });
+            }
+
+            var request = HttpContext.GetOpenIdConnectRequest();
+            if (request == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = T["The authorization server is not correctly configured."]
                 });
             }
 
@@ -255,9 +282,9 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Deny")]
-        public IActionResult Deny(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
+        public IActionResult Deny()
         {
+            var response = HttpContext.GetOpenIdConnectResponse();
             if (response != null)
             {
                 return View("Error", new ErrorViewModel
@@ -267,21 +294,41 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
+            var request = HttpContext.GetOpenIdConnectRequest();
+            if (request == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = T["The authorization server is not correctly configured."]
+                });
+            }
+
             // Notify OpenIddict that the authorization grant has been denied by the resource owner
             // to redirect the user agent to the client application using the appropriate response_mode.
             return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
         [AllowAnonymous, HttpGet]
-        public async Task<IActionResult> Logout(
-            [ModelBinder(BinderType = typeof(OpenIddictModelBinder))] OpenIdConnectResponse response)
+        public async Task<IActionResult> Logout()
         {
+            var response = HttpContext.GetOpenIdConnectResponse();
             if (response != null)
             {
                 return View("Error", new ErrorViewModel
                 {
                     Error = response.Error,
                     ErrorDescription = response.ErrorDescription
+                });
+            }
+
+            var request = HttpContext.GetOpenIdConnectRequest();
+            if (request == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = T["The authorization server is not correctly configured."]
                 });
             }
 
