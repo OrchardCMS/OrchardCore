@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
@@ -20,9 +22,7 @@ using Orchard.OpenId.Settings;
 using Orchard.Recipes;
 using Orchard.Security;
 using Orchard.Settings.Services;
-using Orchard.SiteSettings;
 using Orchard.Users.Models;
-using System;
 using YesSql.Core.Indexes;
 
 namespace Orchard.OpenId
@@ -44,18 +44,50 @@ namespace Orchard.OpenId
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var openIdService = serviceProvider.GetService<IOpenIdService>();
-            var openIdSettings = openIdService.GetOpenIdSettingsAsync().Result;
-            if (!openIdService.IsValidOpenIdSettings(openIdSettings))
+            var settings = openIdService.GetOpenIdSettingsAsync().GetAwaiter().GetResult();
+            if (!openIdService.IsValidOpenIdSettings(settings))
             {
-                _logger.LogWarning("Orchard.OpenId module has invalid settings.");
+                _logger.LogWarning("The OpenID module is not correctly configured.");
                 return;
             }
 
             builder.UseOpenIddict();
 
-            if (openIdSettings.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT)
+            switch (settings.AccessTokenFormat)
             {
-                builder.UseJwtBearerAuthentication();
+                case OpenIdSettings.TokenFormat.Encrypted:
+                {
+                    builder.UseJwtBearerAuthentication(new JwtBearerOptions
+                    {
+                        RequireHttpsMetadata = !settings.TestingModeEnabled,
+                        Authority = settings.Authority,
+                        TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidAudiences = settings.Audiences
+                        }
+                    });
+                    break;
+                }
+
+                case OpenIdSettings.TokenFormat.JWT:
+                {
+                    builder.UseOAuthValidation(options =>
+                    {
+                        foreach (var audience in settings.Audiences)
+                        {
+                            options.Audiences.Add(audience);
+                        }
+
+                        options.DataProtectionProvider = _dataProtectionProvider;
+                    });
+                    break;
+                }
+
+                default:
+                {
+                    Debug.Fail("An unsupported access token format was specified.");
+                    break;
+                }
             }
         }
 
@@ -75,7 +107,7 @@ namespace Orchard.OpenId
             services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
             services.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
 
-            var builder = services.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
+            services.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
                 .AddApplicationStore<OpenIdApplicationStore>()
                 .AddTokenStore<OpenIdTokenStore>()
                 .AddUserStore<OpenIdUserStore>()
@@ -92,9 +124,7 @@ namespace Orchard.OpenId
                 .RequireClientIdentification()
                 .Configure(options => options.ApplicationCanDisplayErrors = true);
 
-            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIddictConfigureOptions>();
-            services.AddScoped<IConfigureOptions<JwtBearerOptions>, JwtBearerConfigureOptions>();
-
+            services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
         }
     }
 }

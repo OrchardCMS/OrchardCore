@@ -9,7 +9,7 @@ namespace Orchard.OpenId.ViewModels
     public class OpenIdSettingsViewModel
     {
         public bool TestingModeEnabled { get; set; }
-        public TokenFormat DefaultTokenFormat { get; set; }
+        public TokenFormat AccessTokenFormat { get; set; }
         public string Authority { get; set; }
         public string Audiences { get; set; }
         public StoreLocation? CertificateStoreLocation { get; set; }

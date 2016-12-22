@@ -12,15 +12,15 @@
         <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
 </fieldset>
     @{
-        var jwtHintClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint collapse" : "hint";
-        var jwtEncryptedClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint" : "hint collapse";
+        var jwtHintClasses = Model.AccessTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint collapse" : "hint";
+        var jwtEncryptedClasses = Model.AccessTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "hint" : "hint collapse";
     }
-    <fieldset class="form-group" asp-validation-class-for="DefaultTokenFormat">
-        <label asp-for="DefaultTokenFormat">@T["Token Format"] <span asp-validation-for="DefaultTokenFormat"></span></label>
-        <select asp-for="DefaultTokenFormat" class="form-control">
+    <fieldset class="form-group" asp-validation-class-for="AccessTokenFormat">
+        <label asp-for="AccessTokenFormat">@T["Token Format"] <span asp-validation-for="AccessTokenFormat"></span></label>
+        <select asp-for="AccessTokenFormat" class="form-control">
             @foreach (OpenIdSettings.TokenFormat format in Enum.GetValues(typeof(OpenIdSettings.TokenFormat)))
             {
-                <option value="@format" selected="@(Model.DefaultTokenFormat == format)">@format.ToString()</option>
+                <option value="@format" selected="@(Model.AccessTokenFormat == format)">@format.ToString()</option>
             }
         </select>
         <span class="@jwtHintClasses" id="jwtHint">@T["If you are using a self-signed certificate for SSL keep in mind JWT requires the client has the SSL certificate registered as a trusted certificate."]</span>
@@ -28,7 +28,7 @@
     </fieldset>
 
     @{
-        var authorityAudienceClasses = Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "form-group collapse" : "form-group";
+        var authorityAudienceClasses = Model.AccessTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "form-group collapse" : "form-group";
     }
     <fieldset class="@authorityAudienceClasses" asp-validation-class-for="Authority">
         <label asp-for="Authority">@T["Authority"] <span asp-validation-for="Authority"></span></label>
@@ -111,7 +111,7 @@
         $("#CertificateStoreName").parent().toggle("slow");
         $("#CertificateThumbPrint").parent().toggle("slow");
     });
-    $("#DefaultTokenFormat").change(function () {
+    $("#AccessTokenFormat").change(function () {
         $("#jwtHint").toggle();        
         $("#encryptedHint").toggle();
         $("#Authority").parent().toggle("slow");

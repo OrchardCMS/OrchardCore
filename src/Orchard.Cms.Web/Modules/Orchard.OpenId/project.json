@@ -1,15 +1,16 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "AspNet.Security.OAuth.Validation": "1.0.0-alpha3-final",
     "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
-    "Orchard.Roles": "2.0.0-*",
-    "Orchard.Users": "2.0.0-*",
     "OpenIddict.Mvc": "1.0.0-alpha2-*",
-    "Orchard.Settings": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*",
+    "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
-    "Orchard.ContentManagement.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Abstractions": "2.0.0-*",
+    "Orchard.Roles": "2.0.0-*",
+    "Orchard.Settings": "2.0.0-*",
+    "Orchard.Users": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
