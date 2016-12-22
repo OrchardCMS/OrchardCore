@@ -28,7 +28,7 @@ A sample of Open Id Settings recipe step:
 {
       "name": "openidsettings",
       "TestingModeEnabled": false,
-      "DefaultTokenFormat": "JWT", //JWT or Encrypted
+      "AccessTokenFormat": "JWT", //JWT or Encrypted
       "Authority": "https://www.orchardproject.net",
       "Audiences": ["https://www.orchardproject.net","https://orchardharvest.org/"],
       "CertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
