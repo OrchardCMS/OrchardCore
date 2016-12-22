@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Orchard.Roles.Services
 {

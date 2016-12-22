@@ -1,13 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.CSharp.RuntimeBinder;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell.Builders.Models;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,6 +8,15 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement.Implementation;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {

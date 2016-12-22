@@ -1,8 +1,8 @@
-﻿using Orchard.Environment.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Descriptor.Models;
-using System;
-using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Builders.Models
 {
