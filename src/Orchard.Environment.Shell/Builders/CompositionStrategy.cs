@@ -51,17 +51,13 @@ namespace Orchard.Environment.Shell.Builders
                 }
             }
 
-            var result = new ShellBlueprint
-            {
-                Settings = settings,
-                Descriptor = descriptor,
-                Dependencies = uniqueDependencies
-            };
+            var result = new ShellBlueprint(settings, descriptor, uniqueDependencies);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Done composing blueprint");
             }
+
             return result;
         }
 

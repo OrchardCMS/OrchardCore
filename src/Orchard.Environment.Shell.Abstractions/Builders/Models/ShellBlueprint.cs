@@ -16,10 +16,23 @@ namespace Orchard.Environment.Shell.Builders.Models
         private static readonly IFeatureInfo CoreFeature
             = new InternalFeatureInfo("Core", new InternalExtensionInfo("Core"));
 
-        public ShellSettings Settings { get; set; }
-        public ShellDescriptor Descriptor { get; set; }
+        private readonly ShellSettings _shellSettings;
+        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IDictionary<Type, DependencyBlueprint> _dependencies;
 
-        public IDictionary<Type, DependencyBlueprint> Dependencies { get; set; }
+        public ShellBlueprint(
+            ShellSettings shellSettings,
+            ShellDescriptor shellDescriptor,
+            IDictionary<Type, DependencyBlueprint> dependencies)
+        {
+            _shellSettings = shellSettings;
+            _shellDescriptor = shellDescriptor;
+            _dependencies = dependencies;
+        }
+
+        public ShellSettings Settings { get { return _shellSettings; } }
+        public ShellDescriptor Descriptor { get { return _shellDescriptor; } }
+        public IDictionary<Type, DependencyBlueprint> Dependencies { get { return _dependencies; } }
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
