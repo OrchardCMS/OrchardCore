@@ -39,8 +39,7 @@ namespace Orchard.OpenId.Controllers
             IRoleProvider roleProvider,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
-            IOpenIdService openIdService
-            )
+            IOpenIdService openIdService)
         {
             _shapeFactory = shapeFactory;
             _siteService = siteService;
