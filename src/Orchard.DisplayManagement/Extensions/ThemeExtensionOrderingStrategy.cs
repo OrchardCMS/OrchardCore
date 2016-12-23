@@ -5,24 +5,15 @@ namespace Orchard.DisplayManagement.Extensions
 {
     public class ThemeExtensionOrderingStrategy : IExtensionOrderingStrategy
     {
-        public double Priority => 10D;
-
-        public int Compare(IFeatureInfo observer, IFeatureInfo subject)
+        public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
         {
-            var isObserverTheme = observer.Extension.Manifest.IsTheme();
-            var isSubjectTheme = subject.Extension.Manifest.IsTheme();
-
-            if (isObserverTheme && !isSubjectTheme)
+            if (observer.Extension.Manifest.IsTheme())
             {
-                return 1;
+                if (!subject.Extension.Manifest.IsTheme())
+                    return true;
             }
 
-            if (!isObserverTheme && isSubjectTheme)
-            {
-                return -1;
-            }
-
-            return 0;
+            return false;
         }
     }
 }

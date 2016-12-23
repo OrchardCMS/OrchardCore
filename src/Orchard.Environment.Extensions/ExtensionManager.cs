@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
@@ -12,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
-using System.Threading;
 using Orchard.Environment.Extensions.Manifests;
 using Microsoft.Extensions.Configuration;
 
@@ -27,7 +27,7 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionProvider _extensionProvider;
 
         private readonly IExtensionLoader _extensionLoader;
-        private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
+        private readonly IEnumerable<IExtensionOrderingStrategy> _extensionOrderingStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
@@ -80,7 +80,7 @@ namespace Orchard.Environment.Extensions
             _manifestProvider = new CompositeManifestProvider(manifestProviders);
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
-            _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
+            _extensionOrderingStrategies = extensionOrderingStrategies;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
             T = localizer;
@@ -306,7 +306,7 @@ namespace Orchard.Environment.Extensions
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            return _extensionOrderingStrategy.Compare(f1, f2) > 0 ? true : GetFeatureDependencies(f1.Id).Contains(f2);
+            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) ? true : f1.Dependencies.Contains(f2.Id);
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)

@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Utility;
 using Orchard.Environment.Shell;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -22,6 +23,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
+        private readonly IEnumerable<IExtensionOrderingStrategy> _extensionOrderingStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
@@ -39,6 +41,7 @@ namespace Orchard.DisplayManagement.Descriptors
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
+            _extensionOrderingStrategies = extensionOrderingStrategies;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
@@ -82,7 +85,10 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledAndOrderedFeatureIds))
-                    .OrderBy((fi) => enabledAndOrderedFeatureIds.IndexOf(fi.Value.Feature.Id))
+                    .OrderByDependenciesAndPriorities(
+                        (fiObv, fiSub) => HasDependency(fiObv.Value.Feature, fiSub.Value.Feature),
+                        (fi) => fi.Value.Feature.Priority
+                    )
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
                     (
@@ -136,6 +142,11 @@ namespace Orchard.DisplayManagement.Descriptors
                     _shapeDescriptors[key] = descriptor;
                 }
             }
+        }
+
+        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
+        {
+            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) ? true : f1.Dependencies.Contains(f2.Id);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
