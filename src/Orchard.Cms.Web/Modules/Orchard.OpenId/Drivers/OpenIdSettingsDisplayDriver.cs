@@ -36,7 +36,7 @@ namespace Orchard.OpenId.Drivers
                     model.CertificateStoreLocation = settings.CertificateStoreLocation;
                     model.CertificateStoreName = settings.CertificateStoreName;
                     model.CertificateThumbPrint = settings.CertificateThumbPrint;
-                    model.AvailableCertificates = _openIdServices.GetAvailableCertificates();
+                    model.AvailableCertificates = _openIdServices.GetAvailableCertificates(onlyCertsWithPrivateKey: true);
                     model.SslBaseUrl = requestUrl.Remove(requestUrl.IndexOf("/Admin/Settings")).Replace("http://", "https://");
                     model.EnableTokenEndpoint = settings.EnableTokenEndpoint;
                     model.EnableAuthorizationEndpoint = settings.EnableAuthorizationEndpoint;

@@ -60,7 +60,7 @@ namespace Orchard.OpenId.Controllers
 
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
             
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -86,7 +86,7 @@ namespace Orchard.OpenId.Controllers
                 return Unauthorized();
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
             
             var app = await _applicationManager.FindByIdAsync(id);
             if (app == null)
@@ -125,7 +125,7 @@ namespace Orchard.OpenId.Controllers
                 return Unauthorized();
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
             if (model.Type == ClientType.Public)
             {
@@ -181,7 +181,7 @@ namespace Orchard.OpenId.Controllers
 
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
             var roles = await _roleProvider.GetRoleNamesAsync();
 
@@ -203,17 +203,24 @@ namespace Orchard.OpenId.Controllers
                 return Unauthorized();
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["Open Id settings are not properly configured."]);
+                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
             if (model.Type == ClientType.Public)
             {
                 if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
                 {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for public apps."]);
                 }
                 if (string.IsNullOrWhiteSpace(model.RedirectUri))
                 {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for Public apps."]);
+                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for public apps."]);
+                }
+            }
+            if (model.Type == ClientType.Confidential)
+            {
+                if (string.IsNullOrWhiteSpace(model.ClientSecret))
+                {
+                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.ClientSecret), T["A client secret is required for confidential apps."]);
                 }
             }
 
@@ -224,7 +231,22 @@ namespace Orchard.OpenId.Controllers
                 if (model.Type == ClientType.Confidential)
                     roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
 
-                var openIdApp = new OpenIdApplication { DisplayName = model.DisplayName, RedirectUri = model.RedirectUri, LogoutRedirectUri = model.LogoutRedirectUri, ClientId = model.ClientId, ClientSecret = Crypto.HashPassword(model.ClientSecret), Type = model.Type, SkipConsent = model.SkipConsent, RoleNames = roleNames, AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow, AllowClientCredentialsFlow = model.AllowClientCredentialsFlow, AllowImplicitFlow = model.AllowImplicitFlow, AllowPasswordFlow = model.AllowPasswordFlow, AllowRefreshTokenFlow = model.AllowRefreshTokenFlow, AllowHybridFlow = model.AllowHybridFlow };
+                var openIdApp = new OpenIdApplication {
+                    DisplayName = model.DisplayName,
+                    RedirectUri = model.RedirectUri,
+                    LogoutRedirectUri = model.LogoutRedirectUri,
+                    ClientId = model.ClientId,
+                    ClientSecret = Crypto.HashPassword(model.ClientSecret),
+                    Type = model.Type,
+                    SkipConsent = model.SkipConsent,
+                    RoleNames = roleNames,
+                    AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
+                    AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+                    AllowImplicitFlow = model.AllowImplicitFlow,
+                    AllowPasswordFlow = model.AllowPasswordFlow,
+                    AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                    AllowHybridFlow = model.AllowHybridFlow
+                };
 
                 await _applicationManager.CreateAsync(openIdApp);
                 if (returnUrl == null)

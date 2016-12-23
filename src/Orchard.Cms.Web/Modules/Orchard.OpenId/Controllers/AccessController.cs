@@ -64,13 +64,13 @@ namespace Orchard.OpenId.Controllers
                     ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
                 });
             }
-            
+
             if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
             {
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Offline scope is not allowed for this OpenId Application"]
+                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
                 });
             }
 
@@ -81,12 +81,12 @@ namespace Orchard.OpenId.Controllers
                     return View("Error", new ErrorViewModel
                     {
                         Error = OpenIdConnectConstants.Errors.InvalidClient,
-                        ErrorDescription = T["Password Flow is not allowed for this OpenId Application"]
+                        ErrorDescription = T["Password Flow is not allowed for this OpenID Connect Application"]
                     });
                 }
                 return await ExchangePasswordGrantType(request);
             }
-            
+
             if (request.IsClientCredentialsGrantType())
             {
                 if (!application.AllowClientCredentialsFlow)
@@ -94,7 +94,7 @@ namespace Orchard.OpenId.Controllers
                     return View("Error", new ErrorViewModel
                     {
                         Error = OpenIdConnectConstants.Errors.InvalidClient,
-                        ErrorDescription = T["Client Credentials Flow is not allowed for this OpenId Application"]
+                        ErrorDescription = T["Client Credentials Flow is not allowed for this OpenID Connect Application"]
                     });
                 }
                 return await ExchangeClientCredentialsGrantType(request);
@@ -239,7 +239,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Offline scope is not allowed for this Open Id Application"]
+                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
                 });
             }
             
@@ -248,7 +248,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Password Flow is not allowed for this Open Id Application"]
+                    ErrorDescription = T["Password Flow is not allowed for this OpenID Connect Application"]
                 });
             }
 
@@ -257,7 +257,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Implicit Flow is not allowed for this Open Id Application"]
+                    ErrorDescription = T["Implicit Flow is not allowed for this OpenID Connect Application"]
                 });
             }
 
@@ -268,7 +268,7 @@ namespace Orchard.OpenId.Controllers
                 return View("Error", new ErrorViewModel
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
-                    ErrorDescription = T["Hybrid Flow is not allowed for this Open Id Application"]
+                    ErrorDescription = T["Hybrid Flow is not allowed for this OpenID Connect Application"]
                 });
             }
 
