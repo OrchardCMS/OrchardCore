@@ -76,7 +76,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledAndOrderedFeatureIds = _shellFeaturesManager
+                var enabledFeatureIds = _shellFeaturesManager
                     .GetEnabledFeaturesAsync()
                     .GetAwaiter()
                     .GetResult()
@@ -84,7 +84,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     .ToList();
 
                 var descriptors = _shapeDescriptors
-                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledAndOrderedFeatureIds))
+                    .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
                     .OrderByDependenciesAndPriorities(
                         (fiObv, fiSub) => HasDependency(fiObv.Value.Feature, fiSub.Value.Feature),
                         (fi) => fi.Value.Feature.Priority
