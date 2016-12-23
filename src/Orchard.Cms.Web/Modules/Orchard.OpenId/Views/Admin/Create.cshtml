@@ -166,17 +166,17 @@
     $("#Type").change(function () {
 
         //There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
-        //This bugs makes this code doesn't work properly when page is loaded, after you change Type fied it starts to work properly 
+        //This bugs makes this code doesn't work properly when page is loaded, after you change Type fied it starts to work properly
         $("#ClientSecret").parent().collapse($(this).val() === '@ClientType.Confidential' ? "show" : "hide");
         $("#ConfirmClientSecret").parent().collapse($(this).val() === '@ClientType.Confidential' ? "show" : "hide");
 
-        var allowPasswordFlowRecommendedHint = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+        var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
         if ($(this).val() === '@ClientType.Confidential') {
-            allowPasswordFlowRecommendedHint.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
+            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
         }
         else {
-            allowPasswordFlowRecommendedHint.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
+            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
         }
     });
     $("#AllowClientCredentialsFlow").change(function () {
@@ -193,19 +193,13 @@
         refreshRedirectSettings();
     });
     $("#AllowRefreshTokenFlow").change(function () {
-        var allowPasswordFlowRecommendedHint = $("#AllowPasswordFlowRecommendedHint");
-        var allowAuthorizationCodeFlowRecommendedHint = $("#AllowAuthorizationCodeFlowRecommendedHint");
-        var allowHybridFlowRecommendedHint = $("#AllowHybridFlowRecommendedHint");
-
+        var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
+        
         if ($(this).is(':checked')) {
-            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
-            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
-            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace("roles", "roles, offline_access");
+            offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
         }
         else {
-            allowPasswordFlowRecommendedHint[0].innerText = allowPasswordFlowRecommendedHint[0].innerText.replace(", offline_access", "");
-            allowAuthorizationCodeFlowRecommendedHint[0].innerText = allowAuthorizationCodeFlowRecommendedHint[0].innerText.replace(", offline_access", "");
-            allowHybridFlowRecommendedHint[0].innerText = allowHybridFlowRecommendedHint[0].innerText.replace(", offline_access", "");
+            offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
         }
     });
     function refreshAllowRefreshTokenFlowVisibility() {
