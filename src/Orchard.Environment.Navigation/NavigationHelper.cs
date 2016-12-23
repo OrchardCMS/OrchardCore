@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Orchard.Environment.Navigation
 {
@@ -15,15 +16,15 @@ namespace Orchard.Environment.Navigation
         /// <param name="parentShape">The menu parent shape.</param>
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItems">The current level to populate.</param>
-        public static void PopulateMenu(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems)
+        public static void PopulateMenu(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
             foreach (MenuItem menuItem in menuItems)
             {
-                dynamic menuItemShape = BuildMenuItemShape(shapeFactory, parentShape, menu, menuItem);
+                dynamic menuItemShape = BuildMenuItemShape(shapeFactory, parentShape, menu, menuItem, viewContext);
 
                 if (menuItem.Items != null && menuItem.Items.Any())
                 {
-                    PopulateMenu(shapeFactory, menuItemShape, menu, menuItem.Items);
+                    PopulateMenu(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
 
                 parentShape.Add(menuItemShape, menuItem.Position);
@@ -38,20 +39,21 @@ namespace Orchard.Environment.Navigation
         /// <param name="menu">The menu shape.</param>
         /// <param name="menuItem">The menu item to build the shape for.</param>
         /// <returns>The menu item shape.</returns>
-        public static dynamic BuildMenuItemShape(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem)
+        public static dynamic BuildMenuItemShape(dynamic shapeFactory, dynamic parentShape, dynamic menu, MenuItem menuItem, ViewContext viewContext)
         {
             var menuItemShape = shapeFactory.NavigationItem()
                 .Text(menuItem.Text)
                 .Id(menuItem.Id)
                 .Href(menuItem.Href)
                 .LinkToFirstChild(menuItem.LinkToFirstChild)
-                .Selected(parentShape.Selected != null && ((bool)parentShape.Selected || IsSelected(menuItem, null)))
                 .RouteValues(menuItem.RouteValues)
                 .Item(menuItem)
                 .Menu(menu)
                 .Parent(parentShape)
-                .Level(parentShape.Selected == null ? 1 : (int)parentShape.Level + 1)
+                .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
                 .Local(menuItem.LocalNav);
+
+            ApplySelection(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);
@@ -59,9 +61,29 @@ namespace Orchard.Environment.Navigation
             return menuItemShape;
         }
 
-        public static bool IsSelected(MenuItem menuItem, HttpContext httpContext)
+        public static void ApplySelection(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
-            return false;
+            // compare route values (if any) first
+            bool match = menuItem.RouteValues != null && RouteMatches(menuItem.RouteValues, viewContext.RouteData.Values);
+
+            // if route match failed, try comparing URL strings, if
+            if (!match && menuItem.Href != null)
+            {
+                string url = menuItem.Href.Replace("~/", viewContext.HttpContext.Request.PathBase);
+                match = viewContext.HttpContext.Request.Path.Equals(url, StringComparison.OrdinalIgnoreCase);
+            }
+
+            menuItemShape.Selected = match;
+
+            // Apply the selection to the hierarchy
+            if (match)
+            {
+                while (menuItemShape.Parent != null)
+                {
+                    menuItemShape = menuItemShape.Parent;
+                    menuItemShape.Selected = true;
+                }
+            }
         }
 
         /// <summary>
@@ -76,14 +98,17 @@ namespace Orchard.Environment.Navigation
             {
                 return true;
             }
+
             if (itemValues == null || requestValues == null)
             {
                 return false;
             }
+
             if (itemValues.Keys.Any(key => requestValues.ContainsKey(key) == false))
             {
                 return false;
             }
+
             return itemValues.Keys.All(key => string.Equals(Convert.ToString(itemValues[key]), Convert.ToString(requestValues[key]), StringComparison.OrdinalIgnoreCase));
         }
     }

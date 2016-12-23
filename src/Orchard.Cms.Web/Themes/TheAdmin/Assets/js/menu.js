@@ -1,11 +1,13 @@
 ﻿$(function () {
-    $(".menu-admin a").each(function () {
-        var link = $(this);
-        var href = link.attr('href');
-        if (window.location.pathname == href) {
-            link.parents('li').children(':checkbox').prop('checked', true);
-            link.parents('li').children(':radio').prop('checked', true);
-            link.addClass('active');
+    $('#navbar-toggler').on('click', function () {
+        var nav = $('#ta-left-sidebar');
+        if (nav.hasClass('in')) {
+            nav.animate({ 'left': '-260px' }, 300);
+            nav.removeClass('in');
+        }
+        else {
+            nav.animate({ 'left': '0px' }, 300);
+            nav.addClass('in');
         }
     });
 });

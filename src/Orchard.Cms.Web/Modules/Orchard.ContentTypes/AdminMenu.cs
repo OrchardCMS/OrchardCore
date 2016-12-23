@@ -20,7 +20,7 @@ namespace Orchard.ContentTypes {
             }
 
             builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
-                .AddClass("content-definition")
+                .AddClass("content-definition").Id("contentdefinition")
                 .LinkToFirstChild(true)
                     .Add(T["Content Types"], "1", contentTypes => contentTypes
                         .Action("List", "Admin", new { area = "Orchard.ContentTypes" })

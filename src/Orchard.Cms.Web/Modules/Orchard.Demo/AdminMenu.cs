@@ -22,7 +22,7 @@ namespace Orchard.Demo
 
             builder
                 .Add(T["Demo"], "10", themes => themes
-                    .AddClass("demo")
+                    .AddClass("demo").Id("demo")
                     .Add(T["This Menu Item 1.1"], "0", installed => installed
                         .Add(T["This is Menu Item 1.1"])
                         .Add(T["This is Menu Item 1.2"])

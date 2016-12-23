@@ -41,7 +41,7 @@ namespace Orchard.Navigation
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-
+                    
                     IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
 
                     var httpContext = httpContextAccessor.HttpContext;
@@ -66,8 +66,7 @@ namespace Orchard.Navigation
                     }
 
                     // TODO: Flag Selected menu item
-
-                    NavigationHelper.PopulateMenu(shapeFactory, menu, menu, menuItems);
+                    NavigationHelper.PopulateMenu(shapeFactory, menu, menu, menuItems, context.DisplayContext.ViewContext);
 
                     return Task.CompletedTask;
                 });

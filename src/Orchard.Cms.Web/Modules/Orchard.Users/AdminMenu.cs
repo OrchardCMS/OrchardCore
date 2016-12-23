@@ -22,7 +22,7 @@ namespace Orchard.Users
 
             builder
                 .Add(T["Content"], "2", content => content
-                    .AddClass("content")
+                    .AddClass("content").Id("content")
                     .Add(T["Users"], "5", installed => installed
                         .Action("Index", "Admin", "Orchard.Users")
                         .Permission(Permissions.ManageUsers)

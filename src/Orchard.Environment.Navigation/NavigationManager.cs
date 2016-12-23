@@ -233,16 +233,6 @@ namespace Orchard.Environment.Navigation
                 var oldItems = item.Items;
 
                 item.Items = Reduce(item.Items, user).ToList();
-
-                // if all sub items have been filtered out, ensure the main one is not one of them
-                // e.g., Manage Roles and Manage Users are not granted, the Users item should not show up
-                if (oldItems.Any() && !item.Items.Any())
-                {
-                    if (oldItems.Any(x => NavigationHelper.RouteMatches(x.RouteValues, item.RouteValues)))
-                    {
-                        continue;
-                    }
-                }
             }
 
             return filtered;
