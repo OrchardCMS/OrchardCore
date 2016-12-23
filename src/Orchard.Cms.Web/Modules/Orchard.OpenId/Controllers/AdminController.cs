@@ -39,8 +39,7 @@ namespace Orchard.OpenId.Controllers
             IRoleProvider roleProvider,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
-            IOpenIdService openIdService
-            )
+            IOpenIdService openIdService)
         {
             _shapeFactory = shapeFactory;
             _siteService = siteService;
@@ -256,7 +255,7 @@ namespace Orchard.OpenId.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View("Edit",model);
+            return View("Create", model);
         }
 
         [HttpPost]

@@ -15,16 +15,16 @@
         <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
     </fieldset>
 
-    <fieldset class="form-group" asp-validation-class-for="DefaultTokenFormat">
-        <label asp-for="DefaultTokenFormat">@T["Token Format"] <span asp-validation-for="DefaultTokenFormat"></span></label>
-        <select asp-for="DefaultTokenFormat" class="form-control">
+    <fieldset class="form-group" asp-validation-class-for="AccessTokenFormat">
+        <label asp-for="AccessTokenFormat">@T["Token Format"] <span asp-validation-for="AccessTokenFormat"></span></label>
+        <select asp-for="AccessTokenFormat" class="form-control">
             @foreach (OpenIdSettings.TokenFormat format in Enum.GetValues(typeof(OpenIdSettings.TokenFormat)))
             {
-                <option value="@format" selected="@(Model.DefaultTokenFormat == format)">@format.ToString()</option>
+                <option value="@format" selected="@(Model.AccessTokenFormat == format)">@format.ToString()</option>
             }
         </select>
-        <span class="@("hintDefaultTokenFormat hint" + (Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.JWT ? "" : " collapse"))" id="Hint_JWT">@T["If you are using a self-signed certificate for SSL keep in mind JWT requires the client has the SSL certificate registered as a trusted certificate."]</span>
-        <span class="@("hintDefaultTokenFormat hint" + (Model.DefaultTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "" : " collapse"))" id="Hint_Encrypted">@T["Encrypted format relies on .Net Data Protection API. It allows the use of a self-signed certificate for SSL without needing it to be registered as trusted in the client."]</span>
+        <span class="@("hintAccessTokenFormat hint" + (Model.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT ? "" : " collapse"))" id="Hint_JWT">@T["If you are using a self-signed certificate for SSL keep in mind JWT requires the client has the SSL certificate registered as a trusted certificate."]</span>
+        <span class="@("hintAccessTokenFormat hint" + (Model.AccessTokenFormat == OpenIdSettings.TokenFormat.Encrypted ? "" : " collapse"))" id="Hint_Encrypted">@T["Encrypted format relies on .Net Data Protection API. It allows the use of a self-signed certificate for SSL without needing it to be registered as trusted in the client."]</span>
     </fieldset>
 
     <fieldset class="form-group" asp-validation-class-for="Authority">
@@ -196,8 +196,8 @@
         e.stopPropagation();    
         $(this).parent().trigger("click");
     })    
-    $("#DefaultTokenFormat").change(function () {
-        var selector = "#Hint_DefaultTokenFormat";
+    $("#AccessTokenFormat").change(function () {
+        var selector = "#Hint_AccessTokenFormat";
         $(".hint" + this.id + ":not(" + selector + ")").collapse("hide");
         $(selector).collapse("show");      
     });
