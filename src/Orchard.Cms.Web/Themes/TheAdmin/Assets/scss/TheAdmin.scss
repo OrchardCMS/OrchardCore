@@ -288,3 +288,12 @@ ul.pager li a {
 .col-xl {
     @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xs-12;
 }
+
+// toggle collapse
+[data-toggle="collapse"] i:before{   
+  content: "\f077";
+}
+
+[data-toggle="collapse"].collapsed i:before{
+  content: "\f078";
+}

@@ -6378,3 +6378,9 @@ label .field-validation-error::before {
 
 .list-group.sortable li {
   cursor: move; }
+
+[data-toggle="collapse"] i:before {
+  content: "\f077"; }
+
+[data-toggle="collapse"].collapsed i:before {
+  content: "\f078"; }
