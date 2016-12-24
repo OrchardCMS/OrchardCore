@@ -18,14 +18,14 @@
         @foreach (var contentItem in Model.ContentItems)
         {
             <li class="list-group-item">
-                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null))
+                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(contentItem, null, "Summary"))
             </li>
         }
     </ul>
 }
 else
 {
-    <p class="alert alert-warning">@T["There are no such results"]</p>
+    <p class="alert alert-warning">@T["There are no such results."]</p>
 }
 
 @{
