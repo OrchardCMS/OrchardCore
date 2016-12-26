@@ -27,7 +27,7 @@ namespace Orchard.Environment.Extensions.Utility
             var result = new List<T>();
             foreach (var item in population)
             {
-                Add(item, result, population, hasDependency, getPriority);
+                Add(item, result, population, hasDependency);
             }
 
             // shift elements forward as possible within priorities and dependencies
@@ -40,7 +40,7 @@ namespace Orchard.Environment.Extensions.Utility
             return result;
         }
 
-        private static void Add<T>(Linkage<T> item, ICollection<T> list, IEnumerable<Linkage<T>> population, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        private static void Add<T>(Linkage<T> item, ICollection<T> list, IEnumerable<Linkage<T>> population, Func<T, T, bool> hasDependency)
         {
             if (item.Used)
                 return;
@@ -49,7 +49,7 @@ namespace Orchard.Environment.Extensions.Utility
 
             foreach (var dependency in population.Where(dep => hasDependency(item.Element, dep.Element)))
             {
-                Add(dependency, list, population, hasDependency, getPriority);
+                Add(dependency, list, population, hasDependency);
             }
 
             list.Add(item.Element);

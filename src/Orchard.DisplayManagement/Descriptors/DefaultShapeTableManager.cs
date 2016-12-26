@@ -85,7 +85,8 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
-                    .OrderByDependenciesAndPriorities(
+                    .OrderByDependenciesAndPriorities
+                    (
                         (fiObv, fiSub) => HasDependency(fiObv.Value.Feature, fiSub.Value.Feature),
                         (fi) => fi.Value.Feature.Priority
                     )
@@ -146,7 +147,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) ? true : f1.Dependencies.Contains(f2.Id);
+            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) || f1.Dependencies.Contains(f2.Id);
         }
 
         private bool IsEnabledModuleOrRequestedTheme(FeatureShapeDescriptor descriptor, string themeName, List<string> enabledFeatureIds)
@@ -156,8 +157,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
         private bool IsEnabledModuleOrRequestedTheme(IFeatureInfo feature, string themeName, List<string> enabledFeatureIds)
         {
-            return IsModuleOrRequestedTheme(feature, themeName) && 
-                (feature.Id == "Core" || enabledFeatureIds.Contains(feature.Id));
+            return IsModuleOrRequestedTheme(feature, themeName) && (feature.Id == "Core" || enabledFeatureIds.Contains(feature.Id));
         }
          
         private bool IsModuleOrRequestedTheme(IFeatureInfo feature, string themeId)

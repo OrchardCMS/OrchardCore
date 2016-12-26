@@ -306,7 +306,7 @@ namespace Orchard.Environment.Extensions
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) ? true : f1.Dependencies.Contains(f2.Id);
+            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) || f1.Dependencies.Contains(f2.Id);
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
