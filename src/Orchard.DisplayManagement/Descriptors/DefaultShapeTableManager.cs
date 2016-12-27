@@ -60,22 +60,22 @@ namespace Orchard.DisplayManagement.Descriptors
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>().AsReadOnly() :
-                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList().AsReadOnly();
+                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
-                Parallel.ForEach(_bindingStrategies, new ParallelOptions { MaxDegreeOfParallelism = 4 }, bindingStrategy =>
+                foreach (var bindingStrategy in _bindingStrategies)
                 {
                     IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
-                        return;
+                        continue;
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
                     var builtAlterations = builder.BuildAlterations();
 
                     BuildDescriptors(bindingStrategy, builtAlterations);
-                });
+                }
 
                 List<string> orderedFeatureIds;
                 if (!_memoryCache.TryGetValue("OrderedFeatureIds", out orderedFeatureIds))
