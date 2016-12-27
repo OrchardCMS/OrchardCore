@@ -34,7 +34,7 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             _logger = logger;
 
             _asyncLazyShellDescriptor = new Lazy<Task<ShellDescriptor>>(() => Task.Run(() =>
-                session.QueryAsync<ShellDescriptor>()
+                _session.QueryAsync<ShellDescriptor>()
                 .FirstOrDefault()
                 .GetAwaiter()
                 .GetResult()));
