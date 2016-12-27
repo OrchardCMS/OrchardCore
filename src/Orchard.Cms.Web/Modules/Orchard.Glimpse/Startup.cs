@@ -1,5 +1,6 @@
 ﻿using System;
 using Glimpse;
+using Glimpse.Common;
 using Glimpse.Common.Initialization;
 using Glimpse.Initialization;
 using Glimpse.Internal;
@@ -17,7 +18,8 @@ namespace Orchard.Glimpse
         {
             services.Add(GlimpseServices.GetDefaultServices());
 
-            services.AddScoped<IAssemblyProvider, OrchardAssemblyProvider>();
+            services.AddTransient<IAssemblyProvider, OrchardAssemblyProvider>();
+            services.AddSingleton<IGlimpseContextAccessor, OrchardGlimpseContextAccessor>();
 
             var servicesProvider = services
                 .BuildServiceProvider();
@@ -33,7 +35,6 @@ namespace Orchard.Glimpse
             }
 
             (servicesProvider as IDisposable).Dispose();
-
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

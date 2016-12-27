@@ -28,7 +28,9 @@ namespace Orchard.Glimpse
         public IEnumerable<Assembly> GetCandidateAssemblies(string coreLibrary)
         {
             return GetCandidateLibraries(DependencyContext.Default)
-                .Select(Assembly.Load);
+                .Select(Assembly.Load)
+                .Concat(_shellBlueprint.Dependencies.Select(x => x.Type.GetTypeInfo().Assembly))
+                .Distinct();
         }
 
         // Returns a list of libraries that references the assemblies in <see cref="ReferenceAssemblies"/>.
