@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Extensions;
@@ -62,19 +63,19 @@ namespace Orchard.DisplayManagement.Descriptors
                 var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
                     _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
 
-                foreach (var bindingStrategy in _bindingStrategies)
+                Parallel.ForEach(_bindingStrategies, new ParallelOptions { MaxDegreeOfParallelism = 4 }, bindingStrategy =>
                 {
                     IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
-                        continue;
+                        return;
 
                     var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
                     bindingStrategy.Discover(builder);
                     var builtAlterations = builder.BuildAlterations();
 
                     BuildDescriptors(bindingStrategy, builtAlterations);
-                }
+                });
 
                 var enabledFeatureIds = _shellFeaturesManager
                     .GetEnabledFeaturesAsync()
