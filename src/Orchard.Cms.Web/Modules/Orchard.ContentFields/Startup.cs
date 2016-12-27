@@ -31,6 +31,12 @@ namespace Orchard.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, HtmlFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, HtmlFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, HtmlFieldIndexHandler>();
+
+            // Link Field
+            services.AddSingleton<ContentField, LinkField>();
+            services.AddScoped<IContentFieldDisplayDriver, LinkFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
         }
     }
 }
