@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orchard.Glimpse.Inspectors;
 
 namespace Orchard.Glimpse
 {
@@ -20,6 +21,7 @@ namespace Orchard.Glimpse
 
             services.AddTransient<IAssemblyProvider, OrchardAssemblyProvider>();
             services.AddSingleton<IGlimpseContextAccessor, OrchardGlimpseContextAccessor>();
+            services.AddTransient<OrchardWebDiagnosticsInspector>();
 
             var servicesProvider = services
                 .BuildServiceProvider();

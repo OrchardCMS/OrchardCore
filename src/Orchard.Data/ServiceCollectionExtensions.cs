@@ -11,6 +11,7 @@ using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
+using YesSql.Core.Sql;
 using YesSql.Storage.Sql;
 
 namespace Orchard.Data
@@ -25,6 +26,8 @@ namespace Orchard.Data
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
             services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
+
+            SqlDialectFactory.RegisterSqlDialect("diagnosticdbconnection", new SqlServerDialect());
 
             // Configuring data access
 

@@ -9,14 +9,17 @@ namespace Orchard.Data.Diagnostics
     {
         private readonly DiagnosticSource _diagnostics;
         private readonly DbCommand _command;
+        private DbConnection _connection;
+        private DbTransaction _transaction;
 
-        public DiagnosticDbCommand(DiagnosticSource diagnostics, DbCommand command)
+        public DiagnosticDbCommand(DiagnosticSource diagnostics, DbCommand command, DbConnection connection)
         {
             if (diagnostics == null) throw new ArgumentNullException(nameof(diagnostics));
             if (command == null) throw new ArgumentNullException(nameof(command));
 
             _diagnostics = diagnostics;
             _command = command;
+            _connection = connection;
         }
 
         public override string CommandText
@@ -51,8 +54,17 @@ namespace Orchard.Data.Diagnostics
 
         protected override DbConnection DbConnection
         {
-            get { return _command.Connection; }
-            set { _command.Connection = value; }
+            get
+            {
+                return _connection;
+            }
+
+            set
+            {
+                _connection = value;
+                var awesomeConn = value as DiagnosticDbConnection;
+                _command.Connection = awesomeConn == null ? value : awesomeConn.WrappedConnection;
+            }
         }
 
         protected override DbParameterCollection DbParameterCollection
@@ -62,8 +74,17 @@ namespace Orchard.Data.Diagnostics
 
         protected override DbTransaction DbTransaction
         {
-            get { return _command.Transaction; }
-            set { _command.Transaction = value; }
+            get
+            {
+                return _transaction;
+            }
+
+            set
+            {
+                _transaction = value;
+                var awesomeTran = value as DiagnosticDbTransaction;
+                _command.Transaction = awesomeTran == null ? value : awesomeTran.WrappedTransaction;
+            }
         }
 
         public override void Cancel()
@@ -135,7 +156,50 @@ namespace Orchard.Data.Diagnostics
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            return _command.ExecuteReader(behavior);
+            var startTimestamp = Stopwatch.GetTimestamp();
+            var instanceId = Guid.NewGuid();
+
+            _diagnostics
+                .WriteCommandBefore(
+                    this,
+                    nameof(ExecuteDbDataReader),
+                    instanceId,
+                    startTimestamp,
+                    async: false);
+
+            try
+            {
+                var value = _command.ExecuteReader(behavior);
+                //value = new DiagnosticDbDataReader(value);
+
+                var currentTimestamp = Stopwatch.GetTimestamp();
+
+                _diagnostics
+                    .WriteCommandAfter(
+                        this,
+                        nameof(ExecuteDbDataReader),
+                        instanceId,
+                        startTimestamp,
+                        currentTimestamp);
+
+                return value;
+            }
+            catch (Exception ex)
+            {
+                var currentTimestamp = Stopwatch.GetTimestamp();
+
+                _diagnostics
+                    .WriteCommandError(
+                        this,
+                        nameof(ExecuteDbDataReader),
+                        instanceId,
+                        startTimestamp,
+                        currentTimestamp,
+                        ex,
+                        async: false);
+
+                throw;
+            }
         }
     }
 }

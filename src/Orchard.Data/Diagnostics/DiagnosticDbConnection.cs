@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 
@@ -12,7 +13,15 @@ namespace Orchard.Data.Diagnostics
 
         public DiagnosticDbConnection(DbConnection connection)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
             _connection = connection;
+            _connection.StateChange += StateChangeHandler;
+        }
+
+        public DbConnection WrappedConnection
+        {
+            get { return _connection; }
         }
 
         public override string ConnectionString
@@ -43,12 +52,22 @@ namespace Orchard.Data.Diagnostics
 
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {
-            return new DiagnosticDbTransaction(_connection.BeginTransaction(isolationLevel));
+            return new DiagnosticDbTransaction(_connection.BeginTransaction(isolationLevel), this);
         }
 
         protected override DbCommand CreateDbCommand()
         {
-            return new DiagnosticDbCommand(_source, _connection.CreateCommand());
+            return new DiagnosticDbCommand(_source, _connection.CreateCommand(), this);
+        }
+
+        /// <summary>
+        /// The state change handler.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="stateChangeEventArguments">The state change event arguments.</param>
+        private void StateChangeHandler(object sender, StateChangeEventArgs stateChangeEventArguments)
+        {
+            OnStateChange(stateChangeEventArguments);
         }
     }
 }

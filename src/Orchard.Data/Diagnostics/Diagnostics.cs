@@ -25,8 +25,8 @@ namespace Orchard.Data.Diagnostics
             long startTimestamp,
             bool async)
         {
-            if (diagnosticSource.IsEnabled(BeforeExecuteCommand))
-            {
+            //if (diagnosticSource.IsEnabled(BeforeExecuteCommand))
+            //{
                 diagnosticSource.Write(
                     BeforeExecuteCommand,
                     new DataDiagnosticSourceBeforeMessage
@@ -37,7 +37,7 @@ namespace Orchard.Data.Diagnostics
                         Timestamp = startTimestamp,
                         IsAsync = async
                     });
-            }
+            //}
         }
 
         public static void WriteCommandAfter(
@@ -49,8 +49,8 @@ namespace Orchard.Data.Diagnostics
            long currentTimestamp,
            bool async = false)
         {
-            if (diagnosticSource.IsEnabled(AfterExecuteCommand))
-            {
+            //if (diagnosticSource.IsEnabled(AfterExecuteCommand))
+            //{
                 diagnosticSource.Write(
                     AfterExecuteCommand,
                     new DataDiagnosticSourceAfterMessage
@@ -62,7 +62,7 @@ namespace Orchard.Data.Diagnostics
                         Duration = currentTimestamp - startTimestamp,
                         IsAsync = async
                     });
-            }
+            //}
         }
 
         public static void WriteCommandError(
@@ -75,8 +75,8 @@ namespace Orchard.Data.Diagnostics
             Exception exception,
             bool async)
         {
-            if (diagnosticSource.IsEnabled(CommandExecutionError))
-            {
+            //if (diagnosticSource.IsEnabled(CommandExecutionError))
+            //{
                 diagnosticSource.Write(
                     CommandExecutionError,
                     new DataDiagnosticSourceAfterMessage
@@ -89,7 +89,7 @@ namespace Orchard.Data.Diagnostics
                         Exception = exception,
                         IsAsync = async
                     });
-            }
+            //}
         }
 
 

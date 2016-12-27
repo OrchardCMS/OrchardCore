@@ -1,7 +1,6 @@
 ﻿using Glimpse;
 using Glimpse.Agent;
 using Glimpse.Agent.Internal.Inspectors;
-using Glimpse.Agent.Internal.Inspectors.Mvc.Proxies;
 using Glimpse.Internal;
 using Microsoft.Extensions.Logging;
 
@@ -11,7 +10,6 @@ namespace Orchard.Glimpse.Inspectors
     {
         private readonly IAgentBroker _broker;
         private readonly IContextData<MessageContext> _contextData;
-        private readonly ProxyAdapter _proxyAdapter;
         private readonly IExceptionProcessor _exceptionProcessor;
         private readonly ILogger _logger;
 
@@ -21,14 +19,6 @@ namespace Orchard.Glimpse.Inspectors
             _broker = broker;
             _contextData = contextData;
             _logger = loggerFactory.CreateLogger<OrchardWebDiagnosticsInspector>();
-
-            _proxyAdapter = new ProxyAdapter();
-
-            AspNetOnCreated();
-            MvcOnCreated();
         }
-
-        partial void AspNetOnCreated();
-        partial void MvcOnCreated();
     }
 }
