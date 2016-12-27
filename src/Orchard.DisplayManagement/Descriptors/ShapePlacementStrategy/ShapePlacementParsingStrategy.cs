@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().Result
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)

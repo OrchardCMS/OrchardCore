@@ -60,8 +60,8 @@ namespace Orchard.DisplayManagement.Descriptors
                     _logger.LogInformation("Start building shape table");
                 }
 
-                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>() :
-                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList();
+                var excludedFeatures = _shapeDescriptors.Count == 0 ? new List<string>().AsReadOnly() :
+                    _shapeDescriptors.Select(kv => kv.Value.Feature.Id).Distinct().ToList().AsReadOnly();
 
                 Parallel.ForEach(_bindingStrategies, new ParallelOptions { MaxDegreeOfParallelism = 4 }, bindingStrategy =>
                 {
@@ -77,6 +77,23 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 });
 
+                List<string> orderedFeatureIds;
+                if (!_memoryCache.TryGetValue("OrderedFeatureIds", out orderedFeatureIds))
+                {
+                    orderedFeatureIds = _shapeDescriptors
+                        .Select(sd => sd.Value.Feature)
+                        .Distinct()
+                        .OrderByDependenciesAndPriorities
+                        (
+                            (fiObv, fiSub) => HasDependency(fiObv, fiSub),
+                            (fi) => fi.Priority
+                        )
+                        .Select(fi => fi.Id)
+                        .ToList();
+
+                    _memoryCache.Set("OrderedFeatureIds", orderedFeatureIds, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
+                }
+
                 var enabledFeatureIds = _shellFeaturesManager
                     .GetEnabledFeaturesAsync()
                     .GetAwaiter()
@@ -86,11 +103,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 var descriptors = _shapeDescriptors
                     .Where(sd => IsEnabledModuleOrRequestedTheme(sd.Value, themeId, enabledFeatureIds))
-                    .OrderByDependenciesAndPriorities
-                    (
-                        (fiObv, fiSub) => HasDependency(fiObv.Value.Feature, fiSub.Value.Feature),
-                        (fi) => fi.Value.Feature.Priority
-                    )
+                    .OrderBy(sd => orderedFeatureIds.IndexOf(sd.Value.Feature.Id))
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
                     (
