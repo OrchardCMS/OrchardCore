@@ -176,6 +176,13 @@ namespace Orchard.ContentManagement
             {
                 Data[name] = JObject.FromObject(obj);
             }
+
+            // Also copy properties added to .Content
+            var contentPart = obj as ContentElement;
+            if (obj != null)
+            {
+                ((JObject)Data[name]).Merge(contentPart.Data, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Merge });
+            }
         }
     }
 }

@@ -1,0 +1,9 @@
+﻿@using Orchard.Lists.Feeds
+@model ListFeedEditViewModel
+
+<fieldset class="form-group">
+    <label asp-for="FeedProxyUrl">@T["Feed proxy Url"]</label>
+    <input asp-for="FeedProxyUrl" class="form-control" />
+    <span class="hint">@T["Provide a custom public url which will be used to proxy the local rss feed."]</span>
+    <span class="hint">@T["The current feed is available at <a href=\"{0}\">{0}</a>.", Url.Action("Index", "Feed", new { area = "Orchard.Feeds", ContentItemId = Model.ContentItem.ContentItemId }, Context.Request.Scheme)]</span>
+</fieldset>
