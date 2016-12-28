@@ -109,7 +109,7 @@ namespace Orchard.OpenId
             services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
             services.AddScoped<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
-
+            services.AddRecipeExecutionStep<OpenIdApplicationStep>();
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
