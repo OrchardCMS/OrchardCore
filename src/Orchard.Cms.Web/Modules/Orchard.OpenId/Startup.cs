@@ -89,6 +89,14 @@ namespace Orchard.OpenId
                     break;
                 }
             }
+
+            // Admin
+            routes.MapAreaRoute(
+                name: "AdminOpenId",
+                areaName: "Orchard.OpenId",
+                template: "Admin/OpenIdApps/{action}/{id?}",
+                defaults: new { controller = "Admin" }
+            );
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -102,6 +110,7 @@ namespace Orchard.OpenId
             services.AddScoped<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
 
+
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
             services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
@@ -112,18 +121,8 @@ namespace Orchard.OpenId
                 .AddTokenStore<OpenIdTokenStore>()
                 .AddUserStore<OpenIdUserStore>()
                 .AddUserManager<OpenIdUserManager>()
-                .EnableAuthorizationEndpoint("/Orchard.OpenId/Access/Authorize")
-                .EnableLogoutEndpoint("/Orchard.OpenId/Access/Logout")
-                .EnableTokenEndpoint("/Orchard.OpenId/Access/Token")
-                .EnableUserinfoEndpoint("/Orchard.OpenId/Access/Userinfo")
-                .AllowPasswordFlow()
-                .AllowClientCredentialsFlow()
-                .AllowAuthorizationCodeFlow()
-                .AllowRefreshTokenFlow()
                 .UseDataProtectionProvider(_dataProtectionProvider)
-                .RequireClientIdentification()
-                .Configure(options => options.ApplicationCanDisplayErrors = true);
-
+                .RequireClientIdentification();
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
         }
     }

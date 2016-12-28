@@ -24,17 +24,23 @@ namespace Orchard.OpenId.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly OpenIddictUserManager<User> _userManager;
         private readonly IStringLocalizer<AccessController> T;
+        private readonly IOpenIdService _openIdService;
+        private readonly IOpenIdApplicationManager _openIdApplicationManager;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             SignInManager<User> signInManager,
             OpenIddictUserManager<User> userManager,
-            IStringLocalizer<AccessController> stringLocalizer)
+            IStringLocalizer<AccessController> stringLocalizer,
+            IOpenIdService openIdService,
+            IOpenIdApplicationManager openIdApplicationManager)
         {
             T = stringLocalizer;
             _applicationManager = applicationManager;
             _signInManager = signInManager;
             _userManager = userManager;
+            _openIdService = openIdService;
+            _openIdApplicationManager = openIdApplicationManager;
         }
 
         [AllowAnonymous, HttpPost]
@@ -47,7 +53,6 @@ namespace Orchard.OpenId.Controllers
             // which is required for this stateless OAuth2/OIDC token endpoint to work correctly.
             // To prevent effective CSRF/session fixation attacks, this action MUST NOT
             // return an authentication cookie or try to establish an ASP.NET Core session.
-
             var request = HttpContext.GetOpenIdConnectRequest();
             if (request == null)
             {
@@ -58,12 +63,49 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
+            if (application == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
+                });
+            }
+
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
+                });
+            }
+
             if (request.IsPasswordGrantType())
             {
+                if (!application.AllowPasswordFlow)
+                {
+                    return View("Error", new ErrorViewModel
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidClient,
+                        ErrorDescription = T["Password Flow is not allowed for this OpenID Connect Application"]
+                    });
+                }
                 return await ExchangePasswordGrantType(request);
             }
-            else if (request.IsClientCredentialsGrantType())
+
+            if (request.IsClientCredentialsGrantType())
             {
+                if (!application.AllowClientCredentialsFlow)
+                {
+                    return View("Error", new ErrorViewModel
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidClient,
+                        ErrorDescription = T["Client Credentials Flow is not allowed for this OpenID Connect Application"]
+                    });
+                }
                 return await ExchangeClientCredentialsGrantType(request);
             }
 
@@ -207,6 +249,44 @@ namespace Orchard.OpenId.Controllers
                 {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
                     ErrorDescription = T["Details concerning the calling client application cannot be found in the database"]
+                });
+            }
+
+            if (request.HasScope(OpenIdConnectConstants.Scopes.OfflineAccess) && !application.AllowRefreshTokenFlow)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Offline scope is not allowed for this OpenID Connect Application"]
+                });
+            }
+            
+            if (request.IsAuthorizationCodeFlow() && !application.AllowPasswordFlow)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Password Flow is not allowed for this OpenID Connect Application"]
+                });
+            }
+
+            if (request.IsImplicitFlow() && !application.AllowImplicitFlow)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Implicit Flow is not allowed for this OpenID Connect Application"]
+                });
+            }
+
+            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+            // Note: It is needed to check openIdSettings.AllowHybridFlow because OpenIddict doesn't have an specific configuration for AllowHybridFlow.             
+            if (request.IsHybridFlow() && (!openIdSettings.AllowHybridFlow || !application.AllowHybridFlow))
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = T["Hybrid Flow is not allowed for this OpenID Connect Application"]
                 });
             }
 

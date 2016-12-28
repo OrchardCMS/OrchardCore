@@ -51,12 +51,16 @@ namespace Orchard.OpenId.Services
                 return false;
             }
 
-            if (settings.AccessTokenFormat == OpenIdSettings.TokenFormat.JWT)
+            if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow 
+                && !settings.AllowHybridFlow && !settings.AllowImplicitFlow && !settings.AllowPasswordFlow)
             {
-                ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
-                ValidateUrisSchema(settings.Audiences, !settings.TestingModeEnabled, modelState, "Audience");
+                modelState.AddModelError("", T["At least one OpenID Connect flow must be enabled."]);
+                return false;
             }
 
+            ValidateUrisSchema(new string[] { settings.Authority }, !settings.TestingModeEnabled, modelState, "Authority");
+            ValidateUrisSchema(settings.Audiences, !settings.TestingModeEnabled, modelState, "Audience");
+            
             if (!settings.TestingModeEnabled)
             {
                 if (settings.CertificateStoreName == null)
@@ -71,6 +75,67 @@ namespace Orchard.OpenId.Services
                 {
                     modelState.AddModelError("CertificateThumbPrint", T["A certificate is required when testing mode is disabled."]);
                 }
+                var certificate = GetCertificate(settings.CertificateStoreLocation.Value, settings.CertificateStoreName.Value, settings.CertificateThumbPrint);
+                if (certificate == null)
+                {
+                    modelState.AddModelError("CertificateThumbPrint", T["The certificate cannot be found."]);
+                    return false;
+                }
+                if (!certificate.HasPrivateKey)
+                {
+                    modelState.AddModelError("CertificateThumbPrint", T["The certificate doesn't contain the required private key."]);
+                    return false;
+                }
+                if (certificate.Archived)
+                {
+                    modelState.AddModelError("CertificateThumbPrint", T["The certificate is not valid because it is marked as archived."]);
+                    return false;
+                }
+                var now = DateTime.Now;
+                if (certificate.NotBefore > now || certificate.NotAfter < now)
+                {
+                    modelState.AddModelError("CertificateThumbPrint", T["The certificate is not valid for current date."]);
+                    return false;
+                }
+            }
+
+            if (settings.AllowPasswordFlow && !settings.EnableTokenEndpoint)
+            {
+                modelState.AddModelError("AllowPasswordFlow", T["Password Flow cannot be enabled if Token Endpoint is disabled"]);
+                return false;
+            }
+            if (settings.AllowClientCredentialsFlow && !settings.EnableTokenEndpoint)
+            {
+                modelState.AddModelError("AllowClientCredentialsFlow", T["Client Credentials Flow cannot be enabled if Token Endpoint is disabled"]);
+                return false;
+            }
+            if (settings.AllowAuthorizationCodeFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
+            {
+                modelState.AddModelError("AllowAuthorizationCodeFlow", T["Authorization Code Flow cannot be enabled if Authorization Endpoint and Token Endpoint are disabled"]);
+                return false;
+            }
+            if (settings.AllowHybridFlow && (!settings.EnableAuthorizationEndpoint || !settings.EnableTokenEndpoint))
+            {
+                modelState.AddModelError("AllowAuthorizationHybridFlow", T["Authorization Hybrid cannot be enabled if Authorization Endpoint and Token Endpoint are disabled"]);
+                return false;
+            }
+            if (settings.AllowRefreshTokenFlow)
+            {
+                if (!settings.EnableTokenEndpoint)
+                {
+                    modelState.AddModelError("AllowRefreshTokenFlow", T["Refresh Token Flow cannot be enabled if Token Endpoint is disabled"]);
+                    return false;
+                }
+                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
+                {
+                    modelState.AddModelError("AllowRefreshTokenFlow", T["Refresh Token Flow only can be enabled if Password Flow, Authorization Code Flow or Hybrid Flow are enabled"]);
+                    return false;
+                }
+            }
+            if (settings.AllowImplicitFlow && !settings.EnableAuthorizationEndpoint)
+            {
+                modelState.AddModelError("AllowImplicitFlow", T["Allow Implicit Flow cannot be enabled if Authorization Endpoint is disabled"]);
+                return false;
             }
             return modelState.IsValid;
         }
@@ -99,7 +164,7 @@ namespace Orchard.OpenId.Services
             return IsValidOpenIdSettings(settings, modelState);
         }
 
-        public IEnumerable<CertificateInfo> GetAvailableCertificates()
+        public IEnumerable<CertificateInfo> GetAvailableCertificates(bool onlyCertsWithPrivateKey)
         {
             foreach (StoreLocation storeLocation in Enum.GetValues(typeof(StoreLocation)))
             {
@@ -118,7 +183,7 @@ namespace Orchard.OpenId.Services
                         X509Certificate2Collection col = x509Store.Certificates;
                         foreach (var cert in col)
                         {
-                            if (!cert.Archived)
+                            if (!cert.Archived && (!onlyCertsWithPrivateKey || (onlyCertsWithPrivateKey && cert.HasPrivateKey)))
                             {
                                 yield return new CertificateInfo()
                                 {
@@ -129,13 +194,45 @@ namespace Orchard.OpenId.Services
                                     Subject = cert.Subject,
                                     NotBefore = cert.NotBefore,
                                     NotAfter = cert.NotAfter,
-                                    ThumbPrint = cert.Thumbprint
+                                    ThumbPrint = cert.Thumbprint,
+                                    HasPrivateKey = cert.HasPrivateKey,
+                                    Archived = cert.Archived
                                 };
                             }
                         }
                     }
                 }
             }
+        }
+
+        public CertificateInfo GetCertificate(StoreLocation storeLocation, StoreName storeName, string certThumbprint)
+        {
+            using (X509Store x509Store = new X509Store(storeName, storeLocation))
+            {
+                x509Store.Open(OpenFlags.ReadOnly);
+
+                X509Certificate2Collection col = x509Store.Certificates;
+                foreach (var cert in col)
+                {
+                    if (cert.Thumbprint == certThumbprint)
+                    {
+                        return new CertificateInfo()
+                        {
+                            StoreLocation = storeLocation,
+                            StoreName = storeName,
+                            FriendlyName = cert.FriendlyName,
+                            Issuer = cert.Issuer,
+                            Subject = cert.Subject,
+                            NotBefore = cert.NotBefore,
+                            NotAfter = cert.NotAfter,
+                            ThumbPrint = cert.Thumbprint,
+                            HasPrivateKey = cert.HasPrivateKey,
+                            Archived = cert.Archived
+                        };
+                    }
+                }
+            }
+            return null;
         }
     }
 }

@@ -1,14 +1,17 @@
 ﻿@model EditOpenIdApplicationViewModel
 @using Orchard.OpenId.ViewModels;
 @using Orchard.OpenId.Models;
-
+@using Orchard.OpenId.Settings;
+@{
+    var openIdSettings = ViewData["OpenIdSettings"] as OpenIdSettings;
+}
 @if (Model.Id == null)
 {
-    <h1>@RenderTitleSegments(T["Create OpenId Application"])</h1>
+    <h1>@RenderTitleSegments(T["Create OpenID Connect Application"])</h1>
 }
 else
 {
-    <h1>@RenderTitleSegments(T["Edit OpenId Application"])</h1>
+    <h1>@RenderTitleSegments(T["Edit OpenID Connect Application"])</h1>
 }
 
 <div asp-validation-summary="ModelOnly"></div>
@@ -24,50 +27,115 @@ else
         <span asp-validation-for="DisplayName" class="text-danger">@T["The Display Name is required."]</span>
         <input asp-for="DisplayName" class="form-control" autofocus />
     </div>
-    @{
-        var hintPublicClasses = Model.Type == ClientType.Public ? "hint" : "hint collapse";
-        var hintConfidentialClasses = Model.Type == ClientType.Confidential ? "hint" : "hint collapse";
-    }
-    <div class="form-group">
+    <div class="form-group" asp-validation-class-for="Type">
         <label asp-for="Type">@T["Type"]</label>
         <select asp-for="Type" class="form-control">
             <option value="@ClientType.Confidential">@ClientType.Confidential.ToString()</option>
             <option value="@ClientType.Public">@ClientType.Public.ToString()</option>
         </select>
-        <div class="@hintPublicClasses">@T["Authorization Code Flow and Refresh Code Flow are allowed. It allows offline access through Refresh Flow."]</div>
-        <div class="@hintPublicClasses">@T["Authorization Code Flow allows an user to authenticate from an insecure app redirecting the user to the Authorize url in the Identity Server fo providing his credentials."]</div>
-        <div class="@hintPublicClasses">@T["Authorization Requests Url: https://baseUrl/Orchard.OpenId/Access/Authorize Token Requests Url: https:// /Orchard.OpenId/Access/Token"]</div>
-        <div class="@hintPublicClasses">@T["Token Request Parameters: grant_type ('authorization_code'), client_id, client_secret, resource ('https://your_resource_server') , scope ('openid, profile, roles, offline_access')"]</div>
-        <div class="@hintConfidentialClasses">@T["Password Flow and Client Credentials Flow are allowed."]</div>
-        <div class="@hintConfidentialClasses">@T["Password Flow allows an app to authenticate as an Orchard user providing its username and password Client. This flows allow offline access providing a refresh token."]</div>
-        <div class="@hintConfidentialClasses">@T["Client Credentials allows an app to authenticate without user credentials. Its permissions are set using the roles assigned to the app at the bottom of this screen. Offline access is not allowed."]</div>
-        <div class="@hintConfidentialClasses">@T["Token Requests Url: https://baseUrl/Orchard.OpenId/Access/Token"]</div>
-        <div class="@hintConfidentialClasses">@T["Token Request Parameters: grant_type (['password'|'client_credentials']), client_id, client_secret, username, password, resource ('https://your_resource_server') , scope ('openid, profile, roles, offline_access')"]</div>
+        <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
-    @{
-        var classes = Model.Type == ClientType.Public ? "form-group" : "form-group collapse";
-    }
-    <div class="@classes" asp-validation-class-for="RedirectUri">
-        <label asp-for="RedirectUri">@T["Redirect Uri"]</label>
-        <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect Uri is required."]</span>
-        <input asp-for="RedirectUri" class="form-control" autofocus />
+
+    <h3>Flows</h3>
+    <fieldset class="@("form-group" + (openIdSettings.AllowAuthorizationCodeFlow ? "" : " collapse"))" asp-validation-class-for="AllowAuthorizationCodeFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowAuthorizationCodeFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowAuthorizationCodeFlow" class="form-check-input" />@T["Allow Authorization Code Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></div>
+        <div id="AllowAuthorizationCodeFlowRecommendedHint" class="@("hint" + (Model.AllowAuthorizationCodeFlow ? "" : " collapse"))">@T["Recommended Parameters:"] grant_type = 'code', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") resource = '@openIdSettings.Authority', scope ('openid, profile, roles@(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    <fieldset class="@("form-group" + (openIdSettings.AllowHybridFlow ? "" : " collapse"))" asp-validation-class-for="AllowHybridFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowHybridFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowHybridFlow" class="form-check-input" />@T["Allow Hybrid Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></div>
+        <div id="AllowHybridFlowRecommendedHint" class="@("hint" + (Model.AllowHybridFlow ? "" : " collapse"))">@T["Recommended Parameters:"] grant_type = 'code id_token', client_id, client_secret, resource = '@openIdSettings.Authority', scope ('openid, profile, roles@(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    <fieldset class="@("form-group" + (openIdSettings.AllowImplicitFlow ? "" : " collapse"))" asp-validation-class-for="AllowImplicitFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowImplicitFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowImplicitFlow" class="form-check-input" />@T["Allow Implicit Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></div>
+        <div id="AllowImplicitFlowRecommendedHint" class="@("hint" + (Model.AllowImplicitFlow ? "" : " collapse"))">@T["Recommended Parameters:"] grant_type = 'id_token token', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") redirect_uri ='', nonce, resource = '@openIdSettings.Authority' , scope ('openid, profile, roles')</div>
+    </fieldset>
+
+    <fieldset class="@("form-group" + (openIdSettings.AllowPasswordFlow ? "" : " collapse"))" asp-validation-class-for="AllowPasswordFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowPasswordFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowPasswordFlow" class="form-check-input" />@T["Allow Password Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></div>
+        <div id="AllowPasswordFlowRecommendedHint" class="@("hint" + (Model.AllowPasswordFlow ? "" : " collapse in"))">@T["Recommended Parameters:"] grant_type = 'password', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") username, password, resource = '@openIdSettings.Authority' , scope ('openid, profile, roles @(Model.AllowRefreshTokenFlow ? ", offline_access" : ""))')</div>
+    </fieldset>
+
+    <fieldset class="@("form-group" + (openIdSettings.AllowClientCredentialsFlow ? "" : " collapse"))" asp-validation-class-for="AllowClientCredentialsFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowClientCredentialsFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowClientCredentialsFlow" class="form-check-input" />@T["Allow Client Credentials Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></div>
+        <div id="AllowClientCredentialsFlowRecommendedHint" class="@("hint" + (Model.AllowClientCredentialsFlow ? "" : " collapse"))">@T["Recommended Parameters:"] grant_type = 'client_credentials', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") resource = '@openIdSettings.Authority' , scope ('openid, profile, roles')</div>
+    </fieldset>
+
+    <fieldset class="@("form-group" + (openIdSettings.AllowRefreshTokenFlow ? "" : " collapse"))" asp-validation-class-for="AllowRefreshTokenFlow">
+        <div class="form-check">
+            <label class="form-check-label">
+                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
+                <a data-toggle="collapse" href="#AllowRefreshTokenFlowRecommendedHint" class="a-unstyled">
+                    <input asp-for="AllowRefreshTokenFlow" class="form-check-input" disabled=@((Model.AllowPasswordFlow || Model.AllowAuthorizationCodeFlow || Model.AllowHybridFlow) ? null : "") />@T["Allow Refresh Token Flow"]
+                </a>
+            </label>
+        </div>
+        <div class="hint">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></div>
+        <div id="AllowRefreshTokenFlowRecommendedHint" class="@("hint" + (Model.AllowRefreshTokenFlow ? "" : " collapse"))">@T["Recommended Parameters:"] grant_type = 'refresh_token', client_id,@(Model.Type == ClientType.Confidential ? " client_secret," : "") refresh_token</div>
+    </fieldset>
+
+    <div id="RedirectSection" class="@(Model.AllowImplicitFlow || Model.AllowAuthorizationCodeFlow || Model.AllowHybridFlow ? "" : "collapse")">
+        <div asp-validation-class-for="RedirectUri">
+            <label asp-for="RedirectUri">@T["Redirect Uri"]</label>
+            <span asp-validation-for="RedirectUri" class="text-danger">@T["The Redirect Uri is required."]</span>
+            <input asp-for="RedirectUri" class="form-control" autofocus />
+        </div>
+        <div asp-validation-class-for="LogoutRedirectUri">
+            <label asp-for="LogoutRedirectUri">@T["Logout Redirect Uri"]</label>
+            <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
+            <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
+        </div>
+        <div asp-validation-class-for="SkipConsent">
+            <label class="form-check-label">
+                <input asp-for="SkipConsent" type="checkbox" class="form-check-input" checked="@Model.SkipConsent" /> @T["Skip user-consent screen"]
+            </label>
+            <div class="hint">@T["It skips the user-consent screen after login in identity server."]</div>
+        </div>
     </div>
-    <div class="@classes" asp-validation-class-for="LogoutRedirectUri">
-        <label asp-for="LogoutRedirectUri">@T["Logout Redirect Uri"]</label>
-        <span asp-validation-for="LogoutRedirectUri" class="text-danger">@T["The Logout Redirect Uri is required."]</span>
-        <input asp-for="LogoutRedirectUri" class="form-control" autofocus />
-    </div>
-    <div class="@classes" asp-validation-class-for="SkipConsent">
-        <label class="form-check-label">
-            <input asp-for="SkipConsent" type="checkbox" class="form-check-input" checked="@Model.SkipConsent" /> @T["Skip user-consent screen"]
-        </label>
-        <div class="hint">@T["It skips the user-consent screen after login in identity server. When identy server and resource server are the same you usually want to skip this screen."]</div>
-    </div>
-    @{
-        classes = Model.Type == ClientType.Public ? "form-group collapse" : "form-group";
-    }
-    <div class="@classes" id="RoleGroup" name="RoleGroup">
-        <h6>@T["Roles"]</h6>
+
+    <div class="@("form-group" + (openIdSettings.AllowClientCredentialsFlow && Model.AllowClientCredentialsFlow ? "" : " collapse"))" id="RoleGroup" name="RoleGroup">
+        <h6>@T["Client Credentials Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             <div class="form-check">
@@ -88,14 +156,66 @@ else
     </fieldset>
 </form>
 <script at="Foot" type="text/javascript">
-//<![CDATA[
+    //<![CDATA[
+    $("a > input.form-check-input").on("click", function (e) {
+        e.stopPropagation();
+        $(this).parent().trigger("click");
+    })
     $("#Type").change(function () {
-        $("#RoleGroup").toggle("slow");
-        $("#SkipConsent").parent().parent().toggle("slow");
-        $("#RedirectUri").parent().toggle("slow");
-        $("#LogoutRedirectUri").parent().toggle("slow");
-        $("#Type").siblings(".hint").toggle("slow");
-    });
-//]]>
-</script>
+        var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
+        if ($(this).val() === '@ClientType.Confidential') {
+            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
+        }
+        else {
+            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
+        }
+    });
+    $("#AllowClientCredentialsFlow").change(function () {
+        $("#RoleGroup").collapse($(this).is(':checked') ? "show" : "hide");
+    });
+    $("#AllowPasswordFlow").change(function () {
+        refreshAllowRefreshTokenFlowVisibility();
+    });
+    $("#AllowAuthorizationCodeFlow, #AllowHybridFlow").change(function () {
+        refreshAllowRefreshTokenFlowVisibility();
+        refreshRedirectSettings();
+    });
+    $("#AllowImplicitFlow").change(function () {
+        refreshRedirectSettings();
+    });
+    $("#AllowRefreshTokenFlow").change(function () {
+        var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
+
+        if ($(this).is(':checked')) {
+            offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
+        }
+        else {
+            offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
+        }
+    });
+    function refreshAllowRefreshTokenFlowVisibility() {
+        var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+
+        if (($("#AllowPasswordFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+            allowRefreshTokenFlow.removeAttr("disabled");
+        }
+        else {
+            allowRefreshTokenFlow.attr('disabled', true);
+            allowRefreshTokenFlow.prop("checked", false);
+        }
+    }
+    function refreshRedirectSettings() {
+        var redirectSection = $("#RedirectSection");
+        var skipConsent = $("#SkipConsent");
+
+        if (($("#AllowImplicitFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+            redirectSection.collapse("show");
+        }
+        else {
+            skipConsent.prop("checked", false);
+            redirectSection.collapse("hide");
+        }
+    }
+    //]]>
+</script>

@@ -36,8 +36,18 @@ namespace Orchard.OpenId.Drivers
                     model.CertificateStoreLocation = settings.CertificateStoreLocation;
                     model.CertificateStoreName = settings.CertificateStoreName;
                     model.CertificateThumbPrint = settings.CertificateThumbPrint;
-                    model.AvailableCertificates = _openIdServices.GetAvailableCertificates();
-                    model.SslBaseUrl = requestUrl.Remove(requestUrl.IndexOf("/Orchard.Settings")).Replace("http://", "https://");
+                    model.AvailableCertificates = _openIdServices.GetAvailableCertificates(onlyCertsWithPrivateKey: true);
+                    model.SslBaseUrl = requestUrl.Remove(requestUrl.IndexOf("/Admin/Settings")).Replace("http://", "https://");
+                    model.EnableTokenEndpoint = settings.EnableTokenEndpoint;
+                    model.EnableAuthorizationEndpoint = settings.EnableAuthorizationEndpoint;
+                    model.EnableLogoutEndpoint = settings.EnableLogoutEndpoint;
+                    model.EnableUserInfoEndpoint = settings.EnableUserInfoEndpoint;
+                    model.AllowPasswordFlow = settings.AllowPasswordFlow;
+                    model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
+                    model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
+                    model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
+                    model.AllowImplicitFlow = settings.AllowImplicitFlow;
+                    model.AllowHybridFlow = settings.AllowHybridFlow;
                 }).Location("Content:2").OnGroup("open id");
         }
 
@@ -58,6 +68,16 @@ namespace Orchard.OpenId.Drivers
                 settings.CertificateStoreLocation = model.CertificateStoreLocation;
                 settings.CertificateStoreName = model.CertificateStoreName;
                 settings.CertificateThumbPrint = model.CertificateThumbPrint;
+                settings.EnableTokenEndpoint = model.EnableTokenEndpoint;
+                settings.EnableAuthorizationEndpoint = model.EnableAuthorizationEndpoint;
+                settings.EnableLogoutEndpoint = model.EnableLogoutEndpoint;
+                settings.EnableUserInfoEndpoint = model.EnableUserInfoEndpoint;
+                settings.AllowPasswordFlow = model.AllowPasswordFlow;
+                settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+                settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+                settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+                settings.AllowImplicitFlow = model.AllowImplicitFlow;
+                settings.AllowHybridFlow = model.AllowHybridFlow;
 
                 _openIdServices.IsValidOpenIdSettings(settings, updater.ModelState);
             }
