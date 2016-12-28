@@ -30,7 +30,7 @@ namespace Orchard.Lists.Drivers
             // existing content item has ContainedPart value. In both cases the hidden field
             // needs to be rendered in the edit form to maintain the relationship with the parent.
 
-            if (model.Is<ContainedPart>())
+            if (model.As<ContainedPart>() != null)
             {
                 return BuildShape(model.As<ContainedPart>().ListContentItemId);
             }
@@ -63,7 +63,6 @@ namespace Orchard.Lists.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null)
             {
-                model.Weld<ContainedPart>();
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);
             }
 

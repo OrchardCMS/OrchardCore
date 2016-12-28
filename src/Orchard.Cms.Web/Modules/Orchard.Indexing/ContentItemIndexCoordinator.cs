@@ -43,7 +43,7 @@ namespace Orchard.Indexing
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
                 var partType = _contentPartFactory.GetContentPartType(partTypeName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var part = (ContentPart)context.ContentItem.Get(partType, partName);
 
                 var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 

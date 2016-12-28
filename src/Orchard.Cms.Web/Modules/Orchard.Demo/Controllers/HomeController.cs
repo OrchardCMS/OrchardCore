@@ -72,7 +72,7 @@ namespace Orchard.Demo.Controllers
             // Explicit syntax
             var testPart = contentItem.As<TestContentPartA>();
             testPart.Line = text;
-            contentItem.Weld(testPart);
+            contentItem.Apply(testPart);
 
             // "Alter" syntax
             contentItem.Alter<TestContentPartA>(x => x.Line = text);

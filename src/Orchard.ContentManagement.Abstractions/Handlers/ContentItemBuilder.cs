@@ -35,13 +35,13 @@ namespace Orchard.ContentManagement.Handlers
         public ContentItemBuilder Weld<TPart>() where TPart : ContentPart, new()
         {
             // if the part hasn't be weld yet
-            if (!_item.Has<TPart>())
+            if (_item.As<TPart>() == null)
             {
                 var partName = typeof(TPart).Name;
 
                 // build and welded the part
                 var part = new TPart();
-                _item.Weld(part);
+                _item.Weld(partName, part);
             }
 
             return this;
@@ -52,14 +52,14 @@ namespace Orchard.ContentManagement.Handlers
         /// </summary>
         public ContentItemBuilder Weld(ContentPart contentPart)
         {
-            _item.Weld(contentPart);
+            _item.Weld(contentPart.GetType().Name, contentPart);
             return this;
         }
 
         /// <summary>
         /// Welds a named part to the content item.
         /// </summary>
-        public ContentItemBuilder Weld(string name, object contentPart)
+        public ContentItemBuilder Weld(string name, ContentPart contentPart)
         {
             _item.Weld(name, contentPart);
             return this;

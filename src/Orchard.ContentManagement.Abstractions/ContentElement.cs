@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
 namespace Orchard.ContentManagement
 {
@@ -26,7 +25,7 @@ namespace Orchard.ContentManagement
         internal JObject Data { get; set; }
 
         [JsonIgnore]
-        public ContentItem ContentItem { get; protected set; }
+        public ContentItem ContentItem { get; internal set; }
 
         /// <summary>
         /// Whether the content has a named property or not.
@@ -36,153 +35,6 @@ namespace Orchard.ContentManagement
         {
             JToken value;
             return Data.TryGetValue(name, out value);
-        }
-
-        /// <summary>
-        /// Projects the content to a custom type.
-        /// </summary>
-        public T Get<T>(string name) where T : ContentElement
-        {
-            var obj = Data[name] as JObject;
-
-            if (obj == null)
-            {
-                return default(T);
-            }
-
-            var result = obj.ToObject<T>();
-            result.Data = obj;
-            result.ContentItem = ((IContent)this).ContentItem;
-
-            return result;
-        }
-
-        public T GetOrCreate<T>() where T : ContentElement, new()
-        {
-            return GetOrCreate<T>(typeof(T).Name);
-        }
-
-        public T GetOrCreate<T>(string name) where T : ContentElement, new()
-        {
-            JToken value;
-            T contentElement = default(T);
-
-            if (Data.TryGetValue(name, out value))
-            {
-                var obj = value as JObject;
-                if (obj == null)
-                {
-                    return default(T);
-                }
-
-                contentElement = obj.ToObject<T>();
-                contentElement.Data = obj;
-            }
-            else
-            {
-                contentElement = new T();
-                contentElement.Data = new JObject();
-                Data[name] = contentElement.Data;
-            }
-
-            contentElement.ContentItem = ((IContent)this).ContentItem;
-
-            return contentElement;
-        }
-
-        public ContentElement Get(Type t, string name)
-        {
-            JToken value;
-            if (Data.TryGetValue(name, out value))
-            {
-                var obj = value as JObject;
-                if (obj == null)
-                {
-                    return null;
-                }
-
-                var contentElement = obj.ToObject(t) as ContentElement;
-                contentElement.Data = obj;
-                contentElement.ContentItem = ((IContent)this).ContentItem;
-
-                return contentElement;
-            }
-
-            return null;
-        }
-
-        public ContentElement GetOrCreate(Type t, Func<ContentElement> factory, string name)
-        {
-            JToken value;
-            ContentElement contentElement;
-
-            if (Data.TryGetValue(name, out value))
-            {
-                var obj = value as JObject;
-                if (obj == null)
-                {
-                    return null;
-                }
-
-                contentElement = obj.ToObject(t) as ContentElement;
-                contentElement.Data = obj;
-            }
-            else
-            {
-                contentElement = factory();
-                contentElement.Data = new JObject();
-                Data[name] = contentElement.Data;
-            }
-
-            contentElement.ContentItem = ((IContent)this).ContentItem;
-            return contentElement;
-        }
-
-        /// <summary>
-        /// Extract some named content.
-        /// </summary>
-        public ContentElement Get(string name)
-        {
-            JToken value;
-            if (Data.TryGetValue(name, out value))
-            {
-                var obj = value as JObject;
-                if (obj == null)
-                {
-                    return null;
-                }
-
-                var contentElement = new ContentElement(obj);
-                contentElement.ContentItem = ((IContent)this).ContentItem;
-
-                return contentElement;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Adds or replaces a projection by its name.
-        /// </summary>
-        public void Weld(string name, object obj)
-        {
-            // If it's a generic part, use its data directly, otherwise converting it to a JObject
-            // would return an empty object
-            if (obj.GetType() == typeof(ContentPart))
-            {
-                Data[name] = ((ContentPart)obj).Data;
-            }
-            else
-            {
-                Data[name] = JObject.FromObject(obj);
-            }
-
-            // Also copy properties added to .Content
-            var contentPart = obj as ContentElement;
-            if (obj != null)
-            {
-                ((JObject)Data[name]).Merge(contentPart.Data, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Merge });
-            }
-        }
+        }        
     }
 }

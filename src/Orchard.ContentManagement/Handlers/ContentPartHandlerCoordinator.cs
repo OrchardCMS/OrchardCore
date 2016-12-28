@@ -69,7 +69,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Activated(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -90,7 +89,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Creating(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -111,7 +109,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Created(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -129,20 +126,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
                 var part = context.ContentItem.Get(partType, partName) as ContentPart;
                 _partHandlers.Invoke(handler => handler.Initializing(context, part), Logger);
-
-                foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
-                {
-                    var fieldTypeName = partFieldDefinition.FieldDefinition.Name;
-                    var field = _contentFieldFactory.CreateContentField(fieldTypeName);
-
-                    if (field != null)
-                    {
-                        var fieldName = partFieldDefinition.Name;
-                        part.Weld(fieldName, field);
-                    }
-                }
-
-                context.ContentItem.Weld(partName, part);
             }
         }
 
@@ -162,7 +145,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Initialized(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -182,25 +164,21 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (!context.ContentItem.Has(partName))
                 {
                     var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
-
                     _partHandlers.Invoke(handler => handler.Loading(context, part), Logger);
-
-                    context.ContentItem.Weld(partName, part);
                 }
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
-                    var part = context.ContentItem.Get(partName);
+                    var part = context.ContentItem.Get<ContentPart>(partName);
                     var fieldName = partFieldDefinition.Name;
 
                     if (!part.Has(fieldName))
                     {
-
                         var field = _contentFieldFactory.CreateContentField(partFieldDefinition.FieldDefinition.Name);
 
                         if (field != null)
                         {
-                            context.ContentItem.Get(partName).Weld(fieldName, field);
+                            context.ContentItem.Get<ContentPart>(partName).Weld(fieldName, field);
                         }
                     }
                 }
@@ -223,7 +201,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Loaded(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -243,7 +220,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Publishing(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -263,7 +239,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Published(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -283,7 +258,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Removing(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -303,7 +277,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Removed(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -323,7 +296,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Unpublishing(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -343,7 +315,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Unpublished(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -363,7 +334,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Updating(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -383,7 +353,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (part != null)
                 {
                     _partHandlers.Invoke(handler => handler.Updated(context, part), Logger);
-                    context.ContentItem.Weld(partName, part);
                 }
             }
         }
@@ -405,9 +374,6 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 if (buildingPart != null && existingPart != null)
                 {
                     _partHandlers.Invoke(handler => handler.Versioning(context, existingPart, buildingPart), Logger);
-
-                    context.BuildingContentItem.Weld(partName, buildingPart);
-                    context.ExistingContentItem.Weld(partName, existingPart);
                 }
             }
         }
@@ -423,15 +389,12 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
-                var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+                var buildingPart = (ContentPart)context.BuildingContentItem.Get(partType, partName);
+                var existingPart = (ContentPart)context.ExistingContentItem.Get(partType, partName);
 
                 if (buildingPart != null && existingPart != null)
                 {
                     _partHandlers.Invoke(handler => handler.Versioned(context, existingPart, buildingPart), Logger);
-
-                    context.BuildingContentItem.Weld(partName, buildingPart);
-                    context.ExistingContentItem.Weld(partName, existingPart);
                 }
             }
         }
