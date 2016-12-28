@@ -27,6 +27,12 @@ namespace Orchard.OpenId.ViewModels
         [Compare("ClientSecret")]
         public string ConfirmClientSecret { get; set; }
         public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
     }
     
     public class RoleEntry

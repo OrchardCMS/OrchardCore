@@ -5,7 +5,7 @@ namespace Orchard.OpenId
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageOpenIdApplications = new Permission("ManageOpenIdApplications", "Managing Open Id Applications");
+        public static readonly Permission ManageOpenIdApplications = new Permission("ManageOpenIdApplications", "Managing Open ID Connect Applications");
         
         public IEnumerable<Permission> GetPermissions()
         {

@@ -13,5 +13,7 @@ namespace Orchard.OpenId.Services
         public StoreName StoreName { get; set; }
         public string Subject { get; set; }
         public string ThumbPrint { get; set; }
+        public bool HasPrivateKey { get; set; }
+        public bool Archived { get; set; }
     }
 }
