@@ -1,20 +1,22 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Models;
 using Orchard.ContentManagement.Records;
 using Orchard.Feeds;
 using Orchard.Feeds.Models;
 using Orchard.Lists.Indexes;
-using Orchard.Lists.Models;
 using YesSql.Core.Services;
 
 namespace Orchard.Lists.Feeds
 {
     public class ListFeedQuery : IFeedQueryProvider, IFeedQuery
     {
+        public const int DefaultItemsCount = 20;
+
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
@@ -93,16 +95,20 @@ namespace Orchard.Lists.Feeds
                 });
             }
 
-            int itemsCount = contentItem.Content[nameof(ListPart)][nameof(ListFeedEditViewModel.FeedItemsCount)];
+            int itemsCount = contentItem.Content.ListPart?.FeedItemsCount ?? DefaultItemsCount;
 
-            var query = await _session.QueryAsync<ContentItem>()
+            IEnumerable<ContentItem> items;
+
+            items = itemsCount == 0
+                ? Enumerable.Empty<ContentItem>()
+                : await _session.QueryAsync<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
                     .With<ContentItemIndex>(x => x.Published)
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(itemsCount)
                     .List();
 
-            foreach (var item in query)
+            foreach (var item in items)
             {
                 context.Builder.AddItem(context, item);
             }

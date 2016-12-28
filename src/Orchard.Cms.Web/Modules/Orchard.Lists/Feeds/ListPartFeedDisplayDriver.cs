@@ -24,8 +24,8 @@ namespace Orchard.Lists.Feeds
         {
             return Shape<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
-                m.FeedProxyUrl = part.Content.FeedProxyUrl;
-                m.FeedItemsCount = part.Content.FeedItemsCount ?? 0;
+                m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
+                m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;
                 m.ContentItem = part.ContentItem;
             });
         }
@@ -37,8 +37,8 @@ namespace Orchard.Lists.Feeds
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 
-            part.Content.FeedProxyUrl = model.FeedProxyUrl;
-            part.Content.FeedItemsCount = model.FeedItemsCount;
+            part.ContentItem.Content.ListPart.FeedProxyUrl= model.FeedProxyUrl;
+            part.ContentItem.Content.ListPart.FeedItemsCount = model.FeedItemsCount;
 
             return Edit(part);
         }
