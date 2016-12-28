@@ -12,7 +12,17 @@ namespace Orchard.OpenId.Settings
         public StoreLocation? CertificateStoreLocation { get; set; }
         public StoreName? CertificateStoreName { get; set; }
         public string CertificateThumbPrint { get; set; }
-
+        public bool EnableTokenEndpoint { get; set; }
+        public bool EnableAuthorizationEndpoint { get; set; }
+        public bool EnableLogoutEndpoint { get; set; }
+        public bool EnableUserInfoEndpoint { get; set; }
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
+        
         public enum TokenFormat
         {
             Encrypted = 0,

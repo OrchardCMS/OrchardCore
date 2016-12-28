@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using AspNet.Security.OpenIdConnect.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,6 +44,8 @@ namespace Orchard.OpenId
             {
                 try
                 {
+                    options.AllowInsecureHttp = false;
+                    options.SigningCredentials.Clear();
                     options.SigningCredentials.AddCertificate(settings.CertificateThumbPrint, settings.CertificateStoreName.Value, settings.CertificateStoreLocation.Value);
                 }
                 catch (Exception exception)
@@ -50,6 +53,43 @@ namespace Orchard.OpenId
                     _logger.LogError("An error occurred while trying to register a X.509 certificate.", exception);
                     throw;
                 }
+            }
+
+            if (settings.EnableAuthorizationEndpoint)
+            {
+                options.AuthorizationEndpointPath = "/Orchard.OpenId/Access/Authorize";
+            }
+            if (settings.EnableTokenEndpoint)
+            {
+                options.TokenEndpointPath = "/Orchard.OpenId/Access/Token";
+            }
+            if (settings.EnableLogoutEndpoint)
+            {
+                options.LogoutEndpointPath = "/Orchard.OpenId/Access/Logout";
+            }
+            if (settings.EnableUserInfoEndpoint)
+            {
+                options.UserinfoEndpointPath = "/Orchard.OpenId/Access/Userinfo";
+            }
+            if (settings.AllowPasswordFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Password);
+            }
+            if (settings.AllowClientCredentialsFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.ClientCredentials);
+            }
+            if (settings.AllowAuthorizationCodeFlow || settings.AllowHybridFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.AuthorizationCode);
+            }
+            if (settings.AllowRefreshTokenFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.RefreshToken);
+            }
+            if (settings.AllowImplicitFlow || settings.AllowHybridFlow)
+            {
+                options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
             }
         }
     }

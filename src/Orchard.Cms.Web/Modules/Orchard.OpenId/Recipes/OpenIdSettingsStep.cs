@@ -35,11 +35,16 @@ namespace Orchard.OpenId.Recipes
             var settings = await _openIdService.GetOpenIdSettingsAsync();
             settings.TestingModeEnabled = model.TestingModeEnabled;
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Audiences = model.Audiences;
-            settings.Authority = model.Authority;
-            settings.CertificateStoreLocation = model.CertificateStoreLocation;
-            settings.CertificateStoreName = model.CertificateStoreName;
-            settings.CertificateThumbPrint = model.CertificateThumbPrint;
+            settings.EnableTokenEndpoint = model.EnableTokenEndpoint;
+            settings.EnableAuthorizationEndpoint = model.EnableAuthorizationEndpoint;
+            settings.EnableLogoutEndpoint = model.EnableLogoutEndpoint;
+            settings.EnableUserInfoEndpoint = model.EnableUserInfoEndpoint;
+            settings.AllowPasswordFlow = model.AllowPasswordFlow;
+            settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+            settings.AllowImplicitFlow = model.AllowImplicitFlow;
+            settings.AllowHybridFlow = model.AllowHybridFlow;
 
             await _openIdService.UpdateOpenIdSettingsAsync(settings);
         }
@@ -54,5 +59,15 @@ namespace Orchard.OpenId.Recipes
         public StoreLocation CertificateStoreLocation { get; set; } = StoreLocation.LocalMachine;
         public StoreName CertificateStoreName { get; set; } = StoreName.My;
         public string CertificateThumbPrint { get; set; }
+        public bool EnableTokenEndpoint { get; set; }
+        public bool EnableAuthorizationEndpoint { get; set; }
+        public bool EnableLogoutEndpoint { get; set; }
+        public bool EnableUserInfoEndpoint { get; set; }
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
     }
 }

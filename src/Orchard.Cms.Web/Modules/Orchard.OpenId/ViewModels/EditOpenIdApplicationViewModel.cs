@@ -23,8 +23,11 @@ namespace Orchard.OpenId.ViewModels
         public ClientType Type { get; set; }
         public bool SkipConsent { get; set; }
         public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
     }
-
-    
-
 }
