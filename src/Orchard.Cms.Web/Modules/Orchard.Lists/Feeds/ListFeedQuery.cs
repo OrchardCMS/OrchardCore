@@ -8,6 +8,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Feeds;
 using Orchard.Feeds.Models;
 using Orchard.Lists.Indexes;
+using Orchard.Lists.Models;
 using YesSql.Core.Services;
 
 namespace Orchard.Lists.Feeds
@@ -92,11 +93,13 @@ namespace Orchard.Lists.Feeds
                 });
             }
 
+            int itemsCount = contentItem.Content[nameof(ListPart)][nameof(ListFeedEditViewModel.FeedItemsCount)];
+
             var query = await _session.QueryAsync<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
                     .With<ContentItemIndex>(x => x.Published)
                     .OrderByDescending(x => x.CreatedUtc)
-                    .Take(20)
+                    .Take(itemsCount)
                     .List();
 
             foreach (var item in query)

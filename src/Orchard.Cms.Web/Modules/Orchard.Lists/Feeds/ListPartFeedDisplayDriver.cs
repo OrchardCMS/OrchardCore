@@ -3,7 +3,6 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Feeds.Models;
 using Orchard.Lists.Models;
 
 namespace Orchard.Lists.Feeds
@@ -26,6 +25,7 @@ namespace Orchard.Lists.Feeds
             return Shape<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
             {
                 m.FeedProxyUrl = part.Content.FeedProxyUrl;
+                m.FeedItemsCount = part.Content.FeedItemsCount ?? 0;
                 m.ContentItem = part.ContentItem;
             });
         }
@@ -35,9 +35,10 @@ namespace Orchard.Lists.Feeds
             var model = new ListFeedEditViewModel();
             model.ContentItem = part.ContentItem;
 
-            await updater.TryUpdateModelAsync(model, Prefix, t => t.FeedProxyUrl);
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 
             part.Content.FeedProxyUrl = model.FeedProxyUrl;
+            part.Content.FeedItemsCount = model.FeedItemsCount;
 
             return Edit(part);
         }
