@@ -77,22 +77,13 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                List<string> orderedFeatureIds;
-                if (!_memoryCache.TryGetValue("OrderedFeatureIds", out orderedFeatureIds))
+                var orderedFeatureIds = _memoryCache.GetOrCreate("OrderedFeatureIds", entry =>
                 {
-                    orderedFeatureIds = _shapeDescriptors
-                        .Select(sd => sd.Value.Feature)
-                        .Distinct()
-                        .OrderByDependenciesAndPriorities
-                        (
-                            (fiObv, fiSub) => HasDependency(fiObv, fiSub),
-                            (fi) => fi.Priority
-                        )
-                        .Select(fi => fi.Id)
-                        .ToList();
-
-                    _memoryCache.Set("OrderedFeatureIds", orderedFeatureIds, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
-                }
+                    entry.Priority = CacheItemPriority.NeverRemove;
+                    return _shapeDescriptors.Select(sd => sd.Value.Feature).Distinct()
+                        .OrderByDependenciesAndPriorities(HasDependency, f => f.Priority)
+                        .Select(f => f.Id).ToList();
+                });
 
                 var enabledFeatureIds = _shellFeaturesManager
                     .GetEnabledFeaturesAsync()
