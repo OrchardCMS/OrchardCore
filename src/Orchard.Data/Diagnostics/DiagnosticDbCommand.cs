@@ -16,6 +16,7 @@ namespace Orchard.Data.Diagnostics
         {
             if (diagnostics == null) throw new ArgumentNullException(nameof(diagnostics));
             if (command == null) throw new ArgumentNullException(nameof(command));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
             _diagnostics = diagnostics;
             _command = command;
@@ -141,7 +142,50 @@ namespace Orchard.Data.Diagnostics
 
         public override object ExecuteScalar()
         {
-            return _command.ExecuteScalar();
+            var startTimestamp = Stopwatch.GetTimestamp();
+            var instanceId = Guid.NewGuid();
+
+            _diagnostics
+                .WriteCommandBefore(
+                    this,
+                    nameof(ExecuteScalar),
+                    instanceId,
+                    startTimestamp,
+                    async: false);
+
+            try
+            {
+                var value = _command.ExecuteScalar();
+                //value = new DiagnosticDbDataReader(value);
+
+                var currentTimestamp = Stopwatch.GetTimestamp();
+
+                _diagnostics
+                    .WriteCommandAfter(
+                        this,
+                        nameof(ExecuteScalar),
+                        instanceId,
+                        startTimestamp,
+                        currentTimestamp);
+
+                return value;
+            }
+            catch (Exception ex)
+            {
+                var currentTimestamp = Stopwatch.GetTimestamp();
+
+                _diagnostics
+                    .WriteCommandError(
+                        this,
+                        nameof(ExecuteScalar),
+                        instanceId,
+                        startTimestamp,
+                        currentTimestamp,
+                        ex,
+                        async: false);
+
+                throw;
+            }
         }
 
         public override void Prepare()
