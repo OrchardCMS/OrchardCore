@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Orchard.ContentFields.Settings;
 using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement;
@@ -14,12 +15,12 @@ namespace Orchard.ContentFields.Fields
 {
     public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
     {
-        public LinkFieldDisplayDriver()
+        public LinkFieldDisplayDriver(IStringLocalizer<LinkFieldDisplayDriver> localizer)
         {
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
         {
@@ -29,12 +30,8 @@ namespace Orchard.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content");
-        }
-
-        private static string GetPrefix(UpdateFieldEditorContext context)
-        {
-            return context.TypePartDefinition.Name + "." + context.PartFieldDefinition.Name;
+            .Location("Content")
+            .Location("SummaryAdmin", "");
         }
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
@@ -44,7 +41,6 @@ namespace Orchard.ContentFields.Fields
                 var settings = context.PartFieldDefinition.Settings.ToObject<LinkFieldSettings>();
                 model.Value = (field.IsNew()) ? settings.DefaultValue : field.Value;
                 model.Text = (field.IsNew()) ? settings.TextDefaultValue : field.Text;
-                model.Target = field.Target;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -53,7 +49,7 @@ namespace Orchard.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            bool modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Value, f => f.Text, f => f.Target);
+            bool modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Value, f => f.Text);
 
             if (modelUpdated)
             {                
@@ -61,19 +57,19 @@ namespace Orchard.ContentFields.Fields
 
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Value))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("The url is required for {0}.", context.PartFieldDefinition.DisplayName()));
+                    updater.ModelState.AddModelError(Prefix, T["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Value) && !Uri.IsWellFormedUriString(field.Value, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("{0} is an invalid url.", field.Value));
+                    updater.ModelState.AddModelError(Prefix, T["{0} is an invalid url.", field.Value]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("The link text is required for {0}.", context.PartFieldDefinition.DisplayName()));
+                    updater.ModelState.AddModelError(Prefix, T["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.TextDefaultValue))
                 {
-                    updater.ModelState.AddModelError(GetPrefix(context), T("The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()));
+                    updater.ModelState.AddModelError(Prefix, T["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

@@ -5,7 +5,6 @@ namespace Orchard.ContentFields.Settings
         public string Hint { get; set; }
         public string HintLinkText { get; set; }
         public bool Required { get; set; }
-        public TargetMode TargetMode { get; set; }
         public LinkTextMode LinkTextMode { get; set; }
         public string UrlPlaceholder { get; set; }
         public string TextPlaceholder { get; set; }
@@ -14,18 +13,8 @@ namespace Orchard.ContentFields.Settings
 
         public LinkFieldSettings()
         {
-            TargetMode = TargetMode.None;
             LinkTextMode = LinkTextMode.Optional;
         }
-    }
-
-    public enum TargetMode
-    {
-        None,
-        NewWindow,
-        Parent,
-        Top,
-        UserChoice
     }
 
     public enum LinkTextMode

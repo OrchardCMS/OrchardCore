@@ -25,7 +25,6 @@ namespace Orchard.ContentFields.Settings
             context.Builder.WithSetting(nameof(model.Required), model.Required.ToString());
             context.Builder.WithSetting(nameof(model.DefaultValue), model.DefaultValue);
             context.Builder.WithSetting(nameof(model.TextDefaultValue), model.TextDefaultValue);
-            context.Builder.WithSetting(nameof(model.TargetMode), model.TargetMode.ToString());
             context.Builder.WithSetting(nameof(model.LinkTextMode), model.LinkTextMode.ToString());
             context.Builder.WithSetting(nameof(model.UrlPlaceholder), model.UrlPlaceholder);
             context.Builder.WithSetting(nameof(model.TextPlaceholder), model.TextPlaceholder);
