@@ -6,6 +6,11 @@ namespace Orchard.ContentManagement
     public static class ContentExtensions
     {
         /// <summary>
+        /// These settings instruct merge to replace current value, even for null values.
+        /// </summary>
+        private static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
+        
+        /// <summary>
         /// Gets a content element by its name.
         /// </summary>
         /// <typeparam name="TElement">The expected type of the content paelementrt.</typeparam>
@@ -91,7 +96,7 @@ namespace Orchard.ContentManagement
 
             if (elementData != null)
             {
-                elementData.Merge(JObject.FromObject(element));
+                elementData.Merge(JObject.FromObject(element), JsonMergeSettings);
             }
             else
             {
