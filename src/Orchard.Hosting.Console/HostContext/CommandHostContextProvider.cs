@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Commands.Parameters;
 using Orchard.Environment.Shell;
-using System;
-using System.Linq;
 
 namespace Orchard.Hosting.HostContext
 {
@@ -42,7 +42,8 @@ namespace Orchard.Hosting.HostContext
             context.Arguments = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(_args));
             context.CommandHost = new CommandHostAgent(
                 _serviceProvider.GetService<IOrchardHost>(),
-                _serviceProvider.GetService<IShellSettingsManager>()
+                _serviceProvider.GetService<IShellSettingsManager>(),
+                _serviceProvider.GetService<IStringLocalizer>()
                 );
 
             // Perform some argument validation and display usage if something is incorrect
@@ -50,7 +51,7 @@ namespace Orchard.Hosting.HostContext
             if (context.DisplayUsageHelp)
                 return;
 
-            context.DisplayUsageHelp = (context.Arguments.Arguments.Any() && context.Arguments.ResponseFiles.Any());
+            context.DisplayUsageHelp = (context.Arguments.Arguments.Count > 0 && context.Arguments.ResponseFiles.Count > 0);
             if (context.DisplayUsageHelp)
             {
                 _logger.LogError("Incorrect syntax: Response files cannot be used in conjunction with commands");

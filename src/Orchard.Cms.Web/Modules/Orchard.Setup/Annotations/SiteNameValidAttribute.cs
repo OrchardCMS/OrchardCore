@@ -1,6 +1,4 @@
-﻿using Orchard.Localization;
-
-namespace Orchard.Setup.Annotations
+﻿namespace Orchard.Setup.Annotations
 {
     public class SiteNameValidAttribute : System.ComponentModel.DataAnnotations.RangeAttribute
     {
@@ -9,10 +7,7 @@ namespace Orchard.Setup.Annotations
         public SiteNameValidAttribute(int maximumLength)
             : base(1, maximumLength)
         {
-            T = NullLocalizer.Instance;
         }
-
-        public Localizer T { get; set; }
 
         public override bool IsValid(object value)
         {
@@ -23,9 +18,9 @@ namespace Orchard.Setup.Annotations
         public override string FormatErrorMessage(string name)
         {
             if (string.IsNullOrWhiteSpace(_value))
-                return T("Site name is required.");
+                return "Site name is required.";
 
-            return T("Site name can be no longer than {0} characters.", Maximum);
+            return string.Format("Site name can be no longer than {0} characters.", Maximum);
         }
     }
 }
