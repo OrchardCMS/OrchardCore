@@ -16,16 +16,16 @@ Available settings are:
 + Testing Mode: Enabling Testing mode, removes the need of providing a certificate for signing tokens providing an ephemeral key. Also removes the requirement of using an HTTPS for issuing tokens.
 + Token Format: there are two options:
   + JWT: This format uses signed JWT standard tokens (not encrypted). It requires the SSL certificate being used is accepted as a trusted certificate by the client.
-  + Encrypted: This format uses non standard opaque tokens encrypted by the ASP.NET data protection block. So, it doesn't require the client accept the SSL certificate as a trusted certificate.
+  + Encrypted: This format uses non standard opaque tokens encrypted by the ASP.NET data protection block. It doesn't require the client accept the SSL certificate as a trusted certificate.
 + Authority: Orchard url used by orchard to act as an identity server.
 + Audiences: Urls of the resource servers for which the identity server issues valid JWT tokens.
 + Certificate Store Location: CurrentUser/LocalMachine https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
 + Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
 + Certificate Thumbprint: The thumbprint of the certificate (It is recommended to not use same certificate it is been used for SSL).
-+ Enable Token Endpoint: Enables action /Orchard.OpenId/Access/Token.
-+ Enable Authorization Endpoint:Enables action /Orchard.OpenId/Access/Authorize.
-+ Enable Logout Endpoint: Enables action /Orchard.OpenId/Access/Logout
-+ Enable User Info Endpoint: Enables action /Orchard.OpenId/Access/Userinfo
++ Enable Token Endpoint.
++ Enable Authorization Endpoint.
++ Enable Logout Endpoint.
++ Enable User Info Endpoint.
 + Allow Password Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.3
 + Allow Client Credentials Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
 + Allow Authorization Code Flow: It requires Authorization and Token Endpoints are enabled. More info at http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth
