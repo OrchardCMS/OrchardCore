@@ -35,6 +35,8 @@ namespace Orchard.OpenId.Recipes
             var settings = await _openIdService.GetOpenIdSettingsAsync();
             settings.TestingModeEnabled = model.TestingModeEnabled;
             settings.AccessTokenFormat = model.AccessTokenFormat;
+            settings.Audiences = model.Audiences;
+            settings.Authority = model.Authority;
             settings.EnableTokenEndpoint = model.EnableTokenEndpoint;
             settings.EnableAuthorizationEndpoint = model.EnableAuthorizationEndpoint;
             settings.EnableLogoutEndpoint = model.EnableLogoutEndpoint;
