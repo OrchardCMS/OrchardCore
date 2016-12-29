@@ -4,6 +4,7 @@ using Orchard.Alias.Models;
 using Orchard.Alias.Settings;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
 
@@ -14,15 +15,18 @@ namespace Orchard.Alias.Handlers
         private readonly ITokenizer _tokenizer;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
+        private readonly ITagCache _tagCache;
 
         public AliasPartHandler(
             ITokenizer tokenizer, 
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService)
+            ISiteService siteService,
+            ITagCache tagCache)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
+            _tagCache = tagCache;
         }
         
         public override void Updated(UpdateContentContext context, AliasPart part)
@@ -55,6 +59,21 @@ namespace Orchard.Alias.Handlers
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;
+        }
+
+        public override void Published(PublishContentContext context, AliasPart instance)
+        {
+            _tagCache.RemoveTag($"alias:{instance.Alias}");
+        }
+
+        public override void Removed(RemoveContentContext context, AliasPart instance)
+        {
+            _tagCache.RemoveTag($"alias:{instance.Alias}");
+        }
+
+        public override void Unpublished(PublishContentContext context, AliasPart instance)
+        {
+            _tagCache.RemoveTag($"alias:{instance.Alias}");
         }
     }
 }

@@ -5,6 +5,7 @@ using Orchard.Autoroute.Models;
 using Orchard.Autoroute.Services;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
 
@@ -16,17 +17,20 @@ namespace Orchard.Title.Handlers
         private readonly IAutorouteEntries _entries;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
+        private readonly ITagCache _tagCache;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries, 
             ITokenizer tokenizer, 
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService)
+            ISiteService siteService,
+            ITagCache tagCache)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
             _siteService = siteService;
+            _tagCache = tagCache;
         }
 
         public override void Published(PublishContentContext context, AutoroutePart part)
@@ -50,6 +54,9 @@ namespace Orchard.Title.Handlers
                 part.SetHomepage = false;
                 _siteService.UpdateSiteSettingsAsync(site).Wait();
             }
+
+            // Evict any dependent item from cache
+            RemoveTag(part);
         }
 
         public override void Unpublished(PublishContentContext context, AutoroutePart part)
@@ -57,6 +64,9 @@ namespace Orchard.Title.Handlers
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
                 _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+
+                // Evict any dependent item from cache
+                RemoveTag(part);
             }
         }
 
@@ -65,6 +75,9 @@ namespace Orchard.Title.Handlers
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
                 _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
+
+                // Evict any dependent item from cache
+                RemoveTag(part);
             }
         }
 
@@ -86,6 +99,11 @@ namespace Orchard.Title.Handlers
 
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
             }
+        }
+
+        private void RemoveTag(AutoroutePart part)
+        {
+            _tagCache.RemoveTag($"alias:{part.Path}");
         }
         
         /// <summary>

@@ -1,11 +1,34 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
+using Orchard.Environment.Cache;
 
 namespace Orchard.Contents.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
+        private readonly ITagCache _tagCache;
+
+        public ContentsHandler(ITagCache tagCache)
+        {
+            _tagCache = tagCache;
+        }
+
+        public override void Published(PublishContentContext context)
+        {
+            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+        }
+
+        public override void Removed(RemoveContentContext context)
+        {
+            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+        }
+
+        public override void Unpublished(PublishContentContext context)
+        {
+            _tagCache.RemoveTag($"contentitemid:{context.ContentItem.ContentItemId}");
+        }
+
         public override void GetContentItemAspect(ContentItemAspectContext context)
         {
             context.For<ContentItemMetadata>(metadata =>
