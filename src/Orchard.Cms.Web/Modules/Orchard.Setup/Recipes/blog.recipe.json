@@ -41,11 +41,13 @@
         "Orchard.Autoroute",
         "Orchard.Body",
         "Orchard.ContentFields",
+        "Orchard.ContentPreview",
         "Orchard.Contents",
         "Orchard.ContentTypes",
         "Orchard.Demo",
         "Orchard.Deployment",
         "Orchard.Deployment.Remote",
+        "Orchard.Feeds",
         "Orchard.Indexing",
         "Orchard.Lists",
         "Orchard.Markdown",
@@ -437,7 +439,7 @@
           }
         },
         {
-          "ContentItemId": "[uuid()]",
+          "ContentItemId": "[js: uuid()]",
           "ContentType": "Article",
           "Latest": true,
           "Published": true,

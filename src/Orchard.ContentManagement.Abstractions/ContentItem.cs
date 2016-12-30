@@ -1,5 +1,5 @@
-using Newtonsoft.Json;
 using System;
+using Newtonsoft.Json;
 
 namespace Orchard.ContentManagement
 {
@@ -7,7 +7,7 @@ namespace Orchard.ContentManagement
     /// Represents a content item version.
     /// </summary>
     [JsonConverter(typeof(ContentItemConverter))]
-    public class ContentItem : ContentElement, IContent
+    public class ContentItem : ContentElement
     {
         public ContentItem() : base()
         {
@@ -63,5 +63,7 @@ namespace Orchard.ContentManagement
         /// The name of the user who last modified this content item version.
         /// </summary>
         public string ModifiedBy { get; set; }
+
+        
     }
 }

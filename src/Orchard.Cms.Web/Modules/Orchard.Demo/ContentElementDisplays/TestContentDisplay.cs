@@ -76,7 +76,7 @@ namespace Orchard.Demo.ContentElementDisplays
                 }
                 else
                 {
-                    contentItem.Weld(testContentPart);
+                    contentItem.Apply(testContentPart);
                 }
             }
 

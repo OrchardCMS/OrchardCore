@@ -54,16 +54,8 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             var result = UpdateAsync(part, context.Updater, updateEditorContext);
 
-            if (result == null)
-            {
-                return Task.FromResult<IDisplayResult>(null);
-            }
-
-            if (context.Updater.ModelState.IsValid)
-            {
-                part.ContentItem.Weld(typePartDefinition.Name, part);
-            }
-
+            part.ContentItem.Apply(part);
+            
             return result;
         }
 

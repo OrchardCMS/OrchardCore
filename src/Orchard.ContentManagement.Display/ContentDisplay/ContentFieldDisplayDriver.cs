@@ -66,7 +66,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
 
             if (context.Updater.ModelState.IsValid)
             {
-                contentPart.Weld(partFieldDefinition.Name, field);
+                contentPart.Apply(partFieldDefinition.Name, field);
             }
 
             return result;
