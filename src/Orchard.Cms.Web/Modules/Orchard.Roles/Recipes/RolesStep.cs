@@ -1,41 +1,43 @@
-﻿using Orchard.Recipes.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Recipes.Models;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
+using Orchard.Environment.Extensions;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using Orchard.Environment.Extensions;
 
 namespace Orchard.Roles.Recipes
 {
-    public class RolesStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step creates a set of roles.
+    /// </summary>
+    public class RolesStep : IRecipeStepHandler
     {
         private readonly RoleManager<Role> _roleManager;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
-
-        public RolesStep(RoleManager<Role> roleManager,
-                            ITypeFeatureProvider typeFeatureProvider,
-                            IEnumerable<IPermissionProvider> permissionProviders,
-                            ILogger<RolesStep> logger, 
-                            IStringLocalizer<RolesStep> stringLocalizer) : base(logger, stringLocalizer)
+        public RolesStep(
+            RoleManager<Role> roleManager,
+            ITypeFeatureProvider typeFeatureProvider,
+            IEnumerable<IPermissionProvider> permissionProviders)
         {
             _roleManager = roleManager;
             _typeFeatureProvider = typeFeatureProvider;
             _permissionProviders = permissionProviders;
         }
 
-        public override string Name => "Roles";
-
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var model = recipeContext.RecipeStep.Step.ToObject<RolesStepModel>();
+            if (!String.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var model = context.Step.ToObject<RolesStepModel>();
             
             foreach (var roleModel in model.Roles)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +25,12 @@ namespace Orchard.Recipes.Services
         private readonly IEventBus _eventBus;
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
-        private readonly ILogger _logger;
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
         private readonly IRecipeStore _recipeStore;
+
+        private VariablesMethodProvider _variablesMethodProvider;
+        private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(
             IEventBus eventBus,
@@ -45,101 +48,83 @@ namespace Orchard.Recipes.Services
             _eventBus = eventBus;
             _recipeStore = recipeStore;
             _recipeOptions = recipeOptions.Value;
-            _logger = logger;
+            Logger = logger;
             T = localizer;
         }
 
+        public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
-        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor)
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment)
         {
             await _eventBus.NotifyAsync<IRecipeEventHandler>(x => x.RecipeExecutingAsync(executionId, recipeDescriptor));
 
             try
             {
-                RecipeResult result = new RecipeResult { ExecutionId = executionId };
-                List<RecipeStepResult> stepResults = new List<RecipeStepResult>();
+                _environmentMethodProvider = new ParametersMethodProvider(environment);
+
+                var result = new RecipeResult { ExecutionId = executionId };
+
+                await _recipeStore.CreateAsync(result);
 
                 using (StreamReader file = File.OpenText(recipeDescriptor.RecipeFileInfo.PhysicalPath))
                 {
                     using (var reader = new JsonTextReader(file))
                     {
-                        VariablesMethodProvider variablesMethodProvider = null;
-
                         // Go to Steps, then iterate.
                         while (reader.Read())
                         {
-
                             if (reader.Path == "variables")
                             {
                                 reader.Read();
 
                                 var variables = JObject.Load(reader);
-                                variablesMethodProvider = new VariablesMethodProvider(variables);
+                                _variablesMethodProvider = new VariablesMethodProvider(variables);
                             }
 
                             if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                             {
-                                int stepId = 0;
                                 while (reader.Read() && reader.Depth > 1)
                                 {
                                     if (reader.Depth == 2)
                                     {
-                                        var child = JToken.Load(reader);
+                                        var child = JObject.Load(reader);
 
-                                        var recipeStep = new RecipeStepDescriptor
+                                        var recipeStep = new RecipeExecutionContext
                                         {
-                                            Id = (stepId++).ToString(),
                                             Name = child.Value<string>("name"),
-                                            Step = child
+                                            Step = child,
+                                            ExecutionId = executionId,
+                                            Environment = environment
                                         };
 
-                                        var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-                                        using (var scope = shellContext.CreateServiceScope())
+                                        var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
+                                        result.Steps.Add(stepResult);
+                                        await _recipeStore.UpdateAsync(result);
+
+                                        ExceptionDispatchInfo capturedException = null;
+                                        try
                                         {
-                                            if (!shellContext.IsActivated)
-                                            {
-                                                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
-                                                await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+                                            await ExecuteStepAsync(recipeStep);
+                                            stepResult.IsSuccessful = true;
+                                        }
+                                        catch(Exception e)
+                                        {
+                                            stepResult.IsSuccessful = false;
+                                            stepResult.ErrorMessage = e.ToString();
 
-                                                shellContext.IsActivated = true;
-                                            }
+                                            // Because we can't do some async processing the in catch or finally
+                                            // blocks, we store the exception to throw it later.
 
-                                            var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
-                                            var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
-
-                                            if (variablesMethodProvider != null)
-                                            {
-                                                variablesMethodProvider.ScriptingManager = scriptingManager;
-                                                scriptingManager.GlobalMethodProviders.Add(variablesMethodProvider);
-                                            }
-
-                                            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
-                                            {
-                                                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
-                                            }
-
-                                            EvaluateJsonTree(scriptingManager, recipeStep.Step);
-
-                                            await recipeStepExecutor.ExecuteAsync(executionId, recipeStep);
+                                            capturedException = ExceptionDispatchInfo.Capture(e);
                                         }
 
-                                        // The recipe execution might have invalidated the shell by enabling new features,
-                                        // so the deferred tasks need to run on an updated shell context if necessary.
-                                        shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-                                        using (var scope = shellContext.CreateServiceScope())
+                                        stepResult.IsCompleted = true;
+                                        await _recipeStore.UpdateAsync(result);
+
+                                        if (stepResult.IsSuccessful == false)
                                         {
-                                            var recipeStepExecutor = scope.ServiceProvider.GetRequiredService<IRecipeStepExecutor>();
-
-                                            var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
-
-                                            // The recipe might have added some deferred tasks to process
-                                            if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
-                                            {
-                                                var taskContext = new DeferredTaskContext(scope.ServiceProvider);
-                                                await deferredTaskEngine.ExecuteTasksAsync(taskContext);
-                                            }
+                                            capturedException.Throw();
                                         }
                                     }
                                 }
@@ -160,6 +145,85 @@ namespace Orchard.Recipes.Services
             }
         }
 
+        private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
+        {
+            var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+            using (var scope = shellContext.CreateServiceScope())
+            {
+                if (!shellContext.IsActivated)
+                {
+                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
+                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
+                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+
+                    shellContext.IsActivated = true;
+                }
+
+                var recipeStepHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeStepHandler>>();
+                var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
+                scriptingManager.GlobalMethodProviders.Add(_environmentMethodProvider);
+
+                // Substitutes the script elements by their actual values
+                EvaluateScriptNodes(recipeStep, scriptingManager);
+
+                foreach (var recipeStepHandler in recipeStepHandlers)
+                {
+                    if (Logger.IsEnabled(LogLevel.Information))
+                    {
+                        Logger.LogInformation("Executing recipe step '{0}'.", recipeStep.Name);
+                    }
+
+                    await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutingAsync(recipeStep));
+
+                    await recipeStepHandler.ExecuteAsync(recipeStep);
+
+                    await _eventBus.NotifyAsync<IRecipeEventHandler>(e => e.RecipeStepExecutedAsync(recipeStep));
+
+                    if (Logger.IsEnabled(LogLevel.Information))
+                    {
+                        Logger.LogInformation("Finished executing recipe step '{0}'.", recipeStep.Name);
+                    }
+                }
+            }
+
+            // The recipe execution might have invalidated the shell by enabling new features,
+            // so the deferred tasks need to run on an updated shell context if necessary.
+            shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+            using (var scope = shellContext.CreateServiceScope())
+            {
+                var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
+
+                // The recipe might have added some deferred tasks to process
+                if (deferredTaskEngine != null && deferredTaskEngine.HasPendingTasks)
+                {
+                    var taskContext = new DeferredTaskContext(scope.ServiceProvider);
+                    await deferredTaskEngine.ExecuteTasksAsync(taskContext);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Traverse all the nodes of the recipe steps and replaces their value if they are scripted.
+        /// </summary>
+        private void EvaluateScriptNodes(RecipeExecutionContext recipeStep, IScriptingManager scriptingManager)
+        {
+            if (_variablesMethodProvider != null)
+            {
+                _variablesMethodProvider.ScriptingManager = scriptingManager;
+                scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
+            }
+
+            if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
+            {
+                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
+            }
+
+            EvaluateJsonTree(scriptingManager, recipeStep.Step);
+        }
+
+        /// <summary>
+        /// Traverse all the nodes of the json document and replaces their value if they are scripted.
+        /// </summary>
         private void EvaluateJsonTree(IScriptingManager scriptingManager, JToken node)
         {
             var items = node as IEnumerable<JToken>;

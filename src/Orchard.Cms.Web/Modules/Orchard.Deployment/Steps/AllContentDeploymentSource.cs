@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
-using Orchard.Recipes.Models;
 using YesSql.Core.Services;
 
 namespace Orchard.Deployment.Steps
@@ -28,11 +27,14 @@ namespace Orchard.Deployment.Steps
             }
 
             var data = new JArray();
-            var descriptor = new RecipeStepDescriptor { Name = "Data", Step = data };
+            result.Steps.Add(new JObject(
+                new JProperty("name", "Content"),
+                new JProperty("data", data)
+            ));
 
             foreach (var contentItem in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published).List())
             {
-                data.Add(contentItem.Content);
+                data.Add(JObject.FromObject(contentItem));
             }
 
             return;

@@ -399,6 +399,7 @@
           "Latest": true,
           "Number": 1,
           "Published": true,
+          "ModifiedBy": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
           },
@@ -416,6 +417,7 @@
           "Latest": true,
           "Number": 1,
           "Published": true,
+          "ModifiedBy": "[js: parameters('AdminUsername')]",
           "BlogPost": {
             "Subtitle": {
               "Text": "Problems look mighty small from 150 miles up"
@@ -443,6 +445,7 @@
           "ContentType": "Article",
           "Latest": true,
           "Published": true,
+          "ModifiedBy": "[js: parameters('AdminUsername')]",
           "Article": {
             "Subtitle": {
               "Text": "This is what I do"

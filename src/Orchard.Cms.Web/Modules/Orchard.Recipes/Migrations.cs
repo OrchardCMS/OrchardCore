@@ -9,6 +9,9 @@ namespace Orchard.Recipes
         {
             SchemaBuilder.CreateMapIndexTable(nameof(RecipeResultIndex), table => table
                 .Column<string>("ExecutionId")
+                .Column<bool>("IsCompleted")
+                .Column<int>("TotalSteps")
+                .Column<int>("CompletedSteps")
             );
 
             return 1;

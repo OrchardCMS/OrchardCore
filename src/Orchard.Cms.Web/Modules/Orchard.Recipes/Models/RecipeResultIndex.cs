@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using YesSql.Core.Indexes;
 
 namespace Orchard.Recipes.Models
@@ -6,6 +6,9 @@ namespace Orchard.Recipes.Models
     public class RecipeResultIndex : MapIndex
     {
         public string ExecutionId { get; set; }
+        public bool IsCompleted { get; set; }
+        public int TotalSteps { get; set; }
+        public int CompletedSteps { get; set; }
     }
 
     public class RecipeResultIndexProvider : IndexProvider<RecipeResult>
@@ -16,7 +19,10 @@ namespace Orchard.Recipes.Models
                 .For<RecipeResultIndex>()
                 .Map(result => new RecipeResultIndex
                 {
-                    ExecutionId = result.ExecutionId
+                    ExecutionId = result.ExecutionId,
+                    IsCompleted = result.IsCompleted,
+                    TotalSteps = result.Steps.Count,
+                    CompletedSteps = result.Steps.Count(x => x.IsCompleted)
                 });
         }
     }

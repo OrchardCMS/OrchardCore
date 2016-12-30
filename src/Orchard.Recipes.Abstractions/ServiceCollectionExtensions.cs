@@ -7,9 +7,9 @@ namespace Orchard.Recipes
     {
         public static IServiceCollection AddRecipeExecutionStep<TImplementation>(
             this IServiceCollection serviceCollection)
-            where TImplementation : class, IRecipeExecutionStep
+            where TImplementation : class, IRecipeStepHandler
         {
-            serviceCollection.AddScoped<IRecipeExecutionStep, TImplementation>();
+            serviceCollection.AddScoped<IRecipeStepHandler, TImplementation>();
 
             return serviceCollection;
         }

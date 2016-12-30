@@ -6,7 +6,7 @@ namespace Orchard.Scripting
     {
         public static IServiceCollection AddScripting(this IServiceCollection services)
         {
-            services.AddSingleton<IScriptingManager, DefaultScriptingManager>();
+            services.AddScoped<IScriptingManager, DefaultScriptingManager>();
 
             return services;
         }

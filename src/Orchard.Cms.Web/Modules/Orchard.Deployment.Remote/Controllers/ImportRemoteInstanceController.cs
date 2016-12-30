@@ -70,7 +70,7 @@ namespace Orchard.Deployment.Remote.Controllers
 
                 var executionId = Guid.NewGuid().ToString("n");
                 var fileProvider = new PhysicalFileProvider(tempArchiveFolder);
-                await _recipeExecutor.ExecuteAsync(executionId, new Recipes.Models.RecipeDescriptor { RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json") });
+                await _recipeExecutor.ExecuteAsync(executionId, new Recipes.Models.RecipeDescriptor { RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json") }, new object());
             }
             finally
             {

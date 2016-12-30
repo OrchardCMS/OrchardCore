@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Orchard.Admin;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
@@ -9,26 +7,30 @@ using Orchard.Themes.Services;
 
 namespace Orchard.Themes.Recipes
 {
-    public class ThemesStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step defines the site and admin default themes.
+    /// </summary>
+    public class ThemesStep : IRecipeStepHandler
     {
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
 
         public ThemesStep(
             ISiteThemeService siteThemeService,
-            IAdminThemeService adminThemeService,
-            ILogger<ThemesStep> logger,
-            IStringLocalizer<ThemesStep> localizer) : base(logger, localizer)
+            IAdminThemeService adminThemeService)
         {
             _adminThemeService = adminThemeService;
             _siteThemeService = siteThemeService;
         }
 
-        public override string Name => "Themes";
-
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var model = recipeContext.RecipeStep.Step.ToObject<ThemeStepModel>();
+            if (!String.Equals(context.Name, "Themes", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var model = context.Step.ToObject<ThemeStepModel>();
 
             if (!String.IsNullOrEmpty(model.Site))
             {

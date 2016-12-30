@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Metadata.Records;
 using Orchard.ContentManagement.MetaData;
@@ -10,24 +8,26 @@ using Orchard.Recipes.Services;
 
 namespace Orchard.ContentTypes.RecipeSteps
 {
-    public class ContentDefinitionStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step creates custom content definition.
+    /// </summary>
+    public class ContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentDefinitionStep(
-            IContentDefinitionManager contentDefinitionManager,
-            ILogger<ContentDefinitionStep> logger,
-            IStringLocalizer<ContentDefinitionStep> localizer) : base(logger, localizer)
+        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
         {
-
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public override string Name => "ContentDefinition";
-
-        public override Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var step = context.RecipeStep.Step.ToObject<ContentDefinitionStepData>();
+            if (!String.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.CompletedTask;
+            }
+
+            var step = context.Step.ToObject<ContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {
@@ -63,7 +63,6 @@ namespace Orchard.ContentTypes.RecipeSteps
                     builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
                 }
             });
-
         }
 
         private void UpdateContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record)
@@ -83,7 +82,7 @@ namespace Orchard.ContentTypes.RecipeSteps
             });
         }
 
-        private class ContentDefinitionStepData
+        private class ContentDefinitionStepModel
         {
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();

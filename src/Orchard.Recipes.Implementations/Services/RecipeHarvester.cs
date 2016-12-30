@@ -36,27 +36,27 @@ namespace Orchard.Recipes.Services
         public IStringLocalizer T { get; set; }
         public ILogger Logger { get; set; }
 
-        public async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+        public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {
-            return await _extensionManager.GetExtensions().InvokeAsync(async descriptor => {
-                return await HarvestRecipesAsync(descriptor);
+            return _extensionManager.GetExtensions().InvokeAsync(descriptor => {
+                return Task.FromResult(HarvestRecipes(descriptor));
             }, Logger);
         }
 
-        public async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string extensionId)
+        public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string extensionId)
         {
             var descriptor = _extensionManager.GetExtension(extensionId);
 
             if (descriptor.Exists)
             {
-                return await HarvestRecipesAsync(descriptor);
+                return Task.FromResult(HarvestRecipes(descriptor));
             }
 
             Logger.LogError(T["Could not discover recipes because extension '{0}' was not found.", extensionId]);
-            return Enumerable.Empty<RecipeDescriptor>();
+            return Task.FromResult(Enumerable.Empty<RecipeDescriptor>());
         }
 
-        private Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(IExtensionInfo extension)
+        private IEnumerable<RecipeDescriptor> HarvestRecipes(IExtensionInfo extension)
         {
             var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
             var recipeContainerFileInfo = _hostingEnvironment
@@ -97,7 +97,7 @@ namespace Orchard.Recipes.Services
                 }));
             }
 
-            return Task.FromResult<IEnumerable<RecipeDescriptor>>(recipeDescriptors);
+            return recipeDescriptors;
         }
     }
 }
