@@ -122,6 +122,16 @@ namespace Orchard.ContentManagement
         }
 
         /// <summary>
+        /// Updates the content item data.
+        /// </summary>
+        /// <returns>The current <see cref="ContentPart"/> instance.</returns>
+        public static ContentPart Apply(this ContentPart contentPart)
+        {
+            contentPart.ContentItem.Apply(contentPart.GetType().Name, contentPart);
+            return contentPart;
+        }
+
+        /// <summary>
         /// Whether the content element is published or not.
         /// </summary>
         /// <param name="content">The content to check.</param>

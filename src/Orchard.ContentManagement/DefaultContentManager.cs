@@ -54,21 +54,13 @@ namespace Orchard.ContentManagement
             // invoke handlers to weld aspects onto kernel
             Handlers.Invoke(handler => handler.Activating(context), _logger);
 
-            var context2 = new ActivatedContentContext
-            {
-                ContentType = contentType,
-                ContentItem = context.Builder.Build()
-            };
+            var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
 
-            var context3 = new InitializingContentContext
-            {
-                ContentType = context2.ContentType,
-                ContentItem = context2.ContentItem,
-            };
+            var context3 = new InitializingContentContext(context2.ContentItem);
 
             Handlers.Invoke(handler => handler.Initializing(context3), _logger);
             Handlers.Reverse().Invoke(handler => handler.Initialized(context3), _logger);
@@ -309,12 +301,7 @@ namespace Orchard.ContentManagement
             buildingContentItem.Latest = true;
             buildingContentItem.Data = existingContentItem.Data;
 
-            var context = new VersionContentContext
-            {
-                ContentType = existingContentItem.ContentType,
-                ExistingContentItem = existingContentItem,
-                BuildingContentItem = buildingContentItem,
-            };
+            var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);

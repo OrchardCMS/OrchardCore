@@ -3,6 +3,7 @@ using System.Linq;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
 using Orchard.Autoroute.Services;
+using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Environment.Cache;
@@ -42,7 +43,7 @@ namespace Orchard.Title.Handlers
 
             if (part.SetHomepage)
             {
-                var site = _siteService.GetSiteSettingsAsync().Result;
+                var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
                 var homeRoute = site.HomeRoute;
 
                 homeRoute["area"] = "Orchard.Contents";
@@ -52,7 +53,7 @@ namespace Orchard.Title.Handlers
 
                 // Once we too the flag into account we can dismiss it.
                 part.SetHomepage = false;
-                _siteService.UpdateSiteSettingsAsync(site).Wait();
+                _siteService.UpdateSiteSettingsAsync(site).GetAwaiter().GetResult();
             }
 
             // Evict any dependent item from cache
@@ -98,6 +99,7 @@ namespace Orchard.Title.Handlers
                     .Content(part.ContentItem);
 
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
+                part.Apply();
             }
         }
 

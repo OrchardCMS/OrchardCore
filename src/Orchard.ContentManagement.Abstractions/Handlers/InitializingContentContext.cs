@@ -1,8 +1,9 @@
 ﻿namespace Orchard.ContentManagement.Handlers
 {
-    public class InitializingContentContext
+    public class InitializingContentContext : ContentContextBase
     {
-        public string ContentType { get; set; }
-        public ContentItem ContentItem { get; set; }
+        public InitializingContentContext(ContentItem contentItem) : base(contentItem)
+        {
+        }
     }
 }

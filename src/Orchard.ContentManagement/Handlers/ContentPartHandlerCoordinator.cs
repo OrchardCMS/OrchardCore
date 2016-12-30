@@ -56,7 +56,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Activated(ActivatedContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -115,7 +115,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Initializing(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -131,7 +131,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Initialized(InitializingContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -359,7 +359,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Versioning(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -369,7 +369,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
                 var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
-                var existingPart = context.ExistingContentItem.Get(partType, partName) as ContentPart;
+                var existingPart = context.ContentItem.Get(partType, partName) as ContentPart;
 
                 if (buildingPart != null && existingPart != null)
                 {
@@ -380,7 +380,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
         public override void Versioned(VersionContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 
@@ -390,7 +390,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
                 var buildingPart = (ContentPart)context.BuildingContentItem.Get(partType, partName);
-                var existingPart = (ContentPart)context.ExistingContentItem.Get(partType, partName);
+                var existingPart = (ContentPart)context.ContentItem.Get(partType, partName);
 
                 if (buildingPart != null && existingPart != null)
                 {

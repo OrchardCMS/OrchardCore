@@ -36,8 +36,8 @@ namespace Orchard.ContentManagement.Handlers
         {
             var utcNow = _clock.UtcNow;
 
-            context.BuildingContentItem.CreatedUtc = context.ExistingContentItem.CreatedUtc ?? utcNow;
-            context.BuildingContentItem.PublishedUtc = context.ExistingContentItem.PublishedUtc;
+            context.BuildingContentItem.CreatedUtc = context.ContentItem.CreatedUtc ?? utcNow;
+            context.BuildingContentItem.PublishedUtc = context.ContentItem.PublishedUtc;
             context.BuildingContentItem.ModifiedUtc = utcNow;
         }
 

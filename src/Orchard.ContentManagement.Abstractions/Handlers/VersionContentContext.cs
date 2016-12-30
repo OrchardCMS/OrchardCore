@@ -1,9 +1,12 @@
 namespace Orchard.ContentManagement.Handlers
 {
-    public class VersionContentContext
+    public class VersionContentContext : ContentContextBase
     {
-        public string ContentType { get; set; }
-        public ContentItem ExistingContentItem { get; set; }
-        public ContentItem BuildingContentItem { get; set; }
+        public VersionContentContext(ContentItem contentItem, ContentItem buildingContentItem) : base(contentItem)
+        {
+            BuildingContentItem = buildingContentItem;
+        }
+
+        public ContentItem BuildingContentItem { get; }
     }
 }
