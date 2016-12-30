@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -22,7 +23,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly ShellBlueprint _shellBlueprint;
         private readonly ILogger _logger;
 
         private readonly IMemoryCache _memoryCache;
@@ -31,15 +32,14 @@ namespace Orchard.DisplayManagement.Descriptors
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
-            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
-            ITypeFeatureProvider typeFeatureProvider,
+            ShellBlueprint shellBlueprint,
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
         {
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
-            _typeFeatureProvider = typeFeatureProvider;
+            _shellBlueprint = shellBlueprint;
             _logger = logger;
             _memoryCache = memoryCache;
         }
@@ -61,7 +61,7 @@ namespace Orchard.DisplayManagement.Descriptors
 
                 foreach (var bindingStrategy in _bindingStrategies)
                 {
-                    IFeatureInfo strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+                    IFeatureInfo strategyFeature = _shellBlueprint.GetFeatureForDependency(bindingStrategy.GetType());
 
                     if (!(bindingStrategy is IShapeTableHarvester) && excludedFeatures.Contains(strategyFeature.Id))
                         continue;

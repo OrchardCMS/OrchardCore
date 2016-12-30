@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Orchard.Environment.Shell.Descriptor.Models;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Environment.Shell.Builders.Models
 {
@@ -12,10 +13,36 @@ namespace Orchard.Environment.Shell.Builders.Models
     /// </summary>
     public class ShellBlueprint
     {
-        public ShellSettings Settings { get; set; }
-        public ShellDescriptor Descriptor { get; set; }
+        private static readonly IFeatureInfo CoreFeature
+            = new InternalFeatureInfo("Core", new InternalExtensionInfo("Core"));
 
-        public IEnumerable<DependencyBlueprint> Dependencies { get; set; }
+        private readonly ShellSettings _shellSettings;
+        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IDictionary<Type, DependencyBlueprint> _dependencies;
+
+        public ShellBlueprint(
+            ShellSettings shellSettings,
+            ShellDescriptor shellDescriptor,
+            IDictionary<Type, DependencyBlueprint> dependencies)
+        {
+            _shellSettings = shellSettings;
+            _shellDescriptor = shellDescriptor;
+            _dependencies = dependencies;
+        }
+
+        public ShellSettings Settings { get { return _shellSettings; } }
+        public ShellDescriptor Descriptor { get { return _shellDescriptor; } }
+        public IDictionary<Type, DependencyBlueprint> Dependencies { get { return _dependencies; } }
+
+        public IFeatureInfo GetFeatureForDependency(Type dependency)
+        {
+            if (Dependencies.ContainsKey(dependency))
+            {
+                return Dependencies[dependency].Feature;
+            }
+
+            return CoreFeature;
+        }
     }
 
     public class ShellBlueprintItem

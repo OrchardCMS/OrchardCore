@@ -92,11 +92,6 @@ namespace Orchard.Hosting
                 _logger.LogInformation("Start creation of shells");
             }
 
-            // Load all extensions and features so that the controllers are
-            // registered in ITypeFeatureProvider and their areas defined in the application
-            // conventions.
-            _extensionManager.LoadFeaturesAsync().Wait();
-
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
 

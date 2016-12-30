@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration.Records;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Utility;
-using Orchard.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration.Records;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell.Builders.Models;
+using Orchard.Localization;
 using YesSql.Core.Services;
 
 namespace Orchard.Data.Migration
@@ -19,24 +19,24 @@ namespace Orchard.Data.Migration
         private readonly IStore _store;
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly List<string> _processedFeatures;
         private DataMigrationRecord _dataMigrationRecord;
+        private readonly ShellBlueprint _shellBlueprint;
 
         public DataMigrationManager(
-            ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
+            ShellBlueprint shellBlueprint,
             ILogger<DataMigrationManager> logger)
         {
-            _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
             _session = session;
             _store = store;
             _extensionManager = extensionManager;
+            _shellBlueprint = shellBlueprint;
             _logger = logger;
 
             _processedFeatures = new List<string>();
@@ -76,7 +76,7 @@ namespace Orchard.Data.Migration
                 return (GetCreateMethod(dataMigration) != null);
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
+            return outOfDateMigrations.Select(m => _shellBlueprint.GetFeatureForDependency(m.GetType()).Id).ToList();
         }
 
         public async Task Uninstall(string feature)
@@ -249,7 +249,7 @@ namespace Orchard.Data.Migration
         private IEnumerable<IDataMigration> GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
-                    .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
+                    .Where(dm => _shellBlueprint.GetFeatureForDependency(dm.GetType()).Id == featureId)
                     .ToList();
 
             //foreach (var migration in migrations.OfType<DataMigrationImpl>()) {

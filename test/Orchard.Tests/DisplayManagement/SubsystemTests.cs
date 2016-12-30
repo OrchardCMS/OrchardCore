@@ -74,7 +74,6 @@
 
 //            serviceCollection.AddScoped<IHttpContextAccessor, StubHttpContextAccessor>();
 //            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-//            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 //            serviceCollection.AddSingleton<IThemeManager>(x =>
 //                new MockThemeManager(testFeature.Descriptor.Extension)
             

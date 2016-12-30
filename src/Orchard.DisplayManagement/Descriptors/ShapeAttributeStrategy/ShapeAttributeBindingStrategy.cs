@@ -15,8 +15,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {
@@ -32,17 +32,17 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             new ConcurrentDictionary<Type, Func<dynamic, object>>();
 
 
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ShellBlueprint _shellBlueprint;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
         public ShapeAttributeBindingStrategy(
             IServiceProvider serviceProvider,
-            ITypeFeatureProvider typeFeatureProvider,
+            ShellBlueprint shellBlueprint,
             IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
             _serviceProvider = serviceProvider;
-            _typeFeatureProvider = typeFeatureProvider;
+            _shellBlueprint = shellBlueprint;
             _shapeProviders = shapeProviders;
         }
 
@@ -54,7 +54,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var serviceType = shapeProvider.GetType();
 
-                IFeatureInfo feature = _typeFeatureProvider.GetFeatureForDependency(serviceType);
+                IFeatureInfo feature = _shellBlueprint.GetFeatureForDependency(serviceType);
                 if (builder.ExcludedFeatureIds.Contains(feature.Id))
                     continue;
 
@@ -73,7 +73,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 var occurrence = iter;
                 var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
                 builder.Describe(shapeType)
-                    .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
+                    .From(_shellBlueprint.GetFeatureForDependency(occurrence.ServiceType))
                     .BoundAs(
                         occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
                         descriptor => CreateDelegate(occurrence, descriptor));
