@@ -34,6 +34,15 @@ If a shape cache content is invalidated, it will be reprocessed.
 For instance, if `Shape B2` is invalidated, `Shape B` will also be invalidated. When the Layout is rendered, the `Shape B` code will run 
 again, as will `Shape B2`, but the cached content of `Shape B1` will be reused.
 
+### Well-known Cache tags
+
+Here is a list of common cache tag values that can be used to invalidate cache entries.
+
+| Tag | Description |
+| --------- | ----------- |
+| `contentitemid:{ContentItemId}` | Triggered when a content item described with its unique id (`{ContentItemId}`) is Published, Unpublished or Removed. |
+| `alias:{Alias}` | Triggered when a content item with a specific alias (`{Alias}`) is Published, Unpublished or Removed. |
+
 ## Varying contexts
 When a shape is cached, it will have a different result for each value of the contexts it defined. For instance `Shape A1` varies
 by role, so each page that is rendered for a user of a different role will get a different value for this shape. The `Shape A`
@@ -89,7 +98,7 @@ When using shape tag helpers, the following attributes can be used:
 | Context | Description |
 | --------- | ----------- |
 | `cache-id` | The identifier of the cached shape. |
-| `cache-context` | The space separated context values. |
-| `cache-dependency` | The space separated dependency values. |
-| `cache-tag` | The space separated tag values. |
+| `cache-context` | A set of space/comma separated context values. |
+| `cache-dependency` | A set of space/comma separated dependency values. |
+| `cache-tag` | A set of space/comma separated tag values. |
 | `cache-duration` | The cache duration of the entry. e.g., "00:05:00: for 5 minutes. |

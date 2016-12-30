@@ -13,6 +13,7 @@ namespace Orchard.DisplayManagement.TagHelpers
     public class ShapeTagHelper : TagHelper
     {
         private static readonly string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
+        private static readonly char[] Separators = new[] { ',', ' ' };
 
         private readonly IShapeFactory _shapeFactory;
         private readonly IDisplayHelperFactory _displayHelperFactory;
@@ -91,19 +92,19 @@ namespace Orchard.DisplayManagement.TagHelpers
 
                 if (!string.IsNullOrWhiteSpace(Context))
                 {
-                    var contexts = Context.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Tag))
                 {
-                    var tags = Tag.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
 
                 if (!string.IsNullOrWhiteSpace(Dependency))
                 {
-                    var dependency = Dependency.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    var dependency = Dependency.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddDependency(dependency);
                 }
             }
