@@ -43,10 +43,12 @@ namespace Orchard.Recipes.RecipeSteps
 
             foreach (var recipe in step.Values)
             {
-                var recipes = recipesDictionary.ContainsKey(recipe.ExecutionId) ? recipesDictionary[recipe.ExecutionId] : default(IDictionary<string, RecipeDescriptor>);
-                if (recipes == null)
+                IDictionary<string, RecipeDescriptor> recipes;
+                
+                if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
                 {
-                    recipes = recipesDictionary[recipe.ExecutionId] = await HarvestRecipes(recipe.ExecutionId);
+                    recipes = (await _recipeHarvester.HarvestRecipesAsync(recipe.ExecutionId)).ToDictionary(x => x.Name);
+                    recipesDictionary[recipe.ExecutionId] = recipes;
                 }
 
                 if (!recipes.ContainsKey(recipe.Name))
@@ -57,12 +59,6 @@ namespace Orchard.Recipes.RecipeSteps
                 var executionId = Guid.NewGuid().ToString();
                 await _recipeManager.ExecuteAsync(executionId, recipes[recipe.Name], context.Environment);
             }
-        }
-
-        private async Task<IDictionary<string, RecipeDescriptor>> HarvestRecipes(string extensionId)
-        {
-            var recipes = await _recipeHarvester.HarvestRecipesAsync(extensionId);
-            return recipes.ToDictionary(x => x.Name);
         }
 
         private class InternalStep
