@@ -14,8 +14,7 @@ namespace Orchard.Glimpse
         {
             "Glimpse.Common",
             "Glimpse.Server",
-            "Glimpse.Agent.AspNet",
-            "Glimpse.Agent.AspNet.Mvc"
+            "Glimpse.Agent.AspNet"
         };
 
         private readonly ShellBlueprint _shellBlueprint;

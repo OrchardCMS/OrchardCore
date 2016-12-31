@@ -1,0 +1,18 @@
+﻿@{
+    var requestId = Model.RequestId;
+    var resourceOptions = Model.ResourceOptions;
+}
+
+<script at="foot"
+        src="@resourceOptions.HudScriptTemplate" 
+        id="__glimpse_hud" 
+        data-request-id="@requestId.ToString("N")" 
+        data-client-template="@resourceOptions.ClientScriptTemplate"
+        data-context-template="@resourceOptions.ContextTemplate"
+        data-metadata-template="@resourceOptions.MetadataTemplate" async></script>
+
+<script at="foot"
+        src="@resourceOptions.BrowserAgentScriptTemplate" 
+        id="__glimpse_browser_agent" 
+        data-request-id="@requestId.ToString("N")" 
+        data-message-ingress-template="@resourceOptions.MessageIngressTemplate" async></script>

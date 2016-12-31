@@ -19,7 +19,7 @@ namespace Orchard.Glimpse.Inspectors
                 CommandText = command.CommandText,
                 //CommandType = command.CommandType,
                 //CommandParameters = command.Parameters,
-                CommandStartTime = DateTime.FromBinary(timestamp)
+                CommandStartTime = DateTime.FromBinary(timestamp),
             };
             
             _broker.BeginLogicalOperation(message, message.CommandStartTime);

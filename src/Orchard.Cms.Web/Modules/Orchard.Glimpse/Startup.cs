@@ -5,6 +5,7 @@ using Glimpse.Common.Initialization;
 using Glimpse.Initialization;
 using Glimpse.Internal;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ namespace Orchard.Glimpse
             services.AddTransient<IAssemblyProvider, OrchardAssemblyProvider>();
             services.AddSingleton<IGlimpseContextAccessor, OrchardGlimpseContextAccessor>();
             services.AddTransient<OrchardWebDiagnosticsInspector>();
+            services.AddScoped<IFilterMetadata, GlimpseFilter>();
 
             var servicesProvider = services
                 .BuildServiceProvider();
