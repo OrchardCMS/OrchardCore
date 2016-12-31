@@ -92,6 +92,13 @@ namespace Orchard.Data.Diagnostics
             //}
         }
 
+        public static void WriteDataReaderDisposing(this DiagnosticSource diagnosticSource, DbDataReader dataReader)
+        {
+            //if (diagnosticSource.IsEnabled(DataReaderDisposing))
+            //{
+                diagnosticSource.Write(DataReaderDisposing, dataReader);
+            //}
+        }
 
         private class DataDiagnosticSourceBeforeMessage
         {

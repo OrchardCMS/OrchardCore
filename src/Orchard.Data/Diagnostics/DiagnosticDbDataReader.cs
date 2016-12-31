@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Data.Common;
+using System.Diagnostics;
 
 namespace Orchard.Data.Diagnostics
 {
     public class DiagnosticDbDataReader : DbDataReader
     {
+        private readonly DiagnosticSource _diagnostics;
         private readonly DbDataReader _reader;
 
-        public DiagnosticDbDataReader(DbDataReader reader)
+        public DiagnosticDbDataReader(DiagnosticSource diagnostics, DbDataReader reader)
         {
+            if (diagnostics == null) throw new ArgumentNullException(nameof(diagnostics));
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
+
+            _diagnostics = diagnostics;
             _reader = reader;
         }
 
-        public DbDataReader WrappedReader
-        {
-            get { return _reader; }
-        }
+        public DbDataReader WrappedReader => _reader;
 
         public override object this[string name]
         {
@@ -154,6 +157,15 @@ namespace Orchard.Data.Diagnostics
         public override bool Read()
         {
             return _reader.Read();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _diagnostics.WriteDataReaderDisposing(_reader);
+            }
+            base.Dispose(disposing);
         }
     }
 }
