@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Orchard.Environment.Extensions;
 
 namespace Orchard.Hosting.Routing
@@ -26,6 +25,7 @@ namespace Orchard.Hosting.Routing
 
         public void OnProvidersExecuted(ApplicationModelProviderContext context)
         {
+            // This code is called only once per tenant during the construction of routes
             foreach (var controller in context.Result.Controllers)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(controller.ControllerType.AsType());

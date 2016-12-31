@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Orchard.DependencyInjection;
+using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
 
@@ -81,10 +83,22 @@ namespace Orchard.Environment.Shell.Builders
 
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
+            // Index all service descriptors by their feature id
+            var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
+
             // Let any module add custom service descriptors to the tenant
-            foreach (var service in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Mvc.Modules.IStartup>())
+            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Mvc.Modules.IStartup>())
             {
-                service.ConfigureServices(tenantServiceCollection);
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Type == startup.GetType())?.Feature;
+
+                ServiceCollection featureServiceCollection;
+                if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
+                {
+                    featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
+                }
+
+                startup.ConfigureServices(featureServiceCollection);
+                tenantServiceCollection.Add(featureServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
@@ -144,6 +158,29 @@ namespace Orchard.Environment.Shell.Builders
                 }
             }
 
+            // Register all DIed types in ITypeFeatureProvider
+            var featureTypes = new List<Type>();
+            var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
+
+            foreach (var featureServiceCollection in featureServiceCollections)
+            {
+                foreach (var serviceDescriptor in featureServiceCollection.Value)
+                {
+                    if (serviceDescriptor.ImplementationType != null)
+                    {
+                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationType, featureServiceCollection.Key);
+                    }
+                    else if (serviceDescriptor.ImplementationInstance != null)
+                    {
+                        typeFeatureProvider.TryAdd(serviceDescriptor.ImplementationInstance.GetType(), featureServiceCollection.Key);
+                    }
+                    else
+                    {
+                        // Factory, we can't know which type will be returned
+                    }
+                }
+            }
+            
             return shellServiceProvider;
         }
     }
