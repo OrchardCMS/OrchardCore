@@ -2,11 +2,11 @@
   "version": "2.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
-    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Glimpse.Agent.AspNet": "2.0.0-*",
     "Glimpse.Server": "2.0.0-*",
-    "Orchard.DisplayManagement": "2.0.0-*"
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
+    "Orchard.ResourceManagement.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"

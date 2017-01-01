@@ -1,30 +1,27 @@
 ﻿using System;
 using Glimpse.Common;
 using Glimpse.Initialization;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Layout;
+using Orchard.ResourceManagement;
 
 namespace Orchard.Glimpse
 {
     public class GlimpseFilter : IResultFilter
     {
-        private readonly ILayoutAccessor _layoutAccessor;
-        private readonly IShapeFactory _shapeFactory;
         private readonly Guid _requestId;
         private readonly ResourceOptions _resourceOptions;
+        private readonly IResourceManager _resourceManager;
 
         public GlimpseFilter(
-            ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory,
             IGlimpseContextAccessor context, 
-            IResourceOptionsProvider resourceOptionsProvider)
+            IResourceOptionsProvider resourceOptionsProvider,
+            IResourceManager resourceManager)
         {
-            _layoutAccessor = layoutAccessor;
-            _shapeFactory = shapeFactory;
             _requestId = context.RequestId;
             _resourceOptions = resourceOptionsProvider.BuildInstance();
+            _resourceManager = resourceManager;
         }
 
         public void OnResultExecuting(ResultExecutingContext filterContext)
@@ -34,15 +31,14 @@ namespace Orchard.Glimpse
                 return;
             }
 
-            // Populate main nav
-            IShape glimpseShape = _shapeFactory.Create("Glimpse",
-                Arguments.From(new
-                {
-                    RequestId = _requestId,
-                    ResourceOptions = _resourceOptions
-                }));
+            var builder = new HtmlContentBuilder();
 
-            _layoutAccessor.GetLayout().Footer.Add(glimpseShape);
+            builder.AppendHtml(
+                $@"<script src=""{_resourceOptions.HudScriptTemplate}"" id=""__glimpse_hud"" data-request-id=""{_requestId.ToString("N")}"" data-client-template=""{_resourceOptions.ClientScriptTemplate}"" data-context-template=""{_resourceOptions.ContextTemplate}"" data-metadata-template=""{_resourceOptions.MetadataTemplate}"" async></script>
+                   <script src=""{_resourceOptions.BrowserAgentScriptTemplate}"" id=""__glimpse_browser_agent"" data-request-id=""{_requestId.ToString("N")}"" data-message-ingress-template=""{_resourceOptions.MessageIngressTemplate}"" async></script>"
+                );
+
+            _resourceManager.RegisterFootScript(builder);
         }
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
