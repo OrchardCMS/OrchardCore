@@ -189,6 +189,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<TestShapeProvider>((x => (TestShapeProvider)x.GetService<IShapeTableProvider>()));
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var typeFeatureProvider = _serviceProvider.GetService<ITypeFeatureProvider>();
+            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
         }
 
         static IFeatureInfo TestFeature()
