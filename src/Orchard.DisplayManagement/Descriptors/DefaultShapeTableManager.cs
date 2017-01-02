@@ -21,7 +21,6 @@ namespace Orchard.DisplayManagement.Descriptors
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IExtensionManager _extensionManager;
-        private readonly IEnumerable<IExtensionOrderingStrategy> _extensionOrderingStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
@@ -31,7 +30,6 @@ namespace Orchard.DisplayManagement.Descriptors
             IEnumerable<IShapeTableProvider> bindingStrategies,
             IShellFeaturesManager shellFeaturesManager,
             IExtensionManager extensionManager,
-            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
@@ -39,7 +37,6 @@ namespace Orchard.DisplayManagement.Descriptors
             _bindingStrategies = bindingStrategies;
             _shellFeaturesManager = shellFeaturesManager;
             _extensionManager = extensionManager;
-            _extensionOrderingStrategies = extensionOrderingStrategies;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
             _memoryCache = memoryCache;
