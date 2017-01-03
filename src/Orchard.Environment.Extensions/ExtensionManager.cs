@@ -27,7 +27,8 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionProvider _extensionProvider;
 
         private readonly IExtensionLoader _extensionLoader;
-        private readonly IEnumerable<IExtensionOrderingStrategy> _extensionOrderingStrategies;
+        private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
+        private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
@@ -69,7 +70,8 @@ namespace Orchard.Environment.Extensions
 
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
-            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
+            IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
+            IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
@@ -80,7 +82,8 @@ namespace Orchard.Environment.Extensions
             _manifestProvider = new CompositeManifestProvider(manifestProviders);
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
-            _extensionOrderingStrategies = extensionOrderingStrategies;
+            _extensionDependencyStrategies = extensionDependencyStrategies;
+            _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
             T = localizer;
@@ -287,8 +290,8 @@ namespace Orchard.Environment.Extensions
             return featuresToOrder
                 .OrderBy(x => x.Id)
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => HasDependency(fiObv, fiSub),
-                    (fi) => fi.Priority)
+                    HasDependency,
+                    GetPriority)
                 .ToList();
         }
 
@@ -306,7 +309,12 @@ namespace Orchard.Environment.Extensions
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            return _extensionOrderingStrategies.Any(s => s.HasDependency(f1, f2)) || f1.Dependencies.Contains(f2.Id);
+            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
+        }
+
+        private double GetPriority(IFeatureInfo feature)
+        {
+            return _extensionPriorityStrategies.Max(s => s.GetPriority(feature));
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)

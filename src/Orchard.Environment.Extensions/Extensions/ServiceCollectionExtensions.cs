@@ -36,6 +36,9 @@ namespace Orchard.Environment.Extensions
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
 
+                services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
+                services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
+
                 services.Configure<ExtensionProbingOptions>(options =>
                 {
                     options.RootProbingName = rootProbingName;

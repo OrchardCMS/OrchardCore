@@ -3,7 +3,7 @@ using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Extensions
 {
-    public class ThemeExtensionOrderingStrategy : IExtensionOrderingStrategy
+    public class ThemeExtensionDependencyStrategy : IExtensionDependencyStrategy
     {
         public bool HasDependency(IFeatureInfo observer, IFeatureInfo subject)
         {
