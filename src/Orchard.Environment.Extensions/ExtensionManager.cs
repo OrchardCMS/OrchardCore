@@ -314,7 +314,7 @@ namespace Orchard.Environment.Extensions
 
         private double GetPriority(IFeatureInfo feature)
         {
-            return _extensionPriorityStrategies.Max(s => s.GetPriority(feature));
+            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
