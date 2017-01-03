@@ -12,7 +12,7 @@
                         </h2>
                         <span class="meta">
                             @T["Posted by {0} on {1}",
-                                Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"),
+                                Html.Raw($"<a href=\"#\">{Model.ContentItem.Owner}</a>"),
                                 (object)Model.ContentItem.CreatedUtc.ToString("MMMM dd, yyyy")]
                         </span>
                     </div>

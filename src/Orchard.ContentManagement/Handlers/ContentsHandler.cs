@@ -19,6 +19,12 @@ namespace Orchard.ContentManagement.Handlers
             var utcNow = _clock.UtcNow;
             context.ContentItem.CreatedUtc = utcNow;
             context.ContentItem.ModifiedUtc = utcNow;
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (context.ContentItem.Owner != null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
+            {
+                context.ContentItem.Owner = httpContext.User.Identity.Name;
+            }
         }
 
         public override void Updating(UpdateContentContext context)
@@ -28,7 +34,9 @@ namespace Orchard.ContentManagement.Handlers
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated ?? false)
             {
-                context.ContentItem.ModifiedBy = httpContext.User.Identity.Name;
+                // The value is only modified during update so that another event like
+                // publishing in a Workflow doesn't change it.
+                context.ContentItem.Author = httpContext.User.Identity.Name;
             }
         }
 

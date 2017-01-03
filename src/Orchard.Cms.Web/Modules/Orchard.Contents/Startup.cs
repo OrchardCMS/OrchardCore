@@ -11,11 +11,15 @@ using Orchard.Contents.Drivers;
 using Orchard.Contents.Feeds.Builders;
 using Orchard.Contents.Handlers;
 using Orchard.Contents.Indexing;
+using Orchard.Contents.Models;
 using Orchard.Contents.Recipes;
+using Orchard.ContentTypes.Editors;
+using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
 using Orchard.Feeds;
 using Orchard.Indexing;
+using Orchard.Lists.Settings;
 using Orchard.Recipes;
 using Orchard.Scripting;
 using Orchard.Security.Permissions;
@@ -39,6 +43,13 @@ namespace Orchard.Contents
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
 
             services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
+            services.AddScoped<IDataMigration, Migrations>();
+
+            // Common Part
+            services.AddSingleton<ContentPart, CommonPart>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
+            services.AddScoped<IContentPartDisplayDriver, DateEditorDriver>();
+            services.AddScoped<IContentPartDisplayDriver, OwnerEditorDriver>();
 
             // Feeds
             // TODO: Move to feature
