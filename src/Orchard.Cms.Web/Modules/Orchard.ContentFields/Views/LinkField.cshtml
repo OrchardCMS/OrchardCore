@@ -9,27 +9,27 @@
     switch (settings.LinkTextMode)
     {
         case LinkTextMode.Static:
-            if (!String.IsNullOrWhiteSpace(settings.TextDefaultValue))
+            if (!String.IsNullOrWhiteSpace(settings.DefaultText))
             {
-                text = settings.TextDefaultValue;
+                text = settings.DefaultText;
             }
             else
             {
-                text = Model.Field.Value;
+                text = Model.Field.Url;
             }
             break;
         case LinkTextMode.Url:
-            text = Model.Field.Value;
+            text = Model.Field.Url;
             break;
         case LinkTextMode.Optional:
             if (String.IsNullOrWhiteSpace(text))
             {
-                text = Model.Field.Value;
+                text = Model.Field.Url;
             }
             break;
     }
 }
 <div>
     @Model.PartFieldDefinition.DisplayName():
-    <a href="@Model.Field.Value">@text</a>
+    <a href="@Model.Field.Url">@text</a>
 </div>

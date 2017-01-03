@@ -47,14 +47,15 @@
 </div>
 <div class="row">
     <fieldset class="form-group col-md-6">
-        <label asp-for="DefaultValue">@T["Default value of the url"]</label>
-        <input asp-for="DefaultValue" type="text" class="form-control" />
+        <label asp-for="DefaultUrl">@T["Default value of the url"]</label>
+        <input asp-for="DefaultUrl" type="text" class="form-control" />
         <span class="hint">@T["A valid url proposed when creating a content item."]</span>
-        <span asp-validation-for="DefaultValue" class="text-danger"></span>
+        <span asp-validation-for="DefaultUrl" class="text-danger"></span>
     </fieldset>
     <fieldset class="form-group col-md-6">
-        <label asp-for="TextDefaultValue">@T["Default value of the text"]</label>
-        <input asp-for="TextDefaultValue" type="text" class="form-control" />
+        <label asp-for="DefaultText">@T["Default value of the text"]</label>
+        <input asp-for="DefaultText" type="text" class="form-control" />
         <span class="hint">@T["The default link text proposed when creating a content item."]</span>
+        <span asp-validation-for="DefaultText" class="text-danger"></span>
     </fieldset>
 </div>

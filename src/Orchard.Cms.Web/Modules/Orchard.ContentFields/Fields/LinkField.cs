@@ -4,7 +4,7 @@ namespace Orchard.ContentFields.Fields
 {
     public class LinkField : ContentField
     {
-        public string Value { get; set; }
+        public string Url { get; set; }
 
         public string Text { get; set; }
     }

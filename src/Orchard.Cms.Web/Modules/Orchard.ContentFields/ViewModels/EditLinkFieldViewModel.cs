@@ -6,7 +6,7 @@ namespace Orchard.ContentFields.ViewModels
 {
     public class EditLinkFieldViewModel
     {
-        public string Value { get; set; }
+        public string Url { get; set; }
         public string Text { get; set; }
         public LinkField Field { get; set; }
         public ContentPart Part { get; set; }

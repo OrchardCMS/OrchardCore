@@ -20,14 +20,7 @@ namespace Orchard.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.Hint(model.Hint);
-            context.Builder.WithSetting(nameof(model.HintLinkText), model.HintLinkText);
-            context.Builder.WithSetting(nameof(model.Required), model.Required.ToString());
-            context.Builder.WithSetting(nameof(model.DefaultValue), model.DefaultValue);
-            context.Builder.WithSetting(nameof(model.TextDefaultValue), model.TextDefaultValue);
-            context.Builder.WithSetting(nameof(model.LinkTextMode), model.LinkTextMode.ToString());
-            context.Builder.WithSetting(nameof(model.UrlPlaceholder), model.UrlPlaceholder);
-            context.Builder.WithSetting(nameof(model.TextPlaceholder), model.TextPlaceholder);
+            context.Builder.MergeSettings(model);
 
             return Edit(partFieldDefinition);
         }

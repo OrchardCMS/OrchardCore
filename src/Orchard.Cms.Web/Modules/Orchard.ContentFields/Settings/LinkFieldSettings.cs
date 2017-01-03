@@ -8,8 +8,8 @@ namespace Orchard.ContentFields.Settings
         public LinkTextMode LinkTextMode { get; set; }
         public string UrlPlaceholder { get; set; }
         public string TextPlaceholder { get; set; }
-        public string DefaultValue { get; set; }
-        public string TextDefaultValue { get; set; }
+        public string DefaultUrl { get; set; }
+        public string DefaultText { get; set; }
 
         public LinkFieldSettings()
         {

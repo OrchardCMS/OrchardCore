@@ -6,19 +6,19 @@
 }
 
 @{
-    var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultValue);
-    var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.TextDefaultValue);
+    var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultUrl);
+    var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(settings.DefaultText);
 }
 <div class="row">
     <fieldset class="form-group col-md-12">
-        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
+        <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
     </fieldset>
-    <fieldset class="form-group col-md-6" asp-validation-class-for="Value">
+    <fieldset class="form-group col-md-6" asp-validation-class-for="Url">
         @if (string.IsNullOrEmpty(settings.UrlPlaceholder))
         {
-            <label asp-for="Value" @if (settings.Required) { <text> class="required" </text>  }>@T["Url"]</label>
+            <label asp-for="Url" @if (settings.Required) { <text> class="required" </text>  }>@T["Url"]</label>
         }
-        <input asp-for="Value" type="url" class="form-control" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+        <input asp-for="Url" type="url" class="form-control" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
@@ -42,7 +42,7 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Value)')
+        $('#@Html.IdFor(m => m.Url)')
         .on('input', function () {
             $(document).trigger('contentpreview:render');
         });
