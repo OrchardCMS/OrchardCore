@@ -279,10 +279,8 @@ namespace Orchard.Environment.Extensions
                 .SelectMany(featureId => GetFeatureDependencies(featureId))
                 .Distinct();
 
-            var orderedFeatureDescriptors = GetFeatures()
+            return GetFeatures()
                 .Where(f => allDependencies.Any(d => d.Id == f.Id));
-
-            return orderedFeatureDescriptors;
         }
 
         private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)

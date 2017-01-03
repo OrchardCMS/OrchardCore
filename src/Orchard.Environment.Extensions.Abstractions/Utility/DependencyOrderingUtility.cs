@@ -19,10 +19,10 @@ namespace Orchard.Environment.Extensions.Utility
         /// </summary>
         public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> elements, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
         {
-            var population = elements.Select(d => new Linkage<T>
+            var population = elements.Select(e => new Linkage<T>
             {
-                Element = d
-            }).OrderBy(item => getPriority(item.Element)).ToArray(); // Performing an initial sorting by priorities may optimize performance
+                Element = e
+            }).ToArray();
 
             var result = new List<T>();
             foreach (var item in population)
@@ -30,11 +30,9 @@ namespace Orchard.Environment.Extensions.Utility
                 Add(item, result, population, hasDependency);
             }
 
-            // shift elements forward as possible within priorities and dependencies
             for (int i = 1; i < result.Count; i++)
             {
-                int bestPosition = BestPriorityPosition(result, i, hasDependency, getPriority);
-                SwitchAndShift(result, i, bestPosition);
+                SwitchAndShift(result, i, BestPosition(result, i, hasDependency, getPriority));
             }
 
             return result;
@@ -55,11 +53,11 @@ namespace Orchard.Environment.Extensions.Utility
             list.Add(item.Element);
         }
 
-        private static int BestPriorityPosition<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        private static int BestPosition<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
         {
-            double bestPriority = getPriority(list[index]);
-            int bestIndex = index;
+            double priority = getPriority(list[index]);
 
+            int bestIndex = index;
             for (int i = index - 1; i >= 0; i--)
             {
                 if (hasDependency(list[index], list[i]))
@@ -68,7 +66,7 @@ namespace Orchard.Environment.Extensions.Utility
                 }
 
                 double currentPriority = getPriority(list[i]);
-                if (currentPriority > bestPriority)
+                if (currentPriority > priority)
                 {
                     bestIndex = i;
                 }
@@ -78,14 +76,13 @@ namespace Orchard.Environment.Extensions.Utility
         }
 
         /// <summary>
-        /// Advances an element within the list from an initial position to a final position with a lower index.
+        /// Moves up an element within the list from an initial position to a final position with a lower index.
         /// </summary>
         /// <typeparam name="T">The type of each element.</typeparam>
         /// <param name="list">the list of elements.</param>
         /// <param name="initialPosition">The initial position within the list.</param>
         /// <param name="finalPosition">The final position within the list.</param>
-        /// <returns>True if any change was made; false otherwise.</returns>
-        private static bool SwitchAndShift<T>(List<T> list, int initialPosition, int finalPosition)
+        private static void SwitchAndShift<T>(List<T> list, int initialPosition, int finalPosition)
         {
             if (initialPosition < finalPosition)
             {
@@ -102,11 +99,7 @@ namespace Orchard.Environment.Extensions.Utility
                 }
 
                 list[finalPosition] = temp;
-
-                return true;
             }
-
-            return false;
         }
     }
 }
