@@ -53,7 +53,6 @@ namespace Orchard.Environment.Extensions
 
         public static IServiceCollection AddExtensionManager(this IServiceCollection services)
         {
-            services.TryAddScoped<IFeaturesProvider, FeaturesProvider>();
             services.TryAddTransient<IFeatureHash, FeatureHash>();
 
             return services;

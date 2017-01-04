@@ -40,7 +40,7 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
-            services.AddScoped<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
@@ -49,7 +49,6 @@ namespace Orchard.DisplayManagement
             });
 
             services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
-
 
             return services;
         }
