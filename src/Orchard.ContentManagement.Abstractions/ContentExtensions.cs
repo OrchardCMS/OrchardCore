@@ -152,5 +152,11 @@ namespace Orchard.ContentManagement
                    content.ContentItem.Published == false ||
                    (content.ContentItem.Published && content.ContentItem.Latest == false);
         }
+
+        public static bool IsNew(this IContent content)
+        {
+            // TODO : How do I know if the content is new?
+            return content.ContentItem.Number == 0;
+        }
     }
 }
