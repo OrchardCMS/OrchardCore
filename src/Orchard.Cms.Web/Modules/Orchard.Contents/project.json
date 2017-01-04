@@ -10,7 +10,7 @@
     "Orchard.Indexing.Abstractions": "2.0.0-*",
     "Orchard.Scripting.Abstractions": "2.0.0-*",
     "Orchard.Feeds.Abstractions": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Abstractions": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
