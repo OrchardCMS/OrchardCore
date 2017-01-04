@@ -1,14 +1,15 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.Data.Abstractions": "2.0.0-*",
-    "Orchard.SiteSettings.Core": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
+    "Orchard.Navigation": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.Navigation": "2.0.0-*"
+    "Orchard.SiteSettings.Core": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

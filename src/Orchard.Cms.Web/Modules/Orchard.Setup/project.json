@@ -2,10 +2,11 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Identity": "1.1.0",
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Core": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Modules.Hosting": "1.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.Data": "2.0.0-*"
+    "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
+    "Orchard.Data": "2.0.0-*",
+    "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

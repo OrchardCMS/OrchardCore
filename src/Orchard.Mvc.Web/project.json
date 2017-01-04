@@ -7,7 +7,8 @@
     "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Routing": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Modules.Hosting": "1.0.0-*"
+    "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Modules": "1.0.0-*"
   },
 
   "tools": {

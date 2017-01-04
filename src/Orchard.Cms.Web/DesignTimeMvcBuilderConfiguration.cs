@@ -26,7 +26,7 @@ namespace Orchard.Cms.Web
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
             var app = new ApplicationBuilder(serviceProvider);
-            startUp.Configure(app, loggerFactory);
+            startUp.Configure(app, env, loggerFactory);
 
             builder.AddRazorOptions(options =>
             {

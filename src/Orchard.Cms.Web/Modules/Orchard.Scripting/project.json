@@ -1,7 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Mvc.Modules.Hosting": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.Scripting.Core": "2.0.0-*",
     "Orchard.Scripting.JavaScript": "2.0.0-*"

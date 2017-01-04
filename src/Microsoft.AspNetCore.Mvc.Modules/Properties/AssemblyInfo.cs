@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Orchard.Admin.Abstractions")]
+[assembly: AssemblyProduct("Microsoft.AspNetCore.Mvc.Modules")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c54b0878-5e52-4de2-a387-f593f5f097d7")]
+[assembly: Guid("9e4e6ccb-7e1c-45ca-a4bb-43d8102df086")]

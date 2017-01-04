@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "1.0.0-*",
   "dependencies": {
     "System.Diagnostics.Process": "4.3.0",
@@ -9,6 +9,7 @@
     "Microsoft.AspNetCore.StaticFiles": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Microsoft.Extensions.Logging": "1.1.0",
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
