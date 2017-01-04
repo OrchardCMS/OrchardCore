@@ -2,8 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "System.Reflection.DispatchProxy": "4.0.1-*",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
-    "Orchard.DependencyInjection": "2.0.0-*"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

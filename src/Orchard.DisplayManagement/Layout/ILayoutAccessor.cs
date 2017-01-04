@@ -1,6 +1,4 @@
-﻿using Orchard.DependencyInjection;
-
-namespace Orchard.DisplayManagement.Layout
+﻿namespace Orchard.DisplayManagement.Layout
 {
     public interface ILayoutAccessor
     {

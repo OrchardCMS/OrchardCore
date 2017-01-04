@@ -5,15 +5,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Internal;
-using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using Orchard.Hosting.Routing;
+using Orchard.Environment.Shell.Models;
 using Orchard.Settings;
 
-namespace Orchard.Hosting.Web.Routing
+namespace Microsoft.AspNetCore.Mvc.Modules.Routing
 {
     /// <summary>
     /// Handles a request by forwarding it to the tenant specific <see cref="IRouter"/> instance.
@@ -74,7 +73,7 @@ namespace Orchard.Hosting.Web.Routing
                     {
                         pipeline = BuildTenantPipeline(shellSettings, httpContext.RequestServices);
 
-                        if (shellSettings.State == Environment.Shell.Models.TenantState.Running)
+                        if (shellSettings.State == TenantState.Running)
                         {
                             _pipelines.Add(shellSettings.Name, pipeline);
                         }

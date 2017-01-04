@@ -2,8 +2,8 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Core": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Routing": "1.1.0",
-    "Orchard.DependencyInjection": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*",
     "Orchard.Security": "2.0.0-*"
   },

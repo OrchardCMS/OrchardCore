@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.Core": "1.1.0",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Security.Abstractions": "2.0.0-*"
   },

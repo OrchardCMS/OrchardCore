@@ -7,10 +7,11 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>c72197b5-2fb1-4e23-9154-0595199cfd9c</ProjectGuid>
-    <RootNamespace>Orchard.DependencyInjection</RootNamespace>
+    <ProjectGuid>3bdac7c1-2e7b-4db6-9a48-42e60613eace</ProjectGuid>
+    <RootNamespace>Microsoft.AspNetCore.Nancy.Modules</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
   </PropertyGroup>
 
   <PropertyGroup>

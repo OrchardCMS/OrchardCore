@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
+using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard;
 using Orchard.ContentManagement;

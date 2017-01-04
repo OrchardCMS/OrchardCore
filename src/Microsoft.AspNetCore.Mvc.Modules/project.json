@@ -12,7 +12,7 @@
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Commands": "2.0.0-*",
-    "Orchard.Environment.Extensions": "2.0.0-*",
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*"
   },
   "buildOptions": {

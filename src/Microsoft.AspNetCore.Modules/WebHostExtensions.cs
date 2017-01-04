@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Hosting
+namespace Microsoft.AspNetCore.Modules
 {
     public static class WebHostExtensions
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace Orchard.DependencyInjection
+namespace Orchard.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
     {

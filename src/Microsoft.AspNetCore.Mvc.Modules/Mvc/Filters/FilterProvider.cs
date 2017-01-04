@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Orchard.Hosting.Mvc.Filters
+namespace Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters
 {
     public class DependencyFilterProvider : IFilterProvider
     {

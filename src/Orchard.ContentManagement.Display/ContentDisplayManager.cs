@@ -14,6 +14,7 @@ using Orchard.DisplayManagement.Theming;
 using Orchard.ContentManagement.Handlers;
 using System.Linq;
 using Orchard.DisplayManagement.Shapes;
+using Microsoft.AspNetCore.Mvc.Modules;
 
 namespace Orchard.ContentManagement.Display
 {

@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Authorization": "1.1.0",
-    "Orchard.DependencyInjection": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Orchard.Security.Abstractions": "2.0.0-*"
   },
   "buildOptions": {

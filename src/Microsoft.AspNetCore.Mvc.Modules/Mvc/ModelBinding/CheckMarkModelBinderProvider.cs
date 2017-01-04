@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Hosting.Mvc.ModelBinding
+namespace Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding
 {
     /// <summary>
     /// An <see cref="IModelBinderProvider"/> for <see cref="CheckMarkModelBinder"/>

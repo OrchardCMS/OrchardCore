@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Orchard.Security;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Orchard;
 
-namespace Orchard
+namespace Microsoft.AspNetCore.Mvc.Modules
 {
     public static class InvokeExtensions
     {
@@ -142,7 +142,7 @@ namespace Orchard
         }
         private static bool IsLogged(Exception ex)
         {
-            return ex is OrchardSecurityException || !ex.IsFatal();
+            return !ex.IsFatal();
         }
     }
 }

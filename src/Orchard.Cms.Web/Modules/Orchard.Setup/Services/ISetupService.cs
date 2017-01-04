@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.DependencyInjection;
 using Orchard.Recipes.Models;
 
 namespace Orchard.Setup.Services

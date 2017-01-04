@@ -1,8 +1,9 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Orchard.Hosting.Mvc.ModelBinding
+namespace Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding
 {
     public class CheckMarkModelBinder : IModelBinder
     {

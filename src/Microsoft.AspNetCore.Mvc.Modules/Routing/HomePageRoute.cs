@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Orchard.Settings;
 
-namespace Orchard.Hosting.Routing
+namespace Microsoft.AspNetCore.Mvc.Modules.Routing
 {
     public class HomePageRoute : Route
     {
         private readonly IRouteBuilder _routeBuilder;
-
         private readonly ISiteService _siteService;
 
         public HomePageRoute(ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)

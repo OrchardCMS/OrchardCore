@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Extensions.Features
 {

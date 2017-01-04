@@ -3,6 +3,7 @@
   "dependencies": {
     "System.Resources.Writer": "4.3.0",
     "Microsoft.AspNetCore.Mvc.Razor": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Microsoft.DiaSymReader.Native": "1.4.0",
     "Microsoft.DotNet.Cli.Utils": "1.0.0-preview2-003121",
     "Microsoft.DotNet.Compiler.Common": "1.0.0-preview2-003121",

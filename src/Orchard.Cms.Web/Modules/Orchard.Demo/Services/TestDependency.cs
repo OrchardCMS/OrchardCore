@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.Environment.Shell;
+﻿using Orchard.Environment.Shell;
 
 namespace Orchard.Demo.Services
 {

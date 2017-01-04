@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Orchard.Hosting;
 
 namespace Orchard.Cms.Web
