@@ -1,31 +1,27 @@
-﻿using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
 
 namespace Orchard.Recipes.RecipeSteps
 {
-    public class RecipesStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step executes a set of external recipes.
+    /// </summary>
+    public class RecipesStep : IRecipeStepHandler
     {
         private readonly IRecipeHarvester _recipeHarvester;
         private readonly IRecipeExecutor _recipeManager;
 
         public RecipesStep(
             IRecipeHarvester recipeHarvester,
-            IRecipeExecutor recipeManager,
-            ILogger<RecipesStep> logger,
-            IStringLocalizer<RecipesStep> localizer) : base(logger, localizer)
+            IRecipeExecutor recipeManager)
         {
-
             _recipeHarvester = recipeHarvester;
             _recipeManager = recipeManager;
         }
-
-        public override string Name => "Recipes";
 
         /*
          {
@@ -35,48 +31,33 @@ namespace Orchard.Recipes.RecipeSteps
             ]
          }
         */
-        public override async Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var step = context.RecipeStep.Step.ToObject<InternalStep>();
+            if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var step = context.Step.ToObject<InternalStep>();
             var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
 
             foreach (var recipe in step.Values)
             {
-                Logger.LogInformation("Executing recipe '{0}' in extension '{1}'.", recipe.Name, recipe.ExecutionId);
-
-                try
+                IDictionary<string, RecipeDescriptor> recipes;
+                
+                if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
                 {
-                    var recipes = recipesDictionary.ContainsKey(recipe.ExecutionId) ? recipesDictionary[recipe.ExecutionId] : default(IDictionary<string, RecipeDescriptor>);
-                    if (recipes == null)
-                    {
-                        recipes = recipesDictionary[recipe.ExecutionId] = await HarvestRecipes(recipe.ExecutionId);
-                    }
-
-                    if (!recipes.ContainsKey(recipe.Name))
-                    {
-                        throw new Exception(string.Format("No recipe named '{0}' was found in extension '{1}'.", recipe.Name, recipe.ExecutionId));
-                    }
-
-                    await _recipeManager.ExecuteAsync(context.ExecutionId, recipes[recipe.Name]);
+                    recipes = (await _recipeHarvester.HarvestRecipesAsync(recipe.ExecutionId)).ToDictionary(x => x.Name);
+                    recipesDictionary[recipe.ExecutionId] = recipes;
                 }
-                catch
+
+                if (!recipes.ContainsKey(recipe.Name))
                 {
-                    Logger.LogError("Error while executing recipe '{0}' in extension '{1}'.", recipe.Name, recipe.ExecutionId);
-                    throw;
+                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
                 }
-            }
-        }
 
-        private async Task<IDictionary<string, RecipeDescriptor>> HarvestRecipes(string extensionId)
-        {
-            try
-            {
-                var recipes = await _recipeHarvester.HarvestRecipesAsync(extensionId);
-                return recipes.ToDictionary(x => x.Name);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new OrchardFatalException(T["A recipe with the same name has been detected for extension \"{0}\". Please make sure recipes are uniquely named.", extensionId], ex);
+                var executionId = Guid.NewGuid().ToString();
+                await _recipeManager.ExecuteAsync(executionId, recipes[recipe.Name], context.Environment);
             }
         }
 
@@ -90,6 +71,5 @@ namespace Orchard.Recipes.RecipeSteps
             public string ExecutionId { get; set; }
             public string Name { get; set; }
         }
-
     }
 }

@@ -174,7 +174,16 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe);
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new 
+                    {
+                        SiteName  = context.SiteName,
+                        AdminUsername = context.AdminUsername,
+                        AdminEmail = context.AdminEmail,
+                        AdminPassword = context.AdminPassword,
+                        DatabaseProvider = context.DatabaseProvider,
+                        DatabaseConnectionString = context.DatabaseConnectionString,
+                        DatabaseTablePrefix = context.DatabaseTablePrefix
+                    }); 
                     //});
 
                 }

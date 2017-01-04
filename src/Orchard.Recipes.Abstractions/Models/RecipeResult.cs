@@ -5,26 +5,9 @@ namespace Orchard.Recipes.Models
 {
     public class RecipeResult
     {
-        public RecipeResult()
-        {
-            Steps = new List<RecipeStepResult>();
-        }
-
         public string ExecutionId { get; set; }
-        public IEnumerable<RecipeStepResult> Steps { get; set; }
-        public bool IsCompleted
-        {
-            get
-            {
-                return Steps.All(s => s.IsCompleted);
-            }
-        }
-        public bool IsSuccessful
-        {
-            get
-            {
-                return IsCompleted && Steps.All(s => s.IsSuccessful);
-            }
-        }
+        public List<RecipeStepResult> Steps { get; set; } = new List<RecipeStepResult>();
+        public bool IsCompleted => Steps.All(s => s.IsCompleted);
+        public bool IsSuccessful => Steps.All(s => s.IsCompleted && s.IsSuccessful);
     }
 }

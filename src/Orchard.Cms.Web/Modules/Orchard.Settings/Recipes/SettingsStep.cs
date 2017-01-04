@@ -1,29 +1,31 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
 namespace Orchard.Settings.Recipes
 {
-    public class SettingsStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step updates the site settings.
+    /// </summary>
+    public class SettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
 
-        public SettingsStep(
-            ISiteService siteService,
-            ILogger<SettingsStep> logger,
-            IStringLocalizer<ISiteService> localizer) : base(logger, localizer)
+        public SettingsStep(ISiteService siteService)
         {
             _siteService = siteService;
         }
 
-        public override string Name => "Settings";
-
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var model = recipeContext.RecipeStep.Step;
+            if (!String.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var model = context.Step;
             var site = await _siteService.GetSiteSettingsAsync();
 
             if (model["BaseUrl"] != null)

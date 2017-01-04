@@ -1,35 +1,37 @@
-﻿using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.Modules.Recipes.Executors
 {
-    public class FeatureStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step enables or disables a set of features.
+    /// </summary>
+    public class FeatureStep : IRecipeStepHandler
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeatureManager;
 
         public FeatureStep(
             IExtensionManager extensionManager,
-            IShellFeaturesManager shellFeatureManager,
-            ILogger<FeatureStep> logger,
-            IStringLocalizer<FeatureStep> localizer) : base(logger, localizer)
+            IShellFeaturesManager shellFeatureManager)
         {
             _extensionManager = extensionManager;
             _shellFeatureManager = shellFeatureManager;
         }
 
-        public override string Name => "Feature";
-        
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            var step = recipeContext.RecipeStep.Step.ToObject<InternalStep>();
+            if (!String.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            var step = context.Step.ToObject<FeatureStepModel>();
 
             var features = _extensionManager.GetFeatures();
 
@@ -51,11 +53,6 @@ namespace Orchard.Modules.Recipes.Executors
 
             if (step.Disable.Any())
             {
-                if (Logger.IsEnabled(LogLevel.Information))
-                {
-                    Logger.LogInformation("Disabling features: {0}", string.Join(";", step.Disable));
-                }
-
                 var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
 
                 await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
@@ -63,11 +60,6 @@ namespace Orchard.Modules.Recipes.Executors
 
             if (step.Enable.Any())
             {
-                if (Logger.IsEnabled(LogLevel.Information))
-                {
-                    Logger.LogInformation("Enabling features: {0}", string.Join(";", step.Enable));
-                }
-
                 var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
@@ -76,7 +68,8 @@ namespace Orchard.Modules.Recipes.Executors
             await Task.CompletedTask;
         }
 
-        private class InternalStep {
+        private class FeatureStepModel
+        {
             public string Name { get; set; }
             public string[] Disable { get; set; }
             public string[] Enable { get; set; }

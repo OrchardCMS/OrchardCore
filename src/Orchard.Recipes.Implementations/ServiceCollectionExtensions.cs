@@ -8,11 +8,7 @@ namespace Orchard.Recipes
         public static IServiceCollection AddRecipes(this IServiceCollection services)
         {
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
-
             services.AddScoped<IRecipeExecutor, RecipeExecutor>();
-            {
-                services.AddScoped<IRecipeStepExecutor, RecipeStepExecutor>();
-            }
 
             return services;
         }

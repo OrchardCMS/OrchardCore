@@ -9,7 +9,7 @@
     </a>
     <p class="post-meta">
         @T["Posted by {0} on {1}", 
-            Html.Raw($"<a href=\"#\">{Model.ContentItem.Content.ModifiedBy}</a>"), 
+            Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"), 
             (object)Model.ContentItem.CreatedUtc.ToString("MMMM dd, yyyy")]
     </p>
 
