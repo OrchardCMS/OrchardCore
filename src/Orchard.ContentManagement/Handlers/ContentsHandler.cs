@@ -14,14 +14,14 @@ namespace Orchard.ContentManagement.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override void Initializing(InitializingContentContext context)
+        public override void Creating(CreateContentContext context)
         {
             var utcNow = _clock.UtcNow;
             context.ContentItem.CreatedUtc = utcNow;
             context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
-            if (context.ContentItem.Owner != null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
+            if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
             {
                 context.ContentItem.Owner = httpContext.User.Identity.Name;
             }

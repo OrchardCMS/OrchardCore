@@ -67,7 +67,11 @@ namespace Orchard.Contents.Drivers
             {
                 var model = new OwnerEditorViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-                part.ContentItem.Owner = model.Owner;
+
+                if (!string.IsNullOrEmpty(part.ContentItem.Owner) || part.ContentItem.Number > 0)
+                {
+                    part.ContentItem.Owner = model.Owner;
+                }                
             }
 
             return await EditAsync(part, context);
