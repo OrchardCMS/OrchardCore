@@ -80,20 +80,20 @@
       "name": "ContentDefinition",
       "ContentTypes": [
         {
-          "Name": "Article",
-          "DisplayName": "Article",
+          "Name": "Page",
+          "DisplayName": "Page",
           "Hidden": false,
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
             "Listable": "True",
-            "Securable": "True",
+            "Securable": "False",
             "Stereotype": null
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "Article",
-              "Name": "Article",
+              "PartName": "Page",
+              "Name": "Page",
               "Settings": {
                 "Position": "2"
               }
@@ -321,7 +321,7 @@
           ]
         },
         {
-          "Name": "Article",
+          "Name": "Page",
           "Settings": {},
           "ContentPartFieldDefinitionRecords": [
             {
@@ -353,7 +353,7 @@
                   "Tokenized": false,
                   "Template": null
                 },
-                "Hint": "A url to the image to display in the header of the article. "
+                "Hint": "A url to the image to display in the header of the page."
               }
             }
           ]
@@ -442,11 +442,11 @@
         },
         {
           "ContentItemId": "[js: uuid()]",
-          "ContentType": "Article",
+          "ContentType": "Page",
           "Latest": true,
           "Published": true,
           "ModifiedBy": "[js: parameters('AdminUsername')]",
-          "Article": {
+          "Page": {
             "Subtitle": {
               "Text": "This is what I do"
             },
