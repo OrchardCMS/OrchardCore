@@ -30,8 +30,8 @@
         </div>
 
         <div class="form-check">
-            <label class="form-check-label" data-toggle="collapse" data-target="#index-template">
-                <input asp-for="ContentIndexSettings.Tokenized" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Tokenized" /> @T["Tokenized"]
+            <label class="form-check-label">
+                <input asp-for="ContentIndexSettings.Tokenized" type="checkbox" data-toggle="collapse" data-target="#index-template" class="form-check-input" checked="@Model.ContentIndexSettings.Tokenized" /> @T["Tokenized"]
                 <span class="hint">@T["Check to be able alter the indexed value using tokens."]</span>
             </label>
         </div>
