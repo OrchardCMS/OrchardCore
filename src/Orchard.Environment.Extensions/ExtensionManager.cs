@@ -15,6 +15,7 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Extensions.Utility;
+using Orchard.Environment.Extensions.Features.Attributes;
 
 namespace Orchard.Environment.Extensions
 {

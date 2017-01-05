@@ -2,9 +2,11 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.1",
-    "Microsoft.AspNetCore.Nancy.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Nancy.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Owin": "1.1.0",
+    "Nancy": "2.0.0-clinteastwood",
+    "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "System.Threading.Tasks.Parallel": "4.3.0"
   },

@@ -6,6 +6,7 @@
     "Microsoft.AspNetCore.Http": "1.1.0",
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.Extensions.Localization": "1.1.0",
     "Microsoft.Extensions.Logging": "1.1.0",
     "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",

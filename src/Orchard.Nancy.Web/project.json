@@ -1,18 +1,34 @@
 ﻿{
   "dependencies": {
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Nancy.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Routing": "1.1.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Routing": "1.1.0",
-    "Microsoft.AspNetCore.Modules": "1.0.0-*"
+    "Microsoft.Extensions.Logging.Console": "1.1.0"
   },
-
-  "tools": {
-    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-*"
+  "runtimeOptions": {
+    "configProperties": {
+      "System.GC.Server": true
+    }
   },
-
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "debugType": "portable",
+    "preserveCompilationContext": true,
+    "compile": {
+      "exclude": [
+        "wwwroot",
+        "node_modules",
+        "App_Data",
+        "Modules",
+        "Themes"
+      ]
+    }
+  },
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {
@@ -22,38 +38,49 @@
         }
       },
       "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
+        "dnxcore50",
+        "portable-net451+win8"
       ]
     }
   },
-
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "preserveCompilationContext": true,
-    "compile": {
-      "exclude": [
-        "Modules"
-      ]
-    }
+  "tools": {
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-*",
+    "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Tools": "1.1.0-*"
   },
-
-  "runtimeOptions": {
-    "configProperties": {
-      "System.GC.Server": true
-    }
+  "packExclude": [
+    "node_modules",
+    "bower_components",
+    "**.kproj",
+    "**.user",
+    "**.vspscc"
+  ],
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   },
-
+  "scripts": {
+    "prepublish": [ "gulp publish" ],
+    "postrestore": [ "gulp publish" ]
+  },
   "publishOptions": {
     "include": [
+      "app_data",
+      "modules",
+      "themes",
+      "views",
+      "_ViewStart.cshtml",
       "wwwroot",
-      "web.config",
-      "Modules",
-      "appsettings.json"
-    ]
+      "web.config"
+    ],
+    "exclude": [
+      "**/obj"
+    ],
+    "includeFiles": [ "" ],
+    "excludeFiles": [ "" ],
+    "builtIns": [ "" ],
+    "mappings": { }
   },
-
-  "scripts": {
-    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
+  "commands": {
+    "web": ""
   }
 }

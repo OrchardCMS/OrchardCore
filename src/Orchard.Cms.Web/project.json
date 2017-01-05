@@ -2,22 +2,22 @@
   "webroot": "wwwroot",
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
-    "System.Linq": "4.3.0",
-    "System.Collections.Specialized": "4.3.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
-    "Orchard.Environment.Shell.Data": "2.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Design": "1.1.0-*",
+    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Orchard.DisplayManagement": "2.0.0-*",
+    "Orchard.Environment.Shell.Data": "2.0.0-*",
     "Orchard.Hosting.Console": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
+    "System.Collections.Specialized": "4.3.0",
     "System.Dynamic.Runtime": "4.3.0",
-    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Design": "1.1.0-*"
+    "System.Linq": "4.3.0"
   },
   "runtimeOptions": {
     "configProperties": {

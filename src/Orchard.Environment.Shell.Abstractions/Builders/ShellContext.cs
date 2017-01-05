@@ -27,7 +27,7 @@ namespace Orchard.Hosting.ShellBuilders
         /// </summary>
         public IServiceScope CreateServiceScope()
         {
-            return ServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            return ServiceProvider.CreateScope();
         }
 
         public void Dispose()

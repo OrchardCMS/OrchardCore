@@ -1,7 +1,14 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Nancy;
+using Nancy.Configuration;
+using Nancy.Owin;
+using Nancy.TinyIoc;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Nancy.Modules
@@ -23,27 +30,33 @@ namespace Microsoft.AspNetCore.Nancy.Modules
                 //// Load controllers
                 //var applicationPartManager = app.ApplicationServices.GetRequiredService<ApplicationPartManager>();
 
-                //var availableExtensions = extensionManager.GetExtensions();
-                //using (logger.BeginScope("Loading extensions"))
-                //{
-                //    Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
-                //    {
-                //        try
-                //        {
-                //            var extensionEntry = extensionManager.LoadExtensionAsync(ae).Result;
+                app.UseOwin(x => x.UseNancy());
 
-                //            if (!extensionEntry.IsError)
-                //            {
+                var availableExtensions = extensionManager.GetExtensions();
+                using (logger.BeginScope("Loading extensions"))
+                {
+                    Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
+                    {
+                        try
+                        {
+                            var extensionEntry = extensionManager
+                                .LoadExtensionAsync(ae)
+                                .GetAwaiter()
+                                .GetResult();
+
+                            if (!extensionEntry.IsError)
+                            {
+                                
                 //                var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
                 //                applicationPartManager.ApplicationParts.Add(assemblyPart);
-                //            }
-                //        }
-                //        catch (Exception e)
-                //        {
-                //            logger.LogCritical("Could not load an extension", ae, e);
-                //        }
-                //    });
-                //}
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.LogCritical("Could not load an extension", ae, e);
+                        }
+                    });
+                }
 
             });
 

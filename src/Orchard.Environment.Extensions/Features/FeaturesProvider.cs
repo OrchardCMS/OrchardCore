@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Extensions.Features
@@ -71,20 +70,24 @@ namespace Orchard.Environment.Extensions.Features
                             featureDetails[DescriptionKey] :
                             (manifestFeatureDetails.ContainsKey(DescriptionKey) ? manifestFeatureDetails[DescriptionKey] : null);
 
-                    _featureBuilderEvents.Invoke(fbe => fbe.Building(
-                        new FeatureBuildingContext
-                        {
-                            FeatureId = featureId,
-                            FeatureName = featureName,
-                            Category = featureCategory,
-                            Description = featureDescription,
-                            ExtensionInfo = extensionInfo,
-                            FeatureDetails = featureDetails,
-                            ManifestDetails = manifestFeatureDetails,
-                            ManifestInfo = manifestInfo,
-                            Priority = featurePriority,
-                            FeatureDependencyIds = featureDependencyIds
-                        }), L);
+                    var context = new FeatureBuildingContext
+                    {
+                        FeatureId = featureId,
+                        FeatureName = featureName,
+                        Category = featureCategory,
+                        Description = featureDescription,
+                        ExtensionInfo = extensionInfo,
+                        FeatureDetails = featureDetails,
+                        ManifestDetails = manifestFeatureDetails,
+                        ManifestInfo = manifestInfo,
+                        Priority = featurePriority,
+                        FeatureDependencyIds = featureDependencyIds
+                    };
+
+                    foreach (var builder in _featureBuilderEvents)
+                    {
+                        builder.Building(context);
+                    }
 
                     var featureInfo = new FeatureInfo(
                         featureId,
@@ -95,8 +98,11 @@ namespace Orchard.Environment.Extensions.Features
                         extensionInfo,
                         featureDependencyIds);
 
-                    _featureBuilderEvents.Invoke(fbe => fbe.Built(featureInfo), L);
-
+                    foreach (var builder in _featureBuilderEvents)
+                    {
+                        builder.Built(featureInfo);
+                    }
+                    
                     features.Add(featureInfo);
                 }
             }
@@ -134,8 +140,10 @@ namespace Orchard.Environment.Extensions.Features
                     FeatureDependencyIds = featureDependencyIds
                 };
 
-                _featureBuilderEvents.Invoke(fbe => fbe.Building(
-                    context), L);
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Building(context);
+                }
 
                 var featureInfo = new FeatureInfo(
                     context.FeatureId,
@@ -146,7 +154,10 @@ namespace Orchard.Environment.Extensions.Features
                     context.ExtensionInfo,
                     context.FeatureDependencyIds);
 
-                _featureBuilderEvents.Invoke(fbe => fbe.Built(featureInfo), L);
+                foreach (var builder in _featureBuilderEvents)
+                {
+                    builder.Built(featureInfo);
+                }
 
                 features.Add(featureInfo);
             }
