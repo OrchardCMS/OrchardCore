@@ -20,13 +20,11 @@ namespace Orchard.Contents.Drivers
         public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             return Combine(
-                Shape("Contents_Metadata", model).Location("Detail", "Content:before"),
-                Shape("Parts_Contents_Publish", model),
-                Shape("Parts_Contents_Publish_Summary", model),
-                Shape("Parts_Contents_Publish_SummaryAdmin", model)
-                    .Location("SummaryAdmin", "Actions:5"),
-                Shape("Parts_Contents_Clone_SummaryAdmin", model)
-                    .Location("SummaryAdmin", "Actions:6")
+                Shape("Contents__Metadata", model).Location("Detail", "Content:before"),
+                Shape("Contents_SummaryAdmin__Tags", model).Location("SummaryAdmin", "Meta:10"),
+                Shape("Contents_SummaryAdmin__Meta", model).Location("SummaryAdmin", "Meta:20"),
+                Shape("Contents_SummaryAdmin__Button__Edit", model).Location("SummaryAdmin", "Actions:10"),
+                Shape("Contents_SummaryAdmin__Button__Actions", model).Location("SummaryAdmin", "Actions:20")
             );
         }
 
@@ -41,12 +39,12 @@ namespace Orchard.Contents.Drivers
 
             var results = new List<IDisplayResult>
             {
-                Shape("Content_PublishButton").Location("Actions:5"),
+                Shape("Content_PublishButton").Location("Actions:10"),
             };
 
             if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
-                results.Add(Shape("Content_SaveDraftButton").Location("Actions:0"));
+                results.Add(Shape("Content_SaveDraftButton").Location("Actions:20"));
             }
 
             return Combine(results.ToArray());

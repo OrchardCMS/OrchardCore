@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Html
+@using Orchard.ContentManagement
+@using Orchard.ContentManagement.Metadata
+@using Orchard.ContentManagement.MetaData
+@using Orchard.Contents
+@inject IContentManager ContentManager
+
+@{
+    var returnUrl = Context.Request.Path;
+
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+}
+
+<div class="btn-group">
+    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @T["Actions"]
+    </button>
+    <div class="dropdown-menu dropdown-menu-right">
+
+        @if (hasDraft)
+        {
+            <a asp-action="Publish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
+        }
+
+        @if (hasPublished)
+        {
+            <a display-for="@contentItem" class="dropdown-item btn-sm" itemprop="">@T["View"]</a>
+        }
+
+        <div class="dropdown-divider"></div>
+
+        @if (hasDraft)
+        {
+            <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Discard Draft"]</a>
+        }
+
+        @if (hasPublished)
+        {
+            <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+        }
+
+        @* This removes the draft and published versions, not necessary as both actions are already available separately *@
+        @*<a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>*@
+    </div>
+</div>
+
