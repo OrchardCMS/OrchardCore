@@ -8,9 +8,9 @@
         </h3>
     </a>
     <p class="post-meta">
-        @T["Posted by {0} on {1}", 
-            Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"), 
-            (object)Model.ContentItem.CreatedUtc.ToString("MMMM dd, yyyy")]
+        @T["Posted by {0} on {1}",
+            Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"),
+            (object)(await DisplayAsync(New.DateTime(Utc: Model.ContentItem.CreatedUtc, Format: T["MMMM dd, yyyy"].Value)))]
     </p>
 
     @*@Html.Raw(Model.ContentItem.Content.BodyPart.Body)*@

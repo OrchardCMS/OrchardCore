@@ -315,14 +315,15 @@ namespace Orchard.Contents.Controllers
         [FormValueRequired("submit.Save")]
         public Task<IActionResult> CreatePOST(string id, string returnUrl)
         {
-            return CreatePOST(id, returnUrl, async contentItem =>
+            return CreatePOST(id, returnUrl, contentItem =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
-                {
-                    await _contentManager.PublishAsync(contentItem);
-                }
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["Your content draft has been saved."]
+                    : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+
+                return Task.CompletedTask;
             });
         }
 
@@ -330,7 +331,6 @@ namespace Orchard.Contents.Controllers
         [FormValueRequired("submit.Publish")]
         public async Task<IActionResult> CreateAndPublishPOST(string id, string returnUrl)
         {
-
             // pass a dummy content to the authorization check to check for "own" variations
             var dummyContent = _contentManager.New(id);
 
@@ -339,7 +339,15 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            return await CreatePOST(id, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
+            return await CreatePOST(id, returnUrl, async contentItem => {
+                await _contentManager.PublishAsync(contentItem);
+
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["Your content has been published."]
+                    : T["Your {0} has been published.", typeDefinition.DisplayName]);
+            });
         }
 
         private async Task<IActionResult> CreatePOST(string id, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
@@ -362,12 +370,6 @@ namespace Orchard.Contents.Controllers
             }
 
             await conditionallyPublish(contentItem);
-
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-            _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T["Your content has been created."]
-                : T["Your {0} has been created.", typeDefinition.DisplayName]);
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
@@ -418,12 +420,15 @@ namespace Orchard.Contents.Controllers
         [FormValueRequired("submit.Save")]
         public Task<IActionResult> EditPOST(string contentItemId, string returnUrl)
         {
-            return EditPOST(contentItemId, returnUrl, async contentItem =>
+            return EditPOST(contentItemId, returnUrl, contentItem =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                if (!contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
-                    await _contentManager.PublishAsync(contentItem);
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["Your content draft has been saved."]
+                    : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
+
+                return Task.CompletedTask;
             });
         }
 
@@ -434,14 +439,25 @@ namespace Orchard.Contents.Controllers
             var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (content == null)
+            {
                 return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
             {
                 return Unauthorized();
             }
 
-            return await EditPOST(contentItemId, returnUrl, async contentItem => await _contentManager.PublishAsync(contentItem));
+            return await EditPOST(contentItemId, returnUrl, async contentItem =>
+            {
+                await _contentManager.PublishAsync(contentItem);
+
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["Your content has been published."]
+                    : T["Your {0} has been published.", typeDefinition.DisplayName]);
+            });
         }
 
         private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
@@ -486,11 +502,7 @@ namespace Orchard.Contents.Controllers
             //}
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-            _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                ? T["Your content has been saved."]
-                : T["Your {0} has been saved.", typeDefinition.DisplayName]);
-
+            
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
@@ -526,6 +538,36 @@ namespace Orchard.Contents.Controllers
 
         //    return this.RedirectLocal(returnUrl, () => RedirectToAction("List"));
         //}
+
+
+        [HttpPost]
+        public async Task<IActionResult> DiscardDraft(string contentItemId, string returnUrl)
+        {
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+            if (contentItem == null || contentItem.Published)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
+            {
+                return Unauthorized();
+            }
+
+            if (contentItem != null)
+            {
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                await _contentManager.DiscardDraftAsync(contentItem);
+
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["The draft has been removed."]
+                    : T["The {0} draft has been removed.", typeDefinition.DisplayName]);
+            }
+
+            return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
@@ -601,11 +643,11 @@ namespace Orchard.Contents.Controllers
 
             if (string.IsNullOrEmpty(typeDefinition.DisplayName))
             {
-                _notifier.Success(T["That content has been unpublished."]);
+                _notifier.Success(T["The content has been unpublished."]);
             }
             else
             {
-                _notifier.Success(T["That {0} has been unpublished.", typeDefinition.DisplayName]);
+                _notifier.Success(T["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");

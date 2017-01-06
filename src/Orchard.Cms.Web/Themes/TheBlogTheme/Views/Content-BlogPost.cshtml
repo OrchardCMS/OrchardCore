@@ -13,7 +13,7 @@
                         <span class="meta">
                             @T["Posted by {0} on {1}",
                                 Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"),
-                                (object)Model.ContentItem.CreatedUtc.ToString("MMMM dd, yyyy")]
+                                (object)(await DisplayAsync(New.DateTime(Utc: Model.ContentItem.CreatedUtc, Format: T["MMMM dd, yyyy"].Value)))]
                         </span>
                     </div>
                 </div>

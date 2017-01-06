@@ -39,11 +39,14 @@ namespace Orchard.Contents.Drivers
                 return null;
             }
 
-            var results = new List<IDisplayResult> { Shape("Content_SaveButton").Location("Actions:0") };
+            var results = new List<IDisplayResult>
+            {
+                Shape("Content_PublishButton").Location("Actions:5"),
+            };
 
             if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
-                results.Add(Shape("Content_PublishButton").Location("Actions:5"));
+                results.Add(Shape("Content_SaveDraftButton").Location("Actions:0"));
             }
 
             return Combine(results.ToArray());

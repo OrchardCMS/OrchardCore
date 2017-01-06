@@ -1,17 +1,62 @@
-﻿@using Orchard.ContentManagement
+﻿@using Microsoft.AspNetCore.Html
+@using Orchard.ContentManagement
 @using Orchard.ContentManagement.Metadata
+@using Orchard.ContentManagement.MetaData
 @using Orchard.Contents
+@inject IContentManager ContentManager
+@inject IContentDefinitionManager ContentDefinitionManager
 
 @{
-    ContentItem contentItem = Model.ContentItem;
     var returnUrl = Context.Request.Path;
+
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+    var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
+    var metadata = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+    var url = Url.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues);
 }
     <div class="properties">
         <div class="related float-xs-right">
             @await DisplayAsync(Model.Actions)
+            
             <a edit-for="@contentItem" class="btn btn-primary btn-sm">@T["Edit"]</a>
-            <a remove-for="@contentItem" class="btn btn-primary btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-            <a display-for="@contentItem" class="btn btn-secondary btn-sm" itemprop="">@T["View"]</a>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @T["Actions"]
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    
+                    @if (hasDraft)
+                    {
+                        <a asp-action="Publish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
+                    }
+
+                    @if (hasPublished)
+                    {
+                        <a display-for="@contentItem" class="dropdown-item btn-sm" itemprop="">@T["View"]</a>
+                    }
+
+                    <div class="dropdown-divider"></div>
+                    
+                    @if (hasDraft)
+                    {
+                        <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Discard Draft"]</a>
+                    }
+
+                    @if (hasPublished)
+                    {
+                        <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+                    }
+
+                    @* This removes the draft and published versions, not necessary as both actions are already available separately *@
+                    @*<a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>*@
+
+                </div>
+            </div>
+
+
             @*@if (Authorizer.Authorize(Permissions.EditContent, contentItem)) {
                 @Html.ItemEditLink(T("Edit").Text, contentItem)@T(" | ")
             }
@@ -21,16 +66,37 @@
         </div>
 
         <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
-        <a admin-for="@contentItem"/>
-        <span class="hint"></span>
-    @*<h3>@Html.ItemAdminLink(contentItem)</h3> - <div class="contentType">@contentItem.TypeDefinition.DisplayName</div>*@
-        @if (Model.Header != null) {
-        <div class="header">@await DisplayAsync(Model.Header)</div>
-        }
-        @if (Model.Meta != null) {
-        <div class="metadata">@await DisplayAsync(Model.Meta)</div>
-        }
-    </div>
+        <a admin-for="@contentItem"/> 
+
+            @if (Model.Header != null)
+            {
+                <div class="header">@await DisplayAsync(Model.Header)</div>
+            }
+
+            <div class="metadata">
+            @if (hasPublished)
+            {
+                <span class="tag tag-success" title="@T["Published"]">
+                    <i class="fa fa-check" aria-hidden="true"></i> @T["Published"]
+                </span>
+            }
+
+            @if (hasDraft)
+            {
+                <span class="tag tag-primary" title="@T["Draft"]">
+                    <i class="fa fa-pencil" aria-hidden="true"></i> @T["Draft"]
+                </span>
+            }
+
+            @if (contentItem.ModifiedUtc.HasValue)
+            {
+                <div>
+                    <span class="hint">@T["Last modified {0} by {1}", (object)(await DisplayAsync(New.TimeSpan(Utc: contentItem.ModifiedUtc))), contentItem.ModifiedBy]</span>
+                </div>
+            }
+            @await DisplayAsync(Model.Meta)
+        </div>
+</div>
 
     @if (Model.Content != null)
     {

@@ -51,6 +51,12 @@ namespace Orchard.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         Task RemoveAsync(ContentItem contentItem);
+
+        /// <summary>
+        /// Deletes the draft version of a content item.
+        /// </summary>
+        /// <param name="contentItem"></param>
+        Task DiscardDraftAsync(ContentItem contentItem);
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
         TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
@@ -61,6 +67,16 @@ namespace Orchard.ContentManagement
         public static TAspect PopulateAspect<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
         {
             return contentManager.PopulateAspect(content, new TAspect());
+        }
+
+        public static async Task<bool> HasPublishedVersionAsync(this IContentManager contentManager, IContent content)
+        {
+            if (content.ContentItem == null)
+            {
+                return false;
+            }
+
+            return content.ContentItem.IsPublished() || (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) != null);
         }
     }
 

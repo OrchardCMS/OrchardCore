@@ -190,6 +190,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return result;
             }
 
+            // Specific implementation for DateTimes
+            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTimeOffset) || parameter.ParameterType == typeof(DateTimeOffset?)))
+            {
+                return DateTimeOffset.Parse((string)result);
+            }
+
             return Convert.ChangeType(result, parameter.ParameterType);
         }
 

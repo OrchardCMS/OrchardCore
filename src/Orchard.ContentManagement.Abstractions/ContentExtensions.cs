@@ -149,8 +149,8 @@ namespace Orchard.ContentManagement
         public static bool HasDraft(this IContent content)
         {
             return content.ContentItem != null &&
-                   content.ContentItem.Published == false ||
-                   (content.ContentItem.Published && content.ContentItem.Latest == false);
+                   (content.ContentItem.Published == false ||
+                   content.ContentItem.Latest == false);
         }
 
         public static bool IsNew(this IContent content)
