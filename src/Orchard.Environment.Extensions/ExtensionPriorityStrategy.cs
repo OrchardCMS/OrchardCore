@@ -4,7 +4,7 @@ namespace Orchard.Environment.Extensions
 {
     public class ExtensionPriorityStrategy : IExtensionPriorityStrategy
     {
-        public double GetPriority(IFeatureInfo feature)
+        public int GetPriority(IFeatureInfo feature)
         {
             return feature.Priority;
         }

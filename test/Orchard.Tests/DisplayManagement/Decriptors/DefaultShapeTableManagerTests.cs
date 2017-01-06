@@ -46,7 +46,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
-            public double Priority { get; set; }
+            public int Priority { get; set; }
             public string Category { get; set; }
             public string Description { get; set; }
             public bool DependencyOn(IFeatureInfo feature)
@@ -75,7 +75,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
                     };
 
                 Features = features;
@@ -109,7 +109,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
                     };
 
                 Features = features;
@@ -136,7 +136,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[] { baseTheme.Id })}
                     };
 
                 Id = name;

@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Utility
         /// Then, items are moved up whenever it is possible without breaking the dependency graph.
         /// This by using a function which gives for each item a priority used as an order value.
         /// </summary>
-        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> items, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> items, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
         {
             var nodes = items.Select(i => new Node<T> { Item = i }).ToArray();
 
@@ -51,7 +51,7 @@ namespace Orchard.Environment.Extensions.Utility
             list.Add(node.Item);
         }
 
-        private static int LowestIndex<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        private static int LowestIndex<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
         {
             double priority = getPriority(list[index]);
 

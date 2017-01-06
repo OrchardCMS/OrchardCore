@@ -4,6 +4,6 @@ namespace Orchard.Environment.Extensions
 {
     public interface IExtensionPriorityStrategy
     {
-        double GetPriority(IFeatureInfo feature);
+        int GetPriority(IFeatureInfo feature);
     }
 }

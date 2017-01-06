@@ -310,7 +310,7 @@ namespace Orchard.Environment.Extensions
             return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
         }
 
-        private double GetPriority(IFeatureInfo feature)
+        private int GetPriority(IFeatureInfo feature)
         {
             return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
         }
