@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.Routing;
-using Orchard.Routes;
 using Orchard.Settings;
 
 namespace Orchard.Hosting.Web.Routing
@@ -58,12 +57,12 @@ namespace Orchard.Hosting.Web.Routing
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
-
+            // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 string requestPrefix = "/" + shellSettings.RequestUrlPrefix;
-                httpContext.Request.PathBase = requestPrefix;
-                httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(requestPrefix.Length);
+                httpContext.Request.PathBase += requestPrefix;
+                httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
             }
 
             if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))

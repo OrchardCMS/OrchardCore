@@ -220,6 +220,11 @@ namespace Orchard.DisplayManagement.Razor
 
             return text;
         }
+
+        /// <summary>
+        /// Returns the full path of the current request.
+        /// </summary>
+        public string FullRequestPath => Context.Request.PathBase + Context.Request.Path + Context.Request.QueryString;
     }
 
     public abstract class RazorPage : RazorPage<dynamic>
