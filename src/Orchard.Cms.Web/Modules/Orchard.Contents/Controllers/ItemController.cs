@@ -24,7 +24,6 @@ namespace Orchard.Contents.Controllers
             _contentManager = contentManager;
         }
 
-        // /Contents/Item/Display/72
         public async Task<IActionResult> Display(string contentItemId, int? version)
         {
             if (version.HasValue)
@@ -49,8 +48,6 @@ namespace Orchard.Contents.Controllers
             return View(model);
         }
 
-        // /Contents/Item/Preview/72
-        // /Contents/Item/Preview/72?version=5
         public async Task<IActionResult> Preview(string contentItemId, int? version)
         {
             if (contentItemId == null)
