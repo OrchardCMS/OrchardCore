@@ -48,7 +48,7 @@ namespace Orchard.DisplayManagement
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
-            services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
         }
