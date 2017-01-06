@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Microsoft.AspNetCore.Nancy.Modules;
 using Nancy;
+using Nancy.Owin;
 
 namespace Microsoft.AspNetCore.Nancy.Modules
 {
@@ -57,7 +58,7 @@ namespace Microsoft.AspNetCore.Nancy.Modules
                     });
                 }
 
-                app.UseOwin(x => x.UseANancy(no =>
+                app.UseOwin(x => x.UseNancy(no =>
                 {
                     no.Bootstrapper = new NancyAspNetCoreBootstrapper(
                         new[] {
