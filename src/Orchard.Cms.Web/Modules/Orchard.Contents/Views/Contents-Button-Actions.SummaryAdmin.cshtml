@@ -22,6 +22,7 @@
         @if (hasDraft)
         {
             <a asp-action="Publish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
+            <a asp-action="Preview" asp-controller="Item" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn-sm">@T["Preview Draft"]</a>
         }
 
         @if (hasPublished)

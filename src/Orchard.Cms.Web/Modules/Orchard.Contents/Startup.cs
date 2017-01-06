@@ -61,6 +61,13 @@ namespace Orchard.Contents
                 defaults: new { controller = "Item", action = "Preview" }
             );
 
+            routes.MapAreaRoute(
+                name: "PreviewContentItemVersion",
+                areaName: "Orchard.Contents",
+                template: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
+                defaults: new { controller = "Item", action = "Preview" }
+            );
+
             // Admin
             routes.MapAreaRoute(
                 name: "EditContentItem",
