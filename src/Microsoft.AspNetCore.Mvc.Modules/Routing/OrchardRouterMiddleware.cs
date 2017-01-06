@@ -57,7 +57,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 string requestPrefix = "/" + shellSettings.RequestUrlPrefix;
                 httpContext.Request.PathBase += requestPrefix;

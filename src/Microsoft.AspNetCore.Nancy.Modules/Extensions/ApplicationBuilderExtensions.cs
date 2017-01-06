@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Microsoft.AspNetCore.Nancy.Modules;
 using Nancy;
 using Nancy.Owin;
 
@@ -27,10 +26,7 @@ namespace Microsoft.AspNetCore.Nancy.Modules
 
                 //// Route the request to the correct tenant specific pipeline
                 //app.UseMiddleware<OrchardRouterMiddleware>();
-
-                //// Load controllers
-                //var applicationPartManager = app.ApplicationServices.GetRequiredService<ApplicationPartManager>();
-
+                
                 ConcurrentBag<Assembly> badOfTypes
                     = new ConcurrentBag<Assembly>();
 
