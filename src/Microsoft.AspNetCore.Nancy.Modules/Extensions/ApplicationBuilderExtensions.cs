@@ -1,15 +1,15 @@
 using System;
+using System.Collections.Concurrent;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nancy;
-using Nancy.Configuration;
-using Nancy.Owin;
-using Nancy.TinyIoc;
 using Orchard.Environment.Extensions;
+using Microsoft.AspNetCore.Nancy.Modules;
+using Nancy;
 
 namespace Microsoft.AspNetCore.Nancy.Modules
 {
@@ -30,7 +30,8 @@ namespace Microsoft.AspNetCore.Nancy.Modules
                 //// Load controllers
                 //var applicationPartManager = app.ApplicationServices.GetRequiredService<ApplicationPartManager>();
 
-                app.UseOwin(x => x.UseNancy());
+                ConcurrentBag<Assembly> badOfTypes
+                    = new ConcurrentBag<Assembly>();
 
                 var availableExtensions = extensionManager.GetExtensions();
                 using (logger.BeginScope("Loading extensions"))
@@ -46,9 +47,7 @@ namespace Microsoft.AspNetCore.Nancy.Modules
 
                             if (!extensionEntry.IsError)
                             {
-                                
-                //                var assemblyPart = new AssemblyPart(extensionEntry.Assembly);
-                //                applicationPartManager.ApplicationParts.Add(assemblyPart);
+                                badOfTypes.Add(extensionEntry.Assembly);
                             }
                         }
                         catch (Exception e)
@@ -58,6 +57,14 @@ namespace Microsoft.AspNetCore.Nancy.Modules
                     });
                 }
 
+                app.UseOwin(x => x.UseANancy(no =>
+                {
+                    no.Bootstrapper = new NancyAspNetCoreBootstrapper(
+                        new[] {
+                            (IAssemblyCatalog)new DependencyContextAssemblyCatalog(),
+                            (IAssemblyCatalog)new AmbientAssemblyCatalog(badOfTypes)
+                        });
+                }));
             });
 
             return modularApp;

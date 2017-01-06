@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Extensions.Configuration": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",

@@ -5,10 +5,14 @@
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Nancy.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Owin": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Nancy": "2.0.0-clinteastwood",
     "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "System.Threading.Tasks.Parallel": "4.3.0"
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
+    "System.Threading.Tasks.Parallel": "4.3.0",
+    "Microsoft.AspNetCore.Hosting": "1.1.0"
   },
 
   "frameworks": {

@@ -14,7 +14,7 @@ namespace Orchard.Environment.Shell.Builders
         public static IServiceCollection CreateChildContainer(this IServiceProvider serviceProvider, IServiceCollection serviceCollection)
         {
             IServiceCollection clonedCollection = new ServiceCollection();
-
+            
             foreach (var service in serviceCollection)
             {
                 // Register the singleton instances to all containers

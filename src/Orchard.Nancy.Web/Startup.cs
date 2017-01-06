@@ -27,7 +27,7 @@ namespace Orchard.Nancy.Web
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add ASP.NET MVC and support for modules
+            // Add Nancy and support for modules
             services.AddModuleServices(configure => configure
                 .AddNancyModules()
                 .AddConfiguration(Configuration)
