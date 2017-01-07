@@ -21,7 +21,8 @@ namespace Orchard.ContentManagement
             o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
             o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
             o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-            o.Add(new JProperty(nameof(ContentItem.ModifiedBy), contentItem.ModifiedBy));
+            o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
+            o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
 
             // Write all custom content properties
             o.Merge(contentItem.Data);
@@ -72,9 +73,13 @@ namespace Orchard.ContentManagement
                 {
                     contentItem.CreatedUtc = (DateTimeOffset?)p.Value;
                 }
-                else if (p.Name == nameof(ContentItem.ModifiedBy))
+                else if (p.Name == nameof(ContentItem.Author))
                 {
-                    contentItem.ModifiedBy = (string)p.Value;
+                    contentItem.Author = (string)p.Value;
+                }
+                else if (p.Name == nameof(ContentItem.Owner))
+                {
+                    contentItem.Owner = (string)p.Value;
                 }
                 else
                 {
