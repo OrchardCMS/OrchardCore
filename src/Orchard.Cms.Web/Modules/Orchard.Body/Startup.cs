@@ -11,6 +11,7 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Indexing;
+using Orchard.MetaWeblog;
 using Orchard.Tokens;
 
 namespace Orchard.Body
@@ -28,6 +29,15 @@ namespace Orchard.Body
             services.AddScoped<IContentPartHandler, BodyPartHandler>();
 
             services.AddNullTokenizer();
+        }
+    }
+
+    [OrchardFeature("Orchard.RemotePublishing")]
+    public class RemotePublishingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IMetaWeblogDriver, BodyMetaWeblogDriver>();
         }
     }
 }

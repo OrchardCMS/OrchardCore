@@ -5,7 +5,9 @@ Website: http://orchardproject.net
 Version: 2.0.x
 OrchardVersion: 2.0
 Description: Introduces a preconfigured container-enabled content type.
-FeatureDescription: A basic container-enabled content type.
-Dependencies: Orchard.Contents, Orchard.ContentTypes
-Category: Content Management
-
+Features:
+    Orchard.Lists:
+        Name: Lists
+        Description: Introduces a preconfigured container-enabled content type.
+        Categories: Content Management
+        Dependencies: Orchard.Contents, Orchard.ContentTypes

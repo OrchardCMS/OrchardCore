@@ -18,6 +18,7 @@ using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
+using Orchard.MetaWeblog;
 using Orchard.Security.Permissions;
 using Orchard.Title.Handlers;
 using Orchard.Tokens;
@@ -57,6 +58,15 @@ namespace Orchard.Autoroute
             var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
 
             routes.Routes.Insert(0, autorouteRoute);
+        }
+    }
+
+    [OrchardFeature("Orchard.RemotePublishing")]
+    public class RemotePublishingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IMetaWeblogDriver, AutorouteMetaWeblogDriver>();
         }
     }
 }
