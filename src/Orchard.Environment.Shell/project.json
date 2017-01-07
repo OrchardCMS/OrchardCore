@@ -9,6 +9,7 @@
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "Microsoft.Extensions.Configuration.Xml": "1.1.0",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
+    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Microsoft.Extensions.Options": "1.1.0",
     "Orchard.DeferredTasks.Abstractions": "2.0.0-*",
