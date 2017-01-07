@@ -2,6 +2,8 @@
 using Orchard.Environment.Commands;
 using System.IO;
 using Xunit;
+using Microsoft.Extensions.Localization;
+using Orchard.Tests.Stubs;
 
 namespace Orchard.Tests.Commands
 {
@@ -15,6 +17,7 @@ namespace Orchard.Tests.Commands
 
             services.AddScoped<ICommandManager, DefaultCommandManager>();
             services.AddScoped<ICommandHandler, MyCommand>();
+            services.AddScoped<IStringLocalizer<DefaultCommandManager>, NullStringLocalizer<DefaultCommandManager>>();
 
             _manager = services.BuildServiceProvider().GetService<ICommandManager>();
         }

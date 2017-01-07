@@ -5,10 +5,10 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Localization;
 
 namespace Orchard.DisplayManagement.Implementation
 {
@@ -30,6 +30,7 @@ namespace Orchard.DisplayManagement.Implementation
             IShapeTableManager shapeTableManager,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
+            IStringLocalizer<DefaultHtmlDisplay> localizer,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
@@ -41,10 +42,10 @@ namespace Orchard.DisplayManagement.Implementation
 
             _logger = logger;
 
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IStringLocalizer T { get; set; }
 
         public async Task<IHtmlContent> ExecuteAsync(DisplayContext context)
         {
@@ -114,7 +115,7 @@ namespace Orchard.DisplayManagement.Implementation
                 }
                 else
                 {
-                    throw new OrchardException(T("Shape type {0} not found", shapeMetadata.Type));
+                    throw new OrchardException(T["Shape type {0} not found", shapeMetadata.Type]);
                 }
             }
 

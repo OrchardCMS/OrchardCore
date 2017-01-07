@@ -1,8 +1,8 @@
-﻿using Orchard.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Environment.Commands
 {
@@ -11,14 +11,15 @@ namespace Orchard.Environment.Commands
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
 
-        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers)
+        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
+            IStringLocalizer<DefaultCommandManager> localizer)
         {
             _commandHandlers = commandHandlers;
 
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IStringLocalizer T { get; set; }
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
@@ -35,11 +36,11 @@ namespace Orchard.Environment.Commands
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any())
                 {
-                    throw new OrchardCoreException(T("Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
-                        commandMatch, commandList));
+                    throw new OrchardCoreException(T["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+                        commandMatch, commandList]);
                 }
-                throw new OrchardCoreException(T("No command found matching arguments \"{0}\". Commands available: {1}.",
-                    commandMatch, commandList));
+                throw new OrchardCoreException(T["No command found matching arguments \"{0}\". Commands available: {1}.",
+                    commandMatch, commandList]);
             }
         }
 

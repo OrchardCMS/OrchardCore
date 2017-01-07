@@ -9,7 +9,6 @@ using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Localization;
 
 namespace Orchard.ContentFields.Fields
 {

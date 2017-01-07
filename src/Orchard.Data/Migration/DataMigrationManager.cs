@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Orchard.Data.Migration.Records;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Utility;
-using Orchard.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Orchard.Data.Migration.Records;
+using Orchard.Environment.Extensions;
 using YesSql.Core.Services;
 
 namespace Orchard.Data.Migration
@@ -30,7 +29,8 @@ namespace Orchard.Data.Migration
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger)
+            ILogger<DataMigrationManager> logger,
+            IStringLocalizer<DataMigrationManager> localizer)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
@@ -41,10 +41,10 @@ namespace Orchard.Data.Migration
 
             _processedFeatures = new List<string>();
 
-            T = NullLocalizer.Instance;
+            T = localizer;
         }
 
-        public Localizer T { get; set; }
+        public IStringLocalizer T { get; set; }
 
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
@@ -224,7 +224,7 @@ namespace Orchard.Data.Migration
                         }
                         _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
                         _session.Cancel();
-                        throw new OrchardException(T("Error while running migration version {0} for {1}.", current, featureId), ex);
+                        throw new OrchardException(T["Error while running migration version {0} for {1}.", current, featureId], ex);
                     }
                     finally
                     {
