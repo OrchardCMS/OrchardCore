@@ -85,7 +85,7 @@ namespace Orchard.Environment.Shell.Builders
 
         private static bool IsStartup(Type type)
         {
-            return typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(type);
+            return typeof(Microsoft.AspNetCore.Modules.IStartup).IsAssignableFrom(type);
         }
 
         private static DependencyBlueprint BuildModule(Type type, FeatureEntry feature)

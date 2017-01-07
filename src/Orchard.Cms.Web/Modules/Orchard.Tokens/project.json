@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Handlebars.Net": "1.8.0",
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",

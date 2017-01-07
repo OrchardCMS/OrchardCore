@@ -4,6 +4,7 @@
   "dependencies": {
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Razor.ViewCompilation.Design": "1.1.0-*",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",

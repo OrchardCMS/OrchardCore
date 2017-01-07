@@ -2,8 +2,6 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
-    "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Microsoft.DotNet.InternalAbstractions": "1.0.0",
     "Microsoft.DotNet.ProjectModel": "1.0.0-rc3-003121",
     "Microsoft.DotNet.ProjectModel.Loader": "1.0.0-preview2-003121",

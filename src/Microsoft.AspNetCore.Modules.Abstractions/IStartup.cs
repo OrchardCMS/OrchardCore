@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.AspNetCore.Mvc.Modules
+namespace Microsoft.AspNetCore.Modules
 {
     /// <summary>
     /// TODO: After RTM, resolve IStartup using the Application container, but inject tenant services in the Configure method.
