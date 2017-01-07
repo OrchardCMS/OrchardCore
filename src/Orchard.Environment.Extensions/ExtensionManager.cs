@@ -278,7 +278,7 @@ namespace Orchard.Environment.Extensions
             return _features.GetOrAdd(feature.Id, async (key) =>
             {
                 var loadedExtension = await LoadExtensionAsync(feature.Extension);
-
+                
                 if (loadedExtension.IsError)
                 {
                     return new NonCompiledFeatureEntry(feature);

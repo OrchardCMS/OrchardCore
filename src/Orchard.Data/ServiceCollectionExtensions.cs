@@ -6,10 +6,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Data.Diagnostics;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
+using YesSql.Core.Sql;
 using YesSql.Storage.Sql;
 
 namespace Orchard.Data
@@ -24,6 +26,8 @@ namespace Orchard.Data
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
             services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
+
+            SqlDialectFactory.RegisterSqlDialect("diagnosticdbconnection", new SqlServerDialect());
 
             // Configuring data access
 
@@ -43,14 +47,14 @@ namespace Orchard.Data
                 switch (shellSettings.DatabaseProvider)
                 {
                     case "SqlConnection":
-                        connectionFactory = new DbConnectionFactory<SqlConnection>(shellSettings.ConnectionString);
+                        connectionFactory = new DiagnosticDbConnectionFactory<SqlConnection>(shellSettings.ConnectionString);
                         isolationLevel = IsolationLevel.ReadUncommitted;
                         break;
                     case "Sqlite":
                         var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, "App_Data", "Sites", shellSettings.Name);
                         var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                         Directory.CreateDirectory(databaseFolder);
-                        connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
+                        connectionFactory = new DiagnosticDbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
                         isolationLevel = IsolationLevel.ReadUncommitted;
                         break;
                     default:
