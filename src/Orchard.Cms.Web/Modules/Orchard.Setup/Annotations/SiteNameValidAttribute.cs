@@ -20,7 +20,7 @@
             if (string.IsNullOrWhiteSpace(_value))
                 return "Site name is required.";
 
-            return string.Format("Site name can be no longer than {0} characters.", Maximum);
+            return $"Site name can be no longer than {Maximum} characters.";
         }
     }
 }
