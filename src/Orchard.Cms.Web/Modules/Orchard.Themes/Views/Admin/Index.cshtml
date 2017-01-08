@@ -6,18 +6,58 @@
 </div>
 
 <form asp-action="Index" method="post">
+    <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-block">
+                        <h4 class="card-title">@Model.CurrentSiteTheme.Name</h4>
+                        <p>@Model.CurrentSiteTheme.Extension.Manifest.Description</p>
+                    </div>
+                    <div class="card-footer text-muted text-xs-right">
+                    </div>
+                </div>
+            </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-block">
+                    <h4 class="card-title">@Model.CurrentAdminTheme.Name</h4>
+                    <p>@Model.CurrentAdminTheme.Extension.Manifest.Description</p>
+                </div>
+                <div class="card-footer text-muted text-xs-right">
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <fieldset class="form-group">
-        <label asp-for="SiteThemeName">Site theme name</label>
-        <input asp-for="SiteThemeName" class="form-control"/>
-        <span class="hint">The name of the theme for the front-end.</span>
-    </fieldset>
-
-    <fieldset class="form-group">
-        <label asp-for="AdminThemeName">Admin theme name</label>
-        <input asp-for="AdminThemeName" class="form-control"/>
-        <span class="hint">The name of the theme for the admin.</span>
-    </fieldset>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
+    @if (!Model.Themes.Any())
+    {
+        <p>@T["There are no themes installed."]</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var themeEntry in Model.Themes)
+            {
+                <div class="col-sm-3">
+                    <div class="card">
+                        <div class="card-block">
+                            <h4 class="card-title">@themeEntry.Name</h4>
+                            @*@T["By"] @themeEntry.Extension.Manifest.Author*@
+                            <p>@themeEntry.Extension.Manifest.Description</p>
+                        </div>
+                        <div class="card-footer text-muted text-xs-right">
+                            <a class="btn btn-primary btn-sm" asp-route-action="SetCurrentSiteTheme" asp-route-id="@themeEntry.Extension.Id">@T["Set Current"]</a>
+                            @if (themeEntry.Enabled)
+                            {
+                                <a asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id">@T["Disable"]</a> }
+                            else
+                            {
+                                <a asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id">@T["Enable"]</a> 
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </form>

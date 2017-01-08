@@ -25,6 +25,7 @@ namespace Orchard.Themes
             services.AddScoped<IThemeSelector, SiteThemeSelector>();
             services.AddScoped<ISiteThemeService, SiteThemeService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IThemeService, ThemeService>();
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

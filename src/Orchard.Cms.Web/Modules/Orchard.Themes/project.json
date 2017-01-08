@@ -4,9 +4,12 @@
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
+    "Orchard.Environment.Shell": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Abstractions": "2.0.0-*",
+    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
+    "Orchard.Environment.Shell.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"
