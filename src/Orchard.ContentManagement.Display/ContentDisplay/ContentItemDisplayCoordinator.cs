@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;

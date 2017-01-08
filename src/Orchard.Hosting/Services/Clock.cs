@@ -1,7 +1,6 @@
-﻿using Orchard.Services;
-using System;
+﻿using System;
 
-namespace Orchard.Hosting.Services
+namespace Microsoft.AspNetCore.Modules
 {
     public class Clock : IClock
     {

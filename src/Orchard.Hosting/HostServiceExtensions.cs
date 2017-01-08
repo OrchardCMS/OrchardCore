@@ -1,12 +1,9 @@
 using System;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Settings;
-using Orchard.Hosting.Services;
-using Orchard.Services;
 
 namespace Orchard.Hosting
 {

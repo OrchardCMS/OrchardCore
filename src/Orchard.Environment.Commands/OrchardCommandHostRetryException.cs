@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
+using Microsoft.AspNetCore.Modules;
 
 namespace Orchard.Environment.Commands
 {

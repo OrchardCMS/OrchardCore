@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;

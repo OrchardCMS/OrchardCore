@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
-using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
-using Orchard.DisplayManagement.Theming;
-using Orchard.ContentManagement.Handlers;
-using System.Linq;
 using Orchard.DisplayManagement.Shapes;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Orchard.DisplayManagement.Theming;
 
 namespace Orchard.ContentManagement.Display
 {

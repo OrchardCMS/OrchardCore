@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;

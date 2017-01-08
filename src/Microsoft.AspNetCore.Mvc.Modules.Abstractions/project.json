@@ -1,6 +1,7 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Core": "1.1.0",
     "Microsoft.Extensions.DependencyModel": "1.1.0",
