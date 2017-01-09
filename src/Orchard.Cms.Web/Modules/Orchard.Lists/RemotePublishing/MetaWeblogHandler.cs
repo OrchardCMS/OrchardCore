@@ -23,7 +23,7 @@ using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 using YesSql.Core.Services;
 
-namespace Orchard.Lists.Services
+namespace Orchard.Lists.RemotePublishing
 {
     [OrchardFeature("Orchard.RemotePublishing")]
     public class MetaWeblogHandler : IXmlRpcHandler

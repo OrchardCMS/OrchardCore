@@ -5,7 +5,7 @@ using Orchard.Core.XmlRpc.Models;
 using Orchard.MetaWeblog;
 using Orchard.Title.Model;
 
-namespace Orchard.Title.Drivers
+namespace Orchard.Title.RemotePublishing
 {
     public class TitleMetaWeblogDriver : MetaWeblogDriver
     {

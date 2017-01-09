@@ -4,7 +4,7 @@ using Orchard.Core.XmlRpc.Models;
 using Orchard.MetaWeblog;
 using Orchard.Autoroute.Model;
 
-namespace Orchard.Autoroute.Drivers
+namespace Orchard.Autoroute.RemotePublishing
 {
     public class AutorouteMetaWeblogDriver : MetaWeblogDriver
     {

@@ -4,10 +4,10 @@ using Orchard.ContentManagement.Display.Models;
 using Orchard.DisplayManagement.Views;
 using Orchard.Lists.Models;
 
-namespace Orchard.Lists.Drivers
+namespace Orchard.Lists.RemotePublishing
 {
     [OrchardFeature("Orchard.RemotePublishing")]
-    public class RemoteBlogPublishingDriver : ContentPartDisplayDriver<ListPart>
+    public class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {

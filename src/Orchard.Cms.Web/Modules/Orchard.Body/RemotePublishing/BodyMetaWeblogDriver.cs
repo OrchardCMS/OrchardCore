@@ -4,7 +4,7 @@ using Orchard.Core.XmlRpc.Models;
 using Orchard.MetaWeblog;
 using Orchard.Body.Model;
 
-namespace Orchard.Body.Drivers
+namespace Orchard.Body.RemotePublishing
 {
     public class BodyMetaWeblogDriver : MetaWeblogDriver
     {

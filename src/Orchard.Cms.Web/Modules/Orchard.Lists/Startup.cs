@@ -53,24 +53,4 @@ namespace Orchard.Lists
             );
         }
     }
-
-    [OrchardFeature("Orchard.RemotePublishing")]
-    public class RemotePublishingStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IXmlRpcHandler, MetaWeblogHandler>();
-            services.AddScoped<IContentPartDisplayDriver, RemoteBlogPublishingDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaRoute(
-                name: "RSD",
-                areaName: "Orchard.Lists",
-                template: "xmlrpc/metaweblog/{contentItemId}/rsd",
-                defaults: new { controller = "RemotePublishing", action = "Rsd" }
-            );
-        }
-    }
 }
