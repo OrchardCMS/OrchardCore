@@ -3,11 +3,17 @@ using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
 using Orchard.MetaWeblog;
 using Orchard.Autoroute.Model;
+using System;
 
 namespace Orchard.Autoroute.RemotePublishing
 {
     public class AutorouteMetaWeblogDriver : MetaWeblogDriver
     {
+        public override void SetCapabilities(Action<string, string> setCapability)
+        {
+            setCapability("supportsSlug", "Yes");
+        }
+
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {
             var autoroutePart = contentItem.As<AutoroutePart>();
@@ -23,7 +29,12 @@ namespace Orchard.Autoroute.RemotePublishing
         {
             if (contentItem.As<AutoroutePart>() != null)
             {
-                contentItem.Alter<AutoroutePart>(x => x.Path = rpcStruct.Optional<string>("wp_slug"));
+                var slug = rpcStruct.Optional<string>("wp_slug");
+
+                if (!string.IsNullOrWhiteSpace(slug))
+                {
+                    contentItem.Alter<AutoroutePart>(x => x.Path = slug);
+                }                
             }
         }
     }

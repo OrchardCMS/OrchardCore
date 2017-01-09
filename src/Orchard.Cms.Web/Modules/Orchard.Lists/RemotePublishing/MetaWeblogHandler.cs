@@ -63,7 +63,12 @@ namespace Orchard.Lists.RemotePublishing
         public void SetCapabilities(XElement options)
         {
             const string manifestUri = "http://schemas.microsoft.com/wlw/manifest/weblog";
-            options.SetElementValue(XName.Get("supportsSlug", manifestUri), "Yes");
+
+            foreach (var driver in _metaWeblogDrivers)
+            {
+                driver.SetCapabilities((name, value) => { options.SetElementValue(XName.Get(name, manifestUri), value); });
+            }
+
         }
 
         public async Task ProcessAsync(XmlRpcContext context)
@@ -425,7 +430,7 @@ namespace Orchard.Lists.RemotePublishing
 
             if (contentItem.HasDraft())
             {
-                url = context.Url.Action("Preview", "Item", new { area = "Orchard.Contents", contentItemId = contentItem.ContentItem.Id });
+                url = context.Url.Action("Preview", "Item", new { area = "Orchard.Contents", contentItemId = contentItem.ContentItemId });
             }
 
             var blogStruct = new XRpcStruct()

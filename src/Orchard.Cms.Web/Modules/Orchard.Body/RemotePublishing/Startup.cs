@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Modules;
+﻿using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Body.Drivers;
+using Orchard.MetaWeblog;
 
 namespace Orchard.Body.RemotePublishing
 {

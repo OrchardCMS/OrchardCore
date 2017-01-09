@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Orchard.ContentManagement;
 using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
@@ -15,6 +12,10 @@ namespace Orchard.MetaWeblog
         }
 
         public virtual void EditPost(XRpcStruct rpcStruct, ContentItem contentItem)
+        {
+        }
+
+        public virtual void SetCapabilities(Action<string, string> setCapability)
         {
         }
     }
