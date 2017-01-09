@@ -1,38 +1,35 @@
 ﻿@using Orchard.ContentManagement
-@using Orchard.ContentManagement.Metadata
-@using Orchard.Contents
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var returnUrl = Context.Request.Path;
 }
-    <div class="properties">
+
+<div class="properties">
+    @if (Model.Actions != null)
+    {
         <div class="related float-xs-right">
             @await DisplayAsync(Model.Actions)
-            <a edit-for="@contentItem" class="btn btn-primary btn-sm">@T["Edit"]</a>
-            <a remove-for="@contentItem" class="btn btn-primary btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-            <a display-for="@contentItem" class="btn btn-secondary btn-sm" itemprop="">@T["View"]</a>
-            @*@if (Authorizer.Authorize(Permissions.EditContent, contentItem)) {
-                @Html.ItemEditLink(T("Edit").Text, contentItem)@T(" | ")
-            }
-            @if (Authorizer.Authorize(Permissions.DeleteContent, contentItem)) {
-                @Html.Link(T("Delete").Text, Url.ItemRemoveUrl(contentItem, new {returnUrl}), new {itemprop = "RemoveUrl UnsafeUrl"})
-            }*@
         </div>
-
-        <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
-        <a admin-for="@contentItem"/>
-        <span class="hint"></span>
-    @*<h3>@Html.ItemAdminLink(contentItem)</h3> - <div class="contentType">@contentItem.TypeDefinition.DisplayName</div>*@
-        @if (Model.Header != null) {
-        <div class="header">@await DisplayAsync(Model.Header)</div>
-        }
-        @if (Model.Meta != null) {
-        <div class="metadata">@await DisplayAsync(Model.Meta)</div>
-        }
-    </div>
-
-    @if (Model.Content != null)
-    {
-    <div class="primary">@await DisplayAsync(Model.Content)</div>
     }
+
+    <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
+        
+    <a admin-for="@contentItem"/> 
+
+    @if (Model.Header != null)
+    {
+        <div class="header">@await DisplayAsync(Model.Header)</div>
+    }
+
+    @if (Model.Meta != null)
+    {
+        <div class="metadata">
+            @await DisplayAsync(Model.Meta)
+        </div>
+    }
+</div>
+
+@if (Model.Content != null)
+{
+    <div class="primary">@await DisplayAsync(Model.Content)</div>
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -78,6 +79,9 @@ namespace Orchard.DisplayManagement
 
             services.AddScoped<INotifier, Notifier>();
             services.AddScoped<IFilterMetadata, NotifyFilter>();
+
+            services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
+            services.AddShapeAttributes<DateTimeShapes>();
 
             return services;
         }

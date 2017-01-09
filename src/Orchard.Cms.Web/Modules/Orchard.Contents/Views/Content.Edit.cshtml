@@ -24,12 +24,18 @@
         </div>
 
         <div class="edit-item-secondary group">
-            @if (Model.Actions != null)
-            {
-                <div class="edit-item-actions form-group">
-                    @await DisplayAsync(Model.Actions)
-                </div>
-            }
+            <div class="edit-item-actions form-group">
+                @await DisplayAsync(Model.Actions)
+
+                @{
+                    var returnUrl = Context.Request.Query["returnUrl"];
+                }
+
+                @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    <a id="button-cancel" href="@returnUrl" class="button">@T["Cancel"]</a>
+                }
+            </div>
         </div>
     </div>
 @if (Model.Sidebar != null)
