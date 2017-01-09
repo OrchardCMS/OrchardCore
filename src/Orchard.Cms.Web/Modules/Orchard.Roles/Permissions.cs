@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Orchard.Security;
 using Orchard.Security.Permissions;
 
 namespace Orchard.Roles
@@ -12,7 +13,7 @@ namespace Orchard.Roles
         {
             return new[]
             {
-                ManageRoles, AssignRoles
+                ManageRoles, AssignRoles, StandardPermissions.SiteOwner
             };
         }
 
@@ -21,7 +22,7 @@ namespace Orchard.Roles
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageRoles, AssignRoles }
+                    Permissions = new[] { ManageRoles, AssignRoles, StandardPermissions.SiteOwner }
                 },
             };
         }

@@ -14,6 +14,8 @@ namespace Orchard.ContentManagement.Records
         public DateTimeOffset? ModifiedUtc { get; set; }
         public DateTimeOffset? PublishedUtc { get; set; }
         public DateTimeOffset? CreatedUtc { get; set; }
+        public string Owner { get; set; }
+        public string Author { get; set; }
     }
 
     public class ContentItemIndexProvider : IndexProvider<ContentItem>
@@ -30,7 +32,9 @@ namespace Orchard.ContentManagement.Records
                     ContentItemId = contentItem.ContentItemId,
                     ModifiedUtc = contentItem.ModifiedUtc,
                     PublishedUtc = contentItem.PublishedUtc,
-                    CreatedUtc = contentItem.CreatedUtc
+                    CreatedUtc = contentItem.CreatedUtc,
+                    Owner = contentItem.Owner,
+                    Author = contentItem.Author
                 });
         }
     }

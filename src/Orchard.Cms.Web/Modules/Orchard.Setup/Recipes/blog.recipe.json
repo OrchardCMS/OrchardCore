@@ -399,7 +399,8 @@
           "Latest": true,
           "Number": 1,
           "Published": true,
-          "ModifiedBy": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
           },
@@ -417,7 +418,8 @@
           "Latest": true,
           "Number": 1,
           "Published": true,
-          "ModifiedBy": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "BlogPost": {
             "Subtitle": {
               "Text": "Problems look mighty small from 150 miles up"
@@ -445,7 +447,8 @@
           "ContentType": "Page",
           "Latest": true,
           "Published": true,
-          "ModifiedBy": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "Page": {
             "Subtitle": {
               "Text": "This is what I do"

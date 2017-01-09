@@ -34,7 +34,7 @@ namespace Orchard.Autoroute.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals("AutoroutePart", contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
             {
                 return null;
             }

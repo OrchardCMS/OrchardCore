@@ -36,9 +36,16 @@ namespace Orchard.Contents.Indexing
                     DocumentIndexOptions.Store));
 
             context.DocumentIndex.Entries.Add(
-                "Content.ContentItem.ModifiedBy",
+                "Content.ContentItem.Owner",
                 new DocumentIndex.DocumentIndexEntry(
-                    context.ContentItem.ModifiedBy,
+                    context.ContentItem.Owner,
+                    DocumentIndex.Types.Text,
+                    DocumentIndexOptions.Store));
+
+            context.DocumentIndex.Entries.Add(
+                "Content.ContentItem.Author",
+                new DocumentIndex.DocumentIndexEntry(
+                    context.ContentItem.Author,
                     DocumentIndex.Types.Text,
                     DocumentIndexOptions.Store));
 

@@ -20,7 +20,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NuGet.Packaging;
 using Orchard.Environment.Extensions.Compilers;
-using Orchard.Localization;
 
 namespace Orchard.Environment.Extensions
 {
@@ -51,10 +50,7 @@ namespace Orchard.Environment.Extensions
             _probingDirectoryName = optionsAccessor.Value.DependencyProbingDirectoryName;
             _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(Path.Combine(optionsAccessor.Value.RootProbingName, _probingDirectoryName)).PhysicalPath;
             _logger = logger;
-            T = NullLocalizer.Instance;
         }
-
-        public Localizer T { get; set; }
 
         public IEnumerable<MetadataReference> MetadataReferences()
         {

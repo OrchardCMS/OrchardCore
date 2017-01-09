@@ -60,10 +60,15 @@ namespace Orchard.ContentManagement
         public DateTimeOffset? CreatedUtc { get; set; }
 
         /// <summary>
+        /// The name of the user who first created this content item version
+        /// and owns content rigths.
+        /// </summary>
+        public string Owner { get; set; }
+
+        /// <summary>
         /// The name of the user who last modified this content item version.
         /// </summary>
-        public string ModifiedBy { get; set; }
+        public string Author { get; set; }
 
-        
     }
 }

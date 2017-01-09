@@ -144,6 +144,7 @@ namespace Orchard.ContentManagement.Display
 
                 part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
                 part = (ContentPart)contentItem.Get(part.GetType(), typePartDefinition.Name) ?? part;
+                part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
                 dynamic typePartShape = context.ShapeFactory.Create("ContentPart_Edit", Arguments.Empty);
@@ -217,6 +218,7 @@ namespace Orchard.ContentManagement.Display
 
                 part = _contentPartFactory.CreateContentPart(typePartDefinition.Name) ?? new ContentPart();
                 part = (ContentPart)contentItem.Get(part.GetType(), typePartDefinition.Name) ?? part;
+                part.ContentItem = contentItem;
 
                 // Create a custom shape to render all the part shapes into it
                 dynamic typePartShape = context.ShapeFactory.Create("ContentPart_Edit", Arguments.Empty);
