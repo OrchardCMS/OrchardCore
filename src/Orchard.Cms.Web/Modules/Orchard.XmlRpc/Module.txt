@@ -9,9 +9,9 @@ Features:
     Orchard.XmlRpc:
         Name: XML-RPC
         Description: The XML-RPC module enables some local features to be used remotely.
-        Categories: Infrastructure
+        Category: Infrastructure
     Orchard.RemotePublishing:
         Name: Remote Publishing
         Description: The remote publishing feature enables creation of contents from client applications such as Open Live Writer.
         Dependencies: Orchard.XmlRpc
-        Categories: Infrastructure
+        Category: Infrastructure
