@@ -15,6 +15,11 @@ namespace Orchard.Tokens.Services
         
         public string Tokenize(string template, dynamic context)
         {
+            if (string.IsNullOrEmpty(template))
+            {
+                return template;
+            }
+
             return _tokenizer.Tokenize(template, context, _serviceProvider);
         }
 
