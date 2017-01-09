@@ -29,6 +29,8 @@ namespace Orchard.Core.XmlRpc.Services
                     { typeof(double), p => new XElement("double", (double)p.Value) },
                     { typeof(DateTime), p => new XElement("dateTime.iso8601", ((DateTime)p.Value).ToString("yyyyMMddTHH:mm:ssZ")) },
                     { typeof(DateTime?), p => new XElement("dateTime.iso8601", ((DateTime?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ")) },
+                    { typeof(DateTimeOffset), p => new XElement("dateTime.iso8601", ((DateTimeOffset)p.Value).ToString("yyyyMMddTHH:mm:ssZ")) },
+                    { typeof(DateTimeOffset?), p => new XElement("dateTime.iso8601", ((DateTimeOffset?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ")) },
                     { typeof(byte[]), p => new XElement("base64", Convert.ToBase64String((byte[])p.Value)) },
                     { typeof(XRpcStruct), p => MapStruct((XRpcStruct)p.Value) },
                     { typeof(XRpcArray), p => MapArray((XRpcArray)p.Value) },

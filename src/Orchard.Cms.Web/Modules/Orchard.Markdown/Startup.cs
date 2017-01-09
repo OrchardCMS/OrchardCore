@@ -15,6 +15,7 @@ using Orchard.Tokens;
 using Orchard.ContentFields.Fields;
 using Orchard.ContentFields.Settings;
 using Orchard.ContentFields.Indexing;
+using Orchard.MetaWeblog;
 
 namespace Orchard.Markdown
 {
@@ -37,6 +38,15 @@ namespace Orchard.Markdown
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
             services.AddNullTokenizer();
+        }
+    }
+
+    [OrchardFeature("Orchard.RemotePublishing")]
+    public class RemotePublishingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IMetaWeblogDriver, MarkdownMetaWeblogDriver>();
         }
     }
 }

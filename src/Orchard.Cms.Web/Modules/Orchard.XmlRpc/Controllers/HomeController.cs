@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Orchard.Core.XmlRpc.Models;
@@ -32,7 +31,7 @@ namespace Orchard.Core.XmlRpc.Controllers
         ILogger Logger { get; }
 
         [HttpPost, ActionName("Index")]
-        [AllowAnonymous]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> ServiceEndpoint([ModelBinder(BinderType = typeof(MethodCallModelBinder))]XRpcMethodCall methodCall)
         {
             if (Logger.IsEnabled(LogLevel.Debug))
@@ -68,10 +67,11 @@ namespace Orchard.Core.XmlRpc.Controllers
             }
         }
 
-        private async Task<XRpcMethodResponse> DispatchAsync([FromBody] XRpcMethodCall request)
+        private async Task<XRpcMethodResponse> DispatchAsync(XRpcMethodCall request)
         {
             var context = new XmlRpcContext
             {
+                Url = Url,
                 ControllerContext = ControllerContext,
                 HttpContext = HttpContext,
                 RpcMethodCall = request

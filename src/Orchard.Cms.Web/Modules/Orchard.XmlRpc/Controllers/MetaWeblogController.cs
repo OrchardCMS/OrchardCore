@@ -23,7 +23,6 @@ namespace Orchard.Core.XmlRpc.Controllers
         ILogger Logger { get; }
 
         [ResponseCache(Duration = 0, NoStore = true)]
-        [AllowAnonymous]
         public ActionResult Manifest()
         {
             if (Logger.IsEnabled(LogLevel.Debug))

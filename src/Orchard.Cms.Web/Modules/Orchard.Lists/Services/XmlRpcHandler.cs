@@ -47,7 +47,9 @@ namespace Orchard.Lists.Services
             IStringLocalizer<MetaWeblogHandler> localizer)
         {
             _contentManager = contentManager;
+            _contentDefinitionManager = contentDefinitionManager;
             _authorizationService = authorizationService;
+            _metaWeblogDrivers = metaWeblogDrivers;
             _session = session;
             _htmlEncoder = htmlEncoder;
             _membershipService = membershipService;
@@ -77,7 +79,7 @@ namespace Orchard.Lists.Services
 
             if (context.RpcMethodCall.MethodName == "metaWeblog.getRecentPosts")
             {
-                var result = MetaWeblogGetRecentPosts(
+                var result = await MetaWeblogGetRecentPosts(
                     context,
                     Convert.ToString(context.RpcMethodCall.Params[0].Value),
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
@@ -90,7 +92,7 @@ namespace Orchard.Lists.Services
 
             if (context.RpcMethodCall.MethodName == "metaWeblog.newPost")
             {
-                var result = MetaWeblogNewPost(
+                var result = await MetaWeblogNewPostAsync(
                     Convert.ToString(context.RpcMethodCall.Params[0].Value),
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
@@ -103,7 +105,7 @@ namespace Orchard.Lists.Services
 
             if (context.RpcMethodCall.MethodName == "metaWeblog.getPost")
             {
-                var result = await MetaWeblogGetPost(
+                var result = await MetaWeblogGetPostAsync(
                     context,
                     Convert.ToString(context.RpcMethodCall.Params[0].Value),
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
@@ -114,7 +116,7 @@ namespace Orchard.Lists.Services
 
             if (context.RpcMethodCall.MethodName == "metaWeblog.editPost")
             {
-                var result = await MetaWeblogEditPost(
+                var result = await MetaWeblogEditPostAsync(
                     Convert.ToString(context.RpcMethodCall.Params[0].Value),
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
@@ -159,7 +161,7 @@ namespace Orchard.Lists.Services
 
                         array.Add(new XRpcStruct()
                                       .Set("url", context.Url.Action(displayRouteValues["action"].ToString(), displayRouteValues["controller"].ToString(), displayRouteValues, context.HttpContext.Request.Scheme))
-                                      .Set("blogId", list.ContentItemId)
+                                      .Set("blogid", list.ContentItemId)
                                       .Set("blogName", metadata.DisplayText));
                     }
                 }
@@ -212,7 +214,7 @@ namespace Orchard.Lists.Services
             return array;
         }
 
-        private async Task<string> MetaWeblogNewPost(
+        private async Task<string> MetaWeblogNewPostAsync(
             string contentItemId,
             string userName,
             string password,
@@ -277,7 +279,7 @@ namespace Orchard.Lists.Services
             return contentItem.ContentItemId;
         }
 
-        private async Task<XRpcStruct> MetaWeblogGetPost(
+        private async Task<XRpcStruct> MetaWeblogGetPostAsync(
             XmlRpcContext context,
             string contentItemId,
             string userName,
@@ -310,7 +312,7 @@ namespace Orchard.Lists.Services
             return postStruct;
         }
 
-        private async Task<bool> MetaWeblogEditPost(
+        private async Task<bool> MetaWeblogEditPostAsync(
             string contentItemId,
             string userName,
             string password,
