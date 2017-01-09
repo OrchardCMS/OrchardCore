@@ -243,7 +243,7 @@ namespace Orchard.Lists.RemotePublishing
 
             var contentItem = _contentManager.New(postType.Name);
 
-            // contentItem.Owner = user;
+            contentItem.Owner = userName;
             contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
 
             foreach (var driver in _metaWeblogDrivers)

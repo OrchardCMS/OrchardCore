@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>0a43b150-748f-4595-ad2b-69cef6b11edq</ProjectGuid>
+    <ProjectGuid>0a43b150-748f-4595-ad2b-69cef6b11eda</ProjectGuid>
     <RootNamespace>Orchard.XmlRpc</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
