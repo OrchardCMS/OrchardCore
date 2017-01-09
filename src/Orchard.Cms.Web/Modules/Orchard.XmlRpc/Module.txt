@@ -13,5 +13,5 @@ Features:
     Orchard.RemotePublishing:
         Name: Remote Publishing
         Description: The remote publishing feature enables creation of contents from client applications such as Open Live Writer.
-        Dependencencies: Orchard.XmlRpc
+        Dependencies: Orchard.XmlRpc
         Categories: Infrastructure
