@@ -92,13 +92,15 @@ namespace Orchard.Environment.Shell.Builders
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Type == startup.GetType())?.Feature;
 
                 ServiceCollection featureServiceCollection;
+                ServiceCollection startupServices = new ServiceCollection();
                 if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
                 {
                     featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
                 }
 
-                startup.ConfigureServices(featureServiceCollection);
-                tenantServiceCollection.Add(featureServiceCollection);
+                startup.ConfigureServices(startupServices);
+                featureServiceCollection.Add(startupServices);
+                tenantServiceCollection.Add(startupServices);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
