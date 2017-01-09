@@ -10,9 +10,10 @@ namespace Orchard.ContentManagement
         public string GenerateUniqueId(ContentItem contentItem)
         {
             // Generate a base32 Guid value
-            var guid = Guid.NewGuid().ToString("N");
-            var hs = Convert.ToInt64(guid.Substring(0, 16), 16);
-            var ls = Convert.ToInt64(guid.Substring(16, 16), 16);
+            var guid = Guid.NewGuid().ToByteArray();
+
+            var hs = BitConverter.ToInt64(guid, 0);
+            var ls = BitConverter.ToInt64(guid, 8);
 
             return ToBase32(hs, ls);
         }

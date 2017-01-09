@@ -9,7 +9,7 @@
     </a>
     <p class="post-meta">
         @T["Posted by {0} on {1}",
-            Html.Raw($"<a href=\"#\">{Model.ContentItem.ModifiedBy}</a>"),
+            Html.Raw($"<a href=\"#\">{Model.ContentItem.Owner}</a>"),
             (object)(await DisplayAsync(New.DateTime(Utc: Model.ContentItem.CreatedUtc, Format: T["MMMM dd, yyyy"].Value)))]
     </p>
 

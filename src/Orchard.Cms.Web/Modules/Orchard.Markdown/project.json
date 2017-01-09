@@ -9,7 +9,7 @@
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Tokens.Abstractions": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
-    "Markdig": "0.10.3"
+    "Markdig": "0.10.4"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
