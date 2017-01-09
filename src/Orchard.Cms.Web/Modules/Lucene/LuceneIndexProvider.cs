@@ -182,6 +182,11 @@ namespace Lucene
                             : Field.Store.NO
                             ;
 
+                if (entry.Value.Value == null)
+                {
+                    continue;
+                }
+
                 switch (entry.Value.Type)
                 {
                     case DocumentIndex.Types.Boolean:
