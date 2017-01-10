@@ -13,6 +13,7 @@ using Orchard.Contents.Handlers;
 using Orchard.Contents.Indexing;
 using Orchard.Contents.Models;
 using Orchard.Contents.Recipes;
+using Orchard.Contents.Services;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Descriptors;
@@ -41,6 +42,7 @@ namespace Orchard.Contents
 
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
+            services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
 
             services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
             services.AddScoped<IDataMigration, Migrations>();

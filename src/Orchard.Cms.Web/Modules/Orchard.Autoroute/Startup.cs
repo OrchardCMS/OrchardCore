@@ -42,6 +42,7 @@ namespace Orchard.Autoroute
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
+            services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
 
             services.AddNullTokenizer();
         }
