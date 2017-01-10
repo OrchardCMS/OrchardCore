@@ -51,7 +51,7 @@ namespace Orchard.Flows.Drivers
             {
                 var contentItem = _contentManager.New("Quote");
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, updater, htmlFieldPrefix: "FlowPart" + Prefix + "." + i);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, updater, htmlFieldPrefix: "FlowPart" + "." + i);
             }
 
             return Edit(model);

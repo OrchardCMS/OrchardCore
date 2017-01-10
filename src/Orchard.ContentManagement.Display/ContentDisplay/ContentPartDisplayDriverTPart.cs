@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
@@ -22,6 +23,13 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult<IDisplayResult>(null);
             }
 
+            Prefix = typePartDefinition.Name;
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
             return DisplayAsync(part, buildDisplayContext);
@@ -36,6 +44,13 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult<IDisplayResult>(null);
             }
 
+            Prefix = typePartDefinition.Name;
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
             return EditAsync(part, buildEditorContext);
@@ -48,6 +63,13 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             if(part == null)
             {
                 return Task.FromResult<IDisplayResult>(null);
+            }
+
+            Prefix = typePartDefinition.Name;
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
             }
 
             var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);

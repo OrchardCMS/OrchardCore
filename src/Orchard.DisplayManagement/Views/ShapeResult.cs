@@ -104,7 +104,7 @@ namespace Orchard.DisplayManagement.Views
             }
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
-            newShapeMetadata.Prefix = context.HtmlFieldPrefix + _prefix;
+            newShapeMetadata.Prefix = _prefix;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();

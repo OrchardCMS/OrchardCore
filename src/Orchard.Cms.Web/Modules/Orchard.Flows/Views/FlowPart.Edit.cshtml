@@ -37,7 +37,7 @@
         $('.add-widget').on('click', function (event) {
             var type = $(this).data("widget-type");
             $.ajax({
-                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart" + "@ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix" + "." + (index++).toString()
+                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + (index++).toString()
             })
           .done(function (data) {
               $('#widgetPlaceholder').append(data);
