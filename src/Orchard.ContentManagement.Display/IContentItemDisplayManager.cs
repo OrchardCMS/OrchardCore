@@ -10,7 +10,7 @@ namespace Orchard.ContentManagement.Display
     public interface IContentItemDisplayManager
     {
         Task<dynamic> BuildDisplayAsync(ContentItem content, IUpdateModel updater, string displayType = "", string groupId = "");
-        Task<dynamic> BuildEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "");
-        Task<dynamic> UpdateEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "");
+        Task<dynamic> BuildEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "", string htmlFieldPrefix = "");
+        Task<dynamic> UpdateEditorAsync(ContentItem content, IUpdateModel updater, string groupId = "", string htmlFieldPrefix = "");
     }
 }

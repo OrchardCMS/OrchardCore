@@ -50,7 +50,6 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
-
             if (String.IsNullOrEmpty(_differentiator))
             {
                 _differentiator = _prefix;
@@ -105,7 +104,7 @@ namespace Orchard.DisplayManagement.Views
             }
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
-            newShapeMetadata.Prefix = _prefix;
+            newShapeMetadata.Prefix = context.HtmlFieldPrefix + _prefix;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();

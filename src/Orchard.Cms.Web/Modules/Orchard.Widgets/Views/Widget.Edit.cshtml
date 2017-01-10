@@ -1,0 +1,25 @@
+﻿@* 
+    LinkEntry resources need to be injected once, and literal scripts need to be injected
+    every time.
+    To inject the LinkEntries we just need to render all the widgets once during the first edition and
+    extract the link resources.
+    On subsequent calls we extract only the scripts. They can be rendered in a different property 
+    on the same object result;
+*@
+
+<div class="edit-widget">
+    <div class="edit-item-primary">
+        @if (Model.Content != null)
+        {
+            <div class="edit-item-content">
+                @await DisplayAsync(Model.Content)
+            </div>
+        }
+    </div>
+    <div class="edit-item-parts">
+        @if (Model.Parts != null)
+        {
+            @await DisplayAsync(Model.Parts)
+        }
+    </div>
+</div>

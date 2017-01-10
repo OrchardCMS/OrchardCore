@@ -10,6 +10,7 @@ namespace Orchard.DisplayManagement.Handlers
             Shape = shape;
             ShapeFactory = shapeFactory;
             GroupId = groupId;
+            HtmlFieldPrefix = string.Empty;
             Layout = layout;
             FindPlacement = FindDefaultPlacement;
             Updater = updater;
@@ -20,6 +21,7 @@ namespace Orchard.DisplayManagement.Handlers
         public dynamic New => ShapeFactory;
         public IShape Layout { get; set; }
         public string GroupId { get; private set; }
+        public string HtmlFieldPrefix { get; protected set; }
         public FindPlacementDelegate FindPlacement { get; set; }
         public IUpdateModel Updater { get; }
 

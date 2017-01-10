@@ -1,0 +1,47 @@
+﻿@using Orchard.ContentManagement.Metadata.Settings;
+@using Orchard.Flows.ViewModels;
+
+@model FlowPartEditViewModel
+
+@inject IContentManager ContentManager
+@inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
+@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
+}
+
+<fieldset class="form-group">
+    <label>@T["Flow"]</label>
+    <div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @T["Add Widget"]
+            </button>
+            <div class="dropdown-menu">
+                @foreach (var type in widgetContentTypes)
+            {
+                    <a class="dropdown-item add-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
+                }
+            </div>
+        </div>
+        <div id="widgetPlaceholder"></div>
+    </div>
+
+    <input type="hidden" id="createEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
+
+    <script at="Foot">
+        var index = 0;
+        var createEditorUrl = $('#createEditorUrl').attr("value");
+
+        $('.add-widget').on('click', function (event) {
+            var type = $(this).data("widget-type");
+            $.ajax({
+                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart" + "@ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix" + "." + (index++).toString()
+            })
+          .done(function (data) {
+              $('#widgetPlaceholder').append(data);
+          });
+        })
+    </script>
+</fieldset>
