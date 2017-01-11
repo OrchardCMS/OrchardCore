@@ -67,7 +67,7 @@ namespace Orchard.Environment.Commands
                     // We check here number of arguments a command can recieve against
                     // arguments provided for the command to identify the correct command
                     // and avoid matching multiple commands.
-                    if(commandDescriptor.MethodInfo.GetParameters().Length == argCount - names.Count())
+                    if (names[0] == parameters.Arguments.First() && commandDescriptor.MethodInfo.GetParameters().Length == argCount - names.Count())
                     {
                         names = parameters.Arguments.ToArray();
                     }
