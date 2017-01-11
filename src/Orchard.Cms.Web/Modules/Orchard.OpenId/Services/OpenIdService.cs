@@ -75,6 +75,9 @@ namespace Orchard.OpenId.Services
                 {
                     modelState.AddModelError("CertificateThumbPrint", T["A certificate is required when testing mode is disabled."]);
                 }
+                if (!modelState.IsValid)
+                    return false;
+
                 var certificate = GetCertificate(settings.CertificateStoreLocation.Value, settings.CertificateStoreName.Value, settings.CertificateThumbPrint);
                 if (certificate == null)
                 {
