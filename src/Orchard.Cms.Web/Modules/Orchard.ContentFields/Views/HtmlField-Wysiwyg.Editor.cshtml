@@ -11,7 +11,7 @@
 
 <fieldset class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Html" class="form-control"></textarea>
+    <textarea asp-for="Html" class="form-control content-preview-text"></textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
@@ -21,16 +21,5 @@
 <script at="Foot">
     $(function () {
         $('#@Html.IdFor(m => m.Html)').trumbowyg();
-
-        $('#@Html.IdFor(m => m.Html)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', function (event) {
-            // handle backspace
-            if (event.keyCode == 46) {
-                $(document).trigger('contentpreview:render');
-            }
-        });
     });
 </script>

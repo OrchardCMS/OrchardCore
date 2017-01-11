@@ -1,0 +1,9 @@
+﻿@using Orchard.Flows.ViewModels;
+
+@model FlowPartViewModel
+@inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@foreach (var widget in Model.FlowPart.Widgets)
+{
+    @await DisplayAsync(await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId))
+}

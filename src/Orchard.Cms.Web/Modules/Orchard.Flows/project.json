@@ -3,7 +3,8 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
-    "Orchard.ContentManagement.Display": "2.0.0-*"
+    "Orchard.ContentManagement.Display": "2.0.0-*",
+    "Orchard.ResourceManagement.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

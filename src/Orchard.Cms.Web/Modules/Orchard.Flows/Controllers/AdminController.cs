@@ -10,6 +10,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
+using Orchard.Flows.ViewModels;
 using Orchard.Settings;
 using YesSql.Core.Services;
 
@@ -35,7 +36,7 @@ namespace Orchard.Flows.Controllers
             IShapeFactory shapeFactory,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> localizer,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService            
             )
         {
             _authorizationService = authorizationService;
@@ -65,17 +66,12 @@ namespace Orchard.Flows.Controllers
 
             var contentItem = _contentManager.New(id);
 
-            var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
 
-            return View("Display", model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UpdateEditor(string id, string prefix)
-        {
-            var contentItem = _contentManager.New(id);
-
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+            var model = new BuildEditorViewModel
+            {
+                EditorShape = editor
+            };
 
             return View("Display", model);
         }

@@ -8,24 +8,9 @@
 
 <fieldset class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Html" class="form-control" />
+    <input asp-for="Html" class="form-control content-preview-text" />
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }
 </fieldset>
-
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.Html)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', function (event) {
-            // handle backspace
-            if (event.keyCode == 46) {
-                $(document).trigger('contentpreview:render');
-            }
-        });
-    });
-</script>

@@ -25,23 +25,46 @@
                 }
             </div>
         </div>
-        <div id="widgetPlaceholder"></div>
+        <div id="widgetPlaceholder">
+            @{ var index = -1; var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
+            @foreach (var widget in Model.FlowPart.Widgets)
+            {
+                index++;
+                <div class="widget-template">
+                    @await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", "FlowPart." + index))
+
+                    @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
+                    <input type="hidden" asp-for="Indexes" value="@index" />
+                    <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
+                </div>
+            }
+        </div>
     </div>
 
-    <input type="hidden" id="createEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
+    <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
+    <input type="hidden" id="indexesName" value="@Html.NameFor(x => x.Indexes)" />
+    <input type="hidden" id="contentTypesName" value="@Html.NameFor(x => x.ContentTypes)" />
 
     <script at="Foot">
-        var index = 0;
-        var createEditorUrl = $('#createEditorUrl').attr("value");
+        var index = @Model.FlowPart.Widgets.Count;
+        var createEditorUrl = $('#buildEditorUrl').attr("value");
+        var indexesName = $('#indexesName').attr("value");
+        var contentTypesName = $('#contentTypesName').attr("value");
+        var widgetTemplate = function (data, index, contentType) {
+            return '<div class="widget-template">' + data + '<input type="hidden" name="' + indexesName + '" value="' + index + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
+        }
 
         $('.add-widget').on('click', function (event) {
             var type = $(this).data("widget-type");
             $.ajax({
-                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + (index++).toString()
+                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + index
             })
-          .done(function (data) {
-              $('#widgetPlaceholder').append(data);
-          });
+            .done(function (data) {
+                var result = JSON.parse(data);
+                $('#widgetPlaceholder').append(widgetTemplate(result.Content, index, type));
+                document.head.append(result.Scripts);
+                index++;
+            });
         })
     </script>
 </fieldset>

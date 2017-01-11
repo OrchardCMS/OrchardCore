@@ -9,7 +9,5 @@ namespace Orchard.Flows.Model
     {
         [BindNever]
         public List<ContentItem> Widgets { get; } = new List<ContentItem>();
-
-        public int[] Indexes { get; set; } = Array.Empty<int>();
     }
 }
