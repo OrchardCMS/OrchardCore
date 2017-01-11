@@ -47,7 +47,7 @@ namespace Orchard.Cms.Web
 
             builder.AddRazorOptions(options =>
             {
-                var extensionLibraryService = builder.Services.BuildServiceProvider().GetService<IExtensionLibraryService>();
+                var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
         }
