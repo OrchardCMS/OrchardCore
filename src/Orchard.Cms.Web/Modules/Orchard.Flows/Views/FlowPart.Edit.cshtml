@@ -20,7 +20,7 @@
             </button>
             <div class="dropdown-menu">
                 @foreach (var type in widgetContentTypes)
-            {
+                {
                     <a class="dropdown-item add-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
                 }
             </div>
@@ -45,6 +45,16 @@
     <input type="hidden" id="indexesName" value="@Html.NameFor(x => x.Indexes)" />
     <input type="hidden" id="contentTypesName" value="@Html.NameFor(x => x.ContentTypes)" />
 
+
+    <div style="display:none">
+        @foreach (var type in widgetContentTypes)
+        {
+            // Render a mock widget so that its resources are included in the page
+            var contentItem = ContentManager.New(type.Name);
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString()));
+        }
+    </div>
+
     <script at="Foot">
         var index = @Model.FlowPart.Widgets.Count;
         var createEditorUrl = $('#buildEditorUrl').attr("value");
@@ -62,7 +72,12 @@
             .done(function (data) {
                 var result = JSON.parse(data);
                 $('#widgetPlaceholder').append(widgetTemplate(result.Content, index, type));
-                document.head.append(result.Scripts);
+
+                var dom = $(result.Scripts); 
+                dom.filter('script').each(function(){
+                    $.globalEval(this.text || this.textContent || this.innerHTML || '');
+                });
+
                 index++;
             });
         })
