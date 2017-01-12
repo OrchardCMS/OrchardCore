@@ -40,10 +40,9 @@
         @if (hasPublished)
         {
             <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+            <a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
 
-        @* This removes the draft and published versions, not necessary as both actions are already available separately *@
-        @*<a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Remove"]</a>*@
     </div>
 </div>
 
