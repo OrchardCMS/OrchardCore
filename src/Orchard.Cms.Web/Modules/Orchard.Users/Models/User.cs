@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Orchard.Security;
 
 namespace Orchard.Users.Models
 {
-    public class User
+    public class User : IUser
     {
         public int Id { get; set; }
         public string UserName { get; set; }

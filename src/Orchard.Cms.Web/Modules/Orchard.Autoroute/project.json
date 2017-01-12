@@ -8,7 +8,8 @@
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Tokens.Abstractions": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
-    "Orchard.Security": "2.0.0-*"
+    "Orchard.Security": "2.0.0-*",
+    "Orchard.MetaWeblog.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
