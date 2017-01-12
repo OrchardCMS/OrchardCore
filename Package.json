@@ -13,7 +13,7 @@
     "gulp-newer": "1.1.0",
     "gulp-plumber": "1.1.0",
     "gulp-sourcemaps": "1.6.0",
-    "gulp-less": "3.1.0",
+    "gulp-less": "3.3.0",
     "gulp-sass": "2.3.1",
     "gulp-cssnano": "2.1.2",
     "gulp-typescript": "2.13.4",

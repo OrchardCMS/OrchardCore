@@ -1,0 +1,39 @@
+.widget-align-left {
+    text-align: left;
+}
+
+.widget-align-center {
+    text-align: center;
+}
+
+.widget-align-right {
+    text-align: right;
+}
+
+.widget-align-justify {
+    text-align: justify;
+}
+
+.widget-size-25 {
+    @extend .col-xs-3;
+}
+
+.widget-size-33 {
+    @extend .col-xs-4;
+}
+
+.widget-size-50 {
+    @extend .col-xs-6;
+}
+
+.widget-size-66 {
+    @extend .col-xs-8;
+}
+
+.widget-size-75 {
+    @extend .col-xs-9;
+}
+
+.widget-size-100 {
+    @extend .col-xs-12;
+}

@@ -1,5 +1,5 @@
 ﻿using Orchard.ContentManagement.Display.Models;
-using Orchard.Flows.Model;
+using Orchard.Flows.Models;
 
 namespace Orchard.Flows.ViewModels
 {

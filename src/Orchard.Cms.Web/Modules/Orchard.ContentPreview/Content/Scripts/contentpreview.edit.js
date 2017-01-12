@@ -3,9 +3,12 @@ $(function () {
     .on('input', '.content-preview-text', function () {
         $(document).trigger('contentpreview:render');
     })
+    .on('propertychange', '.content-preview-text', function () {
+        $(document).trigger('contentpreview:render');
+    })
     .on('keyup', '.content-preview-text', function (event) {
         // handle backspace
-        if (event.keyCode == 46) {
+        if (event.keyCode == 46 || event.ctrlKey) {
             $(document).trigger('contentpreview:render');
         }
     })
@@ -18,9 +21,12 @@ $(function () {
     .on('input', '.trumbowyg-editor', function () {
         $(document).trigger('contentpreview:render');
     })
+    .on('propertychange', '.trumbowyg-editor', function () {
+        $(document).trigger('contentpreview:render');
+    })
     .on('keyup', '.trumbowyg-editor', function (event) {
         // handle backspace
-        if (event.keyCode == 46) {
+        if (event.keyCode == 46 || event.ctrlKey) {
             $(document).trigger('contentpreview:render');
         }
     })

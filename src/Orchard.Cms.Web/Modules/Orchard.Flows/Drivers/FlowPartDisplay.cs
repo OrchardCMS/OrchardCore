@@ -7,7 +7,7 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.Views;
-using Orchard.Flows.Model;
+using Orchard.Flows.Models;
 using Orchard.Flows.ViewModels;
 
 namespace Orchard.Flows.Drivers
@@ -61,6 +61,8 @@ namespace Orchard.Flows.Drivers
             for (var i = 0; i < model.Indexes.Length; i++)
             {
                 var contentItem = _contentManager.New(model.ContentTypes[i]);
+
+                contentItem.Weld(new FlowMetadata());
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: "FlowPart" + "." + model.Indexes[i]);
 

@@ -10,6 +10,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
+using Orchard.Flows.Models;
 using Orchard.Flows.ViewModels;
 using Orchard.Settings;
 using YesSql.Core.Services;
@@ -65,6 +66,8 @@ namespace Orchard.Flows.Controllers
             }
 
             var contentItem = _contentManager.New(id);
+
+            contentItem.Weld(new FlowMetadata());
 
             var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
 

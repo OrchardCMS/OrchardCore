@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Orchard.DisplayManagement.ModelBinding;
-using Orchard.Flows.Model;
+using Orchard.Flows.Models;
 
 namespace Orchard.Flows.ViewModels
 {

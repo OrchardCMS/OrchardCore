@@ -1,22 +1,22 @@
 // Mixins
 
-.transition-all() {
+.transition-all {
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
     transition: all 0.5s;
 }
 
-.background-cover() {
+.background-cover {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
     -o-background-size: cover;
 }
 
-.serif-font() {
+.serif-font {
 	font-family: 'Lora', 'Times New Roman', serif;
 }
 
-.sans-serif-font() {
+.sans-serif-font {
 	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

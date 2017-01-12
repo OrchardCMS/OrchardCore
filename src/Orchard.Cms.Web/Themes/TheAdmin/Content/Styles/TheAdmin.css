@@ -6378,3 +6378,12 @@ label .field-validation-error::before {
 
 .list-group.sortable li {
   cursor: move; }
+
+.card-block::after {
+  display: none; }
+
+.card-header::after {
+  display: none; }
+
+.card-footer::after {
+  display: none; }

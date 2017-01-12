@@ -9,7 +9,7 @@
     TagBuilder tag = Tag(Model, "article");
 }
 
-<article>
+<article class="@String.Join(" ", Model.Classes.ToArray())">
     @if (Model.Header != null || Model.Meta != null)
     {
     <header>

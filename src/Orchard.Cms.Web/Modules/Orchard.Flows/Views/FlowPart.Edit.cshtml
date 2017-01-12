@@ -11,32 +11,37 @@
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
 }
 
-<fieldset class="form-group">
-    <label>@T["Flow"]</label>
-    <div>
-        <div class="btn-group">
-            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Add Widget"]
-            </button>
-            <div class="dropdown-menu">
-                @foreach (var type in widgetContentTypes)
-                {
-                    <a class="dropdown-item add-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
-                }
-            </div>
-        </div>
-        <div id="widgetPlaceholder">
-            @{ var index = -1; var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
-            @foreach (var widget in Model.FlowPart.Widgets)
-            {
-                index++;
-                <div class="widget-template">
-                    @await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", "FlowPart." + index))
+<script asp-name="jquery-ui" at="Foot"></script>
 
-                    @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                    <input type="hidden" asp-for="Indexes" value="@index" />
-                    <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-                </div>
+<fieldset class="form-group">
+    <div id="widgetPlaceholder">
+        @{ var index = -1; var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
+        @foreach (var widget in Model.FlowPart.Widgets)
+        {
+            index++;
+            <div class="widget-template">
+                @{ 
+                    var widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", "FlowPart." + index);
+                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
+                }
+                    
+                @await DisplayAsync(widgetEditor)
+
+                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
+                <input type="hidden" asp-for="Indexes" value="@index" />
+                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
+            </div>
+        }
+    </div>
+
+    <div class="btn-group ">
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Add Widget"]
+        </button>
+        <div class="dropdown-menu">
+            @foreach (var type in widgetContentTypes)
+            {
+                <a class="dropdown-item add-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
             }
         </div>
     </div>
@@ -81,5 +86,39 @@
                 index++;
             });
         })
+
+        $(document).on('click', '.insert-widget', function (event) {
+            var type = $(this).data("widget-type");
+            var target = $(this).closest('.widget-template');
+            $.ajax({
+                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + index
+            })
+            .done(function (data) {
+                var result = JSON.parse(data);
+                $(widgetTemplate(result.Content, index, type)).insertBefore(target);
+
+                var dom = $(result.Scripts); 
+                dom.filter('script').each(function(){
+                    $.globalEval(this.text || this.textContent || this.innerHTML || '');
+                });
+
+                index++;
+            });
+        })
+
+        $(document).on('click', '.widget-delete', function() {
+            $(this).closest('.widget-template').remove();
+            $(document).trigger('contentpreview:render');
+        });
+
+        $("#widgetPlaceholder").sortable({
+            handle: ".widget-editor-header",
+            stop: function( event, ui ) { $(document).trigger('contentpreview:render'); },
+            cursor: "move"
+        });
+
+        $(document).on('change', '.widget-editor-footer label', function () {
+            $(document).trigger('contentpreview:render');
+        });
     </script>
 </fieldset>

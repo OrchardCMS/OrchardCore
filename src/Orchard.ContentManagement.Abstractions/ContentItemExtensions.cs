@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement
 {
@@ -55,6 +56,21 @@ namespace Orchard.ContentManagement
         {
             var part = contentItem.GetOrCreate<TPart>();
             action(part);
+            contentItem.Apply(part);
+
+            return contentItem;
+        }
+
+        /// <summary>
+        /// Modifies a new or existing content part by name.
+        /// </summary>
+        /// <typeparam name="name">The name of the content part to update.</typeparam>
+        /// <typeparam name="action">An action to apply on the content part.</typeparam>
+        /// <returns>The current <see cref="ContentPart"/> instance.</returns>
+        public static async Task<ContentItem> AlterAsync<TPart>(this ContentItem contentItem, Func<TPart, Task> action) where TPart : ContentPart, new()
+        {
+            var part = contentItem.GetOrCreate<TPart>();
+            await action(part);
             contentItem.Apply(part);
 
             return contentItem;
