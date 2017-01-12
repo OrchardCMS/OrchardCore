@@ -55,7 +55,7 @@ namespace Orchard.OpenId
 
             switch (settings.AccessTokenFormat)
             {
-                case OpenIdSettings.TokenFormat.Encrypted:
+                case OpenIdSettings.TokenFormat.JWT:
                 {
                     builder.UseJwtBearerAuthentication(new JwtBearerOptions
                     {
@@ -69,7 +69,7 @@ namespace Orchard.OpenId
                     break;
                 }
 
-                case OpenIdSettings.TokenFormat.JWT:
+                case OpenIdSettings.TokenFormat.Encrypted:
                 {
                     builder.UseOAuthValidation(options =>
                     {
