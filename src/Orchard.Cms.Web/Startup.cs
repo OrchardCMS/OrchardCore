@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -40,7 +39,6 @@ namespace Orchard.Cms.Web
             services.AddCommands();
 
             services.AddModuleServices(configure => configure
-                .AddMvcModules()
                 .AddConfiguration(Configuration)
                 .WithDefaultFeatures("Orchard.Commons")
             );
@@ -59,7 +57,6 @@ namespace Orchard.Cms.Web
 
             app.UseModules(modules => modules
                 .UseStaticFilesModules()
-                .UseMvcModules()
             );
         }
     }

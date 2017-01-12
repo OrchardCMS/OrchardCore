@@ -12,7 +12,8 @@ namespace Microsoft.AspNetCore.Modules
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddModuleServices(this IServiceCollection services, Action<ModularServiceCollection> configure)
+        public static IServiceCollection AddModuleServices(
+            this IServiceCollection services, Action<ModularServiceCollection> configure)
         {
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
@@ -28,7 +29,8 @@ namespace Microsoft.AspNetCore.Modules
             return services;
         }
 
-        public static ModularServiceCollection AddConfiguration(this ModularServiceCollection modules, IConfiguration configuration)
+        public static ModularServiceCollection AddConfiguration(
+            this ModularServiceCollection modules, IConfiguration configuration)
         {
             // Register the configuration object for modules to register options with it
             if (configuration != null)
@@ -39,7 +41,8 @@ namespace Microsoft.AspNetCore.Modules
             return modules;
         }
 
-        public static ModularServiceCollection WithDefaultFeatures(this ModularServiceCollection modules, params string[] featureIds)
+        public static ModularServiceCollection WithDefaultFeatures(
+            this ModularServiceCollection modules, params string[] featureIds)
         {
             modules.Configure(services =>
             {
@@ -55,7 +58,8 @@ namespace Microsoft.AspNetCore.Modules
         /// <summary>
         /// Enables all available features.
         /// </summary>
-        public static ModularServiceCollection WithAllFeatures(this ModularServiceCollection modules)
+        public static ModularServiceCollection WithAllFeatures(
+            this ModularServiceCollection modules)
         {
             modules.Configure(services =>
             {
@@ -65,7 +69,8 @@ namespace Microsoft.AspNetCore.Modules
             return modules;
         }
 
-        public static IServiceCollection AddWebHost(this IServiceCollection services)
+        public static IServiceCollection AddWebHost(
+            this IServiceCollection services)
         {
             return services.AddHost(internalServices =>
             {
