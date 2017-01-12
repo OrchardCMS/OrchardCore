@@ -12,8 +12,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
         private readonly IExtensionLibraryService _applicationServices;
 
         public ExtensionMetadataReferenceFeatureProvider(
-            IServiceProvider serviceProvider) {
-            _applicationServices = (IExtensionLibraryService)serviceProvider.GetService(typeof(IExtensionLibraryService));
+            IExtensionLibraryService applicationServices) {
+            _applicationServices = applicationServices;
         }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, 

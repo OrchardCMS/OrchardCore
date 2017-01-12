@@ -67,7 +67,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                         {
                             try
                             {
-                                var extensionEntry = extensionManager.LoadExtensionAsync(ae).Result;
+                                var extensionEntry = extensionManager
+                                    .LoadExtensionAsync(ae)
+                                    .GetAwaiter()
+                                    .GetResult();
 
                                 if (!extensionEntry.IsError)
                                 {
@@ -85,23 +88,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                         }
                     }
 
-                    apm.FeatureProviders.Add(new ExtensionMetadataReferenceFeatureProvider(provider));
+                    var extensionLibraryService = provider.GetRequiredService<IExtensionLibraryService>();
+                    apm.FeatureProviders.Add(new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService));
                 });
 
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
-
-            //services.Configure<RazorViewEngineOptions>(configureOptions: options =>
-            //{
-            //    var serviceProvider = services.BuildServiceProvider();
-            //    var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
-
-            //    ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
-
-            //    (serviceProvider as IDisposable)?.Dispose();
-            //});
-
-
 
             return services;
         }
