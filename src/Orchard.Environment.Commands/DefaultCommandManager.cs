@@ -64,10 +64,11 @@ namespace Orchard.Environment.Commands
                 foreach (var name in commandDescriptor.Names)
                 {
                     var names = name.Split(' ');
+                    var namesCount = names.Count();
                     // We check here number of arguments a command can recieve against
                     // arguments provided for the command to identify the correct command
                     // and avoid matching multiple commands.
-                    if (name == string.Join(" ", parameters.Arguments.Take(names.Count())) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - names.Count())
+                    if (name == string.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)
                     {
                         names = parameters.Arguments.ToArray();
                     }
