@@ -207,6 +207,12 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Feeds.Core", "src\O
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Feeds", "src\Orchard.Cms.Web\Modules\Orchard.Feeds\Orchard.Feeds.xproj", "{1D0FB7E8-8512-486E-84A4-6BF8E594B07C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.XmlRpc.Abstractions", "src\Orchard.XmlRpc.Abstractions\Orchard.XmlRpc.Abstractions.xproj", "{ECB391BC-F0C7-4775-A585-2781A40ABF5F}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.XmlRpc", "src\Orchard.Cms.Web\Modules\Orchard.XmlRpc\Orchard.XmlRpc.xproj", "{13C94AF5-CCC8-483C-9F8D-EB803A212019}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.MetaWeblog.Abstractions", "src\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.xproj", "{94FB9ECF-BA43-49BF-96BA-D54B2D959746}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -561,6 +567,18 @@ Global
 		{1D0FB7E8-8512-486E-84A4-6BF8E594B07C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D0FB7E8-8512-486E-84A4-6BF8E594B07C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D0FB7E8-8512-486E-84A4-6BF8E594B07C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECB391BC-F0C7-4775-A585-2781A40ABF5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB391BC-F0C7-4775-A585-2781A40ABF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB391BC-F0C7-4775-A585-2781A40ABF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB391BC-F0C7-4775-A585-2781A40ABF5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C94AF5-CCC8-483C-9F8D-EB803A212019}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C94AF5-CCC8-483C-9F8D-EB803A212019}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C94AF5-CCC8-483C-9F8D-EB803A212019}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C94AF5-CCC8-483C-9F8D-EB803A212019}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -660,5 +678,8 @@ Global
 		{9A7DBD64-6F4F-4685-953D-9ACD79ED34A0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{9A7DBD64-6F4F-4685-953D-9ACD79ED34A1} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{1D0FB7E8-8512-486E-84A4-6BF8E594B07C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{ECB391BC-F0C7-4775-A585-2781A40ABF5F} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{13C94AF5-CCC8-483C-9F8D-EB803A212019} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{94FB9ECF-BA43-49BF-96BA-D54B2D959746} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 EndGlobal

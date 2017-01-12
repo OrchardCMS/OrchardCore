@@ -12,6 +12,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Security;
 using Orchard.Security.Permissions;
+using Orchard.Security.Services;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
@@ -22,6 +23,8 @@ namespace Orchard.Users
 {
     public class Startup : StartupBase
     {
+        private const string LoginPath = "Login";
+
         private readonly string _tenantName;
         private readonly string _tenantPrefix;
         private readonly IdentityOptions _options;
@@ -42,6 +45,13 @@ namespace Orchard.Users
                 .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
                 .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
                 ;
+
+            routes.MapAreaRoute(
+                name: "Login",
+                areaName: "Orchard.Users",
+                template: LoginPath,
+                defaults: new { controller = "Account", action = "Login" }
+            );
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -68,25 +78,27 @@ namespace Orchard.Users
             services.TryAddScoped<SignInManager<User>>();
 
             services.TryAddScoped<IUserStore<User>, UserStore>();
-
+            
             services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
-                options.Cookies.ApplicationCookie.LoginPath = "/Orchard.Users/Account/Login/";
-                options.Cookies.ApplicationCookie.AccessDeniedPath = "/Orchard.Users/Account/Login/";
+                options.Cookies.ApplicationCookie.LoginPath = "/" + LoginPath;
+                options.Cookies.ApplicationCookie.AccessDeniedPath = "/" + LoginPath;
             });
 
             services.AddScoped<IIndexProvider, UserIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<SetupEventHandler>();
             services.AddScoped<ISetupEventHandler>(sp => sp.GetRequiredService<SetupEventHandler>());
             services.AddScoped<ICommandHandler, UserCommands>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
         }
     }
 }

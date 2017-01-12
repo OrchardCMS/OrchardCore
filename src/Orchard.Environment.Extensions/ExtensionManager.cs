@@ -290,13 +290,34 @@ namespace Orchard.Environment.Extensions
 
                 var featureTypes = new List<Type>();
 
+                // Search for all types from the extensions that are not assigned to a different
+                // feature.
                 foreach (var type in extensionTypes)
                 {
-                    string sourceFeature = GetSourceFeatureNameForType(type, feature.Id);
+                    string sourceFeature = GetSourceFeatureNameForType(type, loadedExtension.ExtensionInfo.Id);
+
                     if (sourceFeature == feature.Id)
                     {
                         featureTypes.Add(type);
                         _typeFeatureProvider.TryAdd(type, feature);
+                    }
+                }
+
+                // Search in other extensions for types that are assigned to this feature.
+                var otherExtensionInfos = GetExtensions().Where(x => x.Id != loadedExtension.ExtensionInfo.Id);
+
+                foreach (var otherExtensionInfo in otherExtensionInfos)
+                {
+                    var otherExtension = await LoadExtensionAsync(otherExtensionInfo);
+                    foreach (var type in otherExtension.ExportedTypes)
+                    {
+                        string sourceFeature = GetSourceFeatureNameForType(type, null);
+
+                        if (sourceFeature == feature.Id)
+                        {
+                            featureTypes.Add(type);
+                            _typeFeatureProvider.TryAdd(type, feature);
+                        }
                     }
                 }
 
@@ -320,6 +341,7 @@ namespace Orchard.Environment.Extensions
             {
                 return featureAttribute.FeatureName;
             }
+
             return extensionId;
         }
 

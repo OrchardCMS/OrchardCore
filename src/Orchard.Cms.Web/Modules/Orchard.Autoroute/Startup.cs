@@ -16,7 +16,6 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
-using Orchard.Environment.Shell;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
 using Orchard.Title.Handlers;
