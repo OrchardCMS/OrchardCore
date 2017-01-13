@@ -8,7 +8,7 @@
     "Orchard.Contents": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*",
     "Orchard.ResourceManagement.Abstractions": "2.0.0-*",
-    "Orchard.MetaWeblog.Abstractions": "2.0.0-*",
+    "Orchard.MetaWeblog.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "debugType": "portable"
