@@ -39,8 +39,7 @@ namespace Orchard.Environment.Extensions.Loaders
                 return new ExtensionEntry
                 {
                     ExtensionInfo = extensionInfo,
-                    Assembly = assembly,
-                    ExportedTypes = assembly.ExportedTypes
+                    Assembly = assembly
                 };
             }
             catch

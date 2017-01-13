@@ -29,7 +29,7 @@ namespace Orchard.Mvc.Web
         {
             // Add ASP.NET MVC and support for modules
             services.AddModuleServices(configure => configure
-                .AddMvcModules()
+                .AddMvcModules(services.BuildServiceProvider())
                 .AddConfiguration(Configuration)
                 .WithAllFeatures()
             );

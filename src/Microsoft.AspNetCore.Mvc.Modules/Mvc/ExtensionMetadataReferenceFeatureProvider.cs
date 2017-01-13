@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.CodeAnalysis;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
@@ -9,19 +13,39 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
     public class ExtensionMetadataReferenceFeatureProvider
         : IApplicationFeatureProvider<MetadataReferenceFeature>
     {
-        private readonly IExtensionLibraryService _applicationServices;
-
-        public ExtensionMetadataReferenceFeatureProvider(
-            IExtensionLibraryService applicationServices) {
-            _applicationServices = applicationServices;
+        private readonly string[] _metadataReferencePaths;
+        public ExtensionMetadataReferenceFeatureProvider(string[] metadataReferencePaths)
+        {
+            _metadataReferencePaths = metadataReferencePaths;
         }
 
-        public void PopulateFeature(IEnumerable<ApplicationPart> parts, 
-            MetadataReferenceFeature feature)
+        public void PopulateFeature(IEnumerable<ApplicationPart> parts, MetadataReferenceFeature feature)
         {
-            foreach (var reference in _applicationServices.MetadataReferences())
+            if (feature == null)
             {
-                feature.MetadataReferences.Add(reference);
+                throw new ArgumentNullException(nameof(feature));
+            }
+
+            var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var referencePaths = _metadataReferencePaths;
+            foreach (var path in referencePaths)
+            {
+                if (libraryPaths.Add(path))
+                {
+                    var metadataReference = CreateMetadataReference(path);
+                    feature.MetadataReferences.Add(metadataReference);
+                }
+            }
+        }
+
+        private static MetadataReference CreateMetadataReference(string path)
+        {
+            using (var stream = File.OpenRead(path))
+            {
+                var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
+                var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+
+                return assemblyMetadata.GetReference(filePath: path);
             }
         }
     }

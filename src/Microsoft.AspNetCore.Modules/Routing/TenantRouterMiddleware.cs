@@ -87,14 +87,9 @@ namespace Microsoft.AspNetCore.Modules.Routing
         {
             var startups = serviceProvider.GetServices<IStartup>();
             var tenantRouteBuilder = serviceProvider.GetService<ITenantRouteBuilder>();
-            var x = serviceProvider.GetService<IExtensionLibraryService>();
             
-            IApplicationBuilder appBuilder = new ApplicationBuilder(serviceProvider);
-
+            var appBuilder = new ApplicationBuilder(serviceProvider);
             var routeBuilder = tenantRouteBuilder.Build();
-
-            // Register one top level TenantRoute per tenant. Each instance contains all the routes
-            // for this tenant.
 
             // In the case of several tenants, they will all be checked by ShellSettings. To optimize
             // the TenantRoute resolution we can create a single Router type that would index the

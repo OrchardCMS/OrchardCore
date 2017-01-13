@@ -4,22 +4,21 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Extensions;
 
 namespace Orchard.Mvc
 {
     public class Startup : StartupBase
     {
-        private readonly IExtensionLibraryService _applicationServices;
+        private readonly IServiceProvider _applicationServices;
 
-        public Startup(IExtensionLibraryService applicationServices)
+        public Startup(IServiceProvider applicationServices)
         {
             _applicationServices = applicationServices;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvcModules();
+            services.AddMvcModules(_applicationServices);
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

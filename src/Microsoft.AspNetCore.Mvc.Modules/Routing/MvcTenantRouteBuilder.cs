@@ -13,6 +13,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
     {
         private readonly IServiceProvider _serviceProvider;
 
+        // Register one top level TenantRoute per tenant. Each instance contains all the routes
+        // for this tenant.
         public MvcTenantRouteBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

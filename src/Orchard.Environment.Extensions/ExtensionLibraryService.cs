@@ -27,14 +27,13 @@ namespace Orchard.Environment.Extensions
         private readonly string _probingDirectoryName;
         public static string Configuration => _configuration.Value;
         private static readonly Lazy<string> _configuration = new Lazy<string>(GetConfiguration);
-        private static readonly Object _syncLock = new Object();
+        private static readonly object _syncLock = new object();
 
         private static HashSet<string> ApplicationAssemblyNames => _applicationAssemblyNames.Value;
         private static readonly Lazy<HashSet<string>> _applicationAssemblyNames = new Lazy<HashSet<string>>(GetApplicationAssemblyNames);
         private static readonly ConcurrentDictionary<string, Lazy<Assembly>> _loadedAssemblies = new ConcurrentDictionary<string, Lazy<Assembly>>(StringComparer.OrdinalIgnoreCase);
         private static readonly ConcurrentDictionary<string, string> _compileOnlyAssemblies = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly Lazy<List<MetadataReference>> _metadataReferences;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _probingFolderPath;
         private readonly ILogger _logger;
@@ -44,16 +43,21 @@ namespace Orchard.Environment.Extensions
             IOptions<ExtensionProbingOptions> optionsAccessor,
             ILogger<ExtensionLibraryService> logger)
         {
-            _metadataReferences = new Lazy<List<MetadataReference>>(GetMetadataReferences);
             _hostingEnvironment = hostingEnvironment;
             _probingDirectoryName = optionsAccessor.Value.DependencyProbingDirectoryName;
             _probingFolderPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(Path.Combine(optionsAccessor.Value.RootProbingName, _probingDirectoryName)).PhysicalPath;
             _logger = logger;
         }
 
-        public IEnumerable<MetadataReference> MetadataReferences()
-        {
-            return _metadataReferences.Value;
+        public IEnumerable<string> MetadataPaths {
+            get {
+                return _compileOnlyAssemblies
+                    .Values
+                    .Concat(
+                        _loadedAssemblies
+                            .Values
+                            .Select(x => x.Value.Location));
+            }
         }
 
         private static HashSet<string> GetApplicationAssemblyNames()
@@ -63,32 +67,6 @@ namespace Orchard.Environment.Extensions
                 .SelectMany(assetGroup => assetGroup.AssetPaths)
                 .Select(path => Path.GetFileNameWithoutExtension(path)),
                 StringComparer.OrdinalIgnoreCase);
-        }
-
-        private List<MetadataReference> GetMetadataReferences()
-        {
-            var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
-            var metadataReferences = new List<MetadataReference>();
-
-            foreach (var assemblyName in _compileOnlyAssemblies.Keys)
-            {
-                if (assemblyNames.Add(assemblyName))
-                {
-                    var metadataReference = MetadataReference.CreateFromFile(_compileOnlyAssemblies[assemblyName]);
-                    metadataReferences.Add(metadataReference);
-                }
-            }
-
-            foreach (var assemblyName in _loadedAssemblies.Keys)
-            {
-                if (assemblyNames.Add(assemblyName))
-                {
-                    var metadataReference = MetadataReference.CreateFromFile(_loadedAssemblies[assemblyName].Value.Location);
-                    metadataReferences.Add(metadataReference);
-                }
-            }
-
-            return metadataReferences;
         }
 
         public Assembly LoadAmbientExtension(IExtensionInfo extensionInfo)

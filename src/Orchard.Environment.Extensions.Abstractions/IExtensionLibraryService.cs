@@ -32,6 +32,6 @@ namespace Orchard.Environment.Extensions
         /// Lists references of all the available extensions.
         /// Returns <see cref="MetadataReference"/> instances.
         /// </summary>
-        IEnumerable<MetadataReference> MetadataReferences();
+        IEnumerable<string> MetadataPaths { get; }
     }
 }
