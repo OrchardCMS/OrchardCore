@@ -7,7 +7,7 @@ namespace Orchard.Flows.ViewModels
 {
     public class FlowPartEditViewModel
     {
-        public int[] Indexes { get; set; } = Array.Empty<int>();
+        public string[] Prefixes { get; set; } = Array.Empty<string>();
         public string[] ContentTypes { get; set; } = Array.Empty<string>();
 
         [BindNever]

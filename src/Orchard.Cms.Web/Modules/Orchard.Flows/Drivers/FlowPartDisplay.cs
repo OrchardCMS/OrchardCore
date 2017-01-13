@@ -58,13 +58,13 @@ namespace Orchard.Flows.Drivers
 
             part.Widgets.Clear();
 
-            for (var i = 0; i < model.Indexes.Length; i++)
+            for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = _contentManager.New(model.ContentTypes[i]);
 
                 contentItem.Weld(new FlowMetadata());
 
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: "FlowPart" + "." + model.Indexes[i]);
+                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, htmlFieldPrefix: model.Prefixes[i]);
 
                 part.Widgets.Add(contentItem);
             }

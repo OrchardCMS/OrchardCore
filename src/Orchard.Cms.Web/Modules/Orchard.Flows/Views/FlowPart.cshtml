@@ -6,16 +6,18 @@
 @model FlowPartViewModel
 @inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
-@foreach (var widget in Model.FlowPart.Widgets)
-{
-    var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
-    var flowMetadata = widget.As<FlowMetadata>();
-
-    if (flowMetadata != null)
+<div class="row">
+    @foreach (var widget in Model.FlowPart.Widgets)
     {
-        widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
-        widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
-    }
+        var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
+        var flowMetadata = widget.As<FlowMetadata>();
 
-    @await DisplayAsync(widgetContent)
-}
+        if (flowMetadata != null)
+        {
+            widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
+            widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
+        }
+
+        @await DisplayAsync(widgetContent)
+    }
+</div>

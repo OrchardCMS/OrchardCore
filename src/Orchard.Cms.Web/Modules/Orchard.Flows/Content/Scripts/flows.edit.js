@@ -1,29 +1,35 @@
-var flowEditorIndexes = {}; // contains the current indexes for each flow part
 var createEditorUrl = $('#buildEditorUrl').attr("value");
-var widgetTemplate = function (data, indexesName, index, contentTypesName, contentType) {
-    return '<div class="widget-template">' + data + '<input type="hidden" name="' + indexesName + '" value="' + index + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
+var widgetTemplate = function (data, prefixesName, prefix, contentTypesName, contentType) {
+    return '<div class="widget-template">' + data + '<input type="hidden" name="' + prefixesName + '" value="' + prefix + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
 };
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+    }
+    return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+}
 
 $(function () {
 
     $(document).on('click', '.add-widget', function (event) {
         var type = $(this).data("widget-type");
         var targetId = $(this).data("target-id");
-        var indexesName = $(this).data("indexes-name");
+        var prefixesName = $(this).data("prefixes-name");
+        var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + flowEditorIndexes[targetId] + "&indexesName=" + indexesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId
+            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId
         })
         .done(function (data) {
             var result = JSON.parse(data);
-            $(document.getElementById(targetId)).append(widgetTemplate(result.Content, indexesName, flowEditorIndexes[targetId], contentTypesName, type));
+            $(document.getElementById(targetId)).append(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type));
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-
-            flowEditorIndexes[targetId]++;
         });
     });
 
@@ -31,21 +37,20 @@ $(function () {
         var type = $(this).data("widget-type");
         var target = $(this).closest('.widget-template');
         var targetId = $(this).data("target-id");
-        var indexesName = $(this).data("indexes-name");
+        var prefixesName = $(this).data("prefixes-name");
+        var prefix = guid();
         var contentTypesName = $(this).data("contenttypes-name");
         $.ajax({
-            url: createEditorUrl + "/" + type + "?prefix=FlowPart." + flowEditorIndexes[targetId] + "&indexesName=" + indexesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId
+            url: createEditorUrl + "/" + type + "?prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&targetId=" + targetId
         })
         .done(function (data) {
             var result = JSON.parse(data);
-            $(widgetTemplate(result.Content, indexesName, flowEditorIndexes[targetId], contentTypesName, type)).insertBefore(target);
+            $(widgetTemplate(result.Content, prefixesName, prefix, contentTypesName, type)).insertBefore(target);
 
             var dom = $(result.Scripts);
             dom.filter('script').each(function () {
                 $.globalEval(this.text || this.textContent || this.innerHTML || '');
             });
-
-            flowEditorIndexes[targetId]++;
         });
     });
 
