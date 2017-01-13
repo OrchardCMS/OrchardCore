@@ -27,7 +27,6 @@
                     widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
                     widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
                     widgetEditor.TargetId = widgetTemplatePlaceholderId;
-                    widgetEditor.Prefix = prefix;
 
                     widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
                 }
@@ -53,7 +52,6 @@
                    data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name" 
-                   data-prefix="@(Guid.NewGuid().ToString("n"))"
                    href="#">@type.DisplayName</a>
             }
         </div>

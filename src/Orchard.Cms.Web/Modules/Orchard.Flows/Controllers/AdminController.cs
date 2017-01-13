@@ -74,7 +74,6 @@ namespace Orchard.Flows.Controllers
             editor.PrefixesName = prefixesName;
             editor.ContentTypesName = contentTypesName;
             editor.TargetId = targetId;
-            editor.Prefix = prefix;
 
             var model = new BuildEditorViewModel
             {
