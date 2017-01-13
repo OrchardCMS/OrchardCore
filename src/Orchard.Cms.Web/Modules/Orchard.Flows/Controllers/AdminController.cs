@@ -58,7 +58,7 @@ namespace Orchard.Flows.Controllers
 
         public ILogger Logger { get; set; }
         
-        public async Task<IActionResult> BuildEditor(string id, string prefix)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string indexesName, string contentTypesName, string targetId)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -70,6 +70,10 @@ namespace Orchard.Flows.Controllers
             contentItem.Weld(new FlowMetadata());
 
             var editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, htmlFieldPrefix: prefix);
+
+            editor.IndexesName = indexesName;
+            editor.ContentTypesName = contentTypesName;
+            editor.TargetId = targetId;
 
             var model = new BuildEditorViewModel
             {

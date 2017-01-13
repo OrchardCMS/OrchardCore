@@ -17,7 +17,13 @@
                 <div class="dropdown-menu">
                     @foreach (var type in widgetContentTypes)
                     {
-                        <a class="dropdown-item insert-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
+                        <a 
+                           class="dropdown-item insert-widget btn-sm" 
+                           data-target-id="@Model.TargetId" 
+                           data-indexes-name="@Model.IndexesName"
+                           data-contenttypes-name="@Model.ContentTypesName"
+                           data-widget-type="@type.Name" 
+                           href="#">@type.DisplayName</a>
                     }
                 </div>
             </div>

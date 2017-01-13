@@ -9,21 +9,27 @@
 
 @{
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.Settings.ToObject<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
 }
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
 <fieldset class="form-group">
-    <div id="widgetPlaceholder">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
         @{ var index = -1; var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
             index++;
             <div class="widget-template">
-                @{ 
+                                @{
                     var widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, "", "FlowPart." + index);
+
+                    widgetEditor.IndexesName = Html.NameFor(x => x.Indexes);
+                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
+                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
+
                     widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
-                }
+                                }
                     
                 @await DisplayAsync(widgetEditor)
 
@@ -41,84 +47,40 @@
         <div class="dropdown-menu">
             @foreach (var type in widgetContentTypes)
             {
-                <a class="dropdown-item add-widget  btn-sm" data-widget-type="@type.Name" href="#">@type.DisplayName</a>
+                <a class="dropdown-item add-widget  btn-sm" 
+                   data-target-id="@widgetTemplatePlaceholderId" 
+                   data-indexes-name="@Html.NameFor(x => x.Indexes)"
+                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                   data-widget-type="@type.Name" 
+                   href="#">@type.DisplayName</a>
             }
         </div>
     </div>
 
-    <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
-    <input type="hidden" id="indexesName" value="@Html.NameFor(x => x.Indexes)" />
-    <input type="hidden" id="contentTypesName" value="@Html.NameFor(x => x.ContentTypes)" />
 
+    @if (Context.Items["FlowPart.Edit"] == null)
+    {
+        Context.Items["FlowPart.Edit"] = new object();
+        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "Orchard.Flows"  })" />
 
-    <div style="display:none">
+        <div style="display:none">
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
             var contentItem = ContentManager.New(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString()));
         }
-    </div>
+        </div>
+
+        <script asp-src="/Orchard.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+    }
 
     <script at="Foot">
-        var index = @Model.FlowPart.Widgets.Count;
-        var createEditorUrl = $('#buildEditorUrl').attr("value");
-        var indexesName = $('#indexesName').attr("value");
-        var contentTypesName = $('#contentTypesName').attr("value");
-        var widgetTemplate = function (data, index, contentType) {
-            return '<div class="widget-template">' + data + '<input type="hidden" name="' + indexesName + '" value="' + index + '" /><input type="hidden" name="' + contentTypesName + '" value="' + contentType + '" /></div>';
-        }
-
-        $('.add-widget').on('click', function (event) {
-            var type = $(this).data("widget-type");
-            $.ajax({
-                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + index
-            })
-            .done(function (data) {
-                var result = JSON.parse(data);
-                $('#widgetPlaceholder').append(widgetTemplate(result.Content, index, type));
-
-                var dom = $(result.Scripts); 
-                dom.filter('script').each(function(){
-                    $.globalEval(this.text || this.textContent || this.innerHTML || '');
-                });
-
-                index++;
-            });
-        })
-
-        $(document).on('click', '.insert-widget', function (event) {
-            var type = $(this).data("widget-type");
-            var target = $(this).closest('.widget-template');
-            $.ajax({
-                url: createEditorUrl + "/" + type + "?prefix=" + "FlowPart." + index
-            })
-            .done(function (data) {
-                var result = JSON.parse(data);
-                $(widgetTemplate(result.Content, index, type)).insertBefore(target);
-
-                var dom = $(result.Scripts); 
-                dom.filter('script').each(function(){
-                    $.globalEval(this.text || this.textContent || this.innerHTML || '');
-                });
-
-                index++;
-            });
-        })
-
-        $(document).on('click', '.widget-delete', function() {
-            $(this).closest('.widget-template').remove();
-            $(document).trigger('contentpreview:render');
-        });
-
-        $("#widgetPlaceholder").sortable({
+        flowEditorIndexes['@widgetTemplatePlaceholderId'] = @Model.FlowPart.Widgets.Count;
+        $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
             stop: function( event, ui ) { $(document).trigger('contentpreview:render'); },
             cursor: "move"
-        });
-
-        $(document).on('change', '.widget-editor-footer label', function () {
-            $(document).trigger('contentpreview:render');
         });
     </script>
 </fieldset>
