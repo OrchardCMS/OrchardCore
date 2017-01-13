@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Orchard.Environment.Extensions.Features.Attributes;
 
 namespace Orchard.Core.XmlRpc.Controllers
 {

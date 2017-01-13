@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Modules;
+﻿using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.MetaWeblog;
+using Orchard.Environment.Extensions.Features.Attributes;
 
 namespace Orchard.Autoroute.RemotePublishing
 {
