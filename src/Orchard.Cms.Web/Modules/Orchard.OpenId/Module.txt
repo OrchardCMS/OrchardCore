@@ -7,4 +7,4 @@ OrchardVersion: 2.0.x
 Description: The OpenID module enables authentication of external apps through OpenID Connect.
 FeatureDescription: OpenID Connect apps management and authentication.
 Dependencies: Orchard.Users, Orchard.Roles
-Category: Core
+Category: Security

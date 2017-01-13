@@ -3,13 +3,10 @@
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdSettingsViewModel
 
-    <fieldset class="form-group" asp-validation-class-for="TestingModeEnabled">
+    <fieldset class="form-group">
         <div class="form-check">
             <label class="form-check-label">
-                <!--There is a known bug with collapse in Bootstrap v4.0.0-alpha.5  https://github.com/twbs/bootstrap/pull/21019 it will be fixed when we upgrade to v4.0.0-alpha.6 -->
-                <a data-toggle="collapse" href="#certArea" class="a-unstyled">
-                    <input asp-for="TestingModeEnabled" class="form-check-input" />@T["Enable Testing Mode"]
-                </a>
+                <input asp-for="TestingModeEnabled" type="checkbox" data-toggle="collapse" data-target="#certArea" class="form-check-input" checked="@Model.TestingModeEnabled"/>@T["Enable Testing Mode"]
             </label>
         </div>
         <span class="hint">@T["Disables https requirement and uses an ephemeral signing key."]</span>
@@ -191,76 +188,76 @@
     </fieldset>
 
 <script at="Foot" type="text/javascript">
-    //<![CDATA[
-    $("a > input.form-check-input").on("click", function (e) {
-        e.stopPropagation();    
-        $(this).parent().trigger("click");
-    })    
-    $("#AccessTokenFormat").change(function () {
-        var selector = "#Hint_AccessTokenFormat";
-        $(".hint" + this.id + ":not(" + selector + ")").collapse("hide");
-        $(selector).collapse("show");      
-    });
+    ////<![CDATA[
+    ////$("a > input.form-check-input").on("click", function (e) {
+    ////    e.stopPropagation();    
+    ////    $(this).parent().trigger("click");
+    ////})    
+    //$("#AccessTokenFormat").change(function () {
+    //    var selector = "#Hint_AccessTokenFormat";
+    //    $(".hint" + this.id + ":not(" + selector + ")").collapse("hide");
+    //    $(selector).collapse("show");      
+    //});
 
-    $("#CertificateThumbPrint").children("option").hide();
-    $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
+    //$("#CertificateThumbPrint").children("option").hide();
+    //$("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
 
-    $("#CertificateStoreLocation").change(function () {
-        $("#CertificateThumbPrint").children("option").hide();
-        $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $(this).val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
-    });
-    $("#CertificateStoreName").change(function () {
-        $("#CertificateThumbPrint").children("option").hide();
-        $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $(this).val() + "]").show();
-    });
-    $("#EnableTokenEndpoint").change(function () {
-        var allowPasswordFlow = $("#AllowPasswordFlow");
-        var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
-        var showOrHide = $(this).is(':checked') ? "show" : "hide";
-        allowPasswordFlow.parent().parent().parent().collapse(showOrHide);
-        allowClientCredentialsFlow.parent().parent().parent().collapse(showOrHide);
+    //$("#CertificateStoreLocation").change(function () {
+    //    $("#CertificateThumbPrint").children("option").hide();
+    //    $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $(this).val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
+    //});
+    //$("#CertificateStoreName").change(function () {
+    //    $("#CertificateThumbPrint").children("option").hide();
+    //    $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $(this).val() + "]").show();
+    //});
+    //$("#EnableTokenEndpoint").change(function () {
+    //    var allowPasswordFlow = $("#AllowPasswordFlow");
+    //    var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
+    //    var showOrHide = $(this).is(':checked') ? "show" : "hide";
+    //    allowPasswordFlow.parent().parent().parent().collapse(showOrHide);
+    //    allowClientCredentialsFlow.parent().parent().parent().collapse(showOrHide);
 
-        if (!$(this).is(":checked")) {
-            allowPasswordFlow.prop("checked", false);
-            allowClientCredentialsFlow.prop("checked", false);
-        }
-    });
-    $("#EnableTokenEndpoint, #EnableAuthorizationEndpoint, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow").change(function () {
-        refreshAllowAuthorizationCodeFlowAndHybridFlowVisibility();
-        refreshAllowRefreshTokenFlowVisibility();
-    });
-    $("#EnableAuthorizationEndpoint").change(function () {
-        var allowImplicitFlow = $("#AllowImplicitFlow");
-        allowImplicitFlow.parent().parent().parent().collapse($(this).is(":checked") ? "show" : "hide");
-        if (!$(this).is(':checked')) {
-            allowImplicitFlow.prop("checked", false);
-        }
-    });
+    //    if (!$(this).is(":checked")) {
+    //        allowPasswordFlow.prop("checked", false);
+    //        allowClientCredentialsFlow.prop("checked", false);
+    //    }
+    //});
+    //$("#EnableTokenEndpoint, #EnableAuthorizationEndpoint, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow").change(function () {
+    //    refreshAllowAuthorizationCodeFlowAndHybridFlowVisibility();
+    //    refreshAllowRefreshTokenFlowVisibility();
+    //});
+    //$("#EnableAuthorizationEndpoint").change(function () {
+    //    var allowImplicitFlow = $("#AllowImplicitFlow");
+    //    allowImplicitFlow.parent().parent().parent().collapse($(this).is(":checked") ? "show" : "hide");
+    //    if (!$(this).is(':checked')) {
+    //        allowImplicitFlow.prop("checked", false);
+    //    }
+    //});
 
-    function refreshAllowAuthorizationCodeFlowAndHybridFlowVisibility() {
-        var allowAuthorizationCodeFlow = $("#AllowAuthorizationCodeFlow");
-        var allowHybridFlow = $("#AllowHybridFlow");
-        if ($("#EnableTokenEndpoint").is(":checked") && $("#EnableAuthorizationEndpoint").is(":checked")) {
-            allowAuthorizationCodeFlow.parent().parent().parent().collapse("show");
-            allowHybridFlow.parent().parent().parent().collapse("show");
-        }
-        else {
-            allowAuthorizationCodeFlow.parent().parent().parent().collapse("hide");
-            allowAuthorizationCodeFlow.prop("checked", false);
-            allowHybridFlow.parent().parent().parent().collapse("hide");
-            allowHybridFlow.prop("checked", false);
-        }
-    }
-    function refreshAllowRefreshTokenFlowVisibility() {
-        var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
-        if ($("#EnableTokenEndpoint").is(":checked")
-            && ($("#AllowPasswordFlow").is(":checked") || $("#AllowAuthorizationCodeFlow").is(":checked") || $("#AllowHybridFlow").is(":checked"))) {
-            allowRefreshTokenFlow.parent().parent().parent().collapse("show");
-        }
-        else {
-            allowRefreshTokenFlow.parent().parent().parent().collapse("hide");
-            allowRefreshTokenFlow.prop("checked", false);
-        }
-    }
+    //function refreshAllowAuthorizationCodeFlowAndHybridFlowVisibility() {
+    //    var allowAuthorizationCodeFlow = $("#AllowAuthorizationCodeFlow");
+    //    var allowHybridFlow = $("#AllowHybridFlow");
+    //    if ($("#EnableTokenEndpoint").is(":checked") && $("#EnableAuthorizationEndpoint").is(":checked")) {
+    //        allowAuthorizationCodeFlow.parent().parent().parent().collapse("show");
+    //        allowHybridFlow.parent().parent().parent().collapse("show");
+    //    }
+    //    else {
+    //        allowAuthorizationCodeFlow.parent().parent().parent().collapse("hide");
+    //        allowAuthorizationCodeFlow.prop("checked", false);
+    //        allowHybridFlow.parent().parent().parent().collapse("hide");
+    //        allowHybridFlow.prop("checked", false);
+    //    }
+    //}
+    //function refreshAllowRefreshTokenFlowVisibility() {
+    //    var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+    //    if ($("#EnableTokenEndpoint").is(":checked")
+    //        && ($("#AllowPasswordFlow").is(":checked") || $("#AllowAuthorizationCodeFlow").is(":checked") || $("#AllowHybridFlow").is(":checked"))) {
+    //        allowRefreshTokenFlow.parent().parent().parent().collapse("show");
+    //    }
+    //    else {
+    //        allowRefreshTokenFlow.parent().parent().parent().collapse("hide");
+    //        allowRefreshTokenFlow.prop("checked", false);
+    //    }
+    //}
 //]]>
 </script>

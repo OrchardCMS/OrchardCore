@@ -1,36 +1,34 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+﻿using CryptoHelper;
+using Orchard.OpenId.Models;
+using Orchard.OpenId.Services;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
-using Orchard.OpenId.Services;
-using System.Security.Cryptography.X509Certificates;
-using static Orchard.OpenId.Settings.OpenIdSettings;
+using System;
 using System.Collections.Generic;
-using Orchard.OpenId.Models;
-using CryptoHelper;
+using System.Threading.Tasks;
 
 namespace Orchard.OpenId.Recipes
 {
-    public class OpenIdApplicationStep : RecipeExecutionStep
+    public class OpenIdApplicationStep : IRecipeStepHandler
     {
         private readonly IOpenIdApplicationManager _openIdApplicationManager;
-        
-        public OpenIdApplicationStep(IOpenIdApplicationManager openIdApplicationManager,
-            ILogger<OpenIdApplicationStep> logger,
-            IStringLocalizer<OpenIdApplicationStep> localizer) : base(logger, localizer)
+
+        /// <summary>
+        /// This recipe step adds an OpenID Connect app.
+        /// </summary>
+        public OpenIdApplicationStep(IOpenIdApplicationManager openIdApplicationManager)
         {
             _openIdApplicationManager = openIdApplicationManager;
         }
 
-        public override string Name
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            get { return "OpenIdApplication"; }
-        }
+            if (!String.Equals(context.Name, "OpenIdApplication", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
 
-        public override async Task ExecuteAsync(RecipeExecutionContext recipeContext)
-        {
-            var model = recipeContext.RecipeStep.Step.ToObject<OpenIdApplicationStepModel>();
+            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
             var application = new OpenIdApplication();
             if (model.Id != 0)
             {

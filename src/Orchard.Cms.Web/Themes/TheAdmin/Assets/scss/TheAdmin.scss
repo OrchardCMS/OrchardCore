@@ -212,20 +212,6 @@ label .field-validation-error::before {
     display: none;
 }
 
-.a-unstyled {
-    color: inherit;
-    text-decoration: none;
-    &:link { color: inherit; text-decoration: none; }
-    &:visited { color: inherit; text-decoration: none; }
-    &:hover { color: inherit; text-decoration: none; }
-    &:active { color: inherit; text-decoration: none; }   
-}
-
-.a-unistyled:active { 
-    color: inherit; 
-    text-decoration: none
-}
-
 // Toolbar
 // ------------------------------
 

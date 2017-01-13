@@ -1,36 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Orchard.OpenId.Services;
+﻿using Orchard.OpenId.Services;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using static Orchard.OpenId.Settings.OpenIdSettings;
 
 namespace Orchard.OpenId.Recipes
 {
-    public class OpenIdSettingsStep : RecipeExecutionStep
+    /// <summary>
+    /// This recipe step sets general OpenID Connect settings.
+    /// </summary>
+    public class OpenIdSettingsStep : IRecipeStepHandler
     {
         private readonly IOpenIdService _openIdService;
 
-        public OpenIdSettingsStep(
-            IOpenIdService openIdService,
-            ILogger<OpenIdSettingsStep> logger,
-            IStringLocalizer<OpenIdSettingsStep> localizer)
-            : base(logger, localizer)
+        public OpenIdSettingsStep(IOpenIdService openIdService)
         {
             _openIdService = openIdService;
         }
 
-        public override string Name
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            get { return "OpenIdSettings"; }
-        }
+            if (!String.Equals(context.Name, "OpenIdSettings", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
 
-        public override async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            var model = context.RecipeStep.Step.ToObject<OpenIdSettingsStepModel>();
+            var model = context.Step.ToObject<OpenIdSettingsStepModel>();
 
             var settings = await _openIdService.GetOpenIdSettingsAsync();
             settings.TestingModeEnabled = model.TestingModeEnabled;
