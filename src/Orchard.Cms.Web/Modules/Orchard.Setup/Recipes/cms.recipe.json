@@ -41,12 +41,14 @@
         "Orchard.Deployment",
         "Orchard.Deployment.Remote",
         "Orchard.Feeds",
+        "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Lists",
         "Orchard.Menu",
         "Orchard.Title",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
+        "Orchard.Widgets",
 
         // Themes
         "TheTheme",
