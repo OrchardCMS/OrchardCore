@@ -63,4 +63,8 @@ $(function () {
         $(document).trigger('contentpreview:render');
     });
 
+    $(document).on('click', '.widget-editor-btn-toggle', function () {
+        $(this).closest('.widget-editor').toggleClass('collapsed');
+    });
+
 });
