@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
@@ -17,8 +19,6 @@ namespace Orchard.Cms.Web
     {
         public void ConfigureMvc(IMvcBuilder builder)
         {
-            //while (!System.Diagnostics.Debugger.IsAttached) { }
-
             var serviceProvider = builder.Services.BuildServiceProvider();
             var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
@@ -29,6 +29,14 @@ namespace Orchard.Cms.Web
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var app = new ApplicationBuilder(serviceProvider);
             startUp.Configure(app, loggerFactory);
+
+            var assemblyFileName = Path.Combine(ApplicationEnvironment.ApplicationBasePath,
+                env.ApplicationName + ".PrecompiledViews.dll");
+
+            if (File.Exists(assemblyFileName))
+            {
+                File.Delete(assemblyFileName);
+            }
 
             var orchardHost = serviceProvider.GetRequiredService<IOrchardHost>();
             var runningShellTable = serviceProvider.GetRequiredService<IRunningShellTable>();
