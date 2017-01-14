@@ -17,7 +17,7 @@ namespace Orchard.Tests.Extensions
     public class ExtensionManagerTests
     {
         private static IHostingEnvironment HostingEnvrionment
-            = new StubHostingEnvironment(Path.Combine(Directory.GetCurrentDirectory(), "Extensions", "TestDependencyModules"));
+            = new StubHostingEnvironment(Path.Combine(Directory.GetCurrentDirectory(), "Extensions"));
 
         private static IOptions<ManifestOptions> ModuleManifestOptions =
             new StubManifestOptions(
@@ -50,7 +50,7 @@ namespace Orchard.Tests.Extensions
 
         private static IOptions<ExtensionExpanderOptions> ExtensionExpanderOptions =
             new StubExtensionExpanderOptions(
-                new ExtensionExpanderOption { SearchPath = "**" });
+                new ExtensionExpanderOption { SearchPath = "TestDependencyModules" });
 
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;
@@ -96,7 +96,6 @@ namespace Orchard.Tests.Extensions
         }
 
         [Fact]
-
         public void ShouldReturnExtension()
         {
             var extensions = ModuleScopedExtensionManager.GetExtensions();

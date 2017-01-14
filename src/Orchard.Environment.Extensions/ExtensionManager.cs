@@ -124,14 +124,7 @@ namespace Orchard.Environment.Extensions
                             .ManifestConfigurations
                             .FirstOrDefault(mc =>
                                 {
-                                    var filePath = Path.Combine(searchOption.SearchPath, mc.ManifestFileName);
-
-                                    if (_hostingEnvironment.ContentRootFileProvider.GetFileInfo(filePath).Exists)
-                                    {
-                                        return true;
-                                    }
-
-                                    return false;
+                                    return File.Exists(Path.Combine(subDirectory.PhysicalPath, mc.ManifestFileName));
                                 }
                             );
 
@@ -140,9 +133,8 @@ namespace Orchard.Environment.Extensions
                             continue;
                         }
 
-                        var manifestFilesubPath = Path.Combine(searchOption.SearchPath, manifestConfiguration.ManifestFileName);
-                        var manifestsubPath = searchOption.SearchPath;
-                        var manifestFileName = manifestConfiguration.ManifestFileName;
+                        var manifestFilesubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name, manifestConfiguration.ManifestFileName);
+                        var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
 
                         IConfigurationBuilder configurationBuilder =
                             _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
