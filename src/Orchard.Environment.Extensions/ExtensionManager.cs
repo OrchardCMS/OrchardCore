@@ -13,16 +13,21 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Utility;
 using System.Threading;
+using Orchard.Environment.Extensions.Manifests;
+using Microsoft.Extensions.Configuration;
 
 namespace Orchard.Environment.Extensions
 {
     public class ExtensionManager : IExtensionManager
     {
-        private readonly ExtensionOptions _extensionOptions;
+        private readonly ExtensionExpanderOptions _extensionExpanderOptions;
+        private readonly ManifestOptions _manifestOptions;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IManifestProvider _manifestProvider;
         private readonly IExtensionProvider _extensionProvider;
+
         private readonly IExtensionLoader _extensionLoader;
         private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
-        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
@@ -57,20 +62,25 @@ namespace Orchard.Environment.Extensions
                            ).OrderByDescending(x => x.Id).ToArray());
 
         public ExtensionManager(
-            IOptions<ExtensionOptions> optionsAccessor,
+            IOptions<ExtensionExpanderOptions> extensionExpanderOptionsAccessor,
+            IOptions<ManifestOptions> manifestOptionsAccessor,
+            IHostingEnvironment hostingEnvironment,
+            IEnumerable<IManifestProvider> manifestProviders,
+
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
             IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
-            IHostingEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
         {
-            _extensionOptions = optionsAccessor.Value;
+            _extensionExpanderOptions = extensionExpanderOptionsAccessor.Value;
+            _manifestOptions = manifestOptionsAccessor.Value;
+            _hostingEnvironment = hostingEnvironment;
+            _manifestProvider = new CompositeManifestProvider(manifestProviders);
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
             _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
-            _hostingEnvironment = hostingEnvironment;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
             T = localizer;
@@ -94,29 +104,63 @@ namespace Orchard.Environment.Extensions
         {
             if (_extensionsById == null)
             {
+                 var searchOptions = _extensionExpanderOptions.Options;
+ 
+                 if (searchOptions.Count == 0)
+                 {
+                     return Enumerable.Empty<IExtensionInfo>();
+                 }
+
                 var extensionsById = new Dictionary<string, IExtensionInfo>();
 
-                foreach (var searchPath in _extensionOptions.SearchPaths)
+                foreach (var searchOption in searchOptions)
                 {
                     foreach (var subDirectory in _hostingEnvironment
                         .ContentRootFileProvider
-                        .GetDirectoryContents(searchPath)
+                        .GetDirectoryContents(searchOption.SearchPath)
                         .Where(x => x.IsDirectory))
                     {
-                        var extensionId = subDirectory.Name;
+                        var manifestConfiguration = _manifestOptions
+                            .ManifestConfigurations
+                            .FirstOrDefault(mc =>
+                                {
+                                    var filePath = Path.Combine(searchOption.SearchPath, mc.ManifestFileName);
 
-                        if (!extensionsById.ContainsKey(extensionId))
+                                    if (_hostingEnvironment.ContentRootFileProvider.GetFileInfo(filePath).Exists)
+                                    {
+                                        return true;
+                                    }
+
+                                    return false;
+                                }
+                            );
+
+                        if (manifestConfiguration == null)
                         {
-                            var subPath = Path.Combine(searchPath, extensionId);
-
-                            var extensionInfo =
-                                _extensionProvider.GetExtensionInfo(subPath);
-
-                            if (extensionInfo.ExtensionFileInfo.Exists)
-                            {
-                                extensionsById.Add(extensionId, extensionInfo);
-                            }
+                            continue;
                         }
+
+                        var manifestFilesubPath = Path.Combine(searchOption.SearchPath, manifestConfiguration.ManifestFileName);
+                        var manifestsubPath = searchOption.SearchPath;
+                        var manifestFileName = manifestConfiguration.ManifestFileName;
+
+                        IConfigurationBuilder configurationBuilder =
+                            _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
+
+                        if (!configurationBuilder.Sources.Any())
+                        {
+                            continue;
+                        }
+
+                        var configurationRoot = configurationBuilder.Build();
+
+                        var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
+
+                        // Manifest tells you what your loading, subpath is where you are loading it
+                        var extensionInfo = _extensionProvider
+                            .GetExtensionInfo(manifestInfo, manifestsubPath);
+
+                        extensionsById.Add(extensionInfo.Id, extensionInfo);
                     }
                 }
 
