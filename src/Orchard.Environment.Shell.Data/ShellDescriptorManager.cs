@@ -20,7 +20,6 @@ namespace Orchard.Environment.Shell.Data.Descriptors
         private readonly ISession _session;
         private readonly ILogger _logger;
         private ShellDescriptor _shellDescriptor;
-        private Lazy<Task<ShellDescriptor>> _asyncLazyShellDescriptor;
 
         public ShellDescriptorManager(
             ShellSettings shellSettings,
@@ -32,12 +31,6 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             _eventBus = eventBus;
             _session = session;
             _logger = logger;
-
-            _asyncLazyShellDescriptor = new Lazy<Task<ShellDescriptor>>(() => Task.Run(() =>
-                session.QueryAsync<ShellDescriptor>()
-                .FirstOrDefault()
-                .GetAwaiter()
-                .GetResult()));
         }
 
         public async Task<ShellDescriptor> GetShellDescriptorAsync()
@@ -45,7 +38,7 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             // Prevent multiple queries during the same request
             if (_shellDescriptor == null)
             {
-                _shellDescriptor = await _asyncLazyShellDescriptor.Value;
+                _shellDescriptor = await _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
             }
 
             return _shellDescriptor;

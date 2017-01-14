@@ -17,18 +17,16 @@ namespace Orchard.Cms.Web
     {
         public void ConfigureMvc(IMvcBuilder builder)
         {
+            //while (!System.Diagnostics.Debugger.IsAttached) { }
+
             var serviceProvider = builder.Services.BuildServiceProvider();
             var env = serviceProvider.GetRequiredService<IHostingEnvironment>();
 
-            var services = new ServiceCollection();
-            services.AddSingleton(env);
-
             var startUp = new Startup(env);
             startUp.ConfigureServices(builder.Services);
-
             serviceProvider = builder.Services.BuildServiceProvider();
-            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var app = new ApplicationBuilder(serviceProvider);
             startUp.Configure(app, loggerFactory);
 
@@ -36,29 +34,25 @@ namespace Orchard.Cms.Web
             var runningShellTable = serviceProvider.GetRequiredService<IRunningShellTable>();
 
             orchardHost.Initialize();
-            var shellSettings = runningShellTable.Match(new DefaultHttpContext());
+            var ShellSettings = runningShellTable.Match(new DefaultHttpContext());
+            var shellContext = orchardHost.GetOrCreateShellContext(ShellSettings);
 
-            var shellContext = orchardHost.GetOrCreateShellContext(shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
-            {
-                builder.Services.AddSingleton<IHttpContextAccessor, DesignTimeHttpContextAccessor>(s =>
-                    new DesignTimeHttpContextAccessor(scope.ServiceProvider, shellSettings));
-            }
+            builder.Services.AddSingleton<IHttpContextAccessor, DesignTimeHttpContextAccessor>(s =>
+                    new DesignTimeHttpContextAccessor(shellContext.ServiceProvider));
 
             builder.AddRazorOptions(options =>
             {
-                var extensionLibraryService = serviceProvider.GetService<IExtensionLibraryService>();
+                var extensionLibraryService = shellContext.ServiceProvider.GetService<IExtensionLibraryService>();
                 ((List<MetadataReference>)options.AdditionalCompilationReferences).AddRange(extensionLibraryService.MetadataReferences());
             });
         }
 
         private class DesignTimeHttpContextAccessor : IHttpContextAccessor
         {
-            public DesignTimeHttpContextAccessor(IServiceProvider serviceProvider, ShellSettings shellSettings)
+            public DesignTimeHttpContextAccessor(IServiceProvider serviceProvider)
             {
                 HttpContext = new DefaultHttpContext();
                 HttpContext.RequestServices = serviceProvider;
-                HttpContext.Features[typeof(ShellSettings)] = shellSettings;
             }
 
             public HttpContext HttpContext { get; set; }

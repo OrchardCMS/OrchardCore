@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell.Data.Descriptors;
 using Orchard.Environment.Shell.Descriptor;
+using Orchard.Environment.Shell.Descriptor.Settings;
 
 namespace Orchard.Environment.Shell.Data
 {
@@ -32,7 +34,15 @@ namespace Orchard.Environment.Shell.Data
         /// <returns></returns>
         public static IServiceCollection AddShellDescriptorStorage(this IServiceCollection services)
         {
-            services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
+            if (Assembly.GetEntryAssembly().GetName().Name.EndsWith(".ViewCompilation.Design"))
+            {
+                services.AddScoped<IShellDescriptorManager, AllFeaturesShellDescriptorManager>();
+            }
+            else
+            {
+                services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();
+            }
+
             services.AddScoped<IShellStateManager, ShellStateManager>();
             services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
             services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
