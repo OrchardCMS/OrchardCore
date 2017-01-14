@@ -23,14 +23,9 @@
         {
             <a asp-action="Publish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
             <a asp-action="Preview" asp-controller="Item" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn-sm">@T["Preview Draft"]</a>
-        }
 
-        @if (hasPublished)
-        {
-            <a display-for="@contentItem" class="dropdown-item btn-sm" itemprop="">@T["View"]</a>
+            <div class="dropdown-divider"></div>
         }
-
-        <div class="dropdown-divider"></div>
 
         @if (hasDraft && hasPublished)
         {
