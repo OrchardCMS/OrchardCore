@@ -114,7 +114,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
                 internalServices.AddOptions();
                 internalServices.AddLocalization();
                 internalServices.AddHostCore();
-                internalServices.AddExtensionManagerHost("app_data", "dependencies");
+                internalServices.AddExtensionManagerHost("App_Data", "dependencies");
                 internalServices.AddCommands();
 
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
