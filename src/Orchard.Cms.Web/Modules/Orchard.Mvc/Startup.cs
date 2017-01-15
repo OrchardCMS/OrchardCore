@@ -23,7 +23,10 @@ namespace Orchard.Mvc
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            app.UseMvcModules();
+            app.UseMvcModules(apb =>
+            {
+                apb.UseStaticFilesModules();
+            });
         }
     }
 }

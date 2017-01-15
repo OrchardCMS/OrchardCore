@@ -11,6 +11,11 @@ namespace Microsoft.AspNetCore.Modules
 {
     public static class ApplicationBuilderExtensions
     {
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app)
+        {
+            return app.UseModules((_) => { });
+        }
+
         public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
         {
             // Ensure the shell tenants are loaded when a request comes in

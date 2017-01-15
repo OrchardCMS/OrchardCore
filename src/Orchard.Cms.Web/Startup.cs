@@ -55,7 +55,7 @@ namespace Orchard.Cms.Web
 
             loggerFactory.AddConsole(Configuration);
 
-            app.UseModules(modules => { });
+            app.UseModules();
         }
     }
 }

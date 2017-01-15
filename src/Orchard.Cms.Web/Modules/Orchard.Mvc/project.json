@@ -1,6 +1,7 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
+    "Microsoft.AspNetCore.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*"
   },
   "buildOptions": {
