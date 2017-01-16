@@ -141,6 +141,11 @@ namespace Orchard.ContentManagement
             return content.ContentItem != null && content.ContentItem.Published;
         }
 
+        public static bool IsLatest(this IContent content)
+        {
+            return content.ContentItem != null && content.ContentItem.Latest;
+        }
+
         /// <summary>
         /// Whether the content element has a draft or not.
         /// </summary>

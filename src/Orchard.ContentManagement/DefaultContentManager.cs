@@ -112,6 +112,12 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsLatest)
             {
+                // Check if the latest is already loaded
+                if (_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    return contentItem;
+                }
+
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
@@ -129,13 +135,17 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefault();
+                // Check if the latest is already loaded
+                if (!_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    // Loaded whatever is the latest as it will be cloned
+                    contentItem = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Latest == true)
+                        .FirstOrDefault();
+                }
             }
             else if (options.IsPublished)
             {
@@ -154,14 +164,11 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
             // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
+            // If IsPublished or IsLatest is required then the test has already been checked before
             ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {

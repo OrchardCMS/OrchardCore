@@ -15,6 +15,10 @@
         /// </summary>
         public bool Draftable { get; set; }
         /// <summary>
+        /// Used to determine if this content type supports mutiple versions
+        /// </summary>
+        public bool Versionable { get; set; }
+        /// <summary>
         /// Defines the stereotype of the type
         /// </summary>
         public string Stereotype { get; set; }
