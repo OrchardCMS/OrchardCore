@@ -72,6 +72,11 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId)
         {
+            if (contentItemId == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemId));
+            }
+
             return await GetAsync(contentItemId, VersionOptions.Published);
         }
 
