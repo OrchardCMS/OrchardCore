@@ -49,7 +49,6 @@ namespace Orchard.Mvc.Web
 
             app.UseModules(modules => modules
                 .UseStaticFilesModules()
-                .UseMvcModules()
             );
         }
     }

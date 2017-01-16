@@ -13,19 +13,28 @@ namespace Microsoft.AspNetCore.Modules
     {
         public static IApplicationBuilder UseModules(this IApplicationBuilder app)
         {
-            return app.UseModules((_) => { });
-        }
-
-        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
-        {
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
             app.UseMiddleware<OrchardContainerMiddleware>();
             app.UseMiddleware<TenantRouterMiddleware>();
 
+            return app;
+        }
+
+        public static IApplicationBuilder UseModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
+        {
+            app.UseModules();
+
+            app.ConfigureModules(modules);
+
+            return app;
+        }
+
+        public static IApplicationBuilder ConfigureModules(this IApplicationBuilder app, Action<ModularApplicationBuilder> modules)
+        {
             var modularApplicationBuilder = new ModularApplicationBuilder(app);
             modules(modularApplicationBuilder);
-            
+
             return app;
         }
 
