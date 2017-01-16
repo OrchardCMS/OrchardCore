@@ -29,7 +29,6 @@ namespace Orchard.Nancy.Web
         {
             // Add Nancy and support for modules
             services.AddModuleServices(configure => configure
-                .AddNancyModules()
                 .AddConfiguration(Configuration)
                 .WithAllFeatures()
             );
@@ -48,8 +47,8 @@ namespace Orchard.Nancy.Web
             loggerFactory.AddConsole(Configuration);
 
             app.UseModules(modules => modules
-                .UseStaticFilesModules()
                 .UseNancyModules()
+                .UseStaticFilesModules()
             );
         }
     }
