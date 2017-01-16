@@ -122,54 +122,43 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
-            if (model.Type == ClientType.Public)
+            if (!ModelState.IsValid)
             {
-                if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
-                {
-                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for Public apps."]);
-                }
-                if (string.IsNullOrWhiteSpace(model.RedirectUri))
-                {
-                    ModelState.AddModelError(nameof(EditOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for Public apps."]);
-                }
+                var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+                if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                    _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+
+                ViewData["OpenIdSettings"] = openIdSettings;
+                ViewData["ReturnUrl"] = returnUrl;
+                return View(model);
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                var app = await _applicationManager.FindByIdAsync(model.Id);               
-                if (app == null)
-                    return NotFound();
+            var app = await _applicationManager.FindByIdAsync(model.Id);
+            if (app == null)
+                return NotFound();
 
-                app.DisplayName = model.DisplayName;
-                app.RedirectUri = model.RedirectUri;
-                app.LogoutRedirectUri = model.LogoutRedirectUri;
-                app.ClientId = model.ClientId;
-                app.Type = model.Type;
-                app.SkipConsent = model.SkipConsent;
-                app.RoleNames = new List<string>();
-                if (app.Type == ClientType.Confidential)
-                    app.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
-                app.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
-                app.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
-                app.AllowImplicitFlow = model.AllowImplicitFlow;
-                app.AllowPasswordFlow = model.AllowPasswordFlow;
-                app.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
-                app.AllowHybridFlow = model.AllowHybridFlow;
+            app.DisplayName = model.DisplayName;
+            app.RedirectUri = model.RedirectUri;
+            app.LogoutRedirectUri = model.LogoutRedirectUri;
+            app.ClientId = model.ClientId;
+            app.Type = model.Type;
+            app.SkipConsent = model.SkipConsent;
+            app.RoleNames = new List<string>();
+            if (app.Type == ClientType.Confidential)
+                app.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+            app.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            app.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            app.AllowImplicitFlow = model.AllowImplicitFlow;
+            app.AllowPasswordFlow = model.AllowPasswordFlow;
+            app.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+            app.AllowHybridFlow = model.AllowHybridFlow;
 
-                await _applicationManager.CreateAsync(app);                
-                if (returnUrl == null)
-                    return RedirectToAction("Index");
-                else
-                    return LocalRedirect(returnUrl);
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            await _applicationManager.CreateAsync(app);
+            if (returnUrl == null)
+                return RedirectToAction("Index");
+            else
+                return LocalRedirect(returnUrl);
         }
 
         [HttpGet]
@@ -200,62 +189,45 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
-            if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
-                _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
-            if (model.Type == ClientType.Public)
+            if (!ModelState.IsValid)
             {
-                if (string.IsNullOrWhiteSpace(model.LogoutRedirectUri))
-                {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.LogoutRedirectUri), T["Logout Redirect Uri is required for public apps."]);
-                }
-                if (string.IsNullOrWhiteSpace(model.RedirectUri))
-                {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.RedirectUri), T["Redirect Uri is required for public apps."]);
-                }
+                var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
+                if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
+                    _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
+
+                ViewData["OpenIdSettings"] = openIdSettings;
+                ViewData["ReturnUrl"] = returnUrl;
+                return View("Create", model);
             }
+
+            var roleNames = new List<string>();
             if (model.Type == ClientType.Confidential)
+                roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
+
+            var openIdApp = new OpenIdApplication
             {
-                if (string.IsNullOrWhiteSpace(model.ClientSecret))
-                {
-                    ModelState.AddModelError(nameof(CreateOpenIdApplicationViewModel.ClientSecret), T["A client secret is required for confidential apps."]);
-                }
-            }
+                DisplayName = model.DisplayName,
+                RedirectUri = model.RedirectUri,
+                LogoutRedirectUri = model.LogoutRedirectUri,
+                ClientId = model.ClientId,
+                ClientSecret = Crypto.HashPassword(model.ClientSecret),
+                Type = model.Type,
+                SkipConsent = model.SkipConsent,
+                RoleNames = roleNames,
+                AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
+                AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+                AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowPasswordFlow = model.AllowPasswordFlow,
+                AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowHybridFlow = model.AllowHybridFlow
+            };
 
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
-            {
-                var roleNames = new List<string>();
-                if (model.Type == ClientType.Confidential)
-                    roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
-
-                var openIdApp = new OpenIdApplication {
-                    DisplayName = model.DisplayName,
-                    RedirectUri = model.RedirectUri,
-                    LogoutRedirectUri = model.LogoutRedirectUri,
-                    ClientId = model.ClientId,
-                    ClientSecret = Crypto.HashPassword(model.ClientSecret),
-                    Type = model.Type,
-                    SkipConsent = model.SkipConsent,
-                    RoleNames = roleNames,
-                    AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
-                    AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
-                    AllowImplicitFlow = model.AllowImplicitFlow,
-                    AllowPasswordFlow = model.AllowPasswordFlow,
-                    AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
-                    AllowHybridFlow = model.AllowHybridFlow
-                };
-
-                await _applicationManager.CreateAsync(openIdApp);
-                if (returnUrl == null)
-                    return RedirectToAction("Index");
-                else
-                    return LocalRedirect(returnUrl);
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View("Create", model);
+            await _applicationManager.CreateAsync(openIdApp);
+            if (returnUrl == null)
+                return RedirectToAction("Index");
+            else
+                return LocalRedirect(returnUrl);
         }
 
         [HttpPost]
