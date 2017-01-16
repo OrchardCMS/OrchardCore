@@ -1,0 +1,24 @@
+﻿{
+  "version": "2.0.0-*",
+  "dependencies": {
+    "Microsoft.AspNetCore.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*"
+  },
+  "buildOptions": {
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
+  }
+}
