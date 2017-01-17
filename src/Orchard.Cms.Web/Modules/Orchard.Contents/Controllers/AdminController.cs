@@ -420,7 +420,7 @@ namespace Orchard.Contents.Controllers
         [FormValueRequired("submit.Save")]
         public Task<IActionResult> EditPOST(string contentItemId, string returnUrl)
         {
-            return EditPOST(contentItemId, returnUrl, contentItem =>
+            return EditPOST(contentItemId, returnUrl, (contentItem, versionable) =>
             {
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -429,7 +429,8 @@ namespace Orchard.Contents.Controllers
                     : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
 
                 return Task.CompletedTask;
-            });
+            },
+            saveDraft: true);
         }
 
         [HttpPost, ActionName("Edit")]
@@ -448,9 +449,9 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            return await EditPOST(contentItemId, returnUrl, async contentItem =>
+            return await EditPOST(contentItemId, returnUrl, async (contentItem, versionable) =>
             {
-                await _contentManager.PublishAsync(contentItem);
+                await _contentManager.PublishAsync(contentItem, versionable);
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -460,7 +461,7 @@ namespace Orchard.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, bool, Task> conditionallyPublish, bool saveDraft = false)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -475,9 +476,9 @@ namespace Orchard.Contents.Controllers
             }
 
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var typeSettings = typeDefinition.Settings.ToObject<ContentTypeSettings>();
 
-            var draftRequired = contentItem.Published && (typeSettings.Draftable || typeSettings.Versionable);
+            var settings = typeDefinition.Settings.ToObject<ContentTypeSettings>();
+            var draftRequired = contentItem.Published && (saveDraft || settings.Versionable);
 
             if (draftRequired)
             {
@@ -512,7 +513,7 @@ namespace Orchard.Contents.Controllers
                 _session.Save(contentItem);
             }
 
-            await conditionallyPublish(contentItem);
+            await conditionallyPublish(contentItem, settings.Versionable);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null

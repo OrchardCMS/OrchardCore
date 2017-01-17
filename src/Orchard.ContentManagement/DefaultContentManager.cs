@@ -207,7 +207,7 @@ namespace Orchard.ContentManagement
             return contentItem;
         }
 
-        public async Task PublishAsync(ContentItem contentItem)
+        public async Task PublishAsync(ContentItem contentItem, bool versionable = true)
         {
             if (contentItem.Published)
             {
@@ -234,8 +234,15 @@ namespace Orchard.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous);
-                previous.Published = false;
+                if (!versionable)
+                {
+                    _session.Delete(previous);
+                }
+                else
+                {
+                    _session.Save(previous);
+                    previous.Published = false;
+                }
             }
 
             contentItem.Published = true;

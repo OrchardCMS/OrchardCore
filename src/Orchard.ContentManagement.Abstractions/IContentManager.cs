@@ -57,7 +57,7 @@ namespace Orchard.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         Task DiscardDraftAsync(ContentItem contentItem);
-        Task PublishAsync(ContentItem contentItem);
+        Task PublishAsync(ContentItem contentItem, bool versionable = true);
         Task UnpublishAsync(ContentItem contentItem);
         TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect);
     }
