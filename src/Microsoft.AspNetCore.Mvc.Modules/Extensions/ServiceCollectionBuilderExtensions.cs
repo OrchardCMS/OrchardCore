@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Modules.Routing;
@@ -67,6 +69,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             var availableExtensions = extensionManager.GetExtensions();
             using (logger.BeginScope("Loading extensions"))
             {
+                ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
                 Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
                 {
                     try
@@ -78,7 +81,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
                         if (!extensionEntry.IsError)
                         {
-                            builder.AddApplicationPart(extensionEntry.Assembly);
+                            bagOfAssemblies.Add(extensionEntry.Assembly);
                         }
                     }
                     catch (Exception e)
@@ -86,6 +89,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                         logger.LogCritical("Could not load an extension", ae, e);
                     }
                 });
+
+                foreach (var ass in bagOfAssemblies)
+                {
+                    builder.AddApplicationPart(ass);
+                }
             }
 
             return builder;

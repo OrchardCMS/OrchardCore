@@ -92,14 +92,18 @@ namespace Orchard.Environment.Shell.Builders
 
                 ServiceCollection featureServiceCollection;
                 ServiceCollection startupServices = new ServiceCollection();
+
                 if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
                 {
                     featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
                 }
 
-                featureServiceCollection.Add(startupServices);
+                startupServices.Add(featureServiceCollection);
+                startupServices.Add(tenantServiceCollection);
+                startup.ConfigureServices(startupServices);
+
                 tenantServiceCollection.Add(startupServices);
-                startup.ConfigureServices(tenantServiceCollection);
+                tenantServiceCollection = new ServiceCollection().Add(tenantServiceCollection.Distinct());
             }
 
             (moduleServiceProvider as IDisposable).Dispose();

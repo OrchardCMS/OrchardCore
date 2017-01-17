@@ -8,7 +8,10 @@ namespace Orchard.Environment.Extensions
     {
         private readonly ConcurrentDictionary<Type, IFeatureInfo> _features 
             = new ConcurrentDictionary<Type, IFeatureInfo>();
-        
+
+        private static readonly IFeatureInfo CoreFeature 		
+             = new InternalFeatureInfo("Core", new InternalExtensionInfo("Core"));
+
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
             IFeatureInfo feature = null;
@@ -18,7 +21,8 @@ namespace Orchard.Environment.Extensions
                 return feature;
             }
 
-            throw new InvalidOperationException($"Could not resolve feature for type {dependency.Name}");
+            return CoreFeature;
+            //throw new InvalidOperationException($"Could not resolve feature for type {dependency.Name}");
         }
 
         public void TryAdd(Type type, IFeatureInfo feature)

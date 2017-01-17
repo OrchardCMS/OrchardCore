@@ -14,6 +14,7 @@
       "disable": [],
       "enable": [
         // SaaS
+        "Orchard.Mvc",
         "Orchard.Admin",
         "Orchard.Commons",
         "Orchard.Diagnostics",
