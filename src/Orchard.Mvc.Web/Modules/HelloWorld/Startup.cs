@@ -23,7 +23,7 @@ namespace HelloWorld
             {
                 throw new Exception(":(");
             }
-
+            
             routes.MapAreaRoute
             (
                 name: "Home",
@@ -35,7 +35,7 @@ namespace HelloWorld
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
-
+            
         }
     }
 }
