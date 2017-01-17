@@ -462,7 +462,7 @@ namespace Orchard.Contents.Controllers
 
         private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {
@@ -472,6 +472,21 @@ namespace Orchard.Contents.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
                 return Unauthorized();
+            }
+
+            ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var typeSettings = typeDefinition.Settings.ToObject<ContentTypeSettings>();
+
+            var draftRequired = contentItem.Published && (typeSettings.Draftable || typeSettings.Versionable);
+
+            if (draftRequired)
+            {
+                contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+
+                if (contentItem == null)
+                {
+                    return NotFound();
+                }
             }
 
             //string previousRoute = null;
@@ -492,6 +507,11 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
+            if (!draftRequired)
+            {
+                _session.Save(contentItem);
+            }
+
             await conditionallyPublish(contentItem);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
@@ -501,8 +521,6 @@ namespace Orchard.Contents.Controllers
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
