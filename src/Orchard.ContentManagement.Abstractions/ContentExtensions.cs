@@ -155,8 +155,7 @@ namespace Orchard.ContentManagement
 
         public static bool IsNew(this IContent content)
         {
-            // TODO : How do I know if the content is new?
-            return content.ContentItem.Number == 0;
+            return content.ContentItem != null && content.ContentItem.Id == 0;
         }
     }
 }
