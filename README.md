@@ -19,9 +19,9 @@ Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), communi
 
 ## Status
 
-### Pre-Alpha
+### Alpha
 
-The software is still under active development and not feature complete or ready for consumption by anyone other than software developers. There may be milestones during the pre-alpha which deliver specific sets of functionality, and nightly builds for other developers or users who are comfortable living on the absolute bleeding edge.
+The software is complete enough for internal testing. This is typically done by people other than the software engineers who wrote it, but still within the same organization or community that developed the software.
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Roadmap).
 
