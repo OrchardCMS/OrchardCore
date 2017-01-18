@@ -18,6 +18,7 @@ using Orchard.Hosting;
 using Orchard.Hosting.Mvc.Filters;
 using Orchard.Hosting.Mvc.ModelBinding;
 using Orchard.Hosting.Routing;
+using System.IO;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
 {
@@ -48,7 +49,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Hosting
             services.AddSingleton(new ShellFeature("Orchard.Hosting"));
             services.AddWebHost();
             services.AddManifestDefinition(manifestFileName, "module");
-            services.AddExtensionLocation("Modules");
+            services.AddExtensionLocation(Path.Combine("Modules", "**"));
 
             services
                 .AddMvcCore(options =>

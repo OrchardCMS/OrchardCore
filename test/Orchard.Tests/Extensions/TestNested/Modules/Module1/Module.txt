@@ -1,0 +1,4 @@
+﻿Name: Module Sample
+Author: Nicholas Mayne
+Description: Sample module
+Version: 1.0.0

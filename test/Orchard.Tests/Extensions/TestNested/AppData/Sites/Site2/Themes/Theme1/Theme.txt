@@ -1,0 +1,4 @@
+﻿Name: Site 2 Theme Sample
+Author: Nicholas Mayne
+Description: Theme for Site 2
+Version: 1.0.0

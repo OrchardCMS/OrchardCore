@@ -8,6 +8,7 @@ using Orchard.DisplayManagement;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
+using System.IO;
 
 namespace Orchard.Cms.Web
 {
@@ -32,9 +33,14 @@ namespace Orchard.Cms.Web
         {
             services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddExtensionLocation("Themes");
+            services.AddExtensionLocation(Path.Combine("Themes", "**"));
+
             services.AddSitesFolder("App_Data", "Sites");
+            services.AddExtensionLocation(Path.Combine("App_Data", "Sites", "**", "Themes", "**"));
+
             services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Commons");
+
+            services.AddExtensionLocation(Path.Combine("App_Data", "Sites", "**", "Modules", "**"));
         }
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

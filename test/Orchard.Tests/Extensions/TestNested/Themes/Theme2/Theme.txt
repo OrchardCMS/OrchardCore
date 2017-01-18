@@ -1,0 +1,4 @@
+﻿Name: Theme 2 Sample
+Author: Nicholas Mayne
+Description: Sample theme 2
+Version: 1.0.0

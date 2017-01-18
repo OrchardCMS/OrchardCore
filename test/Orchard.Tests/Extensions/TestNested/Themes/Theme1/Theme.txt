@@ -1,0 +1,4 @@
+﻿Name: Theme Sample
+Author: Nicholas Mayne
+Description: Sample theme
+Version: 1.0.0

@@ -1,0 +1,4 @@
+﻿Name: Site 2 Module Sample
+Author: Nicholas Mayne
+Description: Sample module for Site 2
+Version: 1.0.0
