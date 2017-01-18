@@ -45,7 +45,7 @@ namespace Orchard.OpenId.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>(o => o.ClientId == identifier).FirstOrDefault();            
+            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>(o => o.ClientId == identifier).FirstOrDefault();
         }
 
         public Task<OpenIdApplication> FindByLogoutRedirectUri(string url, CancellationToken cancellationToken)

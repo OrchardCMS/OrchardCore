@@ -39,7 +39,7 @@ namespace Orchard.OpenId.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             var key = int.Parse(identifier);
-            return _session.GetAsync<OpenIdToken>(key);            
+            return _session.QueryAsync<OpenIdToken, OpenIdTokenIndex>(o => o.TokenId == key).FirstOrDefault();
         }
 
         public Task RevokeAsync(OpenIdToken token, CancellationToken cancellationToken)

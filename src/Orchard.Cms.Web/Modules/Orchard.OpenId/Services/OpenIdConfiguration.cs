@@ -90,7 +90,7 @@ namespace Orchard.OpenId
             if (settings.AllowImplicitFlow || settings.AllowHybridFlow)
             {
                 options.GrantTypes.Add(OpenIdConnectConstants.GrantTypes.Implicit);
-            }
+            } 
         }
     }
 }
