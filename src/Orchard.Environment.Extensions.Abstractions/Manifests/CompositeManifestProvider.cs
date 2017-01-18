@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Orchard.Environment.Extensions.Manifests
 {
-    internal class CompositeManifestProvider : IManifestProvider
+    public class CompositeManifestProvider : IManifestProvider
     {
         private readonly IManifestProvider[] _manifestProviders;
 
@@ -23,23 +23,17 @@ namespace Orchard.Environment.Extensions.Manifests
             _manifestProviders = manifestProviders.ToArray();
         }
 
-        public int Priority
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
+        public int Order { get { throw new NotSupportedException(); } }
 
         public IConfigurationBuilder GetManifestConfiguration(
             IConfigurationBuilder configurationBuilder, 
-            string subPath)
+            string filePath)
         {
             foreach (var provider in _manifestProviders)
             {
                 configurationBuilder = provider.GetManifestConfiguration(
                     configurationBuilder,
-                    subPath
+                    filePath
                     );
             }
 

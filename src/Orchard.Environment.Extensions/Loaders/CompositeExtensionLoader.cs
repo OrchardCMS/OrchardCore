@@ -39,7 +39,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            foreach (var loader in _extensionLoaders.OrderByDescending(x => x.Order))
+            foreach (var loader in _extensionLoaders.OrderBy(x => x.Order))
             {
                 var entry = loader.Load(extensionInfo);
                 if (entry != null)

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Orchard.Environment.Extensions
 {
-    internal class CompositeExtensionOrderingStrategy : IExtensionOrderingStrategy
+    public class CompositeExtensionOrderingStrategy : IExtensionOrderingStrategy
     {
         private readonly IExtensionOrderingStrategy[] _extensionOrderingStrategies;
         public CompositeExtensionOrderingStrategy(params IExtensionOrderingStrategy[] extensionOrderingStrategies)
