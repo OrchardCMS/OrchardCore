@@ -13,6 +13,7 @@ namespace Orchard.OpenId
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdTokenIndex), table => table
+                .Column<int>("TokenId")
                 .Column<int>("UserId")
                 .Column<int>("AppId"));
 

@@ -6,6 +6,7 @@ namespace Orchard.OpenId.Indexes
 {
     public class OpenIdTokenIndex : MapIndex
     {
+        public int TokenId { get; set; }
         public int UserId { get; set; }   
         public int AppId { get; set; }
     }
@@ -19,6 +20,7 @@ namespace Orchard.OpenId.Indexes
                 {
                     return new OpenIdTokenIndex
                     {
+                        TokenId = openIdToken.Id,
                         UserId = openIdToken.UserId,
                         AppId = openIdToken.AppId
                     };
