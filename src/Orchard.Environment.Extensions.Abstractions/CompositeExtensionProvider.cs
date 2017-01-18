@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Orchard.Environment.Extensions
 {
-    internal class CompositeExtensionProvider : IExtensionProvider
+    public class CompositeExtensionProvider : IExtensionProvider
     {
         private readonly IExtensionProvider[] _extensionProviders;
         public CompositeExtensionProvider(params IExtensionProvider[] extensionProviders)
@@ -21,17 +21,19 @@ namespace Orchard.Environment.Extensions
             _extensionProviders = extensionProviders.ToArray();
         }
 
-        public IExtensionInfo GetExtensionInfo(string subPath)
+        public int Order { get { throw new NotSupportedException(); } }
+
+        public IExtensionInfo GetExtensionInfo(IManifestInfo manifestInfo, string subPath)
         {
-            foreach (var provider in _extensionProviders)
+            foreach (var provider in _extensionProviders.OrderBy(ep => ep.Order))
             {
-                var extensionInfo = provider.GetExtensionInfo(subPath);
+                var extensionInfo = provider.GetExtensionInfo(manifestInfo, subPath);
                 if (extensionInfo != null)
                 {
                     return extensionInfo;
                 }
             }
-            return new InternalExtensionInfo(subPath);
+            return new NotFoundExtensionInfo(subPath);
         }
     }
 }

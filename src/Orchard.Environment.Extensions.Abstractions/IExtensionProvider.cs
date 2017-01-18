@@ -2,6 +2,7 @@
 {
     public interface IExtensionProvider
     {
-        IExtensionInfo GetExtensionInfo(string subPath);
+        int Order { get; }
+        IExtensionInfo GetExtensionInfo(IManifestInfo manifestInfo, string subPath);
     }
 }
