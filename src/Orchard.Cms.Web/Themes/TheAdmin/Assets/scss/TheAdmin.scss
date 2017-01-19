@@ -51,7 +51,7 @@ $link-padding: $font-size-root;
 
         // Rotate the chevron's icon when the menu is active
         input[type=checkbox]:checked + label > .chevron > i {
-            transform: rotate(-90deg);
+            transform: rotate(90deg);
             transition-duration: 0.2s;
         }
 
