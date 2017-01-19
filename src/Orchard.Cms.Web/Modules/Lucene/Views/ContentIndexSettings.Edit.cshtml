@@ -3,8 +3,11 @@
 <fieldset class="form-group">
     <div class="form-check">
         <label class="form-check-label">
-            <input asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Included" /> @T["Include this element index"]
+            <input asp-for="ContentIndexSettings.Included" type="checkbox" class="form-check-input" checked="@Model.ContentIndexSettings.Included" /> @T["Include this element index"]
             <span class="hint">@T["Check to include the value of this element in the index."]</span>
+            <a class="collapsed" data-toggle="collapse" href="#index-settings" aria-expanded="false" aria-controls="index-settings">
+                <i class="fa" aria-hidden="true"></i>
+            </a>
         </label>
     </div>
     <div id="index-settings" class="collapse">
