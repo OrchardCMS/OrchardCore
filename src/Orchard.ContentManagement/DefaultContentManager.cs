@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
@@ -311,7 +312,7 @@ namespace Orchard.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.Latest = true;
-            buildingContentItem.Data = existingContentItem.Data;
+            buildingContentItem.Data = new JObject(existingContentItem.Data);
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
@@ -419,6 +420,14 @@ namespace Orchard.ContentManagement
             _session.Save(contentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+
+            var publishedItem = GetAsync(contentItem.ContentItemId, VersionOptions.Published).GetAwaiter().GetResult();
+
+            if (publishedItem != null)
+            {
+                publishedItem.Latest = true;
+                _session.Save(publishedItem);
+            }
 
             return Task.CompletedTask;
         }
