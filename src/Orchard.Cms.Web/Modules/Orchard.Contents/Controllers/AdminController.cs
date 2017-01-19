@@ -107,7 +107,7 @@ namespace Orchard.Contents.Controllers
             else
             {
                 var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if(listableTypes.Any())
+                if (listableTypes.Any())
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
@@ -157,7 +157,7 @@ namespace Orchard.Contents.Controllers
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
 
             var contentItemSummaries = new List<dynamic>();
-            foreach(var contentItem in pageOfContentItems)
+            foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
@@ -176,7 +176,7 @@ namespace Orchard.Contents.Controllers
             var creatable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if(ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
                     if (authorized)
@@ -420,7 +420,7 @@ namespace Orchard.Contents.Controllers
         [FormValueRequired("submit.Save")]
         public Task<IActionResult> EditPOST(string contentItemId, string returnUrl)
         {
-            return EditPOST(contentItemId, returnUrl, (contentItem, versionable) =>
+            return EditPOST(contentItemId, returnUrl, contentItem =>
             {
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -449,9 +449,9 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            return await EditPOST(contentItemId, returnUrl, async (contentItem, versionable) =>
+            return await EditPOST(contentItemId, returnUrl, async contentItem =>
             {
-                await _contentManager.PublishAsync(contentItem, versionable);
+                await _contentManager.PublishAsync(contentItem);
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
@@ -461,7 +461,7 @@ namespace Orchard.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, bool, Task> conditionallyPublish, bool saveDraft = false)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish, bool saveDraft = false)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -476,8 +476,31 @@ namespace Orchard.Contents.Controllers
             }
 
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
             var settings = typeDefinition.Settings.ToObject<ContentTypeSettings>();
+
+            if (!settings.Versionable)
+            {
+                ContentItem existingVersion = null;
+
+                if (contentItem.Published && saveDraft)
+                {
+                    existingVersion = await _contentManager.GetAsync(contentItemId, VersionOptions.Number(contentItem.Number + 1));
+                }
+                else if (!contentItem.Published && !saveDraft)
+                {
+                    existingVersion = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
+                }
+
+                if (existingVersion != null)
+                {
+                    contentItem.Latest = false;
+                    _session.Save(contentItem);
+
+                    existingVersion.Latest = true;
+                    contentItem = existingVersion;
+                }
+            }
+
             var draftRequired = contentItem.Published && (saveDraft || settings.Versionable);
 
             if (draftRequired)
@@ -508,12 +531,9 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
-            if (!draftRequired)
-            {
-                _session.Save(contentItem);
-            }
+            _session.Save(contentItem);
 
-            await conditionallyPublish(contentItem, settings.Versionable);
+            await conditionallyPublish(contentItem);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null

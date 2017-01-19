@@ -151,7 +151,7 @@ namespace Orchard.ContentManagement
             {
                 // If the published version is requested and is already loaded, we can
                 // return it right away
-                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
                 }
@@ -207,7 +207,7 @@ namespace Orchard.ContentManagement
             return contentItem;
         }
 
-        public async Task PublishAsync(ContentItem contentItem, bool versionable = true)
+        public async Task PublishAsync(ContentItem contentItem)
         {
             if (contentItem.Published)
             {
@@ -243,11 +243,6 @@ namespace Orchard.ContentManagement
             _session.Save(contentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
-
-            if (previous != null && !versionable)
-            {
-                _session.Delete(previous);
-            }
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -287,7 +282,7 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-            
+
             _session.Save(publishedItem);
 
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
