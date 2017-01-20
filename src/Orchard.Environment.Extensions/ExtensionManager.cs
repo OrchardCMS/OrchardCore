@@ -7,14 +7,14 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Utility;
 using Orchard.Environment.Extensions.Manifests;
-using Microsoft.Extensions.Configuration;
+using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Extensions
 {
