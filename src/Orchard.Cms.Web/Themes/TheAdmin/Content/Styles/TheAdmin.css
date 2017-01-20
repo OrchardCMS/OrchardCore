@@ -6288,7 +6288,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
     margin: 0;
     padding: 0; }
   .ta-wrapper #ta-left-sidebar input[type=checkbox]:checked + label > .chevron > i {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
     transition-duration: 0.2s; }
   .ta-wrapper #ta-left-sidebar input[type=checkbox] + label > .chevron > i {
     transition-duration: 0.2s; }
