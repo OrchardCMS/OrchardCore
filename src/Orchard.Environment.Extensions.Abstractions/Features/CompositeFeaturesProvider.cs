@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Orchard.Environment.Extensions.Features
 {
-    internal class CompositeFeaturesProvider : IFeaturesProvider
+    public class CompositeFeaturesProvider : IFeaturesProvider
     {
         private readonly IFeaturesProvider[] _featuresProviders;
         public CompositeFeaturesProvider(params IFeaturesProvider[] featuresProviders)

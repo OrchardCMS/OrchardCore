@@ -18,9 +18,14 @@ namespace Orchard.Autoroute.Services
         {
             string contentItemId;
 
-            if (alias.StartsWith("slug:"))
+            if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
                 alias = alias.Substring(5);
+
+                if (!alias.StartsWith("/"))
+                {
+                    alias = "/" + alias;
+                }
 
                 if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
                 {

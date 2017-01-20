@@ -226,35 +226,32 @@ namespace Orchard.Recipes.Services
         /// </summary>
         private void EvaluateJsonTree(IScriptingManager scriptingManager, JToken node)
         {
-            var items = node as IEnumerable<JToken>;
-
             switch (node.Type)
             {
                 case JTokenType.Array:
-                    foreach (var token in (JArray)node)
+                    var array = (JArray)node;
+                    for (var i=0; i < array.Count; i++)
                     {
-                        EvaluateJsonTree(scriptingManager, token);
+                        EvaluateJsonTree(scriptingManager, array[i]);
                     }
                     break;
                 case JTokenType.Object:
                     foreach (var property in (JObject)node)
                     {
-                        if (property.Value.Type == JTokenType.String)
-                        {
-                            var value = property.Value.Value<string>();
+                        EvaluateJsonTree(scriptingManager, property.Value);
+                    }
+                    break;
 
-                            // Evaluate the expression while the result is another expression
-                            while (value.StartsWith("[") && value.EndsWith("]"))
-                            {
-                                value = value.Trim('[', ']');
-                                value = (scriptingManager.Evaluate(value) ?? "").ToString();
-                                node[property.Key] = new JValue(value);
-                            }
-                        }
-                        else
-                        {
-                            EvaluateJsonTree(scriptingManager, property.Value);
-                        }
+                case JTokenType.String:
+
+                    var value = node.Value<string>();
+
+                    // Evaluate the expression while the result is another expression
+                    while (value.StartsWith("[") && value.EndsWith("]"))
+                    {
+                        value = value.Trim('[', ']');
+                        value = (scriptingManager.Evaluate(value) ?? "").ToString();
+                        ((JValue)node).Value = value;
                     }
                     break;
             }

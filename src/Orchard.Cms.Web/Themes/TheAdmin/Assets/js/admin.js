@@ -99,7 +99,7 @@ function getTechnicalName(name){
 
     for (i = 0; i < name.length; i++) {
         c = name[i];
-        if (isLetter(c) || (isNumber(c) && index > 0)) {
+        if (isLetter(c) || (isNumber(c) && i > 0)) {
             result += c;
         }
     }

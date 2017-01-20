@@ -18,7 +18,7 @@ namespace Orchard.Alias.Services
         
         public async Task<string> GetContentItemIdAsync(string alias)
         {
-            if (alias.StartsWith("alias:"))
+            if (alias.StartsWith("alias:", System.StringComparison.OrdinalIgnoreCase))
             {
                 alias = alias.Substring(6);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
@@ -72,6 +73,11 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId)
         {
+            if (contentItemId == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemId));
+            }
+
             return await GetAsync(contentItemId, VersionOptions.Published);
         }
 
@@ -306,7 +312,7 @@ namespace Orchard.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.Latest = true;
-            buildingContentItem.Data = existingContentItem.Data;
+            buildingContentItem.Data = new JObject(existingContentItem.Data);
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
@@ -399,7 +405,7 @@ namespace Orchard.ContentManagement
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
         }
 
-        public Task DiscardDraftAsync(ContentItem contentItem)
+        public async Task DiscardDraftAsync(ContentItem contentItem)
         {
             if (contentItem.Published || !contentItem.Latest)
             {
@@ -415,7 +421,13 @@ namespace Orchard.ContentManagement
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
 
-            return Task.CompletedTask;
+            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            if (publishedItem != null)
+            {
+                publishedItem.Latest = true;
+                _session.Save(publishedItem);
+            }
         }
     }
 }

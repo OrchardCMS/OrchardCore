@@ -164,7 +164,7 @@ namespace Orchard.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            var updateContentContext = new UpdateContentContext(contentItem);
+            var updateContentContext = new UpdateContentContext(contentItem, updater);
 
             _contentHandlers.Invoke(handler => handler.Updating(updateContentContext), Logger);
 

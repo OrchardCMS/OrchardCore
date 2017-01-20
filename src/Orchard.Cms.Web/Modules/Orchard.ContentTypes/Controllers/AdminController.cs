@@ -183,7 +183,7 @@ namespace Orchard.ContentTypes.Controllers
             else
             {
                 var ownedPartDefinition = _contentDefinitionManager.GetPartDefinition(contentTypeDefinition.Name);
-                if (ownedPartDefinition != null)
+                if (ownedPartDefinition != null && viewModel.OrderedFieldNames != null)
                 {
                     _contentDefinitionService.AlterPartFieldsOrder(ownedPartDefinition, viewModel.OrderedFieldNames);
                 }
