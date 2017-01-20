@@ -405,7 +405,7 @@ namespace Orchard.ContentManagement
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
         }
 
-        public Task DiscardDraftAsync(ContentItem contentItem)
+        public async Task DiscardDraftAsync(ContentItem contentItem)
         {
             if (contentItem.Published || !contentItem.Latest)
             {
@@ -421,15 +421,13 @@ namespace Orchard.ContentManagement
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
 
-            var publishedItem = GetAsync(contentItem.ContentItemId, VersionOptions.Published).GetAwaiter().GetResult();
+            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 
             if (publishedItem != null)
             {
                 publishedItem.Latest = true;
                 _session.Save(publishedItem);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
