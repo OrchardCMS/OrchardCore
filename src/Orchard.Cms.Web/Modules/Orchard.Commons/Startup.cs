@@ -35,7 +35,7 @@ namespace Orchard.Commons
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // TODO: Order to be the late in the return pipeline
-            app.UseMiddleware<DeferredTaskMiddleware>();
+            app.AddDeferredTasks();
         }
     }
 }
