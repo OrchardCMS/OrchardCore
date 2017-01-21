@@ -19,7 +19,7 @@ namespace Orchard.Environment.Extensions.Features
         public string FeatureName { get; set; }
         public IDictionary<string, string> ManifestDetails { get; set; }
         public IDictionary<string, string> FeatureDetails { get; set; }
-        public double Priority { get; set; }
+        public int Priority { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
         public string[] FeatureDependencyIds { get; set; }

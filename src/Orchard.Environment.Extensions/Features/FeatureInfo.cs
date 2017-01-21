@@ -4,7 +4,7 @@
     {
         private readonly string _id;
         private readonly string _name;
-        private readonly double _priority;
+        private readonly int _priority;
         private readonly string _category;
         private readonly string _description;
         private readonly IExtensionInfo _extension;
@@ -13,7 +13,7 @@
         public FeatureInfo(
             string id,
             string name,
-            double priority,
+            int priority,
             string category,
             string description,
             IExtensionInfo extension,
@@ -30,7 +30,7 @@
 
         public string Id { get { return _id; } }
         public string Name { get { return _name; } }
-        public double Priority { get { return _priority; } }
+        public int Priority { get { return _priority; } }
         public string Category { get { return _category; } }
         public string Description { get { return _description; } }
         public IExtensionInfo Extension { get { return _extension; } }

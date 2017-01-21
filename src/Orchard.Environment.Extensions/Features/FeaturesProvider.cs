@@ -57,8 +57,8 @@ namespace Orchard.Environment.Extensions.Features
                         .ConfigurationRoot.GetChildren().ToDictionary(x => x.Key, v => v.Value);
 
                     var featurePriority = featureDetails.ContainsKey(PriorityKey) ?
-                            double.Parse(featureDetails[PriorityKey]) :
-                            (manifestFeatureDetails.ContainsKey(PriorityKey) ? double.Parse(manifestFeatureDetails[PriorityKey]) : 0D);
+                            int.Parse(featureDetails[PriorityKey]) :
+                            (manifestFeatureDetails.ContainsKey(PriorityKey) ? int.Parse(manifestFeatureDetails[PriorityKey]) : 0);
 
                     var featureCategory =
                         featureDetails.ContainsKey(CategoryKey) ?
@@ -107,7 +107,7 @@ namespace Orchard.Environment.Extensions.Features
 
                 var featureDetails = manifestInfo.ConfigurationRoot.GetChildren().ToDictionary(x => x.Key, v => v.Value);
 
-                var featurePriority = featureDetails.ContainsKey(PriorityKey) ? double.Parse(featureDetails[PriorityKey]) : 0D;
+                var featurePriority = featureDetails.ContainsKey(PriorityKey) ? int.Parse(featureDetails[PriorityKey]) : 0;
 
                 var featureDependencyIds = featureDetails.ContainsKey(DependenciesKey) ?
                     featureDetails[DependenciesKey]

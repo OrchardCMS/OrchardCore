@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Utility;
-using System.Threading;
 using Orchard.Environment.Extensions.Manifests;
-using Microsoft.Extensions.Configuration;
+using Orchard.Environment.Extensions.Utility;
 
 namespace Orchard.Environment.Extensions
 {
@@ -27,7 +27,8 @@ namespace Orchard.Environment.Extensions
         private readonly IExtensionProvider _extensionProvider;
 
         private readonly IExtensionLoader _extensionLoader;
-        private readonly IExtensionOrderingStrategy _extensionOrderingStrategy;
+        private readonly IEnumerable<IExtensionDependencyStrategy> _extensionDependencyStrategies;
+        private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
         private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
@@ -69,7 +70,8 @@ namespace Orchard.Environment.Extensions
 
             IEnumerable<IExtensionProvider> extensionProviders,
             IEnumerable<IExtensionLoader> extensionLoaders,
-            IEnumerable<IExtensionOrderingStrategy> extensionOrderingStrategies,
+            IEnumerable<IExtensionDependencyStrategy> extensionDependencyStrategies,
+            IEnumerable<IExtensionPriorityStrategy> extensionPriorityStrategies,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<ExtensionManager> logger,
             IStringLocalizer<ExtensionManager> localizer)
@@ -80,7 +82,8 @@ namespace Orchard.Environment.Extensions
             _manifestProvider = new CompositeManifestProvider(manifestProviders);
             _extensionProvider = new CompositeExtensionProvider(extensionProviders);
             _extensionLoader = new CompositeExtensionLoader(extensionLoaders);
-            _extensionOrderingStrategy = new CompositeExtensionOrderingStrategy(extensionOrderingStrategies);
+            _extensionDependencyStrategies = extensionDependencyStrategies;
+            _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
             L = logger;
             T = localizer;
@@ -276,10 +279,8 @@ namespace Orchard.Environment.Extensions
                 .SelectMany(featureId => GetFeatureDependencies(featureId))
                 .Distinct();
 
-            var orderedFeatureDescriptors = GetFeatures()
+            return GetFeatures()
                 .Where(f => allDependencies.Any(d => d.Id == f.Id));
-
-            return orderedFeatureDescriptors;
         }
 
         private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
@@ -287,8 +288,8 @@ namespace Orchard.Environment.Extensions
             return featuresToOrder
                 .OrderBy(x => x.Id)
                 .OrderByDependenciesAndPriorities(
-                    (fiObv, fiSub) => HasDependency(fiObv, fiSub),
-                    (fi) => fi.Priority)
+                    HasDependency,
+                    GetPriority)
                 .ToList();
         }
 
@@ -306,7 +307,12 @@ namespace Orchard.Environment.Extensions
 
         private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
         {
-            return _extensionOrderingStrategy.Compare(f1, f2) > 0 ? true : GetFeatureDependencies(f1.Id).Contains(f2);
+            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
+        }
+
+        private int GetPriority(IFeatureInfo feature)
+        {
+            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
         }
 
         private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)

@@ -40,7 +40,7 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
-            services.AddScoped<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
@@ -48,8 +48,7 @@ namespace Orchard.DisplayManagement
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
-            services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
-
+            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
         }

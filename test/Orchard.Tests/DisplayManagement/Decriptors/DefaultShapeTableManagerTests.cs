@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
@@ -47,7 +46,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
-            public double Priority { get; set; }
+            public int Priority { get; set; }
             public string Category { get; set; }
             public string Description { get; set; }
             public bool DependencyOn(IFeatureInfo feature)
@@ -76,7 +75,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
                     };
 
                 Features = features;
@@ -110,7 +109,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[0])}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[0])}
                     };
 
                 Features = features;
@@ -137,7 +136,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0D, "", "", this, new string[] { baseTheme.Id })}
+                        {new FeatureInfo(name, name, 0, "", "", this, new string[] { baseTheme.Id })}
                     };
 
                 Id = name;
@@ -161,7 +160,6 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
-            serviceCollection.AddSingleton<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
 
             var testFeatureExtensionInfo = new TestModuleExtensionInfo("Testing");
             var theme1FeatureExtensionInfo = new TestThemeExtensionInfo("Theme1");
