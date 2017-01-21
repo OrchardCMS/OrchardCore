@@ -478,27 +478,7 @@ namespace Orchard.Contents.Controllers
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var versionable = typeDefinition.Settings.ToObject<ContentTypeSettings>().Versionable;
 
-            if (!versionable && (contentItem.Published == saveDraft))
-            {
-                var nextVersion = VersionOptions.Number(contentItem.Number + 1);
-                var version = contentItem.Published ? nextVersion : VersionOptions.Published;
-                var prevVersion = VersionOptions.Number(contentItem.Number - 1);
-
-                var existingVersion = await _contentManager.GetAsync(contentItemId, version)
-                    ?? await _contentManager.GetAsync(contentItemId, prevVersion);
-
-                if (existingVersion != null)
-                {
-                    contentItem.Latest = false;
-                    _session.Save(contentItem);
-                    existingVersion.Latest = true;
-                    contentItem = existingVersion;
-                }
-            }
-
-            var draftRequired = contentItem.Published && (saveDraft || versionable);
-
-            if (draftRequired)
+            if (contentItem.Published && (saveDraft || versionable))
             {
                 contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
