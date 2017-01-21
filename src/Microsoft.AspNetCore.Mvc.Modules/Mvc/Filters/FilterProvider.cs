@@ -21,7 +21,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters
             }
 
             var services = context.ActionContext.HttpContext.RequestServices;
-            var filters = services.GetService<IEnumerable<IFilterMetadata>>();
+            var filters = services.GetServices<IFilterMetadata>();
 
             if (context.ActionContext.ActionDescriptor.FilterDescriptors != null)
             {

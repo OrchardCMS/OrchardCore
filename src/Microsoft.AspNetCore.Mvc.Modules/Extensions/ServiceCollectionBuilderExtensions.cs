@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -60,40 +59,30 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             return services;
         }
 
-        public static IMvcCoreBuilder AddExtensionsApplicationParts(this IMvcCoreBuilder builder, IServiceProvider applicationServices)
+        public static IMvcCoreBuilder AddExtensionsApplicationParts(this IMvcCoreBuilder builder,
+            IServiceProvider applicationServices)
         {
             var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
-            var loggerFactory = applicationServices.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger("Default");
 
             var availableExtensions = extensionManager.GetExtensions();
-            using (logger.BeginScope("Loading extensions"))
+
+            ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
+            Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
             {
-                ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
-                Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
-                {
-                    try
-                    {
-                        var extensionEntry = extensionManager
-                            .LoadExtensionAsync(ae)
-                            .GetAwaiter()
-                            .GetResult();
+                var extensionEntry = extensionManager
+                    .LoadExtensionAsync(ae)
+                    .GetAwaiter()
+                    .GetResult();
 
-                        if (!extensionEntry.IsError)
-                        {
-                            bagOfAssemblies.Add(extensionEntry.Assembly);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        logger.LogCritical("Could not load an extension", ae, e);
-                    }
-                });
-
-                foreach (var ass in bagOfAssemblies)
+                if (!extensionEntry.IsError)
                 {
-                    builder.AddApplicationPart(ass);
+                    bagOfAssemblies.Add(extensionEntry.Assembly);
                 }
+            });
+
+            foreach (var ass in bagOfAssemblies)
+            {
+                builder.AddApplicationPart(ass);
             }
 
             return builder;
