@@ -6,107 +6,91 @@ namespace Orchard.Environment.Extensions.Utility
 {
     public static class DependencyOrdering
     {
-        class Linkage<T>
+        class Node<T>
         {
-            public T Element { get; set; }
+            public T Item { get; set; }
             public bool Used { get; set; }
         }
 
         /// <summary>
-        /// Sort a collection of elements "by dependency order". By passing a lambda which determines if an element
-        /// is a dependency of another, this algorithm will return the collection of elements sorted
-        /// so that a given element in the sequence doesn't depend on any other element further in the sequence.
+        /// Linearizes a dependency graph so that items are positioned after their dependencies.
+        /// This by using a function which determines if an item has a direct dependency on another.
+        /// Then, items are moved up whenever it is possible without breaking the dependency graph.
+        /// This by using a function which gives for each item a priority used as an order value.
         /// </summary>
-        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> elements, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        public static IEnumerable<T> OrderByDependenciesAndPriorities<T>(this IEnumerable<T> items, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
         {
-            var population = elements.Select(d => new Linkage<T>
-            {
-                Element = d
-            }).OrderBy(item => getPriority(item.Element)).ToArray(); // Performing an initial sorting by priorities may optimize performance
+            var nodes = items.Select(i => new Node<T> { Item = i }).ToArray();
 
             var result = new List<T>();
-            foreach (var item in population)
+            foreach (var node in nodes)
             {
-                Add(item, result, population, hasDependency, getPriority);
+                Add(node, result, nodes, hasDependency);
             }
 
-            // shift elements forward as possible within priorities and dependencies
-            for (int i = 1; i < result.Count; i++)
+            for (int index = 1; index < result.Count; index++)
             {
-                int bestPosition = BestPriorityPosition(result, i, hasDependency, getPriority);
-                SwitchAndShift(result, i, bestPosition);
+                MoveUp(result, index, LowestIndex(result, index, hasDependency, getPriority));
             }
 
             return result;
         }
 
-        private static void Add<T>(Linkage<T> item, ICollection<T> list, IEnumerable<Linkage<T>> population, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        private static void Add<T>(Node<T> node, ICollection<T> list, IEnumerable<Node<T>> nodes, Func<T, T, bool> hasDependency)
         {
-            if (item.Used)
+            if (node.Used)
                 return;
 
-            item.Used = true;
+            node.Used = true;
 
-            foreach (var dependency in population.Where(dep => hasDependency(item.Element, dep.Element)))
+            foreach (var dependency in nodes.Where(n => hasDependency(node.Item, n.Item)))
             {
-                Add(dependency, list, population, hasDependency, getPriority);
+                Add(dependency, list, nodes, hasDependency);
             }
 
-            list.Add(item.Element);
+            list.Add(node.Item);
         }
 
-        private static int BestPriorityPosition<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, double> getPriority)
+        private static int LowestIndex<T>(List<T> list, int index, Func<T, T, bool> hasDependency, Func<T, int> getPriority)
         {
-            double bestPriority = getPriority(list[index]);
-            int bestIndex = index;
+            double priority = getPriority(list[index]);
 
+            int lowestIndex = index;
             for (int i = index - 1; i >= 0; i--)
             {
                 if (hasDependency(list[index], list[i]))
                 {
-                    return bestIndex;
+                    return lowestIndex;
                 }
 
                 double currentPriority = getPriority(list[i]);
-                if (currentPriority > bestPriority)
+                if (currentPriority > priority)
                 {
-                    bestIndex = i;
+                    lowestIndex = i;
                 }
             }
 
-            return bestIndex;
+            return lowestIndex;
         }
 
-        /// <summary>
-        /// Advances an element within the list from an initial position to a final position with a lower index.
-        /// </summary>
-        /// <typeparam name="T">The type of each element.</typeparam>
-        /// <param name="list">the list of elements.</param>
-        /// <param name="initialPosition">The initial position within the list.</param>
-        /// <param name="finalPosition">The final position within the list.</param>
-        /// <returns>True if any change was made; false otherwise.</returns>
-        private static bool SwitchAndShift<T>(List<T> list, int initialPosition, int finalPosition)
+        private static void MoveUp<T>(List<T> list, int index, int lowerIndex)
         {
-            if (initialPosition < finalPosition)
+            if (index < lowerIndex)
             {
-                throw new ArgumentException("finalPosition");
+                throw new ArgumentException("lowerIndex");
             }
 
-            if (initialPosition != finalPosition)
+            if (index != lowerIndex)
             {
-                T temp = list[initialPosition];
+                T temp = list[index];
 
-                for (; initialPosition > finalPosition; initialPosition--)
+                for (; index > lowerIndex; index--)
                 {
-                    list[initialPosition] = list[initialPosition - 1];
+                    list[index] = list[index - 1];
                 }
 
-                list[finalPosition] = temp;
-
-                return true;
+                list[lowerIndex] = temp;
             }
-
-            return false;
         }
     }
 }

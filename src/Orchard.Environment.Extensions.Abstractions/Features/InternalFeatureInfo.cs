@@ -6,7 +6,7 @@ namespace Orchard.Environment.Extensions.Features
     {
         private readonly string _id;
         private readonly string _name;
-        private readonly double _priority;
+        private readonly int _priority;
         private readonly string _category;
         private readonly string _description;
         private readonly IExtensionInfo _extension;
@@ -18,7 +18,7 @@ namespace Orchard.Environment.Extensions.Features
         {
             _id = id;
             _name = id;
-            _priority = 0D;
+            _priority = 0;
             _category = null;
             _description = null;
             _extension = extensionInfo;
@@ -27,7 +27,7 @@ namespace Orchard.Environment.Extensions.Features
 
         public string Id { get { return _id; } }
         public string Name { get { return _name; } }
-        public double Priority { get { return _priority; } }
+        public int Priority { get { return _priority; } }
         public string Category { get { return _category; } }
         public string Description { get { return _description; } }
         public IExtensionInfo Extension { get { return _extension; } }

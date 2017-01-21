@@ -65,7 +65,8 @@ namespace Orchard.Tests.Extensions
                 ManifestProviders,
                 new[] { ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                Enumerable.Empty<IExtensionOrderingStrategy>(),
+                new[] { new ExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);
@@ -77,7 +78,8 @@ namespace Orchard.Tests.Extensions
                 ManifestProviders,
                 new[] { ThemeProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                Enumerable.Empty<IExtensionOrderingStrategy>(),
+                new[] { new ExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);
@@ -89,7 +91,8 @@ namespace Orchard.Tests.Extensions
                 ManifestProviders,
                 new[] { ThemeProvider, ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                new[] { new ThemeExtensionOrderingStrategy() },
+                new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);

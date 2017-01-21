@@ -4,7 +4,7 @@
     {
         string Id { get; }
         string Name { get; }
-        double Priority { get; }
+        int Priority { get; }
         string Category { get; }
         string Description { get; }
         IExtensionInfo Extension { get; }
