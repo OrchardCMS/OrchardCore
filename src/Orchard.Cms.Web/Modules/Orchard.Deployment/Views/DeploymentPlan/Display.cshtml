@@ -9,7 +9,7 @@
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
             <div class="btn-group">
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalTargets">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
                     @T["Execute"]
                 </button>
             </div>
@@ -18,7 +18,7 @@
     <ul class="navbar-nav">
         <li class="nav-item">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalSteps">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalSteps">
                 @T["Add Step"]
             </button>
         </li>
@@ -49,23 +49,21 @@
 
 <!-- Modal -->
 <div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title">@T["Available Steps"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">@T["Available Steps"]</h4>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="card-columns">
                     @foreach (var thumbnail in Model.Thumbnails)
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
-                        <div class="col-sm-6">
-                            @await DisplayAsync(thumbnail.Value)
-                        </div>
+                        @await DisplayAsync(thumbnail.Value)
                     }
                 </div>
             </div>
@@ -76,32 +74,29 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="modalTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <h5 class="modal-title">@T["Available Targets"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">@T["Available Targets"]</h4>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="card-columns">
                     @foreach (var target in await DeploymentTargetManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
                         routeWithId["id"] = Model.DeploymentPlan.Id;
 
-                        <div class="col-sm-6">
-                            <div class="card">
-                                <div class="card-block">
-                                    <h4 class="card-title">@target.Name</h4>
-                                    <p>@target.Description</p>
-                                </div>
-                                <div class="card-footer text-muted text-xs-right">
-                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
-                                </div>
+                        <div class="card">
+                            <div class="card-block">
+                                <h4 class="card-title">@target.Name</h4>
+                                <p>@target.Description</p>
+                            </div>
+                            <div class="card-footer text-muted text-xs-right">
+                                <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
                             </div>
                         </div>
                     }

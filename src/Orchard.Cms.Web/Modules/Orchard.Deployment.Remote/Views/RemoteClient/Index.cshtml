@@ -22,8 +22,8 @@
                             <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
+                        <h5>@entry.ClientName</h5>
                     </div>
-                    <h5>@entry.ClientName</h5>
                 </li>
             }
         </ul>
