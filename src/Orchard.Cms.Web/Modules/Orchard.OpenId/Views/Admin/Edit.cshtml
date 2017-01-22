@@ -139,10 +139,6 @@ else
 </form>
 <script at="Foot" type="text/javascript">
     //<![CDATA[
-    $("a > input.form-check-input").on("click", function (e) {
-        e.stopPropagation();
-        $(this).parent().trigger("click");
-    })
     $("#Type").change(function () {
         var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
 
@@ -154,7 +150,7 @@ else
         }
     });
     $("#AllowClientCredentialsFlow").change(function () {
-        $("#RoleGroup").collapse($(this).is(':checked') ? "show" : "hide");
+        $("#RoleGroup").collapse($(this).prop('checked') ? "show" : "hide");
     });
     $("#AllowPasswordFlow").change(function () {
         refreshAllowRefreshTokenFlowVisibility();
@@ -169,7 +165,7 @@ else
     $("#AllowRefreshTokenFlow").change(function () {
         var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
 
-        if ($(this).is(':checked')) {
+        if ($(this).prop('checked')) {
             offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
         }
         else {
@@ -179,7 +175,7 @@ else
     function refreshAllowRefreshTokenFlowVisibility() {
         var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
 
-        if (($("#AllowPasswordFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+        if (($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
             allowRefreshTokenFlow.removeAttr("disabled");
         }
         else {
@@ -191,7 +187,7 @@ else
         var redirectSection = $("#RedirectSection");
         var skipConsent = $("#SkipConsent");
 
-        if (($("#AllowImplicitFlow").is(':checked') || $("#AllowAuthorizationCodeFlow").is(':checked') || $("#AllowHybridFlow").is(':checked'))) {
+        if (($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
             redirectSection.collapse("show");
         }
         else {
