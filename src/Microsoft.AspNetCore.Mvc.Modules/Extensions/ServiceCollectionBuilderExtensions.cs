@@ -52,7 +52,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddFeatureProvider(
                 new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
 
-            services.AddSingleton<ITenantRouteBuilder, MvcTenantRouteBuilder>();
+            services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
 

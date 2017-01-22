@@ -40,7 +40,7 @@ namespace Orchard.Cms.Web
 
             services.AddModuleServices(configure => configure
                 .AddConfiguration(Configuration)
-                .WithDefaultFeatures("Orchard.Commons")
+                .WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons")
             );
         }
 

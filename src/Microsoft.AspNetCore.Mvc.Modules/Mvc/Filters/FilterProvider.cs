@@ -20,11 +20,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var services = context.ActionContext.HttpContext.RequestServices;
-            var filters = services.GetServices<IFilterMetadata>();
-
             if (context.ActionContext.ActionDescriptor.FilterDescriptors != null)
             {
+                var services = context.ActionContext.HttpContext.RequestServices;
+                var filters = services.GetServices<IFilterMetadata>();
+
                 foreach (var filter in filters)
                 {
                     var filterItem = new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter);

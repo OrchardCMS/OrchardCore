@@ -27,7 +27,7 @@ namespace Orchard.Data
 
             // Configuring data access
 
-            services.AddSingleton<IStore>(sp =>
+            services.AddScoped<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
                 var hostingEnvironment = sp.GetService<IHostingEnvironment>();
@@ -84,6 +84,12 @@ namespace Orchard.Data
             services.AddScoped<ISession>(sp =>
             {
                 var store = sp.GetService<IStore>();
+
+                if (store == null)
+                {
+                    return null;
+                }
+
                 return store.CreateSession();
             });
 

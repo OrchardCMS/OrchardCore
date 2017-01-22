@@ -47,14 +47,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
                 inlineConstraintResolver)
             );
 
-            var siteService = builder.ServiceProvider.GetService<ISiteService>();
+            //var siteService = builder.ServiceProvider.GetService<ISiteService>();
 
-            // ISiteService might not be registered during Setup
-            if (siteService != null)
-            {
-                // Add home page route
-                builder.Routes.Add(new HomePageRoute(siteService, builder, inlineConstraintResolver));
-            }
+            //// ISiteService might not be registered during Setup
+            //if (siteService != null)
+            //{
+            //    // Add home page route
+            //    builder.Routes.Add(new HomePageRoute(siteService, builder, inlineConstraintResolver));
+            //}
         }
     }
 }

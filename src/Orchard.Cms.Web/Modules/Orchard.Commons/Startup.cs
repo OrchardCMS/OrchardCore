@@ -21,6 +21,7 @@ namespace Orchard.Commons
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddThemingHost();
             services.AddDeferredTasks();
             services.AddDataAccess();
             services.AddBackgroundTasks();

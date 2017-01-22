@@ -58,15 +58,7 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
-            var descriptor = new ShellDescriptor
-            {
-                SerialNumber = -1,
-                Features = new[] {
-                    new ShellFeature { Id = "Orchard.Mvc" },
-                    new ShellFeature { Id = "Orchard.Setup" },
-                    new ShellFeature { Id = "Orchard.Recipes" }
-                }
-            };
+            var descriptor = MinimumShellDescriptor();
 
             return await CreateDescribedContextAsync(settings, descriptor);
         }

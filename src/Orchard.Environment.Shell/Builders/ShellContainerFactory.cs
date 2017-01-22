@@ -98,12 +98,9 @@ namespace Orchard.Environment.Shell.Builders
                     featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
                 }
 
-                startupServices.Add(featureServiceCollection);
-                startupServices.Add(tenantServiceCollection);
                 startup.ConfigureServices(startupServices);
-
                 tenantServiceCollection.Add(startupServices);
-                tenantServiceCollection = new ServiceCollection().Add(tenantServiceCollection.Distinct());
+                featureServiceCollection.Add(startupServices);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
@@ -164,7 +161,6 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             // Register all DIed types in ITypeFeatureProvider
-            var featureTypes = new List<Type>();
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
 
             foreach (var featureServiceCollection in featureServiceCollections)
