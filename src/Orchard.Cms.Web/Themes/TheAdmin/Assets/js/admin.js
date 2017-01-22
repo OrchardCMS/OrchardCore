@@ -88,6 +88,29 @@ $(function () {
     });
 });
 
+$(function () {
+    $('input[data-toggle="collapse in"]').each(function () {
+        // Prevent bootstrap from altering its behavior
+        // c.f. https://github.com/twbs/bootstrap/issues/21079
+        $(this).removeAttr("data-toggle");
+
+        // Expand the section if necessary
+        var target = $($(this).data('target'));
+        if (!$(this).prop('checked')) {
+            target.addClass('in');
+        }
+
+        $(this).on('change', function (e) {
+            // During a double-click, ignore state changes while the element is collapsing
+            if (target.hasClass('collapsing')) {
+                console.log('collapsing');
+                $(this).prop('checked', !$(this).prop('checked'));
+            }
+            target.collapse($(this).prop('checked') ? 'hide' : 'show');
+        });
+    });
+});
+
 function getTechnicalName(name){
     var result = "", c;
 
