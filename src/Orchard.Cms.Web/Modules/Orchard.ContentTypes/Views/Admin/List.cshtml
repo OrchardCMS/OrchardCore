@@ -3,13 +3,14 @@
 <h1>@RenderTitleSegments(T["Content Types"])</h1>
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Create new type"]</a>
-        <div class="float-xs-right">
-            <input id="search-box" class="form-control" type="text" placeholder="@T["Filter"]" autofocus="autofocus">
-        </div>
-    </div>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Create new type"]</a>
+        </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Filter"]" autofocus="autofocus">
+    </form>
 </nav>
 
 <ul class="list-group">

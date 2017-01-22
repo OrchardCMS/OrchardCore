@@ -1,7 +1,7 @@
 @model dynamic
     
 <div class="properties">
-    <div class="related float-xs-right">
+    <div class="related">
         <a asp-action="Edit" 
            asp-controller="Step" 
            asp-route-id="@Model.DeploymentPlanId" 
@@ -15,6 +15,6 @@
            class="btn btn-danger btn-sm" 
            itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
     </div>
-</div>
 
-@await DisplayAsync(Model.Content)
+    @await DisplayAsync(Model.Content)
+</div>

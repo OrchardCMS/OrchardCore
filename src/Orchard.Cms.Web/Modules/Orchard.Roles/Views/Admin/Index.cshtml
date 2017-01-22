@@ -3,32 +3,29 @@
 <h1>@RenderTitleSegments(T["Roles"])</h1>
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
-
-        <form class="form-inline float-xs-right" autocomplete="off">
-            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        </form>
-    </div>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
+        </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0" autocomplete="off">
+        <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    </form>
 </nav>
 
 <form asp-action="Index">
     <ul id="roles" class="list-group">
-
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
                 <div class="properties">
-                    <div class="float-xs-right">
+                    <div class="related">
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
                         <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
+                    @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
+                    @Model.RoleEntries[i].Name
                 </div>
-
-                @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
-
-                @Model.RoleEntries[i].Name
             </li>
         }
     </ul>

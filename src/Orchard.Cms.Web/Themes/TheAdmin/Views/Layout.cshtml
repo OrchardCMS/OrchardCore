@@ -25,21 +25,23 @@
     <div class="ta-wrapper">
         <div class="ta-navbar-top">
             <a class="navbar-brand" href="~/">@site.SiteName</a>
-            <button id="navbar-toggler" type="button" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation"></button>
-
-            <div id="navbar-content">
-                @await RenderSectionAsync("NavbarTop", required: false)
-
-                <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
-                    <ul class="nav navbar-nav navbar-ri float-xs-right">
-                        <li class="nav-item">
-                            <a class="nav-link"><i class="fa fa-user"></i> @User.Identity.Name</a>
-                        </li>
-                        <li class="nav-item">
+            <button id="navbar-toggler" type="button" data-toggle="collapse" aria-controls="ta-left-sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbar-links">
+                <div class="mr-auto">
+                    @await RenderSectionAsync("NavbarTop", required: false)
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link"><i class="fa fa-user"></i> @User.Identity.Name</a>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-route-area="Orchard.Users" asp-controller="Account" asp-action="LogOff" method="post">
                             <button type="submit" class="btn btn-link nav-link"><i class="fa fa-sign-out"></i> @T["Log off"]</button>
-                        </li>
-                    </ul>
-                </form>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
 
