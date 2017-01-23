@@ -150,15 +150,12 @@ namespace Orchard.ContentManagement
 
                 if (options.IsStageRequired && (contentItem?.Published ?? false))
                 {
-                    var version = contentItem.Number + (contentItem.Number % 2 == 0 ? -1 : 1);
-
                     stageItem = await _session
                         .QueryAsync<ContentItem, ContentItemIndex>()
                         .Where(x =>
                             x.ContentItemId == contentItemId &&
-                            x.Published == false &&
-                            x.Latest == false &&
-                            x.Number == version)
+                            x.Published == false && x.Latest == false &&
+                            x.Number == NextStageVersion(contentItem.Number))
                         .FirstOrDefault();
                 }
             }
@@ -192,23 +189,16 @@ namespace Orchard.ContentManagement
                     // Save the previous version
                     _session.Save(contentItem);
 
-                    if (!options.IsStageRequired)
+                    if (stageItem == null)
                     {
-                        contentItem = await BuildNewVersionAsync(contentItem);
+                        contentItem = await BuildNewVersionAsync(contentItem, options.IsStageRequired);
                     }
                     else
                     {
-                        if (stageItem == null)
-                        {
-                            contentItem = await BuildNewVersionAsync(contentItem, stage: true);
-                        }
-                        else
-                        {
-                            stageItem = Load(stageItem);
-                            stageItem.Latest = true;
-                            contentItem.Latest = false;
-                            contentItem = stageItem;
-                        }
+                        stageItem = Load(stageItem);
+                        stageItem.Latest = true;
+                        contentItem.Latest = false;
+                        contentItem = stageItem;
                     }
                 }
 
@@ -242,6 +232,11 @@ namespace Orchard.ContentManagement
             {
                 return recalled;
             }
+        }
+
+        private int NextStageVersion (int version)
+        {
+            return version + (version % 2 == 0 ? -1 : 1);
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -325,7 +320,7 @@ namespace Orchard.ContentManagement
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
         }
 
-        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem, bool stage = false)
+        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem, bool stageVersion = false)
         {
             var buildingContentItem = New(existingContentItem.ContentType);
 
@@ -347,9 +342,9 @@ namespace Orchard.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                var version = latestVersion.Number;
-                var stageVersion = version + (version % 2 == 0 ? -1 : 1);
-                buildingContentItem.Number = stage ? stageVersion : version + 1;
+                buildingContentItem.Number = stageVersion
+                    ? NextStageVersion(latestVersion.Number)
+                    : latestVersion.Number + 1;
             }
             else
             {
