@@ -103,6 +103,11 @@ namespace Orchard.ContentManagement
         public static VersionOptions DraftRequired { get { return new VersionOptions { IsDraft = true, IsDraftRequired = true }; } }
 
         /// <summary>
+        /// Gets the latest version and gets or creates a stage version based on it.
+        /// </summary>
+        public static VersionOptions StageRequired { get { return new VersionOptions { IsDraft = true, IsDraftRequired = true, IsStageRequired = true }; } }
+
+        /// <summary>
         /// Gets all versions.
         /// </summary>
         public static VersionOptions AllVersions { get { return new VersionOptions { IsAllVersions = true }; } }
@@ -126,6 +131,7 @@ namespace Orchard.ContentManagement
         public bool IsPublished { get; private set; }
         public bool IsDraft { get; private set; }
         public bool IsDraftRequired { get; private set; }
+        public bool IsStageRequired { get; private set; }
         public bool IsAllVersions { get; private set; }
         public int VersionNumber { get; private set; }
         public int VersionRecordId { get; private set; }

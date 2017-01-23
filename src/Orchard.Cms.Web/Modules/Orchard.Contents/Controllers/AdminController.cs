@@ -429,8 +429,7 @@ namespace Orchard.Contents.Controllers
                     : T["Your {0} draft has been saved.", typeDefinition.DisplayName]);
 
                 return Task.CompletedTask;
-            },
-            saveDraft: true);
+            });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -461,7 +460,7 @@ namespace Orchard.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish, bool saveDraft = false)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -478,15 +477,8 @@ namespace Orchard.Contents.Controllers
             ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
             var versionable = typeDefinition.Settings.ToObject<ContentTypeSettings>().Versionable;
 
-            if (contentItem.Published && (saveDraft || versionable))
-            {
-                contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
-
-                if (contentItem == null)
-                {
-                    return NotFound();
-                }
-            }
+            var versionOptions = versionable ? VersionOptions.DraftRequired : VersionOptions.StageRequired;
+            contentItem = await _contentManager.GetAsync(contentItemId, versionOptions);
 
             //string previousRoute = null;
             //if (contentItem.Has<IAliasAspect>() &&
@@ -505,8 +497,6 @@ namespace Orchard.Contents.Controllers
                 _session.Cancel();
                 return View("Edit", model);
             }
-
-            _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);
 
