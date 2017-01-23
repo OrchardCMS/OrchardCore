@@ -23,12 +23,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = typePartDefinition.Name;
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
             var buildDisplayContext = new BuildPartDisplayContext(typePartDefinition, context);
 
@@ -44,12 +39,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = typePartDefinition.Name;
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
             var buildEditorContext = new BuildPartEditorContext(typePartDefinition, context);
 
@@ -65,12 +55,7 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
                 return Task.FromResult<IDisplayResult>(null);
             }
 
-            Prefix = typePartDefinition.Name;
-
-            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
-            {
-                Prefix = context.HtmlFieldPrefix + "." + Prefix;
-            }
+            BuildPrefix(typePartDefinition, context.HtmlFieldPrefix);
 
             var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
@@ -126,5 +111,14 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             return Task.FromResult<IDisplayResult>(null);
         }
 
+        private void BuildPrefix(ContentTypePartDefinition typePartDefinition, string htmlFieldPrefix)
+        {
+            Prefix = typePartDefinition.Name;
+
+            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+        }
     }
 }
