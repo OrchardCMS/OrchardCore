@@ -12,5 +12,12 @@ namespace Orchard.Environment.Shell
 
             return services;
         }
+
+        public static IServiceCollection AddSetFeaturesDescriptor(this IServiceCollection services)
+        {
+            services.AddScoped<IShellDescriptorManager, SetFeaturesShellDescriptorManager>();
+
+            return services;
+        }
     }
 }

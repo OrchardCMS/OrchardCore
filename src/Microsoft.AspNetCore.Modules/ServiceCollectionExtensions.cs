@@ -69,6 +69,26 @@ namespace Microsoft.AspNetCore.Modules
             return modules;
         }
 
+        /// <summary>
+        /// Enables all available features.
+        /// </summary>
+        public static ModularServiceCollection WithSetFeatures(
+            this ModularServiceCollection modules,
+            params string[] featureIds)
+        {
+            modules.Configure(services =>
+            {
+                foreach (var featureId in featureIds)
+                {
+                    services.AddTransient(sp => new ShellFeature(featureId));
+                };
+
+                services.AddSetFeaturesDescriptor();
+            });
+
+            return modules;
+        }
+
         public static IServiceCollection AddWebHost(
             this IServiceCollection services)
         {

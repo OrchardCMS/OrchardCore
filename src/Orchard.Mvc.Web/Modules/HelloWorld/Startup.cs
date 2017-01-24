@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +11,26 @@ namespace HelloWorld
 {
     public class Startup : StartupBase
     {
-        public Startup(IConfiguration configuration)
+        private readonly IServiceProvider _applicationServices;
+        private readonly IConfiguration _configuration;
+
+        public Startup(IServiceProvider applicationServices,
+            IConfiguration configuration)
         {
-            Configuration = configuration;
+            _applicationServices = applicationServices;
+            _configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; set; }
+        
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            if (String.IsNullOrEmpty(Configuration["Sample"]))
+            builder.ConfigureModules(apb =>
+            {
+                apb.UseStaticFilesModules();
+            });
+
+            if (string.IsNullOrEmpty(_configuration["Sample"]))
             {
                 throw new Exception(":(");
             }
@@ -35,7 +46,7 @@ namespace HelloWorld
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
-            
+            serviceCollection.AddMvcModules(_applicationServices);
         }
     }
 }
