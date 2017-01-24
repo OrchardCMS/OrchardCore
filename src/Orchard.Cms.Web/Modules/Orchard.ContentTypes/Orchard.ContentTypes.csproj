@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Orchard.ContentTypes</AssemblyName>
+    <PackageId>Orchard.ContentTypes</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />  
+  </ItemGroup>
+
+  <ItemGroup>
+    
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.0" />
+  </ItemGroup>
+
+</Project>

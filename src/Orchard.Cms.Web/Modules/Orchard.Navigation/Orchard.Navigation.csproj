@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <WarningsAsErrors>true</WarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Orchard.Navigation</AssemblyName>
+    <PackageId>Orchard.Navigation</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.Security\Orchard.Security.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+  </ItemGroup>
+
+</Project>

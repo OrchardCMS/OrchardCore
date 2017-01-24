@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Orchard.Lists</AssemblyName>
+    <PackageId>Orchard.Lists</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Mvc.Modules.Hosting\Microsoft.AspNetCore.Mvc.Modules.Hosting.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.Feeds.Abstractions\Orchard.Feeds.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.ResourceManagement.Abstractions\Orchard.ResourceManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Contents\Orchard.Contents.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.0" />
+  </ItemGroup>
+</Project>

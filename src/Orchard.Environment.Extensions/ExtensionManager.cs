@@ -85,10 +85,10 @@ namespace Orchard.Environment.Extensions
             _extensionDependencyStrategies = extensionDependencyStrategies;
             _extensionPriorityStrategies = extensionPriorityStrategies;
             _typeFeatureProvider = typeFeatureProvider;
-            L = logger;
+            Logger = logger;
             T = localizer;
         }
-        public ILogger L { get; set; }
+        public ILogger Logger { get; set; }
         public IStringLocalizer T { get; set; }
 
         public IExtensionInfo GetExtension(string extensionId)
@@ -243,10 +243,9 @@ namespace Orchard.Environment.Extensions
             {
                 var extension = _extensionLoader.Load(extensionInfo);
 
-                if (extension.IsError && L.IsEnabled(LogLevel.Warning))
+                if (extension.IsError)
                 {
-
-                    L.LogError("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
+                    Logger.LogError("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
                 }
 
                 return Task.FromResult(extension);
