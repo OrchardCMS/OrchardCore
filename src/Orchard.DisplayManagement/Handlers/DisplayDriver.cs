@@ -142,6 +142,12 @@ namespace Orchard.DisplayManagement.Handlers
             }
 
             Prefix = GeneratePrefix(model);
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             return DisplayAsync(model, context);
         }
 
@@ -153,6 +159,12 @@ namespace Orchard.DisplayManagement.Handlers
             }
 
             Prefix = GeneratePrefix(model);
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             return EditAsync(model, context);
         }
 
@@ -164,6 +176,12 @@ namespace Orchard.DisplayManagement.Handlers
             }
 
             Prefix = GeneratePrefix(model);
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             return UpdateAsync(model, context);
         }
 

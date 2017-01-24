@@ -72,7 +72,6 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IThemeManager, ThemeManager>();
             services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
 
-            services.AddScoped<IShapeDisplay, ShapeDisplay>();
             services.AddScoped<IShapeFactory, DefaultShapeFactory>();
             services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
 

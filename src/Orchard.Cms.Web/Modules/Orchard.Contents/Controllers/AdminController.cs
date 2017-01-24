@@ -85,7 +85,7 @@ namespace Orchard.Contents.Controllers
                     query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
                     break;
                 case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest || x.Published);
+                    query = query.With<ContentItemIndex>(x => x.Latest);
                     break;
                 default:
                     query = query.With<ContentItemIndex>(x => x.Latest);
@@ -125,7 +125,7 @@ namespace Orchard.Contents.Controllers
                     query = query.OrderByDescending(cr => cr.CreatedUtc);
                     break;
                 default:
-                    query = query.OrderByDescending(cr => cr.Id);
+                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
                     break;
             }
 

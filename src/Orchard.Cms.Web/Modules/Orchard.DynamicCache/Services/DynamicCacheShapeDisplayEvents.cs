@@ -65,15 +65,23 @@ namespace Orchard.DynamicCache.Services
             // If the shape is not cached, evaluate the ESIs
             if(cacheContext == null)
             {
-                string content;
-                using (var sw = new StringWriter())
+                if (context.ChildContent != null)
                 {
-                    context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                    content = sw.ToString();
-                }
+                    string content;
 
-                ProcessESIs(ref content, GetDistributedCache);
-                context.ChildContent = new HtmlString(content);
+                    using (var sw = new StringWriter())
+                    {
+                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
+                        content = sw.ToString();
+                    }
+
+                    ProcessESIs(ref content, GetDistributedCache);
+                    context.ChildContent = new HtmlString(content);
+                }
+                else
+                {
+                    context.ChildContent = HtmlString.Empty;
+                }
             }
             else if (!_cached.Contains(cacheContext) && context.ChildContent != null)
             {

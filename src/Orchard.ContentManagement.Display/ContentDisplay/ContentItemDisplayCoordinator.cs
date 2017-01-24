@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Display.ContentDisplay;
@@ -229,7 +228,7 @@ namespace Orchard.ContentManagement.Display
 
                 partsShape.Add(typePartShape, partPosition);
                 partsShape[typePartDefinition.Name] = typePartShape;
-
+                
                 context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => new PlacementInfo { Location = $"Parts.{typePartDefinition.Name}" };
 
                 await _partDisplayDrivers.InvokeAsync(async contentDisplay =>

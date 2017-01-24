@@ -23,16 +23,11 @@
         {
             <a asp-action="Publish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
             <a asp-action="Preview" asp-controller="Item" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn-sm">@T["Preview Draft"]</a>
+
+            <div class="dropdown-divider"></div>
         }
 
-        @if (hasPublished)
-        {
-            <a display-for="@contentItem" class="dropdown-item btn-sm" itemprop="">@T["View"]</a>
-        }
-
-        <div class="dropdown-divider"></div>
-
-        @if (hasDraft)
+        @if (hasDraft && hasPublished)
         {
             <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Discard Draft"]</a>
         }
@@ -40,6 +35,10 @@
         @if (hasPublished)
         {
             <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="Orchard.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl RemoveUrl" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+        }
+
+        @if (hasDraft || hasPublished)
+        {
             <a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
 

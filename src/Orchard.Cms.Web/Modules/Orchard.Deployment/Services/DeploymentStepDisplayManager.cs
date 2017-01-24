@@ -82,6 +82,7 @@ namespace Orchard.Deployment.Services
             var context = new BuildEditorContext(
                 deploymentStepShape,
                 "",
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -106,6 +107,7 @@ namespace Orchard.Deployment.Services
 
             var context = new UpdateEditorContext(
                 deploymentStepShape,
+                "",
                 "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
