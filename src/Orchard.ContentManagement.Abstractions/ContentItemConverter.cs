@@ -32,58 +32,67 @@ namespace Orchard.ContentManagement
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject o = JObject.Load(reader);
             var contentItem = new ContentItem();
+            var skip = false;
 
-            foreach (var p in o.Properties())
+            while (skip || reader.Read())
             {
-                if (p.Name == nameof(ContentItem.Id))
+                skip = false;
+
+                if (reader.TokenType == JsonToken.EndObject)
                 {
-                    contentItem.Id = (int)p.Value;
+                    break;
                 }
-                else if (p.Name == nameof(ContentItem.ContentItemId))
+
+                if (reader.TokenType != JsonToken.PropertyName)
                 {
-                    contentItem.ContentItemId = (string)p.Value;
+                    continue;
                 }
-                else if (p.Name == nameof(ContentItem.ContentType))
+
+                var propertyName = (string)reader.Value;
+
+                switch (propertyName)
                 {
-                    contentItem.ContentType = (string)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.Latest))
-                {
-                    contentItem.Latest = (bool)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.Number))
-                {
-                    contentItem.Number = (int)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.Published))
-                {
-                    contentItem.Published = (bool)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.PublishedUtc))
-                {
-                    contentItem.PublishedUtc = (DateTimeOffset?)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.ModifiedUtc))
-                {
-                    contentItem.ModifiedUtc = (DateTimeOffset?)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.CreatedUtc))
-                {
-                    contentItem.CreatedUtc = (DateTimeOffset?)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.Author))
-                {
-                    contentItem.Author = (string)p.Value;
-                }
-                else if (p.Name == nameof(ContentItem.Owner))
-                {
-                    contentItem.Owner = (string)p.Value;
-                }
-                else
-                {
-                    contentItem.Data.Add(p);
+                    case nameof(ContentItem.Id) : 
+                        contentItem.Id = reader.ReadAsInt32() ?? 0;
+                        break;
+                    case nameof(ContentItem.ContentItemId):
+                        contentItem.ContentItemId = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.ContentType):
+                        contentItem.ContentType = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.Latest):
+                        contentItem.Latest = reader.ReadAsBoolean() ?? false;
+                        break;
+                    case nameof(ContentItem.Number):
+                        contentItem.Number = reader.ReadAsInt32() ?? 0;
+                        break;
+                    case nameof(ContentItem.Published):
+                        contentItem.Published = reader.ReadAsBoolean() ?? false;
+                        break;
+                    case nameof(ContentItem.PublishedUtc):
+                        contentItem.PublishedUtc = reader.ReadAsDateTimeOffset();
+                        break;
+                    case nameof(ContentItem.ModifiedUtc):
+                        contentItem.ModifiedUtc = reader.ReadAsDateTimeOffset();
+                        break;
+                    case nameof(ContentItem.CreatedUtc):
+                        contentItem.CreatedUtc = reader.ReadAsDateTimeOffset();
+                        break;
+                    case nameof(ContentItem.Author):
+                        contentItem.Author = reader.ReadAsString();
+                        break;
+                    case nameof(ContentItem.Owner):
+                        contentItem.Owner = reader.ReadAsString();
+                        break;
+                    default:
+                        var customProperty = JProperty.Load(reader);
+                        contentItem.Data.Add(customProperty);
+
+                        // Skip reading a token as JPproperty.Load already did the next one
+                        skip = true;
+                        break;
                 }
             }
             

@@ -18,7 +18,7 @@
         {
             <label asp-for="Url" @if (settings.Required) { <text> class="required" </text>  }>@T["Url"]</label>
         }
-        <input asp-for="Url" type="url" class="form-control" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+        <input asp-for="Url" type="url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
@@ -31,7 +31,7 @@
             {
                 <label asp-for="Text" @if (settings.LinkTextMode == LinkTextMode.Required) { <text> class="required" </text>  }>@T["Link text"]</label>
             }
-            <input asp-for="Text" type="text" class="form-control" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
+            <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
             @if (!string.IsNullOrWhiteSpace(settings.HintLinkText))
             {
                 <span class="hint">@settings.HintLinkText</span>
@@ -39,21 +39,3 @@
         </fieldset>
     }
 </div>
-
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.Url)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        });
-        @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
-        {
-        <text>
-        $('#@Html.IdFor(m => m.Text)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        });
-        </text>
-        }
-    });
-</script>

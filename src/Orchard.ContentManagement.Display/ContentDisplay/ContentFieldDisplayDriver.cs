@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.DisplayManagement.Handlers;
@@ -21,6 +22,12 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             if (field != null)
             {
                 Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
+
+                if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+                {
+                    Prefix = context.HtmlFieldPrefix + "." + Prefix;
+                }
+
                 var fieldDisplayContext = new BuildFieldDisplayContext(contentPart, typePartDefinition, partFieldDefinition, context);
                 return DisplayAsync(field, fieldDisplayContext);
             }
@@ -39,6 +46,12 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
             return EditAsync(field, fieldEditorContext);
@@ -55,6 +68,12 @@ namespace Orchard.ContentManagement.Display.ContentDisplay
             var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
+
+            if (!String.IsNullOrEmpty(context.HtmlFieldPrefix))
+            {
+                Prefix = context.HtmlFieldPrefix + "." + Prefix;
+            }
+
             var updateFieldEditorContext = new UpdateFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
             var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);

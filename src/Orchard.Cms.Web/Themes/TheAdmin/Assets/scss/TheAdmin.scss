@@ -288,3 +288,15 @@ ul.pager li a {
 .col-xl {
     @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xs-12;
 }
+
+// Fixing Cards bottom margins
+
+.card-block::after {
+    display: none;
+}
+.card-header::after {
+    display: none;
+}
+.card-footer::after {
+    display: none;
+}

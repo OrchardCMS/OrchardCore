@@ -213,6 +213,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.XmlRpc", "src\Orcha
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.MetaWeblog.Abstractions", "src\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.xproj", "{94FB9ECF-BA43-49BF-96BA-D54B2D959746}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Flows", "src\Orchard.Cms.Web\Modules\Orchard.Flows\Orchard.Flows.xproj", "{874AF752-83B1-4595-AACD-B18D4A8C464B}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Widgets", "src\Orchard.Cms.Web\Modules\Orchard.Widgets\Orchard.Widgets.xproj", "{874AF752-83B1-4595-AACD-B18D4A8C464C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -579,6 +583,14 @@ Global
 		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94FB9ECF-BA43-49BF-96BA-D54B2D959746}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -681,5 +693,7 @@ Global
 		{ECB391BC-F0C7-4775-A585-2781A40ABF5F} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{13C94AF5-CCC8-483C-9F8D-EB803A212019} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{94FB9ECF-BA43-49BF-96BA-D54B2D959746} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{874AF752-83B1-4595-AACD-B18D4A8C464B} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{874AF752-83B1-4595-AACD-B18D4A8C464C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

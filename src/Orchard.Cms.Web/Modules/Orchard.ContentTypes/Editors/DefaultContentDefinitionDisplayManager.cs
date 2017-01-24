@@ -57,6 +57,7 @@ namespace Orchard.ContentTypes.Editors
             var typeContext = new BuildEditorContext(
                 contentTypeDefinitionShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -111,6 +112,7 @@ namespace Orchard.ContentTypes.Editors
             var partContext = new BuildEditorContext(
                 contentPartDefinitionShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -166,6 +168,7 @@ namespace Orchard.ContentTypes.Editors
             var partContext = new BuildEditorContext(
                 typePartDefinitionShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -227,6 +230,7 @@ namespace Orchard.ContentTypes.Editors
             var fieldContext = new BuildEditorContext(
                 partFieldDefinitionShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater

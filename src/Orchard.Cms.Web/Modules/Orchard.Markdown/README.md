@@ -45,7 +45,7 @@ Sample content:
 
 <fieldset class="form-group">
     <label asp-for="Markdown">@T["Markdown"]</label>
-    <textarea asp-for="Markdown" rows="10" class="form-control"></textarea>
+    <textarea asp-for="Markdown" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The markdown of the content item."]</span>
 </fieldset>
 ```

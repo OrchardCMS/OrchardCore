@@ -10,7 +10,7 @@ using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
 
-namespace Orchard.Title.Handlers
+namespace Orchard.Autoroute.Handlers
 {
     public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
     {
