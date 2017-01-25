@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
@@ -55,6 +57,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
+
+            services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
+
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+            });
 
             return services;
         }

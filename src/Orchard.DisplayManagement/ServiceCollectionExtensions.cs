@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -35,9 +36,7 @@ namespace Orchard.DisplayManagement
 			services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
 			services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
 			services.AddScoped<IFilterMetadata, ModelBinderAccessorFilter>();
-
-			services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
-			services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
+            
 			services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
 			services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
@@ -45,7 +44,6 @@ namespace Orchard.DisplayManagement
 			services.Configure<RazorViewEngineOptions>(options =>
 			{
 				options.FileProviders.Add(new ThemingFileProvider());
-				options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
 			});
 
 			services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();

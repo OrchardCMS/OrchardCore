@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace Orchard.DisplayManagement.LocationExpander
+namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     public class ModuleViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

@@ -21,7 +21,10 @@ namespace HelloWorld
             _configuration = configuration;
         }
 
-        
+        public override void ConfigureServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddMvcModules(_applicationServices);
+        }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -42,11 +45,6 @@ namespace HelloWorld
                 template: "",
                 defaults: new { controller = "Home", action = "Index" }
             );
-        }
-
-        public override void ConfigureServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddMvcModules(_applicationServices);
         }
     }
 }

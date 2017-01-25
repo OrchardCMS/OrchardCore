@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace Orchard.DisplayManagement.LocationExpander
+namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     public class DefaultViewLocationExpanderProvider : IViewLocationExpanderProvider
     {

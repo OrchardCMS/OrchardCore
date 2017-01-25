@@ -5,6 +5,7 @@ using Orchard.Environment.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 
 namespace Orchard.DisplayManagement.LocationExpander
 {

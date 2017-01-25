@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.DisplayManagement.LocationExpander
+namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     internal class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
