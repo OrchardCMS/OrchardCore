@@ -23,6 +23,10 @@ namespace Orchard.OpenId.Drivers
             _openIdServices = openIdServices;
             _httpContextAccessor = httpContextAccessor;
         }
+        public override bool RequiresRestartAfterSaving(string groupId)
+        {
+            return (groupId == "open id");
+        }
 
         public override IDisplayResult Edit(OpenIdSettings settings, BuildEditorContext context)
         {
