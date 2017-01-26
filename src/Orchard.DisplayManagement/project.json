@@ -1,6 +1,7 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
+    "Handlebars.Net": "1.8.0",
     "Microsoft.AspNetCore.Html.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
