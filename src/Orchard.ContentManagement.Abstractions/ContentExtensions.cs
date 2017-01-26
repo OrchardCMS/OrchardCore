@@ -142,6 +142,16 @@ namespace Orchard.ContentManagement
         }
 
         /// <summary>
+        /// Whether the content element is the latest or not.
+        /// </summary>
+        /// <param name="content">The content to check.</param>
+        /// <returns><c>True</c> if the content is the latest, <c>False</c> otherwise.</returns>
+        public static bool IsLatest(this IContent content)
+        {
+            return content.ContentItem != null && content.ContentItem.Latest;
+        }
+
+        /// <summary>
         /// Whether the content element has a draft or not.
         /// </summary>
         /// <param name="content">The content to check.</param>

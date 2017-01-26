@@ -8,6 +8,7 @@ namespace Orchard.ContentManagement
         private readonly Dictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
         private readonly Dictionary<Tuple<string, int>, ContentItem> _itemByContentItemId = new Dictionary<Tuple<string, int>, ContentItem>();
         private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
+        private readonly IDictionary<string, ContentItem> _latestItemsById = new Dictionary<string, ContentItem>();
 
         private bool _hasItems;
 
@@ -17,6 +18,12 @@ namespace Orchard.ContentManagement
 
             _itemByVersionId.Add(item.Id, item);
             _itemByContentItemId.Add(Tuple.Create(item.ContentItemId, item.Number), item);
+
+            // is it the latest version ?
+            if (item.Latest)
+            {
+                _latestItemsById[item.ContentItemId] = item;
+            }
 
             // is it the  Published version ?
             if (item.Published)
@@ -55,7 +62,36 @@ namespace Orchard.ContentManagement
                 return false;
             }
 
-            return _publishedItemsById.TryGetValue(id, out item);
+            if (_publishedItemsById.TryGetValue(id, out item))
+            {
+                if (!item.Published)
+                {
+                    _publishedItemsById.Remove(id);
+                    item = null;
+                }
+            }
+
+            return item != null;
+        }
+
+        public bool RecallLatestItemId(string id, out ContentItem item)
+        {
+            if (!_hasItems)
+            {
+                item = null;
+                return false;
+            }
+
+            if (_latestItemsById.TryGetValue(id, out item))
+            {
+                if (!item.Latest)
+                {
+                    _latestItemsById.Remove(id);
+                    item = null;
+                }
+            }
+
+            return item != null;
         }
 
         public void Clear()
@@ -63,6 +99,7 @@ namespace Orchard.ContentManagement
             _itemByVersionId.Clear();
             _itemByContentItemId.Clear();
             _publishedItemsById.Clear();
+            _latestItemsById.Clear();
             _hasItems = false;
         }
     }
