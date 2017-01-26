@@ -18,7 +18,7 @@
     @if (typePart.PartDefinition.IsReusable())
     {
     <fieldset class="form-group">
-        <div class="row col-xs-6 ">
+        <div class="row col-sm-6">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" />
             <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
@@ -26,7 +26,7 @@
     </fieldset>
 
     <fieldset class="form-group">
-        <div class="row col-xs-6 ">
+        <div class="row col-sm-6">
             <label asp-for="Description">@T["Description"]</label>
             <input asp-for="Description" class="form-control" />
             <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>

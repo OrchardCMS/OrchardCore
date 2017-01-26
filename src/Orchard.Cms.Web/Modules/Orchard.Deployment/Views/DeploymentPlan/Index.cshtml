@@ -3,15 +3,15 @@
 <h1>@RenderTitleSegments(T["Deployment Plans"])</h1>
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Deployment Plan"]</a>
-
-        <form asp-action="Index" method="get" class="form-inline float-xs-right">
-            <input id="search-box" asp-for="Options.Search" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Deployment Plan"]</a>
+        </li>
+    </ul>
+        <form asp-action="Index" method="get" class="form-inline my-2 my-lg-0">
+            <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
             <button type="submit" class="btn btn-secondary">@T["Search"]</button>
         </form>
-    </div>
 </nav>
 
 <form asp-action="Index"> @* the form is nessecary to generate and antiforgery token for the delete action *@
@@ -23,12 +23,12 @@
             {
                 <li class="list-group-item">
                     <div class="properties">
-                        <div class="related float-xs-right">
+                        <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.DeploymentPlan.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
+                        <a asp-action="Display" asp-route-id="@entry.DeploymentPlan.Id">@entry.DeploymentPlan.Name</a>
                     </div>
-                    <a asp-action="Display" asp-route-id="@entry.DeploymentPlan.Id">@entry.DeploymentPlan.Name</a>
                 </li>
             }
         </ul>
