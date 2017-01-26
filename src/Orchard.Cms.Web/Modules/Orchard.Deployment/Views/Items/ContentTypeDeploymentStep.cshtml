@@ -12,11 +12,11 @@
     {
         if (contentTypes.Contains(contentTypeDefinition.Name))
         {
-            <span class="tag tag-default">@contentTypeDefinition.DisplayName</span>
+            <span class="badge badge-default">@contentTypeDefinition.DisplayName</span>
         }
     }
 }
 else
 {
-    <span class="tag tag-warning">@T["Nothing here!"]</span>
+    <span class="badge badge-warning">@T["Nothing here!"]</span>
 }
