@@ -6,7 +6,6 @@ using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.CodeAnalysis;
-using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
 {

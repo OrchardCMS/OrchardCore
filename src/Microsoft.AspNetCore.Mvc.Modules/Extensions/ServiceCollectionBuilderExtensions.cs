@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Modules.Routing;
@@ -15,7 +18,9 @@ using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -45,7 +50,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             builder.AddViews();
             builder.AddViewLocalization();
-            builder.AddRazorViewEngine();
             builder.AddJsonFormatters();
 
             builder.AddExtensionsApplicationParts(applicationServices);
@@ -54,6 +58,36 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddFeatureProvider(
                 new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
 
+            builder.AddRazorViewEngine(options =>
+            {
+                var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var referencePaths = extensionLibraryService.MetadataPaths;
+                foreach (var path in referencePaths)
+                {
+                    if (libraryPaths.Add(path))
+                    {
+                        var metadataReference = CreateMetadataReference(path);
+                        options.AdditionalCompilationReferences.Add(metadataReference);
+                    }
+                }
+
+                //var assets = DependencyContext
+                //    .Default
+                //    .CompileLibraries;
+
+                //foreach (var asset in assets.Where(x => x.Type != "project" && x.Assemblies.Any()))
+                //{
+                //    if (libraryPaths.Add(asset.Assemblies.First()))
+                //    {
+                //        Unre
+                //        var metadataReference = CreateMetadataReference(asset.Assemblies.First());
+                //        options.AdditionalCompilationReferences.Add(metadataReference);
+                //    }
+                //}
+
+                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+            });
+
             services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
@@ -61,10 +95,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
 
-            services.Configure<RazorViewEngineOptions>(options =>
-            {
-                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
-            });
 
             return services;
         }
@@ -92,6 +122,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             foreach (var ass in bagOfAssemblies)
             {
+                var tpyeso = ass.DefinedTypes.Select(x => x.Assembly);
+
                 builder.AddApplicationPart(ass);
             }
 
@@ -117,9 +149,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 throw new ArgumentNullException(nameof(provider));
             }
 
-            builder.ConfigureApplicationPartManager(manager => manager.FeatureProviders.Add(provider));
+            builder.ConfigureApplicationPartManager(manager => manager.FeatureProviders.Insert(0, provider));
 
             return builder;
+        }
+
+        private static MetadataReference CreateMetadataReference(string path)
+        {
+            using (var stream = File.OpenRead(path))
+            {
+                var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
+                var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+
+                return assemblyMetadata.GetReference(filePath: path);
+            }
         }
     }
 }
