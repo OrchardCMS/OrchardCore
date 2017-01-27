@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Caching.Distributed;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Notify;
 using Orchard.DisplayManagement.Views;
+using Orchard.DynamicCache.Services;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
 using Orchard.OpenId.ViewModels;
@@ -14,22 +18,33 @@ namespace Orchard.OpenId.Drivers
 {
     public class OpenIdSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<OpenIdSettings>
     {
+        private const string restartPendingCacheKey = "OpenIdSiteSettings_RestartPending";
+        private const string settingsGroupId = "open id";
+
         private readonly IOpenIdService _openIdServices;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer<OpenIdSiteSettingsDisplayDriver> T;
+        private readonly IDynamicCache _dynamicCache;
 
         public OpenIdSiteSettingsDisplayDriver(IOpenIdService openIdServices,
-                                                IHttpContextAccessor httpContextAccessor)
+                                                IHttpContextAccessor httpContextAccessor,
+                                                INotifier notifier,
+                                                IHtmlLocalizer<OpenIdSiteSettingsDisplayDriver> stringLocalizer,
+                                                IDynamicCache dynamicCache)
         {
             _openIdServices = openIdServices;
+            _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
-        }
-        public override bool RequiresRestartAfterSaving(string groupId)
-        {
-            return (groupId == "open id");
+            _dynamicCache = dynamicCache;
+            T = stringLocalizer;
         }
 
         public override IDisplayResult Edit(OpenIdSettings settings, BuildEditorContext context)
         {
+            if (context.GroupId == settingsGroupId && _dynamicCache.GetAsync(restartPendingCacheKey).GetAwaiter().GetResult()!=null)
+                _notifier.Warning(T["This settings only will take effect after restarting the tenant."]);
+
             var requestUrl = _httpContextAccessor.HttpContext.Request.GetDisplayUrl();
             return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
                 {
@@ -57,7 +72,7 @@ namespace Orchard.OpenId.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdSettings settings, IUpdateModel updater, string groupId)
         {
-            if (groupId == "open id")
+            if (groupId == settingsGroupId)
             {
                 var model = new OpenIdSettingsViewModel();
 
@@ -83,7 +98,8 @@ namespace Orchard.OpenId.Drivers
                 settings.AllowImplicitFlow = model.AllowImplicitFlow;
                 settings.AllowHybridFlow = model.AllowHybridFlow;
 
-                _openIdServices.IsValidOpenIdSettings(settings, updater.ModelState);
+                if (_openIdServices.IsValidOpenIdSettings(settings, updater.ModelState))
+                    await _dynamicCache.SetAsync(restartPendingCacheKey, new byte[0], new DistributedCacheEntryOptions() { AbsoluteExpiration = DateTimeOffset.MaxValue });                    
             }
 
             return Edit(settings);
