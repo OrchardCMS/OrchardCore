@@ -54,37 +54,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             builder.AddExtensionsApplicationParts(applicationServices);
 
-            var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
-            builder.AddFeatureProvider(
-                new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
-
             builder.AddRazorViewEngine(options =>
             {
-                var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var referencePaths = extensionLibraryService.MetadataPaths;
-                foreach (var path in referencePaths)
-                {
-                    if (libraryPaths.Add(path))
-                    {
-                        var metadataReference = CreateMetadataReference(path);
-                        options.AdditionalCompilationReferences.Add(metadataReference);
-                    }
-                }
-
-                //var assets = DependencyContext
-                //    .Default
-                //    .CompileLibraries;
-
-                //foreach (var asset in assets.Where(x => x.Type != "project" && x.Assemblies.Any()))
-                //{
-                //    if (libraryPaths.Add(asset.Assemblies.First()))
-                //    {
-                //        Unre
-                //        var metadataReference = CreateMetadataReference(asset.Assemblies.First());
-                //        options.AdditionalCompilationReferences.Add(metadataReference);
-                //    }
-                //}
-
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
@@ -122,9 +93,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             foreach (var ass in bagOfAssemblies)
             {
-                var tpyeso = ass.DefinedTypes.Select(x => x.Assembly);
-
-                builder.AddApplicationPart(ass);
+                builder.PartManager.ApplicationParts.Add(new ModularAssemblyPart(ass));
             }
 
             return builder;

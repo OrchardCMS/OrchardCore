@@ -35,6 +35,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
                     feature.MetadataReferences.Add(metadataReference);
                 }
             }
+
+            //foreach (var providerPart in parts.OfType<ICompilationReferencesProvider>())
+            //{
+            //    var referencePathsa = providerPart.GetReferencePaths();
+            //    foreach (var path in referencePathsa)
+            //    {
+            //        if (libraryPaths.Add(path))
+            //        {
+            //            var metadataReference = CreateMetadataReference(path);
+            //            feature.MetadataReferences.Add(metadataReference);
+            //        }
+            //    }
+            //}
         }
 
         private static MetadataReference CreateMetadataReference(string path)
