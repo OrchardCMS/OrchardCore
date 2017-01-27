@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Modules.Routing;
@@ -53,7 +54,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             builder.AddExtensionsApplicationParts(applicationServices);
             
-            var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
+            //var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
             //builder.AddFeatureProvider(
             //    new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
 
@@ -61,7 +62,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddRazorViewEngine(options =>
             {
                 var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                var referencePaths = extensionLibraryService.MetadataPaths;
+                //var referencePaths = extensionLibraryService.MetadataPaths;
                 //foreach (var path in referencePaths)
                 //{
                 //    if (libraryPaths.Add(path))
@@ -73,9 +74,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
                 var assets = DependencyContext
                     .Default
-                    .RuntimeLibraries
-                    .Where(x => x.Type != "project")
-                    .SelectMany(x => x.GetDefaultAssemblyNames(DependencyContext.Default));
+                    .GetDefaultAssemblyNames();
 
                 foreach (var asset in assets)
                 {
@@ -87,7 +86,65 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                     }
                 }
 
-                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+
+
+
+
+
+
+
+
+                    //var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
+                    //var availableExtensions = extensionManager.GetExtensions();
+
+                    //var bagOfAssemblies = new ConcurrentBag<Assembly>();
+                    //Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
+                    //{
+                    //    var extensionEntry = extensionManager
+                    //        .LoadExtensionAsync(ae)
+                    //        .GetAwaiter()
+                    //        .GetResult();
+
+                    //    if (!extensionEntry.IsError)
+                    //    {
+                    //        bagOfAssemblies.Add(extensionEntry.Assembly);
+                    //    }
+                    //});
+
+                    //foreach (var assembly in bagOfAssemblies)
+                    //{
+                    //    var context = DependencyContext.Load(assembly);
+                    //    var loadingContext = AssemblyLoadContext.GetLoadContext(assembly);
+
+                    //    foreach (var name in context.GetDefaultAssemblyNames())
+                    //    {
+                    //        if (libraryPaths.Add(name.FullName))
+                    //        {
+                    //            var seembly = loadingContext.LoadFromAssemblyName(name);
+                    //            var metadataReference = CreateMetadataReference(seembly.Location);
+                    //            options.AdditionalCompilationReferences.Add(metadataReference);
+                    //        }
+                    //    }
+                    //}
+
+                    //var previous = options.CompilationCallback;
+                    //options.CompilationCallback = (context) =>
+                    //{
+                    //    previous?.Invoke(context);
+
+                    //    var libraryPathsCallback = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    //    var referencePathsCallback = extensionLibraryService.MetadataPaths;
+                    //    foreach (var path in referencePathsCallback)
+                    //    {
+                    //        if (libraryPathsCallback.Add(path))
+                    //        {
+                    //            var metadataReference = CreateMetadataReference(path);
+                    //            context.Compilation = context.Compilation.AddReferences(metadataReference);
+                    //        }
+                    //    }
+                    //};
+
+                    options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
             services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
