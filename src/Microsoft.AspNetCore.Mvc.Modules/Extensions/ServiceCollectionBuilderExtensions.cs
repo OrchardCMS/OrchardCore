@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Mvc.Modules.Mvc;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,9 +52,41 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddJsonFormatters();
 
             builder.AddExtensionsApplicationParts(applicationServices);
+            
+            var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
+            //builder.AddFeatureProvider(
+            //    new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
+
 
             builder.AddRazorViewEngine(options =>
             {
+                var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var referencePaths = extensionLibraryService.MetadataPaths;
+                //foreach (var path in referencePaths)
+                //{
+                //    if (libraryPaths.Add(path))
+                //    {
+                //        var metadataReference = CreateMetadataReference(path);
+                //        options.AdditionalCompilationReferences.Add(metadataReference);
+                //    }
+                //}
+
+                var assets = DependencyContext
+                    .Default
+                    .RuntimeLibraries
+                    .Where(x => x.Type != "project")
+                    .SelectMany(x => x.GetDefaultAssemblyNames(DependencyContext.Default));
+
+                foreach (var asset in assets)
+                {
+                    if (libraryPaths.Add(asset.Name))
+                    {
+                        var assembly = Assembly.Load(asset);
+                        var metadataReference = CreateMetadataReference(assembly.Location);
+                        options.AdditionalCompilationReferences.Add(metadataReference);
+                    }
+                }
+
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 

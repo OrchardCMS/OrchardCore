@@ -9,8 +9,7 @@
   "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
-    "warningsAsErrors": true,
-    "preserveCompilationContext": true
+    "warningsAsErrors": true
   },
 
   "frameworks": {

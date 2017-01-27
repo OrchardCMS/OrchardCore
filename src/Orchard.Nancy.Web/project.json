@@ -17,7 +17,6 @@
   "buildOptions": {
     "emitEntryPoint": true,
     "debugType": "portable",
-    "preserveCompilationContext": true,
     "compile": {
       "exclude": [
         "wwwroot",

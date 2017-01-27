@@ -4,11 +4,6 @@
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*"
   },
-  "buildOptions": {
-    "define": [ "TRACE" ],
-    "debugType": "portable",
-    "warningsAsErrors": true
-  },
   "frameworks": {
     "netstandard1.6": {
       "imports": [

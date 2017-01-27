@@ -11,9 +11,6 @@
     "Orchard.ResourceManagement": "2.0.0-*",
     "Orchard.Environment.Shell.Data": "2.0.0-*"
   },
-  "buildOptions": {
-    "debugType": "portable"
-  },
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"

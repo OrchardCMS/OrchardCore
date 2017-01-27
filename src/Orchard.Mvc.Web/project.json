@@ -32,7 +32,6 @@
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true,
     "compile": {
       "exclude": [
         "Modules"

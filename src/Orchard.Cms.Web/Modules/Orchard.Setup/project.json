@@ -6,11 +6,6 @@
     "Orchard.Mvc": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
-  "buildOptions": {
-    "define": [ "TRACE" ],
-    "debugType": "portable",
-    "warningsAsErrors": true
-  },
   "frameworks": {
     "netstandard1.6": {
       "imports": [
