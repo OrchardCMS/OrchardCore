@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Modules;
+﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
