@@ -52,40 +52,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddViewLocalization();
             builder.AddJsonFormatters();
 
-            builder.AddExtensionsApplicationParts(applicationServices);
+            var assemeblies = GetModularAssemblies(applicationServices);
 
-            builder.AddTagHelpersAsServices();
-            var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
-            //builder.AddFeatureProvider(
-            //    new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
+            builder.AddExtensionsApplicationParts(assemeblies);
 
 
             builder.AddRazorViewEngine(options =>
             {
-                var libraryPaths = new List<string>(extensionLibraryService.MetadataPaths);
-
-                var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
-
-                var availableExtensions = extensionManager.GetExtensions();
-
-                ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
-                Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
-                {
-                    var extensionEntry = extensionManager
-                        .LoadExtensionAsync(ae)
-                        .GetAwaiter()
-                        .GetResult();
-
-                    if (!extensionEntry.IsError)
-                    {
-                        bagOfAssemblies.Add(extensionEntry.Assembly);
-                    }
-                });
-
+                var libraryPaths = new List<string>();
                 var assemblyNames = new HashSet<string>();
 
-                foreach (var assembly in bagOfAssemblies)
+                foreach (var assembly in assemeblies)
                 {
+                    libraryPaths.Add(assembly.Location);
                     libraryPaths.AddRange(GetAssemblyLocations(assemblyNames, assembly));
                 }
 
@@ -133,7 +112,17 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         }
 
         public static IMvcCoreBuilder AddExtensionsApplicationParts(this IMvcCoreBuilder builder,
-            IServiceProvider applicationServices)
+            IEnumerable<Assembly> assemblies)
+        {
+            foreach (var ass in assemblies)
+            {
+                builder.PartManager.ApplicationParts.Add(new ModularAssemblyPart(ass));
+            }
+
+            return builder;
+        }
+
+        public static IEnumerable<Assembly> GetModularAssemblies(IServiceProvider applicationServices)
         {
             var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
 
@@ -152,13 +141,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                     bagOfAssemblies.Add(extensionEntry.Assembly);
                 }
             });
-
-            foreach (var ass in bagOfAssemblies)
-            {
-                builder.PartManager.ApplicationParts.Add(new ModularAssemblyPart(ass));
-            }
-
-            return builder;
+            
+            return bagOfAssemblies;
         }
 
         /// <summary>
