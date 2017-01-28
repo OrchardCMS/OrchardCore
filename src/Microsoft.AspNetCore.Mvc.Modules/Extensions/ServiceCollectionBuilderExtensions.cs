@@ -53,98 +53,49 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddJsonFormatters();
 
             builder.AddExtensionsApplicationParts(applicationServices);
-            
-            //var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
+
+            builder.AddTagHelpersAsServices();
+            var extensionLibraryService = applicationServices.GetRequiredService<IExtensionLibraryService>();
             //builder.AddFeatureProvider(
             //    new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
 
 
             builder.AddRazorViewEngine(options =>
             {
-                var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                //var referencePaths = extensionLibraryService.MetadataPaths;
-                //foreach (var path in referencePaths)
-                //{
-                //    if (libraryPaths.Add(path))
-                //    {
-                //        var metadataReference = CreateMetadataReference(path);
-                //        options.AdditionalCompilationReferences.Add(metadataReference);
-                //    }
-                //}
+                var libraryPaths = new List<string>(extensionLibraryService.MetadataPaths);
 
-                var assets = DependencyContext
-                    .Default
-                    .GetDefaultAssemblyNames();
+                var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
 
-                foreach (var asset in assets)
+                var availableExtensions = extensionManager.GetExtensions();
+
+                ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
+                Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
                 {
-                    if (libraryPaths.Add(asset.Name))
+                    var extensionEntry = extensionManager
+                        .LoadExtensionAsync(ae)
+                        .GetAwaiter()
+                        .GetResult();
+
+                    if (!extensionEntry.IsError)
                     {
-                        var assembly = Assembly.Load(asset);
-                        var metadataReference = CreateMetadataReference(assembly.Location);
-                        options.AdditionalCompilationReferences.Add(metadataReference);
+                        bagOfAssemblies.Add(extensionEntry.Assembly);
                     }
+                });
+
+                var assemblyNames = new HashSet<string>();
+
+                foreach (var assembly in bagOfAssemblies)
+                {
+                    libraryPaths.AddRange(GetAssemblyLocations(assemblyNames, assembly));
                 }
 
+                foreach (var location in libraryPaths.OrderBy(x => x))
+                {
+                    var metadataReference = CreateMetadataReference(location);
+                    options.AdditionalCompilationReferences.Add(metadataReference);
+                }
 
-
-
-
-
-
-
-
-                    //var extensionManager = applicationServices.GetRequiredService<IExtensionManager>();
-                    //var availableExtensions = extensionManager.GetExtensions();
-
-                    //var bagOfAssemblies = new ConcurrentBag<Assembly>();
-                    //Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
-                    //{
-                    //    var extensionEntry = extensionManager
-                    //        .LoadExtensionAsync(ae)
-                    //        .GetAwaiter()
-                    //        .GetResult();
-
-                    //    if (!extensionEntry.IsError)
-                    //    {
-                    //        bagOfAssemblies.Add(extensionEntry.Assembly);
-                    //    }
-                    //});
-
-                    //foreach (var assembly in bagOfAssemblies)
-                    //{
-                    //    var context = DependencyContext.Load(assembly);
-                    //    var loadingContext = AssemblyLoadContext.GetLoadContext(assembly);
-
-                    //    foreach (var name in context.GetDefaultAssemblyNames())
-                    //    {
-                    //        if (libraryPaths.Add(name.FullName))
-                    //        {
-                    //            var seembly = loadingContext.LoadFromAssemblyName(name);
-                    //            var metadataReference = CreateMetadataReference(seembly.Location);
-                    //            options.AdditionalCompilationReferences.Add(metadataReference);
-                    //        }
-                    //    }
-                    //}
-
-                    //var previous = options.CompilationCallback;
-                    //options.CompilationCallback = (context) =>
-                    //{
-                    //    previous?.Invoke(context);
-
-                    //    var libraryPathsCallback = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    //    var referencePathsCallback = extensionLibraryService.MetadataPaths;
-                    //    foreach (var path in referencePathsCallback)
-                    //    {
-                    //        if (libraryPathsCallback.Add(path))
-                    //        {
-                    //            var metadataReference = CreateMetadataReference(path);
-                    //            context.Compilation = context.Compilation.AddReferences(metadataReference);
-                    //        }
-                    //    }
-                    //};
-
-                    options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
+                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
             services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
@@ -154,8 +105,31 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
 
-
             return services;
+        }
+
+        public static IList<string> GetAssemblyLocations(HashSet<string> assemblyNames, Assembly assembly)
+        {
+            var loadContext = AssemblyLoadContext.GetLoadContext(assembly);
+            var referencedAssemblyNames = assembly.GetReferencedAssemblies()
+                .Where(ass => !assemblyNames.Contains(ass.Name));
+
+            var locations = new List<string>();
+
+            foreach (var referencedAssemblyName in referencedAssemblyNames)
+            {
+                if (assemblyNames.Add(referencedAssemblyName.Name))
+                {
+                    var referencedAssembly = loadContext
+                        .LoadFromAssemblyName(referencedAssemblyName);
+
+                    locations.Add(referencedAssembly.Location);
+
+                    locations.AddRange(GetAssemblyLocations(assemblyNames, referencedAssembly));
+                }
+            }
+
+            return locations;
         }
 
         public static IMvcCoreBuilder AddExtensionsApplicationParts(this IMvcCoreBuilder builder,

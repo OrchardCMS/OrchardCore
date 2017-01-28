@@ -54,14 +54,11 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationParts
                 return Enumerable.Empty<string>();
             }
 
-            //var dependencyContext = DependencyContext.Load(Assembly);
-            //if (dependencyContext != null)
-            //{
-            //    return dependencyContext
-            //        .RuntimeLibraries
-            //        .SelectMany(x => x.Assemblies)
-            //        .Select(x => x.Path);
-            //}
+            var dependencyContext = DependencyContext.Load(Assembly);
+            if (dependencyContext != null)
+            {
+                return dependencyContext.CompileLibraries.SelectMany(library => library.ResolveReferencePaths());
+            }
 
             // If an application has been compiled without preserveCompilationContext, return the path to the assembly
             // as a reference. For runtime compilation, this will allow the compilation to succeed as long as it least
