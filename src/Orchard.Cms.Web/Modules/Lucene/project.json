@@ -13,7 +13,8 @@
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Lucene.Net.Core": "4.8.0-alpha",
     "Lucene.Net.Analysis.Common": "4.8.0-alpha",
-    "Lucene.Net.QueryParser": "4.8.0-alpha"
+    "Lucene.Net.QueryParser": "4.8.0-alpha",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -27,5 +28,9 @@
         "portable-net451+win8"
       ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

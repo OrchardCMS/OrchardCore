@@ -4,15 +4,13 @@
     "Microsoft.AspNetCore.Hosting": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Orchard.Environment.Commands": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*"
+    "Orchard.Hosting": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
     "warningsAsErrors": true
-  },
-  "commands": {
-    "console": "Orchard.Hosting.CommandConsole"
   },
   "frameworks": {
     "netstandard1.6": {

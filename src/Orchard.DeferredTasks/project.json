@@ -3,7 +3,8 @@
   "dependencies": {
     "Microsoft.Extensions.DependencyModel": "1.1.0",
     "Orchard.DeferredTasks.Abstractions": "2.0.0-*",
-    "Orchard.Hosting": "2.0.0-*"
+    "Orchard.Hosting": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

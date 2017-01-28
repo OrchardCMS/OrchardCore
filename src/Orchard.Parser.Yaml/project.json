@@ -3,12 +3,13 @@
   "dependencies": {
     "Microsoft.Extensions.Configuration": "1.1.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
-    "YamlDotNet": "4.0.0"
+    "YamlDotNet": "4.0.0",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
     "debugType": "portable",
-   "warningsAsErrors": true
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {

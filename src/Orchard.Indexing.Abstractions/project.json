@@ -1,7 +1,8 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Orchard.ContentManagement.Abstractions": "2.0.0-*"
+    "Orchard.ContentManagement.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

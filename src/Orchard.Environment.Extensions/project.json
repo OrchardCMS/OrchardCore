@@ -9,6 +9,7 @@
     "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
     "Microsoft.Extensions.Options": "1.1.0",
     "Microsoft.Net.Compilers.netcore": "1.3.0",
+    "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",

@@ -2,7 +2,6 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
-    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*",
@@ -10,7 +9,8 @@
     "Orchard.Tokens.Abstractions": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
     "Orchard.Security": "2.0.0-*",
-    "Orchard.MetaWeblog.Abstractions": "2.0.0-*"
+    "Orchard.MetaWeblog.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -24,5 +24,9 @@
         "portable-net451+win8"
       ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

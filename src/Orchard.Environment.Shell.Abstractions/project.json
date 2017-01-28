@@ -6,7 +6,8 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Newtonsoft.Json": "9.0.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*"
+    "Orchard.Events": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

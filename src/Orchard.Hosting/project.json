@@ -1,14 +1,14 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "System.Threading.Tasks.Parallel": "4.3.0",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Orchard.Environment.Extensions": "2.0.0-*",
     "Orchard.Environment.Shell": "2.0.0-*",
-    "Orchard.Events": "2.0.0-*"
+    "Orchard.Events": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

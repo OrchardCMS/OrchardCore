@@ -9,14 +9,20 @@
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "YesSql.Storage.Sql": "1.0.0-*"
+    "YesSql.Storage.Sql": "1.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
-    "debugType": "portable"
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
     }
   },
   "packOptions": {

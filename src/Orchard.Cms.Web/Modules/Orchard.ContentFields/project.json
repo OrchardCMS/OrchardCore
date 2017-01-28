@@ -8,10 +8,12 @@
     "Orchard.ContentManagement.Display": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
-    "System.Linq": "4.3.0"
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
-    "debugType": "portable"
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {
@@ -20,5 +22,9 @@
         "portable-net451+win8"
       ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

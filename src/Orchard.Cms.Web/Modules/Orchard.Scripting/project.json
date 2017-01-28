@@ -4,7 +4,8 @@
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.Scripting.Core": "2.0.0-*",
-    "Orchard.Scripting.JavaScript": "2.0.0-*"
+    "Orchard.Scripting.JavaScript": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

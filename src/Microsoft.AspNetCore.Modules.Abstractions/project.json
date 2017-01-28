@@ -9,10 +9,21 @@
     "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
     "NETStandard.Library": "1.6.1"
   },
-
+  "buildOptions": {
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

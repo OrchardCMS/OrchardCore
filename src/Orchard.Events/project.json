@@ -2,7 +2,8 @@
   "version": "2.0.0-*",
   "dependencies": {
     "System.Reflection.DispatchProxy": "4.0.1-*",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

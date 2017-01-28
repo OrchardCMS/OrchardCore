@@ -6,7 +6,8 @@
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
-    "Orchard.Environment.Navigation": "2.0.0-*"
+    "Orchard.Environment.Navigation": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

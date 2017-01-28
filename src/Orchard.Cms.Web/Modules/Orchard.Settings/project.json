@@ -9,7 +9,8 @@
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Navigation": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.SiteSettings.Core": "2.0.0-*"
+    "Orchard.SiteSettings.Core": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

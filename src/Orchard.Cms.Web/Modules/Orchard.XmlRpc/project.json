@@ -6,7 +6,8 @@
     "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.XmlRpc.Abstractions": "2.0.0-*"
+    "Orchard.XmlRpc.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

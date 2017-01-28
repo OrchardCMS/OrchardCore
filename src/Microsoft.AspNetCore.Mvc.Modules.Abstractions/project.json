@@ -4,7 +4,8 @@
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Core": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Razor": "1.1.0",
-    "Microsoft.Extensions.Localization.Abstractions": "1.1.0"
+    "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -16,10 +17,7 @@
       "imports": [
         "dnxcore50",
         "portable-net451+win8"
-      ],
-      "dependencies": {
-        "NETStandard.Library": "1.6.1"
-      }
+      ]
     }
   },
   "packOptions": {

@@ -1,16 +1,18 @@
 {
   "dependencies": {
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.Extensions.Configuration.Json": "1.1.0",
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.Settings": "2.0.0-*"
+    "Orchard.Settings": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
-    "debugType": "portable"
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {
@@ -20,7 +22,8 @@
       ]
     }
   },
-  "tools": {
-    "Microsoft.AspNetCore.Razor.Tools": "1.1.0-*"
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

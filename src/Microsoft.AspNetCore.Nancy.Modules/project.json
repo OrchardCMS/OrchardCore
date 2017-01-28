@@ -8,15 +8,25 @@
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Nancy": "2.0.0-clinteastwood",
-    "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-    "System.Threading.Tasks.Parallel": "4.3.0"
+    "NETStandard.Library": "1.6.1"
   },
-
+  "buildOptions": {
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
+  },
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

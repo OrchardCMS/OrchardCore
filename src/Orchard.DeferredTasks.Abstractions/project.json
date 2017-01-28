@@ -1,8 +1,8 @@
 {
   "version": "2.0.0-*",
   "dependencies": {
-    "NETStandard.Library": "1.6.1",
-    "System.ComponentModel": "4.3.0"
+    "System.ComponentModel": "4.3.0",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

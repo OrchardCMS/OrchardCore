@@ -4,12 +4,13 @@
     "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.0",
     "Microsoft.Extensions.FileProviders.Abstractions": "1.1.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
-    "Microsoft.CodeAnalysis.Common": "1.3.0-*"
+    "Microsoft.CodeAnalysis.Common": "1.3.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
-     "debugType": "portable",
-   "warningsAsErrors": true
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {

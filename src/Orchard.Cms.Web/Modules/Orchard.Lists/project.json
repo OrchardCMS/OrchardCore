@@ -8,10 +8,13 @@
     "Orchard.Contents": "2.0.0-*",
     "Orchard.ContentTypes.Abstractions": "2.0.0-*",
     "Orchard.ResourceManagement.Abstractions": "2.0.0-*",
-    "Orchard.MetaWeblog.Abstractions": "2.0.0-*"
+    "Orchard.MetaWeblog.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
-    "debugType": "portable"
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {
@@ -21,7 +24,8 @@
       ]
     }
   },
-  "tools": {
-    "Microsoft.AspNetCore.Razor.Tools": "1.1.0-*"
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

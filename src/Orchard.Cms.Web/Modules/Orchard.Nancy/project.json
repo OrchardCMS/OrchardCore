@@ -2,7 +2,8 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
-    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*"
+    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

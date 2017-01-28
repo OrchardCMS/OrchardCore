@@ -16,7 +16,7 @@
     "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.Parser.Yaml": "2.0.0-*",
-    "System.Reflection.TypeExtensions": "4.3.0"
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

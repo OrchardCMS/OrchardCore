@@ -9,7 +9,8 @@
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

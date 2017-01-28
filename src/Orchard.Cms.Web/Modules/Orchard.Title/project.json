@@ -8,7 +8,8 @@
     "Orchard.Data.Abstractions": "2.0.0-*",
     "Orchard.Indexing.Abstractions": "2.0.0-*",
     "Orchard.MetaWeblog.Abstractions": "2.0.0-*",
-    "Orchard.Security.Abstractions": "2.0.0-*"
+    "Orchard.Security.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

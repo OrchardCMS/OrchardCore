@@ -5,7 +5,8 @@
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Routing": "1.1.0",
     "Orchard.Environment.Shell": "2.0.0-*",
-    "Orchard.Security": "2.0.0-*"
+    "Orchard.Security": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

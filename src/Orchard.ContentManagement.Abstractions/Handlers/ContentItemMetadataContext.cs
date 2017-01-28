@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace Orchard.ContentManagement.Handlers
+﻿namespace Orchard.ContentManagement.Handlers
 {
     public class ContentItemMetadataContext
     {
