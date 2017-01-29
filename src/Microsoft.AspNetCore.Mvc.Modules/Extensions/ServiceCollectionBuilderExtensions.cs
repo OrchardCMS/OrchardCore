@@ -13,14 +13,12 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
-using Microsoft.AspNetCore.Mvc.Modules.Mvc;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -51,11 +49,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddViews();
             builder.AddViewLocalization();
             builder.AddJsonFormatters();
+            //builder.AddTagHelpersAsServices();
 
             var assemeblies = GetModularAssemblies(applicationServices);
 
-            builder.AddExtensionsApplicationParts(assemeblies);
-
+            builder.AddApplicationParts(assemeblies);
 
             builder.AddRazorViewEngine(options =>
             {
@@ -68,7 +66,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                     libraryPaths.AddRange(GetAssemblyLocations(assemblyNames, assembly));
                 }
 
-                foreach (var location in libraryPaths.OrderBy(x => x))
+                var orderedLibraryPaths = libraryPaths.OrderBy(x => x).ToArray();
+
+                foreach (var location in orderedLibraryPaths)
                 {
                     var metadataReference = CreateMetadataReference(location);
                     options.AdditionalCompilationReferences.Add(metadataReference);
@@ -111,12 +111,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             return locations;
         }
 
-        public static IMvcCoreBuilder AddExtensionsApplicationParts(this IMvcCoreBuilder builder,
+        public static IMvcCoreBuilder AddApplicationParts(this IMvcCoreBuilder builder,
             IEnumerable<Assembly> assemblies)
         {
-            foreach (var ass in assemblies)
+            foreach (var assembly in assemblies)
             {
-                builder.PartManager.ApplicationParts.Add(new ModularAssemblyPart(ass));
+                builder.AddApplicationPart(assembly);
             }
 
             return builder;
