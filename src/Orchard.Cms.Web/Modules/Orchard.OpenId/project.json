@@ -7,7 +7,6 @@
     "OpenIddict.Core": "1.0.0-alpha2-*",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.Data.Abstractions": "2.0.0-*",
-    "Orchard.DynamicCache": "1.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
     "Orchard.Roles": "2.0.0-*",
     "Orchard.Settings": "2.0.0-*",
