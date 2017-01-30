@@ -128,11 +128,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             var availableExtensions = extensionManager.GetExtensions();
 
-            ConcurrentBag<Assembly> bagOfAssemblies = new ConcurrentBag<Assembly>();
-            Parallel.ForEach(availableExtensions, new ParallelOptions { MaxDegreeOfParallelism = 4 }, ae =>
+            var bagOfAssemblies = new List<Assembly>();
+            foreach (var extension in availableExtensions)
             {
                 var extensionEntry = extensionManager
-                    .LoadExtensionAsync(ae)
+                    .LoadExtensionAsync(extension)
                     .GetAwaiter()
                     .GetResult();
 
@@ -140,7 +140,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 {
                     bagOfAssemblies.Add(extensionEntry.Assembly);
                 }
-            });
+            }
             
             return bagOfAssemblies;
         }

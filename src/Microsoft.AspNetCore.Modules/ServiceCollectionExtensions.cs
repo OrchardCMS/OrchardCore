@@ -98,7 +98,7 @@ namespace Microsoft.AspNetCore.Modules
                 internalServices.AddOptions();
                 internalServices.AddLocalization();
                 internalServices.AddHostCore();
-                internalServices.AddExtensionManagerHost("app_data", "dependencies");
+                internalServices.AddExtensionManagerHost("App_Data", "dependencies");
 
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             });
