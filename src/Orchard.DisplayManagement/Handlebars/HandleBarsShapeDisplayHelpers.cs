@@ -46,22 +46,24 @@ namespace Orchard.DisplayManagement.HandleBars
                 var urlHelper = context.Url as IUrlHelper;
 
                 output.WriteSafeString(urlHelper.Action(
-                    (string)arguments[0], (string)arguments[1],
-                    arguments.Count() > 2 ? arguments[2] : new { }));
+                    action: (string)arguments[0],
+                    controller: (string)arguments[1],
+                    values: arguments.Count() > 2 ? arguments[2] : new { }));
             });
 
             Handlebars.RegisterHelper("HtmlRaw", (output, context, arguments) =>
             {
-                var htmlHelper = context.Html as IHtmlHelper;
-                output.WriteSafeString(htmlHelper.Raw((string)arguments[0]));
+                output.WriteSafeString((string)arguments[0]);
             });
 
             Handlebars.RegisterHelper("HtmlActionLink", (output, context, arguments) =>
             {
                 var htmlHelper = context.Html as IHtmlHelper;
                 var content = (TagBuilder)htmlHelper.ActionLink(
-                    (string)arguments[0], (string)arguments[1],
-                    new { }, arguments.Count() > 2 ? arguments[2] : new { });
+                    linkText: (string)arguments[0],
+                    actionName: (string)arguments[1],
+                    routeValues: new { },
+                    htmlAttributes: arguments.Count() > 2 ? arguments[2] : new { });
 
                 using (var writer = new StringWriter())
                 {

@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using HandlebarsDotNet;
 using Microsoft.AspNetCore.Hosting;
@@ -36,17 +35,7 @@ namespace Orchard.DisplayManagement.HandleBars
             }
         }
 
-        public async Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
-        {
-            var viewEngineInstance = displayContext.ServiceProvider
-                .GetRequiredService<IEnumerable<IShapeTemplateViewEngine>>()
-                .FirstOrDefault(e => e is HandleBarsShapeTemplateViewEngine);
-
-            return await ((HandleBarsShapeTemplateViewEngine)viewEngineInstance)
-                .RenderAsyncInternal(relativePath, displayContext);
-        }
-
-        private Task<IHtmlContent> RenderAsyncInternal(string relativePath, DisplayContext displayContext)
+        public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
             var physicalPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(relativePath).PhysicalPath;
             var render = _renderers.GetOrAdd(relativePath, Handlebars.Compile(File.ReadAllText(physicalPath)));

@@ -1,0 +1,8 @@
+﻿{{HtmlRaw Model.Body}}
+
+<h3>{{Model.Metadata.DisplayType}}</h3>
+
+{{HtmlActionLink "Preview the item" "Preview" class="btn btn-default" role="button"}}
+
+<h3>{{UrlContent "~/page1"}}</h3>
+{{UrlAction "Display" "Item" area="Orchard.Contents" ContentItemId=Model.BodyPart.ContentItem.ContentItemId}}

@@ -1,9 +1,1 @@
-﻿<h1>{{Model.Title}}</h1>
-<h3>{{Model.ContentItem.Author}}</h3>
-<h3>{{Model.Metadata.DisplayType}}</h3>
-
-<h3>{{UrlContent "~/page1"}}</h3>
-{{UrlAction "Display" "Item" area="Orchard.Contents" ContentItemId=Model.ContentItem.ContentItemId}}
-
-{{HtmlRaw "<h3>Raw string</h3>"}}
-{{HtmlActionLink "Preview the item" "Preview" class="btn btn-default" role="button"}}
+﻿<h1>{{Model.Title}} - {{Model.ContentItem.Author}}</h1>
