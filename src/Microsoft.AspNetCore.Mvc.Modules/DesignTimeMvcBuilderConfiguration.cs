@@ -24,12 +24,12 @@ namespace Orchard.Cms.Web
             serviceProvider = services.BuildServiceProvider();
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-            builder.ConfigureApplicationPartManager(apm =>
-            {
-                var extensionLibraryService = serviceProvider.GetRequiredService<IExtensionLibraryService>();
-                apm.FeatureProviders.Add(
-                    new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
-            });
+            //builder.ConfigureApplicationPartManager(apm =>
+            //{
+            //    var extensionLibraryService = serviceProvider.GetRequiredService<IExtensionLibraryService>();
+            //    apm.FeatureProviders.Add(
+            //        new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
+            //});
         }
     }
 }

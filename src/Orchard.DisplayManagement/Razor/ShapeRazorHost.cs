@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor.Directives;
-using Microsoft.AspNetCore.Razor.Chunks;
 using Microsoft.AspNetCore.Razor.Compilation.TagHelpers;
 using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Orchard.DisplayManagement.TagHelpers;
@@ -19,7 +17,10 @@ namespace Orchard.DisplayManagement.Razor
         /// </summary>
         /// <param name="chunkTreeCache">An <see cref="IChunkTreeCache"/> rooted at the application base path.</param>
         /// <param name="resolver">The <see cref="ITagHelperDescriptorResolver"/> used to resolve tag helpers on razor views.</param>
-        public ShapeRazorHost(IChunkTreeCache chunkTreeCache, IHttpContextAccessor httpContextAccessor, ITagHelperDescriptorResolver resolver)
+        public ShapeRazorHost(IChunkTreeCache chunkTreeCache, 
+            IHttpContextAccessor httpContextAccessor,
+            ITagHelperTypeResolver typeResolver,
+            ITagHelperDescriptorResolver resolver)
             : base(chunkTreeCache, resolver)
         {
             // We need to resolve the services using the scoped service provider
@@ -29,7 +30,7 @@ namespace Orchard.DisplayManagement.Razor
             // It's fine in this context as the TagHelperMvcRazorHost registration is Transient
             // which means we are not keeping any reference on IShapeTableManager and IThemeManager
             TagHelperDescriptorResolver = new ShapeTagHelperDescriptorResolver(
-                new TagHelperTypeResolver(),
+                typeResolver,
                 new TagHelperDescriptorFactory(designTime: false),
                 httpContextAccessor
             );

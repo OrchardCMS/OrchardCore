@@ -9,6 +9,7 @@ namespace Orchard.DisplayManagement.TagHelpers
     {
         public TagHelperMvcRazorHost(
             IChunkTreeCache chunkTreeCache,
+            ITagHelperTypeResolver typeResolver,
             IHttpContextAccessor httpContextAccessor)
             : base(chunkTreeCache, new TagHelperDescriptorResolver(designTime: false))
         {
@@ -19,7 +20,7 @@ namespace Orchard.DisplayManagement.TagHelpers
             // It's fine in this context as the TagHelperMvcRazorHost registration is Transient
             // which means we are not keeping any reference on IShapeTableManager and IThemeManager
             TagHelperDescriptorResolver = new ShapeTagHelperDescriptorResolver(
-                new TagHelperTypeResolver(),
+                typeResolver,
                 new TagHelperDescriptorFactory(designTime: false),
                 httpContextAccessor
             );

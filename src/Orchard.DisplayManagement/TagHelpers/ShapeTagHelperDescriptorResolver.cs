@@ -16,7 +16,7 @@ namespace Orchard.DisplayManagement.TagHelpers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ShapeTagHelperDescriptorResolver(
-            TagHelperTypeResolver typeResolver,
+            ITagHelperTypeResolver typeResolver,
             TagHelperDescriptorFactory descriptorFactory,
             IHttpContextAccessor httpContextAccessor
             )
