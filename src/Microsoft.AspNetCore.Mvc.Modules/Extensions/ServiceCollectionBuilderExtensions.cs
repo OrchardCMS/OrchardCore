@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -44,7 +45,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             AddModularFrameworkParts(applicationServices, builder.PartManager);
 
-            builder.AddModularRazorViewEngine();
+            builder.AddModularRazorViewEngine(applicationServices);
 
             AddMvcModuleCoreServices(services);
 
@@ -62,56 +63,22 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             manager.ApplicationParts.Add(new ModularApplicationPart(httpContextAccessor));
         }
 
-        internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder)
+        internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder, IServiceProvider services)
         {
             return builder.AddRazorViewEngine(options =>
             {
+                var extensionLibraryService = 
+                    services.GetService<IExtensionLibraryService>();
 
-
-                //// Really need to see how to do a Shell Version of this, as this loads everything.
-                //var assemblies = GetModularAssemblies(applicationServices);
-
-                //var loadedContextAssemblies = new List<Assembly>();
-                //var assemblyNames = new HashSet<string>();
-
-                //foreach (var assembly in assemblies)
-                //{
-                //    var currentAssemblyName =
-                //        Path.GetFileNameWithoutExtension(assembly.Location);
-
-                //    if (assemblyNames.Add(currentAssemblyName))
-                //    {
-                //        loadedContextAssemblies.Add(assembly);
-                //    }
-                //    loadedContextAssemblies.AddRange(GetAssemblyLocations(assemblyNames, assembly));
-                //}
-
-                //builder.ConfigureApplicationPartManager((manager) =>
-                //{
-                //    foreach (var assembly in loadedContextAssemblies)
-                //    {
-                //        builder.AddApplicationPart(assembly);
-                //    }
-                //});
-
-
-
-
-
-                //var orderedLibraryPaths = loadedContextAssemblies
-                //    .Select(x => x.Location);
-
-                //foreach (var location in orderedLibraryPaths)
-                //{
-                //    var metadataReference = CreateMetadataReference(location);
-                //    options.AdditionalCompilationReferences.Add(metadataReference);
-                //}
+                foreach (var metadataPath in extensionLibraryService.MetadataPaths)
+                {
+                    var metadata = CreateMetadataReference(metadataPath);
+                    options.AdditionalCompilationReferences.Add(metadata);
+                }
 
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
-
-
 
         /// <summary>
         /// Adds an <see cref="ApplicationPart"/> to the list of <see cref="ApplicationPartManager.ApplicationParts"/> on the

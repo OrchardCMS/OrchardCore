@@ -52,15 +52,29 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<string> MetadataPaths {
             get {
-                return _compileOnlyAssemblies
-                    .Values
-                    .Concat(
-                        _loadedAssemblies
-                            .Values
-                            .Select(x => x.Value.Location));
+                var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
+                var assemblyLocations = new List<string>();
+
+                foreach (var assemblyName in _compileOnlyAssemblies.Keys)
+                {
+                    if (assemblyNames.Add(assemblyName))
+                    {
+                        assemblyLocations.Add(_compileOnlyAssemblies[assemblyName]);
+                    }
+                }
+
+                foreach (var assemblyName in _loadedAssemblies.Keys)
+                {
+                    if (assemblyNames.Add(assemblyName))
+                    {
+                        assemblyLocations.Add(_loadedAssemblies[assemblyName].Value.Location);
+                    }
+                }
+
+                return assemblyLocations;
             }
         }
-
+        
         private static HashSet<string> GetApplicationAssemblyNames()
         {
             return new HashSet<string>(DependencyContext.Default.RuntimeLibraries
