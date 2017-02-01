@@ -74,13 +74,12 @@ $(function () {
         // Expand the section if necessary
         var target = $($(this).data('target'));
         if ($(this).prop('checked')) {
-            target.addClass('in');
+            target.addClass('collapsed');
         }
 
         $(this).on('change', function (e) {
             // During a double-click, ignore state changes while the element is collapsing
             if (target.hasClass('collapsing')) {
-                console.log('collapsing');
                 $(this).prop('checked', !$(this).prop('checked'));                
             }
             target.collapse($(this).prop('checked') ? 'show' : 'hide');

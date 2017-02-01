@@ -2,6 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
+    "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
     "Orchard.Scripting.Abstractions": "2.0.0-*",
     "Jint": "2.10.2"
   },

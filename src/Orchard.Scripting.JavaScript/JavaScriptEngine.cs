@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Jint;
+using Jint.Parser;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
 namespace Orchard.Scripting.JavaScript
 {
     public class JavaScriptEngine : IScriptingEngine
     {
-        public JavaScriptEngine(IStringLocalizer<JavaScriptEngine> localizer)
+		private readonly IMemoryCache _memoryCache;
+
+		public JavaScriptEngine(
+			IMemoryCache memoryCache,
+			IStringLocalizer<JavaScriptEngine> localizer)
         {
+			_memoryCache = memoryCache;
             S = localizer;
         }
 
@@ -44,15 +51,20 @@ namespace Orchard.Scripting.JavaScript
                 throw new ArgumentException($"Expected a scope of type {nameof(JavaScriptScope)}", nameof(scope));
             }
 
-            var result = jsScope.Engine.Execute(script).GetCompletionValue()?.ToObject();
+			var parsedAst = _memoryCache.GetOrCreate(script, entry =>
+			{
+				var parser = new JavaScriptParser();
+				return parser.Parse(script);
+			});
+
+			var result = jsScope.Engine.Execute(parsedAst).GetCompletionValue()?.ToObject();
 
             return result;
         }
     }
 
     public class MethodProxy
-    {
-        
+    {        
         public IList<object> Arguments { get; set; }
         public Func<IServiceProvider, IList<object>, object> Callback { get; set; }
         public object Invoke()

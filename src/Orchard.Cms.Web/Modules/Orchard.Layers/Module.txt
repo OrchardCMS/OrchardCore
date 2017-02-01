@@ -1,0 +1,11 @@
+﻿Name: Layers
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Features:
+    Orchard.Layers:
+        Description: Adds a Layer content type that is used to render widgets across the pages of the site.
+        Category: Content
+        Depdendencies: Orchard.Content, Orchard.Widgets, Orchard.Scripting

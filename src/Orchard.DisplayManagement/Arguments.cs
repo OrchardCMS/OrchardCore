@@ -32,8 +32,8 @@ namespace Orchard.DisplayManagement
 
         class NamedEnumerable<T> : INamedEnumerable<T>
         {
-            readonly IEnumerable<T> _arguments;
-            readonly IEnumerable<string> _names;
+            readonly List<T> _arguments;
+            readonly List<string> _names;
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
@@ -42,8 +42,8 @@ namespace Orchard.DisplayManagement
                     throw new ArgumentException("arguments.Count() < names.Count()");
                 }
 
-                _arguments = arguments;
-                _names = names;
+                _arguments = arguments.ToList();
+                _names = names.ToList();
             }
 
             IEnumerator IEnumerable.GetEnumerator()

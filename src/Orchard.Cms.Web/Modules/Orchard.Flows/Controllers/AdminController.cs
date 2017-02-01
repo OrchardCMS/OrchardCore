@@ -50,6 +50,7 @@ namespace Orchard.Flows.Controllers
             editor.PrefixesName = prefixesName;
             editor.ContentTypesName = contentTypesName;
             editor.TargetId = targetId;
+            editor.Inline = true;
 
             var model = new BuildEditorViewModel
             {
