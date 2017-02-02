@@ -52,7 +52,24 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
             var serviceProvider =
                 HttpContextAccessor.HttpContext.RequestServices;
 
-            return GetModularAssemblies(serviceProvider);
+            var assemblies = GetModularAssemblies(serviceProvider);
+
+            var loadedContextAssemblies = new List<Assembly>();
+            var assemblyNames = new HashSet<string>();
+
+            foreach (var assembly in assemblies)
+            {
+                var currentAssemblyName =
+                    Path.GetFileNameWithoutExtension(assembly.Location);
+
+                if (assemblyNames.Add(currentAssemblyName))
+                {
+                    loadedContextAssemblies.Add(assembly);
+                }
+                loadedContextAssemblies.AddRange(GetAssemblies(assemblyNames, assembly));
+            }
+
+            return loadedContextAssemblies;
         });
 
         /// <inheritdoc />
@@ -67,27 +84,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            var assemblies = InitializedAssemblies.Value;
-
-            var loadedContextAssemblies = new List<string>();
-            var assemblyNames = new HashSet<string>();
-
-            foreach (var assembly in assemblies)
-            {
-                var currentAssemblyName =
-                    Path.GetFileNameWithoutExtension(assembly.Location);
-
-                if (assemblyNames.Add(currentAssemblyName))
-                {
-                    loadedContextAssemblies.Add(assembly.Location);
-                }
-                loadedContextAssemblies.AddRange(GetAssemblyLocations(assemblyNames, assembly));
-            }
-
-            return loadedContextAssemblies;
+            return InitializedAssemblies.Value.Select(x => x.Location);
         }
-
-
 
         private static IList<string> GetAssemblyLocations(HashSet<string> assemblyNames, Assembly assembly)
         {
@@ -107,6 +105,31 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
                     locations.Add(referencedAssembly.Location);
 
                     locations.AddRange(GetAssemblyLocations(assemblyNames, referencedAssembly));
+                }
+            }
+
+            return locations;
+        }
+
+
+        private static IList<Assembly> GetAssemblies(HashSet<string> assemblyNames, Assembly assembly)
+        {
+            var loadContext = AssemblyLoadContext.GetLoadContext(assembly);
+            var referencedAssemblyNames = assembly.GetReferencedAssemblies()
+                .Where(ass => !assemblyNames.Contains(ass.Name));
+
+            var locations = new List<Assembly>();
+
+            foreach (var referencedAssemblyName in referencedAssemblyNames)
+            {
+                if (assemblyNames.Add(referencedAssemblyName.Name))
+                {
+                    var referencedAssembly = loadContext
+                        .LoadFromAssemblyName(referencedAssemblyName);
+
+                    locations.Add(referencedAssembly);
+
+                    locations.AddRange(GetAssemblies(assemblyNames, referencedAssembly));
                 }
             }
 

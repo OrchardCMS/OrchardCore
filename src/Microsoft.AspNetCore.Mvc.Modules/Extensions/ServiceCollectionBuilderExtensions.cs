@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.CodeAnalysis;
@@ -51,6 +54,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddModularRazorViewEngine(applicationServices);
 
             AddMvcModuleCoreServices(services);
+            AddDefaultFrameworkParts(builder.PartManager);
 
             // Order important
             builder.AddJsonFormatters();
@@ -64,6 +68,21 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 services.GetRequiredService<IHttpContextAccessor>();
 
             manager.ApplicationParts.Add(new ModularApplicationPart(httpContextAccessor));
+        }
+
+        private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
+        {
+            var mvcTagHelpersAssembly = typeof(InputTagHelper).GetTypeInfo().Assembly;
+            if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcTagHelpersAssembly))
+            {
+                partManager.ApplicationParts.Add(new AssemblyPart(mvcTagHelpersAssembly));
+            }
+
+            var mvcRazorAssembly = typeof(UrlResolutionTagHelper).GetTypeInfo().Assembly;
+            if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcRazorAssembly))
+            {
+                partManager.ApplicationParts.Add(new AssemblyPart(mvcRazorAssembly));
+            }
         }
 
         internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder, IServiceProvider services)
@@ -112,7 +131,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
-            services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
+            services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, ModularTagHelperTypeResolver>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
