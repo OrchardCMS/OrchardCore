@@ -53,7 +53,7 @@ namespace Orchard.Autoroute.Routing
 
         public Task RouteAsync(RouteContext context)
         {
-            var requestPath = context.HttpContext.Request.Path.ToString();
+            var requestPath = context.HttpContext.Request.Path.Value;
 
             string contentItemId;
 

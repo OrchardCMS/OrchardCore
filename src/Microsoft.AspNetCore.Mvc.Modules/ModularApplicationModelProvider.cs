@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Orchard.Environment.Shell.Builders.Models;
 using System.Linq;
+using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -9,11 +10,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
     /// </summary>
     public class ModularApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly ShellBlueprint _shellBlueprint;
+        private readonly ITypeFeatureProvider _provider;
 
-        public ModularApplicationModelProvider(ShellBlueprint shellBlueprint)
+        public ModularApplicationModelProvider(ITypeFeatureProvider provider)
         {
-            _shellBlueprint = shellBlueprint;
+            _provider = provider;
         }
 
         public int Order
@@ -30,10 +31,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             foreach (var controller in context.Result.Controllers)
             {
                 var controllerType = controller.ControllerType.AsType();
-                var blueprint = _shellBlueprint.Dependencies.FirstOrDefault(dep => dep.Type == controllerType);
+                var blueprint = _provider.GetFeatureForDependency(controllerType);
                 if (blueprint != null)
                 {
-                    controller.RouteValues.Add("area", blueprint.Feature.Extension.Id);
+                    controller.RouteValues.Add("area", blueprint.Extension.Id);
                 }
             }
         }
