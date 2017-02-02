@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
+﻿using System.Collections.Generic;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
-using System.Collections.Generic;
-using System.IO;
-using System;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {

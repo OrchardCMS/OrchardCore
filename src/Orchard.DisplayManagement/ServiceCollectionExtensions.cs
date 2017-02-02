@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +36,11 @@ namespace Orchard.DisplayManagement
 		{
 			services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
 			services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
-			services.AddScoped<IFilterMetadata, ModelBinderAccessorFilter>();
+
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(ModelBinderAccessorFilter));
+            });
             
 			services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
@@ -75,7 +80,11 @@ namespace Orchard.DisplayManagement
 			services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
 
 			services.AddScoped<INotifier, Notifier>();
-			services.AddScoped<IFilterMetadata, NotifyFilter>();
+
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(NotifyFilter));
+            });
 
 			services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
 			services.AddShapeAttributes<DateTimeShapes>();

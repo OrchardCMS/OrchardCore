@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Navigation;
 using Orchard.Security.Permissions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Orchard.Admin
 {
@@ -16,9 +17,13 @@ namespace Orchard.Admin
         {
             services.AddNavigation();
 
-            services.AddScoped<IFilterMetadata, AdminZoneFilter>();
-            services.AddScoped<IFilterMetadata, AdminFilter>();
-            services.AddScoped<IFilterMetadata, AdminMenuFilter>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(AdminZoneFilter));
+                options.Filters.Add(typeof(AdminFilter));
+                options.Filters.Add(typeof(AdminMenuFilter));
+            });
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IThemeSelector, AdminThemeSelector>();
             services.AddScoped<IAdminThemeService, AdminThemeService>();

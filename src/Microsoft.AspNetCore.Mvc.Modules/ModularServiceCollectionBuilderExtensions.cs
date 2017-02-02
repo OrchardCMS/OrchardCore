@@ -10,8 +10,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
-using Microsoft.AspNetCore.Mvc.Modules.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Modules.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -99,35 +98,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
-
-        /// <summary>
-        /// Adds an <see cref="ApplicationPart"/> to the list of <see cref="ApplicationPartManager.ApplicationParts"/> on the
-        /// <see cref="IMvcBuilder.PartManager"/>.
-        /// </summary>
-        /// <param name="builder">The <see cref="IMvcBuilder"/>.</param>
-        /// <param name="assembly">The <see cref="Assembly"/> of the <see cref="ApplicationPart"/>.</param>
-        /// <returns>The <see cref="IMvcBuilder"/>.</returns>
-        public static IMvcCoreBuilder AddFeatureProvider(this IMvcCoreBuilder builder, IApplicationFeatureProvider provider)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (provider == null)
-            {
-                throw new ArgumentNullException(nameof(provider));
-            }
-
-            builder.ConfigureApplicationPartManager(manager => manager.FeatureProviders.Insert(0, provider));
-
-            return builder;
-        }
-
+        
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.AddScoped<ITenantRouteBuilder, ModularRouteBuilder>();
-            services.AddTransient<IFilterProvider, DependencyFilterProvider>();
             services.AddTransient<IApplicationModelProvider, ModularApplicationModelProvider>();
             services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
 
