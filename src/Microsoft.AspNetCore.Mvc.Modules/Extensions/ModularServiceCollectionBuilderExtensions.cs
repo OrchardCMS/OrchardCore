@@ -25,7 +25,7 @@ using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    public static class ServiceCollectionBuilderExtensions
+    public static class ModularServiceCollectionBuilderExtensions
     {
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
             IServiceProvider applicationServices)
@@ -128,10 +128,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
-            services.AddScoped<ITenantRouteBuilder, MvcTenantRouteBuilder>();
+            services.AddScoped<ITenantRouteBuilder, ModularRouteBuilder>();
             services.AddTransient<IFilterProvider, DependencyFilterProvider>();
-            services.AddTransient<IApplicationModelProvider, ModuleAreaRouteConstraintApplicationModelProvider>();
-            services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, ModularTagHelperTypeResolver>());
+            services.AddTransient<IApplicationModelProvider, ModularApplicationModelProvider>();
+            services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();

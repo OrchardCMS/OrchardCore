@@ -9,13 +9,13 @@ using Orchard.Settings;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Routing
 {
-    public class MvcTenantRouteBuilder : ITenantRouteBuilder
+    public class ModularRouteBuilder : ITenantRouteBuilder
     {
         private readonly IServiceProvider _serviceProvider;
 
         // Register one top level TenantRoute per tenant. Each instance contains all the routes
         // for this tenant.
-        public MvcTenantRouteBuilder(IServiceProvider serviceProvider)
+        public ModularRouteBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
@@ -52,7 +53,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
             var serviceProvider =
                 HttpContextAccessor.HttpContext.RequestServices;
 
-            var assemblies = GetModularAssemblies(serviceProvider);
+            var assemblies = GetModularAssemblies(serviceProvider)
+                .Select(x => x.Assembly);
 
             var loadedContextAssemblies = new List<Assembly>();
             var assemblyNames = new HashSet<string>();
@@ -136,34 +138,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
             return locations;
         }
 
-        public static IEnumerable<Assembly> GetModularAssemblies(IServiceProvider services)
+        public static IEnumerable<TypeInfo> GetModularAssemblies(IServiceProvider services)
         {
-            var extensionManager = services.GetRequiredService<IExtensionManager>();
-            var descriptor = services
-                .GetRequiredService<ShellDescriptor>();
+            var blueprint = services
+                .GetRequiredService<ShellBlueprint>();
 
-            var features = extensionManager
-                .GetFeatures().Where(f => descriptor.Features.Any(sf => sf.Id == f.Id));
-
-            var extensionsToLoad = features
-                .Select(feature => feature.Extension)
-                .Distinct();
-
-            var bagOfAssemblies = new List<Assembly>();
-            foreach (var extension in extensionsToLoad)
-            {
-                var extensionEntry = extensionManager
-                    .LoadExtensionAsync(extension)
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (!extensionEntry.IsError)
-                {
-                    bagOfAssemblies.Add(extensionEntry.Assembly);
-                }
-            }
-
-            return bagOfAssemblies;
+            return blueprint.Dependencies.Select(x => x.Type.GetTypeInfo());
         }
     }
 } 

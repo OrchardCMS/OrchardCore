@@ -6,11 +6,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
     /// <summary>
     /// Adds an area route constraint using the name of the module.
     /// </summary>
-    public class ModuleAreaRouteConstraintApplicationModelProvider : IApplicationModelProvider
+    public class ModularApplicationModelProvider : IApplicationModelProvider
     {
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        public ModuleAreaRouteConstraintApplicationModelProvider(ITypeFeatureProvider typeFeatureProvider)
+        public ModularApplicationModelProvider(ITypeFeatureProvider typeFeatureProvider)
         {
             _typeFeatureProvider = typeFeatureProvider;
         }
