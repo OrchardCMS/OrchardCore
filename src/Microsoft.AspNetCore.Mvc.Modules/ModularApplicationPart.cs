@@ -7,11 +7,9 @@ using System.Runtime.Loader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
-using Orchard.Environment.Shell.Descriptor.Models;
 
-namespace Microsoft.AspNetCore.Mvc.Modules.Mvc
+namespace Microsoft.AspNetCore.Mvc.Modules
 {
     /// <summary>
     /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.

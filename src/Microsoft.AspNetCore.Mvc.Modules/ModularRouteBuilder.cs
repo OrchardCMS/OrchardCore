@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Settings;
 
-namespace Microsoft.AspNetCore.Mvc.Modules.Routing
+namespace Microsoft.AspNetCore.Mvc.Modules
 {
     public class ModularRouteBuilder : ITenantRouteBuilder
     {

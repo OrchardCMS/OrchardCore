@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Orchard.Environment.Extensions;
+using Orchard.Environment.Shell.Builders.Models;
+using System.Linq;
 
-namespace Microsoft.AspNetCore.Mvc.Modules.Routing
+namespace Microsoft.AspNetCore.Mvc.Modules
 {
     /// <summary>
     /// Adds an area route constraint using the name of the module.
     /// </summary>
     public class ModularApplicationModelProvider : IApplicationModelProvider
     {
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly ShellBlueprint _shellBlueprint;
 
-        public ModularApplicationModelProvider(ITypeFeatureProvider typeFeatureProvider)
+        public ModularApplicationModelProvider(ShellBlueprint shellBlueprint)
         {
-            _typeFeatureProvider = typeFeatureProvider;
+            _shellBlueprint = shellBlueprint;
         }
 
         public int Order
@@ -28,10 +29,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
             // This code is called only once per tenant during the construction of routes
             foreach (var controller in context.Result.Controllers)
             {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(controller.ControllerType.AsType());
-                if (feature != null)
+                var controllerType = controller.ControllerType.AsType();
+                var blueprint = _shellBlueprint.Dependencies.FirstOrDefault(dep => dep.Type == controllerType);
+                if (blueprint != null)
                 {
-                    controller.RouteValues.Add("area", feature.Extension.Id);
+                    controller.RouteValues.Add("area", blueprint.Feature.Extension.Id);
                 }
             }
         }
