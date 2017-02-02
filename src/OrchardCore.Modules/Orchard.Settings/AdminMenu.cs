@@ -28,6 +28,15 @@ namespace Orchard.Settings
                     )
                 )
             );
+
+            builder.Add(T["Design"], design => design
+                .Add(T["Site"], "1", site => site
+                    .Add(T["Restart"], "99", settings => settings
+                        .Action("RestartSite", "Admin", new { area = "Orchard.Settings" })
+                        .LocalNav()
+                    )
+                )
+            );
         }
     }
 }

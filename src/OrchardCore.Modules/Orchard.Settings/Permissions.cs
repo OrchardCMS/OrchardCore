@@ -6,10 +6,12 @@ namespace Orchard.Settings
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageSettings = new Permission("ManageSettings", "Manage settings");
+        public static readonly Permission Restart = new Permission("Restart", "Restart");
+        
 
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] { ManageSettings };
+            return new[] { ManageSettings, Restart };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -19,7 +21,7 @@ namespace Orchard.Settings
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageSettings }
+                    Permissions = new[] { ManageSettings, Restart }
                 }
             };
         }
