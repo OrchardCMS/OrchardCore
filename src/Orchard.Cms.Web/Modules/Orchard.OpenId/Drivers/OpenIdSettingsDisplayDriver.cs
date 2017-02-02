@@ -42,7 +42,7 @@ namespace Orchard.OpenId.Drivers
         public override IDisplayResult Edit(OpenIdSettings settings, BuildEditorContext context)
         {
             if (context.GroupId == SettingsGroupId && _memoryCache.Get(RestartPendingCacheKey)!=null)
-                _notifier.Warning(T["This settings only will take effect after restarting the tenant."]);
+                _notifier.Warning(T["The site needs to be restarted for the settings to take effect"]);
 
             var requestUrl = _httpContextAccessor.HttpContext.Request.GetDisplayUrl();
             return Shape<OpenIdSettingsViewModel>("OpenIdSettings_Edit", model =>
@@ -97,12 +97,10 @@ namespace Orchard.OpenId.Drivers
                 settings.AllowImplicitFlow = model.AllowImplicitFlow;
                 settings.AllowHybridFlow = model.AllowHybridFlow;
 
-                
                 if (_openIdServices.IsValidOpenIdSettings(settings, updater.ModelState) && _memoryCache.Get(RestartPendingCacheKey) == null)
                 {
-                    var entry = _memoryCache.CreateEntry(RestartPendingCacheKey);
-                    entry.SetPriority(CacheItemPriority.NeverRemove);
-                    _memoryCache.Set(entry.Key, entry);
+                    var entry = _memoryCache.CreateEntry(RestartPendingCacheKey);                    
+                    _memoryCache.Set(entry.Key, entry, new MemoryCacheEntryOptions() { Priority = CacheItemPriority.NeverRemove });
                 }
             }
 
