@@ -1,5 +1,8 @@
-﻿<h1>@RenderTitleSegments(T["Site Restart"])</h1>
+﻿<div class="alert alert-warning">
+    <h4>@T["Site Restart"]</h4>
+    <p>@T["Be careful site restart will cancel any work in progress or any data cached in memory in this site. After this action settings pending of a restart will take effect."]</p>
+</div>
 
 <form asp-action="RestartSite" method="post">
-    <button class="btn btn-primary" type="submit">@T["Restart"]</button>
+    <button class="btn btn-danger" type="submit">@T["Restart"]</button>
 </form>

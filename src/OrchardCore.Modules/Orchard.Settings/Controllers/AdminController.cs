@@ -96,13 +96,13 @@ namespace Orchard.Settings.Controllers
         [ActionName(nameof(RestartSite))]
         public async Task<IActionResult> RestartSitePost()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Restart))
             {
                 return Unauthorized();
             }
             _orchardHost.ReloadShellContext(_shellSettings);
 
-            return Redirect("~/admin");
+            return Redirect("RestartSite");
         }
     }
 }

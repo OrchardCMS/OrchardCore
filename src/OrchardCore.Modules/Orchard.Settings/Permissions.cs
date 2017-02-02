@@ -6,7 +6,7 @@ namespace Orchard.Settings
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageSettings = new Permission("ManageSettings", "Manage settings");
-        public static readonly Permission Restart = new Permission("Restart", "Restart");
+        public static readonly Permission Restart = new Permission("Restart", "Restart the current site");
         
 
         public IEnumerable<Permission> GetPermissions()
