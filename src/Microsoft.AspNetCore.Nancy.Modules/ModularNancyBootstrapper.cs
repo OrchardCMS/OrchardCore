@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs;
 using Nancy;
 
 namespace Microsoft.AspNetCore.Nancy.Modules
 {
-    public class NancyAspNetCoreBootstrapper : DefaultNancyBootstrapper
+    public class ModularNancyBootstrapper : DefaultNancyBootstrapper
     {
         private readonly IAssemblyCatalog _assemblyCatalog;
 
-        public NancyAspNetCoreBootstrapper(
+        public ModularNancyBootstrapper(
             IEnumerable<IAssemblyCatalog> assemblyCatalogs)
         {
             _assemblyCatalog = new CompositeAssemblyCatalog(assemblyCatalogs);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Nancy;
 
-namespace Microsoft.AspNetCore.Nancy.Modules
+namespace Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs
 {
     public class CompositeAssemblyCatalog : IAssemblyCatalog
     {

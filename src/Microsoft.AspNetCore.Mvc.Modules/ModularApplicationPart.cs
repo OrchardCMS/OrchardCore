@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -34,9 +32,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         }
 
         /// <summary>
-        /// Gets the <see cref="Assembly"/> of the <see cref="ApplicationPart"/>.
+        /// Gets the <see cref="IHttpContextAccessor"/> of the <see cref="ApplicationPart"/>.
         /// </summary>
         public IHttpContextAccessor HttpContextAccessor { get; }
+
+        private IModularAssemblyProvider AssemblyProvider =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
 
         public override string Name
         {
@@ -46,102 +47,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             }
         }
 
-        private Lazy<IEnumerable<Assembly>> InitializedAssemblies => new Lazy<IEnumerable<Assembly>>(() =>
-        {
-            var serviceProvider =
-                HttpContextAccessor.HttpContext.RequestServices;
-
-            var assemblies = GetModularAssemblies(serviceProvider)
-                .Select(x => x.Assembly);
-
-            var loadedContextAssemblies = new List<Assembly>();
-            var assemblyNames = new HashSet<string>();
-
-            foreach (var assembly in assemblies)
-            {
-                var currentAssemblyName =
-                    Path.GetFileNameWithoutExtension(assembly.Location);
-
-                if (assemblyNames.Add(currentAssemblyName))
-                {
-                    loadedContextAssemblies.Add(assembly);
-                }
-                loadedContextAssemblies.AddRange(GetAssemblies(assemblyNames, assembly));
-            }
-
-            return loadedContextAssemblies;
-        });
-
         /// <inheritdoc />
         public IEnumerable<TypeInfo> Types
         {
             get
             {
-                return InitializedAssemblies.Value.SelectMany(x => x.DefinedTypes);
+                return AssemblyProvider.GetAssemblies().SelectMany(x => x.DefinedTypes);
             }
         }
 
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            return InitializedAssemblies.Value.Select(x => x.Location);
-        }
-
-        private static IList<string> GetAssemblyLocations(HashSet<string> assemblyNames, Assembly assembly)
-        {
-            var loadContext = AssemblyLoadContext.GetLoadContext(assembly);
-            var referencedAssemblyNames = assembly.GetReferencedAssemblies()
-                .Where(ass => !assemblyNames.Contains(ass.Name));
-
-            var locations = new List<string>();
-
-            foreach (var referencedAssemblyName in referencedAssemblyNames)
-            {
-                if (assemblyNames.Add(referencedAssemblyName.Name))
-                {
-                    var referencedAssembly = loadContext
-                        .LoadFromAssemblyName(referencedAssemblyName);
-
-                    locations.Add(referencedAssembly.Location);
-
-                    locations.AddRange(GetAssemblyLocations(assemblyNames, referencedAssembly));
-                }
-            }
-
-            return locations;
-        }
-
-
-        private static IList<Assembly> GetAssemblies(HashSet<string> assemblyNames, Assembly assembly)
-        {
-            var loadContext = AssemblyLoadContext.GetLoadContext(assembly);
-            var referencedAssemblyNames = assembly.GetReferencedAssemblies()
-                .Where(ass => !assemblyNames.Contains(ass.Name));
-
-            var locations = new List<Assembly>();
-
-            foreach (var referencedAssemblyName in referencedAssemblyNames)
-            {
-                if (assemblyNames.Add(referencedAssemblyName.Name))
-                {
-                    var referencedAssembly = loadContext
-                        .LoadFromAssemblyName(referencedAssemblyName);
-
-                    locations.Add(referencedAssembly);
-
-                    locations.AddRange(GetAssemblies(assemblyNames, referencedAssembly));
-                }
-            }
-
-            return locations;
-        }
-
-        public static IEnumerable<TypeInfo> GetModularAssemblies(IServiceProvider services)
-        {
-            var blueprint = services
-                .GetRequiredService<ShellBlueprint>();
-
-            return blueprint.Dependencies.Select(x => x.Type.GetTypeInfo());
+            return AssemblyProvider.GetAssemblies().Select(x => x.Location);
         }
     }
 } 

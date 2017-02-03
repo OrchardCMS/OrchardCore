@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Modules
         {
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
-            app.UseMiddleware<OrchardContainerMiddleware>();
+            app.UseMiddleware<ModularContainerMiddleware>();
             app.UseMiddleware<TenantRouterMiddleware>();
 
             return app;

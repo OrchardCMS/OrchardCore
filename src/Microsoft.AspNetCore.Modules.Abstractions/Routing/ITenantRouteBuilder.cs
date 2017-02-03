@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 
 namespace Microsoft.AspNetCore.Modules.Routing
 {
