@@ -6,7 +6,7 @@ using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
-    public class ModulerViewLocationExpanderProvider : IViewLocationExpanderProvider
+    public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
         public int Priority => 5;
 
