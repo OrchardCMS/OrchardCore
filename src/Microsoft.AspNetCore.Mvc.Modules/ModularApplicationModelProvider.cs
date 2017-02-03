@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Orchard.Environment.Shell.Builders.Models;
-using System.Linq;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
