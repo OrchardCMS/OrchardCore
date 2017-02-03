@@ -20,7 +20,7 @@ using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    public static class ModularServiceCollectionBuilderExtensions
+    public static class ModularServiceCollectionExtensions
     {
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
             IServiceProvider applicationServices)
