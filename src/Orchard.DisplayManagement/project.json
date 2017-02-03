@@ -5,7 +5,7 @@
     "Microsoft.AspNetCore.Html.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
     "Microsoft.AspNetCore.Mvc.Localization": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "NETStandard.Library": "1.6.1",
     "Orchard.Environment.Cache.Abstractions": "2.0.0-*",

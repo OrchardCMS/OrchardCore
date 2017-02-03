@@ -35,7 +35,7 @@ namespace Orchard.DisplayManagement
 		public static IServiceCollection AddThemingHost(this IServiceCollection services)
 		{
 			services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
-			services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
+            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
 
             services.Configure<MvcOptions>((options) =>
             {

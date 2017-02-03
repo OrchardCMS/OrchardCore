@@ -1,6 +1,6 @@
 ﻿namespace Orchard.DisplayManagement.ModelBinding
 {
-    public interface IModelUpdaterAccessor
+    public interface IUpdateModelAccessor
     {
         IUpdateModel ModelUpdater { get; set; }
     }

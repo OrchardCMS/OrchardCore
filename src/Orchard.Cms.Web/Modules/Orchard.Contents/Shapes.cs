@@ -56,7 +56,7 @@ namespace Orchard.Contents
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
-                    var updateModelAccessor = context.ServiceProvider.GetRequiredService<IModelUpdaterAccessor>();
+                    var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
                     string contentItemId = await aliasManager.GetContentItemIdAsync(alias);
 

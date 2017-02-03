@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
 using Nancy;
 using Nancy.Owin;
+using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Nancy.Modules
 {
