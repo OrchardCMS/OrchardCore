@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
-using Microsoft.AspNetCore.Modules.Routing;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -10,13 +10,13 @@ using Orchard.Settings;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    public class ModularRouteBuilder : ITenantRouteBuilder
+    public class ModularTenantRouteBuilder : IModularTenantRouteBuilder
     {
         private readonly IServiceProvider _serviceProvider;
 
         // Register one top level TenantRoute per tenant. Each instance contains all the routes
         // for this tenant.
-        public ModularRouteBuilder(IServiceProvider serviceProvider)
+        public ModularTenantRouteBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

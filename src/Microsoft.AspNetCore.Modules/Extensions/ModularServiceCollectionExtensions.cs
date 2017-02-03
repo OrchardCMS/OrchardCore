@@ -10,7 +10,7 @@ using Orchard.Hosting;
 
 namespace Microsoft.AspNetCore.Modules
 {
-    public static class ServiceCollectionExtensions
+    public static class ModularServiceCollectionExtensions
     {
         public static IServiceCollection AddModuleServices(
             this IServiceCollection services, Action<ModularServiceCollection> configure)

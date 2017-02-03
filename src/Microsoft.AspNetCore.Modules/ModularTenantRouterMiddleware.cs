@@ -6,25 +6,24 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
 
-namespace Microsoft.AspNetCore.Modules.Routing
+namespace Microsoft.AspNetCore.Modules
 {
     /// <summary>
     /// Handles a request by forwarding it to the tenant specific <see cref="IRouter"/> instance.
     /// It also initializes the middlewares for the requested tenant on the first request.
     /// </summary>
-    public class TenantRouterMiddleware
+    public class ModularTenantRouterMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly Dictionary<string, RequestDelegate> _pipelines = new Dictionary<string, RequestDelegate>();
 
-        public TenantRouterMiddleware(
+        public ModularTenantRouterMiddleware(
             RequestDelegate next,
-            ILogger<TenantRouterMiddleware> logger)
+            ILogger<ModularTenantRouterMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -86,7 +85,7 @@ namespace Microsoft.AspNetCore.Modules.Routing
         public RequestDelegate BuildTenantPipeline(ShellSettings shellSettings, IServiceProvider serviceProvider)
         {
             var startups = serviceProvider.GetServices<IStartup>();
-            var tenantRouteBuilder = serviceProvider.GetService<ITenantRouteBuilder>();
+            var tenantRouteBuilder = serviceProvider.GetService<IModularTenantRouteBuilder>();
             
             var appBuilder = new ApplicationBuilder(serviceProvider);
             var routeBuilder = tenantRouteBuilder.Build();

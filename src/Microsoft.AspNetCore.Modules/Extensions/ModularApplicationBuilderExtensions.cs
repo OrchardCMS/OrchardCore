@@ -2,21 +2,20 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Modules
 {
-    public static class ApplicationBuilderExtensions
+    public static class ModularApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseModules(this IApplicationBuilder app)
         {
             // Ensure the shell tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
-            app.UseMiddleware<ModularContainerMiddleware>();
-            app.UseMiddleware<TenantRouterMiddleware>();
+            app.UseMiddleware<ModularTenantContainerMiddleware>();
+            app.UseMiddleware<ModularTenantRouterMiddleware>();
 
             return app;
         }

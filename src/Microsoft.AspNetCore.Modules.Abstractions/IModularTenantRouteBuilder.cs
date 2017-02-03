@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Routing;
 
-namespace Microsoft.AspNetCore.Modules.Routing
+namespace Microsoft.AspNetCore.Modules
 {
-    public interface ITenantRouteBuilder
+    public interface IModularTenantRouteBuilder
     {
         IRouteBuilder Build();
 

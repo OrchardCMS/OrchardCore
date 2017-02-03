@@ -225,7 +225,7 @@ namespace Orchard.Data.Migration
                         }
                         _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
                         _session.Cancel();
-                        throw new OrchardException(T["Error while running migration version {0} for {1}.", current, featureId], ex);
+                        throw new Exception(T["Error while running migration version {0} for {1}.", current, featureId], ex);
                     }
                     finally
                     {

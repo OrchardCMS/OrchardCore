@@ -59,12 +59,6 @@ namespace Orchard.Environment.Commands
 
                 return CommandReturnCodes.Ok;
             }
-            catch (OrchardCommandHostRetryException ex)
-            {
-                // Special "Retry" return code for our host
-                await output.WriteLineAsync(T[$"{ex.Message} (Retrying...)"]);
-                return CommandReturnCodes.Retry;
-            }
             catch (Exception ex)
             {
                 if (ex.IsFatal())
@@ -102,9 +96,7 @@ namespace Orchard.Environment.Commands
             await output.WriteLineAsync(T["{0}", exception.Message]);
             await output.WriteLineAsync();
 
-            if (!((exception is OrchardException ||
-                exception is OrchardCoreException) &&
-                exception.InnerException == null))
+            if (!(exception.InnerException == null))
             {
                 await output.WriteLineAsync(T["Exception Details: {0}: {1}", exception.GetType().FullName, exception.Message]);
                 await output.WriteLineAsync();
@@ -134,7 +126,7 @@ namespace Orchard.Environment.Commands
                 var settings = settingsList.SingleOrDefault(s => string.Equals(s.Name, tenant, StringComparison.OrdinalIgnoreCase));
                 if (settings == null)
                 {
-                    throw new OrchardCoreException(T["Tenant {0} does not exist", tenant]);
+                    throw new Exception(T["Tenant {0} does not exist", tenant]);
                 }
 
                 return await _orchardHost.CreateShellContextAsync(settings);

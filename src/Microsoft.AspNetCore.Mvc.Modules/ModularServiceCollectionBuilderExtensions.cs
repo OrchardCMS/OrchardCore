@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
@@ -102,7 +101,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
-            services.AddScoped<ITenantRouteBuilder, ModularRouteBuilder>();
+            services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();

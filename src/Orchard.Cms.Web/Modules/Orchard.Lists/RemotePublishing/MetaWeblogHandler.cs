@@ -334,7 +334,7 @@ namespace Orchard.Lists.RemotePublishing
 
             if (contentItem == null)
             {
-                throw new OrchardCoreException(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
+                throw new Exception(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
             }
 
             await CheckAccessAsync(publish ? Permissions.PublishContent: Permissions.EditContent, user, contentItem);

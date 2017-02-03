@@ -12,18 +12,18 @@ namespace Microsoft.AspNetCore.Modules
     /// <summary>
     /// This middleware replaces the default service provider by the one for the current tenant
     /// </summary>
-    public class ModularContainerMiddleware
+    public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IOrchardHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ILogger _logger;
 
-        public ModularContainerMiddleware(
+        public ModularTenantContainerMiddleware(
             RequestDelegate next,
             IOrchardHost orchardHost,
             IRunningShellTable runningShellTable,
-            ILogger<ModularContainerMiddleware> logger)
+            ILogger<ModularTenantContainerMiddleware> logger)
         {
             _next = next;
             _orchardHost = orchardHost;

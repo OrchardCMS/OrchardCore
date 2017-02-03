@@ -121,7 +121,7 @@ namespace Orchard.DisplayManagement.Implementation
                 }
                 else
                 {
-                    throw new OrchardException(T["Shape type {0} not found", shapeMetadata.Type]);
+                    throw new Exception(T["Shape type {0} not found", shapeMetadata.Type]);
                 }
             }
 

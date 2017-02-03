@@ -214,9 +214,9 @@ namespace Orchard.ContentTypes.Services
             var name = partViewModel.Name;
 
             if (_contentDefinitionManager.GetPartDefinition(name) != null)
-                throw new OrchardException(T["Cannot add part named '{0}'. It already exists.", name]);
+                throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
                 var partDefinition = _contentDefinitionManager.GetPartDefinition(name);

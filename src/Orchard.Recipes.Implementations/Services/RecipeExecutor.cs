@@ -216,7 +216,7 @@ namespace Orchard.Recipes.Services
 
             if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
             {
-                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
+                throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
             EvaluateJsonTree(scriptingManager, recipeStep.Step);

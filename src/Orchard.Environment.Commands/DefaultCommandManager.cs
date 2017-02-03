@@ -37,10 +37,10 @@ namespace Orchard.Environment.Commands
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any())
                 {
-                    throw new OrchardCoreException(T["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
+                    throw new Exception(T["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
                         commandMatch, commandList]);
                 }
-                throw new OrchardCoreException(T["No command found matching arguments \"{0}\". Commands available: {1}.",
+                throw new Exception(T["No command found matching arguments \"{0}\". Commands available: {1}.",
                     commandMatch, commandList]);
             }
         }
