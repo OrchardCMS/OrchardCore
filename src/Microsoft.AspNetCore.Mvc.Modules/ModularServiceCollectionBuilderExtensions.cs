@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Modules.Routing;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
@@ -39,7 +38,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             IServiceProvider applicationServices)
         {
             var builder = services.AddMvcCore(options => {
+                // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
+
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
@@ -102,11 +103,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.AddScoped<ITenantRouteBuilder, ModularRouteBuilder>();
-            services.AddTransient<IApplicationModelProvider, ModularApplicationModelProvider>();
-            services.Replace(ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
+            services.Replace(
+                ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
         }
 
         private static MetadataReference CreateMetadataReference(string path)
