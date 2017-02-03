@@ -36,7 +36,8 @@ namespace Microsoft.AspNetCore.Modules
                 _logger.LogInformation("Begin Routing Request");
             }
 
-            var shellSettings = (ShellSettings)httpContext.Features[typeof(ShellSettings)];
+
+            var shellSettings = httpContext.Features.Get<ShellSettings>();
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.

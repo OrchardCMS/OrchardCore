@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.Modules
             var shellSetting = _runningShellTable.Match(httpContext);
 
             // Register the shell settings as a custom feature.
-            httpContext.Features[typeof(ShellSettings)] = shellSetting;
+            httpContext.Features.Set(shellSetting);
 
             // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
