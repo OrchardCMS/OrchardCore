@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 
@@ -57,12 +56,21 @@ namespace Microsoft.AspNetCore.Modules
                             // The tenant gets activated here
                             if (!shellContext.IsActivated)
                             {
-                                var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync()).Wait();
-                                eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync()).Wait();
+                                var tenantEvents = scope.ServiceProvider
+                                    .GetServices<IModularTenantEvents>();
+
+                                foreach (var tenantEvent in tenantEvents)
+                                {
+                                    tenantEvent.ActivatingAsync().Wait();
+                                }
 
                                 httpContext.Items["BuildPipeline"] = true;
                                 shellContext.IsActivated = true;
+
+                                foreach (var tenantEvent in tenantEvents)
+                                {
+                                    tenantEvent.ActivatedAsync().Wait();
+                                }
                             }
                         }
                     }

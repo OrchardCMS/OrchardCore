@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Environment.Shell;
+using Microsoft.AspNetCore.Modules;
 
 namespace Orchard.BackgroundTasks
 {
-    public class BackgroundTasksStarter : IOrchardShellEvents
+    public class BackgroundTasksStarter : IModularTenantEvents
     {
         private readonly IBackgroundTaskService _backgroundService;
 

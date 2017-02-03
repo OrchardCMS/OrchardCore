@@ -153,11 +153,20 @@ namespace Orchard.Recipes.Services
             {
                 if (!shellContext.IsActivated)
                 {
-                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
-                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+                    var tenantEvents = scope.ServiceProvider
+                        .GetServices<IModularTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        tenantEvent.ActivatingAsync().Wait();
+                    }
 
                     shellContext.IsActivated = true;
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        tenantEvent.ActivatedAsync().Wait();
+                    }
                 }
 
                 var recipeStepHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeStepHandler>>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
@@ -9,7 +10,7 @@ namespace Orchard.Data.Migration
     /// <summary>
     /// Registers to OrchardShell.Activated in order to run migrations automatically
     /// </summary>
-    public class AutomaticDataMigrations : IOrchardShellEvents
+    public class AutomaticDataMigrations : IModularTenantEvents
     {
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;

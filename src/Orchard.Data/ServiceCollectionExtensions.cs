@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,7 +21,7 @@ namespace Orchard.Data
         public static IServiceCollection AddDataAccess(this IServiceCollection services)
         {
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-            services.AddScoped<AutomaticDataMigrations>();
+            services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
