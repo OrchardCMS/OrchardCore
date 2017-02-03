@@ -105,7 +105,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             services.AddScoped<ITenantRouteBuilder, ModularRouteBuilder>();
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
+            services.AddScoped<IViewLocationExpanderProvider, ModulerViewLocationExpanderProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
