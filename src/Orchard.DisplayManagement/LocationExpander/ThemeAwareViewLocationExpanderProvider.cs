@@ -11,7 +11,7 @@ namespace Orchard.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority => 15D;
+        public int Priority => 15;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)

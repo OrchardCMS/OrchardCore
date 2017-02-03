@@ -5,7 +5,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     public class DefaultViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority => 0D;
+        public int Priority => 0;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)

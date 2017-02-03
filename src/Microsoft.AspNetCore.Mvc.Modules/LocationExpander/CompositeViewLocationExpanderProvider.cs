@@ -8,10 +8,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     internal class CompositeViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority
+        public int Priority
         {
             get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
         }
 
         public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)

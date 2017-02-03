@@ -6,9 +6,9 @@ using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
-    public class ModuleViewLocationExpanderProvider : IViewLocationExpanderProvider
+    public class ModulerViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority => 5D;
+        public int Priority => 5;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
@@ -19,25 +19,27 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var result = new List<string>();
-
             var extensionManager = context
                 .ActionContext
                 .HttpContext
                 .RequestServices
-                .GetService<IExtensionManager>();
+                .GetRequiredService<IExtensionManager>();
 
             // Get Extension, and then add in the relevant views.
             var extension = extensionManager.GetExtension(context.AreaName);
 
-            if (extension.Exists)
+            if (!extension.Exists)
             {
-                var extensionViewsPath = 
-                    Path.Combine(Path.DirectorySeparatorChar + extension.SubPath, "Views");
-
-                result.Add(Path.Combine(extensionViewsPath, "{1}", "{0}.cshtml"));
-                result.Add(Path.Combine(extensionViewsPath, "Shared", "{0}.cshtml"));
+                return viewLocations;
             }
+
+            var result = new List<string>();
+
+            var extensionViewsPath = 
+                Path.Combine(Path.DirectorySeparatorChar + extension.SubPath, "Views");
+
+            result.Add(Path.Combine(extensionViewsPath, "{1}", "{0}.cshtml"));
+            result.Add(Path.Combine(extensionViewsPath, "Shared", "{0}.cshtml"));
 
             result.AddRange(viewLocations);
 
