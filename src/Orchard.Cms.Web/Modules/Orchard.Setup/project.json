@@ -6,6 +6,7 @@
     "NETStandard.Library": "1.6.1",
     "Orchard.Data": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
+    "Orchard.Hosting": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*"
   },
   "buildOptions": {

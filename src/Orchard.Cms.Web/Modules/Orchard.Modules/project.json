@@ -2,6 +2,8 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
+    "NETStandard.Library": "1.6.1",
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
@@ -10,8 +12,7 @@
     "Orchard.Environment.Shell": "2.0.0-*",
     "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "Orchard.Recipes.Abstractions": "2.0.0-*",
-    "Orchard.ResourceManagement.Abstractions": "2.0.0-*",
-    "NETStandard.Library": "1.6.1"
+    "Orchard.ResourceManagement.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

@@ -9,11 +9,11 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Modules.Models;
 using Orchard.Modules.Services;
 using Orchard.Modules.ViewModels;
-using Orchard.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
 
 namespace Orchard.Modules.Controllers
 {

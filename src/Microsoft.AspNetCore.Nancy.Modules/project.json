@@ -2,14 +2,10 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.AspNetCore.Hosting": "1.1.0",
-    "Microsoft.AspNetCore.Modules.Abstractions": "1.0.0-*",
+    "Microsoft.AspNetCore.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Owin": "1.1.0",
-    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Nancy": "2.0.0-clinteastwood",
-    "Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
-    "Orchard.Environment.Shell.Abstractions": "2.0.0-*",
     "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
