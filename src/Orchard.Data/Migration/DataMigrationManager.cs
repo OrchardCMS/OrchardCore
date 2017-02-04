@@ -232,7 +232,7 @@ namespace Orchard.Data.Migration
                         _session.Save(_dataMigrationRecord);
                     }
                 });
-            }
+			}
         }
 
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)

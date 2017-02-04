@@ -15,10 +15,11 @@ namespace Orchard.Setup
             services.AddScoped<ISetupService, SetupService>();
 
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true );
-            services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false );
-        }
+			services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
+			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
+		}
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
                 name: "Setup",

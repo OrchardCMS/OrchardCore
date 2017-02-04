@@ -47,17 +47,17 @@ namespace Orchard.ContentManagement
         /// <summary>
         /// When the content item version has been updated.
         /// </summary>
-        public DateTimeOffset? ModifiedUtc { get; set; }
+        public DateTime? ModifiedUtc { get; set; }
 
         /// <summary>
         /// When the content item has been published.
         /// </summary>
-        public DateTimeOffset? PublishedUtc { get; set; }
+        public DateTime? PublishedUtc { get; set; }
 
         /// <summary>
         /// When the content item has been created or first published.
         /// </summary>
-        public DateTimeOffset? CreatedUtc { get; set; }
+        public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
         /// The name of the user who first created this content item version

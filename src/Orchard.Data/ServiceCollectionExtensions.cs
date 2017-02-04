@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using YesSql.Core.Indexes;
@@ -24,10 +25,11 @@ namespace Orchard.Data
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
             services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
+			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
 
-            // Configuring data access
+			// Configuring data access
 
-            services.AddSingleton<IStore>(sp =>
+			services.AddSingleton<IStore>(sp =>
             {
                 var shellSettings = sp.GetService<ShellSettings>();
                 var hostingEnvironment = sp.GetService<IHostingEnvironment>();
@@ -52,8 +54,12 @@ namespace Orchard.Data
                         Directory.CreateDirectory(databaseFolder);
                         connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
                         isolationLevel = IsolationLevel.ReadUncommitted;
-                        break;
-                    default:
+						break;
+					case "MySql":
+						connectionFactory = new DbConnectionFactory<MySqlConnection>(shellSettings.ConnectionString);
+						isolationLevel = IsolationLevel.ReadUncommitted;
+						break;
+					default:
                         throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
                 }
 

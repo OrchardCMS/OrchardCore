@@ -64,8 +64,6 @@ namespace Orchard.Modules.Recipes.Executors
 
                 await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }
-
-            await Task.CompletedTask;
         }
 
         private class FeatureStepModel
