@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using Orchard.Hosting;
-using Orchard.Hosting.ShellBuilders;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -43,7 +42,7 @@ namespace Microsoft.AspNetCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSetting != null)
             {
-                ShellContext shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
+                var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
                 using (var scope = shellContext.CreateServiceScope())
                 {
