@@ -8,7 +8,6 @@
 		"Orchard.DependencyInjection": "2.0.0-*",
 		"Orchard.Environment.Extensions.Abstractions": "2.0.0-*",
 		"Orchard.Environment.Shell.Abstractions": "2.0.0-*",
-		"YesSql.Core": "2.0.0-beta-0010",
 		"YesSql.Storage.Sql": "1.0.0-beta-0004",
 		"Microsoft.Data.Sqlite": "1.1.0",
 		"MySqlConnector": "0.11.6",
