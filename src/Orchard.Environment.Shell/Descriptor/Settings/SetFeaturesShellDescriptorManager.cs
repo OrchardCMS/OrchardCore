@@ -7,16 +7,19 @@ using Orchard.Environment.Shell.Descriptor.Models;
 namespace Orchard.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by returning all the available features.
+    /// Implements <see cref="IShellDescriptorManager"/> by returning all pre defined list of features.
     /// </summary>
-    public class AllFeaturesShellDescriptorManager : IShellDescriptorManager
+    public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     {
         private readonly IExtensionManager _extensionManager;
+        private readonly IEnumerable<ShellFeature> _shellFeatures;
         private ShellDescriptor _shellDescriptor;
 
-        public AllFeaturesShellDescriptorManager(IExtensionManager extensionManager)
+        public SetFeaturesShellDescriptorManager(IExtensionManager extensionManager,
+            IEnumerable<ShellFeature> shellFeatures)
         {
             _extensionManager = extensionManager;
+            _shellFeatures = shellFeatures;
         }
 
         public Task<ShellDescriptor> GetShellDescriptorAsync()
@@ -25,7 +28,7 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
             {
                 _shellDescriptor = new ShellDescriptor
                 {
-                    Features = _extensionManager.GetFeatures().Select(x => new ShellFeature { Id = x.Id }).ToList()
+                    Features = _shellFeatures.ToList()
                 };
             }
 
