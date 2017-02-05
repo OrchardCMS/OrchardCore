@@ -12,7 +12,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.ContentTypes.Services

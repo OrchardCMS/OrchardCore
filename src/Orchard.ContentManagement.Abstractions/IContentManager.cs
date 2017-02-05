@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentManagement
 {

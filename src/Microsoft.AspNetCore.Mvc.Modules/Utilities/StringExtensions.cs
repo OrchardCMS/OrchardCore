@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
 
-namespace Orchard.Utility
+namespace Microsoft.AspNetCore.Mvc.Modules.Utilities
 {
     public static class StringExtensions
     {

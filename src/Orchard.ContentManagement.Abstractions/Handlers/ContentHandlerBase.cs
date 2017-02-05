@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Orchard.ContentManagement.Handlers
+﻿namespace Orchard.ContentManagement.Handlers
 {
     public abstract class ContentHandlerBase : IContentHandler
     {

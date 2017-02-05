@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orchard.Deployment.Core.Mvc;
 using Orchard.Deployment.Core.Services;
 using Orchard.Deployment.Services;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.Deployment.Controllers
