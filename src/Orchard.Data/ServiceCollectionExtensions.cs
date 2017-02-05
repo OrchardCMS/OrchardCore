@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
+using Npgsql;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using YesSql.Core.Indexes;
@@ -24,8 +25,9 @@ namespace Orchard.Data
 
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
-            services.TryAddDataProvider(name: "Sql Lite", value: "Sqlite", hasConnectionString: false);
+            services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false);
 			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
+			services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true);
 
 			// Configuring data access
 
@@ -57,6 +59,10 @@ namespace Orchard.Data
 						break;
 					case "MySql":
 						connectionFactory = new DbConnectionFactory<MySqlConnection>(shellSettings.ConnectionString);
+						isolationLevel = IsolationLevel.ReadUncommitted;
+						break;
+					case "Postgres":
+						connectionFactory = new DbConnectionFactory<NpgsqlConnection>(shellSettings.ConnectionString);
 						isolationLevel = IsolationLevel.ReadUncommitted;
 						break;
 					default:
