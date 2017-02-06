@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Admin;
 using Orchard.ContentManagement.Display;
+using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Environment.Cache;
+using Orchard.Layers.Models;
 using Orchard.Scripting;
 using Orchard.Utility;
 
@@ -23,9 +25,11 @@ namespace Orchard.Layers.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly ISignal _signal;
 		private readonly ILayerService _layerService;
+		private readonly IShapeFactory _shapeFactory;
 
 		public LayerFilter(
 			ILayerService layerService,
+			IShapeFactory shapeFactory,
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
             IModelUpdaterAccessor modelUpdaterAccessor,
@@ -41,6 +45,7 @@ namespace Orchard.Layers.Services
             _scriptingManager = scriptingManager;
             _serviceProvider = serviceProvider;
             _signal = signal;
+			_shapeFactory = shapeFactory;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -75,13 +80,16 @@ namespace Orchard.Layers.Services
 					{
 						if (widget.Layer != layer.Name) continue;
 
-						var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
-
+						IShape widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+						
 						widgetContent.Classes.Add("widget");
 						widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
+						var wrapper = _shapeFactory.Create("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
+						wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+
 						var contentZone = layout.Zones[widget.Zone];
-						contentZone.Add(widgetContent);
+						contentZone.Add(wrapper);
 					}
 				}
 			}
