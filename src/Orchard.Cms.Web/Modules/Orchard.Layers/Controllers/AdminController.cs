@@ -4,10 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
 using Orchard.DisplayManagement.ModelBinding;
+using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Cache;
 using Orchard.Layers.Handlers;
 using Orchard.Layers.Models;
@@ -27,6 +29,7 @@ namespace Orchard.Layers.Controllers
 		private readonly IAuthorizationService _authorizationService;
 		private readonly ISession _session;
 		private readonly ISignal _signal;
+		private readonly INotifier _notifier;
 
 		public AdminController(
 			ISignal signal,
@@ -36,7 +39,9 @@ namespace Orchard.Layers.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
-			IStringLocalizer<AdminController> s
+			IStringLocalizer<AdminController> s,
+			IHtmlLocalizer<AdminController> h,
+			INotifier notifier
 			)
         {
 			_signal = signal;
@@ -47,9 +52,12 @@ namespace Orchard.Layers.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
 			S = s;
+			H = h;
+			_notifier = notifier;
 		}
 
 		public IStringLocalizer S { get; }
+		public IHtmlLocalizer H { get; }
 
 		public async Task<IActionResult> Index()
         {
@@ -208,8 +216,18 @@ namespace Orchard.Layers.Controllers
 				return NotFound();
 			}
 
-			layers.Layers.Remove(layer);
+			var widgets = await _layerService.GetLayerWidgetsAsync(c => c.Latest == true);
 
+			if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
+			{
+				layers.Layers.Remove(layer);
+				_notifier.Success(H["Layer deleted successfully."]);
+			}
+			else
+			{
+				_notifier.Error(H["The layer couldn't be deleted: you must remove any associated widgets first."]);
+			}
+			
 			return RedirectToAction("Index");
 		}
 
