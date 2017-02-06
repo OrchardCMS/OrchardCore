@@ -32,18 +32,18 @@
         function getLevel(value) {
 
             if (value >= 100) {
-                return "progress-success";
+                return "bg-success";
             }
 
             if (value >= 50) {
-                return "progress-warning";
+                return "bg-warning";
             }
 
             if (value == 0) {
                 return ''; // grayed
             }
 
-            return "progress-danger";
+            return "bg-danger";
         }
 
         function checkStrength(value) {
@@ -68,7 +68,7 @@
 
         function createProgressBar(percentage, level) {
             console.log([percentage, level]);
-            var el = $('<progress class="progress ' + level + '" value="' + percentage + '" style="' + settings.style + '" max="100" aria-describedby=""><div class="progress"><span class="progress-bar" style="width: ' + percentage + '%;"></span></div></progress>');
+            var el = $('<div class="progress" value="' + percentage + '" style="' + settings.style + '" max="100" aria-describedby=""><div class="progress-bar ' + level + '" role="progress-bar" style="width: ' + percentage + '%;"></div></div>');
             var target = $(settings.target);
             target.empty();
             target.append(el);
