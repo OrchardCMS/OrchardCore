@@ -4,9 +4,11 @@
 <h1>@RenderTitleSegments(T["OpenID Connect Applications"])</h1>
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Application"]</a>
-    </div>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Application"]</a>
+        </li>
+    </ul>
 </nav>
 
 @using (Html.BeginForm())
@@ -20,9 +22,8 @@
                         <a asp-action="Edit" asp-route-id="@entry.Application.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Application.Id" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
+                    @entry.Application.DisplayName
                 </div>
-
-                @entry.Application.DisplayName
             </li>
         }
     </ul>

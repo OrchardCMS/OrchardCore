@@ -63,7 +63,6 @@ namespace Orchard.OpenId.Controllers
                 });
             }
 
-            var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
             if (application == null)
             {

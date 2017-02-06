@@ -24,6 +24,7 @@ using Orchard.Security;
 using Orchard.Settings.Services;
 using Orchard.Users.Models;
 using YesSql.Core.Indexes;
+using Orchard.Security.Permissions;
 
 namespace Orchard.OpenId
 {
@@ -102,6 +103,7 @@ namespace Orchard.OpenId
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IIndexProvider, OpenIdApplicationIndexProvider>();
             services.AddScoped<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
