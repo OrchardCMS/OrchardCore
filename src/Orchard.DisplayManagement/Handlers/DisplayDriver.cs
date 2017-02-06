@@ -10,30 +10,14 @@ namespace Orchard.DisplayManagement.Handlers
         protected virtual string Prefix { get; set; } = "";
 
         /// <summary>
-        /// Creates a new strongly typed shape.
-        /// </summary>
-        public ShapeResult Shape<TModel>() where TModel : class
-        {
-            return Shape<TModel>(typeof(TModel).Name);
-        }
-
-        /// <summary>
-        /// Creates a new strongly typed shape.
-        /// </summary>
-        public ShapeResult Shape<TModel>(string shapeType) where TModel : class
-        {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.Create<TModel>(shapeType)).Prefix(Prefix);
-        }
-
-        /// <summary>
         /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
         /// </summary>
         public ShapeResult Shape<TModel>(Func<TModel, Task> initialize) where TModel : class
         {
             return new ShapeResult(
                 typeof(TModel).Name,
-                ctx => ctx.ShapeFactory.Create<TModel>(typeof(TModel).Name),
-                shape => initialize((TModel)shape)
+                ctx => ctx.ShapeFactory.Create<TModel>(typeof(TModel).Name, 
+                shape => initialize(shape))
                 ).Prefix(Prefix);
         }
 
@@ -52,9 +36,8 @@ namespace Orchard.DisplayManagement.Handlers
         {
             return new ShapeResult(
                 shapeType,
-                ctx => ctx.ShapeFactory.Create<TModel>(shapeType),
-                shape => initialize((TModel)shape)
-                ).Prefix(Prefix);
+                ctx => ctx.ShapeFactory.Create<TModel>(shapeType, shape => initialize(shape)))
+                .Prefix(Prefix);
         }
 
         /// <summary>
@@ -89,9 +72,9 @@ namespace Orchard.DisplayManagement.Handlers
         /// If the shape needs to be rendered, it is created automatically from its type name and initialized with a <see param name="model" />
         /// All the properties of the <see param name="model" /> object are duplicated on the resulting shape.
         /// </summary>
-        public ShapeResult Shape(string shapeType, object model)
+        public ShapeResult Shape<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.Create(shapeType, Arguments.From(model))).Prefix(Prefix);
+            return new ShapeResult(shapeType, ctx => ctx.ShapeFactory.Create(shapeType, model)).Prefix(Prefix);
         }
 
         /// <summary>

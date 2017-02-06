@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
@@ -28,70 +29,67 @@ namespace Orchard.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.GetSiteSettingsAsync();
 
-            if (model["BaseUrl"] != null)
+            foreach(JProperty property in model.Properties())
             {
-                site.BaseUrl = model["BaseUrl"].ToString();
-            }
+                switch (property.Name)
+                {
+                    case "BaseUrl":
+                        site.BaseUrl = property.Value.ToString();
+                        break;
 
-            if (model["Calendar"] != null)
-            {
-                site.Calendar = model["Calendar"].ToString();
-            }
+                    case "Calendar":
+                        site.Calendar = property.Value.ToString();
+                        break;
 
-            if (model["Culture"] != null)
-            {
-                site.Culture = model["Culture"].ToString();
-            }
+                    case "Culture":
+                        site.Culture = property.Value.ToString();
+                        break;
 
-            if (model["MaxPagedCount"] != null)
-            {
-                site.MaxPagedCount = model.Value<int>("MaxPagedCount");
-            }
+                    case "MaxPagedCount":
+                        site.MaxPagedCount = property.Value<int>();
+                        break;
 
-            if (model["MaxPageSize"] != null)
-            {
-                site.MaxPageSize = model.Value<int>("MaxPageSize");
-            }
+                    case "MaxPageSize":
+                        site.MaxPageSize = property.Value<int>();
+                        break;
 
-            if (model["PageSize"] != null)
-            {
-                site.PageSize = model.Value<int>("PageSize");
-            }
+                    case "PageSize":
+                        site.PageSize = property.Value<int>();
+                        break;
 
-            if (model["ResourceDebugMode"] != null)
-            {
-                site.ResourceDebugMode = model.Value<ResourceDebugMode>("ResourceDebugMode");
-            }
+                    case "ResourceDebugMode":
+                        site.ResourceDebugMode = property.Value<ResourceDebugMode>();
+                        break;
 
-            if (model["SiteName"] != null)
-            {
-                site.SiteName = model["SiteName"].ToString();
-            }
+                    case "SiteName":
+                        site.SiteName = property.ToString();
+                        break;
 
-            if (model["SiteSalt"] != null)
-            {
-                site.SiteSalt = model["SiteSalt"].ToString();
-            }
+                    case "SiteSalt":
+                        site.SiteSalt = property.ToString();
+                        break;
 
-            if (model["SuperUser"] != null)
-            {
-                site.SuperUser = model["SuperUser"].ToString();
-            }
+                    case "SuperUser":
+                        site.SuperUser = property.ToString();
+                        break;
 
-            if (model["TimeZone"] != null)
-            {
-                site.TimeZone = model["TimeZone"].ToString();
-            }
+                    case "TimeZone":
+                        site.TimeZone = property.ToString();
+                        break;
 
-            if (model["UseCdn"] != null)
-            {
-                site.UseCdn = model.Value<bool>("UseCdn");
-            }
+                    case "UseCdn":
+                        site.UseCdn = property.Value<bool>();
+                        break;
 
-            if (model["HomeRoute"] != null)
-            {
-                site.HomeRoute = model["HomeRoute"].ToObject<RouteValueDictionary>();
-            }
+                    case "HomeRoute":
+                        site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        break;
+
+                    default:
+                        site.Properties.Add(property);
+                        break;
+                }
+            }            
 
             await _siteService.UpdateSiteSettingsAsync(site);
         }

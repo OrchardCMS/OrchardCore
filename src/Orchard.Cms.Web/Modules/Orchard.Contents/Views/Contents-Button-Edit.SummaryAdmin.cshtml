@@ -6,7 +6,7 @@
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
 }
 
-<a edit-for="@contentItem" class="btn btn-primary btn-sm">@T["Edit"]</a>
+<a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
 
 @if (hasPublished)

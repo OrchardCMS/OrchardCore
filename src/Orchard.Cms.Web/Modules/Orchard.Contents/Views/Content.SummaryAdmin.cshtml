@@ -14,7 +14,7 @@
 
     <input type="checkbox" value="@contentItem.Id" name="itemIds"/>
         
-    <a admin-for="@contentItem"/> 
+    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> 
 
     @if (Model.Header != null)
     {

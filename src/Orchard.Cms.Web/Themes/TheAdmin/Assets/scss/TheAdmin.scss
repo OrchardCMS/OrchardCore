@@ -9,7 +9,6 @@ $top-nav-height: 55px;
 $left-navigation-width: 260px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
 $link-padding-left: 16px !default;
-$li-link-padding-left: 38px;
 
 // Layout
 // -----------------------------
@@ -139,7 +138,7 @@ $li-link-padding-left: 38px;
         li ul > li > a {
             background-color: $gray-lighter;
             color: $gray !important;
-            padding-left: $li-link-padding-left !important;
+            padding-left: 2 * $link-padding-left !important;
         }
 
         li ul > li > a:hover {
@@ -264,8 +263,12 @@ ul.pager li a {
 // Sortable
 // ------------------------------
 
-.list-group.sortable li {
+.ui-sortable-handle {
     cursor: move;
+}
+
+.ui-sortable {
+    min-height: $font-size-base;
 }
 
 .properties {
@@ -276,25 +279,25 @@ ul.pager li a {
     @extend .float-right;
 }
 
-/*// Responsive sizes
+// Responsive sizes
 // Creates mixins to target all breakpoints
 // ------------------------------
 .col-xs {
-    @extend .col-xs-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
+    @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
 }
 
 .col-sm {
-    @extend .col-xs-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
+    @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
 }
 
 .col-md {
-    @extend .col-xs-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
+    @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
 }
 
 .col-lg {
-    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
 }
 
 .col-xl {
-    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xs-12;
-}*/
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
+}

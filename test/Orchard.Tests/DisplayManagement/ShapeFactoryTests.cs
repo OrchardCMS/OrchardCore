@@ -74,22 +74,5 @@ namespace Orchard.Tests.DisplayManagement
             Assert.Equal(1, foo.One);
             Assert.Equal("two", foo.Two);
         }
-
-        [Fact]
-        public void CallInitializerWithBaseType()
-        {
-            dynamic factory = _serviceProvider.GetService<IShapeFactory>();
-            var bar = new { One = 1, Two = "two" };
-            var foo = factory.Foo(typeof(MyShape), bar);
-
-            Assert.IsType(typeof(MyShape), foo);
-            Assert.Equal(1, foo.One);
-            Assert.Equal("two", foo.Two);
-        }
-
-        public class MyShape : Shape
-        {
-            public string Kind { get; set; }
-        }
     }
 }
