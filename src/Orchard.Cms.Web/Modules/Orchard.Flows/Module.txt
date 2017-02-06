@@ -8,5 +8,5 @@ Description: Provides a content part allowing users to edit their content based 
 Features:
     Orchard.Flows:
         Category: Content
-        Provides a content part allowing users to edit their content based on Widgets.
+        Description: Provides a content part allowing users to edit their content based on Widgets.
         Dependencies: Orchard.Content, Orchard.Widgets
