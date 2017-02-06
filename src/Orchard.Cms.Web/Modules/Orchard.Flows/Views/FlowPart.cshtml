@@ -2,6 +2,7 @@
 @using Orchard.DisplayManagement
 @using Orchard.Flows.Models
 @using Orchard.Flows.ViewModels
+@using Orchard.Utility
 
 @model FlowPartViewModel
 @inject Orchard.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -15,6 +16,7 @@
         if (flowMetadata != null)
         {
             widgetContent.Classes.Add("widget");
+            widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
             widgetContent.Classes.Add("widget-align-" + flowMetadata.Alignment.ToString().ToLowerInvariant());
             widgetContent.Classes.Add("widget-size-" + flowMetadata.Size);
         }

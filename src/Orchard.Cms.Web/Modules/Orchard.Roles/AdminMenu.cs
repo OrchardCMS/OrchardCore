@@ -20,14 +20,14 @@ namespace Orchard.Roles
                 return;
             }
 
-            builder
-                .Add(T["Content"], content => content
-                    .Add(T["Roles"], "5", installed => installed
-                        .Action("Index", "Admin", "Orchard.Roles")
-                        .Permission(Permissions.ManageRoles)
-                        .LocalNav()
-                    )
-                );
+			builder
+				.Add(T["Design"], design => design
+					.Add(T["Security"], "5", security => security
+						.Add(T["Roles"], "10", installed => installed
+							.Action("Index", "Admin", "Orchard.Roles")
+							.Permission(Permissions.ManageRoles)
+							.LocalNav()
+						)));
         }
     }
 }

@@ -21,14 +21,13 @@ namespace Orchard.Users
             }
 
             builder
-                .Add(T["Content"], "2", content => content
-                    .AddClass("content").Id("content")
-                    .Add(T["Users"], "5", installed => installed
-                        .Action("Index", "Admin", "Orchard.Users")
-                        .Permission(Permissions.ManageUsers)
-                        .LocalNav()
-                    )
-                );
+				.Add(T["Design"], design => design
+					.Add(T["Security"], "5", security => security
+						.Add(T["Users"], "5", installed => installed
+							.Action("Index", "Admin", "Orchard.Users")
+							.Permission(Permissions.ManageUsers)
+							.LocalNav()
+						)));
         }
     }
 }

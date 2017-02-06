@@ -1,16 +1,4 @@
-﻿<div class="edit-widget">
-    <div class="edit-item-primary">
-        @if (Model.Content != null)
-        {
-            <div class="edit-item-content">
-                @await DisplayAsync(Model.Content)
-            </div>
-        }
-    </div>
-    <div class="edit-item-parts">
-        @if (Model.Parts != null)
-        {
-            @await DisplayAsync(Model.Parts)
-        }
-    </div>
-</div>
+﻿@{ 
+    Model.Metadata.Type = "Content_Edit";
+    @await DisplayAsync(Model)
+}

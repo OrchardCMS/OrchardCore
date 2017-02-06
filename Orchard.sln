@@ -217,6 +217,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Flows", "src\Orchar
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Widgets", "src\Orchard.Cms.Web\Modules\Orchard.Widgets\Orchard.Widgets.xproj", "{874AF752-83B1-4595-AACD-B18D4A8C464C}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Layers", "src\Orchard.Cms.Web\Modules\Orchard.Layers\Orchard.Layers.xproj", "{766929F5-8CAB-4FF0-920E-7E806A6BB14D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -591,6 +593,10 @@ Global
 		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{874AF752-83B1-4595-AACD-B18D4A8C464C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{766929F5-8CAB-4FF0-920E-7E806A6BB14D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{766929F5-8CAB-4FF0-920E-7E806A6BB14D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{766929F5-8CAB-4FF0-920E-7E806A6BB14D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{766929F5-8CAB-4FF0-920E-7E806A6BB14D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -695,5 +701,6 @@ Global
 		{94FB9ECF-BA43-49BF-96BA-D54B2D959746} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{874AF752-83B1-4595-AACD-B18D4A8C464B} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{874AF752-83B1-4595-AACD-B18D4A8C464C} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{766929F5-8CAB-4FF0-920E-7E806A6BB14D} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal

@@ -68,7 +68,7 @@
         {
             // Render a mock widget so that its resources are included in the page
             var contentItem = ContentManager.New(type.Name);
-            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString()));
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, "", Guid.NewGuid().ToString("n")));
         }
         </div>
 
@@ -79,8 +79,10 @@
     <script at="Foot">
         $("#@widgetTemplatePlaceholderId").sortable({
             handle: ".widget-editor-header",
-            stop: function( event, ui ) { $(document).trigger('contentpreview:render'); },
-            cursor: "move"
+            cursor: "move",
+            stop: function (event, ui) {
+                $(document).trigger('contentpreview:render');
+            }
         });
     </script>
 </fieldset>

@@ -6,8 +6,6 @@
 @inject IContentManager ContentManager
 
 @{
-    var returnUrl = Context.Request.Path;
-
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
@@ -39,7 +37,7 @@
 
         @if (hasDraft || hasPublished)
         {
-            <a remove-for="@contentItem" class="dropdown-item btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+            <a remove-for="@contentItem" class="dropdown-item btn-sm" asp-route-returnUrl="@FullRequestPath" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
         }
 
     </div>
