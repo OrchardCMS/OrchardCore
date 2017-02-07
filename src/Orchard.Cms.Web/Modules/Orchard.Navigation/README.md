@@ -27,6 +27,8 @@ It can optionally render _First_ and _Last_ links.
 
 Properties inherited from the `List` shape
 
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
 | `Id` | `string` | The HTML id used for the pager. default: _none_ |
 | `Tag` | `string` | The HTML tag used for the pager. default: `ul` |
 | `ItemTag` | `string` | The HTML tag used for the pages. default: `li` |
@@ -64,6 +66,8 @@ This shape renders a pager that is comprised of two links: _Previous_ and _Next_
 
 Properties inherited from the `List` shape
 
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
 | `Id` | `string` | The HTML id used for the pager. default: _none_ |
 | `Tag` | `string` | The HTML tag used for the pager. default: `ul` |
 | `ItemTag` | `string` | The HTML tag used for the pages. default: `li` |
