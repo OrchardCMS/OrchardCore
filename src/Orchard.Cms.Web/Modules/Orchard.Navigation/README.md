@@ -34,7 +34,7 @@ Properties inherited from the `List` shape
 | `ItemTag` | `string` | The HTML tag used for the pages. default: `li` |
 | `FirstClass` | `string` | The HTML class used for the first page. default: `first` |
 | `LastClass` | `string` | The HTML tag used for last page. default: `last` |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages. default: _none_" |
+| `ItemClasses` | `List<string>` | Classes that are assigned to the pages. default: _none_ |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
@@ -73,7 +73,7 @@ Properties inherited from the `List` shape
 | `ItemTag` | `string` | The HTML tag used for the pages. default: `li` |
 | `FirstClass` | `string` | The HTML class used for the first page. default: `first` |
 | `LastClass` | `string` | The HTML tag used for last page. default: `last` |
-| `ItemClasses` | `List<string>` | Classes that are assigned to the pages. default: _none_" |
+| `ItemClasses` | `List<string>` | Classes that are assigned to the pages. default: _none_ |
 | `ItemAttributes` | `Dictionary<string, string>` | Attributes that are assigned to the pages |
 
 A slim pager can be further customized by defining templates for the following shapes;
