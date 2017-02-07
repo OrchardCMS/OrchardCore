@@ -30,6 +30,15 @@ namespace Orchard.Navigation
         public void Discover(ShapeTableBuilder builder)
         {
             builder.Describe("Pager")
+				.OnCreated(created =>
+				{
+					var pager = created.Shape;
+
+					// Intializes the common properties of a Pager shape
+					// such that views can safely add values to them.
+					pager.ItemClasses = new List<string>();
+					pager.ItemAttributes = new Dictionary<string, string>();
+				})
                 .OnDisplaying(displaying =>
                 {
                     var pager = displaying.Shape;
@@ -40,7 +49,19 @@ namespace Orchard.Navigation
                     }
                 });
 
-            builder.Describe("Pager_Gap")
+			builder.Describe("PagerSlim")
+				.OnCreated(created =>
+				{
+					var pager = created.Shape;
+
+					// Intializes the common properties of a Pager shape
+					// such that views can safely add values to them.
+					pager.ItemClasses = new List<string>();
+					pager.ItemAttributes = new Dictionary<string, string>();
+				});
+
+
+			builder.Describe("Pager_Gap")
                 .OnDisplaying(displaying =>
                 {
                     var pager = displaying.Shape.Pager;
