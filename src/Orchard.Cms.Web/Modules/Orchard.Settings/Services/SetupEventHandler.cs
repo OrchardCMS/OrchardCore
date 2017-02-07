@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
 using Orchard.Events;
 
 namespace Orchard.Settings.Services
@@ -15,22 +13,20 @@ namespace Orchard.Settings.Services
     /// </summary>
     public class SetupEventHandler : ISetupEventHandler
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ISiteService _siteService;
 
-        public SetupEventHandler(IServiceProvider serviceProvider)
+        public SetupEventHandler(ISiteService siteService)
         {
-            _serviceProvider = serviceProvider;
+            _siteService = siteService;
         }
 
         public async Task Setup(string siteName, string userName)
         {
-            var siteService = _serviceProvider.GetRequiredService<ISiteService>();
-
             // Updating site settings
-            var siteSettings = await siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
-            await siteService.UpdateSiteSettingsAsync(siteSettings);
+            await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in
         }

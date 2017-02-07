@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
@@ -23,32 +22,29 @@ namespace Orchard.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private readonly IEventBus _eventBus;
-        private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
         private readonly IOrchardHost _orchardHost;
+        private readonly IEventBus _eventBus;
         private readonly IRecipeStore _recipeStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
 
         public RecipeExecutor(
-            IEventBus eventBus,
-            IRecipeStore recipeStore,
-            IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
             IOrchardHost orchardHost,
+            IEventBus eventBus,
+            IRecipeStore recipeStore,
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {
-            _orchardHost = orchardHost;
-            _shellSettings = shellSettings;
             _applicationLifetime = applicationLifetime;
+            _shellSettings = shellSettings;
+            _orchardHost = orchardHost;
             _eventBus = eventBus;
             _recipeStore = recipeStore;
-            _recipeOptions = recipeOptions.Value;
             Logger = logger;
             T = localizer;
         }

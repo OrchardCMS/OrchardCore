@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +65,7 @@ namespace Orchard.DisplayManagement
 			services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
 			services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
-			services.AddShapeAttributes<CoreShapes>();
+            services.AddShapeAttributes<CoreShapes>();
 			services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
 			services.AddShapeAttributes<ZoneShapes>();
 			services.AddScoped<IShapeTableProvider, LayoutShapes>();

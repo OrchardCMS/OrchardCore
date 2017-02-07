@@ -11,6 +11,13 @@ namespace Orchard.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private readonly IExtensionManager _extensionManager;
+
+        public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
+        {
+            _extensionManager = extensionManager;
+        }
+
         public int Priority => 15;
 
         /// <inheritdoc />
@@ -45,12 +52,6 @@ namespace Orchard.DisplayManagement.LocationExpander
 
             if (themeManager != null)
             {
-                var extensionManager = context
-                    .ActionContext
-                    .HttpContext
-                    .RequestServices
-                    .GetService<IExtensionManager>();
-
                 var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
 
                 if (currentTheme == null)
@@ -58,7 +59,7 @@ namespace Orchard.DisplayManagement.LocationExpander
                     return Enumerable.Empty<string>();
                 }
 
-                var currentThemeAndBaseThemesOrdered = extensionManager
+                var currentThemeAndBaseThemesOrdered = _extensionManager
                     .GetFeatures(new[] { currentTheme.Id })
                     .Where(x => x.Extension.Manifest.IsTheme())
                     .Reverse();
