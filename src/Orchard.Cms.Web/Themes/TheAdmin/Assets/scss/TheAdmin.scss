@@ -135,14 +135,20 @@ $link-padding-left: 16px !default;
             color: $gray-lightest !important;
         }
 
-        li ul > li > a {
+        li ul > li > a,
+        li ul > li > label {
             background-color: $gray-lighter;
             color: $gray !important;
             padding-left: 2 * $link-padding-left !important;
         }
 
-        li ul > li > a:hover {
+        li ul > li > a:hover,
+        li ul > li > label:hover {
             color: $gray-lightest !important;
+        }
+
+        li ul > li ul > li > a{
+            padding-left: 3 * $link-padding-left !important;
         }
     }
 
