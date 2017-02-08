@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
@@ -10,7 +11,6 @@ using Orchard.ContentManagement.Display.Models;
 using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.Views;
 using Orchard.Settings;
-using Orchard.Utility;
 using Orchard.Widgets.Models;
 using Orchard.Widgets.Settings;
 using Orchard.Widgets.ViewModels;

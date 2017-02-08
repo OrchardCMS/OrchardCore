@@ -2,8 +2,11 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Mvc.Modules": "1.0.0-*",
+    "NETStandard.Library": "1.6.1",
     "Orchard.ContentManagement.Abstractions": "2.0.0-*",
-    "NETStandard.Library": "1.6.1"
+    "Orchard.ContentManagement.Display": "2.0.0-*",
+    "Orchard.ContentTypes.Abstractions": "2.0.0-*",
+    "Orchard.Data.Abstractions": "2.0.0-*"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
