@@ -148,12 +148,8 @@ namespace Orchard.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public PagerShapes(
-            IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<PagerShapes> localizer)
+        public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
-            _httpContextAccessor = httpContextAccessor;
             T = localizer;
         }
 
@@ -197,7 +193,8 @@ namespace Orchard.Navigation
             var lastText = LastText ?? T[">>"];
             var gapText = GapText ?? T["..."];
 
-            var httpContext = _httpContextAccessor.HttpContext;
+            var httpContextAccessor = DisplayContext.ServiceProvider.GetService<IHttpContextAccessor>();
+            var httpContext = httpContextAccessor.HttpContext;
 
             var routeData = new RouteValueDictionary(Html.ViewContext.RouteData.Values);
 

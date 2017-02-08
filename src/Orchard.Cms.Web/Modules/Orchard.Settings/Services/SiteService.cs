@@ -89,6 +89,7 @@ namespace Orchard.Settings.Services
             _session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
+            return;
         }
     }
 }

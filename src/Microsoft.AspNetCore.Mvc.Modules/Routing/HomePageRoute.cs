@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.Settings;
 
 namespace Microsoft.AspNetCore.Mvc.Modules.Routing
@@ -9,16 +8,18 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
     public class HomePageRoute : Route
     {
         private readonly IRouteBuilder _routeBuilder;
+        private readonly ISiteService _siteService;
 
-        public HomePageRoute(IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+        public HomePageRoute(ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
             : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
         {
+            _siteService = siteService;
             _routeBuilder = routeBuilder;
         }
 
         protected override async Task OnRouteMatched(RouteContext context)
         {
-            var tokens = await GetHomeRouteValuesAsync(context.HttpContext.RequestServices);
+            var tokens = await GetHomeRouteValuesAsync();
 
             if (tokens != null)
             {
@@ -35,7 +36,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
         {
             object value;
 
-            var tokens = GetHomeRouteValuesAsync(context.HttpContext.RequestServices).GetAwaiter().GetResult();
+            var tokens = GetHomeRouteValuesAsync().Result;
 
             if (tokens == null)
             {
@@ -45,16 +46,16 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
             // Return null if it doesn't match the home route values
             foreach (var entry in tokens)
             {
-                if (string.Equals(entry.Key, "area", StringComparison.OrdinalIgnoreCase))
+                if (String.Equals(entry.Key, "area", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (!context.AmbientValues.TryGetValue("area", out value) || !string.Equals(value.ToString(), tokens["area"].ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (!context.AmbientValues.TryGetValue("area", out value) || !String.Equals(value.ToString(), tokens["area"].ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         return null;
                     }
                 }
                 else
                 {
-                    if (!context.Values.TryGetValue(entry.Key, out value) || !string.Equals(value.ToString(), entry.Value.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (!context.Values.TryGetValue(entry.Key, out value) || !String.Equals(value.ToString(), entry.Value.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         return null;
                     }
@@ -72,16 +73,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Routing
             return result;
         }
 
-        private async Task<RouteValueDictionary> GetHomeRouteValuesAsync(IServiceProvider serviceProvider)
+        private async Task<RouteValueDictionary> GetHomeRouteValuesAsync()
         {
-            var siteService = serviceProvider.GetService<ISiteService>();
-
-            if (siteService == null)
-            {
-                return null;
-            }
-
-            var siteSettings = await siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
             return siteSettings.HomeRoute;
         }
     }
