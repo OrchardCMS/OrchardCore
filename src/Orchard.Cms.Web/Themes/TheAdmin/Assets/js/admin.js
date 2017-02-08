@@ -76,8 +76,6 @@ $(function () {
         if ($(this).prop('checked')) {
             target.addClass('collapsed');
         }
-        target.addClass('collapse');        
-        target.collapse($(this).prop('checked') ? 'show' : 'hide');
 
         $(this).on('change', function (e) {
             // During a double-click, ignore state changes while the element is collapsing
@@ -91,7 +89,7 @@ $(function () {
 
 $(function () {
     $('input[data-toggle="collapse active"]').each(function () {
-        // Prevent bootstrap from altering its behavior
+        // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
         // c.f. https://github.com/twbs/bootstrap/issues/21079
         $(this).removeAttr("data-toggle");
 
@@ -100,8 +98,6 @@ $(function () {
         if (!$(this).prop('checked')) {
             target.addClass('active');            
         }
-        target.addClass('collapse');
-        target.collapse($(this).prop('checked') ? 'hide' : 'show');
 
         $(this).on('change', function (e) {
             // During a double-click, ignore state changes while the element is collapsing
