@@ -86,7 +86,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             return builder.AddRazorViewEngine(options =>
             {
-                var extensionLibraryService = 
+                var extensionLibraryService =
                     services.GetService<IExtensionLibraryService>();
 
                 foreach (var metadataPath in extensionLibraryService.MetadataPaths)

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Orchard.Settings;
 
-namespace Microsoft.AspNetCore.Mvc.Modules.Routing
+namespace Orchard.HomeRoute
 {
     public class HomePageRoute : Route
     {

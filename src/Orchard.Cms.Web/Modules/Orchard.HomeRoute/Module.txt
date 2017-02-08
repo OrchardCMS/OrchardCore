@@ -1,0 +1,9 @@
+﻿Name: Home Route
+AntiForgery: enabled
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Features:
+    Orchard.HomeRoute:
+        Category: Infrastructure

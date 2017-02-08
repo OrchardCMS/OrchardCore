@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.Internal;
-using Microsoft.AspNetCore.Mvc.Modules.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Settings;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -47,15 +45,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 null,
                 inlineConstraintResolver)
             );
-
-            var siteService = builder.ServiceProvider.GetService<ISiteService>();
-
-            // ISiteService might not be registered during Setup
-            if (siteService != null)
-            {
-                // Add home page route
-                builder.Routes.Add(new HomePageRoute(siteService, builder, inlineConstraintResolver));
-            }
         }
     }
 }

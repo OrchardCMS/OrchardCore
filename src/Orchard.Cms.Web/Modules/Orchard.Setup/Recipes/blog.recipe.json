@@ -22,6 +22,7 @@
       "enable": [
         // SaaS
         "Orchard.Mvc",
+        "Orchard.HomeRoute",
         "Orchard.Admin",
         "Orchard.Commons",
         "Orchard.Diagnostics",
