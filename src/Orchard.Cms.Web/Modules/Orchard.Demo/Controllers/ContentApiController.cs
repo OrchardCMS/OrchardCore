@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
-using Orchard.Contents;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Orchard.Demo.Controllers
@@ -43,6 +41,19 @@ namespace Orchard.Demo.Controllers
             {
                 return NotFound();
             }
+
+            return new ObjectResult(contentItem);
+        }
+
+        [Authorize]
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> AddContent([FromServices] IContentManager contentManager, [FromBody]ContentItem contentItem)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+                return Unauthorized();
+
+            contentManager.Create(contentItem);
 
             return new ObjectResult(contentItem);
         }
