@@ -33,15 +33,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
 
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
         public ShapeAttributeBindingStrategy(
-            IServiceProvider serviceProvider,
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
-            _serviceProvider = serviceProvider;
             _typeFeatureProvider = typeFeatureProvider;
             _shapeProviders = shapeProviders;
         }
@@ -85,12 +82,12 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             ShapeAttributeOccurrence attributeOccurrence,
             ShapeDescriptor descriptor)
         {
-            return context =>
-            {
-                var serviceInstance = _serviceProvider.GetService(attributeOccurrence.ServiceType);
-                // oversimplification for the sake of evolving
-                return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
-            };
+			return context =>
+			{
+				var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
+				// oversimplification for the sake of evolving
+				return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
+			};
         }
 
         private Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
