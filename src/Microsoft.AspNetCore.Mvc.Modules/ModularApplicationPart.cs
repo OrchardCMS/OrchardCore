@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -17,6 +18,24 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
+        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Microsoft.AspNetCore.Mvc",
+            "Microsoft.AspNetCore.Mvc.Abstractions",
+            "Microsoft.AspNetCore.Mvc.ApiExplorer",
+            "Microsoft.AspNetCore.Mvc.Core",
+            "Microsoft.AspNetCore.Mvc.Cors",
+            "Microsoft.AspNetCore.Mvc.DataAnnotations",
+            "Microsoft.AspNetCore.Mvc.Formatters.Json",
+            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
+            "Microsoft.AspNetCore.Mvc.Localization",
+            "Microsoft.AspNetCore.Mvc.Razor",
+            "Microsoft.AspNetCore.Mvc.Razor.Host",
+            "Microsoft.AspNetCore.Mvc.RazorPages",
+            "Microsoft.AspNetCore.Mvc.TagHelpers",
+            "Microsoft.AspNetCore.Mvc.ViewFeatures"
+        };
+
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
@@ -39,6 +58,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         private IModularAssemblyProvider AssemblyProvider =>
             HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
 
+        private ShellBlueprint ShellBlueprint =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+
         public override string Name
         {
             get
@@ -52,7 +74,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return AssemblyProvider.GetAssemblies().SelectMany(x => x.DefinedTypes);
+                return DefaultAssemblyDiscoveryProvider
+                    .DiscoverAssemblies(
+                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).Distinct().ToList(),
+                        ReferenceAssemblies)
+                    .SelectMany(x => x.DefinedTypes);
             }
         }
 

@@ -15,7 +15,7 @@ namespace Microsoft.AspNetCore.Modules
         {
             _shellBlueprint = shellBlueprint;
         }
-
+        
         private IList<Assembly> CachedAssemblies;
 
         public IEnumerable<Assembly> GetAssemblies()

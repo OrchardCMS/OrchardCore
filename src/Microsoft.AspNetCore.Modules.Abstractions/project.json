@@ -6,6 +6,7 @@
     "Microsoft.Extensions.Configuration.Abstractions": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
     "Microsoft.Extensions.Localization.Abstractions": "1.1.0",
+    "Microsoft.Extensions.DependencyModel": "1.1.0",
     "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
