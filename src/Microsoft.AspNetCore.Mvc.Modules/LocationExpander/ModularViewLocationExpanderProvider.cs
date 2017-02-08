@@ -8,6 +8,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 {
     public class ModularViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
+        private readonly IExtensionManager _extensionManager;
+        public ModularViewLocationExpanderProvider(IExtensionManager extensionManager)
+        {
+            _extensionManager = extensionManager;
+        }
+
         public int Priority => 5;
 
         /// <inheritdoc />
@@ -19,14 +25,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            var extensionManager = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetRequiredService<IExtensionManager>();
-
             // Get Extension, and then add in the relevant views.
-            var extension = extensionManager.GetExtension(context.AreaName);
+            var extension = _extensionManager.GetExtension(context.AreaName);
 
             if (!extension.Exists)
             {

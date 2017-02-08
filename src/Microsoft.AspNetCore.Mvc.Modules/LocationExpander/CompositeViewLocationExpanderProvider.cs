@@ -15,11 +15,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 
         public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
         {
-            var expanderProviders = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetServices<IViewLocationExpanderProvider>();
+            var expanderProviders = DiscoverProviders(context);
 
             var locations = new List<string>();
 
@@ -37,16 +33,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules.LocationExpander
 
         public void PopulateValues(ViewLocationExpanderContext context)
         {
-            var expanderProviders = context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetServices<IViewLocationExpanderProvider>();
+            var expanderProviders = DiscoverProviders(context);
 
             foreach (var provider in expanderProviders.OrderByDescending(x => x.Priority))
             {
                 provider.PopulateValues(context);
             }
         }
+
+        private IEnumerable<IViewLocationExpanderProvider> DiscoverProviders(ViewLocationExpanderContext context) {
+            return context
+                .ActionContext
+                .HttpContext
+                .RequestServices
+                .GetServices<IViewLocationExpanderProvider>();
+        } 
     }
 }
