@@ -7,9 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -25,9 +22,10 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
+        private static ConcurrentDictionary<string, Func<object, string>> _renderers = new ConcurrentDictionary<string, Func<object, string>>();
+
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
-        private readonly IOptions<MvcViewOptions> _viewEngine;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
         private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -43,7 +41,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
-            _viewEngine = options;
             _hostingEnvironment = hostingEnvironment;
             _logger = logger;
         }
@@ -75,7 +72,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var matcher = new Matcher();
             foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
             {
-                matcher.AddInclude(string.Format("*.{0}", extension));
+                matcher.AddInclude(string.Format("*{0}", extension));
             }
 
             var hits = activeExtensions.Select(extensionDescriptor =>
@@ -92,7 +89,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                     var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
 
-                    var virtualPath = Path.Combine(extensionDescriptor.SubPath, subPath);
+                    var relativePath = Path.Combine(extensionDescriptor.SubPath, subPath);
 
                     if (!directoryInfo.Exists)
                     {
@@ -100,7 +97,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         {
                             harvesterInfo.harvester,
                             subPath,
-                            virtualPath,
+                            relativePath,
                             files = new IFileInfo[0]
                         };
                     }
@@ -113,7 +110,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         .Select(match => _hostingEnvironment
                             .GetExtensionFileInfo(extensionDescriptor, Path.Combine(subPath, match.Path))).ToArray();
 
-                    return new { harvesterInfo.harvester, subPath, virtualPath, files };
+                    return new { harvesterInfo.harvester, subPath, relativePath, files };
                 })).ToList();
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -126,7 +123,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         file => new
                         {
                             fileName = Path.GetFileNameWithoutExtension(file.Name),
-                            fileVirtualPath = "~/" + Path.Combine(pathContext.virtualPath, file.Name),
+                            relativePath = Path.Combine(pathContext.relativePath, file.Name),
                             pathContext
                         });
                 }));
@@ -137,7 +134,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     {
                         SubPath = fileContext.pathContext.subPath,
                         FileName = fileContext.fileName,
-                        TemplateVirtualPath = fileContext.fileVirtualPath
+                        RelativePath = fileContext.relativePath
                     };
                     var harvestShapeHits = fileContext.pathContext.harvester.HarvestShape(harvestShapeInfo);
                     return harvestShapeHits.Select(harvestShapeHit => new { harvestShapeInfo, harvestShapeHit, fileContext });
@@ -156,15 +153,16 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     if (_logger.IsEnabled(LogLevel.Debug))
                     {
                         _logger.LogDebug("Binding {0} as shape [{1}] for feature {2}",
-                            hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
+                            hit.shapeContext.harvestShapeInfo.RelativePath,
                             iter.shapeContext.harvestShapeHit.ShapeType,
                             feature.Id);
                     }
+
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.TemplateVirtualPath,
-                            shapeDescriptor => displayContext => RenderAsync(shapeDescriptor, displayContext, hit.shapeContext.harvestShapeInfo, hit.shapeContext.harvestShapeHit));
+                            hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
+                                RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext));
                 }
             }
 
@@ -174,69 +172,11 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
         }
 
-        private async Task<IHtmlContent> RenderAsync(ShapeDescriptor shapeDescriptor, DisplayContext displayContext, HarvestShapeInfo harvestShapeInfo, HarvestShapeHit harvestShapeHit)
+        private static async Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
-            }
-            IHtmlContent result;
-
-            if (displayContext.ViewContext.View != null)
-            {
-                var htmlHelper = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
-                result = htmlHelper.Partial(harvestShapeInfo.TemplateVirtualPath, displayContext.Value);
-            }
-            else
-            {
-                // If the View is null, it means that the shape is being executed from a non-view origin / where no ViewContext was established by the view engine, but manually.
-                // Manually creating a ViewContext works when working with Shape methods, but not when the shape is implemented as a Razor view template.
-                // Horrible, but it will have to do for now.
-                result = await RenderRazorViewAsync(harvestShapeInfo.TemplateVirtualPath, displayContext);
-            }
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Done rendering template file '{0}'", harvestShapeInfo.TemplateVirtualPath);
-            }
-            return result;
-        }
-
-        private async Task<IHtmlContent> RenderRazorViewAsync(string path, DisplayContext context)
-        {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(context.ViewContext, path, isMainPage: false);
-            if (viewEngineResult.Success)
-            {
-                var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
-                var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
-                using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
-                {
-                    // Forcing synchronous behavior so users don't have to await templates.
-                    var view = viewEngineResult.View;
-                    using (view as IDisposable)
-                    {
-                        var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
-                        await viewEngineResult.View.RenderAsync(viewContext);
-                        return viewBuffer;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
-        {
-            var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
-
-            var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
-            {
-                var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
-                contextable.Contextualize(newViewContext);
-            }
-
-            return newHelper;
+            return await displayContext.ServiceProvider.GetService<IEnumerable<IShapeTemplateViewEngine>>()
+                .FirstOrDefault(e => e.TemplateFileExtensions.Contains(Path.GetExtension(relativePath)))
+                .RenderAsync(relativePath, displayContext);
         }
     }
 }
