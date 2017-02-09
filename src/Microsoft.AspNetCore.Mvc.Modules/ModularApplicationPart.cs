@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -74,10 +76,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return DefaultAssemblyDiscoveryProvider
-                    .DiscoverAssemblies(
-                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).Distinct().ToList(),
-                        ReferenceAssemblies)
+                var serviceProvider = HttpContextAccessor.HttpContext.RequestServices;
+                var extensionLibraryServices = serviceProvider.GetRequiredService<IExtensionLibraryService>();
+
+                return DefaultModularMvcAssemblyDiscoveryProvider
+                    .GetCandidateAssemblies(extensionLibraryServices.LoadedAssemblies, ReferenceAssemblies)
                     .SelectMany(x => x.DefinedTypes);
             }
         }
@@ -85,7 +88,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            return AssemblyProvider.GetAssemblies().Select(x => x.Location);
+            var serviceProvider = HttpContextAccessor.HttpContext.RequestServices;
+            var extensionLibraryServices = serviceProvider.GetRequiredService<IExtensionLibraryService>();
+
+            return DependencyContext.Default.CompileLibraries
+                .SelectMany(library => library.ResolveReferencePaths())
+                .Union(extensionLibraryServices.MetadataPaths);
         }
     }
 } 

@@ -1,6 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
 
 namespace Orchard.Environment.Extensions
 {
@@ -33,5 +33,11 @@ namespace Orchard.Environment.Extensions
         /// Returns <see cref="MetadataReference"/> instances.
         /// </summary>
         IEnumerable<string> MetadataPaths { get; }
+
+        /// <summary>
+        /// Lists all assemblies dynamically loaded.
+        /// Returns <see cref="Assembly"/> instances.
+        /// </summary>
+        IEnumerable<Assembly> LoadedAssemblies { get; }
     }
 }

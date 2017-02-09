@@ -74,7 +74,15 @@ namespace Orchard.Environment.Extensions
                 return assemblyLocations;
             }
         }
-        
+
+        public IEnumerable<Assembly> LoadedAssemblies
+        {
+            get
+            {
+                return _loadedAssemblies.Select(x => x.Value.Value);
+            }
+        }
+
         private static HashSet<string> GetApplicationAssemblyNames()
         {
             return new HashSet<string>(DependencyContext.Default.RuntimeLibraries

@@ -1,8 +1,6 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -16,7 +14,6 @@ using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -86,15 +83,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             return builder.AddRazorViewEngine(options =>
             {
-                var extensionLibraryService =
-                    services.GetService<IExtensionLibraryService>();
-
-                foreach (var metadataPath in extensionLibraryService.MetadataPaths)
-                {
-                    var metadata = CreateMetadataReference(metadataPath);
-                    options.AdditionalCompilationReferences.Add(metadata);
-                }
-
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
@@ -110,17 +98,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
             services.Replace(
                 ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
-        }
-
-        private static MetadataReference CreateMetadataReference(string path)
-        {
-            using (var stream = File.OpenRead(path))
-            {
-                var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
-                var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
-
-                return assemblyMetadata.GetReference(filePath: path);
-            }
         }
     }
 }
