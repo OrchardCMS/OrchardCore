@@ -3,33 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.AspNetCore.Mvc.Modules
+namespace Microsoft.AspNetCore.Modules
 {
-    // Discovers assemblies that are part of the modular MVC application.
-    public static class DefaultModularMvcAssemblyDiscoveryProvider
+    public static class DefaultModularAssemblyDiscoveryProvider
     {
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Microsoft.AspNetCore.Mvc",
-            "Microsoft.AspNetCore.Mvc.Abstractions",
-            "Microsoft.AspNetCore.Mvc.ApiExplorer",
-            "Microsoft.AspNetCore.Mvc.Core",
-            "Microsoft.AspNetCore.Mvc.Cors",
-            "Microsoft.AspNetCore.Mvc.DataAnnotations",
-            "Microsoft.AspNetCore.Mvc.Formatters.Json",
-            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
-            "Microsoft.AspNetCore.Mvc.Localization",
-            "Microsoft.AspNetCore.Mvc.Razor",
-            "Microsoft.AspNetCore.Mvc.Razor.Host",
-            "Microsoft.AspNetCore.Mvc.RazorPages",
-            "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures"
-        };
-
-        // Returns a list of assemblies that references the assemblies in referenceAssemblies.
-        // By default it returns all assemblies that reference any of the primary MVC assemblies
-        // while ignoring MVC assemblies.
-        // Internal for unit testing
+        // Returns a list of assemblies that references the assemblies in referenceAssemblies
         public static IEnumerable<Assembly> GetCandidateAssemblies(IEnumerable<Assembly> assemblies, ISet<string> referenceAssemblies)
         {
             if (!referenceAssemblies.Any())
@@ -64,7 +42,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 var classification = DependencyClassification.Unknown;
                 if (referenceAssemblies.Contains(assembly.GetName().Name))
                 {
-                    classification = DependencyClassification.MvcReference;
+                    classification = DependencyClassification.Reference;
                 }
 
                 return new Dependency(assembly, classification);
@@ -90,7 +68,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                     {
                         var dependencyClassification = ComputeClassification(candidateDependency.Name);
                         if (dependencyClassification == DependencyClassification.Candidate ||
-                            dependencyClassification == DependencyClassification.MvcReference)
+                            dependencyClassification == DependencyClassification.Reference)
                         {
                             classification = DependencyClassification.Candidate;
                             break;
@@ -131,7 +109,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 Unknown = 0,
                 Candidate = 1,
                 NotCandidate = 2,
-                MvcReference = 3
+                Reference = 3
             }
         }
     }

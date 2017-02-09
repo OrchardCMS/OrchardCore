@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
@@ -57,11 +56,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// </summary>
         public IHttpContextAccessor HttpContextAccessor { get; }
 
-        private IModularAssemblyProvider AssemblyProvider =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
-
-        private ShellBlueprint ShellBlueprint =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+        private IExtensionLibraryService ExtensionLibraryService =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionLibraryService>();
 
         public override string Name
         {
@@ -76,11 +72,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                var serviceProvider = HttpContextAccessor.HttpContext.RequestServices;
-                var extensionLibraryServices = serviceProvider.GetRequiredService<IExtensionLibraryService>();
-
-                return DefaultModularMvcAssemblyDiscoveryProvider
-                    .GetCandidateAssemblies(extensionLibraryServices.LoadedAssemblies, ReferenceAssemblies)
+                return DefaultModularAssemblyDiscoveryProvider
+                    .GetCandidateAssemblies(ExtensionLibraryService.LoadedAssemblies, ReferenceAssemblies)
                     .SelectMany(x => x.DefinedTypes);
             }
         }
@@ -88,12 +81,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            var serviceProvider = HttpContextAccessor.HttpContext.RequestServices;
-            var extensionLibraryServices = serviceProvider.GetRequiredService<IExtensionLibraryService>();
-
             return DependencyContext.Default.CompileLibraries
                 .SelectMany(library => library.ResolveReferencePaths())
-                .Union(extensionLibraryServices.MetadataPaths);
+                .Union(ExtensionLibraryService.MetadataPaths);
         }
     }
 } 
