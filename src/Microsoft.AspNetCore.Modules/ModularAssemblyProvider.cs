@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,8 +16,57 @@ namespace Microsoft.AspNetCore.Modules
         {
             _shellBlueprint = shellBlueprint;
         }
-        
+
         private IList<Assembly> CachedAssemblies;
+        private IList<Assembly> CachedRuntimeAssemblies;
+
+        // Returns a list of assemblies and their dependencies contained in runtimeAssemblies
+        public IEnumerable<Assembly> GetAssemblies(IEnumerable<Assembly> runtimeAssemblies)
+        {
+            if (CachedRuntimeAssemblies == null)
+            {
+                if (!runtimeAssemblies.Any())
+                {
+                    return Enumerable.Empty<Assembly>();
+                }
+
+                var types = GetModularTypes();
+                var assemblies = types.Select(x => x.Assembly);
+
+                var runtimeAssembliesByNames = runtimeAssemblies
+                    .ToDictionary(a => a.GetName().Name);
+
+                var references = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var assembly in assemblies)
+                {
+                    if (runtimeAssembliesByNames.ContainsKey(assembly.GetName().Name) &&
+                        references.Add(assembly.GetName().Name))
+                    {
+                        AddReferences(assembly, runtimeAssembliesByNames, references);
+                    }
+                }
+
+                CachedRuntimeAssemblies = runtimeAssemblies
+                    .Where(a => references.Contains(a.GetName().Name))
+                    .ToList();
+            }
+
+            return CachedRuntimeAssemblies;
+        }
+
+        internal static void AddReferences(Assembly assembly, IDictionary<string, Assembly> runtimeAssemblies, HashSet<string> references)
+        {
+            foreach (var assemblyName in assembly.GetReferencedAssemblies())
+            {
+                if (runtimeAssemblies.ContainsKey(assemblyName.Name) &&
+                    references.Add(assemblyName.Name))
+                {
+                    var referencedAssembly = runtimeAssemblies[assemblyName.Name];
+                    AddReferences(referencedAssembly, runtimeAssemblies, references);
+                }
+            }
+        }
 
         public IEnumerable<Assembly> GetAssemblies()
         {

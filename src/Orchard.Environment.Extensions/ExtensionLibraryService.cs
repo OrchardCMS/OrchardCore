@@ -50,7 +50,8 @@ namespace Orchard.Environment.Extensions
             _logger = logger;
         }
 
-        public IEnumerable<string> MetadataPaths {
+        public IEnumerable<string> ReferencePaths
+        {
             get {
                 var assemblyNames = new HashSet<string>(ApplicationAssemblyNames, StringComparer.OrdinalIgnoreCase);
                 var assemblyLocations = new List<string>();
@@ -75,7 +76,7 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        public IEnumerable<Assembly> LoadedAssemblies
+        public IEnumerable<Assembly> RuntimeLibraries
         {
             get
             {

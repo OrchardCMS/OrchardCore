@@ -56,6 +56,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// </summary>
         public IHttpContextAccessor HttpContextAccessor { get; }
 
+        private IModularAssemblyProvider ModularAssemblyProvider =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
+
         private IExtensionLibraryService ExtensionLibraryService =>
             HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionLibraryService>();
 
@@ -72,9 +75,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return DefaultModularAssemblyDiscoveryProvider
-                    .GetCandidateAssemblies(ExtensionLibraryService.LoadedAssemblies, ReferenceAssemblies)
+                var assemblies = ModularAssemblyProvider
+                    .GetAssemblies(ExtensionLibraryService.RuntimeLibraries);
+
+                var types = DefaultModularAssemblyDiscoveryProvider
+                    .GetCandidateAssemblies(assemblies, ReferenceAssemblies)
                     .SelectMany(x => x.DefinedTypes);
+
+                return types;
             }
         }
 
@@ -83,7 +91,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             return DependencyContext.Default.CompileLibraries
                 .SelectMany(library => library.ResolveReferencePaths())
-                .Union(ExtensionLibraryService.MetadataPaths);
+                .Union(ExtensionLibraryService.ReferencePaths);
         }
     }
 } 

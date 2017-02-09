@@ -29,14 +29,14 @@ namespace Orchard.Environment.Extensions
         Assembly LoadDynamicExtension(IExtensionInfo extensionInfo);
 
         /// <summary>
-        /// Lists references of all the available extensions.
+        /// Lists compilation references of all extensions
         /// </summary>
-        IEnumerable<string> MetadataPaths { get; }
+        IEnumerable<string> ReferencePaths { get; }
 
         /// <summary>
-        /// Lists all assemblies dynamically loaded.
+        /// Lists all runtime libraries dynamically loaded.
         /// Returns <see cref="Assembly"/> instances.
         /// </summary>
-        IEnumerable<Assembly> LoadedAssemblies { get; }
+        IEnumerable<Assembly> RuntimeLibraries { get; }
     }
 }
