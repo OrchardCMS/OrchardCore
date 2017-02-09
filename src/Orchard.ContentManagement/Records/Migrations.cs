@@ -9,9 +9,9 @@ namespace Orchard.ContentManagement.Records
         {
             SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<int>("Latest")
+                .Column<bool>("Latest")
                 .Column<int>("Number")
-                .Column<int>("Published")
+                .Column<bool>("Published")
                 .Column<string>("ContentType", column => column.WithLength(255))
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                 .Column<DateTime>("PublishedUtc", column => column.Nullable())

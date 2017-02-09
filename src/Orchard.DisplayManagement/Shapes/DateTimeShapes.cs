@@ -37,7 +37,7 @@ namespace Orchard.DisplayManagement.Shapes
         IPluralStringLocalizer T { get; }
 
         [Shape]
-        public IHtmlContent TimeSpan(IHtmlHelper Html, DateTimeOffset? Utc, DateTimeOffset? Origin)
+        public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
         {
             Utc = Utc ?? _clock.UtcNow;
             Origin = Origin ?? _clock.UtcNow;
@@ -85,7 +85,7 @@ namespace Orchard.DisplayManagement.Shapes
         }
 
         [Shape]
-        public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTimeOffset? Utc, string Format)
+        public async Task<IHtmlContent> DateTime(IHtmlHelper Html, DateTime? Utc, string Format)
         {
             if (Utc == null)
             {
@@ -93,7 +93,7 @@ namespace Orchard.DisplayManagement.Shapes
             }
 
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
-            var local = TimeZoneInfo.ConvertTime(Utc.Value.UtcDateTime, TimeZoneInfo.Utc, timeZone);
+            var local = TimeZoneInfo.ConvertTime(Utc.Value.ToUniversalTime(), TimeZoneInfo.Utc, timeZone);
 
             if (Format == null)
             {
