@@ -96,7 +96,7 @@ $(function () {
         // Expand the section if necessary
         var target = $($(this).data('target'));
         if (!$(this).prop('checked')) {
-            target.addClass('collapse');
+            target.addClass('collapsed');
         }
 
         $(this).on('change', function (e) {
