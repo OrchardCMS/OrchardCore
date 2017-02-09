@@ -138,12 +138,54 @@
     refreshOfflineAccessTip(false);
 
     function refreshForbiddenFlows() {
-        $("#AllowAuthorizationCodeFlowFieldSet").collapse(@(openIdSettings.AllowAuthorizationCodeFlow.ToString().ToLower())?"show":"hide");
-        $("#AllowHybridFlowFieldSet").collapse(@(openIdSettings.AllowHybridFlow.ToString().ToLower())?"show":"hide");
-        $("#AllowImplicitFlowFieldSet").collapse(@(openIdSettings.AllowImplicitFlow.ToString().ToLower())?"show":"hide");
-        $("#AllowPasswordFlowFieldSet").collapse(@(openIdSettings.AllowPasswordFlow.ToString().ToLower())?"show":"hide");
-        $("#AllowClientCredentialsFlowFieldSet").collapse(@(openIdSettings.AllowClientCredentialsFlow.ToString().ToLower())?"show":"hide");
-        $("#AllowRefreshTokenFlowFieldSet").collapse(@(openIdSettings.AllowRefreshTokenFlow.ToString().ToLower())?"show":"hide");
+        if (@(openIdSettings.AllowAuthorizationCodeFlow.ToString().ToLower()) == true) {
+            $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+            $("#AllowAuthorizationCodeFlow").prop("checked", false);
+        }
+
+        if (@(openIdSettings.AllowHybridFlow.ToString().ToLower()) == true) {
+            $("#AllowHybridFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowHybridFlowFieldSet").collapse("hide");
+            $("#AllowHybridFlow").prop("checked", false);
+        }
+
+        if (@(openIdSettings.AllowImplicitFlow.ToString().ToLower()) == true) {
+            $("#AllowImplicitFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowImplicitFlowFieldSet").collapse("hide");
+            $("#AllowImplicitFlow").prop("checked", false);
+        }
+
+
+        if (@(openIdSettings.AllowPasswordFlow.ToString().ToLower()) == true) {
+            $("#AllowPasswordFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowPasswordFlowFieldSet").collapse("hide");
+            $("#AllowPasswordFlow").prop("checked", false);
+        }
+
+        if (@(openIdSettings.AllowClientCredentialsFlow.ToString().ToLower()) === true) {
+            $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+            $("#AllowClientCredentialsFlow").prop("checked", false);
+        }
+
+        if (@(openIdSettings.AllowRefreshTokenFlow.ToString().ToLower()) == true) {
+            $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+        }
+        else {
+            $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+            $("#AllowRefreshTokenFlow").prop("checked", false);
+        }
     }
 
     $("#Type").change(function () {
@@ -151,7 +193,7 @@
     });
     function refreshClientSecret(defaultType) {
         var type = $("#Type");
-        
+
         var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
         if ($("#Type").val() === '@ClientType.Confidential') {
             allowClientCredentialsFlow.removeAttr("disabled");
