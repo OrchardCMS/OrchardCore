@@ -158,11 +158,15 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                             feature.Id);
                     }
 
+                    var viewEngine = _shapeTemplateViewEngines
+                        .FirstOrDefault(e => e.TemplateFileExtensions.Contains(
+                            Path.GetExtension(iter.shapeContext.harvestShapeInfo.RelativePath)));
+
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)
                         .BoundAs(
                             hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
-                                RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext));
+                                viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext));
                 }
             }
 
@@ -170,13 +174,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 _logger.LogInformation("Done discovering shapes");
             }
-        }
-
-        private static async Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
-        {
-            return await displayContext.ServiceProvider.GetService<IEnumerable<IShapeTemplateViewEngine>>()
-                .FirstOrDefault(e => e.TemplateFileExtensions.Contains(Path.GetExtension(relativePath)))
-                .RenderAsync(relativePath, displayContext);
         }
     }
 }
