@@ -72,13 +72,13 @@ namespace Orchard.ContentManagement
                         contentItem.Published = reader.ReadAsBoolean() ?? false;
                         break;
                     case nameof(ContentItem.PublishedUtc):
-                        contentItem.PublishedUtc = reader.ReadAsDateTimeOffset();
+                        contentItem.PublishedUtc = reader.ReadAsDateTime();
                         break;
                     case nameof(ContentItem.ModifiedUtc):
-                        contentItem.ModifiedUtc = reader.ReadAsDateTimeOffset();
+                        contentItem.ModifiedUtc = reader.ReadAsDateTime();
                         break;
                     case nameof(ContentItem.CreatedUtc):
-                        contentItem.CreatedUtc = reader.ReadAsDateTimeOffset();
+                        contentItem.CreatedUtc = reader.ReadAsDateTime();
                         break;
                     case nameof(ContentItem.Author):
                         contentItem.Author = reader.ReadAsString();

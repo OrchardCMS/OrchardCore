@@ -188,9 +188,9 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             }
 
             // Specific implementation for DateTimes
-            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTimeOffset) || parameter.ParameterType == typeof(DateTimeOffset?)))
+            if (result.GetType() == typeof(string) && (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?)))
             {
-                return DateTimeOffset.Parse((string)result);
+                return DateTime.Parse((string)result);
             }
 
             return Convert.ChangeType(result, parameter.ParameterType);

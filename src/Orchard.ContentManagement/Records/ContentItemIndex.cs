@@ -11,9 +11,9 @@ namespace Orchard.ContentManagement.Records
         public bool Published { get; set; }
         public bool Latest { get; set; }
         public string ContentType { get; set; }
-        public DateTimeOffset? ModifiedUtc { get; set; }
-        public DateTimeOffset? PublishedUtc { get; set; }
-        public DateTimeOffset? CreatedUtc { get; set; }
+        public DateTime? ModifiedUtc { get; set; }
+        public DateTime? PublishedUtc { get; set; }
+        public DateTime? CreatedUtc { get; set; }
         public string Owner { get; set; }
         public string Author { get; set; }
     }

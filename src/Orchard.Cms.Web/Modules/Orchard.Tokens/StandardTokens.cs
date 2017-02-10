@@ -17,7 +17,7 @@ namespace Orchard.Tokens
                 var siteService = serviceProvider.GetRequiredService<ISiteService>();
                 var site = siteService.GetSiteSettingsAsync().Result;
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(site.TimeZone);
-                var now = TimeZoneInfo.ConvertTime(clock.UtcNow.UtcDateTime, TimeZoneInfo.Utc, timeZone);
+                var now = TimeZoneInfo.ConvertTime(clock.UtcNow, TimeZoneInfo.Utc, timeZone);
 
                 var format = arguments[0].ToString();
                 output.Write(now.ToString(format));
