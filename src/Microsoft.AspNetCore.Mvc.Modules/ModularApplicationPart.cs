@@ -75,14 +75,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                var assemblies = ModularAssemblyProvider
-                    .GetAssemblies(ExtensionLibraryService.RuntimeLibraries);
-
-                var types = DefaultModularAssemblyDiscoveryProvider
-                    .GetCandidateAssemblies(assemblies, ReferenceAssemblies)
+                return ModularAssemblyProvider
+                    .GetAssemblies(ExtensionLibraryService.RuntimeLibraries, ReferenceAssemblies)
                     .SelectMany(x => x.DefinedTypes);
-
-                return types;
             }
         }
 

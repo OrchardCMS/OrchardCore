@@ -10,7 +10,7 @@ namespace Microsoft.AspNetCore.Modules
         // Returns a list of assemblies that references the assemblies in referenceAssemblies
         public static IEnumerable<Assembly> GetCandidateAssemblies(IEnumerable<Assembly> assemblies, ISet<string> referenceAssemblies)
         {
-            if (!referenceAssemblies.Any())
+            if (!assemblies.Any() || !referenceAssemblies.Any())
             {
                 return Enumerable.Empty<Assembly>();
             }

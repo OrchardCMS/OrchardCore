@@ -21,11 +21,11 @@ namespace Microsoft.AspNetCore.Modules
         private IList<Assembly> CachedRuntimeAssemblies;
 
         // Returns a list of assemblies and their dependencies contained in runtimeAssemblies
-        public IEnumerable<Assembly> GetAssemblies(IEnumerable<Assembly> runtimeAssemblies)
+        public IEnumerable<Assembly> GetAssemblies(IEnumerable<Assembly> runtimeAssemblies, ISet<string> referenceAssemblies)
         {
             if (CachedRuntimeAssemblies == null)
             {
-                if (!runtimeAssemblies.Any())
+                if (!runtimeAssemblies.Any() || !referenceAssemblies.Any())
                 {
                     return Enumerable.Empty<Assembly>();
                 }
@@ -47,8 +47,11 @@ namespace Microsoft.AspNetCore.Modules
                     }
                 }
 
-                CachedRuntimeAssemblies = runtimeAssemblies
-                    .Where(a => references.Contains(a.GetName().Name))
+                CachedRuntimeAssemblies = DefaultModularAssemblyDiscoveryProvider
+                    .GetCandidateAssemblies(
+                        runtimeAssemblies
+                        .Where(a => references.Contains(a.GetName().Name)),
+                        referenceAssemblies)
                     .ToList();
             }
 
