@@ -22,13 +22,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
-        private static ConcurrentDictionary<string, Func<object, string>> _renderers = new ConcurrentDictionary<string, Func<object, string>>();
-
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
         private readonly IShellFeaturesManager _shellFeaturesManager;
+
+        private readonly Dictionary<string, IShapeTemplateViewEngine> _viewEnginesByExtension =
+            new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
@@ -70,7 +71,22 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var activeExtensions = Once(enabledFeatures);
 
             var matcher = new Matcher();
-            foreach (var extension in _shapeTemplateViewEngines.SelectMany(x => x.TemplateFileExtensions))
+
+            if (!_viewEnginesByExtension.Any())
+            {
+                foreach (var viewEngine in _shapeTemplateViewEngines)
+                {
+                    foreach (var extension in viewEngine.TemplateFileExtensions)
+                    {
+                        if (!_viewEnginesByExtension.ContainsKey(extension))
+                        {
+                            _viewEnginesByExtension[extension] = viewEngine;
+                        }
+                    }
+                }
+            }
+
+            foreach (var extension in _viewEnginesByExtension.Select(kvp => kvp.Key))
             {
                 matcher.AddInclude(string.Format("*{0}", extension));
             }
@@ -134,7 +150,8 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                     {
                         SubPath = fileContext.pathContext.subPath,
                         FileName = fileContext.fileName,
-                        RelativePath = fileContext.relativePath
+                        RelativePath = fileContext.relativePath,
+                        Extension = Path.GetExtension(fileContext.relativePath)
                     };
                     var harvestShapeHits = fileContext.pathContext.harvester.HarvestShape(harvestShapeInfo);
                     return harvestShapeHits.Select(harvestShapeHit => new { harvestShapeInfo, harvestShapeHit, fileContext });
@@ -158,9 +175,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                             feature.Id);
                     }
 
-                    var viewEngine = _shapeTemplateViewEngines
-                        .FirstOrDefault(e => e.TemplateFileExtensions.Contains(
-                            Path.GetExtension(iter.shapeContext.harvestShapeInfo.RelativePath)));
+                    var viewEngine = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension];
 
                     builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                         .From(feature)

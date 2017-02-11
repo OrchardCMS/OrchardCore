@@ -41,7 +41,7 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
-            services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
