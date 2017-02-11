@@ -88,7 +88,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
             foreach (var extension in _viewEnginesByExtension.Select(kvp => kvp.Key))
             {
-                matcher.AddInclude(string.Format("*{0}", extension));
+                matcher.AddInclude("*" + extension);
             }
 
             var hits = activeExtensions.Select(extensionDescriptor =>
