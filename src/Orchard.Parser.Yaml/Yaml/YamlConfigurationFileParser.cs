@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 using YamlDotNet.RepresentationModel;
 
 namespace Orchard.Parser.Yaml
@@ -20,10 +20,12 @@ namespace Orchard.Parser.Yaml
             var yamlConfig = new YamlStream();
             yamlConfig.Load(new StreamReader(stream));
 
-            var mapping =
-                (YamlMappingNode)yamlConfig.Documents[0].RootNode;
+            if (yamlConfig.Documents.Any())
+            {
+                var mapping = (YamlMappingNode)yamlConfig.Documents[0].RootNode;
 
-            VisitYamlMappingNode(mapping);
+                VisitYamlMappingNode(mapping);
+            };
 
             return _data;
         }

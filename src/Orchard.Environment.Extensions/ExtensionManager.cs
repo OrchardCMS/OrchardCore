@@ -302,17 +302,19 @@ namespace Orchard.Environment.Extensions
 
                 Parallel.ForEach(extensions, (extension) =>
                 {
-                    if (extension.Exists)
+                    if (!extension.Exists)
                     {
-                        var entry = _extensionLoader.Load(extension);
-
-                        if (entry.IsError && L.IsEnabled(LogLevel.Warning))
-                        {
-                            L.LogError("No suitable loader found for extension \"{0}\"", extension.Id);
-                        }
-
-                        loadedExtensions.TryAdd(extension.Id, entry);
+                        return;
                     }
+
+                    var entry = _extensionLoader.Load(extension);
+
+                    if (entry.IsError && L.IsEnabled(LogLevel.Warning))
+                    {
+                        L.LogError("No suitable loader found for extension \"{0}\"", extension.Id);
+                    }
+
+                    loadedExtensions.TryAdd(extension.Id, entry);
                 });
 
                 var loadedFeatures =
@@ -371,7 +373,7 @@ namespace Orchard.Environment.Extensions
             }
         }
 
-        public IEnumerable<IExtensionInfo> HarvestExtensions()
+        private IEnumerable<IExtensionInfo> HarvestExtensions()
         {
             var searchOptions = _extensionExpanderOptions.Options;
 
@@ -402,8 +404,8 @@ namespace Orchard.Environment.Extensions
                         continue;
                     }
 
-                    var manifestFilesubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name, manifestConfiguration.ManifestFileName);
                     var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
+                    var manifestFilesubPath = Path.Combine(manifestsubPath, manifestConfiguration.ManifestFileName);
 
                     IConfigurationBuilder configurationBuilder =
                         _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
