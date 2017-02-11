@@ -49,7 +49,8 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             get
             {
-                return Bindings[ShapeType].BindingAsync;
+                ShapeBinding binding;
+                return Bindings.TryGetValue(ShapeType, out binding) ? binding.BindingAsync : null;
             }
         }
 
@@ -57,8 +58,8 @@ namespace Orchard.DisplayManagement.Descriptors
         {
             get
             {
-                return _alterationKeys.Select(key => _descriptors[key])
-                    .SelectMany(sd => sd.Bindings).GroupBy(kv => kv.Key).Select(kv => kv.Last())
+                return _alterationKeys.Select(key => _descriptors[key]).SelectMany(sd => sd.Bindings)
+                    .GroupBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => kv.Last())
                     .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
             }
         }
