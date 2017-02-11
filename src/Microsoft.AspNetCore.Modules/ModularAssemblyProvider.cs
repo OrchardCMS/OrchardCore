@@ -18,12 +18,11 @@ namespace Microsoft.AspNetCore.Modules
         }
 
         private IList<Assembly> CachedAssemblies;
-        private IList<Assembly> CachedRuntimeAssemblies;
 
         // Returns a list of assemblies and their dependencies contained in runtimeAssemblies
         public IEnumerable<Assembly> GetAssemblies(IEnumerable<Assembly> runtimeAssemblies, ISet<string> referenceAssemblies)
         {
-            if (CachedRuntimeAssemblies == null)
+            if (CachedAssemblies == null)
             {
                 if (!runtimeAssemblies.Any() || !referenceAssemblies.Any())
                 {
@@ -47,7 +46,7 @@ namespace Microsoft.AspNetCore.Modules
                     }
                 }
 
-                CachedRuntimeAssemblies = DefaultModularAssemblyDiscoveryProvider
+                CachedAssemblies = DefaultModularAssemblyDiscoveryProvider
                     .GetCandidateAssemblies(
                         runtimeAssemblies
                         .Where(a => references.Contains(a.GetName().Name)),
@@ -55,7 +54,7 @@ namespace Microsoft.AspNetCore.Modules
                     .ToList();
             }
 
-            return CachedRuntimeAssemblies;
+            return CachedAssemblies;
         }
 
         internal static void AddReferences(Assembly assembly, IDictionary<string, Assembly> runtimeAssemblies, HashSet<string> references)
@@ -69,58 +68,6 @@ namespace Microsoft.AspNetCore.Modules
                     AddReferences(referencedAssembly, runtimeAssemblies, references);
                 }
             }
-        }
-
-        public IEnumerable<Assembly> GetAssemblies()
-        {
-            if (CachedAssemblies == null)
-            {
-                var types = GetModularTypes();
-                var assemblies = types.Select(x => x.Assembly);
-
-                var loadedContextAssemblies = new List<Assembly>();
-                var assemblyNames = new HashSet<string>();
-
-                foreach (var assembly in assemblies)
-                {
-                    var currentAssemblyName =
-                        Path.GetFileNameWithoutExtension(assembly.Location);
-
-                    if (assemblyNames.Add(currentAssemblyName))
-                    {
-                        loadedContextAssemblies.Add(assembly);
-                    }
-                    loadedContextAssemblies.AddRange(GetAssemblies(assemblyNames, assembly));
-                }
-
-                CachedAssemblies = loadedContextAssemblies;
-            }
-
-            return CachedAssemblies;
-        }
-
-        private static IList<Assembly> GetAssemblies(HashSet<string> assemblyNames, Assembly assembly)
-        {
-            var loadContext = AssemblyLoadContext.GetLoadContext(assembly);
-            var referencedAssemblyNames = assembly.GetReferencedAssemblies()
-                .Where(ass => !assemblyNames.Contains(ass.Name));
-
-            var locations = new List<Assembly>();
-
-            foreach (var referencedAssemblyName in referencedAssemblyNames)
-            {
-                if (assemblyNames.Add(referencedAssemblyName.Name))
-                {
-                    var referencedAssembly = loadContext
-                        .LoadFromAssemblyName(referencedAssemblyName);
-
-                    locations.Add(referencedAssembly);
-
-                    locations.AddRange(GetAssemblies(assemblyNames, referencedAssembly));
-                }
-            }
-
-            return locations;
         }
 
         public IEnumerable<TypeInfo> GetModularTypes()
