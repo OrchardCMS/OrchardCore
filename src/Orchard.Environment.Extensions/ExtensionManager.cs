@@ -164,19 +164,21 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
+            EnsureInitialized();
+
             return _featureDependencies.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
-
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
-                if (feature == null)
+                if (!_features.ContainsKey(key))
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
+                var feature = _features[key].FeatureInfo;
+
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
 
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
                 stack.Push(GetFeatureDependenciesFunc(feature, unorderedFeatures));
 
                 while (stack.Count > 0)
@@ -195,15 +197,22 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
+            EnsureInitialized();
+
             return _dependentFeatures.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
             {
-                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
+                if (!_features.ContainsKey(key))
+                {
+                    return Enumerable.Empty<IFeatureInfo>();
+                }
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
+                var feature = _features[key].FeatureInfo;
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
+
+                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
 
                 return
                     GetDependentFeatures(feature, unorderedFeatures);
@@ -256,7 +265,7 @@ namespace Orchard.Environment.Extensions
         {
             if (_allUnorderedFeatureInfos == null)
             {
-                _allUnorderedFeatureInfos = GetExtensions().SelectMany(x => x.Features).ToList();
+                _allUnorderedFeatureInfos = _features.Values.Select(x => x.FeatureInfo).ToList();
             }
 
             return _allUnorderedFeatureInfos;
