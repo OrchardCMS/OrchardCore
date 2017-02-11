@@ -33,7 +33,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
 
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
         public ShapeAttributeBindingStrategy(
@@ -41,7 +40,6 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
-            _serviceProvider = serviceProvider;
             _typeFeatureProvider = typeFeatureProvider;
             _shapeProviders = shapeProviders;
         }
@@ -87,13 +85,13 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
         {
             return context =>
             {
-                var serviceInstance = _serviceProvider.GetService(attributeOccurrence.ServiceType);
+                var serviceInstance = context.ServiceProvider.GetService(attributeOccurrence.ServiceType);
                 // oversimplification for the sake of evolving
                 return PerformInvokeAsync(context, attributeOccurrence.MethodInfo, serviceInstance);
             };
         }
 
-        private Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
+        private static Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
         {
             var parameters = _parameters.GetOrAdd(methodInfo, m => m.GetParameters());
             var arguments = parameters.Select(parameter => BindParameter(displayContext, parameter));
@@ -129,7 +127,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             return invoke != null ? new HtmlString(invoke.ToString()) : null;
         }
 
-        private object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
+        private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
         {
             if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {
