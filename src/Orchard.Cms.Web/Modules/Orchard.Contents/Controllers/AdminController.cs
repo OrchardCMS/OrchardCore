@@ -482,8 +482,8 @@ namespace Orchard.Contents.Controllers
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your content has been updated."]
-                    : T["Your {0} has been updated.", typeDefinition.DisplayName]);
+                    ? T["Your published content has been updated."]
+                    : T["Your published {0} has been updated.", typeDefinition.DisplayName]);
 
                 return Task.CompletedTask;
             }, updateLatest: true);

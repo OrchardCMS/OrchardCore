@@ -42,8 +42,8 @@ namespace Orchard.Contents.Drivers
                 Shape("Content_PublishButton").Location("Actions:10"),
             };
 
-            if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Updatable
-                && contentItem.IsPublished())
+            if (contentItem.IsPublished() &&
+                contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Updatable)
             {
                 results.Add(Shape("Content_UpdateButton").Location("Actions:20"));
             }
