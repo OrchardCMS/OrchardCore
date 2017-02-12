@@ -81,6 +81,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null

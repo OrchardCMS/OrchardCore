@@ -42,9 +42,15 @@ namespace Orchard.Contents.Drivers
                 Shape("Content_PublishButton").Location("Actions:10"),
             };
 
+            if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Updatable
+                && contentItem.IsPublished())
+            {
+                results.Add(Shape("Content_UpdateButton").Location("Actions:20"));
+            }
+
             if (contentTypeDefinition.Settings.ToObject<ContentTypeSettings>().Draftable)
             {
-                results.Add(Shape("Content_SaveDraftButton").Location("Actions:20"));
+                results.Add(Shape("Content_SaveDraftButton").Location("Actions:30"));
             }
 
             return Combine(results.ToArray());

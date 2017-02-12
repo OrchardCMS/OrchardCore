@@ -93,6 +93,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "False",
             "Stereotype": null
@@ -158,6 +159,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "False",
             "Securable": "True",
             "Stereotype": null
@@ -223,6 +225,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null
@@ -292,6 +295,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -319,6 +323,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -339,6 +344,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -359,6 +365,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -379,6 +386,7 @@
           "Settings": {
             "Creatable": "False",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": "Widget"
@@ -399,6 +407,7 @@
           "Settings": {
             "Creatable": "True",
             "Draftable": "True",
+            "Updatable": "False",
             "Listable": "True",
             "Securable": "True",
             "Stereotype": null

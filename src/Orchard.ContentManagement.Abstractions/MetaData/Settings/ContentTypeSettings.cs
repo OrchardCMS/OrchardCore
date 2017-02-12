@@ -15,6 +15,10 @@
         /// </summary>
         public bool Draftable { get; set; }
         /// <summary>
+        /// Used to determine if a published instance of this content type can be updated
+        /// </summary>
+        public bool Updatable { get; set; }
+        /// <summary>
         /// Defines the stereotype of the type
         /// </summary>
         public string Stereotype { get; set; }

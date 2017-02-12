@@ -461,9 +461,39 @@ namespace Orchard.Contents.Controllers
             });
         }
 
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
+        [HttpPost, ActionName("Edit")]
+        [Mvc.FormValueRequired("submit.Update")]
+        public async Task<IActionResult> EditAndUpdatePOST(string contentItemId, string returnUrl)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+            if (content == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
+            {
+                return Unauthorized();
+            }
+
+            return await EditPOST(contentItemId, returnUrl, contentItem =>
+            {
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                    ? T["Your content has been updated."]
+                    : T["Your {0} has been updated.", typeDefinition.DisplayName]);
+
+                return Task.CompletedTask;
+            }, updateLatest: true);
+        }
+
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish, bool updateLatest = false)
+        {
+            var contentItem = updateLatest
+                ? await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)
+                : await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
@@ -492,6 +522,8 @@ namespace Orchard.Contents.Controllers
                 _session.Cancel();
                 return View("Edit", model);
             }
+
+            _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);
 
