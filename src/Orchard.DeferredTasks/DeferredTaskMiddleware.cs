@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell;
 using Orchard.Hosting;
-using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.DeferredTasks
 {
@@ -26,12 +25,12 @@ namespace Orchard.DeferredTasks
             await _next.Invoke(httpContext);
 
             // Register the shell settings as a custom feature.
-            var shellSettings = httpContext.Features[typeof(ShellSettings)] as ShellSettings;
+            var shellSettings = httpContext.Features.Get<ShellSettings>();
 
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
-                ShellContext shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
+                var shellContext = _orchardHost.GetOrCreateShellContext(shellSettings);
 
                 using (var scope = shellContext.CreateServiceScope())
                 {
