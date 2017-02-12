@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentFields.Fields;
 using Orchard.Indexing;
+using Orchard.Markdown.Fields;
 
-namespace Orchard.ContentFields.Indexing
+namespace Orchard.Markdown.Indexing
 {
     public class MarkdownFieldIndexHandler : ContentFieldIndexHandler<MarkdownField>
     {

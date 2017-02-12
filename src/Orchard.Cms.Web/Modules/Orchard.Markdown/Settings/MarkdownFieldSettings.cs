@@ -1,4 +1,4 @@
-namespace Orchard.ContentFields.Settings
+namespace Orchard.Markdown.Settings
 {
     public class MarkdownFieldSettings
     {
