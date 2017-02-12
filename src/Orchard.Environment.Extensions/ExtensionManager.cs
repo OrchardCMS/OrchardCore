@@ -110,6 +110,8 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
         {
+            EnsureInitialized();
+
             var allDependencies = featureIdsToLoad
                 .SelectMany(featureId => GetFeatureDependencies(featureId))
                 .Distinct();
