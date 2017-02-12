@@ -9,7 +9,7 @@ namespace Orchard.Environment.Extensions.Loaders
     {
         public IExtensionInfo ExtensionInfo { get; set; }
         public Assembly Assembly { get; set; }
-        public IEnumerable<Type> ExportedTypes => Assembly == null ? Enumerable.Empty<Type>() : Assembly.ExportedTypes;
+        public IEnumerable<Type> ExportedTypes { get; set; }
         public bool IsError { get; set; }
     }
 }

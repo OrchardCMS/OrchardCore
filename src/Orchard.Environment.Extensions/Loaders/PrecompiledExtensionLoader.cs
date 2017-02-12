@@ -15,36 +15,28 @@ namespace Orchard.Environment.Extensions.Loaders
             _logger = logger;
         }
 
-        public string Name => GetType().Name;
-
         public int Order => 30;
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            try
-            {
-                var assembly = _extensionLibraryService.LoadPrecompiledExtension(extensionInfo);
-            
-                if (assembly == null)
-                {
-                    return null;
-                }
+            var assembly = _extensionLibraryService.LoadPrecompiledExtension(extensionInfo);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Loaded referenced precompiled extension \"{0}\": assembly name=\"{1}\"", extensionInfo.Id, assembly.FullName);
-                }
-
-                return new ExtensionEntry
-                {
-                    ExtensionInfo = extensionInfo,
-                    Assembly = assembly
-                };
-            }
-            catch
+            if (assembly == null)
             {
                 return null;
             }
-       }
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Loaded referenced precompiled extension \"{0}\": assembly name=\"{1}\"", extensionInfo.Id, assembly.FullName);
+            }
+
+            return new ExtensionEntry
+            {
+                ExtensionInfo = extensionInfo,
+                Assembly = assembly,
+                ExportedTypes = assembly.ExportedTypes
+            };
+        }
     }
 }

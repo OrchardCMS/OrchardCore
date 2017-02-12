@@ -228,17 +228,9 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
+            EnsureInitialized();
+
             return _allOrderedFeatureInfos;
-        }
-
-        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
-        {
-            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
-        }
-
-        private int GetPriority(IFeatureInfo feature)
-        {
-            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
@@ -300,7 +292,7 @@ namespace Orchard.Environment.Extensions
 
                     foreach (var feature in extension.ExtensionInfo.Features)
                     {
-                        var featureTypes = new List<Type>();
+                        var featureTypes = new HashSet<Type>();
 
                         // Search for all types from the extensions that are not assigned to a different
                         // feature.
@@ -337,10 +329,11 @@ namespace Orchard.Environment.Extensions
                     }
                 };
 
-                _extensions = loadedExtensions.ToDictionary(a => a.Key, b => b.Value);
-                _features = loadedFeatures.ToDictionary(a => a.Key, b => b.Value);
-                _allOrderedFeatureInfos = Order(_features.Values.Select(x => x.FeatureInfo));
-                _isInitialized = _extensions != null;
+                _extensions = loadedExtensions;
+                // Could we get rid of _allOrderedFeatureInfos and just have _features?
+                _features = loadedFeatures;
+                _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
+                _isInitialized = true;
             }
         }
 
@@ -355,16 +348,26 @@ namespace Orchard.Environment.Extensions
                 .ToArray();
         }
 
-        private IEnumerable<IExtensionInfo> HarvestExtensions()
+        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
+        {
+            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
+        }
+
+        private int GetPriority(IFeatureInfo feature)
+        {
+            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
+        }
+
+        private ISet<IExtensionInfo> HarvestExtensions()
         {
             var searchOptions = _extensionExpanderOptions.Options;
 
+            var extensionSet = new HashSet<IExtensionInfo>();
+
             if (searchOptions.Count == 0)
             {
-                return Enumerable.Empty<IExtensionInfo>();
+                return extensionSet;
             }
-
-            var extensionsById = new Dictionary<string, IExtensionInfo>();
 
             foreach (var searchOption in searchOptions)
             {
@@ -398,18 +401,18 @@ namespace Orchard.Environment.Extensions
                     }
 
                     var configurationRoot = configurationBuilder.Build();
-
+                    
                     var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
-
+                    
                     // Manifest tells you what your loading, subpath is where you are loading it
                     var extensionInfo = _extensionProvider
                         .GetExtensionInfo(manifestInfo, manifestsubPath);
 
-                    extensionsById.Add(extensionInfo.Id, extensionInfo);
+                    extensionSet.Add(extensionInfo);
                 }
             }
 
-            return extensionsById.Values;
+            return extensionSet;
         }
     }
 }

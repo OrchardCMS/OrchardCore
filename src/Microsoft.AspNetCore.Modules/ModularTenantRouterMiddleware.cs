@@ -44,8 +44,7 @@ namespace Microsoft.AspNetCore.Modules
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
             if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
-                string requestPrefix = "/" + shellSettings.RequestUrlPrefix;
-                httpContext.Request.PathBase += requestPrefix;
+                httpContext.Request.PathBase += ("/" + shellSettings.RequestUrlPrefix);
                 httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
             }
 
