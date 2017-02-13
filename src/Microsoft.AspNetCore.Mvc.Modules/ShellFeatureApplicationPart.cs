@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
     /// <summary>
     /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
     /// </summary>
-    public class ModularApplicationPart :
+    public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
         /// <param name="assembly"></param>
-        public ModularApplicationPart(IHttpContextAccessor httpContextAccessor)
+        public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
             if (httpContextAccessor == null)
             {
@@ -65,7 +65,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return typeof(ModularApplicationPart).GetTypeInfo().Assembly.GetName().Name;
+                return typeof(ShellFeatureApplicationPart).GetTypeInfo().Assembly.GetName().Name;
             }
         }
 
@@ -76,7 +76,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             {
                 return DefaultAssemblyDiscoveryProvider
                     .DiscoverAssemblies(
-                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).Distinct().ToList(),
+                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).ToList(),
                         ReferenceAssemblies)
                     .SelectMany(x => x.DefinedTypes);
             }
