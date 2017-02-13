@@ -22,7 +22,7 @@ namespace Orchard.Cms.Web
             //{
             //    var extensionLibraryService = serviceProvider.GetRequiredService<IExtensionLibraryService>();
             //    apm.FeatureProviders.Add(
-            //        new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.MetadataPaths.ToArray()));
+            //        new ExtensionMetadataReferenceFeatureProvider(extensionLibraryService.ReferencePaths.ToArray()));
             //});
         }
     }
