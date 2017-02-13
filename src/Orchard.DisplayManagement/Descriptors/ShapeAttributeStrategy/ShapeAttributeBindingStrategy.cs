@@ -90,7 +90,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 			};
         }
 
-        private Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
+        private static Task<IHtmlContent> PerformInvokeAsync(DisplayContext displayContext, MethodInfo methodInfo, object serviceInstance)
         {
             var parameters = _parameters.GetOrAdd(methodInfo, m => m.GetParameters());
             var arguments = parameters.Select(parameter => BindParameter(displayContext, parameter));
@@ -126,7 +126,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
             return invoke != null ? new HtmlString(invoke.ToString()) : null;
         }
 
-        private object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
+        private static object BindParameter(DisplayContext displayContext, ParameterInfo parameter)
         {
             if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {

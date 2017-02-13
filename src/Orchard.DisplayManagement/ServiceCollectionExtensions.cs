@@ -25,71 +25,70 @@ using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.DisplayManagement
 {
-	public static class ServiceCollectionExtensions
-	{
-		/// <summary>
-		/// Adds host level services.
-		/// </summary>
-		/// <param name="services"></param>
-		/// <returns></returns>
-		public static IServiceCollection AddThemingHost(this IServiceCollection services)
-		{
-			services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
-            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
-
-            services.Configure<MvcOptions>((options) =>
+    public static class ServiceCollectionExtensions
+    {
+        /// <summary>
+        /// Adds host level services.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddThemingHost(this IServiceCollection services)
+        {
+		    services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(ModelBinderAccessorFilter));
             });
-            
-			services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
-			services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.FileProviders.Add(new ThemingFileProvider());
+            });
+			
+            services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
+            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
+            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
-			services.Configure<RazorViewEngineOptions>(options =>
-			{
-				options.FileProviders.Add(new ThemingFileProvider());
-			});
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
 
-			services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
+            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
-			return services;
-		}
+            return services;
+        }
 
-		public static IServiceCollection AddTheming(this IServiceCollection services)
-		{
-			services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-			services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
-			services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
-
-			services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
-			services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
-			services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
-
-            services.AddShapeAttributes<CoreShapes>();
-			services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
-			services.AddShapeAttributes<ZoneShapes>();
-			services.AddScoped<IShapeTableProvider, LayoutShapes>();
-
-			services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
-			services.AddScoped<ILayoutAccessor, LayoutAccessor>();
-			services.AddScoped<IThemeManager, ThemeManager>();
-			services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
-
-			services.AddScoped<IShapeFactory, DefaultShapeFactory>();
-			services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
-
-			services.AddScoped<INotifier, Notifier>();
-
-            services.Configure<MvcOptions>((options) =>
+        public static IServiceCollection AddTheming(this IServiceCollection services)
+        {
+		    services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(NotifyFilter));
             });
+		
+            services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
+            services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 
-			services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
-			services.AddShapeAttributes<DateTimeShapes>();
+            services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
+            services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
+            services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
-			return services;
-		}
-	}
+            services.AddShapeAttributes<CoreShapes>();
+            services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
+            services.AddShapeAttributes<ZoneShapes>();
+            services.AddScoped<IShapeTableProvider, LayoutShapes>();
+
+            services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
+            services.AddScoped<ILayoutAccessor, LayoutAccessor>();
+            services.AddScoped<IThemeManager, ThemeManager>();
+            services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
+
+            services.AddScoped<IShapeFactory, DefaultShapeFactory>();
+            services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
+
+            services.AddScoped<INotifier, Notifier>();
+
+            services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
+            services.AddShapeAttributes<DateTimeShapes>();
+
+            return services;
+        }
+    }
 }
