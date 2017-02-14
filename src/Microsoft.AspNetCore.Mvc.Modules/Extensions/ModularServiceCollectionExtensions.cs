@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using System.Runtime.Loader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -22,6 +24,24 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 {
     public static class ModularServiceCollectionExtensions
     {
+        internal static ISet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Microsoft.AspNetCore.Mvc",
+            "Microsoft.AspNetCore.Mvc.Abstractions",
+            "Microsoft.AspNetCore.Mvc.ApiExplorer",
+            "Microsoft.AspNetCore.Mvc.Core",
+            "Microsoft.AspNetCore.Mvc.Cors",
+            "Microsoft.AspNetCore.Mvc.DataAnnotations",
+            "Microsoft.AspNetCore.Mvc.Formatters.Json",
+            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
+            "Microsoft.AspNetCore.Mvc.Localization",
+            "Microsoft.AspNetCore.Mvc.Razor",
+            "Microsoft.AspNetCore.Mvc.Razor.Host",
+            "Microsoft.AspNetCore.Mvc.RazorPages",
+            "Microsoft.AspNetCore.Mvc.TagHelpers",
+            "Microsoft.AspNetCore.Mvc.ViewFeatures"
+        };
+
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
             IServiceProvider applicationServices)
         {
@@ -64,7 +84,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             var httpContextAccessor =
                 services.GetRequiredService<IHttpContextAccessor>();
 
-            manager.ApplicationParts.Add(new ModularApplicationPart(httpContextAccessor));
+            manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)

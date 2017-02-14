@@ -18,24 +18,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Microsoft.AspNetCore.Mvc",
-            "Microsoft.AspNetCore.Mvc.Abstractions",
-            "Microsoft.AspNetCore.Mvc.ApiExplorer",
-            "Microsoft.AspNetCore.Mvc.Core",
-            "Microsoft.AspNetCore.Mvc.Cors",
-            "Microsoft.AspNetCore.Mvc.DataAnnotations",
-            "Microsoft.AspNetCore.Mvc.Formatters.Json",
-            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
-            "Microsoft.AspNetCore.Mvc.Localization",
-            "Microsoft.AspNetCore.Mvc.Razor",
-            "Microsoft.AspNetCore.Mvc.Razor.Host",
-            "Microsoft.AspNetCore.Mvc.RazorPages",
-            "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures"
-        };
-
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
@@ -74,11 +56,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return DefaultAssemblyDiscoveryProvider
-                    .DiscoverAssemblies(
-                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).ToList(),
-                        ReferenceAssemblies)
-                    .SelectMany(x => x.DefinedTypes);
+                return ShellBlueprint
+                    .Dependencies
+                    .Select(dep => dep.Key.GetTypeInfo());
             }
         }
 

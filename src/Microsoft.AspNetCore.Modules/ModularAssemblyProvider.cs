@@ -72,7 +72,7 @@ namespace Microsoft.AspNetCore.Modules
 
         public IEnumerable<TypeInfo> GetModularTypes()
         {
-            return _shellBlueprint.Dependencies.Select(x => x.Type.GetTypeInfo());
+            return _shellBlueprint.Dependencies.Select(x => x.Key.GetTypeInfo());
         }
     }
 }

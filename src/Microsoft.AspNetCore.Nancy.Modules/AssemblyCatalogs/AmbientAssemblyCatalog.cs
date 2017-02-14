@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs
         {
             return DefaultAssemblyDiscoveryProvider
                     .DiscoverAssemblies(
-                        ShellBlueprint.Dependencies.Select(dep => dep.Type.GetTypeInfo().Assembly).Distinct().ToList(),
+                        ShellBlueprint.Dependencies.Select(dep => dep.Key.GetTypeInfo().Assembly).Distinct().ToList(),
                         ReferenceAssemblies)
                     .ToArray();
         }
