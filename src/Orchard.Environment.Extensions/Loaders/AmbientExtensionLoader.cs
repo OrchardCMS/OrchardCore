@@ -1,17 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
     public class AmbientExtensionLoader : IExtensionLoader
     {
-        private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
-        public AmbientExtensionLoader(
-            IExtensionLibraryService extensionLibraryService,
-            ILogger<AmbientExtensionLoader> logger)
+        public AmbientExtensionLoader(ILogger<AmbientExtensionLoader> logger)
         {
-            _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
 
@@ -19,7 +16,7 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            var assembly = _extensionLibraryService.LoadAmbientExtension(extensionInfo);
+            var assembly = Assembly.Load(new AssemblyName(extensionInfo.Id));
 
             if (assembly == null)
             {
