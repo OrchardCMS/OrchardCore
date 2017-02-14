@@ -85,6 +85,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 services.GetRequiredService<IHttpContextAccessor>();
 
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.ApplicationParts.Add(new SatalliteApplicationPart(httpContextAccessor));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)

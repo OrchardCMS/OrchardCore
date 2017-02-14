@@ -12,8 +12,8 @@ namespace Orchard.Environment.Shell.Builders
     {
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
-        private readonly ILogger _logger;
         private readonly IEnumerable<ShellFeature> _shellFeatures;
+        private readonly ILogger _logger;
 
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,

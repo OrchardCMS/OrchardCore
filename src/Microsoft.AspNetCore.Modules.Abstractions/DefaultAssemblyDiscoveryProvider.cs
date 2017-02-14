@@ -22,12 +22,8 @@ namespace Microsoft.AspNetCore.Modules
                 discoveredAssemblies.AddRange(candidateAssemblies);
             }
 
-            discoveredAssemblies.AddRange(entryPointAssemblies);
-
-            // this is crap.
-            var uniqueAssemblies = discoveredAssemblies.Distinct().OrderBy(x => x.GetName().Name).ToList();
-
-            return uniqueAssemblies;
+            // Do I need a distinct?
+            return discoveredAssemblies.OrderBy(a => a.FullName).Distinct();
         }
 
         internal static IEnumerable<Assembly> GetCandidateAssemblies(
