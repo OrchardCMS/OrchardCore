@@ -13,16 +13,39 @@ namespace Microsoft.AspNetCore.Mvc.Modules
     /// <summary>
     /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
     /// </summary>
-    public class SatalliteApplicationPart :
+    public class SatelliteApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
+        internal static ISet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Microsoft.AspNetCore.Mvc",
+            "Microsoft.AspNetCore.Mvc.Abstractions",
+            "Microsoft.AspNetCore.Mvc.ApiExplorer",
+            "Microsoft.AspNetCore.Mvc.Core",
+            "Microsoft.AspNetCore.Mvc.Cors",
+            "Microsoft.AspNetCore.Mvc.DataAnnotations",
+            "Microsoft.AspNetCore.Mvc.Formatters.Json",
+            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
+            "Microsoft.AspNetCore.Mvc.Localization",
+            "Microsoft.AspNetCore.Mvc.Razor",
+            "Microsoft.AspNetCore.Mvc.Razor.Host",
+            "Microsoft.AspNetCore.Mvc.RazorPages",
+            "Microsoft.AspNetCore.Mvc.TagHelpers",
+            "Microsoft.AspNetCore.Mvc.ViewFeatures"
+        };
+
+        private bool isInitialized = false;
+
+        private IList<TypeInfo> _cachedTypes;
+        private IList<string> _cachedLocation;
+
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
         /// <param name="assembly"></param>
-        public SatalliteApplicationPart(IHttpContextAccessor httpContextAccessor)
+        public SatelliteApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
             if (httpContextAccessor == null)
             {
@@ -47,29 +70,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 return typeof(ShellFeatureApplicationPart).GetTypeInfo().Assembly.GetName().Name;
             }
         }
-
-        internal static ISet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Microsoft.AspNetCore.Mvc",
-            "Microsoft.AspNetCore.Mvc.Abstractions",
-            "Microsoft.AspNetCore.Mvc.ApiExplorer",
-            "Microsoft.AspNetCore.Mvc.Core",
-            "Microsoft.AspNetCore.Mvc.Cors",
-            "Microsoft.AspNetCore.Mvc.DataAnnotations",
-            "Microsoft.AspNetCore.Mvc.Formatters.Json",
-            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
-            "Microsoft.AspNetCore.Mvc.Localization",
-            "Microsoft.AspNetCore.Mvc.Razor",
-            "Microsoft.AspNetCore.Mvc.Razor.Host",
-            "Microsoft.AspNetCore.Mvc.RazorPages",
-            "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures"
-        };
-
-        private bool isInitialized = false;
-
-        private IList<TypeInfo> _cachedTypes;
-        private IList<string> _cachedLocation;
 
         /// <inheritdoc />
         public IEnumerable<TypeInfo> Types
