@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Orchard.ResourceManagement;
 
-namespace Orchard.ResourceManagement.TagHelpers
+namespace Orchard.Resources.TagHelpers
 {
 
     [HtmlTargetElement("style", Attributes = NameAttributeName)]

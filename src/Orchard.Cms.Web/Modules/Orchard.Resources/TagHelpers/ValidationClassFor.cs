@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.DisplayManagement.TagHelpers
+namespace Orchard.Resources.TagHelpers
 {
     /// <summary>
     /// <see cref="ITagHelper"/> implementation targeting any HTML element with an <c>asp-validation-for</c>

@@ -1,8 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Orchard.ResourceManagement;
 
-namespace Orchard.ResourceManagement.TagHelpers
+namespace Orchard.Resources.TagHelpers
 {
 
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
