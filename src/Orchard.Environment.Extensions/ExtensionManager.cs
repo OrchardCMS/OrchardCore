@@ -136,16 +136,23 @@ namespace Orchard.Environment.Extensions
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            EnsureInitialized();
+            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
 
-            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
+            var loadedFeatures = _features.Values
+                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
+
+            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             EnsureInitialized();
 
-            var loadedFeatures = _features.Values.Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id));
+            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+
+            var loadedFeatures = _features.Values
+                .Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id))
+                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
 
             return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }

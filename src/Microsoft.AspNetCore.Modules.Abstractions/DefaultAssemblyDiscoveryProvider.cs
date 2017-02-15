@@ -1,95 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyModel;
 
 namespace Microsoft.AspNetCore.Modules
 {
     public static class DefaultAssemblyDiscoveryProvider
     {
-        public static IEnumerable<Assembly> DiscoverAssemblies(IList<Assembly> entryPointAssemblies, ISet<string> referenceAssemblies)
+        // Returns a list of assemblies that references the assemblies in referenceAssemblies
+        public static IEnumerable<Assembly> GetCandidateAssemblies(IEnumerable<Assembly> dependencies, ISet<string> referenceAssemblies)
         {
-            var discoveredAssemblies = new List<Assembly>();
-
-            foreach (var entryPointAssembly in entryPointAssemblies)
+            if (!dependencies.Any() || !referenceAssemblies.Any())
             {
-                var context = DependencyContext.Load(entryPointAssembly);
-
-                var candidateAssemblies = GetCandidateAssemblies(entryPointAssembly, context, referenceAssemblies);
-
-                discoveredAssemblies.AddRange(candidateAssemblies);
+                return Enumerable.Empty<Assembly>();
             }
 
-            // Do I need a distinct?
-            return discoveredAssemblies.OrderBy(a => a.FullName).Distinct();
-        }
-
-        internal static IEnumerable<Assembly> GetCandidateAssemblies(
-            Assembly entryAssembly, 
-            DependencyContext dependencyContext,
-            ISet<string> referenceAssemblies)
-        {
-            if (dependencyContext == null)
-            {
-                // Use the entry assembly as the sole candidate.
-                return new[] { entryAssembly };
-            }
-
-            return GetCandidateLibraries(dependencyContext, referenceAssemblies)
-                .SelectMany(library => library.GetDefaultAssemblyNames(dependencyContext))
-                .Select(Assembly.Load);
-        }
-
-        // Returns a list of libraries that references the assemblies in <see cref="ReferenceAssemblies"/>.
-        // By default it returns all assemblies that reference any of the primary MVC assemblies
-        // while ignoring MVC assemblies.
-        // Internal for unit testing
-        internal static IEnumerable<RuntimeLibrary> GetCandidateLibraries(DependencyContext dependencyContext, ISet<string> referenceAssemblies)
-        {
-            if (referenceAssemblies == null)
-            {
-                return Enumerable.Empty<RuntimeLibrary>();
-            }
-
-            var candidatesResolver = new CandidateResolver(dependencyContext.RuntimeLibraries, referenceAssemblies);
+            var candidatesResolver = new CandidateResolver(dependencies, referenceAssemblies);
             return candidatesResolver.GetCandidates();
         }
 
         private class CandidateResolver
         {
-            private readonly IDictionary<string, Dependency> _dependencies;
+            private readonly IDictionary<string, Dependency> _dependencies = new Dictionary<string, Dependency>(StringComparer.OrdinalIgnoreCase);
 
-            public CandidateResolver(IReadOnlyList<RuntimeLibrary> dependencies, ISet<string> referenceAssemblies)
+            public CandidateResolver(IEnumerable<Assembly> assemblies, ISet<string> referenceAssemblies)
             {
                 var dependenciesWithNoDuplicates = new Dictionary<string, Dependency>(StringComparer.OrdinalIgnoreCase);
-                foreach (var dependency in dependencies)
+                foreach (var assembly in assemblies)
                 {
-                    if (dependenciesWithNoDuplicates.ContainsKey(dependency.Name))
+                    if (!dependenciesWithNoDuplicates.ContainsKey(assembly.GetName().Name))
                     {
-                        throw new InvalidOperationException("Resources.FormatCandidateResolver_DifferentCasedReference(dependency.Name)");
+                        dependenciesWithNoDuplicates.Add(assembly.GetName().Name, CreateDependency(assembly, referenceAssemblies));
                     }
-                    dependenciesWithNoDuplicates.Add(dependency.Name, CreateDependency(dependency, referenceAssemblies));
                 }
 
                 _dependencies = dependenciesWithNoDuplicates;
             }
 
-            private Dependency CreateDependency(RuntimeLibrary library, ISet<string> referenceAssemblies)
+            private Dependency CreateDependency(Assembly assembly, ISet<string> referenceAssemblies)
             {
                 var classification = DependencyClassification.Unknown;
-                if (referenceAssemblies.Contains(library.Name))
+                if (referenceAssemblies.Contains(assembly.GetName().Name))
                 {
                     classification = DependencyClassification.Reference;
                 }
 
-                return new Dependency(library, classification);
+                return new Dependency(assembly, classification);
             }
 
             private DependencyClassification ComputeClassification(string dependency)
             {
-                Debug.Assert(_dependencies.ContainsKey(dependency));
+                if (!_dependencies.ContainsKey(dependency))
+                {
+                    return DependencyClassification.Unknown;
+                }
 
                 var candidateEntry = _dependencies[dependency];
                 if (candidateEntry.Classification != DependencyClassification.Unknown)
@@ -99,7 +63,8 @@ namespace Microsoft.AspNetCore.Modules
                 else
                 {
                     var classification = DependencyClassification.NotCandidate;
-                    foreach (var candidateDependency in candidateEntry.Library.Dependencies)
+
+                    foreach (var candidateDependency in candidateEntry.Assembly.GetReferencedAssemblies())
                     {
                         var dependencyClassification = ComputeClassification(candidateDependency.Name);
                         if (dependencyClassification == DependencyClassification.Candidate ||
@@ -116,33 +81,27 @@ namespace Microsoft.AspNetCore.Modules
                 }
             }
 
-            public IEnumerable<RuntimeLibrary> GetCandidates()
+            public IEnumerable<Assembly> GetCandidates()
             {
                 foreach (var dependency in _dependencies)
                 {
                     if (ComputeClassification(dependency.Key) == DependencyClassification.Candidate)
                     {
-                        yield return dependency.Value.Library;
+                        yield return dependency.Value.Assembly;
                     }
                 }
             }
 
             private class Dependency
             {
-                public Dependency(RuntimeLibrary library, DependencyClassification classification)
+                public Dependency(Assembly assembly, DependencyClassification classification)
                 {
-                    Library = library;
+                    Assembly = assembly;
                     Classification = classification;
                 }
 
-                public RuntimeLibrary Library { get; }
-
+                public Assembly Assembly { get; }
                 public DependencyClassification Classification { get; set; }
-
-                public override string ToString()
-                {
-                    return $"Library: {Library.Name}, Classification: {Classification}";
-                }
             }
 
             private enum DependencyClassification
