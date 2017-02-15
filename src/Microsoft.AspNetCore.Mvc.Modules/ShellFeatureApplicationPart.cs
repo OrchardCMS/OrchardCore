@@ -18,6 +18,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
+		private static IEnumerable<string> _referencePaths;
+		private static object _synLock = new object();
+
         internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Microsoft.AspNetCore.Mvc",
@@ -79,8 +82,23 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            return DependencyContext.Default.CompileLibraries
-                .SelectMany(library => library.ResolveReferencePaths());
+			if (_referencePaths != null)
+			{
+				return _referencePaths;
+			}
+
+			lock(_synLock)
+			{
+				if (_referencePaths != null)
+				{
+					return _referencePaths;
+				}
+
+				_referencePaths = DependencyContext.Default.CompileLibraries
+				.SelectMany(library => library.ResolveReferencePaths());
+			}
+
+			return _referencePaths;
         }
     }
 }
