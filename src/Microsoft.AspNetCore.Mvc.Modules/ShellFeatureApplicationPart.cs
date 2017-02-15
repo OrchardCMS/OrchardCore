@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    /// <summary>
-    /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
-    /// </summary>
-    public class ShellFeatureApplicationPart :
+	/// <summary>
+	/// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
+	/// </summary>
+	public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
@@ -21,46 +20,18 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 		private static IEnumerable<string> _referencePaths;
 		private static object _synLock = new object();
 
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+		private readonly IHttpContextAccessor _httpContextAccessor;
+
+		/// <summary>
+		/// Initalizes a new <see cref="AssemblyPart"/> instance.
+		/// </summary>
+		/// <param name="assembly"></param>
+		public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
-            "Microsoft.AspNetCore.Mvc",
-            "Microsoft.AspNetCore.Mvc.Abstractions",
-            "Microsoft.AspNetCore.Mvc.ApiExplorer",
-            "Microsoft.AspNetCore.Mvc.Core",
-            "Microsoft.AspNetCore.Mvc.Cors",
-            "Microsoft.AspNetCore.Mvc.DataAnnotations",
-            "Microsoft.AspNetCore.Mvc.Formatters.Json",
-            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
-            "Microsoft.AspNetCore.Mvc.Localization",
-            "Microsoft.AspNetCore.Mvc.Razor",
-            "Microsoft.AspNetCore.Mvc.Razor.Host",
-            "Microsoft.AspNetCore.Mvc.RazorPages",
-            "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures"
-        };
+			_httpContextAccessor = httpContextAccessor;
+		}
 
-        /// <summary>
-        /// Initalizes a new <see cref="AssemblyPart"/> instance.
-        /// </summary>
-        /// <param name="assembly"></param>
-        public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
-        {
-            if (httpContextAccessor == null)
-            {
-                throw new ArgumentNullException(nameof(httpContextAccessor));
-            }
-
-            HttpContextAccessor = httpContextAccessor;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IHttpContextAccessor"/> of the <see cref="ApplicationPart"/>.
-        /// </summary>
-        public IHttpContextAccessor HttpContextAccessor { get; }
-        private IModularAssemblyProvider ModularAssemblyProvider =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
-
-        public override string Name
+		public override string Name
         {
             get
             {
@@ -73,10 +44,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return ModularAssemblyProvider
-                    .GetAssemblies(ReferenceAssemblies)
-                    .SelectMany(x => x.DefinedTypes);
-            }
+				var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+				return shellBluePrint.Dependencies.Keys.Select(type => type.GetTypeInfo());
+			}
         }
 
         /// <inheritdoc />

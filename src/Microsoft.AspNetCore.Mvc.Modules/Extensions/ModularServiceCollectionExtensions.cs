@@ -60,9 +60,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
 		internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
 		{
-			var httpContextAccessor =
-				services.GetRequiredService<IHttpContextAccessor>();
-
+			var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
 			manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
 		}
 
