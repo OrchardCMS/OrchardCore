@@ -1,14 +1,13 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -48,6 +47,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 			AddModularFrameworkParts(applicationServices, builder.PartManager);
 
 			builder.AddModularRazorViewEngine(applicationServices);
+
+			// Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
+			builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
 
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
