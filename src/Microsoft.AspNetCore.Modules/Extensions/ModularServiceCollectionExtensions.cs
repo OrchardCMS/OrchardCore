@@ -101,6 +101,7 @@ namespace Microsoft.AspNetCore.Modules
                 internalServices.AddExtensionManagerHost("App_Data", "dependencies");
 
                 internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                internalServices.AddScoped<IModularAssemblyProvider, ModularAssemblyProvider>();
             });
         }
     }
