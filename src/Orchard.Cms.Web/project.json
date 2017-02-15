@@ -61,19 +61,20 @@
       "System.GC.Server": true
     }
   },
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "debugType": "portable",
-    "compile": {
-      "exclude": [
-        "wwwroot",
-        "node_modules",
-        "App_Data",
-        "Modules",
-        "Themes"
-      ]
-    }
-  },
+	"buildOptions": {
+		"emitEntryPoint": true,
+		"preserveCompilationContext": true,
+		"debugType": "portable",
+		"compile": {
+			"exclude": [
+				"wwwroot",
+				"node_modules",
+				"App_Data",
+				"Modules",
+				"Themes"
+			]
+		}
+	},
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {

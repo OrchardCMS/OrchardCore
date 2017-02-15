@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -44,7 +45,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddViews();
             builder.AddViewLocalization();
 
-            builder.AddModularRazorViewEngine(applicationServices);
+			AddModularFrameworkParts(applicationServices, builder.PartManager);
+
+			builder.AddModularRazorViewEngine(applicationServices);
 
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
@@ -55,7 +58,15 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             return services;
         }
 
-        private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
+		internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
+		{
+			var httpContextAccessor =
+				services.GetRequiredService<IHttpContextAccessor>();
+
+			manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+		}
+
+		private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
         {
             var mvcTagHelpersAssembly = typeof(InputTagHelper).GetTypeInfo().Assembly;
             if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcTagHelpersAssembly))
