@@ -61,6 +61,11 @@ namespace Orchard.BackgroundTasks
             // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
             ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
 
+            if (!shellContext.IsActivated)
+            {
+                return;
+            }
+
             var groupName = group as string ?? "";
 
             foreach (var task in _tasks[groupName])
