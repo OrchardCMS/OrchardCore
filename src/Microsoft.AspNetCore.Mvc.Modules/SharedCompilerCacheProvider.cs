@@ -12,20 +12,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules
     /// tenant would get its own compiled view.
     /// </summary>
     public class SharedCompilerCacheProvider : ICompilerCacheProvider
-	{
-		private static ICompilerCache _cache;
-		private static object _synLock = new object();
+    {
+        private static ICompilerCache _cache;
+        private static object _synLock = new object();
 
-		public SharedCompilerCacheProvider(
-			ApplicationPartManager applicationPartManager,
-			IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-			IHostingEnvironment env)
-		{
-			lock (_synLock)
-			{
-				if (_cache == null)
-				{
-					var feature = new ViewsFeature();
+        public SharedCompilerCacheProvider(
+            ApplicationPartManager applicationPartManager,
+            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
+            IHostingEnvironment env)
+        {
+            lock (_synLock)
+            {
+                if (_cache == null)
+                {
+                    var feature = new ViewsFeature();
 
                     // Applying ViewsFeatureProvider to gather any precompiled view
                     new ViewsFeatureProvider().PopulateFeature(
@@ -35,18 +35,18 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                         },
                         feature);
 
-					_cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
-				}
-			}
-		}
+                    _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
+                }
+            }
+        }
 
-		/// <inheritdoc />
-		public ICompilerCache Cache
-		{
-			get
-			{
-				return _cache;
-			}
-		}
-	}
+        /// <inheritdoc />
+        public ICompilerCache Cache
+        {
+            get
+            {
+                return _cache;
+            }
+        }
+    }
 }
