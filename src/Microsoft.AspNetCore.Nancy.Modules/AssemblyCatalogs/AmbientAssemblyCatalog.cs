@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs
 {
     public class AmbientAssemblyCatalog : IAssemblyCatalog
     {
-        internal static HashSet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Nancy"
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AmbientAssemblyCatalog"/> class.
         /// </summary>
@@ -34,8 +29,8 @@ namespace Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs
         /// </summary>
         public IHttpContextAccessor HttpContextAccessor { get; }
 
-        private IModularAssemblyProvider ModularAssemblyProvider =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
+        private ShellBlueprint ShellBlueprint =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
 
         /// <summary>
         /// Gets all <see cref="Assembly"/> instances in the catalog.
@@ -43,8 +38,8 @@ namespace Microsoft.AspNetCore.Nancy.Modules.AssemblyCatalogs
         /// <returns>An <see cref="IReadOnlyCollection{T}"/> of <see cref="Assembly"/> instances.</returns>
         public IReadOnlyCollection<Assembly> GetAssemblies()
         {
-            return ModularAssemblyProvider
-                .GetAssemblies(ReferenceAssemblies)
+            return ShellBlueprint.Dependencies.Keys
+                .Select(type => type.GetTypeInfo().Assembly)
                 .ToArray();
         }
     }
