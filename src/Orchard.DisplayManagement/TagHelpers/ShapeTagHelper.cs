@@ -9,14 +9,13 @@ using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.TagHelpers
 {
-    [HtmlTargetElement("shape", Attributes = nameof(Type))]
-    public class ShapeTagHelper : TagHelper
+    public abstract class BaseShapeTagHelper : TagHelper
     {
         private static readonly string[] InternalProperties = new[] { "type", "cache-id", "cache-context", "cache-dependency", "cache-tag", "cache-duration" };
         private static readonly char[] Separators = new[] { ',', ' ' };
 
-        private readonly IShapeFactory _shapeFactory;
-        private readonly IDisplayHelperFactory _displayHelperFactory;
+        protected IShapeFactory _shapeFactory;
+        protected IDisplayHelperFactory _displayHelperFactory;
 
         public string Type { get; set; }
         public string Cache { get; set; }
@@ -28,7 +27,7 @@ namespace Orchard.DisplayManagement.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        public ShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
+        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelperFactory displayHelperFactory)
         {
             _shapeFactory = shapeFactory;
             _displayHelperFactory = displayHelperFactory;

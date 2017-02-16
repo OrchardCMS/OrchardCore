@@ -44,7 +44,6 @@ namespace Orchard.DisplayManagement
                 options.FileProviders.Add(new ThemingFileProvider());
             });
 			
-            services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
             services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
