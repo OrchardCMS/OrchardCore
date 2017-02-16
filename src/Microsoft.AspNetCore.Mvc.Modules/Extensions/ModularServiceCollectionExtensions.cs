@@ -1,16 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Runtime.Loader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -18,30 +15,11 @@ using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    public static class ModularServiceCollectionExtensions
+	public static class ModularServiceCollectionExtensions
     {
-        internal static ISet<string> ReferenceAssemblies { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Microsoft.AspNetCore.Mvc",
-            "Microsoft.AspNetCore.Mvc.Abstractions",
-            "Microsoft.AspNetCore.Mvc.ApiExplorer",
-            "Microsoft.AspNetCore.Mvc.Core",
-            "Microsoft.AspNetCore.Mvc.Cors",
-            "Microsoft.AspNetCore.Mvc.DataAnnotations",
-            "Microsoft.AspNetCore.Mvc.Formatters.Json",
-            "Microsoft.AspNetCore.Mvc.Formatters.Xml",
-            "Microsoft.AspNetCore.Mvc.Localization",
-            "Microsoft.AspNetCore.Mvc.Razor",
-            "Microsoft.AspNetCore.Mvc.Razor.Host",
-            "Microsoft.AspNetCore.Mvc.RazorPages",
-            "Microsoft.AspNetCore.Mvc.TagHelpers",
-            "Microsoft.AspNetCore.Mvc.ViewFeatures"
-        };
-
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
             IServiceProvider applicationServices)
         {
@@ -70,6 +48,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             builder.AddModularRazorViewEngine(applicationServices);
 
+            // Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
+            builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
+
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
 
@@ -81,11 +62,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
-            var httpContextAccessor =
-                services.GetRequiredService<IHttpContextAccessor>();
-
+            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
-            manager.ApplicationParts.Add(new SatelliteApplicationPart(httpContextAccessor));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
@@ -107,15 +85,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             return builder.AddRazorViewEngine(options =>
             {
-                var extensionLibraryService =
-                    services.GetService<IExtensionLibraryService>();
-
-                foreach (var metadataPath in extensionLibraryService.MetadataPaths)
-                {
-                    var metadata = CreateMetadataReference(metadataPath);
-                    options.AdditionalCompilationReferences.Add(metadata);
-                }
-
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
@@ -131,17 +100,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
             services.Replace(
                 ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
-        }
-
-        private static MetadataReference CreateMetadataReference(string path)
-        {
-            using (var stream = File.OpenRead(path))
-            {
-                var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
-                var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
-
-                return assemblyMetadata.GetReference(filePath: path);
-            }
         }
     }
 }

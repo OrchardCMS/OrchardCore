@@ -1,15 +1,8 @@
 ﻿@model dynamic
-@inject Orchard.DisplayManagement.IShapeDisplay ShapeDisplay
-@addTagHelper "*, Orchard.DisplayManagement"
+@addTagHelper "*, Orchard.Resources"
 @addTagHelper "*, Orchard.Demo"
 
 @Model.Line
-
-@*
-    The most simple way to render a shape is to call IShapeDisplay.DisplayAsync.
-    It uses a DisplayHelper internally and returns the html as a string
-*@
-@await ShapeDisplay.DisplayAsync(Model)
 
 @*
     The way it is done from a View is to use a DisplayHelper which is created for

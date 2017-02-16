@@ -33,8 +33,6 @@ namespace Orchard.Environment.Extensions
 
 
                 services.AddSingleton<IExtensionLoader, AmbientExtensionLoader>();
-                services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
-                services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
 
                 services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
                 services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
@@ -44,8 +42,6 @@ namespace Orchard.Environment.Extensions
                     options.RootProbingName = rootProbingName;
                     options.DependencyProbingDirectoryName = dependencyProbingDirectoryName;
                 });
-
-                services.AddSingleton<IExtensionLibraryService, ExtensionLibraryService>();
             }
 
             return services;

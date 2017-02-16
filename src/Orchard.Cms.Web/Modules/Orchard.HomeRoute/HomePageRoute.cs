@@ -36,7 +36,7 @@ namespace Orchard.HomeRoute
         {
             object value;
 
-            var tokens = GetHomeRouteValuesAsync().Result;
+            var tokens = GetHomeRouteValuesAsync().GetAwaiter().GetResult();
 
             if (tokens == null)
             {

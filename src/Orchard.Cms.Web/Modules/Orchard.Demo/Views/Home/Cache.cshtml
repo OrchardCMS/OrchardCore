@@ -2,17 +2,17 @@
 View: @DateTime.Now.ToString("hh:MM:ss")
 <br/>
 
-<outerdoll cache-id="outerdoll" cache-duration="00:00:5" />
+<shape typeof="outerdoll" cache-id="outerdoll" cache-duration="00:00:5" />
 <br/>
-<outerdoll cache-id="outerdoll" />
+<shape typeof="outerdoll" cache-id="outerdoll" />
 
 <div class="row">
 
     <div class="col-md-3">
-        <demowidget title="Widget1" cache-id="widget1" cache-context="user" cache-tag="widget" />
+        <shape typeof="demowidget" title="Widget1" cache-id="widget1" cache-context="user" cache-tag="widget" />
     </div>
 
     <div class="col-md-3 float-md-right">
-        <demowidget title="Widget2" cache-id="widget2" cache-context="query:foo" cache-tag="widget widget2" />
+        <shape typeof="demowidget" title="Widget2" cache-id="widget2" cache-context="query:foo" cache-tag="widget widget2" />
     </div>
 </div>

@@ -1,53 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-    /// <summary>
-    /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
-    /// </summary>
-    public class ShellFeatureApplicationPart :
+	/// <summary>
+	/// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
+	/// </summary>
+	public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
-        /// <summary>
-        /// Initalizes a new <see cref="AssemblyPart"/> instance.
-        /// </summary>
-        /// <param name="assembly"></param>
-        public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
+		private static IEnumerable<string> _referencePaths;
+		private static object _synLock = new object();
+
+		private readonly IHttpContextAccessor _httpContextAccessor;
+
+		/// <summary>
+		/// Initalizes a new <see cref="AssemblyPart"/> instance.
+		/// </summary>
+		/// <param name="assembly"></param>
+		public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
-            if (httpContextAccessor == null)
-            {
-                throw new ArgumentNullException(nameof(httpContextAccessor));
-            }
+			_httpContextAccessor = httpContextAccessor;
+		}
 
-            HttpContextAccessor = httpContextAccessor;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IHttpContextAccessor"/> of the <see cref="ApplicationPart"/>.
-        /// </summary>
-        public IHttpContextAccessor HttpContextAccessor { get; }
-
-        private IModularAssemblyProvider AssemblyProvider =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<IModularAssemblyProvider>();
-
-        private ShellBlueprint ShellBlueprint =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
-
-        public override string Name
+		public override string Name
         {
             get
             {
-                return typeof(ShellFeatureApplicationPart).GetTypeInfo().Assembly.GetName().Name;
+                return nameof(ShellFeatureApplicationPart);
             }
         }
 
@@ -56,16 +44,31 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                return ShellBlueprint
-                    .Dependencies
-                    .Select(dep => dep.Key.GetTypeInfo());
-            }
+				var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+				return shellBluePrint.Dependencies.Keys.Select(type => type.GetTypeInfo());
+			}
         }
 
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-            return AssemblyProvider.GetAssemblies().Select(x => x.Location);
+			if (_referencePaths != null)
+			{
+				return _referencePaths;
+			}
+
+			lock(_synLock)
+			{
+				if (_referencePaths != null)
+				{
+					return _referencePaths;
+				}
+
+				_referencePaths = DependencyContext.Default.CompileLibraries
+				.SelectMany(library => library.ResolveReferencePaths());
+			}
+
+			return _referencePaths;
         }
     }
-} 
+}
