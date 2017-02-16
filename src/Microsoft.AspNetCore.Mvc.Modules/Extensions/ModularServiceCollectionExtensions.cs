@@ -44,12 +44,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddViews();
             builder.AddViewLocalization();
 
-			AddModularFrameworkParts(applicationServices, builder.PartManager);
+            AddModularFrameworkParts(applicationServices, builder.PartManager);
 
-			builder.AddModularRazorViewEngine(applicationServices);
+            builder.AddModularRazorViewEngine(applicationServices);
 
-			// Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
-			builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
+            // Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
+            builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
 
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
@@ -60,13 +60,13 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             return services;
         }
 
-		internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
-		{
-			var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-			manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
-		}
+        internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
+        {
+            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
+            manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+        }
 
-		private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
+        private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
         {
             var mvcTagHelpersAssembly = typeof(InputTagHelper).GetTypeInfo().Assembly;
             if (!partManager.ApplicationParts.OfType<AssemblyPart>().Any(p => p.Assembly == mvcTagHelpersAssembly))
