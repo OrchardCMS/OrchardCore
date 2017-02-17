@@ -1,4 +1,4 @@
-@model AddPartsViewModel
+﻿@model AddPartsViewModel
 @{
     int i = 0;
 }
@@ -20,8 +20,8 @@
                         </label>
                         <input asp-for="PartSelections[i].IsSelected" type="hidden" />
                         <input asp-for="PartSelections[i].PartName" type="hidden" />
+                        <span class="hint">@T["— {0}", @partSelection.PartDescription]</span>
                     </div>
-                    <span class="hint">@partSelection.PartDescription</span>
                 </li>
 
                 i++;
