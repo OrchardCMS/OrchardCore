@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
+using Orchard.Environment.Shell.Models;
 using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 
@@ -45,11 +46,14 @@ namespace Orchard.BackgroundTasks
 
         public void Activate()
         {
-            foreach(var group in _timers.Keys)
+            if (_shellSettings.State == TenantState.Running)
             {
-                var timer = _timers[group];
-                var period = _periods[group];
-                timer.Change(StartNow, period);
+                foreach (var group in _timers.Keys)
+                {
+                    var timer = _timers[group];
+                    var period = _periods[group];
+                    timer.Change(StartNow, period);
+                }
             }
         }
 
@@ -66,11 +70,6 @@ namespace Orchard.BackgroundTasks
             foreach (var task in _tasks[groupName])
             {
                 var taskName = task.GetType().FullName;
-
-                if (shellContext.ServiceProvider == null)
-                {
-                    break;
-                }
 
                 using (var scope = shellContext.CreateServiceScope())
                 {
