@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Environment.Cache;
-using Orchard.Layers.Models;
 using Orchard.Scripting;
 using Orchard.Utility;
 
@@ -54,7 +54,7 @@ namespace Orchard.Layers.Services
 			if (context.Result is ViewResult && !AdminAttribute.IsApplied(context.HttpContext))
 			{
 				var widgets = await _layerService.GetLayerWidgetsAsync(x => x.Published);
-				var layers = await _layerService.GetLayersAsync();
+				var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
 				var layout = _layoutAccessor.GetLayout();
 				var updater = _modelUpdaterAccessor.ModelUpdater;
@@ -62,36 +62,49 @@ namespace Orchard.Layers.Services
 				var engine = _scriptingManager.GetScriptingEngine("js");
 				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
 
-				foreach (var layer in layers.Layers)
+				var layersCache = new Dictionary<string, bool>();
+				
+				foreach (var widget in widgets)
 				{
-					if (String.IsNullOrEmpty(layer.Rule))
+					var layer = layers[widget.Layer];
+
+					if (layer == null)
 					{
 						continue;
 					}
 
-					var display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
+					bool display;
+					if (!layersCache.TryGetValue(layer.Name, out display))
+					{
+						if (String.IsNullOrEmpty(layer.Rule))
+						{
+							display = false;
+						}
+						else
+						{
+							display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
+						}
+
+						layersCache[layer.Rule] = display;
+					}
 
 					if (!display)
 					{
 						continue;
 					}
 
-					foreach (var widget in widgets)
-					{
-						if (widget.Layer != layer.Name) continue;
-
-						IShape widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+					IShape widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 						
-						widgetContent.Classes.Add("widget");
-						widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+					widgetContent.Classes.Add("widget");
+					widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-						var wrapper = _shapeFactory.Create("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
-						wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+					var wrapper = _shapeFactory.Create("Widget_Wrapper", new { Widget = widget.ContentItem, Content = widgetContent });
+					wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
 
-						var contentZone = layout.Zones[widget.Zone];
-						contentZone.Add(wrapper);
-					}
+					var contentZone = layout.Zones[widget.Zone];
+					contentZone.Add(wrapper);
 				}
+				
 			}
 
 			await next.Invoke();
