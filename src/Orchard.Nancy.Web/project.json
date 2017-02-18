@@ -1,13 +1,12 @@
 ﻿{
   "dependencies": {
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
-    "Microsoft.AspNetCore.Http.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
-    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*",
-    "Microsoft.AspNetCore.Routing": "1.1.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
-    "Microsoft.Extensions.Logging.Console": "1.1.0"
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Nancy.HelloWorld": "1.0.0-*",
+    "Orchard.Nancy": "2.0.0-*"
   },
   "runtimeOptions": {
     "configProperties": {
@@ -16,14 +15,14 @@
   },
   "buildOptions": {
     "emitEntryPoint": true,
+    "preserveCompilationContext": true,
     "debugType": "portable",
     "compile": {
       "exclude": [
         "wwwroot",
         "node_modules",
         "App_Data",
-        "Modules",
-        "Themes"
+        "Modules"
       ]
     }
   },
@@ -76,7 +75,7 @@
     "includeFiles": [ "" ],
     "excludeFiles": [ "" ],
     "builtIns": [ "" ],
-    "mappings": { }
+    "mappings": {}
   },
   "commands": {
     "web": ""

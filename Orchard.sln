@@ -135,7 +135,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Cms.Web", "src\Orch
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Orchard.Mvc.Web", "src\Orchard.Mvc.Web\Orchard.Mvc.Web.xproj", "{2CEE4306-FDE4-479F-8754-0492AA5834EB}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "HelloWorld", "src\Orchard.Mvc.Web\Modules\HelloWorld\HelloWorld.xproj", "{4B96E37E-E449-4B55-B12E-AD7816B94F08}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Mvc.HelloWorld", "src\Orchard.Mvc.Web\Modules\Mvc.HelloWorld\Mvc.HelloWorld.xproj", "{4B96E37E-E449-4B55-B12E-AD7816B94F08}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNetCore.Mvc.Modules.Abstractions", "src\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.xproj", "{A1F3BB21-E9C7-4131-8682-50CE9730CD49}"
 EndProject
