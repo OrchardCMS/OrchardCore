@@ -1,0 +1,9 @@
+﻿{{#if Model.HasItems}}
+    <a  class="dropdown-toggle" data-toggle="dropdown" href={{UrlContent Model.ContentItem.Content.LinkMenuItemPart.Url}}>
+        {{Model.ContentItem.Content.LinkMenuItemPart.Name}}<b class="caret"></b>
+    </a>
+{{else}}
+    <a href={{UrlContent Model.ContentItem.Content.LinkMenuItemPart.Url}}>
+        {{Model.ContentItem.Content.LinkMenuItemPart.Name}}
+    </a>
+{{/if}}

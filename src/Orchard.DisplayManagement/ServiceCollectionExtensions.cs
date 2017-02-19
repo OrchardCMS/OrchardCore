@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
@@ -8,6 +10,7 @@ using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
+using Orchard.DisplayManagement.HandleBars;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.LocationExpander;
@@ -41,7 +44,10 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
             services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+
             services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+            services.AddSingleton<IShapeTemplateViewEngine, HandleBarsShapeTemplateViewEngine>();
+            HandleBarsShapeDisplayHelpers.RegisterShapeDisplayHelpers();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
