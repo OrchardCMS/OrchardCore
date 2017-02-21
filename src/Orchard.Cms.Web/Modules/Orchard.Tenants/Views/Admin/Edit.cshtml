@@ -44,6 +44,7 @@
                         <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
                     }
                 </select>
+                <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6" asp-validation-class-for="TablePrefix">
                 <label asp-for="TablePrefix">@T["Table Prefix"]</label>

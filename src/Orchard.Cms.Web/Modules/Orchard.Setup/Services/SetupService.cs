@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
+using Microsoft.Extensions.Localization;
 
 namespace Orchard.Setup.Services
 {
@@ -31,6 +32,7 @@ namespace Orchard.Setup.Services
         private readonly IRunningShellTable _runningShellTable;
         private readonly IRecipeHarvester _recipeHarvester;
         private readonly ILogger _logger;
+        private readonly IStringLocalizer T;
 
         private IReadOnlyList<RecipeDescriptor> _recipes;
 
@@ -43,7 +45,8 @@ namespace Orchard.Setup.Services
             IHttpContextAccessor httpContextAccessor,
             IRunningShellTable runningShellTable,
             IRecipeHarvester recipeHarvester,
-            ILogger<SetupService> logger
+            ILogger<SetupService> logger,
+            IStringLocalizer<SetupService> stringLocalizer
             )
         {
             _shellSettings = shellSettings;
@@ -55,6 +58,7 @@ namespace Orchard.Setup.Services
             _runningShellTable = runningShellTable;
             _recipeHarvester = recipeHarvester;
             _logger = logger;
+            T = stringLocalizer;
         }
 
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
@@ -135,7 +139,7 @@ namespace Orchard.Setup.Services
                     {
                         await store.InitializeAsync();
                     }
-                    catch(Exception ex)
+                    catch(Exception e)
                     {
                         // Tables already exist or database was not found
 
@@ -144,7 +148,8 @@ namespace Orchard.Setup.Services
                         // tables. The tables should be rolled back if one of the steps is invalid,
                         // unless the recipe is executing?
 
-                        context.Errors.Add("DatabaseProvider", $"An error occurred while initializing the datastore: {ex.Message}");
+                        _logger.LogError("An error occurred while initializing the datastore.", e);
+                        context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore. Check error log for more details."]);
                         return null;
                     }
 
