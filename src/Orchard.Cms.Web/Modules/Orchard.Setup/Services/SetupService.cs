@@ -135,14 +135,17 @@ namespace Orchard.Setup.Services
                     {
                         await store.InitializeAsync();
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         // Tables already exist or database was not found
 
                         // The issue is that the user creation needs the tables to be present,
                         // if the user information is not valid, the next POST will try to recreate the
-                        // tables. The tables should be rollbacked if one of the steps is invalid,
+                        // tables. The tables should be rolled back if one of the steps is invalid,
                         // unless the recipe is executing?
+
+                        context.Errors.Add("DatabaseProvider", $"An error occurred while initializing the datastore: {ex.Message}");
+                        return null;
                     }
 
                     // Create the "minimum shell descriptor"
