@@ -40,35 +40,11 @@ namespace Orchard.DisplayManagement.HandleBars
             var physicalPath = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(relativePath).PhysicalPath;
             var render = _renderers.GetOrAdd(relativePath, Handlebars.Compile(File.ReadAllText(physicalPath)));
 
-            var urlHelperFactory = displayContext.ServiceProvider.GetService<IUrlHelperFactory>();
-            var urlHelper = urlHelperFactory.GetUrlHelper(displayContext.ViewContext);
-
             dynamic context = new Composite();
             context.DisplayContext = displayContext;
             context.Model = displayContext.Value;
 
-            if (displayContext.ViewContext.View != null)
-            {
-                context.Html = MakeHtmlHelper(displayContext.ViewContext, displayContext.ViewContext.ViewData);
-            }
-
-            context.Url = urlHelper;
-
             return Task.FromResult<IHtmlContent>(new HtmlString(render(context)));
-        }
-
-        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
-        {
-            var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
-
-            var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
-            {
-                var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
-                contextable.Contextualize(newViewContext);
-            }
-
-            return newHelper;
         }
     }
 }
