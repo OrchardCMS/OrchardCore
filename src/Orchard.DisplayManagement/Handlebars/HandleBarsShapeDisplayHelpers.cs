@@ -8,9 +8,6 @@ using HandlebarsDotNet;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Razor.Host;
-using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -43,15 +40,15 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("T", (output, context, arguments) =>
             {
-                output.WriteSafeString(
-                    (new HandleBarsContext(context)
-                    .T[arguments[0].ToString()])
-                    .Value);
+            output.WriteSafeString(
+                (new HandleBarsContext(context)
+                .T[arguments[0].ToString()])
+                .Value);
             });
 
             Handlebars.RegisterHelper("SiteName", async (output, context, arguments) =>
             {
-                output.WriteSafeString(
+                output.Write(
                     (await new HandleBarsContext(context)
                     .GetService<ISiteService>()
                     .GetSiteSettingsAsync())
@@ -60,7 +57,7 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("IsAuthenticated", (output, context, arguments) =>
             {
-                output.WriteSafeString(
+                output.Write(
                     new HandleBarsContext(context)
                     .User.Identity.IsAuthenticated
                     ? "yes" : String.Empty);
@@ -68,9 +65,9 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("UserName", (output, context, arguments) =>
             {
-                output.WriteSafeString(
+                output.Write(
                     new HandleBarsContext(context)
-                    .User.Identity.Name as string);
+                    .User.Identity.Name);
             });
 
             Handlebars.RegisterHelper("menu", (output, context, arguments) =>
@@ -115,6 +112,35 @@ namespace Orchard.DisplayManagement.HandleBars
                     .Select(x => new TagHelperAttribute(x.Key, x.Value))
                     .ToList());
 
+                var formTagHelper = new Microsoft.AspNetCore.Mvc.TagHelpers
+                    .FormTagHelper(handleBarsContext.GetService<IHtmlGenerator>())
+                {
+                    ViewContext = handleBarsContext.ViewContext
+                };
+
+                TagHelperAttribute attribute;
+                if (attributes.TryGetAttribute("asp-antiforgery", out attribute))
+                {
+                    formTagHelper.Antiforgery = Convert.ToBoolean(attribute.Value);
+                    attributes.Remove(attribute);
+                }
+                if (attributes.TryGetAttribute("asp-route-area", out attribute))
+                {
+                    formTagHelper.RouteValues.Add("area", attribute.Value.ToString());
+                    attributes.Remove(attribute);
+                }
+                if (attributes.TryGetAttribute("asp-controller", out attribute))
+                {
+                    formTagHelper.Controller = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-action", out attribute))
+                {
+                    formTagHelper.Action = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
                 var tagHelperContext = new TagHelperContext(attributes,
                     new Dictionary<object, object>(),
                     Guid.NewGuid().ToString("N"));
@@ -123,34 +149,39 @@ namespace Orchard.DisplayManagement.HandleBars
                     getChildContentAsync: (useCachedResult, encoder) =>
                         Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
-                var formTagHelper = new Microsoft.AspNetCore.Mvc.TagHelpers
-                    .FormTagHelper(handleBarsContext.GetService<IHtmlGenerator>())
-                {
-                    ViewContext = handleBarsContext.ViewContext
-                };
-
-                TagHelperAttribute attribute;
-                if (attributes.TryGetAttribute("asp-route-area", out attribute))
-                {
-                    formTagHelper.RouteValues.Add("area", attribute.Value.ToString());
-                }
-                if (attributes.TryGetAttribute("asp-controller", out attribute))
-                {
-                    formTagHelper.Controller = attribute.Value.ToString();
-                }
-
-                if (attributes.TryGetAttribute("asp-action", out attribute))
-                {
-                    formTagHelper.Action = attribute.Value.ToString();
-                }
-
                 formTagHelper.Process(tagHelperContext, tagHelperOutput);
 
                 using (var writer = new StringWriter())
                 {
+                    tagHelperOutput.TagMode = TagMode.StartTagOnly;
                     tagHelperOutput.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
-                    output.WriteSafeString(writer.ToString().Replace("</form>", ""));
+                    output.WriteSafeString(writer.ToString());
                 }
+
+                if (!tagHelperOutput.PostContent.IsEmptyOrWhiteSpace)
+                {
+                    handleBarsContext.FormContext.EndOfFormContent.Add(tagHelperOutput.PostContent);
+                }
+            });
+
+            Handlebars.RegisterHelper("/form", (output, context, arguments) =>
+            {
+                var handleBarsContext = new HandleBarsContext(context);
+
+                if (handleBarsContext.FormContext.HasEndOfFormContent)
+                {
+                    foreach (var content in handleBarsContext.FormContext.EndOfFormContent)
+                    {
+                        using (var writer = new StringWriter())
+                        {
+                            content.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
+                            output.WriteSafeString(writer.ToString());
+                        }
+                    }
+                }
+
+                output.WriteSafeString("</form>");
+                handleBarsContext.FormContext = new FormContext();
             });
 
             Handlebars.RegisterHelper("a", (output, context, arguments) =>
@@ -158,19 +189,9 @@ namespace Orchard.DisplayManagement.HandleBars
                 var handleBarsContext = new HandleBarsContext(context);
 
                 var attributes = new TagHelperAttributeList(
-                    (arguments[1] as IDictionary<string, object>)
+                    (arguments[0] as IDictionary<string, object>)
                     .Select(x => new TagHelperAttribute(x.Key, x.Value))
                     .ToList());
-
-                var tagHelperContext = new TagHelperContext(attributes,
-                    new Dictionary<object, object>(),
-                    Guid.NewGuid().ToString("N"));
-
-                var tagHelperOutput = new TagHelperOutput("a", attributes,
-                    getChildContentAsync: (useCachedResult, encoder) =>
-                        Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
-
-                tagHelperOutput.Content.AppendHtml(arguments[0].ToString());
 
                 var anchorTagHelper = new Microsoft.AspNetCore.Mvc.TagHelpers
                     .AnchorTagHelper(handleBarsContext.GetService<IHtmlGenerator>())
@@ -182,24 +203,41 @@ namespace Orchard.DisplayManagement.HandleBars
                 if (attributes.TryGetAttribute("asp-route-area", out attribute))
                 {
                     anchorTagHelper.RouteValues.Add("area", attribute.Value.ToString());
+                    attributes.Remove(attribute);
                 }
                 if (attributes.TryGetAttribute("asp-controller", out attribute))
                 {
                     anchorTagHelper.Controller = attribute.Value.ToString();
+                    attributes.Remove(attribute);
                 }
 
                 if (attributes.TryGetAttribute("asp-action", out attribute))
                 {
                     anchorTagHelper.Action = attribute.Value.ToString();
+                    attributes.Remove(attribute);
                 }
+
+                var tagHelperContext = new TagHelperContext(attributes,
+                    new Dictionary<object, object>(),
+                    Guid.NewGuid().ToString("N"));
+
+                var tagHelperOutput = new TagHelperOutput("a", attributes,
+                    getChildContentAsync: (useCachedResult, encoder) =>
+                        Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
                 anchorTagHelper.Process(tagHelperContext, tagHelperOutput);
 
                 using (var writer = new StringWriter())
                 {
+                    tagHelperOutput.TagMode = TagMode.StartTagOnly;
                     tagHelperOutput.WriteTo(writer, System.Text.Encodings.Web.HtmlEncoder.Default);
                     output.WriteSafeString(writer.ToString());
                 }
+            });
+
+            Handlebars.RegisterHelper("/a", (output, context, arguments) =>
+            {
+                output.WriteSafeString("</a>");
             });
 
             Handlebars.RegisterHelper("script", (output, context, arguments) =>
@@ -211,6 +249,33 @@ namespace Orchard.DisplayManagement.HandleBars
                     .Select(x => new TagHelperAttribute(x.Key, x.Value))
                     .ToList());
 
+                var scriptTagHelper = new ScriptTagHelper(handleBarsContext.GetService<IResourceManager>());
+
+                TagHelperAttribute attribute;
+                if (attributes.TryGetAttribute("asp-name", out attribute))
+                {
+                    scriptTagHelper.Name = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("use-cdn", out attribute))
+                {
+                    scriptTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("version", out attribute))
+                {
+                    scriptTagHelper.Version = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("at", out attribute))
+                {
+                    scriptTagHelper.At = (ResourceLocation)Enum.Parse(typeof(ResourceLocation), attribute.Value.ToString());
+                    attributes.Remove(attribute);
+                }
+
                 var tagHelperContext = new TagHelperContext(attributes,
                     new Dictionary<object, object>(),
                     Guid.NewGuid().ToString("N"));
@@ -218,29 +283,6 @@ namespace Orchard.DisplayManagement.HandleBars
                 var tagHelperOutput = new TagHelperOutput("script", attributes,
                     getChildContentAsync: (useCachedResult, encoder) =>
                         Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
-
-                var scriptTagHelper = new ScriptTagHelper(handleBarsContext.GetService<IResourceManager>());
-
-                TagHelperAttribute attribute;
-                if (attributes.TryGetAttribute("asp-name", out attribute))
-                {
-                    scriptTagHelper.Name = attribute.Value.ToString();
-                }
-
-                if (attributes.TryGetAttribute("use-cdn", out attribute))
-                {
-                    scriptTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
-                }
-
-                if (attributes.TryGetAttribute("version", out attribute))
-                {
-                    scriptTagHelper.Version = attribute.Value.ToString();
-                }
-
-                if (attributes.TryGetAttribute("at", out attribute))
-                {
-                    scriptTagHelper.At = (ResourceLocation)Enum.Parse(typeof(ResourceLocation), attribute.Value.ToString());
-                }
 
                 scriptTagHelper.Process(tagHelperContext, tagHelperOutput);
             });
@@ -360,7 +402,7 @@ namespace Orchard.DisplayManagement.HandleBars
                 context.Model.Metadata.Type = arguments[0].ToString();
             });
 
-            Handlebars.RegisterHelper("Display", async (output, context, arguments) =>
+            Handlebars.RegisterHelper("DisplayAsync", async (output, context, arguments) =>
             {
                 output.WriteSafeString(
                     await new HandleBarsContext(context).DisplayAsync(
@@ -369,7 +411,6 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("UrlContent", (output, context, arguments) =>
             {
-                var urlHelper = context.DisplayContext.ViewContext.View.RazorPage.Url;
                 output.WriteSafeString(
                     new HandleBarsContext(context).Url.Content(
                         arguments[0].ToString()));
@@ -391,7 +432,7 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("HtmlActionLink", (output, context, arguments) =>
             {
-                var content = (TagBuilder)
+                var content =
                     new HandleBarsContext(context).Html.ActionLink(
                         linkText: arguments[0].ToString(),
                         actionName: arguments[1].ToString(),
@@ -428,6 +469,18 @@ namespace Orchard.DisplayManagement.HandleBars
                 get
                 {
                     return DisplayContext.ViewContext;
+                }
+            }
+
+            public FormContext FormContext
+            {
+                get
+                {
+                    return ViewContext.FormContext;
+                }
+                set
+                {
+                    ViewContext.FormContext = value;
                 }
             }
 

@@ -3,10 +3,10 @@
 
 {{#if Model.HasItems}}
     <li  class="dropdown">
-        {{Display Model}}
+        {{DisplayAsync Model}}
     </li>
 {{else}}
     <li>
-        {{Display Model}}
+        {{DisplayAsync Model}}
     </li>
 {{/if}}

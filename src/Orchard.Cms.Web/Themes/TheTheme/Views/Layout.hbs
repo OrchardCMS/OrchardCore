@@ -40,19 +40,19 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{UserName}}<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li>{{a (T "Dashboard") asp-route-area="Orchard.Admin" asp-controller="Admin" asp-action="Index"}}</li>
+                                    <li>{{a asp-route-area="Orchard.Admin" asp-controller="Admin" asp-action="Index"}}{{T "Dashboard"}}{{/a}}</li>
                                     <li class="divider"></li>
-                                    <li>{{a (T "Change Password") asp-route-route-area="Orchard.Users" asp-controller="Account" asp-action="ChangePassword"}}</li>
+                                    <li>{{a asp-route-area="Orchard.Users" asp-controller="Account" asp-action="ChangePassword"}}{{T "Chan<ge Password"}}{{/a}}</li>
                                     <li>
                                         <button type="submit" class="btn btn-link navbar-btn navbar-link">{{T "Log off"}}</button>
                                     </li>
                                 </ul>
                             </li>
                         {{else}}
-                            <li>{{a (T "Log in") asp-route-area="Orchard.Users" asp-controller="Account" asp-action="Login"}}</li>
+                            <li>{{a asp-route-area="Orchard.Users" asp-controller="Account" asp-action="Login"}}{{T "Log in"}}{{/a}}</li>
                         {{/if}}
                     </ul>
-                </form>
+                {{/form}}
 
             </div><!--/.nav-collapse -->
         </div>
