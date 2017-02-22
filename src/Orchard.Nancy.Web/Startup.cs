@@ -46,10 +46,7 @@ namespace Orchard.Nancy.Web
 
             loggerFactory.AddConsole(Configuration);
 
-            app.UseModules(modules => modules
-                .UseNancyModules()
-                .UseStaticFilesModules()
-            );
+            app.UseModules();
         }
     }
 }

@@ -3,7 +3,9 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.1",
-    "Nancy": "2.0.0-clinteastwood"
+    "Nancy": "2.0.0-clinteastwood",
+    "Microsoft.AspNetCore.Modules": "1.0.0-*",
+    "Microsoft.AspNetCore.Nancy.Modules": "1.0.0-*"
   },
 
   "frameworks": {

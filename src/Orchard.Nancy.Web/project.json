@@ -1,31 +1,34 @@
 ﻿{
+  "webroot": "wwwroot",
+  "version": "1.0.0-*",
   "dependencies": {
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Modules": "1.0.0-*",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
-    "Nancy.HelloWorld": "1.0.0-*",
-    "Orchard.Nancy": "2.0.0-*"
+    "NETStandard.Library": "1.6.1",
+    "Nancy.HelloWorld": "1.0.0-*"
   },
   "runtimeOptions": {
     "configProperties": {
       "System.GC.Server": true
     }
   },
-  "buildOptions": {
-    "emitEntryPoint": true,
-    "preserveCompilationContext": true,
-    "debugType": "portable",
-    "compile": {
-      "exclude": [
-        "wwwroot",
-        "node_modules",
-        "App_Data",
-        "Modules"
-      ]
-    }
-  },
+	"buildOptions": {
+		"emitEntryPoint": true,
+		"preserveCompilationContext": true,
+		"debugType": "portable",
+		"compile": {
+			"exclude": [
+				"wwwroot",
+				"node_modules",
+				"App_Data",
+				"Modules",
+				"Themes"
+			]
+		}
+	},
   "frameworks": {
     "netcoreapp1.1": {
       "dependencies": {
@@ -75,7 +78,7 @@
     "includeFiles": [ "" ],
     "excludeFiles": [ "" ],
     "builtIns": [ "" ],
-    "mappings": {}
+    "mappings": { }
   },
   "commands": {
     "web": ""
