@@ -1,22 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace Orchard.Environment.Extensions.Loaders
 {
     public class PrecompiledExtensionLoader : IExtensionLoader
     {
-        private readonly string[] ExtensionsSearchPaths;
-
         private readonly IExtensionLibraryService _extensionLibraryService;
         private readonly ILogger _logger;
 
         public PrecompiledExtensionLoader(
-            IOptions<ExtensionOptions> optionsAccessor,
             IExtensionLibraryService extensionLibraryService,
             ILogger<PrecompiledExtensionLoader> logger)
         {
-            ExtensionsSearchPaths = optionsAccessor.Value.SearchPaths.ToArray();
             _extensionLibraryService = extensionLibraryService;
             _logger = logger;
         }
@@ -27,11 +21,6 @@ namespace Orchard.Environment.Extensions.Loaders
 
         public ExtensionEntry Load(IExtensionInfo extensionInfo)
         {
-            if (!ExtensionsSearchPaths.Any(x => extensionInfo.SubPath.StartsWith(x)))
-            {
-                return null;
-            }
-
             try
             {
                 var assembly = _extensionLibraryService.LoadPrecompiledExtension(extensionInfo);

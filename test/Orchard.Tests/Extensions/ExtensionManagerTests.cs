@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
@@ -8,6 +7,7 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Tests.Stubs;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -16,31 +16,41 @@ namespace Orchard.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IFileProvider RunningTestFileProvider
-            = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Extensions"));
-
         private static IHostingEnvironment HostingEnvrionment
-            = new StubHostingEnvironment { ContentRootFileProvider = RunningTestFileProvider };
+            = new StubHostingEnvironment(Path.Combine(Directory.GetCurrentDirectory(), "Extensions"));
 
-        private static IExtensionProvider ModuleProvider =
-                    new ExtensionProvider(
-                        HostingEnvrionment,
-                        new ManifestBuilder(
-                            new IManifestProvider[] { new ManifestProvider(HostingEnvrionment) },
-                            HostingEnvrionment,
-                            new StubManifestOptions(new ManifestOption { ManifestFileName = "Module.txt", Type = "module" })),
-                        new[] { new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>()) });
+        private static IOptions<ManifestOptions> ModuleManifestOptions =
+            new StubManifestOptions(
+                new ManifestOption { ManifestFileName = "Module.txt", Type = "module" }
+                );
 
-        private static IExtensionProvider ThemeProvider =
-            new ExtensionProvider(
+        private static IOptions<ManifestOptions> ThemeManifestOptions =
+            new StubManifestOptions(
+                new ManifestOption { ManifestFileName = "Theme.txt", Type = "theme" }
+                );
+
+        private static IOptions<ManifestOptions> ModuleAndThemeManifestOptions =
+            new StubManifestOptions(
+                new ManifestOption { ManifestFileName = "Module.txt", Type = "module" },
+                new ManifestOption { ManifestFileName = "Theme.txt", Type = "theme" }
+                );
+
+        private static IEnumerable<IManifestProvider> ManifestProviders =
+            new[] { new ManifestProvider(HostingEnvrionment) };
+
+        private static IExtensionProvider ModuleProvider
+            = new ExtensionProvider(
                 HostingEnvrionment,
-                new ManifestBuilder(
-                    new IManifestProvider[] { new ManifestProvider(HostingEnvrionment) },
-                    HostingEnvrionment,
-                    new StubManifestOptions(new ManifestOption { ManifestFileName = "Theme.txt", Type = "theme" })),
+                new[] { new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>()) });
+
+        private static IExtensionProvider ThemeProvider
+            = new ExtensionProvider(
+                HostingEnvrionment,
                 new[] { new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>()) });
 
-
+        private static IOptions<ExtensionExpanderOptions> ExtensionExpanderOptions =
+            new StubExtensionExpanderOptions(
+                new ExtensionExpanderOption { SearchPath = "TestDependencyModules" });
 
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;
@@ -49,38 +59,46 @@ namespace Orchard.Tests.Extensions
         public ExtensionManagerTests()
         {
             ModuleScopedExtensionManager = new ExtensionManager(
-                new StubExtensionOptions("TestDependencyModules"),
+                ExtensionExpanderOptions,
+                ModuleManifestOptions,
+                HostingEnvrionment,
+                ManifestProviders,
                 new[] { ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                Enumerable.Empty<IExtensionOrderingStrategy>(),
-                HostingEnvrionment,
+                new[] { new ExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);
 
             ThemeScopedExtensionManager = new ExtensionManager(
-                new StubExtensionOptions("TestDependencyModules"),
+                ExtensionExpanderOptions,
+                ThemeManifestOptions,
+                HostingEnvrionment,
+                ManifestProviders,
                 new[] { ThemeProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                Enumerable.Empty<IExtensionOrderingStrategy>(),
-                HostingEnvrionment,
+                new[] { new ExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);
 
             ModuleThemeScopedExtensionManager = new ExtensionManager(
-                new StubExtensionOptions("TestDependencyModules"),
+                ExtensionExpanderOptions,
+                ModuleAndThemeManifestOptions,
+                HostingEnvrionment,
+                ManifestProviders,
                 new[] { ThemeProvider, ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
-                new[] { new ThemeExtensionOrderingStrategy() },
-                HostingEnvrionment,
+                new IExtensionDependencyStrategy[] { new ExtensionDependencyStrategy(), new ThemeExtensionDependencyStrategy() },
+                new[] { new ExtensionPriorityStrategy() },
                 null,
                 new NullLogger<ExtensionManager>(),
                 null);
         }
 
         [Fact]
-
         public void ShouldReturnExtension()
         {
             var extensions = ModuleScopedExtensionManager.GetExtensions();
@@ -215,24 +233,13 @@ namespace Orchard.Tests.Extensions
             Assert.Equal("BaseThemeSample", features.ElementAt(3).Id);
             Assert.Equal("DerivedThemeSample", features.ElementAt(4).Id);
         }
-    }
 
-    public class StubExtensionOptions : IOptions<ExtensionOptions>
-    {
-        private string _path;
-        public StubExtensionOptions(string path)
+        [Fact]
+        public void ShouldReturnNotFoundExtensionInfoWhenNotFound()
         {
-            _path = path;
-        }
+            var extension = ModuleThemeScopedExtensionManager.GetExtension("NotFound");
 
-        public ExtensionOptions Value
-        {
-            get
-            {
-                var options = new ExtensionOptions();
-                options.SearchPaths.Add(_path);
-                return options;
-            }
+            Assert.False(extension.Exists);
         }
     }
 }

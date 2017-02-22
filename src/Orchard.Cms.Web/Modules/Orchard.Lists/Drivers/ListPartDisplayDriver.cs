@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
@@ -48,7 +49,7 @@ namespace Orchard.Lists.Drivers
                     var pager = await GetPagerAsync(context.Updater, listPart);
 
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItemsAsync(listPart, pager);
+                    var containedItems = await QueryListItemsAsync(listPart, pager, false);
                     var containedItemsSummaries = new List<dynamic>();
 
                     foreach (var contentItem in containedItems)
@@ -68,7 +69,7 @@ namespace Orchard.Lists.Drivers
                     var pager = await GetPagerAsync(context.Updater, listPart);
 
                     var contentItemDisplayManager = _serviceProvider.GetService<IContentItemDisplayManager>();
-                    var containedItems = await QueryListItemsAsync(listPart, pager);
+                    var containedItems = await QueryListItemsAsync(listPart, pager, true);
                     var containedItemsSummaries = new List<dynamic>();
                     var listContentType = listPart.ContentItem.ContentType;
 
@@ -104,14 +105,14 @@ namespace Orchard.Lists.Drivers
             return pager;
         }
 
-        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager)
+        private async Task<IEnumerable<ContentItem>> QueryListItemsAsync(ListPart listPart, PagerSlim pager, bool published)
         {
             if (pager.Before != null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
                 var query = _session.QueryAsync<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(x => x.Published && x.CreatedUtc > beforeValue)
+                    .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null, published))
                     .OrderBy(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
@@ -141,7 +142,7 @@ namespace Orchard.Lists.Drivers
                 var afterValue = new DateTime(long.Parse(pager.After));
                 var query = _session.QueryAsync<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(x => x.Published && x.CreatedUtc < afterValue)
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue, published))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
@@ -168,7 +169,7 @@ namespace Orchard.Lists.Drivers
             {
                 var query = _session.QueryAsync<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == listPart.ContentItem.ContentItemId)
-                    .With<ContentItemIndex>(x => x.Published)
+                    .With<ContentItemIndex>(CreateContentIndexFilter(null, null, published))
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(pager.PageSize + 1);
 
@@ -189,6 +190,42 @@ namespace Orchard.Lists.Drivers
                 }
 
                 return containedItems;
+            }
+        }
+
+        private static Expression<Func<ContentItemIndex, bool>> CreateContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
+        {
+            if (before != null)
+            {
+                if (publishedOnly)
+                {
+                    return x => x.Published && x.CreatedUtc > before;
+                }
+                else
+                {
+                    return x => x.Latest && x.CreatedUtc > before;
+                }
+            }
+
+            if (after != null)
+            {
+                if (publishedOnly)
+                {
+                    return x => x.Published && x.CreatedUtc < after;
+                }
+                else
+                {
+                    return x => x.Latest && x.CreatedUtc < after;
+                }
+            }
+
+            if (publishedOnly)
+            {
+                return x => x.Published;
+            }
+            else
+            {
+                return x => x.Latest;
             }
         }
 

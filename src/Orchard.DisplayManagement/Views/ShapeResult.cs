@@ -50,7 +50,6 @@ namespace Orchard.DisplayManagement.Views
 
         private void ApplyImplementation(BuildShapeContext context, string displayType)
         {
-
             if (String.IsNullOrEmpty(_differentiator))
             {
                 _differentiator = _prefix;

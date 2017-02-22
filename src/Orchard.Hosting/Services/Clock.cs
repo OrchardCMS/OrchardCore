@@ -5,9 +5,9 @@ namespace Orchard.Hosting.Services
 {
     public class Clock : IClock
     {
-        public DateTimeOffset UtcNow
+        public DateTime UtcNow
         {
-            get { return DateTimeOffset.UtcNow; }
+            get { return DateTime.UtcNow; }
         }
     }
 }

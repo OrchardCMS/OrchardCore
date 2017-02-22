@@ -11,20 +11,23 @@
 }
 
 <article>
-<header>
-    @await DisplayAsync(Model.Header)
-    @if (Model.Meta != null)
+    @if (Model.Header != null || Model.Meta != null)
     {
-        <div class="metadata">
-            @await DisplayAsync(Model.Meta)
-        </div>
+    <header>
+        @await DisplayAsync(Model.Header)
+        @if (Model.Meta != null)
+        {
+            <div class="metadata">
+                @await DisplayAsync(Model.Meta)
+            </div>
+        }
+    </header>
     }
-</header>
-@await DisplayAsync(Model.Content)
-@if (Model.Footer != null)
-{
+    @await DisplayAsync(Model.Content)
+    @if (Model.Footer != null)
+    {
     <footer>
         @await DisplayAsync(Model.Footer)
     </footer>
-}
+    }
 </article>

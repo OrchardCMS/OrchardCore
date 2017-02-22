@@ -1,5 +1,10 @@
-﻿using Orchard.ContentManagement;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Orchard.ContentManagement;
+using Orchard.ContentManagement.Display;
+using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.Contents
 {
@@ -32,6 +37,46 @@ namespace Orchard.Contents
                         // Content_[DisplayType]__[Id] e.g. Content-42.Summary
                         displaying.ShapeMetadata.Alternates.Add("Content_" + displaying.ShapeMetadata.DisplayType + "__" + contentItem.Id);
                     }
+                });
+
+            // This shapes provides a way to lazily load a content item render it in any display type.
+            builder.Describe("ContentItem")
+                .OnProcessingAsync(async context =>
+                {
+                    var content = context.Shape;
+                    string alias = content.Alias;
+                    string displayType = content.DisplayType;
+                    string alternate = content.Alternate;
+
+                    if (String.IsNullOrEmpty(alias))
+                    {
+                        return;
+                    }
+
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
+                    var updateModelAccessor = context.ServiceProvider.GetRequiredService<IModelUpdaterAccessor>();
+
+                    string contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+
+                    ContentItem contentItem = await contentManager.GetAsync(contentItemId);
+
+                    if (contentItem == null)
+                    {
+                        return;
+                    }
+
+                    content.ContentItem = contentItem;
+
+                    var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
+
+                    if (!String.IsNullOrEmpty(alternate))
+                    {
+                        ((IShape)displayShape).Metadata.Alternates.Add(displayShape);
+                    }
+
+                    content.Add(displayShape);
                 });
         }
 

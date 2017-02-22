@@ -53,12 +53,17 @@ namespace Orchard.DisplayManagement.Implementation
 
             // non-shape arguments are returned as a no-op
             if (shape == null)
+            {
                 return CoerceHtmlString(context.Value);
+            }
 
             var shapeMetadata = shape.Metadata;
+            
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
+            {
                 return CoerceHtmlString(context.Value);
+            }
 
             var theme = await _themeManager.GetThemeAsync();
             var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
@@ -72,7 +77,7 @@ namespace Orchard.DisplayManagement.Implementation
             };
 
             // Use the same prefix as the shape
-            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix;
+            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
 
             // Evaluate global Shape Display Events
             _shapeDisplayEvents.Invoke(sde => sde.Displaying(displayContext), _logger);

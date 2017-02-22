@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Html;
-using Orchard.DependencyInjection;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Implementation

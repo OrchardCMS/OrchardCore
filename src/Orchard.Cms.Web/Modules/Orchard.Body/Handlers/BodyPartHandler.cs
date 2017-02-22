@@ -34,7 +34,7 @@ namespace Orchard.Body.Handlers
 
                 var body = part.Body;
 
-                if (settings.RenderTokens)
+                if (settings.RenderTokens && !string.IsNullOrEmpty(body))
                 {
                     var tokenContext = _tokenizer.CreateViewModel().Content(part.ContentItem);
                     body = _tokenizer.Tokenize(body, tokenContext);

@@ -101,7 +101,7 @@ namespace Orchard.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId)
+        public async Task<dynamic> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -123,6 +123,7 @@ namespace Orchard.ContentManagement.Display
             var context = new BuildEditorContext(
                 itemShape,
                 groupId,
+                htmlFieldPrefix,
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -135,7 +136,7 @@ namespace Orchard.ContentManagement.Display
             return context.Shape;
         }
 
-        public async Task<dynamic> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupInfoId)
+        public async Task<dynamic> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
             {
@@ -154,7 +155,8 @@ namespace Orchard.ContentManagement.Display
 
             var context = new UpdateEditorContext(
                 itemShape,
-                groupInfoId,
+                groupId,
+                htmlFieldPrefix,
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -162,7 +164,7 @@ namespace Orchard.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            var updateContentContext = new UpdateContentContext(contentItem);
+            var updateContentContext = new UpdateContentContext(contentItem, updater);
 
             _contentHandlers.Invoke(handler => handler.Updating(updateContentContext), Logger);
 

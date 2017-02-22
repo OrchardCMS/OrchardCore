@@ -196,7 +196,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
 
-                var part = context.ContentItem.Get(partType, partName) as ContentPart; ;
+                var part = context.ContentItem.Get(partType, partName) as ContentPart;
 
                 if (part != null)
                 {

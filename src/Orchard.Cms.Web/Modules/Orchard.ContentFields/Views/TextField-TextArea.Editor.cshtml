@@ -8,21 +8,6 @@
 
 <fieldset class="form-group">
     <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Text" class="form-control"></textarea>
+    <textarea asp-for="Text" class="form-control content-preview-text"></textarea>
     <span class="hint">@settings.Hint</span>
 </fieldset>
-
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.Text)')
-        .on('input', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', function (event) {
-            // handle backspace
-            if (event.keyCode == 46) {
-                $(document).trigger('contentpreview:render');
-            }
-        });
-    });
-</script>

@@ -1,16 +1,25 @@
-﻿using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Html;
+using Orchard.DisplayManagement.Shapes;
 
 namespace Orchard.DisplayManagement
 {
-    public class PositionWrapper : IHtmlContent, IPositioned
+	public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
         private IHtmlContent _value;
         public string Position { get; set; }
 
-        public PositionWrapper(IHtmlContent value, string position)
+		public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
+
+		public string Id { get; set; }
+
+		public IList<string> Classes { get; }
+
+		public IDictionary<string, string> Attributes { get; }
+
+		public PositionWrapper(IHtmlContent value, string position)
         {
             _value = value;
             Position = position;

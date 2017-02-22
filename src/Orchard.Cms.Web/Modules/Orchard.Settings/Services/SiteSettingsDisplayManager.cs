@@ -55,6 +55,7 @@ namespace Orchard.Settings.Services
             var context = new BuildEditorContext(
                 itemShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater
@@ -77,6 +78,7 @@ namespace Orchard.Settings.Services
             var context = new UpdateEditorContext(
                 itemShape,
                 groupId,
+                "",
                 _shapeFactory,
                 _layoutAccessor.GetLayout(),
                 updater

@@ -5,7 +5,6 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
-
     <div class="row">
         <div class="form-group col-md-6" asp-validation-class-for="Name">
             <label asp-for="Name">@T["Name"]</label>
@@ -54,7 +53,7 @@
     </div>
 
     <fieldset class="row connectionString" asp-validation-class-for="ConnectionString">
-        <div class="form-group col-xs-12">
+        <div class="form-group col-md-12">
             <label asp-for="ConnectionString">@T["Connection string"]</label>
             <span asp-validation-for="ConnectionString" class="text-danger"></span>
             <input asp-for="ConnectionString" class="form-control" />

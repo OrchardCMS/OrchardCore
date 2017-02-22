@@ -2,7 +2,7 @@
   "version": "2.0.0-*",
   "dependencies": {
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
-    "YesSql.Core": "2.0.0-*"
+    "YesSql.Core": "2.0.0-beta-0011"
   },
   "buildOptions": {
     "debugType": "portable"

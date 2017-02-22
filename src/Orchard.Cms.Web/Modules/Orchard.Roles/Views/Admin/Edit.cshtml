@@ -4,11 +4,10 @@
 <h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1>
 
 <nav class="admin-toolbar">
-    <div class="nav navbar-nav">
-        <form class="form-inline float-xs-right" autocomplete="off">
-            <input id="search-box" class="form-control" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+    <ul class="navbar-nav mr-auto"></ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
         </form>
-    </div>
 </nav>
 
 <form asp-action="Edit" method="post">
@@ -20,20 +19,20 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="col-xs-10">@T["Permission"]</th>
-                            <th class="col-xs-1">@T["Allow"]</th>
-                            <th class="col-xs-1">@T["Effective"]</th>
+                            <th class="col-10">@T["Permission"]</th>
+                            <th class="col-1">@T["Allow"]</th>
+                            <th class="col-1">@T["Effective"]</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var permission in Model.RoleCategoryPermissions[category])
                         {
                             <tr data-text="@permission.Description">
-                                <td class="col-xs-10">@permission.Description</td>
-                                <td class="col-xs-1">
+                                <td class="col-10">@permission.Description</td>
+                                <td class="col-1">
                                     <input type="checkbox" value="true" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" />
                                 </td>
-                                <td class="col-xs-1">
+                                <td class="col-1">
                                     <input type="checkbox" disabled="disabled" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))" />
                                 </td>
                             </tr>
@@ -51,7 +50,6 @@
         </div>
     </fieldset>
 </form>
-
 
 <script at="Foot" type="text/javascript">
 //<![CDATA[

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
@@ -71,6 +73,11 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId)
         {
+            if (contentItemId == null)
+            {
+                throw new ArgumentNullException(nameof(contentItemId));
+            }
+
             return await GetAsync(contentItemId, VersionOptions.Published);
         }
 
@@ -233,6 +240,12 @@ namespace Orchard.ContentManagement
 
         public async Task UnpublishAsync(ContentItem contentItem)
         {
+            // This method needs to be called using the latest version
+            if (!contentItem.Latest)
+            {
+                throw new InvalidOperationException("Not the latest version.");
+            }
+
             ContentItem publishedItem;
             if (contentItem.Published)
             {
@@ -262,8 +275,8 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-
-            _session.Save(contentItem);
+            
+            _session.Save(publishedItem);
 
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
         }
@@ -299,7 +312,7 @@ namespace Orchard.ContentManagement
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.Latest = true;
-            buildingContentItem.Data = existingContentItem.Data;
+            buildingContentItem.Data = new JObject(existingContentItem.Data);
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
@@ -392,5 +405,29 @@ namespace Orchard.ContentManagement
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
         }
 
+        public async Task DiscardDraftAsync(ContentItem contentItem)
+        {
+            if (contentItem.Published || !contentItem.Latest)
+            {
+                throw new InvalidOperationException("Not a draft version.");
+            }
+
+            var context = new RemoveContentContext(contentItem);
+
+            Handlers.Invoke(handler => handler.Removing(context), _logger);
+
+            contentItem.Latest = false;
+            _session.Save(contentItem);
+
+            Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+
+            var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            if (publishedItem != null)
+            {
+                publishedItem.Latest = true;
+                _session.Save(publishedItem);
+            }
+        }
     }
 }

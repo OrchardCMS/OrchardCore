@@ -30,7 +30,8 @@ namespace Orchard.DisplayManagement.Zones
             var htmlContents = new List<IHtmlContent>();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
-            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab).ToList();
+
+            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab ?? "").ToList();
 
             if (tabbed.Count > 1)
             {

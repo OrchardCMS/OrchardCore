@@ -2,7 +2,7 @@
 @{
     var contentTypeClassName = ((string)Model.ContentItem.ContentType).HtmlClassify();
 }
-<article class="content-item @contentTypeClassName">
+<article class="content content-@contentTypeClassName">
     <header>
         @await DisplayAsync(Model.Header)
         @if (Model.Meta != null) {

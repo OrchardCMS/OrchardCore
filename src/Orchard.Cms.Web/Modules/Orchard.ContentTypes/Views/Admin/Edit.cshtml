@@ -34,10 +34,12 @@
                 @foreach (var field in orderedFields)
                 {
                     <li class="list-group-item">
-                        @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
-                        <div class="float-md-right">
-                            <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                            <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                        <div class="properties">
+                            <div class="related">
+                                <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                            </div>
+                            @field.DisplayName() <span class="hint">@T["— {0}", field.FieldDefinition.Name.CamelFriendly()]</span>
                         </div>
                         <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
                     </li>
@@ -54,25 +56,27 @@
         <ul class="list-group sortable" id="parts">
             @foreach (var part in orderedParts)
             {
-                <li class="list-group-item @(part == typePart ? " bg-faded" : null)" >
-                    @part.DisplayName()
+                <li class="list-group-item @(part == typePart ? " bg-faded" : null)">
+                    <div class="properties">
+                        @part.DisplayName()
 
-                    @if (part != typePart)
-                    {
-                        @if (!String.IsNullOrEmpty(part.Description()))
+                        @if (part != typePart)
                         {
-                            <span class="hint">@T["— {0}", part.Description()]</span>
-                        }
+                            @if (!String.IsNullOrEmpty(part.Description()))
+                            {
+                                <span class="hint">@T["— {0}", part.Description()]</span>
+                            }
 
-                        <div class="float-md-right">
-                            <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                            <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
-                        </div>
-                    }
-                    else
-                    {
-                        <span class="hint">@T["— Contains the fields for the current type"]</span>
-                    }
+                            <div class="related">
+                                <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@part.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="hint">@T["— Contains the fields for the current type"]</span>
+                        }
+                    </div>
                     <input type="hidden" asp-for="OrderedPartNames" value="@part.Name" />
                 </li>
             }
@@ -92,12 +96,10 @@
 </form>
 
 <script at="Foot" type="text/javascript">
-//<![CDATA[
-    $(function(){
+    //<![CDATA[
+    $(function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
     })
-//]]>
+    //]]>
 </script>
-
-

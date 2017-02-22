@@ -8,6 +8,7 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Contents.Services;
 using Orchard.ContentTypes.Editors;
+using Orchard.Core.XmlRpc;
 using Orchard.Data.Migration;
 using Orchard.Feeds;
 using Orchard.Lists.Drivers;

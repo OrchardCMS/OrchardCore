@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -39,7 +40,8 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
-            services.AddScoped<IExtensionOrderingStrategy, ThemeExtensionOrderingStrategy>();
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
@@ -47,8 +49,7 @@ namespace Orchard.DisplayManagement
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
 
-            services.AddScoped<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
-
+            services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
             return services;
         }
@@ -56,7 +57,6 @@ namespace Orchard.DisplayManagement
         public static IServiceCollection AddTheming(this IServiceCollection services)
         {
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
-            services.AddScoped<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 
             services.AddScoped<IShapeTableProvider, ShapeAttributeBindingStrategy>();
@@ -64,6 +64,7 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
             services.AddShapeAttributes<CoreShapes>();
+            services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
             services.AddShapeAttributes<ZoneShapes>();
             services.AddScoped<IShapeTableProvider, LayoutShapes>();
 
@@ -72,12 +73,14 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IThemeManager, ThemeManager>();
             services.AddScoped<IPageTitleBuilder, PageTitleBuilder>();
 
-            services.AddScoped<IShapeDisplay, ShapeDisplay>();
             services.AddScoped<IShapeFactory, DefaultShapeFactory>();
             services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
 
             services.AddScoped<INotifier, Notifier>();
             services.AddScoped<IFilterMetadata, NotifyFilter>();
+
+            services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
+            services.AddShapeAttributes<DateTimeShapes>();
 
             return services;
         }

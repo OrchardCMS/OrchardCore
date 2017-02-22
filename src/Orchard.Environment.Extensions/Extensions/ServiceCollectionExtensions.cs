@@ -18,7 +18,6 @@ namespace Orchard.Environment.Extensions
             string rootProbingName,
             string dependencyProbingDirectoryName)
         {
-            services.AddSingleton<IManifestBuilder, ManifestBuilder>();
             services.AddSingleton<IManifestProvider, ManifestProvider>();
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<ManifestOptions>, ManifestOptionsSetup>());
@@ -30,12 +29,15 @@ namespace Orchard.Environment.Extensions
                 services.AddSingleton<IFeaturesProvider, FeaturesProvider>();
 
                 services.TryAddEnumerable(
-                    ServiceDescriptor.Transient<IConfigureOptions<ExtensionOptions>, ExtensionOptionsSetup>());
+                    ServiceDescriptor.Transient<IConfigureOptions<ExtensionExpanderOptions>, ExtensionExpanderOptionsSetup>());
 
 
                 services.AddSingleton<IExtensionLoader, AmbientExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, DynamicExtensionLoader>();
                 services.AddSingleton<IExtensionLoader, PrecompiledExtensionLoader>();
+
+                services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
+                services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
 
                 services.Configure<ExtensionProbingOptions>(options =>
                 {
@@ -51,7 +53,6 @@ namespace Orchard.Environment.Extensions
 
         public static IServiceCollection AddExtensionManager(this IServiceCollection services)
         {
-            services.TryAddScoped<IFeaturesProvider, FeaturesProvider>();
             services.TryAddTransient<IFeatureHash, FeatureHash>();
 
             return services;
@@ -61,9 +62,9 @@ namespace Orchard.Environment.Extensions
             this IServiceCollection services,
             string subPath)
         {
-            return services.Configure<ExtensionOptions>(configureOptions: options =>
+            return services.Configure<ExtensionExpanderOptions>(configureOptions: options =>
             {
-                options.SearchPaths.Add(subPath);
+                options.Options.Add(new ExtensionExpanderOption { SearchPath = subPath });
             });
         }
     }

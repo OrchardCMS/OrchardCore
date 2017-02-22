@@ -49,8 +49,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             get
             {
-                EnsureShapeFactory();
-                return _shapeFactory;
+                return Factory;
             }
         }
 

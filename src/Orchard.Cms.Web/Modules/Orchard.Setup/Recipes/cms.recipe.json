@@ -41,12 +41,14 @@
         "Orchard.Deployment",
         "Orchard.Deployment.Remote",
         "Orchard.Feeds",
+        "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Lists",
         "Orchard.Menu",
         "Orchard.Title",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
+        "Orchard.Widgets",
 
         // Themes
         "TheTheme",
@@ -66,6 +68,84 @@
         "Controller": "Home",
         "Area": "Orchard.Demo"
       }
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Page",
+          "DisplayName": "Page",
+          "Hidden": false,
+          "Settings": {
+            "Creatable": "True",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "False",
+            "Stereotype": null
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "Page",
+              "Name": "Page",
+              "Settings": {
+                "Position": "2"
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "Pattern": "{{slug}}",
+                "AllowCustomPath": "True",
+                "ShowHomepageOption": "False",
+                "Position": "1"
+              }
+            },
+            {
+              "PartName": "BodyPart",
+              "Name": "BodyPart",
+              "Settings": {
+                "ContentIndexSettings": {
+                  "Included": false,
+                  "Stored": false,
+                  "Analyzed": false,
+                  "Sanitized": false,
+                  "Tokenized": false,
+                  "Template": null
+                },
+                "BodyPartSettings": {
+                  "RenderTokens": false,
+                  "Editor": "Wysiwyg"
+                },
+                "Position": "3"
+              }
+            },
+            {
+              "PartName": "TitlePart",
+              "Name": "TitlePart",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "Page",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+          ]
+        }
+      ]
     },
     {
       "name": "content",

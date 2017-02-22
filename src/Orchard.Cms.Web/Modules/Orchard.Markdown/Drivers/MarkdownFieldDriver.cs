@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Orchard.ContentFields.ViewModels;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
+using Orchard.Markdown.Fields;
+using Orchard.Markdown.ViewModels;
 
-namespace Orchard.ContentFields.Fields
+namespace Orchard.Markdown.Drivers
 {
     public class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<MarkdownField>
     {

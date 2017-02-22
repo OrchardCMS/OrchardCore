@@ -148,15 +148,12 @@ namespace Orchard.ContentManagement
         /// <returns><c>True</c> if the content has a draft, <c>False</c> otherwise.</returns>
         public static bool HasDraft(this IContent content)
         {
-            return content.ContentItem != null &&
-                   content.ContentItem.Published == false ||
-                   (content.ContentItem.Published && content.ContentItem.Latest == false);
+            return content.ContentItem != null && (!content.ContentItem.Published || !content.ContentItem.Latest);
         }
 
         public static bool IsNew(this IContent content)
         {
-            // TODO : How do I know if the content is new?
-            return content.ContentItem.Number == 0;
+            return content.ContentItem != null && content.ContentItem.Id == 0;
         }
     }
 }

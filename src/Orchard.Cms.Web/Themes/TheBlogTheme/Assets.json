@@ -2,7 +2,7 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/Less/clean-blog.less"
+      "Assets/Less/clean-blog.scss"
     ],
     "output": "Content/Styles/blog.css"
   },

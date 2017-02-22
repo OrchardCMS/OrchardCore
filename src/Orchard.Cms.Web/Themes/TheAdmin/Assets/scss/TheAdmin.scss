@@ -5,11 +5,10 @@
 
 @import "src/Orchard.Cms.Web/Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
 
-
 $top-nav-height: 55px;
 $left-navigation-width: 260px;
 $border-content: 1px solid rgba(0, 0, 0, 0.05);
-$link-padding: $font-size-root;
+$link-padding-left: 16px !default;
 
 // Layout
 // -----------------------------
@@ -18,20 +17,23 @@ $link-padding: $font-size-root;
 
     .ta-navbar-top {
         @extend .bg-faded;
-        @extend .navbar, .navbar-light, .navbar-fixed-top;
+        @extend .navbar, .navbar-toggleable-md, .navbar-light, .fixed-top;
         min-height: $top-nav-height;
+    }
+
+    .ta-navbar-brand {
+        @extend .navbar-brand;
+        margin-left: 4px;
     }
 
     // Menu toggling button
     #navbar-toggler {
-        @extend .navbar-toggler, .hidden-sm-up;
+        @extend .navbar-toggler, .navbar-toggler-right, .hidden-sm-up;
     }
-
     // Icons in the main nav bar
     #navbar-content {
         @extend .hidden-xs-down;
     }
-
     // The menu is hidden for sm
     #ta-left-sidebar {
         @extend .bg-faded;
@@ -42,34 +44,30 @@ $link-padding: $font-size-root;
         top: $top-nav-height;
         color: $gray-dark;
         border-right: $border-content;
-
         // Remove padding/margin from all uls
         ul {
-            margin:0;
-            padding:0;
+            margin: 0;
+            padding: 0;
         }
-
         // Rotate the chevron's icon when the menu is active
         input[type=checkbox]:checked + label > .chevron > i {
-            transform: rotate(-90deg);
+            transform: rotate(90deg);
             transition-duration: 0.2s;
         }
 
         input[type=checkbox] + label > .chevron > i {
             transition-duration: 0.2s;
         }
-
         // Hide native checkbox */
         input[type=checkbox] {
-	        position: absolute;
-	        opacity: 0;
+            position: absolute;
+            opacity: 0;
         }
 
         input[type=checkbox] + label + ul {
-            max-height:0;
+            max-height: 0;
             opacity: 0;
             transition: max-height 0.2s, opacity 0.2s, ease-in-out;
-
             // Hide chevrons when the containing ul is hidden
             li > label > .chevron {
                 display: none;
@@ -77,37 +75,35 @@ $link-padding: $font-size-root;
         }
 
         input[type=checkbox]:checked + label + ul {
-	        overflow-y: hidden;
-	        max-height: 500px; /* approximate max height */
+            overflow-y: hidden;
+            max-height: 500px; /* approximate max height */
             opacity: 1;
             transition: max-height 0.5s, opacity 0.5s, ease-in-out;
-
             // Hide chevrons when the containing ul is open
             li > label > .chevron {
                 display: block;
             }
         }
-
         // Make each line a block
         label, a {
-	        position: relative;
-	        display: block;
+            position: relative;
+            display: block;
             margin: 0;
         }
 
         nav > ul {
-                display: block;
-                white-space: nowrap;
+            display: block;
+            white-space: nowrap;
 
-                li {
-                    position: relative;
-                    margin: 0;
-                    padding: 0;
-                    display: list-item;
-                    list-style: none;
-                    line-height: 2.5em;
-                }
+            li {
+                position: relative;
+                margin: 0;
+                padding: 0;
+                display: list-item;
+                list-style: none;
+                line-height: 2.5em;
             }
+        }
 
         .chevron {
             float: right;
@@ -125,21 +121,34 @@ $link-padding: $font-size-root;
         li a:visited {
             color: $gray;
             text-decoration: none;
-            padding-left: $link-padding;
+            padding-left: $link-padding-left - 4px;
         }
-
         // Hovering the navigation items
         li a:hover, li label:hover {
             background-color: $gray;
             color: $gray-lightest;
-            border-left: 4px solid $gray-dark;
-            padding-left: $link-padding - 4px;
+        }
+        // Current page
+        li.active > a {
+            background-color: $gray-light;
+            //border-left: 4px solid $gray-dark;
+            color: $gray-lightest !important;
         }
 
-        // Current page
-        li.active > a  {
-            background-color: $gray-light;
-            color: $gray-lightest;
+        li ul > li > a,
+        li ul > li > label {
+            background-color: $gray-lighter;
+            color: $gray !important;
+            padding-left: 2 * $link-padding-left !important;
+        }
+
+        li ul > li > a:hover,
+        li ul > li > label:hover {
+            color: $gray-lightest !important;
+        }
+
+        li ul > li ul > li > a{
+            padding-left: 3 * $link-padding-left !important;
         }
     }
 
@@ -150,14 +159,13 @@ $link-padding: $font-size-root;
         padding-top: 1em;
         border-top: $border-content;
     }
-
     // When the screen is bigger than md, add a margin of the size of the menu
     @include media-breakpoint-up(sm) {
         .ta-content {
             margin-left: $left-navigation-width;
         }
     }
-    
+
     @include media-breakpoint-down(xs) {
         #ta-left-sidebar {
             left: -$left-navigation-width;
@@ -171,7 +179,6 @@ $link-padding: $font-size-root;
         .in {
             /*margin-left:0;*/
         }
-
     }
 }
 
@@ -184,7 +191,7 @@ $link-padding: $font-size-root;
 
 .validation-summary-errors {
     @extend .alert, .alert-danger;
-    padding-bottom:0;
+    padding-bottom: 0;
 }
 
 .field-validation-error {
@@ -216,7 +223,7 @@ label .field-validation-error::before {
 // ------------------------------
 
 .admin-toolbar {
-    @extend .navbar, .navbar-light, .bg-faded;
+    @extend .navbar, .navbar-toggleable-md, .navbar-light, .bg-faded;
     margin-bottom: 1em;
 }
 
@@ -262,29 +269,41 @@ ul.pager li a {
 // Sortable
 // ------------------------------
 
-.list-group.sortable li {
+.ui-sortable-handle {
     cursor: move;
+}
+
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+.properties {
+    @extend .w-100;
+}
+
+.related {
+    @extend .float-right;
 }
 
 // Responsive sizes
 // Creates mixins to target all breakpoints
 // ------------------------------
 .col-xs {
-    @extend .col-xs-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
+    @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
 }
 
 .col-sm {
-    @extend .col-xs-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
+    @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
 }
 
 .col-md {
-    @extend .col-xs-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
+    @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
 }
 
 .col-lg {
-    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
 }
 
 .col-xl {
-    @extend .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xs-12;
+    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
 }

@@ -8,5 +8,11 @@
       "Assets/Bootstrap/Js/bootstrap.js"
     ],
     "output": "Content/Scripts/bootstrap.js"
+  },
+  {
+    "inputs": [
+      "Assets/Bootstrap/Js/tether.js"
+    ],
+    "output": "Content/Scripts/tether.js"
   }
 ]

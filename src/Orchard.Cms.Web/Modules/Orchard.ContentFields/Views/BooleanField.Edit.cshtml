@@ -6,19 +6,10 @@
 
 <fieldset class="form-check">
     <label class="form-check-label">
-        <input asp-for="Value" type="checkbox" class="form-check-input" checked="@Model.Value" /> @settings.Label
+        <input asp-for="Value" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" /> @settings.Label
         @if (!String.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@T["— {0}", settings.Hint]</span>
         }
     </label>
 </fieldset>
-
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.Value)')
-        .change(function () {
-            $(document).trigger('contentpreview:render');
-        });
-    });
-</script>

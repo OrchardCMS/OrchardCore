@@ -43,7 +43,6 @@ namespace Orchard.Environment.Navigation
         {
             var menuItemShape = shapeFactory.NavigationItem()
                 .Text(menuItem.Text)
-                .Id(menuItem.Id)
                 .Href(menuItem.Href)
                 .LinkToFirstChild(menuItem.LinkToFirstChild)
                 .RouteValues(menuItem.RouteValues)
@@ -53,7 +52,9 @@ namespace Orchard.Environment.Navigation
                 .Level(parentShape.Level == null ? 1 : (int)parentShape.Level + 1)
                 .Local(menuItem.LocalNav);
 
-            ApplySelection(menuItem, menuItemShape, viewContext);
+			menuItemShape.Id = menuItem.Id;
+
+			ApplySelection(menuItem, menuItemShape, viewContext);
 
             foreach (var className in menuItem.Classes)
                 menuItemShape.Classes.Add(className);

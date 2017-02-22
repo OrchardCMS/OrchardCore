@@ -12,6 +12,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
 
     <script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script asp-src="/TheBlogTheme/Scripts/clean-blog.min.js" debug-src="/TheBlogTheme/Scripts/clean-blog.js" at="Foot"></script>
 
     <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
@@ -65,38 +66,7 @@
     <footer>
         <div class="container">
             <div class="row">
-
                 @await RenderSectionAsync("Footer", required: false)
-
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                    <ul class="list-inline text-center">
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                    <p class="copyright text-muted">Copyright © @site.SiteName @DateTime.Now.Year</p>
-                </div>
             </div>
         </div>
     </footer>

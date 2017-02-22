@@ -13,7 +13,7 @@ namespace Orchard.ContentTypes.Editors
             IShapeFactory shapeFactory,
             IShape layout,
             IUpdateModel updater)
-            : base(model, groupId, shapeFactory, layout, updater)
+            : base(model, groupId, "", shapeFactory, layout, updater)
         {
             Builder = builder;
         }

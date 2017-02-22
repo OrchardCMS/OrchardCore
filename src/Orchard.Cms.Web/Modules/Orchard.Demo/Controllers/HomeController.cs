@@ -23,7 +23,6 @@ namespace Orchard.Demo.Controllers
         private readonly ITestDependency _testDependency;
         private readonly IContentManager _contentManager;
         private readonly IEventBus _eventBus;
-        private readonly IShapeDisplay _shapeDisplay;
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly ITagCache _tagCache;
@@ -35,7 +34,6 @@ namespace Orchard.Demo.Controllers
             IContentManager contentManager,
             IEventBus eventBus,
             IShapeFactory shapeFactory,
-            IShapeDisplay shapeDisplay,
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
@@ -47,7 +45,6 @@ namespace Orchard.Demo.Controllers
             _testDependency = testDependency;
             _contentManager = contentManager;
             _eventBus = eventBus;
-            _shapeDisplay = shapeDisplay;
             Shape = shapeFactory;
             _logger = logger;
             _tagCache = tagCache;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.AspNetCore.Routing;
 using Orchard.ContentManagement.MetaData;
 
 namespace Orchard.ContentManagement.Display
@@ -18,9 +19,10 @@ namespace Orchard.ContentManagement.Display
         private const string ContentLinkDisplay = "display-for";
         private const string ContentLinkEdit = "edit-for";
         private const string ContentLinkRemove = "remove-for";
-        private const string ContentLinkCreate = "create-for";
+		private const string ContentLinkCreate = "create-for";
+		private const string RoutePrefix = "asp-route-";
 
-        private readonly IContentManager _contentManager;
+		private readonly IContentManager _contentManager;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -85,7 +87,9 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
+				ApplyRouteValues(tagHelperContext, metadata.DisplayRouteValues);
+
+				output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
             }
             else if (EditFor != null)
             {
@@ -97,7 +101,9 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
+				ApplyRouteValues(tagHelperContext, metadata.EditorRouteValues);
+
+				output.Attributes.SetAttribute("href", urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues));
             }
             else if (AdminFor != null)
             {
@@ -109,7 +115,9 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
+				ApplyRouteValues(tagHelperContext, metadata.AdminRouteValues);
+
+				output.Attributes.SetAttribute("href", urlHelper.Action(metadata.AdminRouteValues["action"].ToString(), metadata.AdminRouteValues));
             }
             else if (RemoveFor != null)
             {
@@ -121,7 +129,9 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
+				ApplyRouteValues(tagHelperContext, metadata.RemoveRouteValues);
+
+				output.Attributes.SetAttribute("href", urlHelper.Action(metadata.RemoveRouteValues["action"].ToString(), metadata.RemoveRouteValues));
             }
             else if (CreateFor != null)
             {
@@ -133,7 +143,9 @@ namespace Orchard.ContentManagement.Display
                     return;
                 }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
+				ApplyRouteValues(tagHelperContext, metadata.CreateRouteValues);
+
+				output.Attributes.SetAttribute("href", urlHelper.Action(metadata.CreateRouteValues["action"].ToString(), metadata.CreateRouteValues));
             }
 
             // A self closing anchor tag will be rendered using the display text
@@ -153,5 +165,16 @@ namespace Orchard.ContentManagement.Display
 
             return;
         }
+
+		private void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
+		{
+			foreach (var attribute in tagHelperContext.AllAttributes)
+			{
+				if (attribute.Name.StartsWith(RoutePrefix, System.StringComparison.OrdinalIgnoreCase))
+				{
+					route.Add(attribute.Name.Substring(RoutePrefix.Length), attribute.Value);
+				}
+			}
+		}
     }
 }

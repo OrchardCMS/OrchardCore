@@ -1,8 +1,8 @@
-﻿using Orchard.ContentFields.Fields;
-using Orchard.ContentManagement;
+﻿using Orchard.ContentManagement;
 using Orchard.ContentManagement.Metadata.Models;
+using Orchard.Markdown.Fields;
 
-namespace Orchard.ContentFields.ViewModels
+namespace Orchard.Markdown.ViewModels
 {
     public class EditMarkdownFieldViewModel
     {

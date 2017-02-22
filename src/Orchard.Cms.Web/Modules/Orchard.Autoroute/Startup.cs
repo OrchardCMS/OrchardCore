@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Autoroute.Drivers;
+using Orchard.Autoroute.Handlers;
 using Orchard.Autoroute.Indexing;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Routing;
@@ -16,10 +17,8 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
-using Orchard.Environment.Shell;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
-using Orchard.Title.Handlers;
 using Orchard.Tokens;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
@@ -42,6 +41,7 @@ namespace Orchard.Autoroute
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
+            services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
 
             services.AddNullTokenizer();
         }
