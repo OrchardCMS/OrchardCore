@@ -58,14 +58,15 @@ namespace Orchard.Themes.Controllers
 
         public async Task<ActionResult> Index()
         {
-            bool installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+            var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
             //&& _shellSettings.Name == ShellSettings.; // of the default tenant
             //&& _featureManager.GetEnabledFeatures().FirstOrDefault(f => f.Id == "PackagingServices") != null
 
             //var featuresThatNeedUpdate = _dataMigrationManager.GetFeaturesThatNeedUpdate();
 
             ThemeEntry currentSiteTheme = null;
-            IExtensionInfo currentSiteThemeExtensionInfo = await _siteThemeService.GetSiteThemeAsync();
+            var  currentSiteThemeExtensionInfo = await _siteThemeService.GetSiteThemeAsync();
+            
             if (currentSiteThemeExtensionInfo != null)
             {
                 currentSiteTheme = new ThemeEntry(currentSiteThemeExtensionInfo);
@@ -80,46 +81,44 @@ namespace Orchard.Themes.Controllers
             
             var features = _extensionManager.GetFeatures();
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var themes = features.Where(extensionDescriptor =>
+            {
+                //bool hidden = false;
+                //string tags = extensionDescriptor.Tags;
+                //if (tags != null)
+                //{
+                //    hidden = tags.Split(',').Any(t => t.Trim().Equals("hidden", StringComparison.OrdinalIgnoreCase));
+                //}
 
-            IEnumerable<ThemeEntry> themes = features
-                .Where(extensionDescriptor =>
+                /// is the theme allowed for this tenant ?
+                // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
+
+                //!hidden && allowed &&
+                return
+                        extensionDescriptor.Extension.Manifest.IsTheme() &&
+                        (currentSiteTheme == null || !currentSiteTheme.Extension.Id.Equals(extensionDescriptor.Id)) &&
+                        (currentAdminTheme == null || !currentAdminTheme.Extension.Id.Equals(extensionDescriptor.Id));
+            })
+            .Select(extensionDescriptor =>
+            {
+                var themeEntry = new ThemeEntry(extensionDescriptor.Extension)
                 {
-                    //bool hidden = false;
-                    //string tags = extensionDescriptor.Tags;
-                    //if (tags != null)
-                    //{
-                    //    hidden = tags.Split(',').Any(t => t.Trim().Equals("hidden", StringComparison.OrdinalIgnoreCase));
-                    //}
+                    //NeedsUpdate = featuresThatNeedUpdate.Contains(extensionDescriptor.Id),
+                    //IsRecentlyInstalled = _themeService.IsRecentlyInstalled(extensionDescriptor),
+                    Enabled = enabledFeatures.Any(x => x.Name == extensionDescriptor.Id),
+                    CanUninstall = installThemes
+                };
 
-                    //// is the theme allowed for this tenant ?
-                    // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
+                //if (_extensionDisplayEventHandler != null)
+                //{
+                //    foreach (string notification in _extensionDisplayEventHandler.Displaying(themeEntry.Descriptor, ControllerContext.RequestContext))
+                //    {
+                //        themeEntry.Notifications.Add(notification);
+                //    }
+                //}
 
-                    //!hidden && allowed &&
-                    return
-                            extensionDescriptor.Extension.Manifest.IsTheme() &&
-                            (currentSiteTheme == null || !currentSiteTheme.Extension.Id.Equals(extensionDescriptor.Id)) &&
-                            (currentAdminTheme == null || !currentAdminTheme.Extension.Id.Equals(extensionDescriptor.Id));
-                })
-                .Select(extensionDescriptor =>
-                {
-                    ThemeEntry themeEntry = new ThemeEntry(extensionDescriptor.Extension)
-                    {
-                        //NeedsUpdate = featuresThatNeedUpdate.Contains(extensionDescriptor.Id),
-                        //IsRecentlyInstalled = _themeService.IsRecentlyInstalled(extensionDescriptor),
-                        Enabled = enabledFeatures.Any(sf => sf.Name == extensionDescriptor.Id),
-                        CanUninstall = installThemes
-                    };
-
-                    //if (_extensionDisplayEventHandler != null)
-                    //{
-                    //    foreach (string notification in _extensionDisplayEventHandler.Displaying(themeEntry.Descriptor, ControllerContext.RequestContext))
-                    //    {
-                    //        themeEntry.Notifications.Add(notification);
-                    //    }
-                    //}
-
-                    return themeEntry;
-                });
+                return themeEntry;
+            });
 
             var model = new SelectThemesViewModel
             {

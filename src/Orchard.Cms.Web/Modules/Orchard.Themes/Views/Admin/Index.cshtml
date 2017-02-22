@@ -14,6 +14,7 @@
                         <p>@Model.CurrentSiteTheme.Extension.Manifest.Description</p>
                     </div>
                     <div class="card-footer text-muted text-xs-right">
+                        @T["This is the current front-end theme"]
                     </div>
                 </div>
             </div>
@@ -24,11 +25,12 @@
                     <p>@Model.CurrentAdminTheme.Extension.Manifest.Description</p>
                 </div>
                 <div class="card-footer text-muted text-xs-right">
+                    @T["This is the current admin theme"]
                 </div>
             </div>
         </div>
     </div>
-
+    <hr>
     @if (!Model.Themes.Any())
     {
         <p>@T["There are no themes installed."]</p>
@@ -46,7 +48,19 @@
                             <p>@themeEntry.Extension.Manifest.Description</p>
                         </div>
                         <div class="card-footer text-muted text-xs-right">
-                            <a class="btn btn-primary btn-sm" asp-route-action="SetCurrentSiteTheme" asp-route-id="@themeEntry.Extension.Id">@T["Set Current"]</a>
+                            <div class="btn-group">
+                                <a class="btn btn-primary btn-sm" asp-route-action="SetCurrentSiteTheme" asp-route-id="@themeEntry.Extension.Id">
+                                    @T["Set Current"]
+                                </a>
+                                <a class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" asp-route-action="SetCurrentSiteTheme" asp-route-id="@themeEntry.Extension.Id">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-route-action="SetCurrentSiteTheme" asp-route-id="@themeEntry.Extension.Id">@T["Site Theme"]</a></li>
+                                    <li><a class="dropdown-item" asp-route-action="SetCurrentAdminTheme" asp-route-id="@themeEntry.Extension.Id">@T["Admin Theme"]</a></li>
+                                </ul>
+                            </div>
                             @if (themeEntry.Enabled)
                             {
                                 <a asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id">@T["Disable"]</a> }
