@@ -149,7 +149,7 @@ namespace Orchard.Setup.Services
                         // unless the recipe is executing?
 
                         _logger.LogError("An error occurred while initializing the datastore.", e);
-                        context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore. Check error log for more details."]);
+                        context.Errors.Add("DatabaseProvider", T["An error occurred while initializing the datastore: {0}", e.Message]);
                         return null;
                     }
 
