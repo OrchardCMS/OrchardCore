@@ -40,10 +40,10 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("T", (output, context, arguments) =>
             {
-            output.WriteSafeString(
-                (new HandleBarsContext(context)
-                .T[arguments[0].ToString()])
-                .Value);
+                output.WriteSafeString(
+                    (new HandleBarsContext(context)
+                    .T[arguments[0].ToString()])
+                    .Value);
             });
 
             Handlebars.RegisterHelper("SiteName", async (output, context, arguments) =>
@@ -244,10 +244,18 @@ namespace Orchard.DisplayManagement.HandleBars
             {
                 var handleBarsContext = new HandleBarsContext(context);
 
-                var attributes = new TagHelperAttributeList(
-                    (arguments[0] as IDictionary<string, object>)
-                    .Select(x => new TagHelperAttribute(x.Key, x.Value))
-                    .ToList());
+                TagHelperAttributeList attributes;
+                if (arguments.Count() == 2)
+                {
+                    attributes = new TagHelperAttributeList();
+                    attributes.Add("at", arguments[0]);
+                }
+                else
+                {
+                    attributes = new TagHelperAttributeList(
+                        (arguments[0] as IDictionary<string, object>)
+                        .Select(x => new TagHelperAttribute(x.Key, x.Value)));
+                }
 
                 var scriptTagHelper = new ScriptTagHelper(handleBarsContext.GetService<IResourceManager>());
 
@@ -280,9 +288,15 @@ namespace Orchard.DisplayManagement.HandleBars
                     new Dictionary<object, object>(),
                     Guid.NewGuid().ToString("N"));
 
+                string content = String.Empty;
+                if (arguments.Count() == 2)
+                {
+                    content = arguments[1].ToString();
+                }
+
                 var tagHelperOutput = new TagHelperOutput("script", attributes,
                     getChildContentAsync: (useCachedResult, encoder) =>
-                        Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
+                        Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
 
                 scriptTagHelper.Process(tagHelperContext, tagHelperOutput);
             });
