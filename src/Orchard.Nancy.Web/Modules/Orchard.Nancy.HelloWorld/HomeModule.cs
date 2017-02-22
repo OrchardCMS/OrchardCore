@@ -1,4 +1,6 @@
-﻿namespace Orchard.Nancy.HelloWorld
+﻿using Nancy;
+
+namespace Orchard.Nancy.HelloWorld
 {
     public class HomeModule : NancyModule
     {
