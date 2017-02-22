@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +10,7 @@ namespace Orchard.Environment.Extensions.Manifests
         private readonly IConfigurationRoot _configurationRoot;
         private string _type;
         private Lazy<IEnumerable<string>> _tags;
+        private Lazy<Version> _version;
 
         public ManifestInfo
         (
@@ -21,12 +21,15 @@ namespace Orchard.Environment.Extensions.Manifests
             _configurationRoot = configurationRoot;
             _type = type;
             _tags = new Lazy<IEnumerable<string>>(ParseTags);
+            _version = new Lazy<Version>(ParseVersion);
         }
 
         public bool Exists => true;
         public string Name => _configurationRoot["name"];
         public string Description => _configurationRoot["description"];
         public string Type => _type;
+        public string Author => _configurationRoot["author"];
+        public Version Version => _version.Value;
         public IEnumerable<string> Tags => _tags.Value;
         public IConfigurationRoot ConfigurationRoot => _configurationRoot;
 
@@ -38,6 +41,18 @@ namespace Orchard.Environment.Extensions.Manifests
                 return Enumerable.Empty<string>();
 
             return tags.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+        }
+
+        private Version ParseVersion()
+        {
+            var value = _configurationRoot["version"];
+
+            if (string.IsNullOrWhiteSpace(value))
+                return new Version(0, 0);
+
+            Version version;
+            Version.TryParse(value, out version);
+            return version;
         }
     }
 }

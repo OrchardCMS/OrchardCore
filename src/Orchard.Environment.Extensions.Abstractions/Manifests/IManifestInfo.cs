@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
 namespace Orchard.Environment.Extensions
@@ -9,6 +10,8 @@ namespace Orchard.Environment.Extensions
         string Name { get; }
         string Description { get; }
         string Type { get; }
+        string Author { get; }
+        Version Version { get; }
         IEnumerable<string> Tags { get; }
         IConfigurationRoot ConfigurationRoot { get; }
     }

@@ -18,8 +18,12 @@ else
                 <div class="card">
                     <div class="card-block">
                         <h4 class="card-title">@themeEntry.Name</h4>
-                        @*@T["By"] @themeEntry.Extension.Manifest.Author*@
                         <p>@themeEntry.Extension.Manifest.Description</p>
+                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
+                        {
+                            <p><small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small></p>
+                        }
+                        <p><small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small></p>
                     </div>
                     <div class="card-footer text-muted text-xs-right">
                         @if (!themeEntry.IsCurrent)
