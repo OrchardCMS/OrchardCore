@@ -288,7 +288,7 @@
           "Name": "Container",
           "DisplayName": "Container",
           "Settings": {
-            "Creatable": "True",
+            "Creatable": "False",
             "Draftable": "True",
             "Listable": "True",
             "Securable": "True",
