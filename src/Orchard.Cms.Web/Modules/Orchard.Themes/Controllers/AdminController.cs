@@ -121,7 +121,7 @@ namespace Orchard.Themes.Controllers
             return View(model);
         }
 
-        //[HttpPost]
+        [HttpPost]
         public async Task<ActionResult> SetCurrentTheme(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , T["Couldn't set the current theme."]
@@ -160,7 +160,7 @@ namespace Orchard.Themes.Controllers
             return RedirectToAction("Index");
         }
         
-        //[HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Disable(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , T["Not allowed to apply theme."]
@@ -182,7 +182,7 @@ namespace Orchard.Themes.Controllers
             return RedirectToAction("Index");
         }
 
-        //[HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Enable(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , T["Not allowed to apply theme."]
