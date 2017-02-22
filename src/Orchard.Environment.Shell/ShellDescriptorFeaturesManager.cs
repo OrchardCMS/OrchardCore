@@ -95,10 +95,8 @@ namespace Orchard.Environment.Shell
 
             if (featuresToDisable.Count > 0)
             {
-                var leadedFeatures = await _extensionManager
-                    .LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
-
-                var enabledFeatures = leadedFeatures.Select(x => x.FeatureInfo).ToList();
+                var loadedFeatures = await _extensionManager.LoadFeaturesAsync(shellDescriptor.Features.Select(x => x.Id).ToArray());
+                var enabledFeatures = loadedFeatures.Select(x => x.FeatureInfo).ToList();
 
                 foreach (var feature in featuresToDisable)
                 {

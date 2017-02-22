@@ -27,12 +27,12 @@ namespace Orchard.Themes.Models {
         public IExtensionInfo Extension { get; set; }
 
         /// <summary>
-        /// Boolean value indicating wether the theme is enabled.
+        /// Boolean value indicating whether the theme is enabled.
         /// </summary>
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// Boolean value indicating wether the theme needs a data update / migration.
+        /// Boolean value indicating whether the theme needs a data update / migration.
         /// </summary>
         public bool NeedsUpdate { get; set; }
 
@@ -60,5 +60,15 @@ namespace Orchard.Themes.Models {
         /// The theme's name.
         /// </summary>
         public string Name { get { return Extension.Manifest.Name; } }
+
+        /// <summary>
+        /// Boolean value indicating whether this is an admin theme.
+        /// </summary>
+        public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// Boolean value indicating whether this is the current theme.
+        /// </summary>
+        public bool IsCurrent { get; set; }
     }
 }
