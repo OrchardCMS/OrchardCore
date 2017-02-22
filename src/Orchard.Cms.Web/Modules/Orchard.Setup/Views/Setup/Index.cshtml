@@ -95,6 +95,7 @@
         @if (Model.DatabaseProviderPreset)
         {
             <input asp-for="DatabaseProvider" type="hidden" />
+            <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
         }
         else
         {
@@ -106,6 +107,7 @@
                 <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
                 }
             </select>
+            <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
         </div>
         }
 
