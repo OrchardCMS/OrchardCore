@@ -8,7 +8,7 @@
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "NETStandard.Library": "1.6.1",
-    "Mvc.HelloWorld": "1.0.0-*"
+    "Orchard.Mvc.HelloWorld": "1.0.0-*"
   },
   "runtimeOptions": {
     "configProperties": {

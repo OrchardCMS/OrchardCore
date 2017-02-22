@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Nancy.Modules;
 using Microsoft.AspNetCore.Routing;
 
-namespace Nancy.HelloWorld
+namespace Orchard.Nancy.HelloWorld
 {
     public class Startup : StartupBase
     {
