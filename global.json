@@ -1,10 +1,12 @@
 {
-	"projects": [
-		"src",
-		"test",
-		"src/Orchard.Cms.Web/Modules",
-		"src/Orchard.Cms.Web/Themes"
-	],
+  "projects": [
+    "src",
+    "test",
+    "src/Orchard.Cms.Web/Modules",
+    "src/Orchard.Cms.Web/Themes",
+    "src/Orchard.Mvc.Web/Modules",
+    "src/Orchard.Nancy.Web/Modules"
+  ],
   "sdk": {
     "runtime": "coreclr",
     "architecture": "x64",
