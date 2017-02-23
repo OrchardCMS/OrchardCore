@@ -11,6 +11,7 @@ namespace Orchard.Environment.Extensions
         string Description { get; }
         string Type { get; }
         string Author { get; }
+        string Website { get; }
         Version Version { get; }
         IEnumerable<string> Tags { get; }
         IConfigurationRoot ConfigurationRoot { get; }

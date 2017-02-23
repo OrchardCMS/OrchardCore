@@ -29,6 +29,7 @@ namespace Orchard.Environment.Extensions.Manifests
         public string Description => _configurationRoot["description"];
         public string Type => _type;
         public string Author => _configurationRoot["author"];
+        public string Website => _configurationRoot["website"];
         public Version Version => _version.Value;
         public IEnumerable<string> Tags => _tags.Value;
         public IConfigurationRoot ConfigurationRoot => _configurationRoot;

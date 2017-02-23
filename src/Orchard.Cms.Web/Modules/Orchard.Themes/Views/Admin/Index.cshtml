@@ -22,9 +22,13 @@ else
                         <p>@themeEntry.Extension.Manifest.Description</p>
                         @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
                         {
-                            <p><small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small></p>
+                            <small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small><br />
                         }
-                        <p><small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small></p>
+                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
+                        {
+                            <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
+                        }
+                        <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
                     </div>
                     <div class="card-footer text-muted text-xs-right">
                         @if (!themeEntry.IsCurrent)

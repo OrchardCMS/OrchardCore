@@ -21,6 +21,7 @@ namespace Orchard.Environment.Extensions.Manifests
         public string Description => null;
         public string Type => null;
         public string Author => null;
+        public string Website => null;
         public Version Version => null;
         public IEnumerable<string> Tags => Enumerable.Empty<string>();
         public IConfigurationRoot ConfigurationRoot => null;
