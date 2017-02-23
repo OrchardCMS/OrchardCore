@@ -27,23 +27,29 @@ namespace Orchard.DisplayManagement.HandleBars
         {
             Handlebars.RegisterHelper("foreach", (output, options, context, arguments) =>
             {
-                foreach (var shape in (IEnumerable<dynamic>)arguments[0])
+                if (arguments.Any())
                 {
-                    if (shape is Shape)
+                    foreach (var shape in (IEnumerable<dynamic>)arguments[0])
                     {
-                        shape.DisplayContext = context.DisplayContext;
-                    }
+                        if (shape is Shape)
+                        {
+                            shape.DisplayContext = context.DisplayContext;
+                        }
 
-                    options.Template(output, shape);
+                        options.Template(output, shape);
+                    }
                 }
             });
 
             Handlebars.RegisterHelper("T", (output, context, arguments) =>
             {
-                output.WriteSafeString(
-                    (new HelperContext(context)
-                    .T[arguments[0].ToString()])
-                    .Value);
+                if (arguments.Any())
+                {
+                    output.WriteSafeString(
+                        (new HelperContext(context)
+                        .T[arguments[0].ToString()])
+                        .Value);
+                }
             });
 
             Handlebars.RegisterHelper("SiteName", async (output, context, arguments) =>
@@ -72,6 +78,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("menu", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 var attributes = new TagHelperAttributeList(
@@ -105,6 +116,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("form", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 var attributes = new TagHelperAttributeList(
@@ -120,26 +136,58 @@ namespace Orchard.DisplayManagement.HandleBars
                     };
 
                 TagHelperAttribute attribute;
+
+                if (attributes.TryGetAttribute("asp-action", out attribute))
+                {
+                    formTagHelper.Action = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
                 if (attributes.TryGetAttribute("asp-antiforgery", out attribute))
                 {
                     formTagHelper.Antiforgery = Convert.ToBoolean(attribute.Value);
                     attributes.Remove(attribute);
                 }
-                if (attributes.TryGetAttribute("asp-route-area", out attribute))
+
+                if (attributes.TryGetAttribute("asp-area", out attribute))
                 {
-                    formTagHelper.RouteValues.Add("area", attribute.Value.ToString());
+                    formTagHelper.Area = attribute.Value.ToString();
                     attributes.Remove(attribute);
                 }
+
+                if (attributes.TryGetAttribute("asp-fragment", out attribute))
+                {
+                    formTagHelper.Fragment = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
                 if (attributes.TryGetAttribute("asp-controller", out attribute))
                 {
                     formTagHelper.Controller = attribute.Value.ToString();
                     attributes.Remove(attribute);
                 }
 
-                if (attributes.TryGetAttribute("asp-action", out attribute))
+                if (attributes.TryGetAttribute("asp-route", out attribute))
                 {
-                    formTagHelper.Action = attribute.Value.ToString();
+                    formTagHelper.Route = attribute.Value.ToString();
                     attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-all-route-data", out attribute))
+                {
+                    formTagHelper.RouteValues = attribute.Value as IDictionary<string, string>;
+                    attributes.Remove(attribute);
+                }
+
+                foreach (var routeAttribute in attributes
+                    .Where(a => a.Name.StartsWith("asp-route-"))
+                    .ToList())
+                {
+                    formTagHelper.RouteValues.Add(
+                        routeAttribute.Name.Replace("asp-route-", String.Empty),
+                        routeAttribute.Value.ToString());
+
+                    attributes.Remove(routeAttribute);
                 }
 
                 var tagHelperContext = new TagHelperContext(attributes,
@@ -187,6 +235,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("a", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 var attributes = new TagHelperAttributeList(
@@ -244,10 +297,15 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("script", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 TagHelperAttributeList attributes;
-                if (arguments.Count() == 2)
+                if (arguments.Count() > 1)
                 {
                     attributes = new TagHelperAttributeList();
                     attributes.Add("at", arguments[0]);
@@ -268,9 +326,57 @@ namespace Orchard.DisplayManagement.HandleBars
                     attributes.Remove(attribute);
                 }
 
+                if (attributes.TryGetAttribute("asp-src", out attribute))
+                {
+                    scriptTagHelper.Src = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("cdn-src", out attribute))
+                {
+                    scriptTagHelper.CdnSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug-src", out attribute))
+                {
+                    scriptTagHelper.DebugSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug-cdn-src", out attribute))
+                {
+                    scriptTagHelper.DebugCdnSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
                 if (attributes.TryGetAttribute("use-cdn", out attribute))
                 {
                     scriptTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("condition", out attribute))
+                {
+                    scriptTagHelper.Condition = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("culture", out attribute))
+                {
+                    scriptTagHelper.Culture = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug", out attribute))
+                {
+                    scriptTagHelper.Debug = Convert.ToBoolean(attribute.Value);
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("depend-on", out attribute))
+                {
+                    scriptTagHelper.DependsOn = attribute.Value.ToString();
                     attributes.Remove(attribute);
                 }
 
@@ -287,7 +393,7 @@ namespace Orchard.DisplayManagement.HandleBars
                 }
 
                 string content = String.Empty;
-                if (arguments.Count() == 2)
+                if (arguments.Count() > 1)
                 {
                     content = arguments[1].ToString();
                 }
@@ -305,6 +411,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("style", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 var attributes = new TagHelperAttributeList(
@@ -319,9 +430,57 @@ namespace Orchard.DisplayManagement.HandleBars
                     styleTagHelper.Name = attribute.Value.ToString();
                 }
 
+                if (attributes.TryGetAttribute("asp-src", out attribute))
+                {
+                    styleTagHelper.Src = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("cdn-src", out attribute))
+                {
+                    styleTagHelper.CdnSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug-src", out attribute))
+                {
+                    styleTagHelper.DebugSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug-cdn-src", out attribute))
+                {
+                    styleTagHelper.DebugCdnSrc = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
                 if (attributes.TryGetAttribute("use-cdn", out attribute))
                 {
                     styleTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
+                }
+
+                if (attributes.TryGetAttribute("condition", out attribute))
+                {
+                    styleTagHelper.Condition = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("culture", out attribute))
+                {
+                    styleTagHelper.Culture = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("debug", out attribute))
+                {
+                    styleTagHelper.Debug = Convert.ToBoolean(attribute.Value);
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("dependencies", out attribute))
+                {
+                    styleTagHelper.Dependencies = attribute.Value.ToString();
+                    attributes.Remove(attribute);
                 }
 
                 if (attributes.TryGetAttribute("version", out attribute))
@@ -347,6 +506,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("resources", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var helperContext = new HelperContext(context);
 
                 var attributes = new TagHelperAttributeList(
@@ -382,6 +546,11 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("RenderTitleSegments", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
                 var content =
                     new HelperContext(context)
                     .RenderTitleSegments(
@@ -398,11 +567,14 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("RenderSectionAsync", async (output, context, arguments) =>
             {
-                output.WriteSafeString(
-                    await new HelperContext(context)
-                    .RenderSectionAsync(
-                        arguments[0].ToString(),
-                        Convert.ToBoolean(arguments[1])));
+                if (arguments.Any())
+                {
+                    output.WriteSafeString(
+                        await new HelperContext(context)
+                        .RenderSectionAsync(
+                            arguments[0].ToString(),
+                            Convert.ToBoolean(arguments[1])));
+                }
             });
 
             Handlebars.RegisterHelper("RenderBodyAsync", async (output, context, arguments) =>
@@ -419,7 +591,10 @@ namespace Orchard.DisplayManagement.HandleBars
 
             Handlebars.RegisterHelper("SetMetadataType", (output, context, arguments) =>
             {
-                context.Model.Metadata.Type = arguments[0].ToString();
+                if (arguments.Any())
+                {
+                    context.Model.Metadata.Type = arguments[0].ToString();
+                }
             });
 
             Handlebars.RegisterHelper("DisplayAsync", async (output, context, arguments) =>
@@ -427,41 +602,99 @@ namespace Orchard.DisplayManagement.HandleBars
                 output.WriteSafeString(
                     await new HelperContext(context)
                     .DisplayAsync(
-                        arguments.Count() > 0 ? arguments[0] : (object)context));
+                        arguments.Any() ? arguments[0] : (object)context));
             });
 
             Handlebars.RegisterHelper("UrlContent", (output, context, arguments) =>
             {
-                output.WriteSafeString(
-                    new HelperContext(context)
-                    .Url.Content(
-                        arguments[0].ToString()));
+                if (arguments.Any())
+                {
+                    output.WriteSafeString(
+                        new HelperContext(context)
+                        .Url.Content(
+                            arguments[0].ToString()));
+                }
             });
 
             Handlebars.RegisterHelper("UrlAction", (output, context, arguments) =>
             {
+                if (!arguments.Any())
+                {
+                    return;
+                }
+
+                var attributes = arguments[0] as IDictionary<string, object>;
+
+                object action;
+                if (attributes.TryGetValue("action", out action))
+                {
+                    attributes.Remove("action");
+                }
+
+                object controller;
+                if (attributes.TryGetValue("controller", out controller))
+                {
+                    attributes.Remove("controller");
+                }
+
                 output.WriteSafeString(
                     new HelperContext(context)
                     .Url.Action(
-                        action: arguments[0].ToString(),
-                        controller: arguments[1].ToString(),
-                        values: arguments.Count() > 2 ? arguments[2] : new { }));
+                        action: action?.ToString(),
+                        controller: controller?.ToString(),
+                        values: attributes));
             });
 
             Handlebars.RegisterHelper("HtmlRaw", (output, context, arguments) =>
             {
-                output.WriteSafeString(arguments[0].ToString());
+                if (arguments.Any())
+                {
+                    output.WriteSafeString(arguments[0].ToString());
+                }
             });
 
             Handlebars.RegisterHelper("HtmlActionLink", (output, context, arguments) =>
             {
+                if (arguments.Count() < 2)
+                {
+                    return;
+                }
+
+                var attributes = arguments[1] as IDictionary<string, object>;
+
+                object action;
+                if (attributes.TryGetValue("action", out action))
+                {
+                    attributes.Remove("action");
+                }
+
+                object controller;
+                if (attributes.TryGetValue("controller", out controller))
+                {
+                    attributes.Remove("controller");
+                }
+
+                object area;
+                if (attributes.TryGetValue("area", out area))
+                {
+                    attributes.Remove("area");
+                }
+
+                var routesValues = new Dictionary<string, object>();
+
+                if (area != null)
+                {
+                    routesValues.Add("area", area);
+                }
+
                 var content =
                     new HelperContext(context)
                     .Html.ActionLink(
                         linkText: arguments[0].ToString(),
-                        actionName: arguments[1].ToString(),
-                        routeValues: new { },
-                        htmlAttributes: arguments.Count() > 2 ? arguments[2] : new { });
+                        actionName: action?.ToString(),
+                        controllerName: controller?.ToString(),
+                        routeValues: routesValues,
+                        htmlAttributes: attributes);
 
                 using (var writer = new StringWriter())
                 {
