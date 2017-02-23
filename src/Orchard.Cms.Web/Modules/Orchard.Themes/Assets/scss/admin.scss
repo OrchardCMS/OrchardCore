@@ -1,0 +1,12 @@
+@import "../../../Orchard.Resources/Assets/Bootstrap/scss/variables";
+
+.theme-card {
+    margin-bottom: 15px;
+
+    .card-theme-thumbnail {
+        height: 200px;
+        background-color: $gray-lightest;
+        background-size: cover;
+        border-bottom: 1px solid $gray-lightest;
+    }
+}
