@@ -190,6 +190,15 @@ namespace Orchard.DisplayManagement.HandleBars
                     attributes.Remove(routeAttribute);
                 }
 
+                if (attributes.TryGetAttribute("method", out attribute))
+                {
+                    if (!formTagHelper.Antiforgery.HasValue)
+                    {
+                        formTagHelper.Antiforgery = !attribute.Value.ToString()
+                            .Equals("get", StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+
                 var tagHelperContext = new TagHelperContext(attributes,
                     new Dictionary<object, object>(),
                     Guid.NewGuid().ToString("N"));
@@ -255,21 +264,63 @@ namespace Orchard.DisplayManagement.HandleBars
                     };
 
                 TagHelperAttribute attribute;
-                if (attributes.TryGetAttribute("asp-route-area", out attribute))
+                if (attributes.TryGetAttribute("asp-action", out attribute))
                 {
-                    anchorTagHelper.RouteValues.Add("area", attribute.Value.ToString());
+                    anchorTagHelper.Action = attribute.Value.ToString();
                     attributes.Remove(attribute);
                 }
+
                 if (attributes.TryGetAttribute("asp-controller", out attribute))
                 {
                     anchorTagHelper.Controller = attribute.Value.ToString();
                     attributes.Remove(attribute);
                 }
 
-                if (attributes.TryGetAttribute("asp-action", out attribute))
+                if (attributes.TryGetAttribute("asp-area", out attribute))
                 {
-                    anchorTagHelper.Action = attribute.Value.ToString();
+                    anchorTagHelper.Area = attribute.Value.ToString();
                     attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-fragment", out attribute))
+                {
+                    anchorTagHelper.Fragment = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-host", out attribute))
+                {
+                    anchorTagHelper.Host = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-protocol", out attribute))
+                {
+                    anchorTagHelper.Protocol = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-route", out attribute))
+                {
+                    anchorTagHelper.Route = attribute.Value.ToString();
+                    attributes.Remove(attribute);
+                }
+
+                if (attributes.TryGetAttribute("asp-all-route-data", out attribute))
+                {
+                    anchorTagHelper.RouteValues = attribute.Value as IDictionary<string, string>;
+                    attributes.Remove(attribute);
+                }
+
+                foreach (var routeAttribute in attributes
+                    .Where(a => a.Name.StartsWith("asp-route-"))
+                    .ToList())
+                {
+                    anchorTagHelper.RouteValues.Add(
+                        routeAttribute.Name.Replace("asp-route-", String.Empty),
+                        routeAttribute.Value.ToString());
+
+                    attributes.Remove(routeAttribute);
                 }
 
                 var tagHelperContext = new TagHelperContext(attributes,
