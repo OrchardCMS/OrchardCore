@@ -3,10 +3,15 @@
 .theme-card {
     margin-bottom: 15px;
 
+    .card-title {
+        margin: 1.25rem;
+    }
+
     .card-theme-thumbnail {
         height: 200px;
         background-color: $gray-lightest;
         background-size: cover;
+        border-top: 1px solid $gray-lightest;
         border-bottom: 1px solid $gray-lightest;
     }
 }
