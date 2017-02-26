@@ -15,7 +15,7 @@ namespace Orchard.DependencyInjection
         public static IServiceCollection CreateChildContainer(this IServiceProvider serviceProvider, IServiceCollection serviceCollection)
         {
             IServiceCollection clonedCollection = new ServiceCollection();
-            var serviceTypeNames = new HashSet<string>();
+            var serviceTypes = new HashSet<Type>();
 
             foreach (var service in serviceCollection)
             {
@@ -39,17 +39,19 @@ namespace Orchard.DependencyInjection
                         // It will be shared by all tenant service providers.
                         clonedCollection.AddSingleton(service.ServiceType, serviceProvider.GetService(service.ServiceType));
 
-                        var ienumerableType = typeof(IEnumerable<>).MakeGenericType(service.ServiceType);
-
-                        if (!serviceTypeNames.Add(service.ServiceType.Name) && serviceTypeNames.Add(ienumerableType.FullName))
+                        if (!serviceTypes.Add(service.ServiceType))
                         {
-                            clonedCollection.AddSingleton(ienumerableType, serviceProvider.GetServices(service.ServiceType));
+                            var serviceType = typeof(IEnumerable<>).MakeGenericType(service.ServiceType);
+
+                            if (serviceTypes.Add(serviceType))
+                            {
+                                clonedCollection.AddSingleton(serviceType, serviceProvider.GetServices(service.ServiceType));
+                            }
                         }
 
                         // Ideally the service should be resolved when first requested, but ASp.NET DI will call Dispose()
                         // and this would fail reusability of the instance across tenants' containers.
                         //clonedCollection.AddSingleton(service.ServiceType, sp => serviceProvider.GetService(service.ServiceType));
-
                     }
                 }
                 else
