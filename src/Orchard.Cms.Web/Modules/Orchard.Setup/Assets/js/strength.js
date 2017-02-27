@@ -21,7 +21,7 @@
         var upperCase = new RegExp('[A-Z]');
         var lowerCase = new RegExp('[a-z]');
         var number = new RegExp('[0-9]');
-        var specialchar = new RegExp('([!,%,&,@,#,$,^,*,?,_,~])');
+        var specialchar = new RegExp('[^A-Za-z0-9]');
 
         createProgressBar(0, '');
 
@@ -48,26 +48,19 @@
 
         function checkStrength(value) {
 
-            console.log('val: ' + value);
-
             minLength = value.length >= settings.minLength ? 1 : 0;
             capitalletters = !settings.upperCase || value.match(upperCase) ? 1 : 0;
             lowerletters = !settings.lowerCase || value.match(lowerCase) ? 1 : 0;
             numbers = !settings.numbers || value.match(number) ? 1 : 0;
             specialchars = !settings.specialchars || value.match(specialchar) ? 1 : 0;
 
-            console.log({ 'capitalletter': capitalletters, 'lowerletters': lowerletters, 'numbers': numbers, 'specialchars': specialchars });
-
             var total = minLength + capitalletters + lowerletters + numbers + specialchars;
             var percentage = getPercentage(5, total);
-
-            console.log({ 'total': total, 'percentage': percentage });
 
             createProgressBar(percentage, getLevel(percentage));
         }
 
         function createProgressBar(percentage, level) {
-            console.log([percentage, level]);
             var el = $('<div class="progress" value="' + percentage + '" style="' + settings.style + '" max="100" aria-describedby=""><div class="progress-bar ' + level + '" role="progress-bar" style="width: ' + percentage + '%;"></div></div>');
             var target = $(settings.target);
             target.empty();
