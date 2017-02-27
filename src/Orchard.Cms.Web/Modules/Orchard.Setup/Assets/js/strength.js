@@ -21,7 +21,7 @@
         var upperCase = new RegExp('[A-Z]');
         var lowerCase = new RegExp('[a-z]');
         var number = new RegExp('[0-9]');
-        var specialchar = new RegExp('([!,%,&,@,#,$,^,*,?,_,~,",£,(,)])');
+        var specialchar = new RegExp('[^A-Za-z0-9]');
 
         createProgressBar(0, '');
 
