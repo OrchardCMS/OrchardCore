@@ -1,23 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
-using Orchard.Environment.Shell.Builders.Models;
-
-using Microsoft.AspNetCore.Mvc.Internal;
 using Orchard.Environment.Extensions;
-using Microsoft.AspNetCore.Hosting;
-using System;
+using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-	/// <summary>
-	/// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
-	/// </summary>
-	public class ShellFeatureApplicationPart :
+    /// <summary>
+    /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
+    /// </summary>
+    public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
