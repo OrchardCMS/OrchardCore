@@ -3,9 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -13,7 +11,6 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -34,16 +31,21 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
-            IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
+            //IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IHostingEnvironment hostingEnvironment,
-            ILogger<DefaultShapeTableManager> logger)
+            IServiceCollection services,
+            ILogger<ShapeTemplateBindingStrategy> logger)
         {
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
-            _shapeTemplateViewEngines = shapeTemplateViewEngines;
+            //_shapeTemplateViewEngines = shapeTemplateViewEngines;
             _hostingEnvironment = hostingEnvironment;
             _logger = logger;
+
+            var serviceProvider = services.BuildServiceProvider();
+            _shapeTemplateViewEngines = serviceProvider.GetServices<IShapeTemplateViewEngine>();
+            (serviceProvider as IDisposable)?.Dispose();
         }
 
         public bool DisableMonitoring { get; set; }

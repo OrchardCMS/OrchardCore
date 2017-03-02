@@ -1,0 +1,12 @@
+﻿{{ClearAlternates}}
+{{SetMetadataType "MenuItemLink"}}
+
+{{#if Model.HasItems}}
+    <li  class="dropdown">
+        {{DisplayAsync Model}}
+    </li>
+{{else}}
+    <li>
+        {{DisplayAsync Model}}
+    </li>
+{{/if}}
