@@ -138,9 +138,7 @@ namespace Orchard.Environment.Extensions
 
                         var manifestFilesubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name, manifestConfiguration.ManifestFileName);
                         var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
-
-                        IConfigurationBuilder configurationBuilder =
-                            _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
+                        var configurationBuilder = _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
 
                         if (!configurationBuilder.Sources.Any())
                         {
@@ -148,12 +146,10 @@ namespace Orchard.Environment.Extensions
                         }
 
                         var configurationRoot = configurationBuilder.Build();
-
                         var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
 
-                        // Manifest tells you what your loading, subpath is where you are loading it
-                        var extensionInfo = _extensionProvider
-                            .GetExtensionInfo(manifestInfo, manifestsubPath);
+                        // Manifest tells you what you're loading, subpath is where you are loading it.
+                        var extensionInfo = _extensionProvider.GetExtensionInfo(manifestInfo, manifestsubPath);
 
                         extensionsById.Add(extensionInfo.Id, extensionInfo);
                     }

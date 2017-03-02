@@ -2,7 +2,6 @@
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
-Version: 2.0.x
-OrchardVersion: 2.0.x
-Description: A theme adapted for blogs
-FeatureDescription: The Blog Theme
+Version: 2.0.0
+OrchardVersion: 2.0.0
+Description: A theme adapted for blogs.
