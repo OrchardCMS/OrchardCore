@@ -7,6 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Shell.Builders.Models;
 
+using Microsoft.AspNetCore.Mvc.Internal;
+using Orchard.Environment.Extensions;
+using Microsoft.AspNetCore.Hosting;
+using System;
+
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
 	/// <summary>
@@ -17,10 +22,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
     {
-		private static IEnumerable<string> _referencePaths;
-		private static object _synLock = new object();
+        private static IEnumerable<string> _referencePaths;
+        private static IEnumerable<Type> _applicationTypes;
+        private static object _synLock = new object();
 
-		private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 		/// <summary>
 		/// Initalizes a new <see cref="AssemblyPart"/> instance.
@@ -28,7 +34,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 		/// <param name="assembly"></param>
 		public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
-			_httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor;
 		}
 
 		public override string Name
@@ -44,8 +50,19 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-				var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
-				return shellBluePrint.Dependencies.Keys.Select(type => type.GetTypeInfo());
+                var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+                var extensionManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionManager>();
+
+                var excludedTypes = extensionManager
+                    .LoadFeaturesAsync().GetAwaiter().GetResult()
+                    .Except(shellBluePrint.Dependencies.Values.Distinct())
+                    .SelectMany(f => f.ExportedTypes);
+
+                var types = GetApplicationTypes()
+                    .Except(excludedTypes)
+                    .Select(type => type.GetTypeInfo());
+
+                return types;
 			}
         }
 
@@ -69,6 +86,31 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 			}
 
 			return _referencePaths;
+        }
+
+        /// <inheritdoc />
+        private IEnumerable<Type> GetApplicationTypes()
+        {
+            if (_applicationTypes != null)
+            {
+                return _applicationTypes;
+            }
+
+            lock (_synLock)
+            {
+                if (_applicationTypes != null)
+                {
+                    return _applicationTypes;
+                }
+                var hostingEnvironment = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IHostingEnvironment>();
+
+                _applicationTypes = DefaultAssemblyPartDiscoveryProvider
+                    .DiscoverAssemblyParts(hostingEnvironment.ApplicationName)
+                    .Where(p => p is AssemblyPart)
+                    .SelectMany(p => (p as AssemblyPart).Assembly.ExportedTypes);
+            }
+
+            return _applicationTypes;
         }
     }
 }
