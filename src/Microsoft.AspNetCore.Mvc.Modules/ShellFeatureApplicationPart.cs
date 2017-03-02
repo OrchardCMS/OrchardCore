@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         ICompilationReferencesProvider
     {
         private static IEnumerable<string> _referencePaths;
-        private static IEnumerable<Type> _applicationTypes;
+        private static IEnumerable<TypeInfo> _applicationTypes;
         private static object _synLock = new object();
 
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -49,19 +49,20 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                var shellBluePrint = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
-                var extensionManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionManager>();
+                var shellBluePrint = _httpContextAccessor.HttpContext
+                    .RequestServices.GetRequiredService<ShellBlueprint>();
+
+                var extensionManager = _httpContextAccessor.HttpContext
+                    .RequestServices.GetRequiredService<IExtensionManager>();
 
                 var excludedTypes = extensionManager
                     .LoadFeaturesAsync().GetAwaiter().GetResult()
                     .Except(shellBluePrint.Dependencies.Values.Distinct())
-                    .SelectMany(f => f.ExportedTypes);
-
-                var types = GetApplicationTypes()
-                    .Except(excludedTypes)
+                    .SelectMany(f => f.ExportedTypes)
                     .Select(type => type.GetTypeInfo());
 
-                return types;
+                return GetApplicationTypes()
+                    .Except(excludedTypes);
 			}
         }
 
@@ -88,7 +89,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         }
 
         /// <inheritdoc />
-        private IEnumerable<Type> GetApplicationTypes()
+        private IEnumerable<TypeInfo> GetApplicationTypes()
         {
             if (_applicationTypes != null)
             {
@@ -101,12 +102,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 {
                     return _applicationTypes;
                 }
-                var hostingEnvironment = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IHostingEnvironment>();
+                var hostingEnvironment = _httpContextAccessor.HttpContext
+                    .RequestServices.GetRequiredService<IHostingEnvironment>();
 
                 _applicationTypes = DefaultAssemblyPartDiscoveryProvider
                     .DiscoverAssemblyParts(hostingEnvironment.ApplicationName)
                     .Where(p => p is AssemblyPart)
-                    .SelectMany(p => (p as AssemblyPart).Assembly.ExportedTypes);
+                    .SelectMany(p => (p as AssemblyPart).Assembly.ExportedTypes)
+                    .Select(type => type.GetTypeInfo());
             }
 
             return _applicationTypes;
