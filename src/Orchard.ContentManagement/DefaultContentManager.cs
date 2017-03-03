@@ -113,6 +113,12 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsLatest)
             {
+                // Check if the latest is already loaded
+                if (_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    return contentItem;
+                }
+
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
@@ -130,19 +136,23 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefault();
+                // Check if the latest is already loaded
+                if (!_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    // Loaded whatever is the latest as it will be cloned
+                    contentItem = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Latest == true)
+                        .FirstOrDefault();
+                }
             }
             else if (options.IsPublished)
             {
                 // If the published version is requested and is already loaded, we can
                 // return it right away
-                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
                 }
@@ -155,33 +165,10 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
-            // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
-            ContentItem recalled = null;
-            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
-            {
-                // store in session prior to loading to avoid some problems with simple circular dependencies
-                _contentManagerSession.Store(contentItem);
-
-                // create a context with a new instance to load
-                var context = new LoadContentContext(contentItem);
-
-                // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
-
-                contentItem = context.ContentItem;
-            }
-            else
-            {
-                contentItem = recalled;
-            }
+            contentItem = Load(contentItem);
 
             if (options.IsDraftRequired)
             {
@@ -199,6 +186,31 @@ namespace Orchard.ContentManagement
             }
 
             return contentItem;
+        }
+
+        private ContentItem Load(ContentItem contentItem)
+        {
+            // Return item if obtained earlier in session
+            // If IsPublished or IsLatest is required then the test has already been checked before
+            ContentItem recalled = null;
+            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
+            {
+                // store in session prior to loading to avoid some problems with simple circular dependencies
+                _contentManagerSession.Store(contentItem);
+
+                // create a context with a new instance to load
+                var context = new LoadContentContext(contentItem);
+
+                // invoke handlers to acquire state, or at least establish lazy loading callbacks
+                Handlers.Invoke(handler => handler.Loading(context), _logger);
+                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
+
+                return context.ContentItem;
+            }
+            else
+            {
+                return recalled;
+            }
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -276,7 +288,7 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-            
+
             _session.Save(publishedItem);
 
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
