@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 
 namespace Lucene.Controllers
 {

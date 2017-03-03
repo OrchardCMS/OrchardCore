@@ -6,14 +6,23 @@
     "Microsoft.Extensions.Logging.Abstractions": "1.1.0",
     "Orchard.BackgroundTasks.Abstractions": "2.0.0-*",
     "Orchard.Hosting": "2.0.0-*",
-    "System.Reflection.Extensions": "4.3.0"
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
-    "debugType": "portable"
+    "define": [ "TRACE" ],
+    "debugType": "portable",
+    "warningsAsErrors": true
   },
   "frameworks": {
     "netstandard1.6": {
-      "imports": "dnxcore50"
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

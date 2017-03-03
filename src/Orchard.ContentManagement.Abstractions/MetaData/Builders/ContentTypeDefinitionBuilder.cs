@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.Metadata.Models;
 
 namespace Orchard.ContentManagement.Metadata.Builders

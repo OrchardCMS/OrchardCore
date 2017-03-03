@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
@@ -21,6 +21,7 @@ namespace Orchard.Commons
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddThemingHost();
             services.AddDeferredTasks();
             services.AddDataAccess();
             services.AddBackgroundTasks();
@@ -35,7 +36,7 @@ namespace Orchard.Commons
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             // TODO: Order to be the late in the return pipeline
-            app.UseMiddleware<DeferredTaskMiddleware>();
+            app.AddDeferredTasks();
         }
     }
 }

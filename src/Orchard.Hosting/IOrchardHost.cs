@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
-using System.Threading.Tasks;
 
 namespace Orchard.Hosting
 {

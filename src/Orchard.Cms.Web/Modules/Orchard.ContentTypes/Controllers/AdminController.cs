@@ -16,10 +16,10 @@ using Orchard.ContentTypes.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Shell;
-using Orchard.Mvc;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
 
 namespace Orchard.ContentTypes.Controllers
 {

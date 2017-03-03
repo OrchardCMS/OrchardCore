@@ -1,7 +1,11 @@
 {
   "projects": [
     "src",
-    "test"
+    "test",
+    "src/Orchard.Cms.Web/Modules",
+    "src/Orchard.Cms.Web/Themes",
+    "src/Orchard.Mvc.Web/Modules",
+    "src/Orchard.Nancy.Web/Modules"
   ],
   "sdk": {
     "runtime": "coreclr",

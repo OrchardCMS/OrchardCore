@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,22 +34,21 @@ namespace Orchard.DisplayManagement
         /// <returns></returns>
         public static IServiceCollection AddThemingHost(this IServiceCollection services)
         {
-            services.AddTransient<IMvcRazorHost, ShapeRazorHost>();
-            services.AddScoped<IModelUpdaterAccessor, LocalModelBinderAccessor>();
-            services.AddScoped<IFilterMetadata, ModelBinderAccessorFilter>();
-
-            services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, ModuleViewLocationExpanderProvider>();
-            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
-
-            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
-            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
+		    services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(ModelBinderAccessorFilter));
+            });
 
             services.Configure<RazorViewEngineOptions>(options =>
             {
                 options.FileProviders.Add(new ThemingFileProvider());
-                options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
+			
+            services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
+            services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
+
+            services.AddSingleton<IExtensionDependencyStrategy, ThemeExtensionDependencyStrategy>();
+            services.AddSingleton<IShapeTemplateViewEngine, RazorShapeTemplateViewEngine>();
 
             services.AddSingleton<IFeatureBuilderEvents, ThemeFeatureBuilderEvents>();
 
@@ -56,6 +57,11 @@ namespace Orchard.DisplayManagement
 
         public static IServiceCollection AddTheming(this IServiceCollection services)
         {
+		    services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(NotifyFilter));
+            });
+		
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 
@@ -77,7 +83,6 @@ namespace Orchard.DisplayManagement
             services.AddScoped<IDisplayHelperFactory, DisplayHelperFactory>();
 
             services.AddScoped<INotifier, Notifier>();
-            services.AddScoped<IFilterMetadata, NotifyFilter>();
 
             services.AddScoped(typeof(IPluralStringLocalizer<>), typeof(PluralStringLocalizer<>));
             services.AddShapeAttributes<DateTimeShapes>();

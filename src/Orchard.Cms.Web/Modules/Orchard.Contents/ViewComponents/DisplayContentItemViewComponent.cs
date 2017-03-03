@@ -11,12 +11,12 @@ namespace Orchard.Contents.ViewComponents
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IModelUpdaterAccessor _modelUpdaterAccessor;
+        private readonly IUpdateModelAccessor _modelUpdaterAccessor;
 
         public DisplayContentItemViewComponent(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            IModelUpdaterAccessor modelUpdaterAccessor)
+            IUpdateModelAccessor modelUpdaterAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;

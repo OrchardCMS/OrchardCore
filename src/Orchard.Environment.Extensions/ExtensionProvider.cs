@@ -3,6 +3,7 @@ using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions.Features;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Orchard.Environment.Extensions
 {

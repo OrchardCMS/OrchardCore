@@ -2,7 +2,7 @@
 
 namespace Orchard.DisplayManagement.ModelBinding
 {
-    public class LocalModelBinderAccessor : IModelUpdaterAccessor
+    public class LocalModelBinderAccessor : IUpdateModelAccessor
     {
         private readonly AsyncLocal<IUpdateModel> _storage = new AsyncLocal<IUpdateModel>();
 

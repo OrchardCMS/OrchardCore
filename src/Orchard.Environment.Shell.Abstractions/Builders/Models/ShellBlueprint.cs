@@ -15,17 +15,6 @@ namespace Orchard.Environment.Shell.Builders.Models
         public ShellSettings Settings { get; set; }
         public ShellDescriptor Descriptor { get; set; }
 
-        public IEnumerable<DependencyBlueprint> Dependencies { get; set; }
-    }
-
-    public class ShellBlueprintItem
-    {
-        public Type Type { get; set; }
-        public IFeatureInfo Feature { get; set; }
-    }
-
-    public class DependencyBlueprint : ShellBlueprintItem
-    {
-        public IEnumerable<ShellParameter> Parameters { get; set; }
+        public IDictionary<Type, FeatureEntry> Dependencies { get; set; }
     }
 }

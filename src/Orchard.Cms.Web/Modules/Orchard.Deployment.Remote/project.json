@@ -7,7 +7,8 @@
     "Orchard.Environment.Navigation": "2.0.0-*",
     "Orchard.Admin.Abstractions": "2.0.0-*",
     "Orchard.DisplayManagement": "2.0.0-*",
-    "Orchard.Recipes.Abstractions": "2.0.0-*"
+    "Orchard.Recipes.Abstractions": "2.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],
@@ -21,5 +22,9 @@
         "portable-net451+win8"
       ]
     }
+  },
+  "packOptions": {
+    "type": "git",
+    "url": "https://github.com/OrchardCMS/Orchard2"
   }
 }

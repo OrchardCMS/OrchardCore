@@ -1,5 +1,3 @@
-using Orchard.DependencyInjection;
-
 namespace Orchard.ContentManagement
 {
     public interface IContentManagerSession

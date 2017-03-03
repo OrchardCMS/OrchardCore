@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
@@ -11,7 +12,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.ContentTypes.Services
@@ -213,9 +214,9 @@ namespace Orchard.ContentTypes.Services
             var name = partViewModel.Name;
 
             if (_contentDefinitionManager.GetPartDefinition(name) != null)
-                throw new OrchardException(T["Cannot add part named '{0}'. It already exists.", name]);
+                throw new Exception(T["Cannot add part named '{0}'. It already exists.", name]);
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
                 var partDefinition = _contentDefinitionManager.GetPartDefinition(name);

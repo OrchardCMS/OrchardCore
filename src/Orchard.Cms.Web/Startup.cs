@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Modules.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.DisplayManagement;
+using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
@@ -30,15 +30,27 @@ namespace Orchard.Cms.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddThemingHost();
             services.AddManifestDefinition("Theme.txt", "theme");
             services.AddExtensionLocation("Themes");
             services.AddSitesFolder("App_Data", "Sites");
-            services.AddModuleServices(Configuration).WithDefaultFeatures("Orchard.Commons");
+
+            services.AddCommands();
+
+            services.AddModuleServices(configure => configure
+                .AddConfiguration(Configuration)
+                .WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons")
+            );
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseStaticFiles();
+
             loggerFactory.AddConsole(Configuration);
 
             app.UseModules();

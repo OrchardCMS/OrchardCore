@@ -1,11 +1,9 @@
 ﻿{
   "version": "2.0.0-*",
   "dependencies": {
-    "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.AspNetCore.Mvc.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
-    "Microsoft.AspNetCore.Html.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*"
+    "Microsoft.AspNetCore.Mvc.Modules.Abstractions": "1.0.0-*",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

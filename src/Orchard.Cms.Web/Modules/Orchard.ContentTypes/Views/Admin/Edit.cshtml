@@ -1,6 +1,6 @@
 ﻿@model EditTypeViewModel
 @using Orchard.ContentManagement.Metadata.Models
-@using Orchard.Utility
+@using Microsoft.AspNetCore.Mvc.Modules.Utilities
 
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));

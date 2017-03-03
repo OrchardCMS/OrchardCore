@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Commons.Filters;
@@ -8,9 +9,10 @@ namespace Orchard.Commons
     {
         public static IServiceCollection AddGeneratorTagFilter(this IServiceCollection services)
         {
-            services.AddSingleton<IFilterMetadata, MetaGeneratorFilter>();
-
-            return services;
+            return services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(MetaGeneratorFilter));
+            });
         }
     }
 }

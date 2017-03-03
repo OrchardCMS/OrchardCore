@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
@@ -27,19 +27,22 @@ namespace Orchard.Layers
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IFilterMetadata, LayerFilter>();
+            services.Configure<MvcOptions>((options) =>
+            {
+                options.Filters.Add(typeof(LayerFilter));
+            });
 
-			services.AddScoped<ISiteSettingsDisplayDriver, LayerSiteSettingsDisplayDriver>();
+            services.AddScoped<ISiteSettingsDisplayDriver, LayerSiteSettingsDisplayDriver>();
             services.AddSingleton<ContentPart, LayerMetadata>();
-			services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
-			services.AddScoped<INavigationProvider, AdminMenu>();
-			services.AddScoped<ILayerService, LayerService>();
-			services.AddScoped<IContentHandler, LayerMetadataHandler>();
-			services.AddScoped<IIndexProvider, LayerMetadataIndexProvider>();
-			services.AddScoped<IDataMigration, Migrations>();
-			services.AddScoped<IPermissionProvider, Permissions>();
-			services.AddRecipeExecutionStep<LayerStep>();
-		}
+            services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<ILayerService, LayerService>();
+            services.AddScoped<IContentHandler, LayerMetadataHandler>();
+            services.AddScoped<IIndexProvider, LayerMetadataIndexProvider>();
+            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddRecipeExecutionStep<LayerStep>();
+        }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {

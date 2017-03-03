@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Handlers;
 
@@ -24,9 +25,9 @@ namespace Orchard.Settings.Services
 
         ILogger Logger { get; }
 
-        public async Task BuildEditorAsync(ISite site, BuildEditorContext context)
+        public Task BuildEditorAsync(ISite site, BuildEditorContext context)
         {
-            await _drivers.InvokeAsync(async driver =>
+            return _drivers.InvokeAsync(async driver =>
             {
                 var result = await driver.BuildEditorAsync(site, context);
                 if (result != null)
@@ -36,9 +37,9 @@ namespace Orchard.Settings.Services
             }, Logger);
         }
 
-        public async Task UpdateEditorAsync(ISite site, UpdateEditorContext context)
+        public Task UpdateEditorAsync(ISite site, UpdateEditorContext context)
         {
-            await _drivers.InvokeAsync(async driver =>
+            return _drivers.InvokeAsync(async driver =>
             {
                 var result = await driver.UpdateEditorAsync(site, context);
                 if (result != null)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -152,11 +153,20 @@ namespace Orchard.Recipes.Services
             {
                 if (!shellContext.IsActivated)
                 {
-                    var eventBus = scope.ServiceProvider.GetService<IEventBus>();
-                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatingAsync());
-                    await eventBus.NotifyAsync<IOrchardShellEvents>(x => x.ActivatedAsync());
+                    var tenantEvents = scope.ServiceProvider
+                        .GetServices<IModularTenantEvents>();
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        tenantEvent.ActivatingAsync().Wait();
+                    }
 
                     shellContext.IsActivated = true;
+
+                    foreach (var tenantEvent in tenantEvents)
+                    {
+                        tenantEvent.ActivatedAsync().Wait();
+                    }
                 }
 
                 var recipeStepHandlers = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeStepHandler>>();
@@ -215,7 +225,7 @@ namespace Orchard.Recipes.Services
 
             if (_applicationLifetime.ApplicationStopping.IsCancellationRequested)
             {
-                throw new OrchardException(T["Recipe cancelled, application is restarting"]);
+                throw new Exception(T["Recipe cancelled, application is restarting"]);
             }
 
             EvaluateJsonTree(scriptingManager, recipeStep.Step);

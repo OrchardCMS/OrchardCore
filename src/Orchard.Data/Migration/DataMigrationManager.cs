@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration.Records;
@@ -224,7 +225,7 @@ namespace Orchard.Data.Migration
                         }
                         _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
                         _session.Cancel();
-                        throw new OrchardException(T["Error while running migration version {0} for {1}.", current, featureId], ex);
+                        throw new Exception(T["Error while running migration version {0} for {1}.", current, featureId], ex);
                     }
                     finally
                     {

@@ -12,8 +12,8 @@ namespace Orchard.Environment.Shell.Builders
     {
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IShellContainerFactory _shellContainerFactory;
-        private readonly ILogger _logger;
         private readonly IEnumerable<ShellFeature> _shellFeatures;
+        private readonly ILogger _logger;
 
         public ShellContextFactory(
             ICompositionStrategy compositionStrategy,
@@ -58,14 +58,7 @@ namespace Orchard.Environment.Shell.Builders
             {
                 _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
-            var descriptor = new ShellDescriptor
-            {
-                SerialNumber = -1,
-                Features = new[] {
-                    new ShellFeature { Id = "Orchard.Setup" },
-                    new ShellFeature { Id = "Orchard.Recipes" }
-                }
-            };
+            var descriptor = MinimumShellDescriptor();
 
             return await CreateDescribedContextAsync(settings, descriptor);
         }

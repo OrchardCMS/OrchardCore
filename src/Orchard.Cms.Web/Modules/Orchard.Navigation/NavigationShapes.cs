@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 
 namespace Orchard.Navigation
 {

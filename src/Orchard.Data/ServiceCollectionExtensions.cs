@@ -4,8 +4,10 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using Orchard.Data.Migration;
@@ -21,7 +23,7 @@ namespace Orchard.Data
         public static IServiceCollection AddDataAccess(this IServiceCollection services)
         {
             services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-            services.AddScoped<AutomaticDataMigrations>();
+            services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
             // Adding supported databases
             services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true);
@@ -41,6 +43,8 @@ namespace Orchard.Data
                     return null;
                 }
 
+                var shellOptions = sp.GetService<IOptions<ShellOptions>>();
+
                 IConnectionFactory connectionFactory = null;
                 var isolationLevel = IsolationLevel.Unspecified;
 
@@ -51,7 +55,8 @@ namespace Orchard.Data
                         isolationLevel = IsolationLevel.ReadUncommitted;
                         break;
                     case "Sqlite":
-                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, "App_Data", "Sites", shellSettings.Name);
+                        var option = shellOptions.Value;
+                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
                         var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                         Directory.CreateDirectory(databaseFolder);
                         connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
@@ -96,6 +101,12 @@ namespace Orchard.Data
             services.AddScoped<ISession>(sp =>
             {
                 var store = sp.GetService<IStore>();
+
+                if (store == null)
+                {
+                    return null;
+                }
+
                 return store.CreateSession();
             });
 

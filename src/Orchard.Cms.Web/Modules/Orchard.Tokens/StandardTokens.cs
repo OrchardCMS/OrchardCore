@@ -1,7 +1,7 @@
 ﻿using System;
 using HandlebarsDotNet;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Services;
 using Orchard.Settings;
 
 namespace Orchard.Tokens

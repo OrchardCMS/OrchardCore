@@ -15,7 +15,7 @@ namespace Orchard.DisplayManagement.ModelBinding
             var controller = context.Controller as Controller;
             if (controller != null)
             {
-                var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IModelUpdaterAccessor>();
+                var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
                 modelBinderAccessor.ModelUpdater = new ControllerModelUpdater(controller);
             }
         }

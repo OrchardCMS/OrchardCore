@@ -21,14 +21,6 @@ namespace Orchard.Environment.Extensions.Loaders
             _extensionLoaders = extensionLoaders.ToArray();
         }
 
-        public string Name
-        {
-            get
-            {
-                throw new NotSupportedException();
-            }
-        }
-
         public int Order
         {
             get
@@ -47,7 +39,7 @@ namespace Orchard.Environment.Extensions.Loaders
                     return entry;
                 }
             }
-            return new ExtensionEntry { ExtensionInfo = extensionInfo, IsError = true };
+            return new ExtensionEntry { ExtensionInfo = extensionInfo, IsError = true, ExportedTypes = Enumerable.Empty<Type>() };
         }
     }
 }

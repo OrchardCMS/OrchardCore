@@ -4,7 +4,8 @@
     "Microsoft.Extensions.DependencyInjection": "1.1.0",
     "Microsoft.Extensions.Caching.Abstractions": "1.1.0",
     "Orchard.Scripting.Abstractions": "2.0.0-*",
-    "Jint": "2.10.2"
+    "Jint": "2.10.2",
+    "NETStandard.Library": "1.6.1"
   },
   "buildOptions": {
     "define": [ "TRACE" ],

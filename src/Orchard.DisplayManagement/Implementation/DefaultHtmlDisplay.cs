@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
@@ -120,7 +121,7 @@ namespace Orchard.DisplayManagement.Implementation
                 }
                 else
                 {
-                    throw new OrchardException(T["Shape type {0} not found", shapeMetadata.Type]);
+                    throw new Exception(T["Shape type {0} not found", shapeMetadata.Type]);
                 }
             }
 

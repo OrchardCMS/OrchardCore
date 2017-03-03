@@ -15,22 +15,20 @@ namespace Orchard.Settings.Services
     /// </summary>
     public class SetupEventHandler : ISetupEventHandler
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ISiteService _setupService;
 
-        public SetupEventHandler(IServiceProvider serviceProvider)
+        public SetupEventHandler(ISiteService setupService)
         {
-            _serviceProvider = serviceProvider;
+            _setupService = setupService;
         }
 
         public async Task Setup(string siteName, string userName)
         {
-            var siteService = _serviceProvider.GetRequiredService<ISiteService>();
-
             // Updating site settings
-            var siteSettings = await siteService.GetSiteSettingsAsync();
+            var siteSettings = await _setupService.GetSiteSettingsAsync();
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userName;
-            await siteService.UpdateSiteSettingsAsync(siteSettings);
+            await _setupService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in
         }

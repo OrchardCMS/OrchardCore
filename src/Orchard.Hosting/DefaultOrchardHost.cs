@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
@@ -95,14 +96,22 @@ namespace Orchard.Hosting
             // Load all extensions and features so that the controllers are
             // registered in ITypeFeatureProvider and their areas defined in the application
             // conventions.
-            _extensionManager.LoadFeaturesAsync().Wait();
+            var features = _extensionManager.LoadFeaturesAsync();
 
             // Is there any tenant right now?
             var allSettings = _shellSettingsManager.LoadSettings().Where(CanCreateShell).ToArray();
 
-            // Load all tenants, and activate their shell.
-            if (allSettings.Any())
+            features.Wait();
+
+            // No settings, run the Setup.
+            if (allSettings.Length == 0)
             {
+                var setupContext = await CreateSetupContextAsync();
+                RegisterShell(setupContext);
+            }
+            else
+            {
+                // Load all tenants, and activate their shell.
                 Parallel.ForEach(allSettings, settings =>
                 {
                     try
@@ -111,7 +120,7 @@ namespace Orchard.Hosting
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(string.Format("A tenant could not be started: {0}", settings.Name), ex);
+                        _logger.LogError($"A tenant could not be started: {settings.Name}", ex);
 
                         if (ex.IsFatal())
                         {
@@ -119,13 +128,6 @@ namespace Orchard.Hosting
                         }
                     }
                 });
-            }
-
-            // No settings, run the Setup.
-            else
-            {
-                var setupContext = await CreateSetupContextAsync();
-                RegisterShell(setupContext);
             }
 
             if (_logger.IsEnabled(LogLevel.Information))
@@ -201,14 +203,14 @@ namespace Orchard.Hosting
         /// <summary>
         /// Creates a transient shell for the default tenant's setup.
         /// </summary>
-        private async Task<ShellContext> CreateSetupContextAsync()
+        private Task<ShellContext> CreateSetupContextAsync()
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            return await _shellContextFactory.CreateSetupContextAsync(ShellHelper.BuildDefaultUninitializedShell);
+            return _shellContextFactory.CreateSetupContextAsync(ShellHelper.BuildDefaultUninitializedShell);
         }
 
         /// <summary>

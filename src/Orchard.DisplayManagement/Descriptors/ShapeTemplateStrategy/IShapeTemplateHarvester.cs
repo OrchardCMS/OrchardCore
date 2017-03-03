@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {

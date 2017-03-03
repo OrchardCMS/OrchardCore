@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.Metadata.Models;
-using Orchard.Utility;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.MetaData
 {
     /// <summary>
-    /// This interface is an <see cref="IDependency"/> so that each client gets
+    /// This interface provides each client with
     /// a different copy of <see cref="ContentTypeDefinition"/> to work with in case
     /// multiple clients do modifications.
     /// </summary>

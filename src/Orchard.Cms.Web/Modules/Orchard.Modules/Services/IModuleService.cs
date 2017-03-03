@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.Modules.Models;
-using Orchard.Environment.Extensions.Features;
 
 namespace Orchard.Modules.Services {
     public interface IModuleService {

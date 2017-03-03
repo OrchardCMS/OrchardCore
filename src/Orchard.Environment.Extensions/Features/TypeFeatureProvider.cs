@@ -8,7 +8,7 @@ namespace Orchard.Environment.Extensions
     {
         private readonly ConcurrentDictionary<Type, IFeatureInfo> _features 
             = new ConcurrentDictionary<Type, IFeatureInfo>();
-        
+
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
             IFeatureInfo feature = null;

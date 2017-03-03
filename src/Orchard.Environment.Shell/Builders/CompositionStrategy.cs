@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Environment.Shell.Descriptor.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Orchard.Environment.Shell.Builders
 {
@@ -41,16 +40,12 @@ namespace Orchard.Environment.Shell.Builders
             var features = await _extensionManager
                 .LoadFeaturesAsync(descriptor.Features.Select(x => x.Id).ToArray());
 
-            // Statup classes are the only types that are automatically added to the blueprint
-            var dependencies = BuildBlueprint(features, IsStartup, BuildModule, Enumerable.Empty<string>());
+            var entries = new Dictionary<Type, FeatureEntry>();
 
-            var uniqueDependencies = new Dictionary<Type, DependencyBlueprint>();
-
-            foreach (var dependency in dependencies)
+            foreach (var feature in features)
             {
-                if (!uniqueDependencies.ContainsKey(dependency.Type))
-                {
-                    uniqueDependencies.Add(dependency.Type, dependency);
+                foreach (var exportedType in feature.ExportedTypes) {
+                    entries.Add(exportedType, feature);
                 }
             }
 
@@ -58,7 +53,7 @@ namespace Orchard.Environment.Shell.Builders
             {
                 Settings = settings,
                 Descriptor = descriptor,
-                Dependencies = uniqueDependencies.Values
+                Dependencies = entries
             };
 
             if (_logger.IsEnabled(LogLevel.Debug))
@@ -66,46 +61,6 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Done composing blueprint");
             }
             return result;
-        }
-
-        private static IEnumerable<T> BuildBlueprint<T>(
-            IEnumerable<FeatureEntry> features,
-            Func<Type, bool> predicate,
-            Func<Type, FeatureEntry, T> selector,
-            IEnumerable<string> excludedTypes)
-        {
-            // Load types excluding the replaced types
-            return features.SelectMany(
-                feature => feature.ExportedTypes
-                    .Where(predicate)
-                    .Where(type => !excludedTypes.Contains(type.FullName))
-                    .Select(type => selector(type, feature)))
-                .ToArray();
-        }
-
-        private static bool IsStartup(Type type)
-        {
-            return typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(type);
-        }
-
-        private static DependencyBlueprint BuildModule(Type type, FeatureEntry feature)
-        {
-            return new DependencyBlueprint
-            {
-                Type = type,
-                Feature = feature.FeatureInfo,
-                Parameters = Enumerable.Empty<ShellParameter>()
-            };
-        }
-
-        private static DependencyBlueprint BuildDependency(Type type, FeatureEntry feature, ShellDescriptor descriptor)
-        {
-            return new DependencyBlueprint
-            {
-                Type = type,
-                Feature = feature.FeatureInfo,
-                Parameters = descriptor.Parameters.Where(x => x.Component == type.FullName).ToArray()
-            };
         }
     }
 }

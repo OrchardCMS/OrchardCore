@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
-using Orchard.Services;
 using Orchard.Settings;
 
 namespace Orchard.DisplayManagement.Shapes

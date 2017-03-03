@@ -1,0 +1,9 @@
+﻿Name: Mvc
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: The mvc module
+FeatureDescription: The mvc module
+Priority: -1
+Category: Infrastructure

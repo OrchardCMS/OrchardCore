@@ -1,16 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
 using Orchard.Environment.Extensions;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Orchard.DisplayManagement.LocationExpander
 {
     public class ThemeAwareViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        public double Priority => 15D;
+        private readonly IExtensionManager _extensionManager;
+        public ThemeAwareViewLocationExpanderProvider(IExtensionManager extensionManager)
+        {
+            _extensionManager = extensionManager;
+        }
+
+        public int Priority => 15;
 
         /// <inheritdoc />
         public void PopulateValues(ViewLocationExpanderContext context)
@@ -44,12 +51,6 @@ namespace Orchard.DisplayManagement.LocationExpander
 
             if (themeManager != null)
             {
-                var extensionManager = context
-                    .ActionContext
-                    .HttpContext
-                    .RequestServices
-                    .GetService<IExtensionManager>();
-
                 var currentTheme = themeManager.GetThemeAsync().GetAwaiter().GetResult();
 
                 if (currentTheme == null)
@@ -57,7 +58,7 @@ namespace Orchard.DisplayManagement.LocationExpander
                     return Enumerable.Empty<string>();
                 }
 
-                var currentThemeAndBaseThemesOrdered = extensionManager
+                var currentThemeAndBaseThemesOrdered = _extensionManager
                     .GetFeatures(new[] { currentTheme.Id })
                     .Where(x => x.Extension.Manifest.IsTheme())
                     .Reverse();

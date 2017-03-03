@@ -7,5 +7,5 @@
     var displayText = ContentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText;
 }
 
-<h1>@RenderTitleSegments(displayText)</h1>
+<h1>@RenderTitleSegments(Html.Raw(Html.Encode(displayText)))</h1>
 @await DisplayAsync(Model)

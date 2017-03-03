@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Shell;
 
 namespace Orchard.BackgroundTasks
 {
@@ -11,7 +11,7 @@ namespace Orchard.BackgroundTasks
             services.TryAddSingleton<IBackgroundTaskService, BackgroundTaskService>();
 
             services.AddScoped<BackgroundTasksStarter>();
-            services.AddScoped<IOrchardShellEvents>(sp => sp.GetRequiredService<BackgroundTasksStarter>());
+            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<BackgroundTasksStarter>());
 
             return services;
         }

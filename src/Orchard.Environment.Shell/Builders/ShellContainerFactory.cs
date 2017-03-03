@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Orchard.DependencyInjection;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
@@ -67,10 +66,10 @@ namespace Orchard.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup).IsAssignableFrom(t.Type)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Modules.IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
-                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Mvc.Modules.IStartup), dependency.Type);
+                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
             }
 
             // Add a default configuration if none has been provided
@@ -87,20 +86,21 @@ namespace Orchard.Environment.Shell.Builders
             var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
 
             // Let any module add custom service descriptors to the tenant
-            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Mvc.Modules.IStartup>())
+            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>())
             {
-                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Type == startup.GetType())?.Feature;
+                var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
 
                 ServiceCollection featureServiceCollection;
                 ServiceCollection startupServices = new ServiceCollection();
+
                 if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
                 {
                     featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
                 }
 
                 startup.ConfigureServices(startupServices);
-                featureServiceCollection.Add(startupServices);
                 tenantServiceCollection.Add(startupServices);
+                featureServiceCollection.Add(startupServices);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
@@ -134,7 +134,7 @@ namespace Orchard.Environment.Shell.Builders
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider();
 
-            using (var scope = shellServiceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var scope = shellServiceProvider.CreateScope())
             {
                 var eventBusState = scope.ServiceProvider.GetService<IEventBusState>();
 
@@ -161,7 +161,6 @@ namespace Orchard.Environment.Shell.Builders
             }
 
             // Register all DIed types in ITypeFeatureProvider
-            var featureTypes = new List<Type>();
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
 
             foreach (var featureServiceCollection in featureServiceCollections)

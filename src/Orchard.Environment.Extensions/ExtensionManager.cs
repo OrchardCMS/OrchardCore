@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Extensions.Utility;
@@ -31,22 +31,16 @@ namespace Orchard.Environment.Extensions
         private readonly IEnumerable<IExtensionPriorityStrategy> _extensionPriorityStrategies;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
 
-        private readonly LazyConcurrentDictionary<string, Task<ExtensionEntry>> _extensions
-            = new LazyConcurrentDictionary<string, Task<ExtensionEntry>>();
+        private IDictionary<string, ExtensionEntry> _extensions;
+        private IDictionary<string, FeatureEntry> _features;
 
-        private readonly LazyConcurrentDictionary<string, Task<FeatureEntry>> _features
-            = new LazyConcurrentDictionary<string, Task<FeatureEntry>>();
+        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
+            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _featureDependencies
-            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
+        private ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
+            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>> _dependentFeatures
-            = new LazyConcurrentDictionary<string, IEnumerable<IFeatureInfo>>();
-
-        private IDictionary<string, IExtensionInfo> _extensionsById;
-
-        private IList<IFeatureInfo> _allOrderedFeatureInfos;
-        private IList<IFeatureInfo> _allUnorderedFeatureInfos;
+        private IFeatureInfo[] _allOrderedFeatureInfos;
 
         private static Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]> GetDependantFeaturesFunc =
             new Func<IFeatureInfo, IFeatureInfo[], IFeatureInfo[]>(
@@ -61,6 +55,9 @@ namespace Orchard.Environment.Extensions
                     .Where(f =>
                             currentFeature.Dependencies.Any(dep => dep == f.Id)
                            ).OrderByDescending(x => x.Id).ToArray());
+
+        private bool _isInitialized = false;
+        private static object InitializationSyncLock = new object();
 
         public ExtensionManager(
             IOptions<ExtensionExpanderOptions> extensionExpanderOptionsAccessor,
@@ -93,11 +90,12 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo GetExtension(string extensionId)
         {
-            GetExtensions(); // initialize
+            EnsureInitialized();
 
-            if (_extensionsById.ContainsKey(extensionId))
+            ExtensionEntry extension;
+            if (_extensions.TryGetValue(extensionId, out extension))
             {
-                return _extensionsById[extensionId];
+                return extension.ExtensionInfo;
             }
 
             return new NotFoundExtensionInfo(extensionId);
@@ -105,82 +103,79 @@ namespace Orchard.Environment.Extensions
 
         public IEnumerable<IExtensionInfo> GetExtensions()
         {
-            if (_extensionsById == null)
+            EnsureInitialized();
+
+            return _extensions.Values.Select(ex => ex.ExtensionInfo);
+        }
+
+        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
+        {
+            EnsureInitialized();
+
+            var allDependencies = featureIdsToLoad
+                .SelectMany(featureId => GetFeatureDependencies(featureId))
+                .Distinct();
+
+            return _allOrderedFeatureInfos
+                .Where(f => allDependencies.Any(d => d.Id == f.Id));
+        }
+
+
+        public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
+        {
+            EnsureInitialized();
+
+            ExtensionEntry extension;
+            if (_extensions.TryGetValue(extensionInfo.Id, out extension))
             {
-                 var searchOptions = _extensionExpanderOptions.Options;
- 
-                 if (searchOptions.Count == 0)
-                 {
-                     return Enumerable.Empty<IExtensionInfo>();
-                 }
-
-                var extensionsById = new Dictionary<string, IExtensionInfo>();
-
-                foreach (var searchOption in searchOptions)
-                {
-                    foreach (var subDirectory in _hostingEnvironment
-                        .ContentRootFileProvider
-                        .GetDirectoryContents(searchOption.SearchPath)
-                        .Where(x => x.IsDirectory))
-                    {
-                        var manifestConfiguration = _manifestOptions
-                            .ManifestConfigurations
-                            .FirstOrDefault(mc =>
-                                {
-                                    return File.Exists(Path.Combine(subDirectory.PhysicalPath, mc.ManifestFileName));
-                                }
-                            );
-
-                        if (manifestConfiguration == null)
-                        {
-                            continue;
-                        }
-
-                        var manifestFilesubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name, manifestConfiguration.ManifestFileName);
-                        var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
-
-                        IConfigurationBuilder configurationBuilder =
-                            _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
-
-                        if (!configurationBuilder.Sources.Any())
-                        {
-                            continue;
-                        }
-
-                        var configurationRoot = configurationBuilder.Build();
-
-                        var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
-
-                        // Manifest tells you what your loading, subpath is where you are loading it
-                        var extensionInfo = _extensionProvider
-                            .GetExtensionInfo(manifestInfo, manifestsubPath);
-
-                        extensionsById.Add(extensionInfo.Id, extensionInfo);
-                    }
-                }
-
-                _extensionsById = extensionsById;
+                return Task.FromResult(extension);
             }
 
-            return _extensionsById.Values;
+            return Task.FromResult<ExtensionEntry>(null);
         }
+
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
+        {
+            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+
+            var loadedFeatures = _features.Values
+                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
+
+            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+        }
+
+        public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
+        {
+            EnsureInitialized();
+
+            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+
+            var loadedFeatures = _features.Values
+                .Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id))
+                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
+
+            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+        }
+
+
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
-            return _featureDependencies.GetOrAdd(featureId, (key) =>
-            {
-                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
+            EnsureInitialized();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
-                if (feature == null)
+            return _featureDependencies.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            {
+                if (!_features.ContainsKey(key))
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
+                var feature = _features[key].FeatureInfo;
+
                 var dependencies = new HashSet<IFeatureInfo>() { feature };
                 var stack = new Stack<IFeatureInfo[]>();
-
-                stack.Push(GetFeatureDependenciesFunc(feature, unorderedFeatures));
+                
+                stack.Push(GetFeatureDependenciesFunc(feature, _allOrderedFeatureInfos));
 
                 while (stack.Count > 0)
                 {
@@ -188,29 +183,34 @@ namespace Orchard.Environment.Extensions
                     foreach (var dependency in next.Where(dependency => !dependencies.Contains(dependency)))
                     {
                         dependencies.Add(dependency);
-                        stack.Push(GetFeatureDependenciesFunc(dependency, unorderedFeatures));
+                        stack.Push(GetFeatureDependenciesFunc(dependency, _allOrderedFeatureInfos));
                     }
                 }
 
                 return dependencies.Reverse();
-            });
+            })).Value;
         }
 
         public IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId)
         {
-            return _dependentFeatures.GetOrAdd(featureId, (key) =>
-            {
-                var unorderedFeatures = GetAllUnorderedFeatures().ToArray();
+            EnsureInitialized();
 
-                var feature = unorderedFeatures.FirstOrDefault(x => x.Id == key);
+            return _dependentFeatures.GetOrAdd(featureId, (key) => new Lazy<IEnumerable<IFeatureInfo>>(() =>
+            {
+                if (!_features.ContainsKey(key))
+                {
+                    return Enumerable.Empty<IFeatureInfo>();
+                }
+
+                var feature = _features[key].FeatureInfo;
                 if (feature == null)
                 {
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
                 return
-                    GetDependentFeatures(feature, unorderedFeatures);
-            });
+                    GetDependentFeatures(feature, _allOrderedFeatureInfos);
+            })).Value;
         }
 
         private IEnumerable<IFeatureInfo> GetDependentFeatures(
@@ -235,146 +235,11 @@ namespace Orchard.Environment.Extensions
             return dependencies;
         }
 
-        public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
-        {
-            // Results are cached so that there is no mismatch when loading an assembly twice.
-            // Otherwise the same types would not match.
-            return _extensions.GetOrAdd(extensionInfo.Id, (key) =>
-            {
-                var extension = _extensionLoader.Load(extensionInfo);
-
-                if (extension.IsError && L.IsEnabled(LogLevel.Warning))
-                {
-
-                    L.LogError("No suitable loader found for extension \"{0}\"", extensionInfo.Id);
-                }
-
-                return Task.FromResult(extension);
-            });
-        }
-
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
-        {
-            // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(GetFeatures()
-                .Select(feature => LoadFeatureAsync(feature))
-                .ToArray());
-
-            return loadedFeatures.AsEnumerable();
-        }
-
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            if (_allOrderedFeatureInfos == null)
-            {
-                _allOrderedFeatureInfos = Order(GetAllUnorderedFeatures());
-            }
+            EnsureInitialized();
 
             return _allOrderedFeatureInfos;
-        }
-
-        public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)
-        {
-            var allDependencies = featureIdsToLoad
-                .SelectMany(featureId => GetFeatureDependencies(featureId))
-                .Distinct();
-
-            return GetFeatures()
-                .Where(f => allDependencies.Any(d => d.Id == f.Id));
-        }
-
-        private IList<IFeatureInfo> Order(IEnumerable<IFeatureInfo> featuresToOrder)
-        {
-            return featuresToOrder
-                .OrderBy(x => x.Id)
-                .OrderByDependenciesAndPriorities(
-                    HasDependency,
-                    GetPriority)
-                .ToList();
-        }
-
-        public async Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
-        {
-            var features = GetFeatures(featureIdsToLoad);
-
-            // get loaded feature information
-            var loadedFeatures = await Task.WhenAll(features
-                .Select(feature => LoadFeatureAsync(feature))
-                .ToArray());
-
-            return loadedFeatures.AsEnumerable();
-        }
-
-        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
-        {
-            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
-        }
-
-        private int GetPriority(IFeatureInfo feature)
-        {
-            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
-        }
-
-        private Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
-        {
-            return _features.GetOrAdd(feature.Id, async (key) =>
-            {
-                var loadedExtension = await LoadExtensionAsync(feature.Extension);
-
-                if (loadedExtension.IsError)
-                {
-                    return new NonCompiledFeatureEntry(feature);
-                }
-
-                var extensionTypes = loadedExtension
-                    .ExportedTypes
-                    .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
-
-                var featureTypes = new List<Type>();
-
-                // Search for all types from the extensions that are not assigned to a different
-                // feature.
-                foreach (var type in extensionTypes)
-                {
-                    string sourceFeature = GetSourceFeatureNameForType(type, loadedExtension.ExtensionInfo.Id);
-
-                    if (sourceFeature == feature.Id)
-                    {
-                        featureTypes.Add(type);
-                        _typeFeatureProvider.TryAdd(type, feature);
-                    }
-                }
-
-                // Search in other extensions for types that are assigned to this feature.
-                var otherExtensionInfos = GetExtensions().Where(x => x.Id != loadedExtension.ExtensionInfo.Id);
-
-                foreach (var otherExtensionInfo in otherExtensionInfos)
-                {
-                    var otherExtension = await LoadExtensionAsync(otherExtensionInfo);
-                    foreach (var type in otherExtension.ExportedTypes)
-                    {
-                        string sourceFeature = GetSourceFeatureNameForType(type, null);
-
-                        if (sourceFeature == feature.Id)
-                        {
-                            featureTypes.Add(type);
-                            _typeFeatureProvider.TryAdd(type, feature);
-                        }
-                    }
-                }
-
-                return new CompiledFeatureEntry(feature, featureTypes);
-            });
-        }
-
-        private IList<IFeatureInfo> GetAllUnorderedFeatures()
-        {
-            if (_allUnorderedFeatureInfos == null)
-            {
-                _allUnorderedFeatureInfos = GetExtensions().SelectMany(x => x.Features).ToList();
-            }
-
-            return _allUnorderedFeatureInfos;
         }
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
@@ -387,27 +252,176 @@ namespace Orchard.Environment.Extensions
             return extensionId;
         }
 
-        // https://blogs.endjin.com/2015/10/using-lazy-and-concurrentdictionary-to-ensure-a-thread-safe-run-once-lazy-loaded-collection/
-        private class LazyConcurrentDictionary<TKey, TValue>
+        private void EnsureInitialized()
         {
-            private readonly ConcurrentDictionary<TKey, Lazy<TValue>> _concurrentDictionary;
-
-            public LazyConcurrentDictionary()
+            if (_isInitialized)
             {
-                _concurrentDictionary = new ConcurrentDictionary<TKey, Lazy<TValue>>();
+                return;
             }
 
-            // When you call GetOrAdd the valueFactory is not thread safe, this means two threads could make the same
-            // call to underlying components.
-            // Loading features and extensions is expensive and should only be done once
-            public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+            lock (InitializationSyncLock)
             {
-                return _concurrentDictionary
-                    .GetOrAdd(
-                        key, 
-                        k => new Lazy<TValue>(() => valueFactory(k), LazyThreadSafetyMode.ExecutionAndPublication))
-                    .Value;
+                if (_isInitialized)
+                {
+                    return;
+                }
+
+                var extensions = HarvestExtensions();
+
+                var loadedExtensions =
+                    new ConcurrentDictionary<string, ExtensionEntry>();
+
+                Parallel.ForEach(extensions, (extension) =>
+                {
+                    if (!extension.Exists)
+                    {
+                        return;
+                    }
+
+                    var entry = _extensionLoader.Load(extension);
+
+                    if (entry.IsError && L.IsEnabled(LogLevel.Warning))
+                    {
+                        L.LogError("No suitable loader found for extension \"{0}\"", extension.Id);
+                    }
+
+                    loadedExtensions.TryAdd(extension.Id, entry);
+                });
+
+                var loadedFeatures =
+                    new Dictionary<string, FeatureEntry>();
+
+                foreach (var loadedExtension in loadedExtensions)
+                {
+                    var extension = loadedExtension.Value;
+
+                    var extensionTypes = extension
+                        .ExportedTypes
+                        .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
+
+                    foreach (var feature in extension.ExtensionInfo.Features)
+                    {
+                        var featureTypes = new HashSet<Type>();
+
+                        // Search for all types from the extensions that are not assigned to a different
+                        // feature.
+                        foreach (var type in extensionTypes)
+                        {
+                            string sourceFeature = GetSourceFeatureNameForType(type, extension.ExtensionInfo.Id);
+
+                            if (sourceFeature == feature.Id)
+                            {
+                                featureTypes.Add(type);
+                                _typeFeatureProvider.TryAdd(type, feature);
+                            }
+                        }
+
+                        // Search in other extensions for types that are assigned to this feature.
+                        var otherExtensionInfos = extensions.Where(x => x.Id != extension.ExtensionInfo.Id);
+
+                        foreach (var otherExtensionInfo in otherExtensionInfos)
+                        {
+                            var otherExtension = loadedExtensions[otherExtensionInfo.Id];
+                            foreach (var type in otherExtension.ExportedTypes)
+                            {
+                                string sourceFeature = GetSourceFeatureNameForType(type, null);
+
+                                if (sourceFeature == feature.Id)
+                                {
+                                    featureTypes.Add(type);
+                                    _typeFeatureProvider.TryAdd(type, feature);
+                                }
+                            }
+                        }
+
+                        loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
+                    }
+                };
+
+                _extensions = loadedExtensions;
+                // Could we get rid of _allOrderedFeatureInfos and just have _features?
+                _features = loadedFeatures;
+                _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
+                _isInitialized = true;
             }
+        }
+
+        private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
+        {
+            return featuresToOrder
+                .OrderBy(x => x.Id)
+                .Distinct()
+                .OrderByDependenciesAndPriorities(
+                    HasDependency,
+                    GetPriority)
+                .ToArray();
+        }
+
+        private bool HasDependency(IFeatureInfo f1, IFeatureInfo f2)
+        {
+            return _extensionDependencyStrategies.Any(s => s.HasDependency(f1, f2));
+        }
+
+        private int GetPriority(IFeatureInfo feature)
+        {
+            return _extensionPriorityStrategies.Sum(s => s.GetPriority(feature));
+        }
+
+        private ISet<IExtensionInfo> HarvestExtensions()
+        {
+            var searchOptions = _extensionExpanderOptions.Options;
+
+            var extensionSet = new HashSet<IExtensionInfo>();
+
+            if (searchOptions.Count == 0)
+            {
+                return extensionSet;
+            }
+
+            foreach (var searchOption in searchOptions)
+            {
+                foreach (var subDirectory in _hostingEnvironment
+                    .ContentRootFileProvider
+                    .GetDirectoryContents(searchOption.SearchPath)
+                    .Where(x => x.IsDirectory))
+                {
+                    var manifestConfiguration = _manifestOptions
+                        .ManifestConfigurations
+                        .FirstOrDefault(mc =>
+                        {
+                            return File.Exists(Path.Combine(subDirectory.PhysicalPath, mc.ManifestFileName));
+                        }
+                        );
+
+                    if (manifestConfiguration == null)
+                    {
+                        continue;
+                    }
+
+                    var manifestsubPath = Path.Combine(searchOption.SearchPath, subDirectory.Name);
+                    var manifestFilesubPath = Path.Combine(manifestsubPath, manifestConfiguration.ManifestFileName);
+
+                    IConfigurationBuilder configurationBuilder =
+                        _manifestProvider.GetManifestConfiguration(new ConfigurationBuilder(), manifestFilesubPath);
+
+                    if (!configurationBuilder.Sources.Any())
+                    {
+                        continue;
+                    }
+
+                    var configurationRoot = configurationBuilder.Build();
+                    
+                    var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
+                    
+                    // Manifest tells you what your loading, subpath is where you are loading it
+                    var extensionInfo = _extensionProvider
+                        .GetExtensionInfo(manifestInfo, manifestsubPath);
+
+                    extensionSet.Add(extensionInfo);
+                }
+            }
+
+            return extensionSet;
         }
     }
 }

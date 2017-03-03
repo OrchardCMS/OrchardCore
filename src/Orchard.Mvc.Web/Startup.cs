@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Modules.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Mvc.Modules;
+using Orchard.Environment.Extensions;
 
 namespace Orchard.Mvc.Web
 {
@@ -19,7 +20,6 @@ namespace Orchard.Mvc.Web
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
-
         }
 
         public IConfiguration Configuration { get; }
@@ -29,12 +29,22 @@ namespace Orchard.Mvc.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Add ASP.NET MVC and support for modules
-            services.AddModuleServices(Configuration).WithAllFeatures();
+            services.AddModuleServices(configure => configure
+                .AddConfiguration(Configuration)
+                .WithAllFeatures()
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseStaticFiles();
+
             loggerFactory.AddConsole(Configuration);
 
             app.UseModules();

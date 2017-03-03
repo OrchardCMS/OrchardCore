@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Implementation;
 

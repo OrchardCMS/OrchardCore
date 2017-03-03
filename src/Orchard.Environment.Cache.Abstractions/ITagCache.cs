@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.Events;
+﻿using Orchard.Events;
 using System.Collections.Generic;
 
 namespace Orchard.Environment.Cache

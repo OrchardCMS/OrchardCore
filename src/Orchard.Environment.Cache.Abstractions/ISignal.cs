@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Primitives;
-using Orchard.DependencyInjection;
 
 namespace Orchard.Environment.Cache
 {

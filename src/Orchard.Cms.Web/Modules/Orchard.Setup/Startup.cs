@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Data;
 using Orchard.Setup.Services;
 
 namespace Orchard.Setup
@@ -13,11 +12,6 @@ namespace Orchard.Setup
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISetupService, SetupService>();
-
-            services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true );
-			services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false);
-			services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true);
-			services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true);
 		}
 
 		public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)

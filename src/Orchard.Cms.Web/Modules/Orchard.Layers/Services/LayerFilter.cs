@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Modules.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Admin;
 using Orchard.ContentManagement.Display;
@@ -12,15 +13,14 @@ using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Environment.Cache;
 using Orchard.Scripting;
-using Orchard.Utility;
 
 namespace Orchard.Layers.Services
 {
-	public class LayerFilter : IAsyncResultFilter
+    public class LayerFilter : IAsyncResultFilter
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IModelUpdaterAccessor _modelUpdaterAccessor;
+        private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
         private readonly IServiceProvider _serviceProvider;
         private readonly ISignal _signal;
@@ -32,7 +32,7 @@ namespace Orchard.Layers.Services
 			IShapeFactory shapeFactory,
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
-            IModelUpdaterAccessor modelUpdaterAccessor,
+            IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
             IServiceProvider serviceProvider,
             IMemoryCache memoryCache,

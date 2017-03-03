@@ -6,6 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Contents;
 using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
+using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.MetaWeblog;
@@ -332,7 +334,7 @@ namespace Orchard.Lists.RemotePublishing
 
             if (contentItem == null)
             {
-                throw new OrchardCoreException(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
+                throw new Exception(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
             }
 
             await CheckAccessAsync(publish ? Permissions.PublishContent: Permissions.EditContent, user, contentItem);

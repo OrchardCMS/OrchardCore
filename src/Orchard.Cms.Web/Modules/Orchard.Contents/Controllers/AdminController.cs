@@ -1,26 +1,27 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
-using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Contents.Services;
 using Orchard.Contents.ViewModels;
-using Orchard.Settings;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Mvc;
 using Orchard.Navigation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Orchard.Settings;
 using YesSql.Core.Services;
 
 namespace Orchard.Contents.Controllers
@@ -433,7 +434,7 @@ namespace Orchard.Contents.Controllers
         }
 
         [HttpPost, ActionName("Edit")]
-        [Mvc.FormValueRequired("submit.Publish")]
+        [FormValueRequired("submit.Publish")]
         public async Task<IActionResult> EditAndPublishPOST(string contentItemId, string returnUrl)
         {
             var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);

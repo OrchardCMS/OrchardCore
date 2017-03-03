@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.Services;
+using Microsoft.AspNetCore.Modules;
 
 namespace Orchard.ContentManagement.Handlers
 {
