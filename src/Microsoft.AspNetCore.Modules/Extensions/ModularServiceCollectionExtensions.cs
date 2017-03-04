@@ -12,8 +12,7 @@ namespace Microsoft.AspNetCore.Modules
 {
     public static class ModularServiceCollectionExtensions
     {
-        public static IServiceCollection AddModuleServices(
-            this IServiceCollection services, Action<ModularServiceCollection> configure)
+        public static IServiceCollection AddModuleServices(this IServiceCollection services, Action<ModularServiceCollection> configure)
         {
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
