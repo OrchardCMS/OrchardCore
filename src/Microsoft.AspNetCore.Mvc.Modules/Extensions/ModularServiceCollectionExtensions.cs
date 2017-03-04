@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
@@ -18,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-	public static class ModularServiceCollectionExtensions
+    public static class ModularServiceCollectionExtensions
     {
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
             IServiceProvider applicationServices)
@@ -48,9 +47,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             builder.AddModularRazorViewEngine(applicationServices);
 
-            // Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
-            builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
-
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
 
@@ -64,6 +60,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+            manager.FeatureProviders.Add(new ShellViewsFeatureProvider(httpContextAccessor));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)

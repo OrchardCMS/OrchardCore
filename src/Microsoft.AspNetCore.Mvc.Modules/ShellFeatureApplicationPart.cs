@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -102,14 +101,14 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 {
                     return _applicationTypes;
                 }
+
                 var hostingEnvironment = _httpContextAccessor.HttpContext
                     .RequestServices.GetRequiredService<IHostingEnvironment>();
 
                 _applicationTypes = DefaultAssemblyPartDiscoveryProvider
                     .DiscoverAssemblyParts(hostingEnvironment.ApplicationName)
-                    .Where(p => p is AssemblyPart)
-                    .SelectMany(p => (p as AssemblyPart).Assembly.ExportedTypes)
-                    .Select(type => type.GetTypeInfo());
+                    .OfType<AssemblyPart>()
+                    .SelectMany(p => p.Types);
             }
 
             return _applicationTypes;
