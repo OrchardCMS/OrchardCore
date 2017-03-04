@@ -26,16 +26,16 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-		/// <summary>
-		/// Initalizes a new <see cref="AssemblyPart"/> instance.
-		/// </summary>
-		/// <param name="assembly"></param>
-		public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
+        /// <summary>
+        /// Initalizes a new <see cref="AssemblyPart"/> instance.
+        /// </summary>
+        /// <param name="assembly"></param>
+        public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-		}
+        }
 
-		public override string Name
+        public override string Name
         {
             get
             {
@@ -62,29 +62,29 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
                 return GetApplicationTypes()
                     .Except(excludedTypes);
-			}
+            }
         }
 
         /// <inheritdoc />
         public IEnumerable<string> GetReferencePaths()
         {
-			if (_referencePaths != null)
-			{
-				return _referencePaths;
-			}
+            if (_referencePaths != null)
+            {
+                return _referencePaths;
+            }
 
-			lock(_synLock)
-			{
-				if (_referencePaths != null)
-				{
-					return _referencePaths;
-				}
+            lock (_synLock)
+            {
+                if (_referencePaths != null)
+                {
+                    return _referencePaths;
+                }
 
-				_referencePaths = DependencyContext.Default.CompileLibraries
-				.SelectMany(library => library.ResolveReferencePaths());
-			}
+                _referencePaths = DependencyContext.Default.CompileLibraries
+                .SelectMany(library => library.ResolveReferencePaths());
+            }
 
-			return _referencePaths;
+            return _referencePaths;
         }
 
         /// <inheritdoc />

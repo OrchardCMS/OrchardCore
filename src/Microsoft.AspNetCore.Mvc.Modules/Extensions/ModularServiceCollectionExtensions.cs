@@ -19,7 +19,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 {
     public static class ModularServiceCollectionExtensions
     {
-        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
+        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices,
             IServiceProvider applicationServices)
         {
             moduleServices.Configure(services =>
@@ -33,7 +33,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
-            var builder = services.AddMvcCore(options => {
+            var builder = services.AddMvcCore(options =>
+            {
                 // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
 
@@ -85,7 +86,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
-        
+
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();

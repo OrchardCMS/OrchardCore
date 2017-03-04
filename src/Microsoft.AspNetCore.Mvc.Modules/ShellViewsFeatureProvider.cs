@@ -15,10 +15,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-         public ShellViewsFeatureProvider(IHttpContextAccessor httpContextAccessor)
+        public ShellViewsFeatureProvider(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-		}
+        }
 
         /// <inheritdoc />
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
