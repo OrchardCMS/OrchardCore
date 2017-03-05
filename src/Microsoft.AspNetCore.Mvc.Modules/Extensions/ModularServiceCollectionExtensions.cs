@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -61,7 +62,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
-            manager.FeatureProviders.Add(new ShellViewsFeatureProvider(httpContextAccessor));
+            manager.ApplicationParts.Add(new AssemblyPart(Assembly.Load(new AssemblyName(
+                        services.GetRequiredService<IHostingEnvironment>().ApplicationName))));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)

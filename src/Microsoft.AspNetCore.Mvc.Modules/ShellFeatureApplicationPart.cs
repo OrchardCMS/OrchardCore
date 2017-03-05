@@ -6,35 +6,33 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyModel;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
     /// <summary>
-    /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
+    /// An <see cref="ApplicationPart"/> which implements <see cref="IApplicationPartTypeProvider"/>.
     /// </summary>
     public class ShellFeatureApplicationPart :
         ApplicationPart,
-        IApplicationPartTypeProvider,
-        ICompilationReferencesProvider
+        IApplicationPartTypeProvider
     {
-        private static IEnumerable<string> _referencePaths;
         private static IEnumerable<TypeInfo> _applicationTypes;
         private static object _synLock = new object();
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// Initalizes a new <see cref="AssemblyPart"/> instance.
+        /// Initalizes a new <see cref="ShellFeatureApplicationPart"/> instance.
         /// </summary>
-        /// <param name="assembly"></param>
+        /// <param name="httpContextAccessor"></param>
         public ShellFeatureApplicationPart(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <inheritdoc />
         public override string Name
         {
             get
@@ -63,28 +61,6 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 return GetApplicationTypes()
                     .Except(excludedTypes);
             }
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<string> GetReferencePaths()
-        {
-            if (_referencePaths != null)
-            {
-                return _referencePaths;
-            }
-
-            lock (_synLock)
-            {
-                if (_referencePaths != null)
-                {
-                    return _referencePaths;
-                }
-
-                _referencePaths = DependencyContext.Default.CompileLibraries
-                .SelectMany(library => library.ResolveReferencePaths());
-            }
-
-            return _referencePaths;
         }
 
         /// <inheritdoc />
