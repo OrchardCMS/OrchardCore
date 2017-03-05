@@ -85,6 +85,7 @@ namespace Orchard.Environment.Extensions
             L = logger;
             T = localizer;
         }
+
         public ILogger L { get; set; }
         public IStringLocalizer T { get; set; }
 
@@ -120,7 +121,6 @@ namespace Orchard.Environment.Extensions
                 .Where(f => allDependencies.Any(d => d.Id == f.Id));
         }
 
-
         public Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo)
         {
             EnsureInitialized();
@@ -136,28 +136,19 @@ namespace Orchard.Environment.Extensions
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync()
         {
-            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+            EnsureInitialized();
 
-            var loadedFeatures = _features.Values
-                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
-
-            return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
+            return Task.FromResult<IEnumerable<FeatureEntry>>(_features.Values);
         }
 
         public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad)
         {
             EnsureInitialized();
 
-            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
-
-            var loadedFeatures = _features.Values
-                .Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id))
-                .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
+            var loadedFeatures = _features.Values.Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id));
 
             return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }
-
-
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
@@ -340,8 +331,14 @@ namespace Orchard.Environment.Extensions
 
                 _extensions = loadedExtensions;
                 // Could we get rid of _allOrderedFeatureInfos and just have _features?
-                _features = loadedFeatures;
                 _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
+
+                var orderedFeaturesIds = _allOrderedFeatureInfos.Select(f => f.Id).ToList();
+
+                _features = loadedFeatures
+                    .OrderBy(kv => orderedFeaturesIds.IndexOf(kv.Value.FeatureInfo.Id))
+                    .ToDictionary(kv => kv.Key, kv => kv.Value);
+
                 _isInitialized = true;
             }
         }
