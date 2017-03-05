@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using Orchard.Environment.Shell.Descriptor.Models;
+using System.Linq;
 using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Environment.Shell.Builders.Models
 {
@@ -18,7 +18,7 @@ namespace Orchard.Environment.Shell.Builders.Models
 
         public IDictionary<Type, FeatureEntry> Dependencies { get; set; }
 
-        public IEnumerable<FeatureEntry> Features
+        public IEnumerable<FeatureEntry> FeatureEntries
         {
             get
             {

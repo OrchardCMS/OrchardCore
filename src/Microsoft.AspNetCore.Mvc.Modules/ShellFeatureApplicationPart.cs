@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -36,16 +35,11 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public ShellBlueprint ShellBlueprint =>
+        private ShellBlueprint ShellBlueprint =>
             _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
 
-        public IExtensionManager ExtensionManager =>
+        private IExtensionManager ExtensionManager =>
             _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionManager>();
-
-        public IEnumerable<FeatureEntry> ShellFeatures => ShellBlueprint.Features;
-
-        public IEnumerable<FeatureEntry> AllFeatures =>
-            ExtensionManager.LoadFeaturesAsync().GetAwaiter().GetResult();
 
         /// <inheritdoc />
         public override string Name
@@ -67,8 +61,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                     {
                         if (_excludedTypes == null)
                         {
-                            _excludedTypes = AllFeatures
-                                .Except(ShellFeatures)
+                            _excludedTypes =
+                                ExtensionManager.GetFeatureEntries()
+                                .Except(ShellBlueprint.FeatureEntries)
                                 .SelectMany(f => f.ExportedTypes)
                                 .Select(type => type.GetTypeInfo());
                         }
@@ -99,8 +94,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
                 _applicationTypes = DefaultAssemblyPartDiscoveryProvider
                     .DiscoverAssemblyParts(hostingEnvironment.ApplicationName)
-                    .OfType<AssemblyPart>()
-                    .SelectMany(p => p.Types);
+                    .SelectMany(p => (p as AssemblyPart).Types);
             }
 
             return _applicationTypes;
