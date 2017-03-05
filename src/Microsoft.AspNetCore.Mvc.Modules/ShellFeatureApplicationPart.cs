@@ -7,19 +7,23 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Extensions;
+using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
     /// <summary>
-    /// An <see cref="ApplicationPart"/> which implements <see cref="IApplicationPartTypeProvider"/>.
+    /// An <see cref="ApplicationPart"/> implementing <see cref="IApplicationPartTypeProvider"/>.
     /// </summary>
     public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider
     {
         private static IEnumerable<TypeInfo> _applicationTypes;
-        private static object _synLock = new object();
+        private static object _staticSyncLock = new object();
+
+        private IEnumerable<TypeInfo> _excludedTypes;
+        private object _instanceSyncLock = new object();
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -31,6 +35,17 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             _httpContextAccessor = httpContextAccessor;
         }
+
+        public ShellBlueprint ShellBlueprint =>
+            _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+
+        public IExtensionManager ExtensionManager =>
+            _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionManager>();
+
+        public IEnumerable<FeatureEntry> ShellFeatures => ShellBlueprint.Features;
+
+        public IEnumerable<FeatureEntry> AllFeatures =>
+            ExtensionManager.LoadFeaturesAsync().GetAwaiter().GetResult();
 
         /// <inheritdoc />
         public override string Name
@@ -46,20 +61,21 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                var shellBluePrint = _httpContextAccessor.HttpContext
-                    .RequestServices.GetRequiredService<ShellBlueprint>();
+                if (_excludedTypes == null)
+                {
+                    lock (_instanceSyncLock)
+                    {
+                        if (_excludedTypes == null)
+                        {
+                            _excludedTypes = AllFeatures
+                                .Except(ShellFeatures)
+                                .SelectMany(f => f.ExportedTypes)
+                                .Select(type => type.GetTypeInfo());
+                        }
+                    }
+                }
 
-                var extensionManager = _httpContextAccessor.HttpContext
-                    .RequestServices.GetRequiredService<IExtensionManager>();
-
-                var excludedTypes = extensionManager
-                    .LoadFeaturesAsync().GetAwaiter().GetResult()
-                    .Except(shellBluePrint.Dependencies.Values.Distinct())
-                    .SelectMany(f => f.ExportedTypes)
-                    .Select(type => type.GetTypeInfo());
-
-                return GetApplicationTypes()
-                    .Except(excludedTypes);
+                return GetApplicationTypes().Except(_excludedTypes);
             }
         }
 
@@ -71,7 +87,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 return _applicationTypes;
             }
 
-            lock (_synLock)
+            lock (_staticSyncLock)
             {
                 if (_applicationTypes != null)
                 {
