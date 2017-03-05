@@ -62,8 +62,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+
             manager.ApplicationParts.Add(new AssemblyPart(Assembly.Load(new AssemblyName(
-                        services.GetRequiredService<IHostingEnvironment>().ApplicationName))));
+                services.GetRequiredService<IHostingEnvironment>().ApplicationName))));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)

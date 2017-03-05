@@ -38,6 +38,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         private IExtensionManager ExtensionManager =>
             _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IExtensionManager>();
 
+        private IHostingEnvironment HostingEnvironment =>
+            _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IHostingEnvironment>();
+
         /// <inheritdoc />
         public override string Name
         {
@@ -72,17 +75,12 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
             lock (_syncLock)
             {
-                if (_applicationTypes != null)
+                if (_applicationTypes == null)
                 {
-                    return _applicationTypes;
+                    _applicationTypes = DefaultAssemblyPartDiscoveryProvider
+                        .DiscoverAssemblyParts(HostingEnvironment.ApplicationName)
+                        .SelectMany(p => (p as AssemblyPart).Types);
                 }
-
-                var hostingEnvironment = _httpContextAccessor.HttpContext
-                    .RequestServices.GetRequiredService<IHostingEnvironment>();
-
-                _applicationTypes = DefaultAssemblyPartDiscoveryProvider
-                    .DiscoverAssemblyParts(hostingEnvironment.ApplicationName)
-                    .SelectMany(p => (p as AssemblyPart).Types);
             }
 
             return _applicationTypes;
