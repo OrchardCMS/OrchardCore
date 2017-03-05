@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions;
@@ -36,5 +37,11 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
         {
             return Task.CompletedTask;
         }
+
+        public Task NotifyShellDescriptorChanged()
+        {
+            return Task.CompletedTask;
+        }
+
     }
 }

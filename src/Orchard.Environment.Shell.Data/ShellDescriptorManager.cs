@@ -79,8 +79,13 @@ namespace Orchard.Environment.Shell.Data.Descriptors
 
             // Update cached reference
             _shellDescriptor = shellDescriptorRecord;
-
             await _eventBus.NotifyAsync<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptorRecord, _shellSettings.Name));
+        }
+
+        public async Task NotifyShellDescriptorChanged()
+        {
+            var shellDescriptor = await GetShellDescriptorAsync();
+            await _eventBus.NotifyAsync<IShellDescriptorManagerEventHandler>(e => e.Changed(shellDescriptor, _shellSettings.Name));
         }
     }
 }
