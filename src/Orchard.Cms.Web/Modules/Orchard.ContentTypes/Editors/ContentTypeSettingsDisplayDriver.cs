@@ -17,6 +17,7 @@ namespace Orchard.ContentTypes.Editors
                 model.Creatable = settings.Creatable;
                 model.Listable = settings.Listable;
                 model.Draftable = settings.Draftable;
+                model.Versionable = settings.Versionable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
 
@@ -33,6 +34,7 @@ namespace Orchard.ContentTypes.Editors
                 context.Builder.Creatable(model.Creatable);
                 context.Builder.Listable(model.Listable);
                 context.Builder.Draftable(model.Draftable);
+                context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
                 context.Builder.Stereotype(model.Stereotype);
             }

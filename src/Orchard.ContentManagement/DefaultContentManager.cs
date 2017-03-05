@@ -85,6 +85,7 @@ namespace Orchard.ContentManagement
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
             ContentItem contentItem = null;
+            ContentItem stageItem = null;
 
             // obtain the root records based on version options
             if (options.VersionRecordId != 0)
@@ -113,6 +114,12 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsLatest)
             {
+                // Check if the latest is already loaded
+                if (_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    return contentItem;
+                }
+
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
@@ -128,21 +135,36 @@ namespace Orchard.ContentManagement
                         x.Latest == true)
                     .FirstOrDefault();
             }
-            else if (options.IsDraft || options.IsDraftRequired)
+            else if (options.IsDraft || options.IsDraftRequired || options.IsStageRequired)
             {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefault();
+                // Check if the latest is already loaded
+                if (!_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    // Loaded whatever is the latest as it will be cloned
+                    contentItem = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Latest == true)
+                        .FirstOrDefault();
+                }
+
+                if (options.IsStageRequired && (contentItem?.Published ?? false))
+                {
+                    stageItem = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Published == false && x.Latest == false &&
+                            x.Number == NextStageVersion(contentItem.Number))
+                        .FirstOrDefault();
+                }
             }
             else if (options.IsPublished)
             {
                 // If the published version is requested and is already loaded, we can
                 // return it right away
-                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
                 }
@@ -155,14 +177,43 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
+            contentItem = Load(contentItem);
+
+            if (options.IsDraftRequired)
+            {
+                // When draft is required and latest is published a new version is added
+                if (contentItem.Published)
+                {
+                    // Save the previous version
+                    _session.Save(contentItem);
+
+                    if (stageItem == null)
+                    {
+                        contentItem = await BuildNewVersionAsync(contentItem, options.IsStageRequired);
+                    }
+                    else
+                    {
+                        stageItem = Load(stageItem);
+                        stageItem.Latest = true;
+                        contentItem.Latest = false;
+                        contentItem = stageItem;
+                    }
+                }
+
+                // Save the new version
+                _session.Save(contentItem);
+            }
+
+            return contentItem;
+        }
+
+        private ContentItem Load(ContentItem contentItem)
+        {
             // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
+            // If IsPublished or IsLatest is required then the test has already been checked before
             ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {
@@ -176,29 +227,17 @@ namespace Orchard.ContentManagement
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
                 Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
 
-                contentItem = context.ContentItem;
+                return context.ContentItem;
             }
             else
             {
-                contentItem = recalled;
+                return recalled;
             }
+        }
 
-            if (options.IsDraftRequired)
-            {
-                // When draft is required and latest is published a new version is added
-                if (contentItem.Published)
-                {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
-                    contentItem = await BuildNewVersionAsync(contentItem);
-                }
-
-                // Save the new version
-                _session.Save(contentItem);
-            }
-
-            return contentItem;
+        private int NextStageVersion (int version)
+        {
+            return version + (version % 2 == 0 ? -1 : 1);
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -276,13 +315,13 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-            
+
             _session.Save(publishedItem);
 
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
         }
 
-        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
+        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem, bool stageVersion = false)
         {
             var buildingContentItem = New(existingContentItem.ContentType);
 
@@ -304,7 +343,9 @@ namespace Orchard.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
+                buildingContentItem.Number = stageVersion
+                    ? NextStageVersion(latestVersion.Number)
+                    : latestVersion.Number + 1;
             }
             else
             {

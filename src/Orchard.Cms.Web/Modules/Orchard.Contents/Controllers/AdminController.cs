@@ -108,7 +108,7 @@ namespace Orchard.Contents.Controllers
             else
             {
                 var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if(listableTypes.Any())
+                if (listableTypes.Any())
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
@@ -158,7 +158,7 @@ namespace Orchard.Contents.Controllers
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
 
             var contentItemSummaries = new List<dynamic>();
-            foreach(var contentItem in pageOfContentItems)
+            foreach (var contentItem in pageOfContentItems)
             {
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "SummaryAdmin"));
             }
@@ -177,7 +177,7 @@ namespace Orchard.Contents.Controllers
             var creatable = new List<ContentTypeDefinition>();
             foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                if(ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
+                if (ctd.Settings.ToObject<ContentTypeSettings>().Creatable)
                 {
                     var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, _contentManager.New(ctd.Name));
                     if (authorized)
@@ -463,7 +463,7 @@ namespace Orchard.Contents.Controllers
 
         private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {
@@ -474,6 +474,12 @@ namespace Orchard.Contents.Controllers
             {
                 return Unauthorized();
             }
+
+            ContentTypeDefinition typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var versionable = typeDefinition.Settings.ToObject<ContentTypeSettings>().Versionable;
+
+            var versionOptions = versionable ? VersionOptions.DraftRequired : VersionOptions.StageRequired;
+            contentItem = await _contentManager.GetAsync(contentItemId, versionOptions);
 
             //string previousRoute = null;
             //if (contentItem.Has<IAliasAspect>() &&
@@ -502,8 +508,6 @@ namespace Orchard.Contents.Controllers
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });

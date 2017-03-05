@@ -6,6 +6,7 @@ namespace Orchard.ContentManagement
         bool RecallVersionId(int id, out ContentItem item);
         bool RecallContentItemId(string id, int version, out ContentItem item);
         bool RecallPublishedItemId(string id, out ContentItem item);
+        bool RecallLatestItemId(string id, out ContentItem item);
 
         void Clear();
     }
