@@ -19,10 +19,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         IApplicationPartTypeProvider
     {
         private static IEnumerable<TypeInfo> _applicationTypes;
-        private static object _staticSyncLock = new object();
-
-        private IEnumerable<TypeInfo> _excludedTypes;
-        private object _instanceSyncLock = new object();
+        private static object _syncLock = new object();
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -55,22 +52,13 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                if (_excludedTypes == null)
-                {
-                    lock (_instanceSyncLock)
-                    {
-                        if (_excludedTypes == null)
-                        {
-                            _excludedTypes =
-                                ExtensionManager.GetFeatureEntries()
-                                .Except(ShellBlueprint.FeatureEntries)
-                                .SelectMany(f => f.ExportedTypes)
-                                .Select(type => type.GetTypeInfo());
-                        }
-                    }
-                }
+                var excludedTypes =
+                    ExtensionManager.GetFeatureEntries()
+                    .Except(ShellBlueprint.FeatureEntries)
+                    .SelectMany(f => f.ExportedTypes)
+                    .Select(type => type.GetTypeInfo());
 
-                return GetApplicationTypes().Except(_excludedTypes);
+                return GetApplicationTypes().Except(excludedTypes);
             }
         }
 
@@ -82,7 +70,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 return _applicationTypes;
             }
 
-            lock (_staticSyncLock)
+            lock (_syncLock)
             {
                 if (_applicationTypes != null)
                 {
