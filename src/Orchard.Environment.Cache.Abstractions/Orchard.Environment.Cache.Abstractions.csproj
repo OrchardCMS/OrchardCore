@@ -9,6 +9,7 @@
     <PackageId>Orchard.Environment.Cache.Abstractions</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+    <RootNamespace>Orchard.Environment.Cache</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

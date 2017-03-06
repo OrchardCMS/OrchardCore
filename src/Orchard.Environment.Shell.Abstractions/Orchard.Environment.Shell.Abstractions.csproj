@@ -9,6 +9,7 @@
     <PackageId>Orchard.Environment.Shell.Abstractions</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+    <RootNamespace>Orchard.Environment.Shell</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
