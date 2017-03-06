@@ -1,4 +1,4 @@
-﻿using Orchard.Lucene.Net.Util;
+﻿using Lucene.Net.Util;
 
 namespace Orchard.Lucene
 {

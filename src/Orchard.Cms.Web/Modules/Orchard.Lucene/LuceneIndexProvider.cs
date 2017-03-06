@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Orchard.Lucene.Net.Analysis.Standard;
-using Orchard.Lucene.Net.Codecs;
-using Orchard.Lucene.Net.Documents;
-using Orchard.Lucene.Net.Index;
-using Orchard.Lucene.Net.Search;
-using Orchard.Lucene.Net.Store;
-using Orchard.Lucene.Net.Util;
+using Lucene.Net.Analysis.Standard;
+using LuceneNetCodecs = Lucene.Net.Codecs;
+using Lucene.Net.Documents;
+using Lucene.Net.Index;
+using Lucene.Net.Search;
+using Lucene.Net.Store;
+using Lucene.Net.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
@@ -27,9 +27,9 @@ namespace Orchard.Lucene
 
         static LuceneIndexProvider()
         {
-            SPIClassIterator<Codec>.Types.Add(typeof(Net.Codecs.Lucene46.Lucene46Codec));
-            SPIClassIterator<PostingsFormat>.Types.Add(typeof(Net.Codecs.Lucene41.Lucene41PostingsFormat));
-            SPIClassIterator<DocValuesFormat>.Types.Add(typeof(Net.Codecs.Lucene45.Lucene45DocValuesFormat));
+            SPIClassIterator<LuceneNetCodecs.Codec>.Types.Add(typeof(LuceneNetCodecs.Lucene46.Lucene46Codec));
+            SPIClassIterator<LuceneNetCodecs.PostingsFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene41.Lucene41PostingsFormat));
+            SPIClassIterator<LuceneNetCodecs.DocValuesFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene45.Lucene45DocValuesFormat));
         }
 
         public LuceneIndexProvider(

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Lucene.Net.Analysis.Standard;
-using Orchard.Lucene.Net.QueryParsers.Classic;
-using Orchard.Lucene.Net.Search;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.QueryParsers.Classic;
+using Lucene.Net.Search;
 using Orchard.Lucene.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

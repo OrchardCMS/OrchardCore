@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.Lucene.Net.Documents;
+using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Orchard.Lucene.ViewModels
