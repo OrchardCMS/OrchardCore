@@ -1,3 +1,4 @@
+image: Visual Studio 2017 RC
 environment:
   nodejs_version: "6.9.1"
 
@@ -9,7 +10,7 @@ install:
 init:
   - git config --global core.autocrlf true
 build_script:
-  - build.cmd --quiet verify
+  - dotnet build
 clone_depth: 1
 test: off
 deploy: off
