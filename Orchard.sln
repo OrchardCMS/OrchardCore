@@ -36,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Microsoft.AspNetCore", "_M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules.Nancy", "Modules.Nancy", "{D1EC1E7A-8233-4527-A79E-B6ECE9DBB469}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Cms.Web", "src\Orchard.Cms.Web\Orchard.Cms.Web.csproj", "{50629FBB-D63C-4DB8-A260-D2FD2BCF0B8B}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Demo", "src\Orchard.Cms.Web\Modules\Orchard.Demo\Orchard.Demo.csproj", "{19089E81-CEFD-4008-A31C-541D82F58C54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Setup", "src\Orchard.Cms.Web\Modules\Orchard.Setup\Orchard.Setup.csproj", "{6A89ECB8-F5DE-4B01-86AD-CFEE95C854DC}"
@@ -229,8 +231,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Mvc.HelloWorld", "src\Orchard.Mvc.Web\Modules\Orchard.Mvc.HelloWorld\Orchard.Mvc.HelloWorld.csproj", "{4B96E37E-E449-4B55-B12E-AD7816B94F08}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Nancy.HelloWorld", "src\Orchard.Nancy.Web\Modules\Orchard.Nancy.HelloWorld\Orchard.Nancy.HelloWorld.csproj", "{1378DA30-64E4-4A9B-83B4-CCF39EADB26E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Cms.Web", "src\Orchard.Cms.Web\Orchard.Cms.Web.csproj", "{50629FBB-D63C-4DB8-A260-D2FD2BCF0B8B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Mvc.Web", "src\Orchard.Mvc.Web\Orchard.Mvc.Web.csproj", "{2FDE5786-2120-478E-B638-26C4B5CDD783}"
 EndProject
