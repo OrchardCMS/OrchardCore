@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Commands\Orchard.Environment.Commands.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Commands\Orchard.Environment.Commands.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Settings\Orchard.Settings.csproj" />
   </ItemGroup>
 

@@ -15,10 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Hosting\Orchard.Hosting.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Hosting\Orchard.Hosting.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

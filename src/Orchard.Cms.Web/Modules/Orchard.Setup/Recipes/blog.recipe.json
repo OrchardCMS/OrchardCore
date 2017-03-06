@@ -38,7 +38,6 @@
         "Orchard.Users",
 
         // Content Management
-        "Lucene",
         "Orchard.Alias",
         "Orchard.Autoroute",
         "Orchard.Body",
@@ -52,6 +51,7 @@
         "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Layers",
+        "Orchard.Lucene",
         "Orchard.Lists",
         "Orchard.Markdown",
         "Orchard.Menu",

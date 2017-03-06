@@ -14,13 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Orchard.DeferredTasks\Orchard.DeferredTasks.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Data\Orchard.Data.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Cache\Orchard.Environment.Cache.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.BackgroundTasks\Orchard.BackgroundTasks.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Shell.Data\Orchard.Environment.Shell.Data.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.DeferredTasks\Orchard.DeferredTasks.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Cache\Orchard.Environment.Cache.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.BackgroundTasks\Orchard.BackgroundTasks.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Shell.Data\Orchard.Environment.Shell.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

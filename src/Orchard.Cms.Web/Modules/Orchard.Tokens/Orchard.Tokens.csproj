@@ -15,10 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

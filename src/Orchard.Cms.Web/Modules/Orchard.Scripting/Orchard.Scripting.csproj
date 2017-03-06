@@ -15,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Scripting.Core\Orchard.Scripting.Core.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Scripting.JavaScript\Orchard.Scripting.JavaScript.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Scripting.Core\Orchard.Scripting.Core.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Scripting.JavaScript\Orchard.Scripting.JavaScript.csproj" />
   </ItemGroup>
 
   <ItemGroup>

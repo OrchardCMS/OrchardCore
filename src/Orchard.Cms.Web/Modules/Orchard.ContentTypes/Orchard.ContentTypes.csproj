@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

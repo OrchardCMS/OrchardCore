@@ -15,12 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\Orchard.Navigation\Orchard.Navigation.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.SiteSettings.Core\Orchard.SiteSettings.Core.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.SiteSettings.Core\Orchard.SiteSettings.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

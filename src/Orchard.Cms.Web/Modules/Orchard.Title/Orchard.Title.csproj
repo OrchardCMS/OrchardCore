@@ -15,13 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Indexing.Abstractions\Orchard.Indexing.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Indexing.Abstractions\Orchard.Indexing.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.MetaWeblog.Abstractions\Orchard.MetaWeblog.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,17 +11,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Data\Orchard.Data.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Environment.Extensions\Orchard.Environment.Extensions.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Events\Orchard.Events.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Hosting\Orchard.Hosting.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
-    <ProjectReference Include="..\..\src\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Extensions\Orchard.Environment.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Events\Orchard.Events.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting\Orchard.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj" />
   </ItemGroup>
 
   <ItemGroup>
