@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Descriptor.Models;
 
@@ -18,19 +19,11 @@ namespace Orchard.Environment.Shell.Builders.Models
 
         public IDictionary<Type, FeatureEntry> Dependencies { get; set; }
 
-        public IEnumerable<FeatureEntry> FeatureEntries
+        public IEnumerable<TypeInfo> Types
         {
             get
             {
-                return Dependencies.Values.Distinct();
-            }
-        }
-
-        public IEnumerable<Type> Types
-        {
-            get
-            {
-                return Dependencies.Keys;
+                return Dependencies.Keys.Select(t => t.GetTypeInfo());
             }
         }
     }

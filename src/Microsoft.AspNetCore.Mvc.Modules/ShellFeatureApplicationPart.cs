@@ -55,13 +55,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             get
             {
-                var excludedTypes =
-                    ExtensionManager.GetFeatureEntries()
-                    .Except(ShellBlueprint.FeatureEntries)
-                    .SelectMany(f => f.ExportedTypes)
-                    .Select(type => type.GetTypeInfo());
-
-                return GetApplicationTypes().Except(excludedTypes);
+                return GetApplicationTypes().Union(ShellBlueprint.Types);
             }
         }
 
@@ -79,7 +73,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 {
                     _applicationTypes = DefaultAssemblyPartDiscoveryProvider
                         .DiscoverAssemblyParts(HostingEnvironment.ApplicationName)
-                        .SelectMany(p => (p as AssemblyPart).Types);
+                        .SelectMany(p => (p as AssemblyPart).Assembly.ExportedTypes)
+                        .Select(type => type.GetTypeInfo())
+                        .Where(type => type.IsClass && !type.IsAbstract)
+                        .Except(ExtensionManager.GetTypes());
                 }
             }
 

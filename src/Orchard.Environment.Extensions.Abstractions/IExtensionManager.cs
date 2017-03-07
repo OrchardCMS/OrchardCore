@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
@@ -21,9 +23,10 @@ namespace Orchard.Environment.Extensions
 
     public static class IExtensionManagerExtensions
     {
-        public static IEnumerable<FeatureEntry> GetFeatureEntries(this IExtensionManager manager)
+        public static IEnumerable<TypeInfo> GetTypes(this IExtensionManager manager)
         {
-            return manager.LoadFeaturesAsync().GetAwaiter().GetResult();
+            return manager.LoadFeaturesAsync().GetAwaiter().GetResult()
+                .SelectMany(f => f.ExportedTypes).Select(t => t.GetTypeInfo());
         }
     }
 }
