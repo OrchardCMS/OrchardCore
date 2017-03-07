@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
+using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 
@@ -172,7 +173,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 throw new InvalidOperationException("Output is no more a valid Shape method parameter. Return an IHtmlContent instead.");
             }
 
-            var getter = _getters.GetOrAdd(parameter.Name, n =>
+            var getter = _getters.GetOrAdd(ShapeTagHelper.LowerKebabToPascalCase(parameter.Name), n =>
                 CallSite<Func<CallSite, object, dynamic>>.Create(
                 Binder.GetMember(
                 CSharpBinderFlags.None, n, null, new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) })));
