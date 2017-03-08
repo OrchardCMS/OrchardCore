@@ -20,13 +20,4 @@ namespace Orchard.Environment.Extensions
         Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
         Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad);
     }
-
-    public static class IExtensionManagerExtensions
-    {
-        public static IEnumerable<TypeInfo> GetTypes(this IExtensionManager manager)
-        {
-            return manager.LoadFeaturesAsync().GetAwaiter().GetResult()
-                .SelectMany(f => f.ExportedTypes).Select(t => t.GetTypeInfo());
-        }
-    }
 }
