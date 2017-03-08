@@ -1,7 +1,9 @@
-﻿using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Orchard.Environment.Extensions.Features;
+using Orchard.Environment.Extensions.Loaders;
 
 namespace Orchard.Environment.Extensions
 {

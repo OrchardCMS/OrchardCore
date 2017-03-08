@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
@@ -18,24 +15,16 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
         public SharedCompilerCacheProvider(
             ApplicationPartManager applicationPartManager,
-            IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-            IHostingEnvironment env)
+            IRazorViewEngineFileProviderAccessor fileProviderAccessor)
         {
             lock (_synLock)
             {
                 if (_cache == null)
                 {
-                    var feature = new ViewsFeature();
-
-                    // Applying ViewsFeatureProvider to gather any precompiled view
-                    new ViewsFeatureProvider().PopulateFeature(
-                        new AssemblyPart[]
-                        {
-                            new AssemblyPart(Assembly.Load(new AssemblyName(env.ApplicationName)))
-                        },
-                        feature);
-
-                    _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
+                    _cache = new DefaultCompilerCacheProvider(
+                        applicationPartManager,
+                        fileProviderAccessor)
+                        .Cache;
                 }
             }
         }

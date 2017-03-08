@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -18,9 +19,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.AspNetCore.Mvc.Modules
 {
-	public static class ModularServiceCollectionExtensions
+    public static class ModularServiceCollectionExtensions
     {
-        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices, 
+        public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices,
             IServiceProvider applicationServices)
         {
             moduleServices.Configure(services =>
@@ -34,7 +35,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
-            var builder = services.AddMvcCore(options => {
+            var builder = services.AddMvcCore(options =>
+            {
                 // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
 
@@ -49,7 +51,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
             builder.AddModularRazorViewEngine(applicationServices);
 
             // Use a custom ICompilerCacheProvider so all tenant reuse the same ICompilerCache instance
-            builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider), typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
+            builder.Services.Replace(new ServiceDescriptor(typeof(ICompilerCacheProvider),
+                typeof(SharedCompilerCacheProvider), ServiceLifetime.Singleton));
 
             AddMvcModuleCoreServices(services);
             AddDefaultFrameworkParts(builder.PartManager);
@@ -64,6 +67,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
             manager.ApplicationParts.Add(new ShellFeatureApplicationPart(httpContextAccessor));
+
+            manager.ApplicationParts.Add(new AssemblyPart(Assembly.Load(new AssemblyName(
+                services.GetRequiredService<IHostingEnvironment>().ApplicationName))));
         }
 
         private static void AddDefaultFrameworkParts(ApplicationPartManager partManager)
@@ -88,7 +94,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
             });
         }
-        
+
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
             services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
