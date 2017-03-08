@@ -91,7 +91,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         
         internal static void AddMvcModuleCoreServices(IServiceCollection services)
         {
-            services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+            services.Replace(
+                ServiceDescriptor.Scoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>());
 
             services.AddScoped<IViewLocationExpanderProvider, DefaultViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, ModularViewLocationExpanderProvider>();

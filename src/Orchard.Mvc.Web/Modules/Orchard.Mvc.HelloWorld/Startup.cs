@@ -22,6 +22,7 @@ namespace Orchard.Mvc.HelloWorld
 
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddRouting();
             serviceCollection.AddMvcModules(_applicationServices);
         }
 
@@ -40,7 +41,7 @@ namespace Orchard.Mvc.HelloWorld
             routes.MapAreaRoute
             (
                 name: "Home",
-                areaName: "HelloWorld",
+                areaName: "Orchard.Mvc.HelloWorld",
                 template: "",
                 defaults: new { controller = "Home", action = "Index" }
             );
