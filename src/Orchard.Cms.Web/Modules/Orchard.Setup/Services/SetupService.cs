@@ -9,7 +9,6 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using System;

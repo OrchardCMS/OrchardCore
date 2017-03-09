@@ -1,26 +1,13 @@
-using System;
-using Microsoft.AspNetCore.Modules;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
 
-namespace Orchard.Hosting
+namespace Orchard.Environment.Shell
 {
-    public static class HostServiceExtensions
+    public static class ShellServiceCollectionExtensions
     {
-        public static IServiceCollection AddHost(
-            this IServiceCollection services, Action<IServiceCollection> additionalDependencies)
+        public static IServiceCollection AddHostingShellServices(this IServiceCollection services)
         {
-            additionalDependencies(services);
-
-            return services;
-        }
-
-        public static IServiceCollection AddHostCore(this IServiceCollection services)
-        {
-            services.AddSingleton<IClock, Clock>();
-
             services.AddSingleton<ShellHost>();
             services.AddSingleton<IShellHost>(sp => sp.GetRequiredService<ShellHost>());
             services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
-using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.BackgroundTasks

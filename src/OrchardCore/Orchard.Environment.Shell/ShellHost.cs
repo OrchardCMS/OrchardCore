@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Builders;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Hosting.ShellBuilders;
 
-namespace Orchard.Hosting
+namespace Orchard.Environment.Shell
 {
     /// <summary>
     /// All <see cref="ShellContext"/> object are loaded when <see cref="Initialize"/> is called. They can be removed when the

@@ -18,7 +18,6 @@
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Events\Orchard.Events.csproj" />
-    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting\Orchard.Hosting.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj" />

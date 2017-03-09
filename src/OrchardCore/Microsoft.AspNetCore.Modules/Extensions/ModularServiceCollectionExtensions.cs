@@ -6,7 +6,6 @@ using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Hosting;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -91,18 +90,18 @@ namespace Microsoft.AspNetCore.Modules
         public static IServiceCollection AddWebHost(
             this IServiceCollection services)
         {
-            return services.AddHost(internalServices =>
-            {
-                internalServices.AddLogging();
-                internalServices.AddOptions();
-                internalServices.AddLocalization();
-                internalServices.AddHostCore();
-                internalServices.AddExtensionManagerHost("App_Data", "dependencies");
+            services.AddLogging();
+            services.AddOptions();
+            services.AddLocalization();
+            services.AddHostingShellServices();
+            services.AddExtensionManagerHost("App_Data", "dependencies");
 
-                internalServices.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IClock, Clock>();
 
-                internalServices.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
-            });
+            services.AddScoped<IModularTenantRouteBuilder, ModularTenantRouteBuilder>();
+
+            return services;
         }
     }
 }
