@@ -449,11 +449,17 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
+            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentType);
+
+            if (content.IsPublished() &&
+                typeDefinition.Settings.ToObject<ContentTypeSettings>().Updatable)
+            {
+                await _contentManager.UnpublishAsync(content);
+            }
+
             return await EditPOST(contentItemId, returnUrl, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);
-
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content has been published."]
@@ -461,39 +467,9 @@ namespace Orchard.Contents.Controllers
             });
         }
 
-        [HttpPost, ActionName("Edit")]
-        [Mvc.FormValueRequired("submit.Update")]
-        public async Task<IActionResult> EditAndUpdatePOST(string contentItemId, string returnUrl)
+        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish)
         {
-            var content = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            if (content == null)
-            {
-                return NotFound();
-            }
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
-            {
-                return Unauthorized();
-            }
-
-            return await EditPOST(contentItemId, returnUrl, contentItem =>
-            {
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-                _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? T["Your published content has been updated."]
-                    : T["Your published {0} has been updated.", typeDefinition.DisplayName]);
-
-                return Task.CompletedTask;
-            }, updateLatest: true);
-        }
-
-        private async Task<IActionResult> EditPOST(string contentItemId, string returnUrl, Func<ContentItem, Task> conditionallyPublish, bool updateLatest = false)
-        {
-            var contentItem = updateLatest
-                ? await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)
-                : await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
@@ -523,8 +499,6 @@ namespace Orchard.Contents.Controllers
                 return View("Edit", model);
             }
 
-            _session.Save(contentItem);
-
             await conditionallyPublish(contentItem);
 
             //if (!string.IsNullOrWhiteSpace(returnUrl)
@@ -534,8 +508,6 @@ namespace Orchard.Contents.Controllers
             //    returnUrl = Url.ItemDisplayUrl(contentItem);
             //}
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
