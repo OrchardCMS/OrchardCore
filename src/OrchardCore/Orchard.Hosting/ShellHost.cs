@@ -19,7 +19,7 @@ namespace Orchard.Hosting
     /// tenant is removed, but are necessary to match an incoming request, even if they are not initialized.
     /// Each <see cref="ShellContext"/> is activated (its service provider is built) on the first request.
     /// </summary>
-    public class DefaultOrchardHost : IOrchardHost, IShellDescriptorManagerEventHandler
+    public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
     {
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -30,12 +30,12 @@ namespace Orchard.Hosting
         private ConcurrentDictionary<string, ShellContext> _shellContexts;
         private readonly IExtensionManager _extensionManager;
 
-        public DefaultOrchardHost(
+        public ShellHost(
             IShellSettingsManager shellSettingsManager,
             IShellContextFactory shellContextFactory,
             IRunningShellTable runningShellTable,
             IExtensionManager extensionManager,
-            ILogger<DefaultOrchardHost> logger)
+            ILogger<ShellHost> logger)
         {
             _extensionManager = extensionManager;
             _shellSettingsManager = shellSettingsManager;

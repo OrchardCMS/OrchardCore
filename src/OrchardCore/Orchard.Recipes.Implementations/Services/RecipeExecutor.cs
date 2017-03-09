@@ -27,7 +27,7 @@ namespace Orchard.Recipes.Services
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
         private readonly ShellSettings _shellSettings;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IRecipeStore _recipeStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
@@ -39,7 +39,7 @@ namespace Orchard.Recipes.Services
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
             ShellSettings shellSettings,
-            IOrchardHost orchardHost,
+            IShellHost orchardHost,
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {

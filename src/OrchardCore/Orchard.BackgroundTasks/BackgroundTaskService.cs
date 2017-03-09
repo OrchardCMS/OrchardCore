@@ -19,14 +19,14 @@ namespace Orchard.BackgroundTasks
 
         private readonly Dictionary<string, IEnumerable<IBackgroundTask>> _tasks;
         private readonly IApplicationLifetime _applicationLifetime;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly ShellSettings _shellSettings;
         private readonly Dictionary<IBackgroundTask, BackgroundTaskState> _states;
         private readonly Dictionary<string, Timer> _timers;
         private readonly Dictionary<string, TimeSpan> _periods;
 
         public BackgroundTaskService(
-            IOrchardHost orchardHost,
+            IShellHost orchardHost,
             ShellSettings shellSettings,
             IApplicationLifetime applicationLifetime,
             IEnumerable<IBackgroundTask> tasks,

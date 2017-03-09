@@ -18,14 +18,14 @@ namespace Orchard.Tenants.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
         private readonly INotifier _notifier;
 
         public AdminController(
-            IOrchardHost orchardHost, 
+            IShellHost orchardHost, 
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,

@@ -21,9 +21,9 @@ namespace Orchard.Hosting
         {
             services.AddSingleton<IClock, Clock>();
 
-            services.AddSingleton<DefaultOrchardHost>();
-            services.AddSingleton<IOrchardHost>(sp => sp.GetRequiredService<DefaultOrchardHost>());
-            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<DefaultOrchardHost>());
+            services.AddSingleton<ShellHost>();
+            services.AddSingleton<IShellHost>(sp => sp.GetRequiredService<ShellHost>());
+            services.AddSingleton<IShellDescriptorManagerEventHandler>(sp => sp.GetRequiredService<ShellHost>());
             {
                 // Use a single default site by default, i.e. if AddMultiTenancy hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();

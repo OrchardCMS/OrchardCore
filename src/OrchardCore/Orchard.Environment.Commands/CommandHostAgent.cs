@@ -16,10 +16,10 @@ namespace Orchard.Environment.Commands
 {
     public class CommandHostAgent
     {
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
 
-        public CommandHostAgent(IOrchardHost orchardHost,
+        public CommandHostAgent(IShellHost orchardHost,
             IShellSettingsManager shellSettingsManager,
             IStringLocalizer localizer)
         {

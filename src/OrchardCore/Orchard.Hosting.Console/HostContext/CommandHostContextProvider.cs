@@ -41,7 +41,7 @@ namespace Orchard.Hosting.HostContext
         {
             context.Arguments = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(_args));
             context.CommandHost = new CommandHostAgent(
-                _serviceProvider.GetService<IOrchardHost>(),
+                _serviceProvider.GetService<IShellHost>(),
                 _serviceProvider.GetService<IShellSettingsManager>(),
                 _serviceProvider.GetService<IStringLocalizer>()
                 );

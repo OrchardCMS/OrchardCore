@@ -13,13 +13,13 @@ namespace Microsoft.AspNetCore.Modules
     public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ILogger _logger;
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
-            IOrchardHost orchardHost,
+            IShellHost orchardHost,
             IRunningShellTable runningShellTable,
             ILogger<ModularTenantContainerMiddleware> logger)
         {

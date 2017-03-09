@@ -5,7 +5,7 @@ using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Hosting
 {
-    public interface IOrchardHost
+    public interface IShellHost
     {
         /// <summary>
         /// Ensure that all the <see cref="ShellContext"/> are created and available to process requests. 

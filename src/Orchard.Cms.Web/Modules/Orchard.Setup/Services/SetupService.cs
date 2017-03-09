@@ -24,7 +24,7 @@ namespace Orchard.Setup.Services
     public class SetupService : ISetupService
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
@@ -38,7 +38,7 @@ namespace Orchard.Setup.Services
 
         public SetupService(
             ShellSettings shellSettings,
-            IOrchardHost orchardHost,
+            IShellHost orchardHost,
             IShellContextFactory shellContextFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
