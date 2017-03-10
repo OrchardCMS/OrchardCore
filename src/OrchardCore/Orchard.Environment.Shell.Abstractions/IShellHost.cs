@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Orchard.Environment.Shell;
 using Orchard.Hosting.ShellBuilders;
 
-namespace Orchard.Hosting
+namespace Orchard.Environment.Shell
 {
-    public interface IOrchardHost
+    public interface IShellHost
     {
         /// <summary>
         /// Ensure that all the <see cref="ShellContext"/> are created and available to process requests. 

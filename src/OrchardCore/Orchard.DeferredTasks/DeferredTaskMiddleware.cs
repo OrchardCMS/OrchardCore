@@ -12,9 +12,9 @@ namespace Orchard.DeferredTasks
     public class DeferredTaskMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
 
-        public DeferredTaskMiddleware(RequestDelegate next, IOrchardHost orchardHost)
+        public DeferredTaskMiddleware(RequestDelegate next, IShellHost orchardHost)
         {
             _next = next;
             _orchardHost = orchardHost;

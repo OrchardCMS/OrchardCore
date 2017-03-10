@@ -9,7 +9,6 @@ using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Environment.Shell.Models;
 using Orchard.Events;
-using Orchard.Hosting;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using System;
@@ -24,7 +23,7 @@ namespace Orchard.Setup.Services
     public class SetupService : ISetupService
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
@@ -38,7 +37,7 @@ namespace Orchard.Setup.Services
 
         public SetupService(
             ShellSettings shellSettings,
-            IOrchardHost orchardHost,
+            IShellHost orchardHost,
             IShellContextFactory shellContextFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,

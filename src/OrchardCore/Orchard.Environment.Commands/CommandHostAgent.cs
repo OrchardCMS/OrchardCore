@@ -9,17 +9,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
-using Orchard.Hosting;
 using Orchard.Hosting.ShellBuilders;
 
 namespace Orchard.Environment.Commands
 {
     public class CommandHostAgent
     {
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _orchardHost;
         private readonly IShellSettingsManager _shellSettingsManager;
 
-        public CommandHostAgent(IOrchardHost orchardHost,
+        public CommandHostAgent(IShellHost orchardHost,
             IShellSettingsManager shellSettingsManager,
             IStringLocalizer localizer)
         {
