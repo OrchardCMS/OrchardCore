@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.1" />
   </ItemGroup>

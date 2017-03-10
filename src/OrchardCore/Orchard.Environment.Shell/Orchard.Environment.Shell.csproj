@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.DotNet.ProjectModel.Loader" Version="1.0.0-preview2-003121" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
