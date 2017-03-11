@@ -21,7 +21,8 @@ os:
   - osx
 osx_image: xcode7.3
 install:
-  - ./scripts/dotnet-install.sh
+  - ./scripts/dotnet-install.sh --shared-runtime --version 1.1.1
+  - ./scripts/dotnet-install.sh 
 before_script:
   - dotnet restore
 script:
