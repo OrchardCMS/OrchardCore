@@ -15,7 +15,7 @@ namespace Orchard.Settings.Controllers
     {
         private readonly ISiteSettingsDisplayManager _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
-        private readonly IOrchardHost _orchardHost;
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -24,14 +24,14 @@ namespace Orchard.Settings.Controllers
             ISiteService siteService,
             ISiteSettingsDisplayManager siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
-            IOrchardHost orchardHost,
+            IShellHost shellHost,
             ShellSettings shellSettings,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;
-            _orchardHost = orchardHost;
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _notifier = notifier;
             _authorizationService = authorizationService;
@@ -100,7 +100,7 @@ namespace Orchard.Settings.Controllers
             {
                 return Unauthorized();
             }
-            _orchardHost.ReloadShellContext(_shellSettings);
+            _shellHost.ReloadShellContext(_shellSettings);
 
             return Redirect("RestartSite");
         }
