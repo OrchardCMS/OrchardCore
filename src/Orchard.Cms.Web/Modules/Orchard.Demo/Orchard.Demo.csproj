@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ResourceManagement\Orchard.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ResourceManagement.Abstractions\Orchard.ResourceManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Contents\Orchard.Contents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

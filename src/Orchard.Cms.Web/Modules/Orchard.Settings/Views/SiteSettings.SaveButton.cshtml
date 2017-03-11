@@ -5,7 +5,6 @@
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
-@if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-{
+@if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) {
     <a id="button-cancel" href="@returnUrl" class="button">@T["Cancel"]</a>
 }
