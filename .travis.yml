@@ -28,4 +28,4 @@ before_script:
   - dotnet restore
 script:
   - dotnet build
-  - ./scripts/run-tests.sh
+  - dotnet test test/Orchard.Tests
