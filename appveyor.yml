@@ -15,5 +15,5 @@ build_script:
 test_script:
   - ps: .\scripts\run-tests.ps1
 clone_depth: 1
-test: off
+test: on
 deploy: off
