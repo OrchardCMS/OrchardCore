@@ -22,7 +22,6 @@ namespace Orchard.OpenId.ViewModels
         public string LogoutRedirectUri { get; set; }
         public ClientType Type { get; set; }
         public bool SkipConsent { get; set; }
-        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

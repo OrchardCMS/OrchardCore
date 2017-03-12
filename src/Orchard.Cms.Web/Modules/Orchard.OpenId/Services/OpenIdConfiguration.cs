@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using AspNet.Security.OpenIdConnect.Extensions;
+using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -69,7 +69,7 @@ namespace Orchard.OpenId
             }
             if (settings.EnableUserInfoEndpoint)
             {
-                options.UserinfoEndpointPath = "/Orchard.OpenId/Access/Userinfo";
+                options.UserinfoEndpointPath = "/Orchard.OpenId/Userinfo/Me";
             }
             if (settings.AllowPasswordFlow)
             {

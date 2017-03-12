@@ -57,11 +57,6 @@ namespace Orchard.OpenId.Models
         /// </summary>
         public bool SkipConsent { get; set; }
 
-        /// <summary>
-        /// Gets or sets the RoleNames assined to the app.
-        /// </summary>
-        public List<string> RoleNames { get; set; } = new List<string>();
-
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

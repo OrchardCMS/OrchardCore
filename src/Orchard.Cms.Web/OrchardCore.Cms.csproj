@@ -43,6 +43,7 @@
     <ProjectReference Include="Modules\Orchard.Modules\Orchard.Modules.csproj" />
     <ProjectReference Include="Modules\Orchard.Mvc\Orchard.Mvc.csproj" />
     <ProjectReference Include="Modules\Orchard.Navigation\Orchard.Navigation.csproj" />
+    <ProjectReference Include="Modules\Orchard.OpenId\Orchard.OpenId.csproj" />
     <ProjectReference Include="Modules\Orchard.Recipes\Orchard.Recipes.csproj" />
     <ProjectReference Include="Modules\Orchard.Resources\Orchard.Resources.csproj" />
     <ProjectReference Include="Modules\Orchard.Roles\Orchard.Roles.csproj" />
@@ -67,6 +68,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
