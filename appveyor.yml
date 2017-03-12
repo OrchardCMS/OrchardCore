@@ -12,6 +12,8 @@ init:
 build_script:
   - dotnet restore
   - dotnet build
+test_script:
+  - ps: .\scripts\run-tests.ps1
 clone_depth: 1
-test: off
+test: on
 deploy: off

@@ -1,8 +1,13 @@
 language: csharp
 sudo: required
 dist: trusty
+mono: none
+dotnet: 1.0.0
 addons:
   apt:
+    sources:
+    - sourceline: 'deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main'
+      key_url: 'https://apt-mo.trafficmanager.net/keys/microsoft.asc'
     packages:
     - gettext
     - libcurl4-openssl-dev
@@ -10,17 +15,17 @@ addons:
     - libssl-dev
     - libunwind8
     - zlib1g
+    - dotnet-dev-1.0.1
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1    
-mono:
-  - 4.0.5
 os:
   - linux
   - osx
-osx_image: xcode7.1
-before_install:
-  - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
+osx_image: xcode7.3
+before_script:
+  - dotnet restore
 script:
-  - ./build.sh --quiet verify
+  - dotnet build
+  - ./scripts/run-tests.sh
