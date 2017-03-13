@@ -34,13 +34,15 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         public static IServiceCollection AddMvcModules(this IServiceCollection services,
             IServiceProvider applicationServices)
         {
-            var builder = services.AddMvcCore(options => {
+            var builder = services.AddMvcCore(options =>
+            {
                 // Do we need this?
                 options.Filters.Add(typeof(AutoValidateAntiforgeryTokenAuthorizationFilter));
 
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
             });
 
+            builder.AddAuthorization();
             builder.AddViews();
             builder.AddViewLocalization();
 
