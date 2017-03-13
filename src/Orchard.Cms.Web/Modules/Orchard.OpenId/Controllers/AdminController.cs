@@ -14,6 +14,9 @@ using Orchard.OpenId.ViewModels;
 using Orchard.Settings;
 using System.Collections.Generic;
 using Orchard.Security.Services;
+using Microsoft.AspNetCore.Identity;
+using Orchard.Security;
+using System;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -104,9 +107,9 @@ namespace Orchard.OpenId.Controllers
                 ClientId = application.ClientId,
                 Type = application.Type,
                 SkipConsent = application.SkipConsent,
-                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() { Name = r.Name,
-                                                                                                      NormalizedName = r.NormalizedName,
-                                                                                                      Selected = application.NormalizedRoleNames.Contains(r.NormalizedName)
+                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() {
+                                                                                                        Name = r,
+                                                                                                        Selected = application.RoleNames.Contains(r),
                                                                                                     }).ToList(),
                 AllowAuthorizationCodeFlow = application.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = application.AllowClientCredentialsFlow,
@@ -158,9 +161,9 @@ namespace Orchard.OpenId.Controllers
             if (model.UpdateClientSecret && model.Type == ClientType.Confidential)
                 await _applicationManager.SetClientSecretAsync(application, model.ClientSecret, HttpContext.RequestAborted);
 
-            application.NormalizedRoleNames = new List<string>();
+            application.RoleNames = new List<string>();
             if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
-                application.NormalizedRoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.NormalizedName).ToList();
+                application.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
 
             await _applicationManager.UpdateAsync(application, HttpContext.RequestAborted);
 
@@ -180,10 +183,9 @@ namespace Orchard.OpenId.Controllers
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
                 _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
-            var roles = await _roleProvider.GetRoleNamesAsync();
             var model = new CreateOpenIdApplicationViewModel()
             {
-                RoleEntries = roles.Select(r => new RoleEntry() { Name = r.Name, NormalizedName = r.NormalizedName }).ToList()
+                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() { Name = r }).ToList()
             };
 
             ViewData["OpenIdSettings"] = openIdSettings;
@@ -211,9 +213,9 @@ namespace Orchard.OpenId.Controllers
                 return View("Create", model);
             }
 
-            var normalizedRoleNames = new List<string>();
+            var roleNames = new List<string>();
             if (model.Type == ClientType.Confidential && model.AllowClientCredentialsFlow)
-                normalizedRoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.NormalizedName).ToList();
+                roleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
             
             var application = new OpenIdApplication
             {
@@ -223,7 +225,7 @@ namespace Orchard.OpenId.Controllers
                 ClientId = model.ClientId,
                 Type = model.Type,
                 SkipConsent = model.SkipConsent,
-                NormalizedRoleNames = normalizedRoleNames,
+                RoleNames = roleNames,
                 AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,

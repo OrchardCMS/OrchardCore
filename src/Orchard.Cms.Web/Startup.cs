@@ -52,10 +52,10 @@ namespace Orchard.Cms.Web
             }
 
             app.UseStaticFiles();
+            loggerFactory.AddConsole(Configuration);
 
             if (env.IsDevelopment())
             {
-                loggerFactory.AddConsole(Configuration);
                 loggerFactory.AddDebug();
             }
 

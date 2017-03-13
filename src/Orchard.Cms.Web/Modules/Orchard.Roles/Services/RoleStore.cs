@@ -58,10 +58,10 @@ namespace Orchard.Roles.Services
             _memoryCache.Set(Key, roles);
         }
 
-        public async Task<IEnumerable<RoleNamesEntry>> GetRoleNamesAsync()
+        public async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
             var roles = await GetRolesAsync();
-            return roles.Roles.Select(x => new RoleNamesEntry() { Name = x.RoleName, NormalizedName = x.NormalizedRoleName }).OrderBy(x => x.Name).ToList();
+            return roles.Roles.Select(x => x.RoleName).OrderBy(x => x).ToList();
         }
 
         #region IRoleStore<Role>

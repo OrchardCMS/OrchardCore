@@ -38,7 +38,6 @@ namespace Orchard.OpenId.ViewModels
     public class RoleEntry
     {
         public string Name { get; set; }
-        public string NormalizedName { get; set; }
         public bool Selected { get; set; }
     }
 

@@ -60,7 +60,7 @@ namespace Orchard.OpenId.Models
         /// <summary>
         /// Gets or sets the RoleNames assined to the app.
         /// </summary>
-        public List<string> NormalizedRoleNames { get; set; } = new List<string>();
+        public List<string> RoleNames { get; set; } = new List<string>();
 
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }

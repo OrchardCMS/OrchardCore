@@ -336,13 +336,13 @@ namespace Orchard.OpenId.Controllers
                 OpenIdConnectConstants.Destinations.AccessToken,
                 OpenIdConnectConstants.Destinations.IdentityToken);
 
-            foreach (var roleName in application.NormalizedRoleNames)
+            foreach (var roleName in application.RoleNames)
             {
                 identity.AddClaim(identity.RoleClaimType, roleName,
                     OpenIdConnectConstants.Destinations.AccessToken,
                     OpenIdConnectConstants.Destinations.IdentityToken);
 
-                foreach (var claim in await _roleStore.GetClaimsAsync(await _roleStore.FindByNameAsync(roleName, HttpContext.RequestAborted)))
+                foreach (var claim in await _roleStore.GetClaimsAsync(await _roleStore.FindByIdAsync(roleName, HttpContext.RequestAborted)))
                 {
                     identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken);
                 }
