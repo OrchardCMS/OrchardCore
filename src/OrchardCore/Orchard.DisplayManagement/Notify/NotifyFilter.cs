@@ -102,7 +102,7 @@ namespace Orchard.DisplayManagement.Notify
 
         public void OnResultExecuting(ResultExecutingContext filterContext)
         {
-            if ((filterContext.Result is ViewResult) || _shouldDeleteCookie)
+            if ((filterContext.Result is ViewResult) && _shouldDeleteCookie)
             {
                 _httpContextAccessor.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
             }
