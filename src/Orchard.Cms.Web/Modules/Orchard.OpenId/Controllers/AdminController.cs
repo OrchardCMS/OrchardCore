@@ -12,6 +12,8 @@ using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Settings;
+using System.Collections.Generic;
+using Orchard.Security.Services;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -23,6 +25,7 @@ namespace Orchard.OpenId.Controllers
         private readonly IHtmlLocalizer<AdminController> H;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
+        private readonly IRoleProvider _roleProvider;
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
         private readonly OpenIdApplicationStore _applicationStore;
         private readonly INotifier _notifier;
@@ -33,6 +36,7 @@ namespace Orchard.OpenId.Controllers
             ISiteService siteService,
             IStringLocalizer<AdminController> stringLocalizer,
             IAuthorizationService authorizationService,
+            IRoleProvider roleProvider,
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             OpenIdApplicationStore applicationStore,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -45,6 +49,7 @@ namespace Orchard.OpenId.Controllers
             H = htmlLocalizer;
             _authorizationService = authorizationService;
             _applicationManager = applicationManager;
+            _roleProvider = roleProvider;
             _applicationStore = applicationStore;
             _notifier = notifier;
             _openIdService = openIdService;
@@ -99,6 +104,10 @@ namespace Orchard.OpenId.Controllers
                 ClientId = application.ClientId,
                 Type = application.Type,
                 SkipConsent = application.SkipConsent,
+                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() { Name = r.Name,
+                                                                                                      NormalizedName = r.NormalizedName,
+                                                                                                      Selected = application.NormalizedRoleNames.Contains(r.NormalizedName)
+                                                                                                    }).ToList(),
                 AllowAuthorizationCodeFlow = application.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = application.AllowClientCredentialsFlow,
                 AllowImplicitFlow = application.AllowImplicitFlow,
@@ -116,6 +125,23 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
+            
+            if (model.UpdateClientSecret && string.IsNullOrWhiteSpace(model.ClientSecret))
+                ModelState.AddModelError(nameof(model.ClientSecret), "The client secret is required");
+
+            OpenIdApplication application = null;
+
+            if (ModelState.IsValid)
+            {
+                application = await _applicationManager.FindByIdAsync(model.Id, HttpContext.RequestAborted);
+                if (application == null)
+                    return NotFound();
+
+                if (application.Type == ClientType.Public && model.Type == ClientType.Confidential && !model.UpdateClientSecret)
+                {
+                    ModelState.AddModelError(nameof(model.UpdateClientSecret), "Setting a new client secret is required");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
@@ -127,12 +153,15 @@ namespace Orchard.OpenId.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
-
-            var application = await _applicationManager.FindByIdAsync(model.Id, HttpContext.RequestAborted);
-            if (application == null)
-                return NotFound();
-
+            
             await TryUpdateModelAsync(application);
+            if (model.UpdateClientSecret && model.Type == ClientType.Confidential)
+                await _applicationManager.SetClientSecretAsync(application, model.ClientSecret, HttpContext.RequestAborted);
+
+            application.NormalizedRoleNames = new List<string>();
+            if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
+                application.NormalizedRoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.NormalizedName).ToList();
+
             await _applicationManager.UpdateAsync(application, HttpContext.RequestAborted);
 
             if (returnUrl == null)
@@ -146,14 +175,20 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-
+            
             var openIdSettings = await _openIdService.GetOpenIdSettingsAsync();
             if (!_openIdService.IsValidOpenIdSettings(openIdSettings))
                 _notifier.Warning(H["OpenID Connect settings are not properly configured."]);
 
+            var roles = await _roleProvider.GetRoleNamesAsync();
+            var model = new CreateOpenIdApplicationViewModel()
+            {
+                RoleEntries = roles.Select(r => new RoleEntry() { Name = r.Name, NormalizedName = r.NormalizedName }).ToList()
+            };
+
             ViewData["OpenIdSettings"] = openIdSettings;
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new CreateOpenIdApplicationViewModel());
+            return View(model);
         }
 
         [HttpPost]
@@ -161,6 +196,9 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
+            
+            if (model.Type == ClientType.Confidential && string.IsNullOrWhiteSpace(model.ClientSecret))
+                ModelState.AddModelError(nameof(model.ClientSecret), "The client secret is required when application type is confidential.");
 
             if (!ModelState.IsValid)
             {
@@ -173,6 +211,10 @@ namespace Orchard.OpenId.Controllers
                 return View("Create", model);
             }
 
+            var normalizedRoleNames = new List<string>();
+            if (model.Type == ClientType.Confidential && model.AllowClientCredentialsFlow)
+                normalizedRoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.NormalizedName).ToList();
+            
             var application = new OpenIdApplication
             {
                 DisplayName = model.DisplayName,
@@ -181,6 +223,7 @@ namespace Orchard.OpenId.Controllers
                 ClientId = model.ClientId,
                 Type = model.Type,
                 SkipConsent = model.SkipConsent,
+                NormalizedRoleNames = normalizedRoleNames,
                 AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
                 AllowImplicitFlow = model.AllowImplicitFlow,

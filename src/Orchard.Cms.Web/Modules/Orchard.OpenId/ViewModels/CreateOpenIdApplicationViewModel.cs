@@ -1,4 +1,5 @@
 ﻿using Orchard.OpenId.Models;
+using Orchard.Roles.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -25,6 +26,7 @@ namespace Orchard.OpenId.ViewModels
         [DataType(DataType.Password)]
         [Compare("ClientSecret")]
         public string ConfirmClientSecret { get; set; }
+        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
@@ -33,5 +35,11 @@ namespace Orchard.OpenId.ViewModels
         public bool AllowHybridFlow { get; set; }
     }
 
+    public class RoleEntry
+    {
+        public string Name { get; set; }
+        public string NormalizedName { get; set; }
+        public bool Selected { get; set; }
+    }
 
 }

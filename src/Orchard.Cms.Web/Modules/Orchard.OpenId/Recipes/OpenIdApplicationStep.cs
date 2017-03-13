@@ -5,6 +5,7 @@ using OpenIddict.Core;
 using Orchard.OpenId.Models;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
+using System.Collections.Generic;
 
 namespace Orchard.OpenId.Recipes
 {
@@ -44,6 +45,7 @@ namespace Orchard.OpenId.Recipes
             application.LogoutRedirectUri = model.LogoutRedirectUri;
             application.RedirectUri = model.RedirectUri;
             application.SkipConsent = model.SkipConsent;
+            application.NormalizedRoleNames = model.NormalizedRoleNames;
             application.Type = model.Type;
 
             if (model.Type == ClientType.Confidential)
@@ -68,6 +70,7 @@ namespace Orchard.OpenId.Recipes
         public string RedirectUri { get; set; }
         public ClientType Type { get; set; }
         public bool SkipConsent { get; set; }
+        public List<string> NormalizedRoleNames { get; set; } = new List<string>();
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }

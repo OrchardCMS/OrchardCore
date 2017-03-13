@@ -72,7 +72,7 @@ namespace Orchard.Roles.Controllers
 
             var model = new RolesViewModel
             {
-                RoleEntries = roles.Select(BuildRoleEntry).ToList()
+                RoleEntries = roles.Select(r => BuildRoleEntry(r.Name)).ToList()
             };
 
             return View(model);

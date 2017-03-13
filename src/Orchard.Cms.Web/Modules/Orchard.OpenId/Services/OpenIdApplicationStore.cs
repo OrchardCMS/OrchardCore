@@ -151,7 +151,12 @@ namespace Orchard.OpenId.Services
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.Type = (ClientType) Enum.Parse(typeof(ClientType), type);
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            
+            application.Type = (ClientType) Enum.Parse(typeof(ClientType), type, true);
 
             return Task.CompletedTask;
         }

@@ -5,6 +5,13 @@ namespace Orchard.Security.Services
 {
     public interface IRoleProvider
     {
-        Task<IEnumerable<string>> GetRoleNamesAsync();
+        Task<IEnumerable<RoleNamesEntry>> GetRoleNamesAsync();
+    }
+
+    public class RoleNamesEntry
+    {
+        public string Name { get; set; }
+        public string NormalizedName { get; set; }
+
     }
 }

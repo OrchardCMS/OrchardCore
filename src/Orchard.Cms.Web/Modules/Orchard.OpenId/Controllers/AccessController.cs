@@ -19,6 +19,7 @@ using OpenIddict.Core;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.ViewModels;
 using Orchard.Users.Models;
+using Orchard.Security;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -29,6 +30,7 @@ namespace Orchard.OpenId.Controllers
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
+        private readonly IRoleClaimStore<Role> _roleStore;
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
@@ -36,13 +38,15 @@ namespace Orchard.OpenId.Controllers
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
             SignInManager<User> signInManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IRoleClaimStore<Role> roleStore)
         {
             T = localizer;
             _applicationManager = applicationManager;
             _identityOptions = identityOptions;
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleStore = roleStore;
         }
 
         [HttpGet]
@@ -332,6 +336,18 @@ namespace Orchard.OpenId.Controllers
                 OpenIdConnectConstants.Destinations.AccessToken,
                 OpenIdConnectConstants.Destinations.IdentityToken);
 
+            foreach (var roleName in application.NormalizedRoleNames)
+            {
+                identity.AddClaim(identity.RoleClaimType, roleName,
+                    OpenIdConnectConstants.Destinations.AccessToken,
+                    OpenIdConnectConstants.Destinations.IdentityToken);
+
+                foreach (var claim in await _roleStore.GetClaimsAsync(await _roleStore.FindByNameAsync(roleName, HttpContext.RequestAborted)))
+                {
+                    identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken);
+                }
+            }
+            
             var ticket = new AuthenticationTicket(
                 new ClaimsPrincipal(identity),
                 new AuthenticationProperties(),

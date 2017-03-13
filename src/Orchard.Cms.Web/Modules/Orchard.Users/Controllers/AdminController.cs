@@ -303,7 +303,7 @@ namespace Orchard.Users.Controllers
 
         public async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = (await _roleProvider.GetRoleNamesAsync()).Select(r=>r.Name);
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
         }
 
