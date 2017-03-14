@@ -8,15 +8,17 @@ namespace Orchard.Demo.Controllers
     public class ContentApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
+        private readonly IContentManager _contentManager;
 
-        public ContentApiController(IAuthorizationService authorizationService)
+        public ContentApiController(IAuthorizationService authorizationService, IContentManager contentManager)
         {
             _authorizationService = authorizationService;
+            _contentManager = contentManager;
         }
 
-        public async Task<IActionResult> GetById([FromServices] IContentManager contentManager, string id)
+        public async Task<IActionResult> GetById(string id)
         {
-            var contentItem = await contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(id);
 
             if (contentItem == null)
             {
@@ -27,15 +29,19 @@ namespace Orchard.Demo.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> GetAuthorizedById([FromServices] IContentManager contentManager, string id)
+        public async Task<IActionResult> GetAuthorizedById(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+            {
                 return Unauthorized();
+            }
 
-            var contentItem = await contentManager.GetAsync(id);
+            var contentItem = await _contentManager.GetAsync(id);
 
             if (!await _authorizationService.AuthorizeAsync(User, Orchard.Contents.Permissions.ViewContent, contentItem))
+            {
                 return Unauthorized();
+            }
 
             if (contentItem == null)
             {
@@ -48,12 +54,14 @@ namespace Orchard.Demo.Controllers
         [Authorize]
         [IgnoreAntiforgeryToken]
         [HttpPost]
-        public async Task<IActionResult> AddContent([FromServices] IContentManager contentManager, [FromBody]ContentItem contentItem)
+        public async Task<IActionResult> AddContent([FromBody]ContentItem contentItem)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DemoAPIAccess))
+            {
                 return Unauthorized();
+            }
 
-            contentManager.Create(contentItem);
+            _contentManager.Create(contentItem);
 
             return new ObjectResult(contentItem);
         }

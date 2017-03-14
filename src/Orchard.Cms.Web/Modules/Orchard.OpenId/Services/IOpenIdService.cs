@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.OpenId.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orchard.OpenId.Settings;
+using Orchard.OpenId.Models;
 
 namespace Orchard.OpenId.Services
 {

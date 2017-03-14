@@ -1,5 +1,4 @@
-﻿using Orchard.DependencyInjection;
-using Orchard.OpenId.Models;
+﻿using Orchard.OpenId.Models;
 using YesSql.Core.Indexes;
 
 namespace Orchard.OpenId.Indexes
@@ -14,15 +13,14 @@ namespace Orchard.OpenId.Indexes
     {
         public override void Describe(DescribeContext<OpenIdApplication> context)
         {
-            context.For<OpenIdApplicationIndex>()
-                .Map(openIdApplication =>
+            context.For<OpenIdApplicationIndex>().Map(application =>
+            {
+                return new OpenIdApplicationIndex
                 {
-                    return new OpenIdApplicationIndex
-                    {
-                        ClientId = openIdApplication.ClientId,
-                        LogoutRedirectUri = openIdApplication.LogoutRedirectUri
-                    };
-                });
+                    ClientId = application.ClientId,
+                    LogoutRedirectUri = application.LogoutRedirectUri
+                };
+            });
         }
     }
 }

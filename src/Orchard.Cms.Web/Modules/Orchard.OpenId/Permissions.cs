@@ -9,20 +9,16 @@ namespace Orchard.OpenId
         
         public IEnumerable<Permission> GetPermissions()
         {
-            return new[] {
-                ManageOpenIdApplications
-            };
+            yield return ManageOpenIdApplications;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageOpenIdApplications }
-                }
+            yield return new PermissionStereotype
+            {
+                Name = "Administrator",
+                Permissions = new[] { ManageOpenIdApplications }
             };
         }
-
     }
 }

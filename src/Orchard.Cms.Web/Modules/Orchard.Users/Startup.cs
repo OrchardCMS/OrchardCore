@@ -42,14 +42,13 @@ namespace Orchard.Users
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             builder.UseIdentity();
-            //We use builder.UseIdentity() instead of commented lines to avoid an unexpected exception. 
-            //More info: https://github.com/OrchardCMS/Orchard2/issues/192
-            //builder
-            //    .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
-            //    .UseCookieAuthentication(_options.Cookies.ExternalCookie)
-            //    .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
-            //    .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)                
-            //    ;
+            builder
+                .UseCookieAuthentication(_options.Cookies.ApplicationCookie)
+                .UseCookieAuthentication(_options.Cookies.ExternalCookie)
+                .UseCookieAuthentication(_options.Cookies.TwoFactorRememberMeCookie)
+                .UseCookieAuthentication(_options.Cookies.TwoFactorUserIdCookie)
+                ;
+
             routes.MapAreaRoute(
                 name: "Login",
                 areaName: "Orchard.Users",
@@ -89,6 +88,7 @@ namespace Orchard.Users
                 options.Cookies.ApplicationCookie.CookiePath = _tenantPrefix;
                 options.Cookies.ApplicationCookie.LoginPath = "/" + LoginPath;
                 options.Cookies.ApplicationCookie.AccessDeniedPath = "/" + LoginPath;
+                // Using a different DataProtectionProvider per tenant ensures cookie isolation between tenants
                 options.Cookies.ApplicationCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.ExternalCookie.DataProtectionProvider = _dataProtectionProvider;
                 options.Cookies.TwoFactorRememberMeCookie.DataProtectionProvider = _dataProtectionProvider;

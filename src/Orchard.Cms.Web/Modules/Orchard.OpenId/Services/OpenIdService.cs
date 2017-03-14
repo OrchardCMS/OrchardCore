@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
-using Orchard.OpenId.Settings;
-using Orchard.Settings;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
+using Orchard.OpenId.Settings;
+using Orchard.Settings;
+using Orchard.OpenId.Models;
 
 namespace Orchard.OpenId.Services
 {

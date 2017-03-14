@@ -2,10 +2,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -20,11 +19,9 @@ using Orchard.OpenId.Recipes;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
 using Orchard.Recipes;
-using Orchard.Security;
-using Orchard.Settings.Services;
-using Orchard.Users.Models;
-using YesSql.Core.Indexes;
 using Orchard.Security.Permissions;
+using Orchard.Settings.Services;
+using YesSql.Core.Indexes;
 
 namespace Orchard.OpenId
 {
@@ -48,7 +45,7 @@ namespace Orchard.OpenId
             var settings = openIdService.GetOpenIdSettingsAsync().GetAwaiter().GetResult();
             if (!openIdService.IsValidOpenIdSettings(settings))
             {
-                _logger.LogWarning("The OpenID module is not correctly configured.");
+                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 return;
             }
 
@@ -74,11 +71,7 @@ namespace Orchard.OpenId
                 {
                     builder.UseOAuthValidation(options =>
                     {
-                        foreach (var audience in settings.Audiences)
-                        {
-                            options.Audiences.Add(audience);
-                        }
-
+                        options.Audiences.UnionWith(settings.Audiences);
                         options.DataProtectionProvider = _dataProtectionProvider;
                     });
                     break;
@@ -95,7 +88,7 @@ namespace Orchard.OpenId
             routes.MapAreaRoute(
                 name: "AdminOpenId",
                 areaName: "Orchard.OpenId",
-                template: "Admin/OpenIdApps/{action}/{id?}",
+                template: "Admin/OpenIdApps/{id?}/{action}",
                 defaults: new { controller = "Admin" }
             );
         }
@@ -115,16 +108,22 @@ namespace Orchard.OpenId
 
             services.AddScoped<OpenIdApplicationIndexProvider>();
             services.AddScoped<OpenIdTokenIndexProvider>();
-            services.TryAddScoped<IOpenIdApplicationManager, OpenIdApplicationManager>();
-            services.TryAddScoped<IOpenIdApplicationStore, OpenIdApplicationStore>();
 
-            services.AddOpenIddict<User, Role, OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>()
-                .AddApplicationStore<OpenIdApplicationStore>()
-                .AddTokenStore<OpenIdTokenStore>()
-                .AddUserStore<OpenIdUserStore>()
-                .AddUserManager<OpenIdUserManager>()
-                .UseDataProtectionProvider(_dataProtectionProvider)
-                .RequireClientIdentification();
+            services.AddScoped<OpenIdApplicationStore>();
+
+            services.AddOpenIddict<OpenIdApplication, OpenIdAuthorization, OpenIdScope, OpenIdToken>(builder =>
+            {
+                builder.AddApplicationStore<OpenIdApplicationStore>()
+                       .AddTokenStore<OpenIdTokenStore>();
+
+                builder.UseDataProtectionProvider(_dataProtectionProvider);
+
+                builder.RequireClientIdentification()
+                       .EnableRequestCaching();
+
+                builder.Configure(options => options.ApplicationCanDisplayErrors = true);
+            });
+
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
         }
     }
