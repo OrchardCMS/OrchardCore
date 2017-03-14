@@ -24,6 +24,7 @@ namespace Orchard.Roles
             services.TryAddScoped<RoleManager<Role>>();
             services.TryAddScoped<IRoleStore<Role>, RoleStore>();
             services.TryAddScoped<IRoleProvider, RoleStore>();
+            services.TryAddScoped<IRoleClaimStore<Role>, RoleStore>();
             services.AddRecipeExecutionStep<RolesStep>();
 
             services.AddScoped<RoleUpdater>();

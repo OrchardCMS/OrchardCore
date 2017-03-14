@@ -28,6 +28,26 @@
         </select>
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
+    <fieldset class="form-group">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input asp-for="UpdateClientSecret" type="checkbox" data-toggle="collapse" data-target="#clientSecretGroup" class="form-check-input" checked="@Model.UpdateClientSecret"/>@T["Set a new Client Secret"]
+                <span asp-validation-for="UpdateClientSecret" class="text-danger">@T["Set a new Client Secret is required."]</span>
+            </label>
+        </div>
+    </fieldset>
+    <div class="form-group collapse" id="clientSecretGroup" name="clientSecretGroup">
+        <div class="form-group" asp-validation-class-for="ClientSecret">
+            <label asp-for="ClientSecret">@T["Client Secret"]</label>
+            <span asp-validation-for="ClientSecret" class="text-danger">@T["The Client Secret is required."]</span>
+            <input asp-for="ClientSecret" class="form-control" autofocus />
+        </div>
+        <div class="form-group" asp-validation-class-for="ConfirmClientSecret">
+            <label asp-for="ConfirmClientSecret">@T["Confirm Client Secret"]</label>
+            <span asp-validation-for="ConfirmClientSecret" class="text-danger">@T["The Confirm Client Secret is required."]</span>
+            <input asp-for="ConfirmClientSecret" class="form-control" autofocus />
+        </div>
+    </div>
 
     <h3>Flows</h3>
     <fieldset id="AllowAuthorizationCodeFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
@@ -115,7 +135,6 @@
         {
             <div class="form-check">
                 <label class="form-check-label" asp-for="RoleEntries[i].Selected">
-
                     <input class="form-check-input" type="checkbox" asp-for="RoleEntries[i].Selected" />
                     <input type="hidden" asp-for="RoleEntries[i].Name" />
                     @Model.RoleEntries[i].Name
@@ -123,6 +142,7 @@
             </div>
         }
     </div>
+
     <fieldset>
         <div class="form-group">
             <button class="btn btn-primary" type="submit">@T["Save"]</button>
@@ -132,145 +152,147 @@
 </form>
 <script at="Foot" type="text/javascript">
     //<![CDATA[
-    refreshForbiddenFlows();
-    refreshClientSecret('@ClientType.Confidential');
-    refreshFlows();
-    refreshOfflineAccessTip(false);
-
-    function refreshForbiddenFlows() {
-        if (@(openIdSettings.AllowAuthorizationCodeFlow.ToString().ToLower()) == true) {
-            $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-            $("#AllowAuthorizationCodeFlow").prop("checked", false);
-        }
-
-        if (@(openIdSettings.AllowHybridFlow.ToString().ToLower()) == true) {
-            $("#AllowHybridFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowHybridFlowFieldSet").collapse("hide");
-            $("#AllowHybridFlow").prop("checked", false);
-        }
-
-        if (@(openIdSettings.AllowImplicitFlow.ToString().ToLower()) == true) {
-            $("#AllowImplicitFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowImplicitFlowFieldSet").collapse("hide");
-            $("#AllowImplicitFlow").prop("checked", false);
-        }
-
-
-        if (@(openIdSettings.AllowPasswordFlow.ToString().ToLower()) == true) {
-            $("#AllowPasswordFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowPasswordFlowFieldSet").collapse("hide");
-            $("#AllowPasswordFlow").prop("checked", false);
-        }
-
-        if (@(openIdSettings.AllowClientCredentialsFlow.ToString().ToLower()) === true) {
-            $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-            $("#AllowClientCredentialsFlow").prop("checked", false);
-        }
-
-        if (@(openIdSettings.AllowRefreshTokenFlow.ToString().ToLower()) == true) {
-            $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-        }
-        else {
-            $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-            $("#AllowRefreshTokenFlow").prop("checked", false);
-        }
-    }
-
-    $("#Type").change(function () {
-        refreshClientSecret();
-    });
-    function refreshClientSecret(defaultType) {
-        var type = $("#Type");
-
-        var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
-        if ($("#Type").val() === '@ClientType.Confidential') {
-            allowClientCredentialsFlow.removeAttr("disabled");
-        }
-        else {
-            allowClientCredentialsFlow.attr('disabled', true);
-            allowClientCredentialsFlow.prop("checked", false);
-        }
-
-        var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
-
-        if (defaultType === $("#Type").val())
-            return;
-
-        if ($("#Type").val() === '@ClientType.Confidential') {
-            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
-        }
-        else {
-            clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
-        }
-    }
-
-
-    $("#AllowRefreshTokenFlow").change(function () {
-        refreshOfflineAccessTip();
-    });
-
-    function refreshOfflineAccessTip(defaultValue) {
-        var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
-        var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
-        if (defaultValue === allowRefreshTokenFlow.prop('checked'))
-            return;
-
-        if (allowRefreshTokenFlow.prop('checked')) {
-            offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
-        }
-        else {
-            offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
-        }
-    }
-
-    $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow, #AllowImplicitFlow, #AllowRefreshTokenFlow").change(function () {
+    window.onload = function () {
+        refreshForbiddenFlows();
+        refreshClientSecret('@ClientType.Confidential');
         refreshFlows();
-    });
+        refreshOfflineAccessTip(false);
 
-    function refreshFlows() {
-        refreshRoleGroup();
-        refreshAllowRefreshTokenFlowVisibility();
-        refreshRedirectSettings();
-    }
-    function refreshRoleGroup() {
-        $("#RoleGroup").collapse($("#AllowClientCredentialsFlow").prop('checked') ? "show" : "hide");
-    }
-    function refreshAllowRefreshTokenFlowVisibility() {
-        var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+        function refreshForbiddenFlows() {
+            if (@(openIdSettings.AllowAuthorizationCodeFlow.ToString().ToLower()) == true) {
+                $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+                $("#AllowAuthorizationCodeFlow").prop("checked", false);
+            }
 
-        if (($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
-            allowRefreshTokenFlow.removeAttr("disabled");
+            if (@(openIdSettings.AllowHybridFlow.ToString().ToLower()) == true) {
+                $("#AllowHybridFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowHybridFlowFieldSet").collapse("hide");
+                $("#AllowHybridFlow").prop("checked", false);
+            }
+
+            if (@(openIdSettings.AllowImplicitFlow.ToString().ToLower()) == true) {
+                $("#AllowImplicitFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowImplicitFlowFieldSet").collapse("hide");
+                $("#AllowImplicitFlow").prop("checked", false);
+            }
+
+
+            if (@(openIdSettings.AllowPasswordFlow.ToString().ToLower()) == true) {
+                $("#AllowPasswordFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowPasswordFlowFieldSet").collapse("hide");
+                $("#AllowPasswordFlow").prop("checked", false);
+            }
+
+            if (@(openIdSettings.AllowClientCredentialsFlow.ToString().ToLower()) === true) {
+                $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+                $("#AllowClientCredentialsFlow").prop("checked", false);
+            }
+
+            if (@(openIdSettings.AllowRefreshTokenFlow.ToString().ToLower()) == true) {
+                $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+            }
+            else {
+                $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+                $("#AllowRefreshTokenFlow").prop("checked", false);
+            }
         }
-        else {
-            allowRefreshTokenFlow.attr('disabled', true);
-            allowRefreshTokenFlow.prop("checked", false);
-            $("#AllowRefreshTokenFlowRecommendedHint").collapse("hide");
+
+        $("#Type").change(function () {
+            refreshClientSecret();
+        });
+        function refreshClientSecret(defaultType) {
+            var type = $("#Type");
+
+            var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
+            if ($("#Type").val() === '@ClientType.Confidential') {
+                allowClientCredentialsFlow.removeAttr("disabled");
+            }
+            else {
+                allowClientCredentialsFlow.attr('disabled', true);
+                allowClientCredentialsFlow.prop("checked", false);
+            }
+
+            var clientSecretHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint, #AllowImplicitFlowRecommendedHint, #AllowRefreshTokenFlowRecommendedHint");
+
+            if (defaultType === $("#Type").val())
+                return;
+
+            if ($("#Type").val() === '@ClientType.Confidential') {
+                clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, ", "client_id, client_secret, "); });
+            }
+            else {
+                clientSecretHints.each(function () { this.innerText = this.innerText.replace("client_id, client_secret, ", "client_id, "); });
+            }
+        }
+
+
+        $("#AllowRefreshTokenFlow").change(function () {
             refreshOfflineAccessTip();
-        }
-    }
-    function refreshRedirectSettings() {
-        var redirectSection = $("#RedirectSection");
-        var skipConsent = $("#SkipConsent");
+        });
 
-        if (($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
-            redirectSection.collapse("show");
+        function refreshOfflineAccessTip(defaultValue) {
+            var offlineAccessHints = $("#AllowPasswordFlowRecommendedHint, #AllowAuthorizationCodeFlowRecommendedHint, #AllowHybridFlowRecommendedHint");
+            var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+            if (defaultValue === allowRefreshTokenFlow.prop('checked'))
+                return;
+
+            if (allowRefreshTokenFlow.prop('checked')) {
+                offlineAccessHints.each(function () { this.innerText = this.innerText.replace("roles", "roles, offline_access"); });
+            }
+            else {
+                offlineAccessHints.each(function () { this.innerText = this.innerText.replace(", offline_access", ""); });
+            }
         }
-        else {
-            skipConsent.prop("checked", false);
-            redirectSection.collapse("hide");
+
+        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow, #AllowImplicitFlow, #AllowRefreshTokenFlow").change(function () {
+            refreshFlows();
+        });
+
+        function refreshFlows() {
+            refreshRoleGroup();
+            refreshAllowRefreshTokenFlowVisibility();
+            refreshRedirectSettings();
         }
-    }
+        function refreshRoleGroup() {
+            $("#RoleGroup").collapse($("#AllowClientCredentialsFlow").prop('checked') ? "show" : "hide");
+        }
+        function refreshAllowRefreshTokenFlowVisibility() {
+            var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
+
+            if (($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
+                allowRefreshTokenFlow.removeAttr("disabled");
+            }
+            else {
+                allowRefreshTokenFlow.attr('disabled', true);
+                allowRefreshTokenFlow.prop("checked", false);
+                $("#AllowRefreshTokenFlowRecommendedHint").collapse("hide");
+                refreshOfflineAccessTip();
+            }
+        }
+        function refreshRedirectSettings() {
+            var redirectSection = $("#RedirectSection");
+            var skipConsent = $("#SkipConsent");
+
+            if (($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked') || $("#AllowHybridFlow").prop('checked'))) {
+                redirectSection.collapse("show");
+            }
+            else {
+                skipConsent.prop("checked", false);
+                redirectSection.collapse("hide");
+            }
+        }
+    };
     //]]>
 </script>

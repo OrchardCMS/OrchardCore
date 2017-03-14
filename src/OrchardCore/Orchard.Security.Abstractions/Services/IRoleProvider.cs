@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Orchard.Security.Services
@@ -7,4 +8,5 @@ namespace Orchard.Security.Services
     {
         Task<IEnumerable<string>> GetRoleNamesAsync();
     }
+
 }
