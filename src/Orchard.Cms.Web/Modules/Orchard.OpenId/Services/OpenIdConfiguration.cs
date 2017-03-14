@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using AspNet.Security.OpenIdConnect.Extensions;
+using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,7 +26,7 @@ namespace Orchard.OpenId
             var settings = _openIdService.GetOpenIdSettingsAsync().GetAwaiter().GetResult();
             if (!_openIdService.IsValidOpenIdSettings(settings))
             {
-                _logger.LogWarning("The OpenID module is not correctly configured.");
+                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 return;
             }
 
@@ -69,7 +69,7 @@ namespace Orchard.OpenId
             }
             if (settings.EnableUserInfoEndpoint)
             {
-                options.UserinfoEndpointPath = "/Orchard.OpenId/Access/Userinfo";
+                options.UserinfoEndpointPath = "/Orchard.OpenId/UserInfo/Me";
             }
             if (settings.AllowPasswordFlow)
             {

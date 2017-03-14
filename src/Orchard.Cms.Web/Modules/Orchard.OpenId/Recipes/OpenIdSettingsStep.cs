@@ -1,10 +1,10 @@
-﻿using Orchard.OpenId.Services;
-using Orchard.Recipes.Models;
-using Orchard.Recipes.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Orchard.OpenId.Services;
+using Orchard.Recipes.Models;
+using Orchard.Recipes.Services;
 using static Orchard.OpenId.Settings.OpenIdSettings;
 
 namespace Orchard.OpenId.Recipes
@@ -23,7 +23,7 @@ namespace Orchard.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "OpenIdSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "OpenIdSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

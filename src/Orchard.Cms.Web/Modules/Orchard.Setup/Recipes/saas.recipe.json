@@ -21,6 +21,7 @@
         "Orchard.DynamicCache",
         "Orchard.Modules",
         "Orchard.Navigation",
+        "Orchard.OpenId",
         "Orchard.Recipes",
         "Orchard.Resources",
         "Orchard.Roles",

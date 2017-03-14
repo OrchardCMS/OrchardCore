@@ -74,7 +74,7 @@ namespace Orchard.Roles.Controllers
             {
                 RoleEntries = roles.Select(BuildRoleEntry).ToList()
             };
-
+            
             return View(model);
         }
 
@@ -97,8 +97,8 @@ namespace Orchard.Roles.Controllers
             if (ModelState.IsValid)
             {
                 model.RoleName = model.RoleName.Trim();
-
-                if (await _roleManager.FindByNameAsync(model.RoleName) != null)
+                
+                if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
                     ModelState.AddModelError(string.Empty, T["The role is already used."]);
                 }
@@ -170,7 +170,7 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = await _roleManager.FindByNameAsync(id);
+            var role = await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
             if (role == null)
             {
                 return NotFound();
@@ -198,7 +198,7 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = await _roleManager.FindByNameAsync(id);
+            var role = await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
 
             if (role == null)
             {

@@ -1,9 +1,6 @@
 ﻿using Orchard.OpenId.Models;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Orchard.OpenId.ViewModels
 {
@@ -19,7 +16,6 @@ namespace Orchard.OpenId.ViewModels
         public string LogoutRedirectUri { get; set; }
         public ClientType Type { get; set; }
         public bool SkipConsent { get; set; }
-        [Required]
         [StringLength(100, MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string ClientSecret { get; set; }
@@ -34,12 +30,11 @@ namespace Orchard.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
     }
-    
+
     public class RoleEntry
     {
         public string Name { get; set; }
         public bool Selected { get; set; }
     }
-
 
 }
