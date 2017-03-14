@@ -14,12 +14,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Modules\**;Themes\**" Exclude="**\*.cs;**\*.csproj;**\assets.json;**\obj\**;**\bin\**;**\Assets\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Update="*.json;web.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +81,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="OrchardCore.HelloWorld" Version="1.0.0" />
   </ItemGroup>
 </Project>

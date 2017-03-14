@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.Environment.Extensions;
@@ -7,9 +11,6 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Tests.Stubs;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace Orchard.Tests.Extensions
@@ -17,7 +18,8 @@ namespace Orchard.Tests.Extensions
     public class ExtensionManagerTests
     {
         private static IHostingEnvironment HostingEnvrionment
-            = new StubHostingEnvironment(Path.Combine(Directory.GetCurrentDirectory(), "Extensions"));
+            = new StubHostingEnvironment(Path.Combine(
+                PlatformServices.Default.Application.ApplicationBasePath, "Extensions"));
 
         private static IOptions<ManifestOptions> ModuleManifestOptions =
             new StubManifestOptions(
