@@ -4,13 +4,23 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Modules\**;Themes\**;App_Data\**" />
-    <Content Remove="Modules\**;Themes\**;App_Data\**" />
-    <EmbeddedResource Remove="Modules\**;Themes\**;App_Data\**" />
-    <None Remove="Modules\**;Themes\**;App_Data\**" />
+    <Compile Remove="Modules\**;Themes\**" />
+    <Content Remove="Modules\**;Themes\**" />
+    <EmbeddedResource Remove="Modules\**;Themes\**" />
+    <None Remove="Modules\**;Themes\**" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Modules\**;Themes\**" Exclude="**\*.cs;**\*.csproj;**\assets.json;**\obj\**;**\bin\**;**\Assets\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="*.json;web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../OrchardCore/Orchard.Environment.Shell.Data/Orchard.Environment.Shell.Data.csproj" />
@@ -71,5 +81,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
+    <PackageReference Include="OrchardCore.HelloWorld" Version="1.0.0" />
   </ItemGroup>
 </Project>
