@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
@@ -15,6 +17,14 @@ namespace Orchard.Cms.Web
     {
         public Startup(IHostingEnvironment env)
         {
+            if (env.IsDevelopment() && !(env.ContentRootFileProvider is CompositeFileProvider))
+            {
+                env.ContentRootFileProvider = new CompositeFileProvider(
+                    env.ContentRootFileProvider,
+                    new PhysicalFileProvider(
+                        PlatformServices.Default.Application.ApplicationBasePath));
+            }
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

@@ -17,7 +17,7 @@ namespace Orchard.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static IHostingEnvironment HostingEnvrionment
+        private static IHostingEnvironment HostingEnvironment
             = new StubHostingEnvironment(Path.Combine(
                 PlatformServices.Default.Application.ApplicationBasePath, "Extensions"));
 
@@ -38,16 +38,16 @@ namespace Orchard.Tests.Extensions
                 );
 
         private static IEnumerable<IManifestProvider> ManifestProviders =
-            new[] { new ManifestProvider(HostingEnvrionment) };
+            new[] { new ManifestProvider(HostingEnvironment) };
 
         private static IExtensionProvider ModuleProvider
             = new ExtensionProvider(
-                HostingEnvrionment,
+                HostingEnvironment,
                 new[] { new FeaturesProvider(Enumerable.Empty<IFeatureBuilderEvents>(), new NullLogger<FeaturesProvider>()) });
 
         private static IExtensionProvider ThemeProvider
             = new ExtensionProvider(
-                HostingEnvrionment,
+                HostingEnvironment,
                 new[] { new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>()) });
 
         private static IOptions<ExtensionExpanderOptions> ExtensionExpanderOptions =
@@ -63,7 +63,7 @@ namespace Orchard.Tests.Extensions
             ModuleScopedExtensionManager = new ExtensionManager(
                 ExtensionExpanderOptions,
                 ModuleManifestOptions,
-                HostingEnvrionment,
+                HostingEnvironment,
                 ManifestProviders,
                 new[] { ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),
@@ -76,7 +76,7 @@ namespace Orchard.Tests.Extensions
             ThemeScopedExtensionManager = new ExtensionManager(
                 ExtensionExpanderOptions,
                 ThemeManifestOptions,
-                HostingEnvrionment,
+                HostingEnvironment,
                 ManifestProviders,
                 new[] { ThemeProvider },
                 Enumerable.Empty<IExtensionLoader>(),
@@ -89,7 +89,7 @@ namespace Orchard.Tests.Extensions
             ModuleThemeScopedExtensionManager = new ExtensionManager(
                 ExtensionExpanderOptions,
                 ModuleAndThemeManifestOptions,
-                HostingEnvrionment,
+                HostingEnvironment,
                 ManifestProviders,
                 new[] { ThemeProvider, ModuleProvider },
                 Enumerable.Empty<IExtensionLoader>(),

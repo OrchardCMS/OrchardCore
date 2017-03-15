@@ -1,7 +1,7 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Hosting;
 
 namespace Orchard.Cms.Web
@@ -13,7 +13,7 @@ namespace Orchard.Cms.Web
             var host = new WebHostBuilder()
                 .UseIISIntegration()
                 .UseKestrel()
-                .UseContentRoot(PlatformServices.Default.Application.ApplicationBasePath)
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<Startup>()
                 .Build();
 

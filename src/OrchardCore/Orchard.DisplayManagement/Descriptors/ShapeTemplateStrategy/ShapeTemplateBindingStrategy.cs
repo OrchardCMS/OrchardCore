@@ -3,17 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Orchard.DisplayManagement.Implementation;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell;
@@ -100,14 +96,20 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var subPathFileInfo = _hostingEnvironment
-                        .GetExtensionFileInfo(extensionDescriptor, subPath);
+                    var fileInfos = _hostingEnvironment
+                        .ContentRootFileProvider
+                        .GetDirectoryContents(Path.Combine(extensionDescriptor.SubPath, subPath));
 
-                    var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
+                    DirectoryInfo directoryInfo = null;
+
+                    if (fileInfos.Exists)
+                    {
+                        directoryInfo = Directory.GetParent(fileInfos.First().PhysicalPath);
+                    }
 
                     var relativePath = Path.Combine(extensionDescriptor.SubPath, subPath);
 
-                    if (!directoryInfo.Exists)
+                    if (directoryInfo == null || !directoryInfo.Exists)
                     {
                         return new
                         {
