@@ -1,0 +1,5 @@
+﻿<Project>
+  <ItemGroup>
+    <Content Include="**\*" Exclude="**\*.cs;*.csproj;obj\**;bin\**;assets.json;Assets\**;Properties\**" PackagePath="contentFiles\any\any\Modules\$(PackageId)\" />
+  </ItemGroup>
+</Project>
