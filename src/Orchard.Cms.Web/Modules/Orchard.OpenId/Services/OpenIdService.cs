@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using Orchard.OpenId.Settings;
 using Orchard.Settings;
+using Orchard.OpenId.Models;
 
 namespace Orchard.OpenId.Services
 {

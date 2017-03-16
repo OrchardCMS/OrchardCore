@@ -69,7 +69,7 @@ OpenID Connect apps require the following configuration.
 + Type: There are two options:
   + Confidential: Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token.
   + Public: Public applications don't use client secret on their communications.
-  + Client Secret: Client secret is a password associated with the application. It will be required when the application is configured as Confidential. Client Secret cannot be set through a recipe step, only through Admin UI.
+  + Client Secret: Client secret is a password associated with the application. It will be required when the application is configured as Confidential.
   + Flows: If general OpenID Connect settings allow this flow, app can also enable this flow.
   + Allow Password Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.3
   + Allow Client Credentials Flow: It requires Token Endpoint is enabled. More info at https://tools.ietf.org/html/rfc6749#section-1.3.4
@@ -90,6 +90,7 @@ OpenID Connect apps require the following configuration.
       "ClientId": "openidtest",
       "DisplayName": "Open Id Test",
       "Type": "Confidential",
+	  "ClientSecret": "MyPassword",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
       "EnableLogoutEndpoint": true,
