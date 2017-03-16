@@ -13,6 +13,7 @@ namespace Orchard.Tenants.ViewModels
     {
         public bool Selected { get; set; }
         public string Name { get; set; }
+        public bool IsDefaultTenant { get; set; }
 
         [BindNever]
         public ShellSettings ShellSettings { get; set; }
