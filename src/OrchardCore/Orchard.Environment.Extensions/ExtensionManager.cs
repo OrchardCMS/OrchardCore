@@ -381,6 +381,15 @@ namespace Orchard.Environment.Extensions
 
             if (_hostingEnvironment.IsDevelopment())
             {
+                // If a module is referenced as a project, its assets are under ContentRootPath.
+                // If it is referenced as a package, its assets are under ApplicationBasePath.
+
+                // ContentRootPath is initialized with the current working directory.
+                // ApplicationBasePath is where the main application assembly resides.
+
+                // In production, they are the same but not in a development environment.
+                // So, if in development we also search extensions in ApplicationBasePath.
+
                 var applicationRelativePath = GetRelativePath(
                     _hostingEnvironment.ContentRootPath,
                     PlatformServices.Default.Application.ApplicationBasePath);
