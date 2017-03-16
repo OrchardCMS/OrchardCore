@@ -12,13 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Module.txt" />
-    <None Remove="Views\Home\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="*.txt" PackagePath="contentFiles/any/any/Modules/$(PackageId)" />
-    <Content Include="Views/Home/*" PackagePath="contentFiles/any/any/Modules/$(PackageId)/Views/Home" />
+    <Content Include="**\*" Exclude="**\*.cs;*.csproj;obj\**;bin\**;assets.json;Assets\**" PackagePath="contentFiles\any\any\Modules\$(PackageId)\" />
   </ItemGroup>
 
   <ItemGroup>

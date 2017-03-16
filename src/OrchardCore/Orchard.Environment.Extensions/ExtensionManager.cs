@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Extensions.Loaders;
@@ -369,13 +370,37 @@ namespace Orchard.Environment.Extensions
 
         private ISet<IExtensionInfo> HarvestExtensions()
         {
-            var searchOptions = _extensionExpanderOptions.Options;
+            var searchOptions = _extensionExpanderOptions.Options.ToList();
 
             var extensionSet = new HashSet<IExtensionInfo>();
 
             if (searchOptions.Count == 0)
             {
                 return extensionSet;
+            }
+
+            if (_hostingEnvironment.IsDevelopment())
+            {
+                var applicationRelativePath = GetRelativePath(
+                    _hostingEnvironment.ContentRootPath,
+                    PlatformServices.Default.Application.ApplicationBasePath);
+
+                if (!String.IsNullOrWhiteSpace(applicationRelativePath) &&
+                    !applicationRelativePath.StartsWith(".."))
+                {
+                    var options = new List<ExtensionExpanderOption>();
+                    foreach (var searchOption in searchOptions)
+                    {
+                        options.Add(new ExtensionExpanderOption()
+                        {
+                            SearchPath = Path.Combine(
+                                applicationRelativePath,
+                                searchOption.SearchPath)
+                        });
+                    }
+
+                    searchOptions.AddRange(options);
+                }
             }
 
             foreach (var searchOption in searchOptions)
@@ -422,6 +447,24 @@ namespace Orchard.Environment.Extensions
             }
 
             return extensionSet;
+        }
+
+        internal static string GetRelativePath(string pathFrom, string pathTo)
+        {
+            if (!pathFrom.EndsWith(Path.DirectorySeparatorChar.ToString()) &&
+                !pathFrom.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+            {
+                pathFrom += Path.DirectorySeparatorChar;
+            }
+
+            string relativePath = Uri.UnescapeDataString(
+                new Uri(pathFrom).MakeRelativeUri(new Uri(pathTo)).ToString());
+
+
+            relativePath = relativePath.Replace(
+                Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+
+            return relativePath;
         }
     }
 }
