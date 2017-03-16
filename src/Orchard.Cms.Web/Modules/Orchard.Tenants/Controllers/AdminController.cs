@@ -260,6 +260,7 @@ namespace Orchard.Tenants.Controllers
             if (shellSettings.State != TenantState.Running)
             {
                 _notifier.Error(H["You can only disable a Running shell."]);
+                return RedirectToAction(nameof(Index));
             }
 
             shellSettings.State = TenantState.Disabled;
