@@ -13,6 +13,10 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Modules\**;Themes\**" Exclude="**\*.cs;**\*.csproj;**\obj\**;**\bin\**;**\assets.json;**\Assets\**;**\*.props;**\Properties\**" CopyToPublishDirectory="Always" />
+    <None Include="App_Data\**" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../OrchardCore/Orchard.Environment.Shell.Data/Orchard.Environment.Shell.Data.csproj" />
     <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />
     <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Modules/Microsoft.AspNetCore.Modules.csproj" />
