@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,8 @@ using Orchard.Navigation;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
-using Orchard.Settings;
-using System.Collections.Generic;
 using Orchard.Security.Services;
-using Microsoft.AspNetCore.Identity;
-using Orchard.Security;
-using System;
+using Orchard.Settings;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -107,10 +104,12 @@ namespace Orchard.OpenId.Controllers
                 ClientId = application.ClientId,
                 Type = application.Type,
                 SkipConsent = application.SkipConsent,
-                RoleEntries = (await _roleProvider.GetRoleNamesAsync()).Select(r => new RoleEntry() {
-                                                                                                        Name = r,
-                                                                                                        Selected = application.RoleNames.Contains(r),
-                                                                                                    }).ToList(),
+                RoleEntries = (await _roleProvider.GetRoleNamesAsync())
+                    .Select(r => new RoleEntry()
+                    {
+                        Name = r,
+                        Selected = application.RoleNames.Contains(r),
+                    }).ToList(),
                 AllowAuthorizationCodeFlow = application.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = application.AllowClientCredentialsFlow,
                 AllowImplicitFlow = application.AllowImplicitFlow,
@@ -128,8 +127,11 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            
-            if (model.UpdateClientSecret && string.IsNullOrWhiteSpace(model.ClientSecret))
+
+            if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
+                ModelState.AddModelError(nameof(model.ClientSecret), "No client secret can be set for public applications.");
+
+            else if (model.UpdateClientSecret && string.IsNullOrEmpty(model.ClientSecret))
                 ModelState.AddModelError(nameof(model.ClientSecret), "The client secret is required");
 
             OpenIdApplication application = null;
@@ -156,16 +158,40 @@ namespace Orchard.OpenId.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(model);
             }
-            
-            await TryUpdateModelAsync(application);
-            if (model.UpdateClientSecret && model.Type == ClientType.Confidential)
-                await _applicationManager.SetClientSecretAsync(application, model.ClientSecret, HttpContext.RequestAborted);
+
+            // If the application was confidential and is now public, the client secret must be reset.
+            if (application.Type == ClientType.Confidential && model.Type == ClientType.Public)
+            {
+                model.UpdateClientSecret = true;
+                model.ClientSecret = null;
+            }
+
+            application.DisplayName = model.DisplayName;
+            application.RedirectUri = model.RedirectUri;
+            application.LogoutRedirectUri = model.LogoutRedirectUri;
+            application.ClientId = model.ClientId;
+            application.Type = model.Type;
+            application.SkipConsent = model.SkipConsent;
+            application.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            application.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            application.AllowImplicitFlow = model.AllowImplicitFlow;
+            application.AllowPasswordFlow = model.AllowPasswordFlow;
+            application.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
+            application.AllowHybridFlow = model.AllowHybridFlow;
 
             application.RoleNames = new List<string>();
             if (application.Type == ClientType.Confidential && application.AllowClientCredentialsFlow)
                 application.RoleNames = model.RoleEntries.Where(r => r.Selected).Select(r => r.Name).ToList();
 
-            await _applicationManager.UpdateAsync(application, HttpContext.RequestAborted);
+            if (model.UpdateClientSecret)
+            {
+                await _applicationManager.UpdateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
+            }
+
+            else
+            {
+                await _applicationManager.UpdateAsync(application, HttpContext.RequestAborted);
+            }
 
             if (returnUrl == null)
                 return RedirectToAction("Index");
@@ -198,9 +224,12 @@ namespace Orchard.OpenId.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOpenIdApplications))
                 return Unauthorized();
-            
-            if (model.Type == ClientType.Confidential && string.IsNullOrWhiteSpace(model.ClientSecret))
-                ModelState.AddModelError(nameof(model.ClientSecret), "The client secret is required when application type is confidential.");
+
+            if (model.Type == ClientType.Confidential && string.IsNullOrEmpty(model.ClientSecret))
+                ModelState.AddModelError(nameof(model.ClientSecret), "The client secret is required for confidential applications.");
+
+            else if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
+                ModelState.AddModelError(nameof(model.ClientSecret), "No client secret can be set for public applications.");
 
             if (!ModelState.IsValid)
             {
@@ -234,15 +263,7 @@ namespace Orchard.OpenId.Controllers
                 AllowHybridFlow = model.AllowHybridFlow
             };
 
-            if (model.Type == ClientType.Confidential)
-            {
-                await _applicationManager.CreateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
-            }
-
-            else
-            {
-                await _applicationManager.CreateAsync(application, HttpContext.RequestAborted);
-            }
+            await _applicationManager.CreateAsync(application, model.ClientSecret, HttpContext.RequestAborted);
 
             if (returnUrl == null)
                 return RedirectToAction("Index");
