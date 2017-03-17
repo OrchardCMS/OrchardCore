@@ -14,7 +14,7 @@ namespace Orchard.OpenId
 
             SchemaBuilder.CreateMapIndexTable(nameof(OpenIdTokenIndex), table => table
                 .Column<int>(nameof(OpenIdTokenIndex.AppId))
-                .Column<int>(nameof(OpenIdTokenIndex.Subject))
+                .Column<string>(nameof(OpenIdTokenIndex.Subject))
                 .Column<int>(nameof(OpenIdTokenIndex.TokenId)));
 
             return 1;

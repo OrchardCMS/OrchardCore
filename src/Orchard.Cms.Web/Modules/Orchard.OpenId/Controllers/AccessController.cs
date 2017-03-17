@@ -18,8 +18,8 @@ using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.ViewModels;
-using Orchard.Users.Models;
 using Orchard.Security;
+using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -515,9 +515,9 @@ namespace Orchard.OpenId.Controllers
                     OpenIdConnectConstants.Scopes.OfflineAccess,
                     OpenIddictConstants.Scopes.Roles
                 }.Intersect(request.GetScopes()));
-            }
 
-            ticket.SetResources(request.GetResources());
+                ticket.SetResources(request.GetResources());
+            }
 
             // Note: by default, claims are NOT automatically included in the access and identity tokens.
             // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
