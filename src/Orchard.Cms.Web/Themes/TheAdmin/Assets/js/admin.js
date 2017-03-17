@@ -74,7 +74,7 @@ $(function () {
         // Expand the section if necessary
         var target = $($(this).data('target'));
         if ($(this).prop('checked')) {
-            target.addClass('collapsed');
+            target.addClass('show');
         }
 
         $(this).on('change', function (e) {
@@ -96,7 +96,7 @@ $(function () {
         // Expand the section if necessary
         var target = $($(this).data('target'));
         if (!$(this).prop('checked')) {
-            target.addClass('collapsed');
+            target.addClass('show');
         }
 
         $(this).on('change', function (e) {
