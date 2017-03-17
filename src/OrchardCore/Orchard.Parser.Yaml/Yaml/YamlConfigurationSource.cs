@@ -3,13 +3,18 @@
 namespace Orchard.Parser.Yaml
 {
     /// <summary>
-    /// A Yaml file based <see cref="FileConfigurationSource"/>
+    /// Represents a Yaml file as an <see cref="IConfigurationSource"/>.
     /// </summary>
     public class YamlConfigurationSource : FileConfigurationSource
     {
+        /// <summary>
+        /// Builds the <see cref="YamlConfigurationProvider"/> for this source.
+        /// </summary>
+        /// <param name="builder">The <see cref="IConfigurationBuilder"/>.</param>
+        /// <returns>A <see cref="YamlConfigurationProvider"/></returns>
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            FileProvider = FileProvider ?? builder.GetFileProvider();
+            EnsureDefaults(builder);
             return new YamlConfigurationProvider(this);
         }
     }
