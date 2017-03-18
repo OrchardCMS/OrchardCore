@@ -1,0 +1,9 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CopyToOutput Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\**\*"/>
+  </ItemGroup>
+
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(CopyToOutput)" DestinationFolder="$(MSBuildProjectDirectory)\%(RecursiveDir)" />
+  </Target>
+</Project>

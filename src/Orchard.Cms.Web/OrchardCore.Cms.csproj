@@ -2,20 +2,28 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <IncludedFiles>Modules\**;Themes\**;Packages\**</IncludedFiles>
+    <ExcludedFiles>**\*.cs;**\*.csproj*;**\obj\**;**\bin\**;**\assets.json;**\Assets\**;**\*.props;**\Properties\**</ExcludedFiles>
+    <AllAssetFiles>Modules\**;Themes\**;Packages\**;App_Data\**</AllAssetFiles>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="Modules\**;Themes\**;App_Data\**" />
-    <Content Remove="Modules\**;Themes\**;App_Data\**" />
-    <EmbeddedResource Remove="Modules\**;Themes\**;App_Data\**" />
-    <None Remove="Modules\**;Themes\**;App_Data\**" />
+    <Compile Remove="$(AllAssetFiles)" />
+    <Content Remove="$(AllAssetFiles)" />
+    <EmbeddedResource Remove="$(AllAssets)" />
+    <None Remove="$(AllAssets)" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Modules\**;Themes\**" Exclude="**\*.cs;**\*.csproj;**\obj\**;**\bin\**;**\assets.json;**\Assets\**;**\*.props;**\Properties\**" CopyToPublishDirectory="Always" />
+    <None Include="$(IncludedFiles)" Exclude="$(ExcludedFiles)">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
     <None Include="App_Data\**" CopyToPublishDirectory="Always" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="../OrchardCore/Orchard.Environment.Shell.Data/Orchard.Environment.Shell.Data.csproj" />
     <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />

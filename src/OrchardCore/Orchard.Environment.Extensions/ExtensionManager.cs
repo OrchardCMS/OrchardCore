@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.PlatformAbstractions;
 using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Extensions.Loaders;
@@ -377,39 +376,6 @@ namespace Orchard.Environment.Extensions
             if (searchOptions.Count == 0)
             {
                 return extensionSet;
-            }
-
-            if (_hostingEnvironment.IsDevelopment())
-            {
-                // If a module is referenced as a project, its assets are under ContentRootPath.
-                // If it is referenced as a package, its assets are under ApplicationBasePath.
-
-                // ContentRootPath is initialized with the current working directory.
-                // ApplicationBasePath is where the main application assembly resides.
-
-                // In production, they are the same but not in a development environment.
-                // So, if in development we also search extensions in ApplicationBasePath.
-
-                var applicationRelativePath = GetRelativePath(
-                    _hostingEnvironment.ContentRootPath,
-                    PlatformServices.Default.Application.ApplicationBasePath);
-
-                if (!String.IsNullOrWhiteSpace(applicationRelativePath) &&
-                    !applicationRelativePath.StartsWith(".."))
-                {
-                    var options = new List<ExtensionExpanderOption>();
-                    foreach (var searchOption in searchOptions)
-                    {
-                        options.Add(new ExtensionExpanderOption()
-                        {
-                            SearchPath = Path.Combine(
-                                applicationRelativePath,
-                                searchOption.SearchPath)
-                        });
-                    }
-
-                    searchOptions.AddRange(options);
-                }
             }
 
             foreach (var searchOption in searchOptions)

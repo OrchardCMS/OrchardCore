@@ -12,16 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="**\*" Exclude="**\*.cs;*.csproj;obj\**;bin\**;assets.json;Assets\**;Properties\**" PackagePath="contentFiles\any\any\Modules\$(PackageId)\" />
-  </ItemGroup>
- 
-  <Target Name="HelloWorld" AfterTargets="Pack">
-    <Message Text="Hello"></Message>
-    <Message Text="World"></Message>
-  </Target>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
