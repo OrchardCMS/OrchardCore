@@ -2,16 +2,17 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <ApplicationData>App_Data\**</ApplicationData>
     <IncludedFiles>Modules\**;Themes\**;Packages\**</IncludedFiles>
-    <ExcludedFiles>**\*.cs;**\*.csproj*;**\obj\**;**\bin\**;**\assets.json;**\Assets\**;**\*.props;**\Properties\**</ExcludedFiles>
+    <ExcludedFiles>**\*.cs;**\*.csproj*;**\obj\**;**\bin\**;**\assets.json;**\Assets\**;**\Properties\**;**\*.props;**\*.targets</ExcludedFiles>
     <AllAssetFiles>Modules\**;Themes\**;Packages\**;App_Data\**</AllAssetFiles>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="$(AllAssetFiles)" />
     <Content Remove="$(AllAssetFiles)" />
-    <EmbeddedResource Remove="$(AllAssets)" />
-    <None Remove="$(AllAssets)" />
+    <EmbeddedResource Remove="$(AllAssetFiles)" />
+    <None Remove="$(AllAssetFiles)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +22,7 @@
     <None Include="$(IncludedFiles)" Exclude="$(ExcludedFiles)">
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </None>
-    <None Include="App_Data\**" CopyToPublishDirectory="Always" />
+    <None Include="$(ApplicationData)" CopyToPublishDirectory="Always" />
   </ItemGroup>
   
   <ItemGroup>
