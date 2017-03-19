@@ -1,0 +1,18 @@
+﻿<Project>
+  <PropertyGroup>
+    <IncludedContentFiles>**\*</IncludedContentFiles>
+    <ExcludedContentFiles>**\*.cs;*.csproj*;obj\**;bin\**;assets.json;Assets\**;Properties\**</ExcludedContentFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(IncludedContentFiles)" Exclude="$(ExcludedContentFiles)" Pack="true">
+      <PackagePath>contentFiles\any\any\$(PackageId)\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\Package.Build.targets" Pack="true">
+      <PackagePath>build\$(PackageId).targets</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
