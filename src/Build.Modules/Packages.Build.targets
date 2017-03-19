@@ -1,0 +1,5 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="CopyPackageAssetFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(PackageAssetFiles)" DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)" />
+  </Target>
+</Project>

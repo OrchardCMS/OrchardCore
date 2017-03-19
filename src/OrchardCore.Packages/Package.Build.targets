@@ -1,5 +1,0 @@
-﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <PackageContentFiles Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\**\*" />
-  </ItemGroup>
-</Project>
