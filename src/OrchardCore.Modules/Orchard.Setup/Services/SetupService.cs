@@ -181,18 +181,17 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new 
-                    {
-                        SiteName  = context.SiteName,
-                        AdminUsername = context.AdminUsername,
-                        AdminEmail = context.AdminEmail,
-                        AdminPassword = context.AdminPassword,
-                        DatabaseProvider = context.DatabaseProvider,
-                        DatabaseConnectionString = context.DatabaseConnectionString,
-                        DatabaseTablePrefix = context.DatabaseTablePrefix
-                    }); 
-                    //});
+                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,string>();
+                    recipeParams.Add(nameof(context.SiteName), context.SiteName);
+                    recipeParams.Add(nameof(context.AdminUsername), context.AdminUsername);
+                    recipeParams.Add(nameof(context.AdminEmail), context.AdminEmail);
+                    recipeParams.Add(nameof(context.AdminPassword), context.AdminPassword);
+                    recipeParams.Add(nameof(context.DatabaseProvider), context.DatabaseProvider);
+                    recipeParams.Add(nameof(context.DatabaseConnectionString), context.DatabaseConnectionString);
+                    recipeParams.Add(nameof(context.DatabaseTablePrefix), context.DatabaseTablePrefix);
 
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, recipeParams);
+                    //});
                 }
             }
 
