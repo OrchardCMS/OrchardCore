@@ -227,8 +227,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Nancy", "Orchar
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modular", "Modular", "{04472175-8BFD-4BA6-A0E4-241F186F89CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.HelloWorld", "src\OrchardCore.Packages\Modules\OrchardCore.HelloWorld\OrchardCore.HelloWorld.csproj", "{CCB09F1C-ABFB-4AD3-8768-D35892AD7EB5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -631,10 +629,6 @@ Global
 		{7D00A0CB-2A5A-4CFB-B542-2F273BE73134}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D00A0CB-2A5A-4CFB-B542-2F273BE73134}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D00A0CB-2A5A-4CFB-B542-2F273BE73134}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCB09F1C-ABFB-4AD3-8768-D35892AD7EB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCB09F1C-ABFB-4AD3-8768-D35892AD7EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCB09F1C-ABFB-4AD3-8768-D35892AD7EB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CCB09F1C-ABFB-4AD3-8768-D35892AD7EB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

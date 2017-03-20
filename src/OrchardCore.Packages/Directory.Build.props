@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\Build.Modules\Module.Build.props" />
-</Project>
