@@ -1,4 +1,4 @@
-﻿using Orchard.Environment.Extensions.Features.Attributes;
+﻿using OrchardCore.Extensions.Features.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 using Orchard.MetaWeblog;

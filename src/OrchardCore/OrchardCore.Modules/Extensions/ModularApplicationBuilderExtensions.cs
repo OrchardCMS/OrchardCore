@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace OrchardCore.Modules
 {
@@ -12,7 +12,7 @@ namespace OrchardCore.Modules
     {
         public static IApplicationBuilder UseModules(this IApplicationBuilder app)
         {
-            // Ensure the shell tenants are loaded when a request comes in
+            // Ensure the tenant tenants are loaded when a request comes in
             // and replaces the current service provider for the tenant's one.
             app.UseMiddleware<ModularTenantContainerMiddleware>();
             app.UseMiddleware<ModularTenantRouterMiddleware>();

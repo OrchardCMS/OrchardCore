@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.Localization;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Tenant;
+using OrchardCore.Tenant.Descriptor;
 using Orchard.Modules.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +14,21 @@ namespace Orchard.Modules.Services
     public class ModuleService : IModuleService
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly ITenantDescriptorManager _tenantDescriptorManager;
+        private readonly ITenantFeaturesManager _tenantFeaturesManager;
         private readonly INotifier _notifier;
 
         public ModuleService(
                 IExtensionManager extensionManager,
-                IShellDescriptorManager shellDescriptorManager,
-                IShellFeaturesManager shellFeaturesManager,
+                ITenantDescriptorManager tenantDescriptorManager,
+                ITenantFeaturesManager tenantFeaturesManager,
                 IHtmlLocalizer<AdminMenu> htmlLocalizer,
                 INotifier notifier)
         {
             _notifier = notifier;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
-            _shellFeaturesManager = shellFeaturesManager;
+            _tenantDescriptorManager = tenantDescriptorManager;
+            _tenantFeaturesManager = tenantFeaturesManager;
 
             T = htmlLocalizer;
         }
@@ -41,8 +41,8 @@ namespace Orchard.Modules.Services
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
         public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
         {
-            var enabledFeatures = 
-                await _shellFeaturesManager.GetEnabledFeaturesAsync();
+            var enabledFeatures =
+                await _tenantFeaturesManager.GetEnabledFeaturesAsync();
 
             var availableFeatures = _extensionManager.GetFeatures();
 
@@ -71,7 +71,7 @@ namespace Orchard.Modules.Services
                 .GetFeatures()
                 .Where(x => featureIds.Contains(x.Id));
 
-            var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
+            var enabledFeatures = await _tenantFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
                 _notifier.Success(T["{0} was enabled", enabledFeature.Name]);
@@ -98,7 +98,7 @@ namespace Orchard.Modules.Services
                 .GetFeatures()
                 .Where(x => featureIds.Contains(x.Id));
 
-            var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
+            var features = await _tenantFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
                 _notifier.Success(T["{0} was disabled", feature.Name]);

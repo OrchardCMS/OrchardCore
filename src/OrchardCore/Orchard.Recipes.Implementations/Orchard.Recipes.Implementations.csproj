@@ -18,8 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.DeferredTasks.Abstractions\Orchard.DeferredTasks.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Environment.Shell.Abstractions\Orchard.Environment.Shell.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Extensions.Abstractions\OrchardCore.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenant.Abstractions\OrchardCore.Tenant.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Scripting.Abstractions\Orchard.Scripting.Abstractions.csproj" />
   </ItemGroup>

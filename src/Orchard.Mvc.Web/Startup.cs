@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Modules;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Mvc.Web
 {

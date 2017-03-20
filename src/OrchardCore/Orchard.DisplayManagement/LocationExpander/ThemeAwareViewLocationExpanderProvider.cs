@@ -5,7 +5,7 @@ using OrchardCore.Mvc.Modules.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.DisplayManagement.LocationExpander
 {

@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Indexing.Abstractions\Orchard.Indexing.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Tenant\OrchardCore.Tenant.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.BackgroundTasks.Abstractions\Orchard.BackgroundTasks.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Security\Orchard.Security.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />

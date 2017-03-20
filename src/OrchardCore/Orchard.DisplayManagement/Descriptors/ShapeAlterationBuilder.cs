@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors
 {

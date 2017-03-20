@@ -14,9 +14,9 @@ using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Tenant;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
@@ -26,21 +26,21 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly ITenantFeaturesManager _tenantFeaturesManager;
 
         private readonly Dictionary<string, IShapeTemplateViewEngine> _viewEnginesByExtension =
             new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
-            IShellFeaturesManager shellFeaturesManager,
+            ITenantFeaturesManager tenantFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IOptions<MvcViewOptions> options,
             IHostingEnvironment hostingEnvironment,
             ILogger<DefaultShapeTableManager> logger)
         {
             _harvesters = harvesters;
-            _shellFeaturesManager = shellFeaturesManager;
+            _tenantFeaturesManager = tenantFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
             _hostingEnvironment = hostingEnvironment;
             _logger = logger;
@@ -65,7 +65,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = _tenantFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
 
             var activeExtensions = Once(enabledFeatures);

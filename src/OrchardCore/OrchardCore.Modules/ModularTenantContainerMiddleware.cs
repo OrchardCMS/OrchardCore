@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Hosting;
 
 namespace OrchardCore.Modules
@@ -13,47 +13,47 @@ namespace OrchardCore.Modules
     public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IShellHost _orchardHost;
-        private readonly IRunningShellTable _runningShellTable;
+        private readonly ITenantHost _orchardHost;
+        private readonly IRunningTenantTable _runningTenantTable;
         private readonly ILogger _logger;
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
-            IShellHost orchardHost,
-            IRunningShellTable runningShellTable,
+            ITenantHost orchardHost,
+            IRunningTenantTable runningTenantTable,
             ILogger<ModularTenantContainerMiddleware> logger)
         {
             _next = next;
             _orchardHost = orchardHost;
-            _runningShellTable = runningShellTable;
+            _runningTenantTable = runningTenantTable;
             _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
-            // Ensure all ShellContext are loaded and available.
+            // Ensure all TenantContext are loaded and available.
             _orchardHost.Initialize();
 
-            var shellSetting = _runningShellTable.Match(httpContext);
+            var tenantSetting = _runningTenantTable.Match(httpContext);
 
-            // Register the shell settings as a custom feature.
-            httpContext.Features.Set(shellSetting);
+            // Register the tenant settings as a custom feature.
+            httpContext.Features.Set(tenantSetting);
 
             // We only serve the next request if the tenant has been resolved.
-            if (shellSetting != null)
+            if (tenantSetting != null)
             {
-                var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
+                var tenantContext = _orchardHost.GetOrCreateTenantContext(tenantSetting);
 
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = tenantContext.CreateServiceScope())
                 {
                     httpContext.RequestServices = scope.ServiceProvider;
 
-                    if (!shellContext.IsActivated)
+                    if (!tenantContext.IsActivated)
                     {
-                        lock (shellContext)
+                        lock (tenantContext)
                         {
                             // The tenant gets activated here
-                            if (!shellContext.IsActivated)
+                            if (!tenantContext.IsActivated)
                             {
                                 var tenantEvents = scope.ServiceProvider
                                     .GetServices<IModularTenantEvents>();
@@ -64,7 +64,7 @@ namespace OrchardCore.Modules
                                 }
 
                                 httpContext.Items["BuildPipeline"] = true;
-                                shellContext.IsActivated = true;
+                                tenantContext.IsActivated = true;
 
                                 foreach (var tenantEvent in tenantEvents)
                                 {

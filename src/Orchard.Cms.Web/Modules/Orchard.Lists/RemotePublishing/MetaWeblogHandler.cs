@@ -17,7 +17,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Contents;
 using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
-using Orchard.Environment.Extensions.Features.Attributes;
+using OrchardCore.Extensions.Features.Attributes;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.MetaWeblog;

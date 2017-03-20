@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 using Orchard.Recipes.Models;
 
 namespace Orchard.Recipes.Services

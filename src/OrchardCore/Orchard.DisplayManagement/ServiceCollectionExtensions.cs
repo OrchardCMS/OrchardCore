@@ -20,8 +20,8 @@ using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Theming;
 using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
 
 namespace Orchard.DisplayManagement
 {

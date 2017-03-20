@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Descriptor.Models;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Manifests;
+using OrchardCore.Tenant;
+using OrchardCore.Tenant.Descriptor.Models;
 
 namespace OrchardCore.Modules
 {
@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
             {
                 foreach (var featureId in featureIds)
                 {
-                    services.AddTransient(sp => new ShellFeature(featureId));
+                    services.AddTransient(sp => new TenantFeature(featureId));
                 };
             });
 
@@ -78,7 +78,7 @@ namespace OrchardCore.Modules
             {
                 foreach (var featureId in featureIds)
                 {
-                    services.AddTransient(sp => new ShellFeature(featureId));
+                    services.AddTransient(sp => new TenantFeature(featureId));
                 };
 
                 services.AddSetFeaturesDescriptor();
@@ -93,7 +93,7 @@ namespace OrchardCore.Modules
             services.AddLogging();
             services.AddOptions();
             services.AddLocalization();
-            services.AddHostingShellServices();
+            services.AddHostingTenantServices();
             services.AddExtensionManagerHost("App_Data", "dependencies");
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -33,13 +33,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Events", "src\Orcha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Parser.Yaml", "src\OrchardCore\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj", "{366ADAD5-4F2A-4768-80E2-CA70222C78BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Extensions", "src\OrchardCore\Orchard.Environment.Extensions\Orchard.Environment.Extensions.csproj", "{FDCEB9E1-4BA7-42CE-AF43-3C604EBA720D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Extensions", "src\OrchardCore\OrchardCore.Extensions\OrchardCore.Extensions.csproj", "{FDCEB9E1-4BA7-42CE-AF43-3C604EBA720D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Extensions.Abstractions", "src\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj", "{E1C3B0A7-FCD8-4895-AE10-479A90A0CE1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Extensions.Abstractions", "src\OrchardCore\OrchardCore.Extensions.Abstractions\OrchardCore.Extensions.Abstractions.csproj", "{E1C3B0A7-FCD8-4895-AE10-479A90A0CE1F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Shell.Abstractions", "src\OrchardCore\Orchard.Environment.Shell.Abstractions\Orchard.Environment.Shell.Abstractions.csproj", "{57958811-69DA-4C86-B75C-3806C2451EC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tenant.Abstractions", "src\OrchardCore\OrchardCore.Tenant.Abstractions\OrchardCore.Tenant.Abstractions.csproj", "{57958811-69DA-4C86-B75C-3806C2451EC8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Shell", "src\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj", "{4C2F50F1-666E-497A-9498-A3494387A0CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tenant", "src\OrchardCore\OrchardCore.Tenant\OrchardCore.Tenant.csproj", "{4C2F50F1-666E-497A-9498-A3494387A0CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Commands", "src\OrchardCore\Orchard.Environment.Commands\Orchard.Environment.Commands.csproj", "{8E85C4F6-19C9-47E0-ADD4-0104B008BFF8}"
 EndProject
@@ -125,7 +125,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Mvc.Modules.Abs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Data.Abstractions", "src\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj", "{FDB57330-DBB0-466C-B488-C81F8BFC6BDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Environment.Shell.Data", "src\OrchardCore\Orchard.Environment.Shell.Data\Orchard.Environment.Shell.Data.csproj", "{2C7AA06B-BA37-4EEA-A31D-472A00C2EA94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tenant.Data", "src\OrchardCore\OrchardCore.Tenant.Data\OrchardCore.Tenant.Data.csproj", "{2C7AA06B-BA37-4EEA-A31D-472A00C2EA94}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Recipes.Implementations", "src\OrchardCore\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj", "{F1A7EE1A-DB21-40E9-A215-B9093CBE3116}"
 EndProject

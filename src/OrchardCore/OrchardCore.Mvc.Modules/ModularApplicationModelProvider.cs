@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace OrchardCore.Mvc.Modules
 {

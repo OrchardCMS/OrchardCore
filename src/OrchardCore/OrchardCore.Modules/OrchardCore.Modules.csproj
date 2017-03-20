@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Environment.Extensions\Orchard.Environment.Extensions.csproj" />
-    <ProjectReference Include="..\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\OrchardCore.Extensions\OrchardCore.Extensions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenant\OrchardCore.Tenant.csproj" />
   </ItemGroup>
 
   <ItemGroup>

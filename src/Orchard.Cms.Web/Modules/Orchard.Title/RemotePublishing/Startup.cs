@@ -1,6 +1,6 @@
 ﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Environment.Extensions.Features.Attributes;
+using OrchardCore.Extensions.Features.Attributes;
 using Orchard.MetaWeblog;
 
 namespace Orchard.Title.RemotePublishing

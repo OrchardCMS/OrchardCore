@@ -1,4 +1,4 @@
-﻿using Orchard.Environment.Extensions;
+﻿using OrchardCore.Extensions;
 using System.Threading.Tasks;
 
 namespace Orchard.DisplayManagement.Theming

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Parser.Yaml;
 using System;
 using System.IO;
@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Orchard.Tests.Configuration
 {
-    public class ShellSettingsTests : IDisposable
+    public class TenantSettingsTests : IDisposable
     {
         private string _tempFolderName;
 
-        public ShellSettingsTests()
+        public TenantSettingsTests()
         {
             _tempFolderName = Path.GetTempFileName();
             File.Delete(_tempFolderName);
@@ -43,7 +43,7 @@ dataproviders:
 
             var root = new ConfigurationBuilder().Add(yamlConfigPrd.Source).Build();
 
-            //var settings = new ShellSettings(root);
+            //var settings = new TenantSettings(root);
 
             //Assert.Equal(, settings.DataProviders.First())
         }

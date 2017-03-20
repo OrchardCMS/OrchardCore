@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Orchard.Data;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Recipes.Models;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
@@ -15,18 +15,18 @@ namespace Orchard.Setup.Controllers
     public class SetupController : Controller
     {
         private readonly ISetupService _setupService;
-        private readonly ShellSettings _shellSettings;
+        private readonly TenantSettings _tenantSettings;
         private const string DefaultRecipe = "Default";
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
 
         public SetupController(
             ISetupService setupService,
-            ShellSettings shellSettings,
+            TenantSettings tenantSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<SetupController> t)
         {
             _setupService = setupService;
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _databaseProviders = databaseProviders;
 
             T = t;
@@ -46,22 +46,22 @@ namespace Orchard.Setup.Controllers
                 RecipeName = defaultRecipe.Name
             };
 
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!String.IsNullOrEmpty(_tenantSettings.ConnectionString))
             {
                 model.ConnectionStringPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
+                model.ConnectionString = _tenantSettings.ConnectionString;
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            if (!String.IsNullOrEmpty(_tenantSettings.DatabaseProvider))
             {
                 model.DatabaseProviderPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+                model.DatabaseProvider = _tenantSettings.DatabaseProvider;
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            if (!String.IsNullOrEmpty(_tenantSettings.TablePrefix))
             {
                 model.TablePrefixPreset = true;
-                model.TablePrefix = _shellSettings.TablePrefix;
+                model.TablePrefix = _tenantSettings.TablePrefix;
             }
 
             return View(model);
@@ -97,22 +97,22 @@ namespace Orchard.Setup.Controllers
                 ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!String.IsNullOrEmpty(_tenantSettings.ConnectionString))
             {
                 model.ConnectionStringPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
+                model.ConnectionString = _tenantSettings.ConnectionString;
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            if (!String.IsNullOrEmpty(_tenantSettings.DatabaseProvider))
             {
                 model.DatabaseProviderPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+                model.DatabaseProvider = _tenantSettings.DatabaseProvider;
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            if (!String.IsNullOrEmpty(_tenantSettings.TablePrefix))
             {
                 model.TablePrefixPreset = true;
-                model.TablePrefix = _shellSettings.TablePrefix;
+                model.TablePrefix = _tenantSettings.TablePrefix;
             }
 
             if (!ModelState.IsValid)

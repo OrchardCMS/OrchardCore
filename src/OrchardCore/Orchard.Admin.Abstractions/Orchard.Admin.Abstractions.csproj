@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Extensions.Abstractions\OrchardCore.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
   </ItemGroup>
 

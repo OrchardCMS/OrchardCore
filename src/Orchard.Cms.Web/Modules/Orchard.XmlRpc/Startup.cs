@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Core.XmlRpc.Services;
-using Orchard.Environment.Extensions.Features.Attributes;
+using OrchardCore.Extensions.Features.Attributes;
 
 namespace Orchard.XmlRpc
 {

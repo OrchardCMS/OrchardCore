@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Tenants.ViewModels
 {
     public class AdminIndexViewModel
     {
-        public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
+        public List<TenantSettingsEntry> TenantSettingsEntries { get; set; } = new List<TenantSettingsEntry>();
     }
 
-    public class ShellSettingsEntry
+    public class TenantSettingsEntry
     {
         public bool Selected { get; set; }
         public string Name { get; set; }
         public bool IsDefaultTenant { get; set; }
 
         [BindNever]
-        public ShellSettings ShellSettings { get; set; }
+        public TenantSettings TenantSettings { get; set; }
     }
 
 }

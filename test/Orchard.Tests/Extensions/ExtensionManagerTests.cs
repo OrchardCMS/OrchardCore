@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Extensions.Loaders;
+using OrchardCore.Extensions.Manifests;
 using Orchard.Tests.Stubs;
 using System.Collections.Generic;
 using System.IO;

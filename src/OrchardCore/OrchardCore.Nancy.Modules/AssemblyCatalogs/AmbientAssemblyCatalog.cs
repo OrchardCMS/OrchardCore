@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Nancy;
-using Orchard.Environment.Shell.Builders.Models;
+using OrchardCore.Tenant.Builders.Models;
 
 namespace OrchardCore.Nancy.Modules.AssemblyCatalogs
 {
@@ -29,8 +29,8 @@ namespace OrchardCore.Nancy.Modules.AssemblyCatalogs
         /// </summary>
         public IHttpContextAccessor HttpContextAccessor { get; }
 
-        private ShellBlueprint ShellBlueprint =>
-            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<ShellBlueprint>();
+        private TenantBlueprint TenantBlueprint =>
+            HttpContextAccessor.HttpContext.RequestServices.GetRequiredService<TenantBlueprint>();
 
         /// <summary>
         /// Gets all <see cref="Assembly"/> instances in the catalog.
@@ -38,7 +38,7 @@ namespace OrchardCore.Nancy.Modules.AssemblyCatalogs
         /// <returns>An <see cref="IReadOnlyCollection{T}"/> of <see cref="Assembly"/> instances.</returns>
         public IReadOnlyCollection<Assembly> GetAssemblies()
         {
-            return ShellBlueprint.Dependencies.Keys
+            return TenantBlueprint.Dependencies.Keys
                 .Select(type => type.GetTypeInfo().Assembly)
                 .ToArray();
         }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.DisplayManagement
 {

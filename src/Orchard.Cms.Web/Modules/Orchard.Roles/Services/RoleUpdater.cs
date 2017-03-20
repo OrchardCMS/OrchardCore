@@ -4,11 +4,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Tenant;
 using Orchard.Security;
 using Orchard.Security.Permissions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Features;
 
 namespace Orchard.Roles.Services
 {

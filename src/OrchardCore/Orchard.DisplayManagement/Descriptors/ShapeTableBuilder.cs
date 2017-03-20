@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors
 {

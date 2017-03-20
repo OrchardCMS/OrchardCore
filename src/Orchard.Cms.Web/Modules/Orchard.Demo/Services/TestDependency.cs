@@ -1,4 +1,4 @@
-﻿using Orchard.Environment.Shell;
+﻿using OrchardCore.Tenant;
 
 namespace Orchard.Demo.Services
 {
@@ -9,15 +9,15 @@ namespace Orchard.Demo.Services
 
     public class ClassFoo : ITestDependency
     {
-        private readonly ShellSettings _shellSettings;
-        public ClassFoo(ShellSettings shellSettings)
+        private readonly TenantSettings _tenantSettings;
+        public ClassFoo(TenantSettings tenantSettings)
         {
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
         }
 
         public string SayHi(string line)
         {
-            return string.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
+            return string.Format("Hi from tenant {0} - {1}", _tenantSettings.Name, line);
         }
     }
 }

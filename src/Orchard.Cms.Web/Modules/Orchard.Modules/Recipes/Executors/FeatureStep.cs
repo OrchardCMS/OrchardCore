@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Tenant;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 
@@ -14,14 +14,14 @@ namespace Orchard.Modules.Recipes.Executors
     public class FeatureStep : IRecipeStepHandler
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellFeaturesManager _shellFeatureManager;
+        private readonly ITenantFeaturesManager _tenantFeatureManager;
 
         public FeatureStep(
             IExtensionManager extensionManager,
-            IShellFeaturesManager shellFeatureManager)
+            ITenantFeaturesManager tenantFeatureManager)
         {
             _extensionManager = extensionManager;
-            _shellFeatureManager = shellFeatureManager;
+            _tenantFeatureManager = tenantFeatureManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -55,14 +55,14 @@ namespace Orchard.Modules.Recipes.Executors
             {
                 var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
 
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
+                await _tenantFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
             }
 
             if (step.Enable.Any())
             {
                 var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
-                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
+                await _tenantFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
             }
         }
 

@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
+using OrchardCore.Tenant;
+using OrchardCore.Tenant.Models;
 
 namespace OrchardCore.Modules
 {
@@ -37,42 +37,42 @@ namespace OrchardCore.Modules
             }
 
 
-            var shellSettings = httpContext.Features.Get<ShellSettings>();
+            var tenantSettings = httpContext.Features.Get<TenantSettings>();
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            if (!string.IsNullOrEmpty(tenantSettings.RequestUrlPrefix))
             {
-                httpContext.Request.PathBase += ("/" + shellSettings.RequestUrlPrefix);
+                httpContext.Request.PathBase += ("/" + tenantSettings.RequestUrlPrefix);
                 httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
             }
 
-            // TODO: Invalidate the pipeline automatically when the shell context is changed
+            // TODO: Invalidate the pipeline automatically when the tenant context is changed
             // such that we can reload the middlewares and the routes. Implement something similar
-            // to IRunningShellTable but for the pipelines.
+            // to IRunningTenantTable but for the pipelines.
 
             // Do we need to rebuild the pipeline ?
             var rebuildPipeline = httpContext.Items["BuildPipeline"] != null;
-            if (rebuildPipeline && _pipelines.ContainsKey(shellSettings.Name))
+            if (rebuildPipeline && _pipelines.ContainsKey(tenantSettings.Name))
             {
-                _pipelines.Remove(shellSettings.Name);
+                _pipelines.Remove(tenantSettings.Name);
             }
 
             RequestDelegate pipeline;
 
-            if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))
+            if (!_pipelines.TryGetValue(tenantSettings.Name, out pipeline))
             {
                 // Building a pipeline can't be done by two requests
                 lock (_pipelines)
                 {
-                    if (!_pipelines.TryGetValue(shellSettings.Name, out pipeline))
+                    if (!_pipelines.TryGetValue(tenantSettings.Name, out pipeline))
                     {
-                        pipeline = BuildTenantPipeline(shellSettings, httpContext.RequestServices);
+                        pipeline = BuildTenantPipeline(tenantSettings, httpContext.RequestServices);
 
-                        if (shellSettings.State == TenantState.Running)
+                        if (tenantSettings.State == TenantState.Running)
                         {
-                            _pipelines.Add(shellSettings.Name, pipeline);
+                            _pipelines.Add(tenantSettings.Name, pipeline);
                         }
                     }
                 }
@@ -82,7 +82,7 @@ namespace OrchardCore.Modules
         }
 
         // Build the middleware pipeline for the current tenant
-        public RequestDelegate BuildTenantPipeline(ShellSettings shellSettings, IServiceProvider serviceProvider)
+        public RequestDelegate BuildTenantPipeline(TenantSettings tenantSettings, IServiceProvider serviceProvider)
         {
             var startups = serviceProvider.GetServices<IStartup>();
             var tenantRouteBuilder = serviceProvider.GetService<IModularTenantRouteBuilder>();
@@ -90,10 +90,10 @@ namespace OrchardCore.Modules
             var appBuilder = new ApplicationBuilder(serviceProvider);
             var routeBuilder = tenantRouteBuilder.Build();
 
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
+            // In the case of several tenants, they will all be checked by TenantSettings. To optimize
             // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSetting. This way there would just be one lookup.
-            // And the ShellSettings test in TenantRoute would also be useless.
+            // TenantRoute object by their TenantSetting. This way there would just be one lookup.
+            // And the TenantSettings test in TenantRoute would also be useless.
 
             foreach (var startup in startups)
             {

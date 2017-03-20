@@ -7,7 +7,7 @@ using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Shapes;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 using Orchard.Tests.Stubs;
 using Xunit;
 

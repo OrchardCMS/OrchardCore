@@ -8,8 +8,8 @@ using Orchard.Data;
 using Orchard.DeferredTasks;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Cache;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell.Data;
+using OrchardCore.Extensions;
+using OrchardCore.Tenant.Data;
 using Orchard.ResourceManagement;
 
 namespace Orchard.Commons
@@ -28,7 +28,7 @@ namespace Orchard.Commons
             services.AddResourceManagement();
             services.AddGeneratorTagFilter();
             services.AddCaching();
-            services.AddShellDescriptorStorage();
+            services.AddTenantDescriptorStorage();
             services.AddExtensionManager();
             services.AddTheming();
         }

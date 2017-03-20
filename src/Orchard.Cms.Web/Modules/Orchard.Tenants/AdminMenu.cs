@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Localization;
 using Orchard.Environment.Navigation;
 using System;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Tenants
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly ShellSettings _shellSettings;
+        private readonly TenantSettings _tenantSettings;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer, TenantSettings tenantSettings)
         {
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             T = localizer;
         }
 
@@ -25,7 +25,7 @@ namespace Orchard.Tenants
             }
 
             // Don't add the menu item on non-default tenants
-            if (_shellSettings.Name != ShellHelper.DefaultShellName)
+            if (_tenantSettings.Name != TenantHelper.DefaultTenantName)
             {
                 return;
             }

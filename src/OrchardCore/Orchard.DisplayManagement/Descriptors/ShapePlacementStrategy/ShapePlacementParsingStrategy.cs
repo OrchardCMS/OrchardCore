@@ -4,9 +4,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Tenant;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -16,22 +16,22 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
         private readonly IHostingEnvironment _hostingEnviroment;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly ITenantFeaturesManager _tenantFeaturesManager;
         private readonly ILogger _logger;
 
         public ShapePlacementParsingStrategy(
             IHostingEnvironment hostingEnviroment,
-            IShellFeaturesManager shellFeaturesManager,
+            ITenantFeaturesManager tenantFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger)
         {
             _logger = logger;
             _hostingEnviroment = hostingEnviroment;
-            _shellFeaturesManager = shellFeaturesManager;
+            _tenantFeaturesManager = tenantFeaturesManager;
         }
 
         public void Discover(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = _tenantFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
@@ -42,7 +42,7 @@ namespace Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
-            // TODO : (ngm) Replace with configuration Provider and read from that. 
+            // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
             var virtualFileInfo = _hostingEnviroment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");

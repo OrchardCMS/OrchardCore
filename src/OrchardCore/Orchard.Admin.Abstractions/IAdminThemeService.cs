@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Admin
 {

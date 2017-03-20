@@ -15,8 +15,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
 
 namespace Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy
 {

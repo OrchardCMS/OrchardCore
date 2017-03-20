@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Commands.Parameters;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Hosting.HostContext
 {
@@ -41,8 +41,8 @@ namespace Orchard.Hosting.HostContext
         {
             context.Arguments = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(_args));
             context.CommandHost = new CommandHostAgent(
-                _serviceProvider.GetService<IShellHost>(),
-                _serviceProvider.GetService<IShellSettingsManager>(),
+                _serviceProvider.GetService<ITenantHost>(),
+                _serviceProvider.GetService<ITenantSettingsManager>(),
                 _serviceProvider.GetService<IStringLocalizer>()
                 );
 

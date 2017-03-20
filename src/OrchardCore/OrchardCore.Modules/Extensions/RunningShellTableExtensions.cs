@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace OrchardCore.Modules
 {
-    public static class RunningShellTableExtensions
+    public static class RunningTenantTableExtensions
     {
-        public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
+        public static TenantSettings Match(this IRunningTenantTable table, HttpContext httpContext)
         {
             // use Host header to prevent proxy alteration of the orignal request
             try

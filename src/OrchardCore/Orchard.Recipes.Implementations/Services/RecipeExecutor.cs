@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DeferredTasks;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Events;
 using Orchard.Hosting;
 using Orchard.Recipes.Events;
@@ -26,8 +26,8 @@ namespace Orchard.Recipes.Services
         private readonly IEventBus _eventBus;
         private readonly RecipeHarvestingOptions _recipeOptions;
         private readonly IApplicationLifetime _applicationLifetime;
-        private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _orchardHost;
+        private readonly TenantSettings _tenantSettings;
+        private readonly ITenantHost _orchardHost;
         private readonly IRecipeStore _recipeStore;
 
         private VariablesMethodProvider _variablesMethodProvider;
@@ -38,13 +38,13 @@ namespace Orchard.Recipes.Services
             IRecipeStore recipeStore,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IApplicationLifetime applicationLifetime,
-            ShellSettings shellSettings,
-            IShellHost orchardHost,
+            TenantSettings tenantSettings,
+            ITenantHost orchardHost,
             ILogger<RecipeExecutor> logger,
             IStringLocalizer<RecipeExecutor> localizer)
         {
             _orchardHost = orchardHost;
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _applicationLifetime = applicationLifetime;
             _eventBus = eventBus;
             _recipeStore = recipeStore;
@@ -148,10 +148,10 @@ namespace Orchard.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            var tenantContext = _orchardHost.GetOrCreateTenantContext(_tenantSettings);
+            using (var scope = tenantContext.CreateServiceScope())
             {
-                if (!shellContext.IsActivated)
+                if (!tenantContext.IsActivated)
                 {
                     var tenantEvents = scope.ServiceProvider
                         .GetServices<IModularTenantEvents>();
@@ -161,7 +161,7 @@ namespace Orchard.Recipes.Services
                         tenantEvent.ActivatingAsync().Wait();
                     }
 
-                    shellContext.IsActivated = true;
+                    tenantContext.IsActivated = true;
 
                     foreach (var tenantEvent in tenantEvents)
                     {
@@ -196,10 +196,10 @@ namespace Orchard.Recipes.Services
                 }
             }
 
-            // The recipe execution might have invalidated the shell by enabling new features,
-            // so the deferred tasks need to run on an updated shell context if necessary.
-            shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-            using (var scope = shellContext.CreateServiceScope())
+            // The recipe execution might have invalidated the tenant by enabling new features,
+            // so the deferred tasks need to run on an updated tenant context if necessary.
+            tenantContext = _orchardHost.GetOrCreateTenantContext(_tenantSettings);
+            using (var scope = tenantContext.CreateServiceScope())
             {
                 var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
