@@ -50,6 +50,7 @@
     <ProjectReference Include="Modules\Orchard.Navigation\Orchard.Navigation.csproj" />
     <ProjectReference Include="Modules\Orchard.Recipes\Orchard.Recipes.csproj" />
     <ProjectReference Include="Modules\Orchard.Resources\Orchard.Resources.csproj" />
+    <ProjectReference Include="Modules\Orchard.ResponseCache\Orchard.ResponseCache.csproj" />
     <ProjectReference Include="Modules\Orchard.Roles\Orchard.Roles.csproj" />
     <ProjectReference Include="Modules\Orchard.Scripting\Orchard.Scripting.csproj" />
     <ProjectReference Include="Modules\Orchard.Settings\Orchard.Settings.csproj" />
