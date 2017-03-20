@@ -1,6 +1,6 @@
 ﻿using System;
 using Orchard.ContentManagement.Metadata.Settings;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using OrchardCore.Mvc.Modules.Utilities;
 
 namespace Orchard.ContentManagement.Metadata.Models
 {

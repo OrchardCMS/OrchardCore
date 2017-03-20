@@ -1,6 +1,6 @@
 ﻿using System;
 using HandlebarsDotNet;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Settings;
 

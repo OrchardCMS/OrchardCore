@@ -66,10 +66,10 @@ namespace Orchard.Environment.Shell.Builders
 
             IServiceCollection moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
-            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(Microsoft.AspNetCore.Modules.IStartup).IsAssignableFrom(t.Key)))
+            foreach (var dependency in blueprint.Dependencies.Where(t => typeof(OrchardCore.Modules.IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(Microsoft.AspNetCore.Modules.IStartup), dependency.Key);
+                moduleServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
+                tenantServiceCollection.AddSingleton(typeof(OrchardCore.Modules.IStartup), dependency.Key);
             }
 
             // Add a default configuration if none has been provided
@@ -86,7 +86,7 @@ namespace Orchard.Environment.Shell.Builders
             var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
 
             // Let any module add custom service descriptors to the tenant
-            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>())
+            foreach (var startup in moduleServiceProvider.GetServices<OrchardCore.Modules.IStartup>())
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
 
@@ -181,7 +181,7 @@ namespace Orchard.Environment.Shell.Builders
                     }
                 }
             }
-            
+
             return shellServiceProvider;
         }
     }

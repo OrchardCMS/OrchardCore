@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Nancy.Modules;
+using OrchardCore.Modules;
+using OrchardCore.Nancy.Modules;
 using Microsoft.AspNetCore.Routing;
 
 namespace Orchard.Nancy

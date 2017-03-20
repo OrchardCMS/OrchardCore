@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
+using OrchardCore.Mvc.Modules.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
@@ -503,7 +503,7 @@ namespace Orchard.Contents.Controllers
             //}
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            
+
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });

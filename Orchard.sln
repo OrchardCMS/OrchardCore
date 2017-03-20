@@ -121,7 +121,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Modules", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Security.Abstractions", "src\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj", "{16428A6C-83DA-46DB-BBFA-7ED56CD09204}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Mvc.Modules.Abstractions", "src\OrchardCore\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.csproj", "{A1F3BB21-E9C7-4131-8682-50CE9730CD49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Mvc.Modules.Abstractions", "src\OrchardCore\OrchardCore.Mvc.Modules.Abstractions\OrchardCore.Mvc.Modules.Abstractions.csproj", "{A1F3BB21-E9C7-4131-8682-50CE9730CD49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Data.Abstractions", "src\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj", "{FDB57330-DBB0-466C-B488-C81F8BFC6BDD}"
 EndProject
@@ -185,11 +185,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Feeds.Core", "src\O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Feeds", "src\Orchard.Cms.Web\Modules\Orchard.Feeds\Orchard.Feeds.csproj", "{1D0FB7E8-8512-486E-84A4-6BF8E594B07C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Modules.Abstractions", "src\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj", "{477CBA01-FB6E-498C-AD3C-EF2B16F7C006}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules.Abstractions", "src\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj", "{477CBA01-FB6E-498C-AD3C-EF2B16F7C006}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Modules", "src\OrchardCore\Microsoft.AspNetCore.Modules\Microsoft.AspNetCore.Modules.csproj", "{19617686-B3AE-4810-9C32-7FAF42F56744}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules", "src\OrchardCore\OrchardCore.Modules\OrchardCore.Modules.csproj", "{19617686-B3AE-4810-9C32-7FAF42F56744}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Mvc.Modules", "src\OrchardCore\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj", "{9E4E6CCB-7E1C-45CA-A4BB-43D8102DF086}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Mvc.Modules", "src\OrchardCore\OrchardCore.Mvc.Modules\OrchardCore.Mvc.Modules.csproj", "{9E4E6CCB-7E1C-45CA-A4BB-43D8102DF086}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.XmlRpc.Abstractions", "src\OrchardCore\Orchard.XmlRpc.Abstractions\Orchard.XmlRpc.Abstractions.csproj", "{ECB391BC-F0C7-4775-A585-2781A40ABF5F}"
 EndProject
@@ -203,7 +203,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Widgets", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Layers", "src\Orchard.Cms.Web\Modules\Orchard.Layers\Orchard.Layers.csproj", "{766929F5-8CAB-4FF0-920E-7E806A6BB14D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Nancy.Modules", "src\OrchardCore\Microsoft.AspNetCore.Nancy.Modules\Microsoft.AspNetCore.Nancy.Modules.csproj", "{3BDAC7C1-2E7B-4DB6-9A48-42E60613EACE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Nancy.Modules", "src\OrchardCore\OrchardCore.Nancy.Modules\OrchardCore.Nancy.Modules.csproj", "{3BDAC7C1-2E7B-4DB6-9A48-42E60613EACE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Mvc", "src\Orchard.Cms.Web\Modules\Orchard.Mvc\Orchard.Mvc.csproj", "{F9842D64-DA3B-48E4-BEB4-7F01033978B2}"
 EndProject

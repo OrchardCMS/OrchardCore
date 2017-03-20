@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Mvc.Modules.Abstractions\OrchardCore.Mvc.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
   </ItemGroup>
 

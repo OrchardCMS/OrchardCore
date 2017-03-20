@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -78,7 +78,7 @@ namespace Orchard.Users
             services.TryAddScoped<SignInManager<User>>();
 
             services.TryAddScoped<IUserStore<User>, UserStore>();
-            
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;

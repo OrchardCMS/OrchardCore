@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
@@ -12,7 +12,7 @@ using Orchard.DisplayManagement.Theming;
 namespace Orchard.Settings.Services
 {
     /// <summary>
-    /// Processes all <see cref="ISiteSettingsDisplayHandler"/> implementations to provide the 
+    /// Processes all <see cref="ISiteSettingsDisplayHandler"/> implementations to provide the
     /// edit and update shapes for the Site Settings object.
     /// </summary>
     public class SiteSettingsDisplayManager : BaseDisplayManager, ISiteSettingsDisplayManager

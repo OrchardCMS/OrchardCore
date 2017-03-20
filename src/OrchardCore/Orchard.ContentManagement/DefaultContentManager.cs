@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
@@ -276,7 +276,7 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Unpublishing(context), _logger);
 
             publishedItem.Published = false;
-            
+
             _session.Save(publishedItem);
 
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
