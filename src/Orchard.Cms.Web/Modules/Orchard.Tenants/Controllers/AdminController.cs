@@ -52,7 +52,12 @@ namespace Orchard.Tenants.Controllers
 
             var model = new AdminIndexViewModel
             {
-                ShellSettingsEntries = shells.Select(x => new ShellSettingsEntry { Name = x.Settings.Name, ShellSettings = x.Settings }).ToList()
+                ShellSettingsEntries = shells.Select(x => new ShellSettingsEntry
+                {
+                    Name = x.Settings.Name,
+                    ShellSettings = x.Settings,
+                    IsDefaultTenant = string.Equals(x.Settings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                }).ToList()
             };
 
             return View(model);
@@ -246,9 +251,16 @@ namespace Orchard.Tenants.Controllers
 
             var shellSettings = shellContext.Settings;
 
+            if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            {
+                _notifier.Error(H["You cannot disable the default tenant."]);
+                return RedirectToAction(nameof(Index));
+            }
+
             if (shellSettings.State != TenantState.Running)
             {
                 _notifier.Error(H["You can only disable a Running shell."]);
+                return RedirectToAction(nameof(Index));
             }
 
             shellSettings.State = TenantState.Disabled;

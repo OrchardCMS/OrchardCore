@@ -74,7 +74,7 @@ $(function () {
         // Expand the section if necessary
         var target = $($(this).data('target'));
         if ($(this).prop('checked')) {
-            target.addClass('collapsed');
+            target.addClass('show');
         }
 
         $(this).on('change', function (e) {
@@ -83,6 +83,29 @@ $(function () {
                 $(this).prop('checked', !$(this).prop('checked'));                
             }
             target.collapse($(this).prop('checked') ? 'show' : 'hide');
+        });
+    });
+});
+
+$(function () {
+    $('input[data-toggle="collapse active"]').each(function () {
+        // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
+        // c.f. https://github.com/twbs/bootstrap/issues/21079
+        $(this).removeAttr("data-toggle");
+
+        // Expand the section if necessary
+        var target = $($(this).data('target'));
+        if (!$(this).prop('checked')) {
+            target.addClass('show');
+        }
+
+        $(this).on('change', function (e) {
+            // During a double-click, ignore state changes while the element is collapsing
+            if (target.hasClass('collapsing')) {
+                console.log('collapsing');
+                $(this).prop('checked', !$(this).prop('checked'));
+            }
+            target.collapse($(this).prop('checked') ? 'hide' : 'show');
         });
     });
 });

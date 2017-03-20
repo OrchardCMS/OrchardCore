@@ -23,9 +23,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="YesSql.Storage.Sql" Version="1.0.0-*" />
-    <PackageReference Include="MySqlConnector" Version="0.12" />
-    <PackageReference Include="Npgsql" Version="3.2.0" />
+    <PackageReference Include="YesSql.Storage.Sql" Version="1.0.0-beta-0005" />
+    <PackageReference Include="MySqlConnector" Version="0.14.0" />
+    <PackageReference Include="Npgsql" Version="3.2.1" />
   </ItemGroup>
 
 </Project>
