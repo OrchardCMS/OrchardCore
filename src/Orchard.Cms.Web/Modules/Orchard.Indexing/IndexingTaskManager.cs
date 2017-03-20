@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using YesSql.Core.Services;
@@ -82,7 +82,7 @@ namespace Orchard.Indexing.Services
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             await connection.OpenAsync();
             var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
-            
+
             try
             {
                 var table = $"{_tablePrefix }{ nameof(IndexingTask)}";

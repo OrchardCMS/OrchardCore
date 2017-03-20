@@ -14,8 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Modules/Microsoft.AspNetCore.Modules.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Mvc.Modules/Microsoft.AspNetCore.Mvc.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Modules/OrchardCore.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Mvc.Modules/OrchardCore.Mvc.Modules.csproj" />
     <ProjectReference Include="Modules\Orchard.Mvc.HelloWorld\Orchard.Mvc.HelloWorld.csproj" />
   </ItemGroup>
   <ItemGroup>

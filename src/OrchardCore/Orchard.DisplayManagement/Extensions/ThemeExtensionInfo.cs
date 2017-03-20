@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace Orchard.DisplayManagement.Extensions
         public ThemeExtensionInfo(IExtensionInfo extensionInfo)
         {
             _extensionInfo = extensionInfo;
-            
+
             var baseTheme = _extensionInfo.Manifest.ConfigurationRoot["basetheme"];
 
             if (baseTheme != null && baseTheme.Length != 0) {

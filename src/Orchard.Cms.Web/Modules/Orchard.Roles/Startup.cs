@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orchard.Environment.Navigation;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Recipes;
 using Orchard.Roles.Recipes;
 using Orchard.Roles.Services;

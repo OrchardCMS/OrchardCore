@@ -1,5 +1,5 @@
 ﻿@model AdminIndexViewModel
-@using Orchard.Environment.Shell.Models
+@using OrchardCore.Tenant.Models
 
 <h1>@RenderTitleSegments(T["Tenants"])</h1>
 
@@ -15,30 +15,30 @@
 <form asp-action="Index">
     @* the form is nessecary to generate and antiforgery token for the delete action *@
     <ul class="list-group">
-        @foreach (var entry in Model.ShellSettingsEntries)
+        @foreach (var entry in Model.TenantSettingsEntries)
         {
             <li class="list-group-item">
                 <div class="properties">
                     <div class="related">
                         <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
+                        @if (!entry.IsDefaultTenant && entry.TenantSettings.State == TenantState.Running)
                         {
                             <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
                         }
-                        @if (entry.ShellSettings.State == TenantState.Disabled)
+                        @if (entry.TenantSettings.State == TenantState.Disabled)
                         {
                             <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
                         }
-                        @if (entry.ShellSettings.State == TenantState.Uninitialized)
+                        @if (entry.TenantSettings.State == TenantState.Uninitialized)
                         {
-                            <a class="btn btn-success btn-sm" href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@T["Setup"]</a>
+                            <a class="btn btn-success btn-sm" href="@entry.TenantSettings.RequestUrlHost/@entry.TenantSettings.RequestUrlPrefix">@T["Setup"]</a>
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                     <h5>
-                        <a href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@entry.Name</a>
-                        <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
-                        @switch (entry.ShellSettings.State)
+                        <a href="@entry.TenantSettings.RequestUrlHost/@entry.TenantSettings.RequestUrlPrefix">@entry.Name</a>
+                        <code class="hint">@entry.TenantSettings.RequestUrlHost/@entry.TenantSettings.RequestUrlPrefix</code>
+                        @switch (entry.TenantSettings.State)
                         {
                             case TenantState.Disabled:
                                 <span class="badge badge-default">@T["Disabled"]</span>

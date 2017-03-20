@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Models;
-using Orchard.Hosting.ShellBuilders;
+using OrchardCore.Tenant;
+using OrchardCore.Tenant.Models;
+using Orchard.Hosting.TenantBuilders;
 
 namespace Orchard.BackgroundTasks
 {
@@ -18,20 +18,20 @@ namespace Orchard.BackgroundTasks
 
         private readonly Dictionary<string, IEnumerable<IBackgroundTask>> _tasks;
         private readonly IApplicationLifetime _applicationLifetime;
-        private readonly IShellHost _orchardHost;
-        private readonly ShellSettings _shellSettings;
+        private readonly ITenantHost _orchardHost;
+        private readonly TenantSettings _tenantSettings;
         private readonly Dictionary<IBackgroundTask, BackgroundTaskState> _states;
         private readonly Dictionary<string, Timer> _timers;
         private readonly Dictionary<string, TimeSpan> _periods;
 
         public BackgroundTaskService(
-            IShellHost orchardHost,
-            ShellSettings shellSettings,
+            ITenantHost orchardHost,
+            TenantSettings tenantSettings,
             IApplicationLifetime applicationLifetime,
             IEnumerable<IBackgroundTask> tasks,
             ILogger<BackgroundTaskService> logger)
         {
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _orchardHost = orchardHost;
             _applicationLifetime = applicationLifetime;
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
@@ -45,7 +45,7 @@ namespace Orchard.BackgroundTasks
 
         public void Activate()
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_tenantSettings.State == TenantState.Running)
             {
                 foreach (var group in _timers.Keys)
                 {
@@ -62,7 +62,7 @@ namespace Orchard.BackgroundTasks
         {
             // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
             // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
-            ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
+            TenantContext tenantContext = _orchardHost.GetOrCreateTenantContext(_tenantSettings);
 
             var groupName = group as string ?? "";
 
@@ -70,7 +70,7 @@ namespace Orchard.BackgroundTasks
             {
                 var taskName = task.GetType().FullName;
 
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = tenantContext.CreateServiceScope())
                 {
                     try
                     {

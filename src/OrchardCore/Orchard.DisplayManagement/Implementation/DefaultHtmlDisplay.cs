@@ -5,7 +5,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
@@ -59,7 +59,7 @@ namespace Orchard.DisplayManagement.Implementation
             }
 
             var shapeMetadata = shape.Metadata;
-            
+
             // can't really cope with a shape that has no type information
             if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {

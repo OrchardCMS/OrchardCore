@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Tests.Stubs
 {

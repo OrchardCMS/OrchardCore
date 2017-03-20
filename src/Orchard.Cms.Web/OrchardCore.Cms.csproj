@@ -17,10 +17,10 @@
     <None Include="App_Data\**" CopyToPublishDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore/Orchard.Environment.Shell.Data/Orchard.Environment.Shell.Data.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Tenant.Data/OrchardCore.Tenant.Data.csproj" />
     <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Modules/Microsoft.AspNetCore.Modules.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Mvc.Modules/Microsoft.AspNetCore.Mvc.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Modules/OrchardCore.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Mvc.Modules/OrchardCore.Mvc.Modules.csproj" />
     <ProjectReference Include="Modules\Orchard.Lucene\Orchard.Lucene.csproj" />
     <ProjectReference Include="Modules\Orchard.Admin\Orchard.Admin.csproj" />
     <ProjectReference Include="Modules\Orchard.Alias\Orchard.Alias.csproj" />

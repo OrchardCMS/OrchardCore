@@ -10,8 +10,8 @@
 //using Orchard.DisplayManagement.Implementation;
 //using Orchard.DisplayManagement.Shapes;
 //using Orchard.DisplayManagement.Theming;
-//using Orchard.Environment.Extensions;
-//using Orchard.Environment.Extensions.Features;
+//using OrchardCore.Extensions;
+//using OrchardCore.Extensions.Features;
 //using Orchard.Events;
 //using Orchard.Tests.Stubs;
 //using System;
@@ -77,7 +77,7 @@
 //            serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
 //            serviceCollection.AddSingleton<IThemeManager>(x =>
 //                new MockThemeManager(testFeature.Descriptor.Extension)
-            
+
 //            );
 
 //            serviceCollection.AddSingleton<IMemoryCache>(x => new MemoryCache(new MemoryCacheOptions()));

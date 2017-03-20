@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Modules.Models {
     /// <summary>

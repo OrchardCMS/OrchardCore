@@ -1,7 +1,7 @@
-﻿using Orchard.Environment.Extensions;
+﻿using OrchardCore.Extensions;
 using System;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Loaders;
+using OrchardCore.Extensions.Features;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

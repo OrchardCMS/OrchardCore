@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Shell;
-using Orchard.Environment.Shell.Builders;
-using Orchard.Environment.Shell.Descriptor;
-using Orchard.Environment.Shell.Descriptor.Models;
-using Orchard.Environment.Shell.Models;
+using OrchardCore.Extensions;
+using OrchardCore.Tenant;
+using OrchardCore.Tenant.Builders;
+using OrchardCore.Tenant.Descriptor;
+using OrchardCore.Tenant.Descriptor.Models;
+using OrchardCore.Tenant.Models;
 using Orchard.Events;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
@@ -22,13 +22,13 @@ namespace Orchard.Setup.Services
 {
     public class SetupService : ISetupService
     {
-        private readonly ShellSettings _shellSettings;
-        private readonly IShellHost _orchardHost;
-        private readonly IShellContextFactory _shellContextFactory;
+        private readonly TenantSettings _tenantSettings;
+        private readonly ITenantHost _orchardHost;
+        private readonly ITenantContextFactory _tenantContextFactory;
         private readonly ICompositionStrategy _compositionStrategy;
         private readonly IExtensionManager _extensionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IRunningShellTable _runningShellTable;
+        private readonly IRunningTenantTable _runningTenantTable;
         private readonly IRecipeHarvester _recipeHarvester;
         private readonly ILogger _logger;
         private readonly IStringLocalizer T;
@@ -36,25 +36,25 @@ namespace Orchard.Setup.Services
         private IReadOnlyList<RecipeDescriptor> _recipes;
 
         public SetupService(
-            ShellSettings shellSettings,
-            IShellHost orchardHost,
-            IShellContextFactory shellContextFactory,
+            TenantSettings tenantSettings,
+            ITenantHost orchardHost,
+            ITenantContextFactory tenantContextFactory,
             ICompositionStrategy compositionStrategy,
             IExtensionManager extensionManager,
             IHttpContextAccessor httpContextAccessor,
-            IRunningShellTable runningShellTable,
+            IRunningTenantTable runningTenantTable,
             IRecipeHarvester recipeHarvester,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer
             )
         {
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _orchardHost = orchardHost;
-            _shellContextFactory = shellContextFactory;
+            _tenantContextFactory = tenantContextFactory;
             _compositionStrategy = compositionStrategy;
             _extensionManager = extensionManager;
             _httpContextAccessor = httpContextAccessor;
-            _runningShellTable = runningShellTable;
+            _runningTenantTable = runningTenantTable;
             _recipeHarvester = recipeHarvester;
             _logger = logger;
             T = stringLocalizer;
@@ -74,14 +74,14 @@ namespace Orchard.Setup.Services
 
         public async Task<string> SetupAsync(SetupContext context)
         {
-            var initialState = _shellSettings.State;
+            var initialState = _tenantSettings.State;
             try
             {
                 return await SetupInternalAsync(context);
             }
             catch
             {
-                _shellSettings.State = initialState;
+                _tenantSettings.State = initialState;
                 throw;
             }
         }
@@ -92,7 +92,7 @@ namespace Orchard.Setup.Services
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Running setup for tenant '{0}'.", _shellSettings.Name);
+                _logger.LogInformation("Running setup for tenant '{0}'.", _tenantSettings.Name);
             }
 
             // Features to enable for Setup
@@ -106,31 +106,31 @@ namespace Orchard.Setup.Services
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
-            // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            _shellSettings.State = TenantState.Initializing;
+            // Set tenant state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
+            _tenantSettings.State = TenantState.Initializing;
 
-            var shellSettings = new ShellSettings(_shellSettings);
+            var tenantSettings = new TenantSettings(_tenantSettings);
 
-            if (string.IsNullOrEmpty(shellSettings.DatabaseProvider))
+            if (string.IsNullOrEmpty(tenantSettings.DatabaseProvider))
             {
-                shellSettings.DatabaseProvider = context.DatabaseProvider;
-                shellSettings.ConnectionString = context.DatabaseConnectionString;
-                shellSettings.TablePrefix = context.DatabaseTablePrefix;
+                tenantSettings.DatabaseProvider = context.DatabaseProvider;
+                tenantSettings.ConnectionString = context.DatabaseConnectionString;
+                tenantSettings.TablePrefix = context.DatabaseTablePrefix;
             }
 
-            // Creating a standalone environment based on a "minimum shell descriptor".
+            // Creating a standalone environment based on a "minimum tenant descriptor".
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
 
-            var shellDescriptor = new ShellDescriptor
+            var tenantDescriptor = new TenantDescriptor
             {
-                Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
+                Features = context.EnabledFeatures.Select(id => new TenantFeature { Id = id }).ToList()
             };
 
-            using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
+            using (var tenantContext = await _tenantContextFactory.CreateDescribedContextAsync(tenantSettings, tenantDescriptor))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = tenantContext.CreateServiceScope())
                 {
                     var store = scope.ServiceProvider.GetRequiredService<IStore>();
 
@@ -152,13 +152,13 @@ namespace Orchard.Setup.Services
                         return null;
                     }
 
-                    // Create the "minimum shell descriptor"
+                    // Create the "minimum tenant descriptor"
                     await scope
                         .ServiceProvider
-                        .GetService<IShellDescriptorManager>()
-                        .UpdateShellDescriptorAsync(0,
-                            shellContext.Blueprint.Descriptor.Features,
-                            shellContext.Blueprint.Descriptor.Parameters);
+                        .GetService<ITenantDescriptorManager>()
+                        .UpdateTenantDescriptorAsync(0,
+                            tenantContext.Blueprint.Descriptor.Features,
+                            tenantContext.Blueprint.Descriptor.Parameters);
 
                     var deferredTaskEngine = scope.ServiceProvider.GetService<IDeferredTaskEngine>();
 
@@ -173,7 +173,7 @@ namespace Orchard.Setup.Services
 
                 // Create a new scope for the recipe thread to prevent race issues with other scoped
                 // services from the request.
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = tenantContext.CreateServiceScope())
                 {
                     var recipeExecutor = scope.ServiceProvider.GetService<IRecipeExecutor>();
 
@@ -181,7 +181,7 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new 
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
                     {
                         SiteName  = context.SiteName,
                         AdminUsername = context.AdminUsername,
@@ -190,16 +190,16 @@ namespace Orchard.Setup.Services
                         DatabaseProvider = context.DatabaseProvider,
                         DatabaseConnectionString = context.DatabaseConnectionString,
                         DatabaseTablePrefix = context.DatabaseTablePrefix
-                    }); 
+                    });
                     //});
 
                 }
             }
 
-            // Reloading the shell context as the recipe  has probably updated its features
-            using (var shellContext = await _orchardHost.CreateShellContextAsync(shellSettings))
+            // Reloading the tenant context as the recipe  has probably updated its features
+            using (var tenantContext = await _orchardHost.CreateTenantContextAsync(tenantSettings))
             {
-                using (var scope = shellContext.CreateServiceScope())
+                using (var scope = tenantContext.CreateServiceScope())
                 {
                     bool hasErrors = false;
 
@@ -236,9 +236,9 @@ namespace Orchard.Setup.Services
                 }
             }
 
-            // Update the shell state
-            shellSettings.State = TenantState.Running;
-            _orchardHost.UpdateShellSettings(shellSettings);
+            // Update the tenant state
+            tenantSettings.State = TenantState.Running;
+            _orchardHost.UpdateTenantSettings(tenantSettings);
 
             return executionId;
         }

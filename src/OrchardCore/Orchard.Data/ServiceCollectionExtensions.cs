@@ -4,14 +4,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using Orchard.Data.Migration;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using YesSql.Core.Indexes;
 using YesSql.Core.Services;
 using YesSql.Storage.Sql;
@@ -35,43 +35,43 @@ namespace Orchard.Data
 
 			services.AddSingleton<IStore>(sp =>
             {
-                var shellSettings = sp.GetService<ShellSettings>();
+                var tenantSettings = sp.GetService<TenantSettings>();
                 var hostingEnvironment = sp.GetService<IHostingEnvironment>();
 
-                if (shellSettings.DatabaseProvider == null)
+                if (tenantSettings.DatabaseProvider == null)
                 {
                     return null;
                 }
 
-                var shellOptions = sp.GetService<IOptions<ShellOptions>>();
+                var tenantOptions = sp.GetService<IOptions<TenantOptions>>();
 
                 IConnectionFactory connectionFactory = null;
                 var isolationLevel = IsolationLevel.Unspecified;
 
-                switch (shellSettings.DatabaseProvider)
+                switch (tenantSettings.DatabaseProvider)
                 {
                     case "SqlConnection":
-                        connectionFactory = new DbConnectionFactory<SqlConnection>(shellSettings.ConnectionString);
+                        connectionFactory = new DbConnectionFactory<SqlConnection>(tenantSettings.ConnectionString);
                         isolationLevel = IsolationLevel.ReadUncommitted;
                         break;
                     case "Sqlite":
-                        var option = shellOptions.Value;
-                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
+                        var option = tenantOptions.Value;
+                        var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.TenantsRootContainerName, option.TenantsContainerName, tenantSettings.Name);
                         var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                         Directory.CreateDirectory(databaseFolder);
                         connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
                         isolationLevel = IsolationLevel.ReadUncommitted;
 						break;
 					case "MySql":
-						connectionFactory = new DbConnectionFactory<MySqlConnection>(shellSettings.ConnectionString);
+						connectionFactory = new DbConnectionFactory<MySqlConnection>(tenantSettings.ConnectionString);
 						isolationLevel = IsolationLevel.ReadUncommitted;
 						break;
 					case "Postgres":
-						connectionFactory = new DbConnectionFactory<NpgsqlConnection>(shellSettings.ConnectionString);
+						connectionFactory = new DbConnectionFactory<NpgsqlConnection>(tenantSettings.ConnectionString);
 						isolationLevel = IsolationLevel.ReadUncommitted;
 						break;
 					default:
-                        throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                        throw new ArgumentException("Unknown database provider: " + tenantSettings.DatabaseProvider);
                 }
 
                 var storeConfiguration = new Configuration
@@ -80,15 +80,15 @@ namespace Orchard.Data
                     IsolationLevel = isolationLevel
                 };
 
-                if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                if (!string.IsNullOrWhiteSpace(tenantSettings.TablePrefix))
                 {
-                    storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
+                    storeConfiguration.TablePrefix = tenantSettings.TablePrefix + "_";
                 }
 
                 var sqlFactory = new SqlDocumentStorageFactory();
-                if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                if (!string.IsNullOrWhiteSpace(tenantSettings.TablePrefix))
                 {
-                    sqlFactory.TablePrefix = shellSettings.TablePrefix + "_";
+                    sqlFactory.TablePrefix = tenantSettings.TablePrefix + "_";
                 }
                 storeConfiguration.DocumentStorageFactory = sqlFactory;
 

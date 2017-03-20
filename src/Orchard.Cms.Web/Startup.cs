@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Commands;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell.Data;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Manifests;
+using OrchardCore.Tenant.Data;
 
 namespace Orchard.Cms.Web
 {

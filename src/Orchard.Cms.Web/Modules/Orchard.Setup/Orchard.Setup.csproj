@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Mvc.Modules.Abstractions\OrchardCore.Mvc.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />

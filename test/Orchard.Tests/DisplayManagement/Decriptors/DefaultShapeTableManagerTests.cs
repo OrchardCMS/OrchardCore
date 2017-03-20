@@ -9,11 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Implementation;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Loaders;
-using Orchard.Environment.Extensions.Manifests;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Extensions.Loaders;
+using OrchardCore.Extensions.Manifests;
+using OrchardCore.Tenant;
 using Orchard.Events;
 using Xunit;
 
@@ -156,7 +156,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddLogging();
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddScoped<IShellFeaturesManager, TestShellFeaturesManager>();
+            serviceCollection.AddScoped<ITenantFeaturesManager, TestTenantFeaturesManager>();
             serviceCollection.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
             serviceCollection.AddScoped<IEventBus, StubEventBus>();
             serviceCollection.AddSingleton<ITypeFeatureProvider, TypeFeatureProvider>();
@@ -201,41 +201,41 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             };
         }
 
-        public class TestShellFeaturesManager : IShellFeaturesManager
+        public class TestTenantFeaturesManager : ITenantFeaturesManager
         {
             private readonly IExtensionManager _extensionManager;
 
-            public TestShellFeaturesManager(IExtensionManager extensionManager)
+            public TestTenantFeaturesManager(IExtensionManager extensionManager)
             {
                 _extensionManager = extensionManager;
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetEnabledFeaturesAsync()
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.GetEnabledFeaturesAsync()
             {
                 return Task.FromResult(_extensionManager.GetFeatures());
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.EnableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.GetDisabledFeaturesAsync()
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.GetDisabledFeaturesAsync()
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
                 throw new NotImplementedException();
             }
 
-            Task<IEnumerable<IFeatureInfo>> IShellFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
+            Task<IEnumerable<IFeatureInfo>> ITenantFeaturesManager.DisableFeaturesAsync(IEnumerable<IFeatureInfo> features, bool force)
             {
                 throw new NotImplementedException();
             }

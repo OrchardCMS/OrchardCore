@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.Metadata.Models;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using OrchardCore.Mvc.Modules.Utilities;
 using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.MetaData

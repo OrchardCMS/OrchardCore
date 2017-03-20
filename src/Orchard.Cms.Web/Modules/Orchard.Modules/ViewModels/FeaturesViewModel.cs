@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Orchard.Modules.Models;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Modules.ViewModels {
     public class FeaturesViewModel {

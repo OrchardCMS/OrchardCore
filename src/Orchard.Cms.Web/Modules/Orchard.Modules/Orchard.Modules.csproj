@@ -15,15 +15,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Modules.Abstractions\OrchardCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Mvc.Modules.Abstractions\OrchardCore.Mvc.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Extensions.Abstractions\OrchardCore.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
-    <ProjectReference Include="..\..\..\OrchardCore\Orchard.Environment.Shell.Abstractions\Orchard.Environment.Shell.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Tenant\OrchardCore.Tenant.csproj" />
+    <ProjectReference Include="..\..\..\OrchardCore\OrchardCore.Tenant.Abstractions\OrchardCore.Tenant.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\OrchardCore\Orchard.ResourceManagement.Abstractions\Orchard.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>

@@ -6,7 +6,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Contents;
 using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
-using Orchard.Environment.Extensions.Features.Attributes;
+using OrchardCore.Extensions.Features.Attributes;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.MetaWeblog;
@@ -147,7 +147,7 @@ namespace Orchard.Lists.RemotePublishing
         private async Task<XRpcArray> MetaWeblogGetUserBlogsAsync(XmlRpcContext context, string userName, string password)
         {
             var user = await ValidateUserAsync(userName, password);
-            
+
             XRpcArray array = new XRpcArray();
 
             // Look for all types using ListPart
@@ -343,7 +343,7 @@ namespace Orchard.Lists.RemotePublishing
             {
                 driver.EditPost(content, contentItem);
             }
-            
+
             // try to get the UTC timezone by default
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
@@ -425,9 +425,9 @@ namespace Orchard.Lists.RemotePublishing
             var metadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
 
             var url = context.Url.Action(
-                metadata.DisplayRouteValues["action"].ToString(), 
-                metadata.DisplayRouteValues["controller"].ToString(), 
-                metadata.DisplayRouteValues, 
+                metadata.DisplayRouteValues["action"].ToString(),
+                metadata.DisplayRouteValues["controller"].ToString(),
+                metadata.DisplayRouteValues,
                 context.HttpContext.Request.Scheme);
 
             if (contentItem.HasDraft())

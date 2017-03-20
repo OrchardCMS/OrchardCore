@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using Orchard.DisplayManagement.Layout;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.DisplayManagement.Notify
 {
@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Notify
         private readonly dynamic _shapeFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ShellSettings _shellSettings;
+        private readonly TenantSettings _tenantSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
@@ -32,20 +32,20 @@ namespace Orchard.DisplayManagement.Notify
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            ShellSettings shellSettings,
+            TenantSettings tenantSettings,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder)
         {
             _htmlEncoder = htmlEncoder;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
 
             _layoutAccessor = layoutAccessor;
             _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
 
-            _tenantPath = "/" + _shellSettings.RequestUrlPrefix;
+            _tenantPath = "/" + _tenantSettings.RequestUrlPrefix;
         }
 
         public void OnActionExecuting(ActionExecutingContext filterContext)

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Orchard.Data.Migration;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Navigation;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Security;
 using Orchard.Security.Permissions;
 using Orchard.Security.Services;
@@ -29,11 +29,11 @@ namespace Orchard.Users
         private readonly string _tenantPrefix;
         private readonly IdentityOptions _options;
 
-        public Startup(ShellSettings shellSettings, IOptions<IdentityOptions> options)
+        public Startup(TenantSettings tenantSettings, IOptions<IdentityOptions> options)
         {
             _options = options.Value;
-            _tenantName = shellSettings.Name;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+            _tenantName = tenantSettings.Name;
+            _tenantPrefix = "/" + tenantSettings.RequestUrlPrefix;
         }
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -78,7 +78,7 @@ namespace Orchard.Users
             services.TryAddScoped<SignInManager<User>>();
 
             services.TryAddScoped<IUserStore<User>, UserStore>();
-            
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Cookies.ApplicationCookie.CookieName = "orchauth_" + _tenantName;

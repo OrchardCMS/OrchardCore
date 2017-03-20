@@ -15,11 +15,11 @@ using Orchard.ContentTypes.Services;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Environment.Shell;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using OrchardCore.Tenant;
+using OrchardCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
+using OrchardCore.Mvc.Modules.ActionConstraints;
 
 namespace Orchard.ContentTypes.Controllers
 {
@@ -27,7 +27,7 @@ namespace Orchard.ContentTypes.Controllers
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _settings;
+        private readonly TenantSettings _settings;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
@@ -37,7 +37,7 @@ namespace Orchard.ContentTypes.Controllers
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings settings,
+            TenantSettings settings,
             IAuthorizationService authorizationService,
             ISession session,
             ILogger<AdminController> logger,

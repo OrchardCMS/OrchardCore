@@ -11,7 +11,7 @@ using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 using Orchard.Indexing;
 using Directory = System.IO.Directory;
 
@@ -34,12 +34,12 @@ namespace Orchard.Lucene
 
         public LuceneIndexProvider(
             IHostingEnvironment hostingEnvironment,
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
+            IOptions<TenantOptions> tenantOptions,
+            TenantSettings tenantSettings
             )
         {
             _hostingEnvironment = hostingEnvironment;
-            _rootPath = Path.Combine(shellOptions.Value.ShellsRootContainerName, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
+            _rootPath = Path.Combine(tenantOptions.Value.TenantsRootContainerName, tenantOptions.Value.TenantsContainerName, tenantSettings.Name, "Lucene");
             _rootDirectory = Directory.CreateDirectory(_rootPath);
         }
 

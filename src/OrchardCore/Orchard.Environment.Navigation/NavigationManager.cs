@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Environment.Navigation
 {
@@ -16,7 +16,7 @@ namespace Orchard.Environment.Navigation
 
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
-        protected readonly ShellSettings _shellSettings;
+        protected readonly TenantSettings _tenantSettings;
         private readonly IUrlHelperFactory _urlHelperFactory;
         //private readonly IAuthorizationService _authorizationService;
 
@@ -25,14 +25,14 @@ namespace Orchard.Environment.Navigation
         public NavigationManager(
             IEnumerable<INavigationProvider> navigationProviders,
             ILogger<NavigationManager> logger,
-            ShellSettings shellSettings,
+            TenantSettings tenantSettings,
             IUrlHelperFactory urlHelperFactory
             //IAuthorizationService authorizationService ,
             )
         {
             _navigationProviders = navigationProviders;
             _logger = logger;
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _urlHelperFactory = urlHelperFactory;
             //_authorizationService = authorizationService;
         }
@@ -178,9 +178,9 @@ namespace Orchard.Environment.Navigation
             {
                 if (url.StartsWith("~/"))
                 {
-                    if (!String.IsNullOrEmpty(_shellSettings.RequestUrlPrefix))
+                    if (!String.IsNullOrEmpty(_tenantSettings.RequestUrlPrefix))
                     {
-                        url = _shellSettings.RequestUrlPrefix + "/" + url.Substring(2);
+                        url = _tenantSettings.RequestUrlPrefix + "/" + url.Substring(2);
                     }
                     else
                     {

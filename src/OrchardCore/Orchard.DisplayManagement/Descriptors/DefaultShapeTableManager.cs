@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Shell;
+using OrchardCore.Extensions;
+using OrchardCore.Extensions.Features;
+using OrchardCore.Tenant;
 
 namespace Orchard.DisplayManagement.Descriptors
 {
@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Descriptors
         private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
 
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
-        private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly ITenantFeaturesManager _tenantFeaturesManager;
         private readonly IExtensionManager _extensionManager;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
@@ -28,14 +28,14 @@ namespace Orchard.DisplayManagement.Descriptors
 
         public DefaultShapeTableManager(
             IEnumerable<IShapeTableProvider> bindingStrategies,
-            IShellFeaturesManager shellFeaturesManager,
+            ITenantFeaturesManager tenantFeaturesManager,
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
             ILogger<DefaultShapeTableManager> logger,
             IMemoryCache memoryCache)
         {
             _bindingStrategies = bindingStrategies;
-            _shellFeaturesManager = shellFeaturesManager;
+            _tenantFeaturesManager = tenantFeaturesManager;
             _extensionManager = extensionManager;
             _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
@@ -71,7 +71,7 @@ namespace Orchard.DisplayManagement.Descriptors
                     BuildDescriptors(bindingStrategy, builtAlterations);
                 }
 
-                var enabledAndOrderedFeatureIds = _shellFeaturesManager
+                var enabledAndOrderedFeatureIds = _tenantFeaturesManager
                     .GetEnabledFeaturesAsync()
                     .GetAwaiter()
                     .GetResult()

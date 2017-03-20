@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Lucene
 {
@@ -18,16 +18,16 @@ namespace Orchard.Lucene
 
         public LuceneIndexingState(
             IHostingEnvironment hostingEnvironment,
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
+            IOptions<TenantOptions> tenantOptions,
+            TenantSettings tenantSettings
             )
         {
             _hostingEnvironment = hostingEnvironment;
 
             _indexSettingsFilename = Path.Combine(
-                shellOptions.Value.ShellsRootContainerName, 
-                shellOptions.Value.ShellsContainerName, 
-                shellSettings.Name, 
+                tenantOptions.Value.TenantsRootContainerName,
+                tenantOptions.Value.TenantsContainerName,
+                tenantSettings.Name,
                 "lucene.status.json");
 
             if (!File.Exists(_indexSettingsFilename))

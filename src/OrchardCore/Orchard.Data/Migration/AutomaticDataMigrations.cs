@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Shell;
+using OrchardCore.Tenant;
 
 namespace Orchard.Data.Migration
 {
     /// <summary>
-    /// Registers to OrchardShell.Activated in order to run migrations automatically
+    /// Registers to OrchardTenant.Activated in order to run migrations automatically
     /// </summary>
     public class AutomaticDataMigrations : IModularTenantEvents
     {
-        private readonly ShellSettings _shellSettings;
+        private readonly TenantSettings _tenantSettings;
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
         public AutomaticDataMigrations(
             IServiceProvider serviceProvider,
-            ShellSettings shellSettings,
+            TenantSettings tenantSettings,
             ILogger<AutomaticDataMigrations> logger)
         {
             _serviceProvider = serviceProvider;
-            _shellSettings = shellSettings;
+            _tenantSettings = tenantSettings;
             _logger = logger;
         }
 
         public Task ActivatedAsync()
         {
-            if (_shellSettings.State != Environment.Shell.Models.TenantState.Uninitialized)
+            if (_tenantSettings.State != OrchardCore.Tenant.Models.TenantState.Uninitialized)
             {
                 var dataMigrationManager = _serviceProvider.GetService<IDataMigrationManager>();
                 return dataMigrationManager.UpdateAllFeaturesAsync();

@@ -1,8 +1,8 @@
 dotnet pack "src\Orchard.Hosting" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Hosting.Console" --configuration Debug --output "c:\temp\BrochardPackages"
 
-dotnet pack "src\Microsoft.AspNetCore.Mvc.Modules.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
-dotnet pack "src\Microsoft.AspNetCore.Mvc.Modules" --configuration Debug --output "c:\temp\BrochardPackages"
+dotnet pack "src\OrchardCore.Mvc.Modules.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
+dotnet pack "src\OrchardCore.Mvc.Modules" --configuration Debug --output "c:\temp\BrochardPackages"
 
 dotnet pack "src\Orchard.Admin.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.BackgroundTasks" --configuration Debug --output "c:\temp\BrochardPackages"
@@ -23,9 +23,9 @@ dotnet pack "src\Orchard.Environment.Commands" --configuration Debug --output "c
 dotnet pack "src\Orchard.Environment.Extensions" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Environment.Extensions.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Environment.Navigation" --configuration Debug --output "c:\temp\BrochardPackages"
-dotnet pack "src\Orchard.Environment.Shell" --configuration Debug --output "c:\temp\BrochardPackages"
-dotnet pack "src\Orchard.Environment.Shell.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
-dotnet pack "src\Orchard.Environment.Shell.Data" --configuration Debug --output "c:\temp\BrochardPackages"
+dotnet pack "src\OrchardCore.Tenant" --configuration Debug --output "c:\temp\BrochardPackages"
+dotnet pack "src\OrchardCore.Tenant.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"
+dotnet pack "src\OrchardCore.Tenant.Data" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Events" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Parser.Yaml" --configuration Debug --output "c:\temp\BrochardPackages"
 dotnet pack "src\Orchard.Recipes.Abstractions" --configuration Debug --output "c:\temp\BrochardPackages"

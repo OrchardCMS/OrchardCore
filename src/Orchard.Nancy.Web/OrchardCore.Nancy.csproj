@@ -14,8 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Modules/Microsoft.AspNetCore.Modules.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Nancy.Modules/Microsoft.AspNetCore.Nancy.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Modules/OrchardCore.Modules.csproj" />
+    <ProjectReference Include="../OrchardCore/OrchardCore.Nancy.Modules/OrchardCore.Nancy.Modules.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Linq" Version="4.3.0" />

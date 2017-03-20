@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
@@ -399,7 +399,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 }
             }
         }
-        
+
         public override void GetContentItemAspect(ContentItemAspectContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

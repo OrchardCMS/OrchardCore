@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Extensions;
 
@@ -13,7 +13,7 @@ namespace Orchard.DisplayManagement.Theming
         private IExtensionInfo _theme;
 
         public ThemeManager(
-            IEnumerable<IThemeSelector> themeSelectors, 
+            IEnumerable<IThemeSelector> themeSelectors,
             IExtensionManager extensionManager)
         {
             _themeSelectors = themeSelectors;

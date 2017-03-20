@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orchard.DeferredTasks.Abstractions\Orchard.DeferredTasks.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Environment.Shell.Abstractions\Orchard.Environment.Shell.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenant.Abstractions\OrchardCore.Tenant.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

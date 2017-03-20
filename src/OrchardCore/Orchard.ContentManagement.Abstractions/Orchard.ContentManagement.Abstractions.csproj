@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj" />
+    <ProjectReference Include="..\OrchardCore.Mvc.Modules\OrchardCore.Mvc.Modules.csproj" />
   </ItemGroup>
 
   <ItemGroup>

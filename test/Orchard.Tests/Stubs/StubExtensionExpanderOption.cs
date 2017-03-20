@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 
 namespace Orchard.Tests.Stubs
 {

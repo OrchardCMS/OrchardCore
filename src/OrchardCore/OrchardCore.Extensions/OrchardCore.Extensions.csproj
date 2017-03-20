@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>portable</DebugType>
+    <AssemblyName>OrchardCore.Extensions</AssemblyName>
+    <PackageId>OrchardCore.Extensions</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.Environment.Cache.Abstractions\Orchard.Environment.Cache.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Extensions.Abstractions\OrchardCore.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tenant.Abstractions\OrchardCore.Tenant.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>

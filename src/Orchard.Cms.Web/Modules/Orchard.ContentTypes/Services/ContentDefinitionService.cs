@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
@@ -12,7 +12,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using OrchardCore.Mvc.Modules.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.ContentTypes.Services

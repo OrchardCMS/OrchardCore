@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Autoroute.Drivers;
@@ -53,7 +53,7 @@ namespace Orchard.Autoroute
             var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().List().GetAwaiter().GetResult();
 
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
-            
+
             var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
 
             routes.Routes.Insert(0, autorouteRoute);

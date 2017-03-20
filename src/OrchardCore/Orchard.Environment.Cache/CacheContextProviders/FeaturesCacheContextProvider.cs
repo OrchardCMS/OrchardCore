@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Features;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,7 +14,7 @@ namespace Orchard.Environment.Cache.CacheContextProviders
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IFeatureHash _featureHash;
-        
+
         public FeaturesCacheContextProvider(
             IHttpContextAccessor httpContextAccessor,
             IFeatureHash featureHash

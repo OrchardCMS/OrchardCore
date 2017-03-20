@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Mvc.Modules;
-using Orchard.Environment.Extensions;
+using OrchardCore.Modules;
+using OrchardCore.Mvc.Modules;
+using OrchardCore.Extensions;
 
 namespace Orchard.Mvc.Web
 {

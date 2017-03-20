@@ -4,7 +4,7 @@
 //using Orchard.ContentManagement.MetaData;
 //using Orchard.ContentManagement.Metadata.Models;
 //using Orchard.Contents.Settings;
-//using Orchard.Environment.Extensions.Models;
+//using OrchardCore.Extensions.Models;
 //using Orchard.Security.Permissions;
 
 //namespace Orchard.Contents {

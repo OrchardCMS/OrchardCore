@@ -45,5 +45,5 @@
     Logged user: @User?.Identity?.Name
 </div>
 <div>
-    Tenant: @(Context.RequestServices.GetService<Orchard.Environment.Shell.ShellSettings>().Name)
+    Tenant: @(Context.RequestServices.GetService<OrchardCore.Tenant.TenantSettings>().Name)
 </div>

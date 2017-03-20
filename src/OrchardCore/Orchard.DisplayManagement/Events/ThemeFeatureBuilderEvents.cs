@@ -1,5 +1,5 @@
 ﻿using Orchard.DisplayManagement.Extensions;
-using Orchard.Environment.Extensions.Features;
+using OrchardCore.Extensions.Features;
 using System.Linq;
 
 namespace Orchard.DisplayManagement.Events

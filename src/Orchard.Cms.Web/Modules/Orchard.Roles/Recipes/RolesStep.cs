@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Orchard.Environment.Extensions;
+using OrchardCore.Extensions;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.Services;
 using Orchard.Security;
@@ -38,22 +38,22 @@ namespace Orchard.Roles.Recipes
             }
 
             var model = context.Step.ToObject<RolesStepModel>();
-            
+
             foreach (var roleModel in model.Roles)
             {
-                if (string.IsNullOrWhiteSpace(roleModel.Name)) 
+                if (string.IsNullOrWhiteSpace(roleModel.Name))
                     continue;
 
                 var role = await _roleManager.FindByNameAsync(roleModel.Name);
                 bool isNewRole = role == null;
-                
+
                 if (isNewRole)
                 {
-                    role = new Role { RoleName = roleModel.Name };                    
+                    role = new Role { RoleName = roleModel.Name };
                 }
                 role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
                 role.RoleClaims.AddRange(roleModel.Permissions.Select(p=>new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
-                
+
                 if (isNewRole)
                 {
                     await _roleManager.CreateAsync(role);
@@ -77,5 +77,5 @@ namespace Orchard.Roles.Recipes
         public IEnumerable<string> Permissions { get; set; }
     }
 
-    
+
 }

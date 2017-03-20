@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Modules;
+using OrchardCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.Indexing;
@@ -11,7 +11,7 @@ using Orchard.Settings;
 namespace Orchard.Lucene
 {
     /// <summary>
-    /// This class provides services to update all the Lucene indexes. It is non-rentrant so that calls 
+    /// This class provides services to update all the Lucene indexes. It is non-rentrant so that calls
     /// from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
     /// It also indexes one content item at a time and provides the result to all indexes.
     /// </summary>
@@ -27,8 +27,8 @@ namespace Orchard.Lucene
         private readonly ISiteService _siteService;
 
         public LuceneIndexingService(
-            LuceneIndexingState indexingState, 
-            LuceneIndexProvider indexProvider, 
+            LuceneIndexingState indexingState,
+            LuceneIndexProvider indexProvider,
             IIndexingTaskManager indexTaskManager,
             IEnumerable<IContentItemIndexHandler> indexHandlers,
             IContentManager contentManager,
@@ -96,7 +96,7 @@ namespace Orchard.Lucene
                         var contentItem = await _contentManager.GetAsync(task.ContentItemId);
                         var context = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, contentItem.ContentType);
 
-                        // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                        // Update the document from the index if its lastIndexId is smaller than the current task id.
                         await _indexHandlers.InvokeAsync(x => x.BuildIndexAsync(context), Logger);
 
                         foreach (var index in allIndexes)
