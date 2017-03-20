@@ -96,20 +96,14 @@ namespace Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
                 {
-                    var fileInfos = _hostingEnvironment
-                        .ContentRootFileProvider
-                        .GetDirectoryContents(Path.Combine(extensionDescriptor.SubPath, subPath));
+                    var subPathFileInfo = _hostingEnvironment
+                        .GetExtensionFileInfo(extensionDescriptor, subPath);
 
-                    DirectoryInfo directoryInfo = null;
-
-                    if (fileInfos.Exists)
-                    {
-                        directoryInfo = Directory.GetParent(fileInfos.First().PhysicalPath);
-                    }
+                    var directoryInfo = new DirectoryInfo(subPathFileInfo.PhysicalPath);
 
                     var relativePath = Path.Combine(extensionDescriptor.SubPath, subPath);
 
-                    if (directoryInfo == null || !directoryInfo.Exists)
+                    if (!directoryInfo.Exists)
                     {
                         return new
                         {

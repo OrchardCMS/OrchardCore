@@ -369,7 +369,7 @@ namespace Orchard.Environment.Extensions
 
         private ISet<IExtensionInfo> HarvestExtensions()
         {
-            var searchOptions = _extensionExpanderOptions.Options.ToList();
+            var searchOptions = _extensionExpanderOptions.Options;
 
             var extensionSet = new HashSet<IExtensionInfo>();
 
@@ -422,24 +422,6 @@ namespace Orchard.Environment.Extensions
             }
 
             return extensionSet;
-        }
-
-        internal static string GetRelativePath(string pathFrom, string pathTo)
-        {
-            if (!pathFrom.EndsWith(Path.DirectorySeparatorChar.ToString()) &&
-                !pathFrom.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
-            {
-                pathFrom += Path.DirectorySeparatorChar;
-            }
-
-            string relativePath = Uri.UnescapeDataString(
-                new Uri(pathFrom).MakeRelativeUri(new Uri(pathTo)).ToString());
-
-
-            relativePath = relativePath.Replace(
-                Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-
-            return relativePath;
         }
     }
 }

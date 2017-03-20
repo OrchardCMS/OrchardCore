@@ -25,7 +25,8 @@ namespace Orchard.Recipes.Services
             IHostingEnvironment hostingEnvironment,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
-            ILogger<RecipeHarvester> logger) {
+            ILogger<RecipeHarvester> logger)
+        {
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
             _recipeOptions = recipeOptions;
@@ -60,27 +61,19 @@ namespace Orchard.Recipes.Services
         private IEnumerable<RecipeDescriptor> HarvestRecipes(IExtensionInfo extension)
         {
             var folderSubPath = Path.Combine(extension.SubPath, "Recipes");
-
-            var recipeContainerFileInfos = _hostingEnvironment
+            var recipeContainerFileInfo = _hostingEnvironment
                 .ContentRootFileProvider
-                .GetDirectoryContents(folderSubPath);
-
-            List<RecipeDescriptor> recipeDescriptors = new List<RecipeDescriptor>();
-
-            if (!recipeContainerFileInfos.Exists)
-            {
-                return recipeDescriptors;
-            }
+                .GetFileInfo(folderSubPath);
 
             var recipeOptions = _recipeOptions.Value;
 
-            var directoryInfo = Directory.GetParent(recipeContainerFileInfos.First().PhysicalPath);
+            List<RecipeDescriptor> recipeDescriptors = new List<RecipeDescriptor>();
 
             var matcher = new Matcher(System.StringComparison.OrdinalIgnoreCase);
             matcher.AddInclude("*.recipe.json");
 
             var matches = matcher
-                .Execute(new DirectoryInfoWrapper(directoryInfo))
+                .Execute(new DirectoryInfoWrapper(new DirectoryInfo(recipeContainerFileInfo.PhysicalPath)))
                 .Files;
 
             if (matches.Any())
