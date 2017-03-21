@@ -151,10 +151,11 @@ namespace Orchard.Contents.Controllers
             await _contentAdminFilters.InvokeAsync(x => x.FilterAsync(query, model, pagerParameters, this), Logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
+            var actualCount = await query.Count();
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.Count());
+            var pagerShape = New.Pager(pager).TotalItemCount(actualCount > maxPagedCount ? maxPagedCount : actualCount);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
 
             var contentItemSummaries = new List<dynamic>();
