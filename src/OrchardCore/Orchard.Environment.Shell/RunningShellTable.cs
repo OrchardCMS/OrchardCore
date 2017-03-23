@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Orchard.Environment.Shell
@@ -35,8 +36,11 @@ namespace Orchard.Environment.Shell
                     _default = settings;
                 }
 
-                var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix[hostAndPrefix] = settings;
+                var hostsWithPrefixs = GetHostsWithPrefix(settings);
+                for (int i = 0; i < hostsWithPrefixs.Length; i++)
+                {
+                    _shellsByHostAndPrefix[hostsWithPrefixs[i]] = settings;
+                }
             }
             finally
             {
@@ -49,8 +53,11 @@ namespace Orchard.Environment.Shell
             _lock.EnterWriteLock();
             try
             {
-                var hostAndPrefix = GetHostAndPrefix(settings);
-                _shellsByHostAndPrefix.Remove(hostAndPrefix);
+                var hostsWithPrefixs = GetHostsWithPrefix(settings);
+                for (int i = 0; i < hostsWithPrefixs.Length; i++)
+                {
+                    _shellsByHostAndPrefix.Remove(hostsWithPrefixs[i]);
+                }
 
                 if (_default == settings)
                 {
@@ -126,9 +133,9 @@ namespace Orchard.Environment.Shell
 
         }
 
-        private string GetHostAndPrefix(ShellSettings shellSettings)
+        private string[] GetHostsWithPrefix(ShellSettings shellSettings)
         {
-            return shellSettings.RequestUrlHost + "/" + shellSettings.RequestUrlPrefix;
+            return shellSettings.RequestUrlHost.Split(',').Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix).ToArray();
         }
     }
 }
