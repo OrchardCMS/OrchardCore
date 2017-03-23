@@ -12,6 +12,7 @@ namespace Orchard.Environment.Shell
     public class ShellSettings
     {
         private readonly IDictionary<string, string> _values;
+        private TenantState _tenantState = TenantState.Invalid;
 
         public ShellSettings()
         {
@@ -22,6 +23,7 @@ namespace Orchard.Environment.Shell
         public ShellSettings(ShellSettings settings)
         {
             _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
+            State = settings.State;
         }
 
         public string this[string key]
@@ -89,14 +91,10 @@ namespace Orchard.Environment.Shell
         /// </summary>
         public TenantState State
         {
-            get
-            {
-                return Enum.TryParse(this["State"], true, out TenantState state)
-                    ? state
-                    : TenantState.Invalid;
-            }
+            get { return _tenantState; }
             set
             {
+                _tenantState = value;
                 this["State"] = value.ToString();
             }
         }

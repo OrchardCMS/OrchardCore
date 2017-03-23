@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Orchard.Environment.Shell.Models;
+using System;
 using System.Linq;
 
 namespace Orchard.Environment.Shell
@@ -13,7 +15,10 @@ namespace Orchard.Environment.Shell
             {
                 shellSettings[setting.Key] = setting.Value;
             }
-            
+
+            TenantState state;
+            shellSettings.State = Enum.TryParse(configuration["State"], true, out state) ? state : TenantState.Uninitialized;
+
             return shellSettings;
         }
     }
