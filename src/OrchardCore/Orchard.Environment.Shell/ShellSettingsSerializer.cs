@@ -9,7 +9,8 @@ namespace Orchard.Environment.Shell
         {
             var shellSettings = new ShellSettings();
             
-            foreach (var setting in configuration.AsEnumerable().ToDictionary(k => k.Key, v => v.Value)) {
+            foreach (var setting in configuration.AsEnumerable().ToDictionary(k => k.Key, v => v.Value)) 
+            {
                 shellSettings[setting.Key] = setting.Value;
             }
             
