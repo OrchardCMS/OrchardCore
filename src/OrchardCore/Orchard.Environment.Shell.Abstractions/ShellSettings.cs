@@ -11,8 +11,8 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _tenantState = TenantState.Invalid;
         private readonly IDictionary<string, string> _values;
+        private TenantState _tenantState = TenantState.Invalid;
 
         public ShellSettings()
         {
@@ -23,14 +23,6 @@ namespace Orchard.Environment.Shell
         public ShellSettings(ShellSettings settings)
         {
             _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
-
-            Name = settings.Name;
-            RequestUrlHost = settings.RequestUrlHost;
-            RequestUrlPrefix = settings.RequestUrlPrefix;
-            State = settings.State;
-            DatabaseProvider = settings.DatabaseProvider;
-            ConnectionString = settings.ConnectionString;
-            TablePrefix = settings.TablePrefix;
             State = settings.State;
         }
 
