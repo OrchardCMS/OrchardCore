@@ -91,12 +91,9 @@ namespace Orchard.Environment.Shell
         {
             get
             {
-                TenantState state;
-                if (Enum.TryParse(this["State"], true, out state))
-                {
-                    return state;
-                }
-                return TenantState.Invalid;
+                return Enum.TryParse(this["State"], true, out TenantState state)
+                    ? state
+                    : TenantState.Invalid;
             }
             set
             {
