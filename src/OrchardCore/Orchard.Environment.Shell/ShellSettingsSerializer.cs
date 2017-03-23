@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Shell.Models;
-using System;
+using System.Linq;
 
 namespace Orchard.Environment.Shell
 {
@@ -9,16 +8,10 @@ namespace Orchard.Environment.Shell
         public static ShellSettings ParseSettings(IConfigurationRoot configuration)
         {
             var shellSettings = new ShellSettings();
-            shellSettings.Name = configuration["Name"];
-
-            TenantState state;
-            shellSettings.State = Enum.TryParse(configuration["State"], true, out state) ? state : TenantState.Uninitialized;
-
-            shellSettings.RequestUrlHost = configuration["RequestUrlHost"];
-            shellSettings.RequestUrlPrefix = configuration["RequestUrlPrefix"];
-            shellSettings.ConnectionString = configuration["ConnectionString"];
-            shellSettings.TablePrefix = configuration["TablePrefix"];
-            shellSettings.DatabaseProvider = configuration["DatabaseProvider"];
+            
+            foreach (var setting in configuration.AsEnumerable().ToDictionary(k => k.Key, v => v.Value)) {
+                shellSettings[setting.Key] = setting.Value;
+            }
             
             return shellSettings;
         }
