@@ -135,7 +135,11 @@ namespace Orchard.Environment.Shell
 
         private string[] GetHostsWithPrefix(ShellSettings shellSettings)
         {
-            return shellSettings.RequestUrlHost.Split(',').Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix).ToArray();
+            return shellSettings
+                .RequestUrlHost
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
+                .ToArray();
         }
     }
 }
