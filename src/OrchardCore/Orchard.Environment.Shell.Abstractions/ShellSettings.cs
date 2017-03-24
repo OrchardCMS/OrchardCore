@@ -1,6 +1,7 @@
 ﻿using Orchard.Environment.Shell.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Orchard.Environment.Shell
 {
@@ -13,6 +14,7 @@ namespace Orchard.Environment.Shell
     {
         private readonly IDictionary<string, string> _values;
         private TenantState _tenantState = TenantState.Invalid;
+        private string[] _features = new string[0];
 
         public ShellSettings()
         {
@@ -84,6 +86,21 @@ namespace Orchard.Environment.Shell
         {
             get { return this["DatabaseProvider"]; }
             set { _values["DatabaseProvider"] = value; }
+        }
+
+        public string[] Features
+        {
+            get
+            {
+                return _features ?? (Features = (_values["Features"] ?? "").Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                                                                     .Select(t => t.Trim())
+                                                                     .ToArray();
+            }
+            set
+            {
+                _features = value;
+                this["Features"] = string.Join(";", value);
+            }
         }
 
         /// <summary>
