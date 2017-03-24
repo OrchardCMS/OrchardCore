@@ -1,6 +1,4 @@
-﻿using Orchard.Environment.Shell.Models;
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,24 +7,28 @@ namespace Orchard.Environment.Shell
 {
     public class RunningShellTable : IRunningShellTable
     {
-        private IEnumerable<ShellSettings> _shells = Enumerable.Empty<ShellSettings>();
-        private IDictionary<string, IEnumerable<ShellSettings>> _shellsByHost;
-        private readonly ConcurrentDictionary<string, ShellSettings> _shellsByHostAndPrefix = new ConcurrentDictionary<string, ShellSettings>(StringComparer.OrdinalIgnoreCase);
-
-        private ShellSettings _fallback;
+        private readonly Dictionary<string, ShellSettings> _shellsByHostAndPrefix = new Dictionary<string, ShellSettings>(StringComparer.OrdinalIgnoreCase);
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+
+        private ShellSettings _default;
+        private bool _hasStarMapping = false;
 
         public void Add(ShellSettings settings)
         {
             _lock.EnterWriteLock();
             try
             {
-                _shells = _shells
-                    .Where(s => s.Name != settings.Name)
-                    .Concat(new[] { settings })
-                    .ToArray();
+                if(ShellHelper.DefaultShellName == settings.Name)
+                {
+                    _default = settings;
+                }
 
-                Organize();
+                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+                foreach (var hostAndPrefix in allHostsAndPrefix)
+                {
+                    _hasStarMapping = _hasStarMapping || hostAndPrefix.StartsWith("*");
+                    _shellsByHostAndPrefix[hostAndPrefix] = settings;
+                }
             }
             finally
             {
@@ -39,11 +41,16 @@ namespace Orchard.Environment.Shell
             _lock.EnterWriteLock();
             try
             {
-                _shells = _shells
-                    .Where(s => s.Name != settings.Name)
-                    .ToArray();
+                var allHostsAndPrefix = GetAllHostsAndPrefix(settings);
+                foreach (var hostAndPrefix in allHostsAndPrefix)
+                {
+                    _shellsByHostAndPrefix.Remove(hostAndPrefix);
+                }
 
-                Organize();
+                if (_default == settings)
+                {
+                    _default = null;
+                }
             }
             finally
             {
@@ -51,117 +58,93 @@ namespace Orchard.Environment.Shell
             }
         }
 
-        private void Organize()
-        {
-            var qualified =
-                _shells.Where(x => !string.IsNullOrEmpty(x.RequestUrlHost) || !string.IsNullOrEmpty(x.RequestUrlPrefix));
-
-            var unqualified = _shells
-                .Where(x => string.IsNullOrEmpty(x.RequestUrlHost) && string.IsNullOrEmpty(x.RequestUrlPrefix))
-                .ToList();
-
-            _shellsByHost = qualified
-                .SelectMany(s => s.RequestUrlHost == null || s.RequestUrlHost.IndexOf(',') == -1 ? new[] { s } :
-                    s.RequestUrlHost.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                     .Select(h => new ShellSettings(s) { RequestUrlHost = h }))
-                .GroupBy(s => s.RequestUrlHost ?? string.Empty)
-                .OrderByDescending(g => g.Key.Length)
-                .ToDictionary(x => x.Key, x => x.AsEnumerable(), StringComparer.OrdinalIgnoreCase);
-
-            if (unqualified.Count() == 1)
-            {
-                // only one shell had no request url criteria
-                _fallback = unqualified.Single();
-            }
-            else if (unqualified.Any())
-            {
-                // two or more shells had no request criteria. 
-                // this is technically a misconfiguration - so fallback to the default shell
-                // if it's one which will catch all requests
-                _fallback = unqualified.SingleOrDefault(x => x.Name == ShellHelper.DefaultShellName);
-            }
-            else
-            {
-                // no shells are unqualified - a request that does not match a shell's spec
-                // will not be mapped to routes coming from orchard
-                _fallback = null;
-            }
-
-            _shellsByHostAndPrefix.Clear();
-        }
-
         public ShellSettings Match(string host, string appRelativePath)
         {
             _lock.EnterReadLock();
             try
             {
-                if (_shellsByHost == null)
+                // Specific match?
+                if(TryMatchInternal(host, appRelativePath, out ShellSettings result))
                 {
-                    return null;
+                    return result;
                 }
 
-                // optimized path when only one tenant (Default), configured with no custom host
-                if (!_shellsByHost.Any() && _fallback != null)
+                // Search for star mapping
+                // Optimization: only if a mapping with a '*' has been added
+
+                if (_hasStarMapping && TryMatchStarMapping(host, appRelativePath, out result))
                 {
-                    return _fallback;
+                    return result;
                 }
 
-                // removing the port from the host
-                var hostLength = host.IndexOf(':');
-                if (hostLength != -1)
+                // Check if the Default tenant is a catch-all
+                if (DefaultIsCatchAll())
                 {
-                    host = host.Substring(0, hostLength);
+                    return _default;
                 }
 
-                string hostAndPrefix = host + "/" + appRelativePath.Split('/')[1];
+                // Search for another catch-all 
+                if (TryMatchInternal("", "/", out result))
+                {
+                    return result;
+                }
 
-                return _shellsByHostAndPrefix.GetOrAdd(hostAndPrefix, key => {
-
-                    // filtering shells by host
-                    IEnumerable<ShellSettings> shells;
-
-                    if (!_shellsByHost.TryGetValue(host, out shells))
-                    {
-                        if (!_shellsByHost.TryGetValue("", out shells))
-                        {
-
-                            // no specific match, then look for star mapping
-                            var subHostKey = _shellsByHost.Keys.FirstOrDefault(x =>
-                                x.StartsWith("*.") && host.EndsWith(x.Substring(2))
-                                );
-
-                            if (subHostKey == null)
-                            {
-                                return _fallback;
-                            }
-
-                            shells = _shellsByHost[subHostKey];
-                        }
-                    }
-
-                    // looking for a request url prefix match
-                    var mostQualifiedMatch = shells.FirstOrDefault(settings => {
-                        if (settings.State == TenantState.Disabled)
-                        {
-                            return false;
-                        }
-
-                        if (String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
-                        {
-                            return true;
-                        }
-
-                        return key.Equals(host + "/" + settings.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase);
-                    });
-
-                    return mostQualifiedMatch ?? _fallback;
-                });
-
+                return null;
             }
             finally
             {
                 _lock.ExitReadLock();
             }
+        }
+
+        private bool TryMatchInternal(string host, string appRelativePath, out ShellSettings result)
+        {
+            // 1. Search for Host + Prefix match
+            string hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
+
+            if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
+            {
+                // 2. Search for Host only match
+
+                var hostAndNoPrefix = GetHostAndPrefix(host, "/");
+
+                if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                {
+                    // 3. Search for Prefix only match
+
+                    var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
+
+                    if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                    {
+                        result = null;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool TryMatchStarMapping(string host, string appRelativePath, out ShellSettings result)
+        {
+            if (TryMatchInternal("*." + host, appRelativePath, out result))
+            {
+                return true;
+            }
+
+            int index = -1;
+
+            // Take the longest subdomain and look for a mapping
+            while (-1 != (index = host.IndexOf('.', index + 1)))
+            {
+                if(TryMatchInternal("*" + host.Substring(index), appRelativePath, out result))
+                {
+                    return true;
+                }
+            }
+
+            result = null;
+            return false;
         }
 
         private string GetHostAndPrefix(string host, string appRelativePath)
@@ -186,19 +169,25 @@ namespace Orchard.Environment.Shell
 
         }
 
-        private string[] GetHostsWithPrefix(ShellSettings shellSettings)
+        private string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
         {
-            if (shellSettings
-                .RequestUrlHost == null)
+            // For each host entry return HOST/PREFIX
+
+            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
-                return new string[0];
+                return new string[] { "/" + shellSettings.RequestUrlPrefix };
             }
 
             return shellSettings
                 .RequestUrlHost
-                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
+                .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix ?? "")
                 .ToArray();
+        }
+
+        private bool DefaultIsCatchAll()
+        {
+            return _default != null && String.IsNullOrEmpty(_default.RequestUrlHost) && String.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }
