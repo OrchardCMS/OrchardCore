@@ -19,6 +19,7 @@
         "Orchard.Commons",
         "Orchard.Diagnostics",
         "Orchard.DynamicCache",
+        "Orchard.HomeRoute",
         "Orchard.Modules",
         "Orchard.Navigation",
         "Orchard.OpenId",
