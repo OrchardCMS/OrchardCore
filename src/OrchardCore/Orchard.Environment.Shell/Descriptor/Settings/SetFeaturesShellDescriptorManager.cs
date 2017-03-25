@@ -11,13 +11,17 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
     /// </summary>
     public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     {
+        private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<ShellFeature> _shellFeatures;
         private ShellDescriptor _shellDescriptor;
 
-        public SetFeaturesShellDescriptorManager(IExtensionManager extensionManager,
+        public SetFeaturesShellDescriptorManager(
+            ShellSettings shellSettings,
+            IExtensionManager extensionManager,
             IEnumerable<ShellFeature> shellFeatures)
         {
+            _shellSettings = shellSettings;
             _extensionManager = extensionManager;
             _shellFeatures = shellFeatures;
         }
@@ -30,6 +34,11 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
                 {
                     Features = _shellFeatures.ToList()
                 };
+
+                for (int i = 0; i < _shellSettings.Features.Length; i++)
+                {
+                    _shellDescriptor.Features.Add(new ShellFeature(_shellSettings.Features[i]));
+                }
             }
 
             return Task.FromResult(_shellDescriptor);

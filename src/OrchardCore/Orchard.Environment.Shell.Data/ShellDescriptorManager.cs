@@ -39,6 +39,11 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             if (_shellDescriptor == null)
             {
                 _shellDescriptor = await _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
+
+                for (int i = 0; i < _shellSettings.Features.Length; i++)
+                {
+                    _shellDescriptor.Features.Add(new ShellFeature(_shellSettings.Features[i]));
+                }
             }
 
             return _shellDescriptor;
