@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
-using System.IO;
 
 namespace Orchard.Tests.Stubs
 {
@@ -22,10 +19,8 @@ namespace Orchard.Tests.Stubs
         public string ApplicationName { get; set; }
 
         public string WebRootPath { get; set; }
-           = Directory.GetCurrentDirectory();
 
         public IFileProvider WebRootFileProvider { get; set; }
-            = new PhysicalFileProvider(Directory.GetCurrentDirectory());
 
         public string ContentRootPath
         {

@@ -18,6 +18,7 @@ namespace Microsoft.AspNetCore.Modules
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
             services.AddExtensionLocation("Modules");
+            services.AddExtensionLocation("Packages");
 
             // Register custom services specific to modules
             var modularServiceCollection = new ModularServiceCollection(services);

@@ -25,6 +25,7 @@ namespace Orchard.Lucene
             _hostingEnvironment = hostingEnvironment;
 
             _indexSettingsFilename = Path.Combine(
+                _hostingEnvironment.ContentRootPath,
                 shellOptions.Value.ShellsRootContainerName, 
                 shellOptions.Value.ShellsContainerName, 
                 shellSettings.Name, 

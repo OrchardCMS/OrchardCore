@@ -39,7 +39,13 @@ namespace Orchard.Lucene
             )
         {
             _hostingEnvironment = hostingEnvironment;
-            _rootPath = Path.Combine(shellOptions.Value.ShellsRootContainerName, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
+
+            _rootPath = Path.Combine(
+                _hostingEnvironment.ContentRootPath,
+                shellOptions.Value.ShellsRootContainerName,
+                shellOptions.Value.ShellsContainerName,
+                shellSettings.Name, "Lucene");
+
             _rootDirectory = Directory.CreateDirectory(_rootPath);
         }
 
