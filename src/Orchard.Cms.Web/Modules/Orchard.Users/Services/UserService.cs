@@ -28,7 +28,7 @@ namespace Orchard.Users.Services
                 reportError("UserName", T["A user name is required."]);
                 result = false;
             }
-            if (string.IsNullOrWhiteSpace(user.UserName))
+            if (string.IsNullOrWhiteSpace(password))
             {
                 reportError("Password", T["A password is required."]);
                 result = false;
