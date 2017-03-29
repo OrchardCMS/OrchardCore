@@ -3,18 +3,18 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using HandlebarsDotNet;
 
-namespace Orchard.Tokens.Services
+namespace Orchard.Tokens.Handlebars
 {
     public class HandlebarsTokenizer
     {
-        private static readonly Regex _tokens = new Regex(@"(\{\{.*\}\})", RegexOptions.Compiled);
+        private static readonly Regex _tokens = new Regex(@"(\{\{\{[^\{\}]*\}\}\})|(\{\{[^\{\}]*\}\})", RegexOptions.Compiled);
 
         private readonly ConcurrentDictionary<string, Func<object, string>> _renderers;
         private readonly IHandlebars _handlebars;
 
         public HandlebarsTokenizer()
         {
-            _handlebars = Handlebars.Create();
+            _handlebars = HandlebarsDotNet.Handlebars.Create();
             _renderers = new ConcurrentDictionary<string, Func<object, string>>();
         }
 

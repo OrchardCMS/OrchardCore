@@ -1,0 +1,118 @@
+﻿<script asp-src="/Orchard.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs"></script>
+<style asp-src="/Orchard.Media/Styles/media.min.css" debug-src="/Orchard.Media/Styles/media.css"></style>
+<script asp-src="https://unpkg.com/vue" asp-name="vuejs" at="Foot"></script>
+
+<div id="mediaApp">
+    <nav class="admin-toolbar">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <div class="upload-button">
+                    <label for="fileupload" class="btn btn-success fileinput-button">
+                        <input id="fileupload" type="file" name="files" multiple="multiple">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                        @T["Upload files..."]
+                    </label>
+                </div>
+            </li>
+        </ul>
+        <form class="form-inline">
+            <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+            <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
+        </form>
+    </nav>
+
+    <nav id="media-toolbar" class="breadcrumb">
+        <span class="breadcrumb-item" v-bind:class="{ active: isHome}"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
+        <span v-for="(folder, i) in parents" v-cloak
+              class="breadcrumb-item"
+              v-bind:class="{active: parents.length - i == 1}">
+            <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectFolder(folder)">{{ folder.name }}</a>
+        </span>
+        <div class="btn-group">
+            <a v-cloak href="#" class="btn btn-secondary btn-sm" v-on:click="createFolder"><i class="fa fa-plus text-muted"></i></a>
+            <a v-cloak v-show="!isHome" href="#" v-on:click="deleteFolder" class="btn btn-secondary btn-sm"><i class="fa fa-trash text-muted"></i></a>
+        </div>
+        <code class="pull-right" v-if="selectedMedia">{{ selectedMedia.fileName }}</code>
+    </nav>
+
+    <div class="media-container row">
+
+        <div id="navigationApp" class="media-container-navigation" v-cloak>
+            <ol id="media-container-navigation-menu">
+                <folder :model="root">
+                </folder>
+            </ol>
+        </div>
+
+        <div id="filesApp" class="media-container-main" v-cloak>
+            <ol class="row">
+                <li v-for="media in mediaItems"
+                    :key="media.name"
+                    class="col-md-3"
+                    v-on:click="selectMedia(media)">
+                    <div class="media-container-main-item " v-bind:class="{selected: selectedMedia == media}">
+                        <img v-bind:src="'/media/' + media.folder + '/' + media.fileName" />
+                        <div class="media-container-main-item-title">
+                            <span class="media-filename">{{ media.fileName }}</span>
+                            <span class="media-contentItemId">{{ media.contentItemId }}</span>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin" , new { area="Orchard.Media" })" />
+<input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin" , new { area="Orchard.Media" })" />
+<input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin" , new { area="Orchard.Media" })" />
+<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "Orchard.Media" })" />
+<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "Orchard.Media" })" />
+<input type="hidden" id="deleteMessage" value="@T["Are you sure you want to delete this folder?"]" />
+
+@Html.AntiForgeryToken()
+
+<div class="modal" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modelTitle">@T["Create Folder"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
+                        <input type="text" class="form-control" id="input">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modalFooterOk">@T["Ok"]</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/x-template" id="folder-template">
+    <li :class="{selected: selected}">
+        <div>
+            <i v-on:click="toggle" class="expand fa fa-caret-right" v-bind:class="{open: open, closed: !open, empty: empty}"></i>
+            <a href="#" v-on:click="select">
+                @* The icon is part of the link so the click zone is bigger *@
+                <i class="folder fa fa-folder"></i>
+                {{model.name}}
+            </a>
+        </div>
+        <ol v-show="open">
+            <folder
+                  v-for="folder in children" 
+                  :key="folder.path"
+                  :model="folder">
+            </folder>
+        </ol>
+    </li>
+</script>

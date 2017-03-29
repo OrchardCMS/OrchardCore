@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Cms\OrchardCore.Cms.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Media\Orchard.Media.csproj" />
   </ItemGroup>
 
   <ItemGroup>

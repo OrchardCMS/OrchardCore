@@ -54,6 +54,7 @@
         "Orchard.Lucene",
         "Orchard.Lists",
         "Orchard.Markdown",
+        "Orchard.Media",
         "Orchard.Menu",
         "Orchard.Title",
         "Orchard.Tokens",

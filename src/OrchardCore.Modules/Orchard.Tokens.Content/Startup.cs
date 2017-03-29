@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Tokens.Services;
+using Orchard.Tokens.Handlebars;
 
 namespace Orchard.Tokens.Content
 {

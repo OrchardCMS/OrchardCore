@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>Orchard.Media.Services</AssemblyName>
+    <RootNamespace>Orchard.Media</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Media.Abstractions\Orchard.Media.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

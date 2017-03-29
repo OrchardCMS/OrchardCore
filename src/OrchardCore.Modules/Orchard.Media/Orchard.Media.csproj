@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <PackageReference Include="Handlebars.Net" Version="1.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Abstractions\Orchard.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Media.Services\Orchard.Media.Services.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Security\Orchard.Security.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.StorageProviders.FileSystem\Orchard.StorageProviders.FileSystem.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Handlebars\Orchard.Tokens.Handlebars.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\Scripts\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+</Project>
