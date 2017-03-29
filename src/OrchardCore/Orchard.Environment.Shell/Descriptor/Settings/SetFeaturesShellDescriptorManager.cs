@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Descriptor.Models;
 
 namespace Orchard.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by returning all pre defined list of features.
+    /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with a specified set
+    /// of features. This class can be registered as a singleton as its state never changes.
     /// </summary>
     public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
     {
-        private readonly IExtensionManager _extensionManager;
         private readonly IEnumerable<ShellFeature> _shellFeatures;
         private ShellDescriptor _shellDescriptor;
 
-        public SetFeaturesShellDescriptorManager(IExtensionManager extensionManager,
-            IEnumerable<ShellFeature> shellFeatures)
+        public SetFeaturesShellDescriptorManager(IEnumerable<ShellFeature> shellFeatures)
         {
-            _extensionManager = extensionManager;
             _shellFeatures = shellFeatures;
         }
 

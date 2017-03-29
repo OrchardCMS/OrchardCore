@@ -7,7 +7,8 @@ using Orchard.Environment.Shell.Descriptor.Models;
 namespace Orchard.Environment.Shell.Descriptor.Settings
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by returning all the available features.
+    /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with all the available 
+    /// extensions.
     /// </summary>
     public class AllFeaturesShellDescriptorManager : IShellDescriptorManager
     {

@@ -25,7 +25,8 @@ namespace Orchard.Recipes.Services
             IHostingEnvironment hostingEnvironment,
             IOptions<RecipeHarvestingOptions> recipeOptions,
             IStringLocalizer<RecipeHarvester> localizer,
-            ILogger<RecipeHarvester> logger) {
+            ILogger<RecipeHarvester> logger)
+        {
             _extensionManager = extensionManager;
             _hostingEnvironment = hostingEnvironment;
             _recipeOptions = recipeOptions;

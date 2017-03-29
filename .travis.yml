@@ -19,7 +19,8 @@ addons:
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - DOTNET_CLI_TELEMETRY_OPTOUT: 1    
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1   
+    - TEMP: "$TRAVIS_BUILD_DIR/.temp"
 os:
   - linux
   - osx

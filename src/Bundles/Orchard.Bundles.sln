@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Cms", "OrchardCore.Cms\OrchardCore.Cms.csproj", "{C8131C56-3E48-4C16-B2E8-ACDA52080346}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules", "OrchardCore.Modules\OrchardCore.Modules.csproj", "{3474D1C7-0E80-4D29-8FEA-B2740FC31E3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules.Mvc", "OrchardCore.Modules.Mvc\OrchardCore.Modules.Mvc.csproj", "{9E500262-A1CA-4879-AB9D-11241AF18128}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Modules.Nancy", "OrchardCore.Modules.Nancy\OrchardCore.Modules.Nancy.csproj", "{89FDFC13-2533-43A6-954A-1F0ED8E17ACD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AsBundle", "..\OrchardCore\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj", "{693E813C-BA0E-4242-BE78-DE73806149FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AsModule", "..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj", "{1D20E7AB-7719-4531-827E-B1010DCB4D1B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AsTheme", "..\OrchardCore\OrchardCore.AsTheme\OrchardCore.AsTheme.csproj", "{02545DA6-BFCA-49C2-9BB9-BAA3F186B467}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8131C56-3E48-4C16-B2E8-ACDA52080346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8131C56-3E48-4C16-B2E8-ACDA52080346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8131C56-3E48-4C16-B2E8-ACDA52080346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8131C56-3E48-4C16-B2E8-ACDA52080346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3474D1C7-0E80-4D29-8FEA-B2740FC31E3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3474D1C7-0E80-4D29-8FEA-B2740FC31E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3474D1C7-0E80-4D29-8FEA-B2740FC31E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3474D1C7-0E80-4D29-8FEA-B2740FC31E3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E500262-A1CA-4879-AB9D-11241AF18128}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E500262-A1CA-4879-AB9D-11241AF18128}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E500262-A1CA-4879-AB9D-11241AF18128}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E500262-A1CA-4879-AB9D-11241AF18128}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89FDFC13-2533-43A6-954A-1F0ED8E17ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89FDFC13-2533-43A6-954A-1F0ED8E17ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89FDFC13-2533-43A6-954A-1F0ED8E17ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89FDFC13-2533-43A6-954A-1F0ED8E17ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{693E813C-BA0E-4242-BE78-DE73806149FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{693E813C-BA0E-4242-BE78-DE73806149FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{693E813C-BA0E-4242-BE78-DE73806149FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{693E813C-BA0E-4242-BE78-DE73806149FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D20E7AB-7719-4531-827E-B1010DCB4D1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D20E7AB-7719-4531-827E-B1010DCB4D1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D20E7AB-7719-4531-827E-B1010DCB4D1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D20E7AB-7719-4531-827E-B1010DCB4D1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02545DA6-BFCA-49C2-9BB9-BAA3F186B467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02545DA6-BFCA-49C2-9BB9-BAA3F186B467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02545DA6-BFCA-49C2-9BB9-BAA3F186B467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02545DA6-BFCA-49C2-9BB9-BAA3F186B467}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
