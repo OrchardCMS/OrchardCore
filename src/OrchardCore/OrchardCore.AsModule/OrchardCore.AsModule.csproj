@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <PackageVersion>1.0.0-beta-0001</PackageVersion>
+  </PropertyGroup>
+
+  <!-- Add the OrchardCore.AsModule.props file in the package -->
+  <ItemGroup>
+    <None Include="OrchardCore.AsModule.props" Pack="true">
+      <PackagePath>build\netstandard1.6\OrchardCore.AsModule.props</PackagePath>
+    </None>
+    <None Include="Package.Build.props" Pack="true">
+      <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
