@@ -17,7 +17,6 @@ namespace Orchard.DisplayManagement.Notify
         public const string CookiePrefix = "orch_notify";
         private readonly INotifier _notifier;
         private readonly dynamic _shapeFactory;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ShellSettings _shellSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -28,7 +27,6 @@ namespace Orchard.DisplayManagement.Notify
         private readonly HtmlEncoder _htmlEncoder;
 
         public NotifyFilter(
-            IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
@@ -41,7 +39,6 @@ namespace Orchard.DisplayManagement.Notify
             _shellSettings = shellSettings;
 
             _layoutAccessor = layoutAccessor;
-            _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
 
@@ -50,7 +47,7 @@ namespace Orchard.DisplayManagement.Notify
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var messages = Convert.ToString(_httpContextAccessor.HttpContext.Request.Cookies[CookiePrefix]);
+            var messages = Convert.ToString(filterContext.HttpContext.Request.Cookies[CookiePrefix]);
             if (String.IsNullOrEmpty(messages))
             {
                 return;
@@ -93,7 +90,7 @@ namespace Orchard.DisplayManagement.Notify
             // String data type used instead of complex array to be session-friendly.
             if (!(filterContext.Result is ViewResult) && _existingEntries.Length > 0)
             {
-                _httpContextAccessor.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
+                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
             }
         }
 
@@ -101,7 +98,7 @@ namespace Orchard.DisplayManagement.Notify
         {
             if (_shouldDeleteCookie)
             {
-                DeleteCookies();
+                DeleteCookies(filterContext);
                 return;
             }
 
@@ -121,16 +118,16 @@ namespace Orchard.DisplayManagement.Notify
                 messagesZone = messagesZone.Add(_shapeFactory.Message(messageEntry));
             }
 
-            DeleteCookies();
+            DeleteCookies(filterContext);
         }
 
         public void OnResultExecuted(ResultExecutedContext filterContext)
         {
         }
 
-        private void DeleteCookies()
+        private void DeleteCookies(ResultExecutingContext filterContext)
         {
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
+            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
         }
 
         private IDataProtector CreateTenantProtector()
