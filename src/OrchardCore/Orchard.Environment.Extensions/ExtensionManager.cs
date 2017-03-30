@@ -148,7 +148,7 @@ namespace Orchard.Environment.Extensions
         {
             EnsureInitialized();
 
-            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+            var orderedFeaturesIds = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
 
             var loadedFeatures = _features.Values
                 .Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id))
