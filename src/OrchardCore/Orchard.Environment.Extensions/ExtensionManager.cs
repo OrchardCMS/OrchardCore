@@ -151,12 +151,11 @@ namespace Orchard.Environment.Extensions
             var orderedFeaturesIds = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
 
             var loadedFeatures = _features.Values
+                .Where(f => orderedFeaturesIds.Contains(f.FeatureInfo.Id))
                 .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
 
             return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }
-
-
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
