@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Nancy.Modules/Microsoft.AspNetCore.Nancy.Modules.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy.HelloWorld\Orchard.Nancy.HelloWorld.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy\Orchard.Nancy.csproj" />
   </ItemGroup>
 
   <ItemGroup>
