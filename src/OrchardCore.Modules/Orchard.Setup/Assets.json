@@ -8,9 +8,9 @@
   },
   {
     "inputs": [
-      "../../Modules/Orchard.Resources/Assets/jQuery/jquery-3.*.js",
-      "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/tether.js",
-      "../../Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
+      "../../OrchardCore.Modules/Orchard.Resources/Assets/jQuery/jquery-3.*.js",
+      "../../OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/Js/tether.js",
+      "../../OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/Js/bootstrap.js",
       "Assets/js/*.js"
     ],
     "output": "Content/Scripts/setup.js"

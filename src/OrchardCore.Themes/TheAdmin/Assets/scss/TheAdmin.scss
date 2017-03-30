@@ -3,7 +3,7 @@
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
 
-@import "src/Orchard.Cms.Web/Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
+@import "src/OrchardCore.Modules/Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss";
 
 $top-nav-height: 55px;
 $left-navigation-width: 260px;
