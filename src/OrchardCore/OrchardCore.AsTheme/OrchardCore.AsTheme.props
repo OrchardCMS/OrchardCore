@@ -26,7 +26,7 @@
         DestinationFolder="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\%(RecursiveDir)" />
 
     <WriteLinesToFile
-        Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt') and !Exists('$(MSBuildProjectDirectory)\Module.txt')"
+        Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt')"
         File="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt"
         Lines="$(ThemeManifest)"
         Overwrite="true"
@@ -43,7 +43,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt" Pack="true">
+        <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt')">
       <PackagePath>assets\$(PackageId)\Theme.txt</PackagePath>
     </None>
   </ItemGroup>
