@@ -65,6 +65,9 @@ Vue.component('folder', {
                     method: 'GET',
                     success: function (data) {
                         self.children = data;
+                        self.children.forEach(function(c) { 
+                            c.parent = self.model; 
+                        });
                     },
                     error: function (error) {
                         emtpy = false;
