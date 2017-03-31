@@ -1,17 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <VersionPrefix>2.0.0</VersionPrefix>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>portable</DebugType>
     <AssemblyName>Orchard.Tenants</AssemblyName>
     <PackageId>Orchard.Tenants</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
 
   <ItemGroup>

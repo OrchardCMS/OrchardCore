@@ -5,24 +5,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AllAssetFiles>Packages\**</AllAssetFiles>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="$(AllAssetFiles)" />
-    <Content Remove="$(AllAssetFiles)" />
-    <EmbeddedResource Remove="$(AllAssetFiles)" />
-    <None Remove="$(AllAssetFiles)" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Nancy.Modules/Microsoft.AspNetCore.Nancy.Modules.csproj" />
-    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy.HelloWorld\Orchard.Nancy.HelloWorld.csproj" />
     <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy\Orchard.Nancy.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy.HelloWorld\Orchard.Nancy.HelloWorld.csproj" />
   </ItemGroup>
 
   <ItemGroup>

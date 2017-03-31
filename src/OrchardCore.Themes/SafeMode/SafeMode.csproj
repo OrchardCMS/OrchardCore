@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <DebugType>portable</DebugType>
     <AssemblyName>SafeMode</AssemblyName>
     <PackageId>SafeMode</PackageId>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>

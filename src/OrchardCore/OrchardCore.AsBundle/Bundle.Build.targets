@@ -21,6 +21,13 @@
   -->
 
   <ItemGroup>
+    <Compile Remove="App_Data\**;Packages\**" />
+    <Content Remove="App_Data\**;Packages\**" />
+    <EmbeddedResource Remove="App_Data\**;Packages\**" />
+    <None Remove="App_Data\**;Packages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ResolvedFileToPublish Include="App_Data\**">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>

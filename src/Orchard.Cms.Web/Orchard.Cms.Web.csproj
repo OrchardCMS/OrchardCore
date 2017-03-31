@@ -5,15 +5,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AllAssetFiles>Packages\**;App_Data\**</AllAssetFiles>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="$(AllAssetFiles)" />
-    <Content Remove="$(AllAssetFiles)" />
-    <EmbeddedResource Remove="$(AllAssetFiles)" />
-    <None Remove="$(AllAssetFiles)" />
-  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
