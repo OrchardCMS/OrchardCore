@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Orchard.Environment.Shell
 {
@@ -28,14 +29,24 @@ namespace Orchard.Environment.Shell
                 return new ShellSettings[] { new ShellSettingsWithTenants { Name = ShellHelper.DefaultShellName, State = Models.TenantState.Running } };
             }
 
-            var shellSettings = JsonConvert.DeserializeObject<Dictionary<string, ShellSettingsWithTenants>>(File.ReadAllText(tenantsFile.PhysicalPath));
-            
-            foreach(var shellSetting in shellSettings)
+            var preShellSettings = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(File.ReadAllText(tenantsFile.PhysicalPath));
+
+            var shellSettings = new List<ShellSettingsWithTenants>();
+            foreach (var preShellSetting in preShellSettings)
             {
-                shellSetting.Value.Name = shellSetting.Key;
+                var shellSetting = JObject.FromObject(preShellSetting.Value).ToObject<ShellSettingsWithTenants>();
+
+                shellSetting.Name = preShellSetting.Key;
+
+                foreach (var vals in preShellSetting.Value)
+                {
+                    shellSetting[vals.Key] = vals.Value.ToString();
+                }
+
+                shellSettings.Add(shellSetting);
             }
 
-            return shellSettings.Values;
+            return shellSettings;
         }
 
         void IShellSettingsManager.SaveSettings(ShellSettings shellSettings)
