@@ -22,7 +22,7 @@ Vue.component('folder', {
     data: function () {
         return {
             open: false,
-            children: null,
+            children: null, // not initialized state (for lazy-loading)
             parent: null,
             selected: false
         }
@@ -46,7 +46,11 @@ Vue.component('folder', {
        
         bus.$on('addFolder', function (target, folder) {
             if (self.model == target) {
+
+                bus.$emit('beforeFolderAdded', self.model);
+
                 self.children.push(folder);
+                folder.parent = self.model;
                 bus.$emit('folderAdded', folder);
             }
         });
@@ -98,6 +102,11 @@ var mediaApp = new Vue({
 
         bus.$on('folderAdded', function (folder) {
             self.selectFolder(folder);
+            folder.selected = true;
+        });
+
+        bus.$on('beforeFolderAdded', function (folder) {
+            self.loadFolder(folder);
         });
     },
     computed: {
@@ -181,28 +190,28 @@ var mediaApp = new Vue({
         createFolder: function () {
             $('#createFolderModal').modal('show');
             $('.modal-body input').val('').focus();
-
-            $('#modalFooterOk').on('click', function (e) {
-                var name = $('.modal-body input').val();
-
-                $.ajax({
-                    url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
-                    method: 'POST',
-                    data: {
-                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                    },
-                    success: function (data) {
-                        bus.$emit('addFolder', mediaApp.selectedFolder, data);
-                        $('#createFolderModal').modal('hide');
-                    },
-                    error: function (error) {
-                        alert(JSON.stringify(error));
-                    }
-                });
-            });            
         }
     }
 });
+
+$('#modalFooterOk').on('click', function (e) {
+    var name = $('.modal-body input').val();
+
+    $.ajax({
+        url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
+        method: 'POST',
+        data: {
+            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+        },
+        success: function (data) {
+            bus.$emit('addFolder', mediaApp.selectedFolder, data);
+            $('#createFolderModal').modal('hide');
+        },
+        error: function (error) {
+            alert(JSON.stringify(error));
+        }
+    });
+});   
 
 $(function () {
     $('#fileupload').fileupload({
