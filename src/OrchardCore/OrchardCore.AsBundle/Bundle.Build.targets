@@ -8,7 +8,13 @@
     <ItemGroup>
       <PackageAssetFiles Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
           $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*" />
+      <ProjectAssetFiles Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
+          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*" />
     </ItemGroup>
+    <Delete
+        Files="@(ProjectAssetFiles)"
+        Condition="!Exists('$(Temp)\OrchardCorePackages\%(RecursiveDir)%(Filename)%(Extension)')"
+        ContinueOnError="true"/>
     <Message Text="Copying package assets" Importance="high" />
     <Copy
         SourceFiles="@(PackageAssetFiles)"
