@@ -21,22 +21,9 @@
   -->
 
   <ItemGroup>
-    <Compile Remove="App_Data\**;Packages\**" />
-    <Content Remove="App_Data\**;Packages\**" />
-    <EmbeddedResource Remove="App_Data\**;Packages\**" />
-    <None Remove="App_Data\**;Packages\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ResolvedFileToPublish Include="App_Data\**">
-      <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-    </ResolvedFileToPublish>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ResolvedFileToPublish Include="Packages\**">
-      <RelativePath>Packages\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-    </ResolvedFileToPublish>
+    <Compile Remove="Packages\**" />
+    <EmbeddedResource Remove="Packages\**" />
+    <None Include="Packages\**" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
 </Project>
