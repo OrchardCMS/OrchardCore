@@ -23,8 +23,13 @@
   </Target>
 
   <!--
-    Defines msbuild tasks on a Bundle package to publish all the extensions (local and packages) publish command.
+    Defines msbuild props and items on a Bundle package to publish all extensions assets (local and packages).
   -->
+
+  <PropertyGroup>
+    <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
+    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Packages\**" />
