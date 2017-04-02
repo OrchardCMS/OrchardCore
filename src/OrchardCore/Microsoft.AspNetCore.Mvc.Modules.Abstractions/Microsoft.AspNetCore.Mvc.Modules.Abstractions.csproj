@@ -1,13 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>portable</DebugType>
     <AssemblyName>Microsoft.AspNetCore.Mvc.Modules.Abstractions</AssemblyName>
     <PackageId>Microsoft.AspNetCore.Mvc.Modules.Abstractions</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
     <RootNamespace>Microsoft.AspNetCore.Mvc.Modules</RootNamespace>
   </PropertyGroup>
 

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
-    <PackageVersion>1.0.0-beta-0001</PackageVersion>
+    <AssemblyName>OrchardCore.AsTheme</AssemblyName>
+    <PackageId>OrchardCore.AsTheme</PackageId>
   </PropertyGroup>
 
   <!-- Add the OrchardCore.AsTheme.props file in the package -->
