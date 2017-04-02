@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Extensions\**" Exclude="**\*.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />

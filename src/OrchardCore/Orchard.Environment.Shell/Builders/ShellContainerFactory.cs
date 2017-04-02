@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,19 +20,16 @@ namespace Orchard.Environment.Shell.Builders
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceCollection _applicationServices;
-        private readonly IHostingEnvironment _hostingEnvironment;
 
         public ShellContainerFactory(
             IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory,
             ILogger<ShellContainerFactory> logger,
-            IServiceCollection applicationServices,
-            IHostingEnvironment hostingEnvironment)
+            IServiceCollection applicationServices)
         {
             _applicationServices = applicationServices;
             _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
-            _hostingEnvironment = hostingEnvironment;
             _logger = logger;
         }
 

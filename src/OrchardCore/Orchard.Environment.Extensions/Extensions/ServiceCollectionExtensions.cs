@@ -13,10 +13,7 @@ namespace Orchard.Environment.Extensions
         /// Add host level services for managing extensions.
         /// </summary>
         /// <param name="services"></param>
-        public static IServiceCollection AddExtensionManagerHost(
-            this IServiceCollection services,
-            string rootProbingName,
-            string dependencyProbingDirectoryName)
+        public static IServiceCollection AddExtensionManagerHost(this IServiceCollection services)
         {
             services.AddSingleton<IManifestProvider, ManifestProvider>();
             services.TryAddEnumerable(
@@ -36,12 +33,6 @@ namespace Orchard.Environment.Extensions
 
                 services.AddSingleton<IExtensionDependencyStrategy, ExtensionDependencyStrategy>();
                 services.AddSingleton<IExtensionPriorityStrategy, ExtensionPriorityStrategy>();
-
-                services.Configure<ExtensionProbingOptions>(options =>
-                {
-                    options.RootProbingName = rootProbingName;
-                    options.DependencyProbingDirectoryName = dependencyProbingDirectoryName;
-                });
             }
 
             return services;

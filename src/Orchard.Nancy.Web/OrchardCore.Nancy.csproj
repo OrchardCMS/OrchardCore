@@ -1,22 +1,30 @@
 ﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk.Web">
+
+  <Import Project="..\OrchardCore\OrchardCore.AsBundle\Bundle.Build.targets" />
+
   <PropertyGroup>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <AllAssetFiles>Packages\**</AllAssetFiles>
   </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="Modules\**;Themes\**" />
-    <Content Remove="Modules\**;Themes\**" />
-    <EmbeddedResource Remove="Modules\**;Themes\**" />
-    <None Remove="Modules\**;Themes\**" />
+    <Compile Remove="$(AllAssetFiles)" />
+    <Content Remove="$(AllAssetFiles)" />
+    <EmbeddedResource Remove="$(AllAssetFiles)" />
+    <None Remove="$(AllAssetFiles)" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="../OrchardCore/Orchard.Hosting.Console/Orchard.Hosting.Console.csproj" />
-    <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Modules/Microsoft.AspNetCore.Modules.csproj" />
     <ProjectReference Include="../OrchardCore/Microsoft.AspNetCore.Nancy.Modules/Microsoft.AspNetCore.Nancy.Modules.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy.HelloWorld\Orchard.Nancy.HelloWorld.csproj" />
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Nancy\Orchard.Nancy.csproj" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
@@ -28,4 +36,5 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
+
 </Project>

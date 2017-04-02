@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Nancy.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -28,8 +26,8 @@ namespace Orchard.Nancy.Web
         public void ConfigureServices(IServiceCollection services)
         {
             // Add Nancy and support for modules
-            services.AddModuleServices(configure => configure
-                .AddConfiguration(Configuration)
+            services.AddModules(configure => configure
+                .WithConfiguration(Configuration)
                 .WithAllFeatures()
             );
         }

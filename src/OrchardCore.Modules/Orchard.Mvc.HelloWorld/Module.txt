@@ -1,0 +1,2 @@
+﻿Name: Mvc HelloWorld
+Dependencies: Orchard.Mvc

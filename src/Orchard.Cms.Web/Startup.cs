@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,15 +30,14 @@ namespace Orchard.Cms.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddExtensionLocation("Themes");
             services.AddSitesFolder("App_Data", "Sites");
 
             services.AddCommands();
 
             services.AddAuthentication();
 
-            services.AddModuleServices(configure => configure
-                .AddConfiguration(Configuration)
+            services.AddModules(configure => configure
+                .WithConfiguration(Configuration)
                 .WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons")
             );
         }

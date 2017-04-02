@@ -1,0 +1,2 @@
+﻿Name: Nancy HelloWorld
+Dependencies: Orchard.Nancy
