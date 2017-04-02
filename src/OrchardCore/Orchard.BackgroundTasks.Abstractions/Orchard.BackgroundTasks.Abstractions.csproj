@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Orchard.BackgroundTasks.Abstractions</AssemblyName>
     <PackageId>Orchard.BackgroundTasks.Abstractions</PackageId>
     <RootNamespace>Orchard.BackgroundTasks</RootNamespace>

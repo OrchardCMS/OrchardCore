@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Orchard.MetaWeblog.Abstractions</AssemblyName>
     <PackageId>Orchard.MetaWeblog.Abstractions</PackageId>
     <RootNamespace>Orchard.MetaWeblog</RootNamespace>

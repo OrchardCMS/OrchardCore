@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Orchard.Deployment.Remote</AssemblyName>
     <PackageId>Orchard.Deployment.Remote</PackageId>
   </PropertyGroup>

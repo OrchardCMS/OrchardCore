@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Orchard.Feeds.Abstractions</AssemblyName>
     <PackageId>Orchard.Feeds.Abstractions</PackageId>
     <RootNamespace>Orchard.Feeds</RootNamespace>

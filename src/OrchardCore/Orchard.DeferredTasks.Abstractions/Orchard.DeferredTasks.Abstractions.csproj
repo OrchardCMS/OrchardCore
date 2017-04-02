@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Orchard.DeferredTasks.Abstractions</AssemblyName>
     <PackageId>Orchard.DeferredTasks.Abstractions</PackageId>
     <RootNamespace>Orchard.DeferredTasks</RootNamespace>
