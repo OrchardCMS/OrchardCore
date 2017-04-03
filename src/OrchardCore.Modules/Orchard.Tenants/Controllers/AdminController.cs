@@ -25,7 +25,7 @@ namespace Orchard.Tenants.Controllers
         private readonly INotifier _notifier;
 
         public AdminController(
-            IShellHost orchardHost, 
+            IShellHost orchardHost,
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
@@ -98,13 +98,13 @@ namespace Orchard.Tenants.Controllers
             {
                 ValidateViewModel(model, true);
             }
-            
+
             if (ModelState.IsValid)
             {
                 var shellSettings = new ShellSettings
                 {
                     Name = model.Name,
-                    RequestUrlPrefix = model.RequestUrlPrefix,
+                    RequestUrlPrefix = model.RequestUrlPrefix?.Trim(),
                     RequestUrlHost = model.RequestUrlHost,
                     ConnectionString = model.ConnectionString,
                     TablePrefix = model.TablePrefix,
@@ -196,7 +196,7 @@ namespace Orchard.Tenants.Controllers
 
             if (ModelState.IsValid)
             {
-                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix?.Trim();
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
 
                 // The user can change the 'preset' database information only if the 
@@ -356,11 +356,6 @@ namespace Orchard.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
 
-            if (newTenant && allShells.Any(tenant => String.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix, StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
-            }
-
             if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
@@ -371,16 +366,17 @@ namespace Orchard.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
+            var allOtherShells = allShells.Where(tenant => !string.Equals(tenant.Settings.Name, model.Name, StringComparison.OrdinalIgnoreCase));
+            if (allOtherShells.Any(tenant => string.Equals(tenant.Settings.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.Settings.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
+            }
+
             if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 if (model.RequestUrlPrefix.Contains('/'))
                 {
                     ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contains more than one segment."]);
-                }
-
-                if (allShells.Any(x => x.Settings.RequestUrlPrefix != null && String.Equals(x.Settings.RequestUrlPrefix.Trim(), model.RequestUrlPrefix.Trim(), StringComparison.OrdinalIgnoreCase)))
-                {
-                    ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix is already used by another tenant."]);
                 }
             }
         }

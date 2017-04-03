@@ -1,5 +1,29 @@
 ﻿@model AdminIndexViewModel
 @using Orchard.Environment.Shell.Models
+@using Orchard.Environment.Shell
+
+@functions {
+    public string GetTenantUrl(ShellSettings tenantShellSettings)
+    {
+        var requestHostInfo = Context.Request.Host;
+
+        var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).First() ?? requestHostInfo.Host;
+        if (requestHostInfo.Port.HasValue)
+        {
+            tenantUrlHost += ":" + requestHostInfo.Port;
+        }
+
+        var result = $"{Context.Request.Scheme}://{tenantUrlHost}";
+
+        if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+        {
+            result += "/" + tenantShellSettings.RequestUrlPrefix;
+        }
+
+        return result;
+
+    }
+}
 
 <h1>@RenderTitleSegments(T["Tenants"])</h1>
 
@@ -31,12 +55,12 @@
                         }
                         @if (entry.ShellSettings.State == TenantState.Uninitialized)
                         {
-                            <a class="btn btn-success btn-sm" href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@T["Setup"]</a>
+                            <a class="btn btn-success btn-sm" href="@GetTenantUrl(entry.ShellSettings)">@T["Setup"]</a>
                         }
                         <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                     </div>
                     <h5>
-                        <a href="@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix">@entry.Name</a>
+                        <a href="@GetTenantUrl(entry.ShellSettings)">@entry.Name</a>
                         <code class="hint">@entry.ShellSettings.RequestUrlHost/@entry.ShellSettings.RequestUrlPrefix</code>
                         @switch (entry.ShellSettings.State)
                         {
