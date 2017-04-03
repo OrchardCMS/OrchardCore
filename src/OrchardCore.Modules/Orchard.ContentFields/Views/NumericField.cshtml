@@ -1,0 +1,14 @@
+﻿@model Orchard.ContentFields.ViewModels.DisplayNumericFieldViewModel
+@using Orchard.ContentManagement.Metadata.Models
+
+@{
+    string name = Model.PartFieldDefinition.DisplayName();
+    decimal? number = Model.Field.Value;
+}
+
+@if (number.HasValue)
+{
+    <div>
+        @name: @number
+    </div>
+}

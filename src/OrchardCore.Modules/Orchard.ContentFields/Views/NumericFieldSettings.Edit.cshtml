@@ -1,0 +1,58 @@
+﻿@model Orchard.ContentFields.Settings.NumericFieldSettings
+
+<fieldset class="form-group">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input asp-for="Required" type="checkbox" class="form-check-input" />
+            <span class="hint">@T["Check if the field is required."]</span>
+        </label>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-md">
+        <label for="Placeholder">@T["Watermark (placeholder)"]</label>
+        <input asp-for="Placeholder" type="text" class="form-control" />
+        <span class="hint">@T["A hint to display when the input is empty. (optional)"]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label for="Scale">@T["Scale"]</label>
+        <input asp-for="Scale" class="form-control" min="0" />
+        <span class="hint">@T["The number of digits after the decimal."]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label for="Minimum">@T["Minimum"]</label>
+        <input asp-for="Minimum" class="form-control" />
+        <span class="hint">@T["The minimum value allowed. (optional)"]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label for="Maximum">@T["Maximum"]</label>
+        <input asp-for="Maximum" class="form-control" />
+        <span class="hint">@T["The maximum value allowed. (optional)"]</span>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label for="DefaultValue">@T["Default value"]</label>
+        <input asp-for="DefaultValue" class="form-control" />
+        <span class="hint">@T["The default value. (optional)"]</span>
+    </div>
+</fieldset>
