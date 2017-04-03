@@ -98,10 +98,10 @@ dotnet pack "src\OrchardCore.Themes\TheAdmin" -c Release -o "%curpath%\artifacts
 dotnet pack "src\OrchardCore.Themes\TheBlogTheme" -c Release -o "%curpath%\artifacts\Extensions"
 dotnet pack "src\OrchardCore.Themes\TheTheme" -c Release -o "%curpath%\artifacts\Extensions"
 
-dotnet pack "src\Bundles\OrchardCore.Cms" -c Release -o "%curpath%\artifacts\Bundles"
-dotnet pack "src\Bundles\OrchardCore.Modules" -c Release -o "%curpath%\artifacts\Bundles"
-dotnet pack "src\Bundles\OrchardCore.Modules.Mvc" -c Release -o "%curpath%\artifacts\Bundles"
-dotnet pack "src\Bundles\OrchardCore.Modules.Nancy" -c Release -o "%curpath%\artifacts\Bundles"
+dotnet pack "src\OrchardCore\OrchardCore.Cms" -c Release -o "%curpath%\artifacts\Bundles"
+dotnet pack "src\OrchardCore\OrchardCore.Modules" -c Release -o "%curpath%\artifacts\Bundles"
+dotnet pack "src\OrchardCore\OrchardCore.Modules.Mvc" -c Release -o "%curpath%\artifacts\Bundles"
+dotnet pack "src\OrchardCore\OrchardCore.Modules.Nancy" -c Release -o "%curpath%\artifacts\Bundles"
 
 dotnet pack "src\OrchardCore\OrchardCore.AsBundle" -c Release -o "%curpath%\artifacts\Aspects"
 dotnet pack "src\OrchardCore\OrchardCore.AsModule" -c Release -o "%curpath%\artifacts\Aspects"

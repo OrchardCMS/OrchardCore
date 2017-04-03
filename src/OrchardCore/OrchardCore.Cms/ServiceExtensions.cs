@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Commands;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
 
@@ -19,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddManifestDefinition("Theme.txt", "theme");
             services.AddSitesFolder("App_Data", "Sites");
             services.AddCommands();
+            services.AddAuthentication();
             services.AddModules(modules => 
             {
                 if (configuration != null)

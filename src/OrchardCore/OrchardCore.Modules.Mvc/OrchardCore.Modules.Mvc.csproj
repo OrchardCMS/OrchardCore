@@ -7,8 +7,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="OrchardCore.AsBundle" Version="1.0.0-beta-0001" PrivateAssets="none" />
-    <PackageReference Include="Orchard.Nancy" Version="2.0.0" PrivateAssets="none" />
+    <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Mvc\Orchard.Mvc.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>
