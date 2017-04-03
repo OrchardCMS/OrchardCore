@@ -1,17 +1,21 @@
 ﻿@model Orchard.ContentFields.ViewModels.EditNumericFieldViewModel
-@using System.Globalization
 @using Orchard.ContentManagement.Metadata.Models
 @using Orchard.ContentFields.Settings;
+
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
-    string name = Model.PartFieldDefinition.DisplayName();
-    string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
 }
 
-<fieldset class="form-group">
-    <div class="row col-md">
-        <label asp-for="Value">@name</label>
-        <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" min="@(settings.Minimum.HasValue ? settings.Minimum.Value : 0)" max="@(settings.Maximum.HasValue ? settings.Maximum.Value : 10000)" step="@step" />
-        <span class="hint">@settings.Hint</span>
-    </div>
-</fieldset>
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as Orchard.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "NumericField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"NumericField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)
