@@ -78,6 +78,7 @@ namespace Orchard.DisplayManagement.Implementation
             };
 
             // Use the same prefix as the shape
+            var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
             context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
 
             // Evaluate global Shape Display Events
@@ -157,6 +158,9 @@ namespace Orchard.DisplayManagement.Implementation
 
             // invoking ShapeMetadata displayed events
             shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
+
+            //restore original HtmlFieldPrefix
+            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
 
             return shape.Metadata.ChildContent;
         }
