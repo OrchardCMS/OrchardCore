@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Deployment.Abstractions</AssemblyName>
-    <PackageId>Orchard.Deployment.Abstractions</PackageId>
     <RootNamespace>Orchard.Deployment</RootNamespace>
   </PropertyGroup>
 

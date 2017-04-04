@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Scripting</AssemblyName>
-    <PackageId>Orchard.Scripting</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

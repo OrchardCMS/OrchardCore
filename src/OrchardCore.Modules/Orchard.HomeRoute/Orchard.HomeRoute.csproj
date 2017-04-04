@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.HomeRoute</AssemblyName>
-    <PackageId>Orchard.HomeRoute</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

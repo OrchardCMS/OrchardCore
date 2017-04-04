@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Scripting.Abstractions</AssemblyName>
-    <PackageId>Orchard.Scripting.Abstractions</PackageId>
     <RootNamespace>Orchard.Scripting</RootNamespace>
   </PropertyGroup>
 

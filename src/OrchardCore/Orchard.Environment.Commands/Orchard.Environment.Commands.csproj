@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Environment.Commands</AssemblyName>
-    <PackageId>Orchard.Environment.Commands</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

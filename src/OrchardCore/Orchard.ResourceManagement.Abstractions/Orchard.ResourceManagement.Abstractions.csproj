@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.ResourceManagement.Abstractions</AssemblyName>
-    <PackageId>Orchard.ResourceManagement.Abstractions</PackageId>
     <RootNamespace>Orchard.ResourceManagement</RootNamespace>
   </PropertyGroup>
 

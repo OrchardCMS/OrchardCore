@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Tokens.Abstractions</AssemblyName>
-    <PackageId>Orchard.Tokens.Abstractions</PackageId>
     <RootNamespace>Orchard.Tokens</RootNamespace>
   </PropertyGroup>
 

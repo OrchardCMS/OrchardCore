@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Microsoft.AspNetCore.Mvc.Modules.Abstractions</AssemblyName>
-    <PackageId>Microsoft.AspNetCore.Mvc.Modules.Abstractions</PackageId>
     <RootNamespace>Microsoft.AspNetCore.Mvc.Modules</RootNamespace>
   </PropertyGroup>
 

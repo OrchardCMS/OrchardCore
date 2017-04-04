@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Nancy.HelloWorld</AssemblyName>
-    <PackageId>Orchard.Nancy.HelloWorld</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

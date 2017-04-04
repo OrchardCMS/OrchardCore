@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Parser.Yaml</AssemblyName>
-    <PackageId>Orchard.Parser.Yaml</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

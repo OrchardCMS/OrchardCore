@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Recipes.Implementations</AssemblyName>
-    <PackageId>Orchard.Recipes.Implementations</PackageId>
     <RootNamespace>Orchard.Recipes</RootNamespace>
   </PropertyGroup>
 

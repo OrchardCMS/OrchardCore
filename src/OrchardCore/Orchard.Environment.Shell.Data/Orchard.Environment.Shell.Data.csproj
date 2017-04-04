@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Environment.Shell.Data</AssemblyName>
-    <PackageId>Orchard.Environment.Shell.Data</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

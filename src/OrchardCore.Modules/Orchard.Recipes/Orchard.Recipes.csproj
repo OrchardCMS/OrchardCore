@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Recipes</AssemblyName>
-    <PackageId>Orchard.Recipes</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.XmlRpc.Abstractions</AssemblyName>
-    <PackageId>Orchard.XmlRpc.Abstractions</PackageId>
     <RootNamespace>Orchard.XmlRpc</RootNamespace>
   </PropertyGroup>
 

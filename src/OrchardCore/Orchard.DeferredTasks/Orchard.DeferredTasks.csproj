@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.DeferredTasks</AssemblyName>
-    <PackageId>Orchard.DeferredTasks</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

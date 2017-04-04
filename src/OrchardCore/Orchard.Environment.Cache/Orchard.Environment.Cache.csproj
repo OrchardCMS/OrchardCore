@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Environment.Cache</AssemblyName>
-    <PackageId>Orchard.Environment.Cache</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

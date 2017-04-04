@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Admin.Abstractions</AssemblyName>
-    <PackageId>Orchard.Admin.Abstractions</PackageId>
     <RootNamespace>Orchard.Admin</RootNamespace>
   </PropertyGroup>
 

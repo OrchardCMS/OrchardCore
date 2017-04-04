@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.SiteSettings.Core</AssemblyName>
-    <PackageId>Orchard.SiteSettings.Core</PackageId>
     <RootNamespace>Orchard.SiteSettings</RootNamespace>
   </PropertyGroup>
 

@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>OrchardCore.AsTheme</AssemblyName>
-    <PackageId>OrchardCore.AsTheme</PackageId>
   </PropertyGroup>
 
   <!-- Add the OrchardCore.AsTheme.props file in the package -->

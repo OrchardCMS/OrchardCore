@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Indexing.Abstractions</AssemblyName>
-    <PackageId>Orchard.Indexing.Abstractions</PackageId>
     <RootNamespace>Orchard.Indexing</RootNamespace>
   </PropertyGroup>
 

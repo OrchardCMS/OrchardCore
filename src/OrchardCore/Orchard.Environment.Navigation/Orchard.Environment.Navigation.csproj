@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Environment.Navigation</AssemblyName>
-    <PackageId>Orchard.Environment.Navigation</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.ResourceManagement</AssemblyName>
-    <PackageId>Orchard.ResourceManagement</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

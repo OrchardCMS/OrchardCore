@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Environment.Shell.Abstractions</AssemblyName>
-    <PackageId>Orchard.Environment.Shell.Abstractions</PackageId>
     <RootNamespace>Orchard.Environment.Shell</RootNamespace>
   </PropertyGroup>
 

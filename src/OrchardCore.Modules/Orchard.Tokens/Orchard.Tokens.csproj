@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Tokens</AssemblyName>
-    <PackageId>Orchard.Tokens</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Orchard.Hosting.Console</AssemblyName>
-    <PackageId>Orchard.Hosting.Console</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
