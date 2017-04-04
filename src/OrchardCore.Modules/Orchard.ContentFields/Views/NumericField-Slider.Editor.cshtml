@@ -11,11 +11,21 @@
     string id = Html.IdFor(m => m.Value);
 }
 
+<script asp-name="bootstrap-slider" depends-on="admin" asp-src="/Orchard.Resources/Scripts/bootstrap-slider.min.js" debug-src="/Orchard.Resources/Scripts/bootstrap-slider.js" at="Foot"></script>
+<style asp-name="bootstrap-slider" asp-src="/Orchard.Resources/Styles/bootstrap-slider.min.css" debug-src="/Orchard.Resources/Styles/bootstrap-slider.css"></style>
+
 <fieldset class="form-group">
     <div class="row col-sm">
         <label asp-for="Value">@name</label>
         <input asp-for="Value" class="form-control content-preview-select" />
-        <input id="@(id)-range" type="range" min="@min" max="@max" step="@step" onchange="$('#@(id)').val(value);" />
+        <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
         <span class="hint">@settings.Hint</span>
     </div>
 </fieldset>
+<script at="Foot">
+    $(function () {
+        $('#@(id)-slider').bootstrapSlider().on('slide', function (ev) {
+            $('#@(id)').val(ev.value);
+        });
+    });
+</script>

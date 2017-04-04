@@ -14,8 +14,16 @@
 <fieldset class="form-group">
     <div class="row col-sm">
         <label asp-for="Value">@name</label>
-        <input asp-for="Value" class="form-control content-preview-select" />
-        <input id="@(id)-range" type="range" min="@min" max="@max" step="@step" onchange="$('#@(id)').val(value);" />
+        <input asp-for="Value" class="form-control content-preview-select" type="number" required="@settings.Required" />
         <span class="hint">@settings.Hint</span>
     </div>
 </fieldset>
+<script at="Foot">
+    $(function () {
+        $('#@(id)').spinner({
+            min: @min,
+            max: @max,
+            step: @step
+        });
+    });
+</script>
