@@ -2,14 +2,13 @@
 @using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Html
 @using System.IO;
-@inject Microsoft​.AspNetCore​.Hosting.IHostingEnvironment Environment
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model Orchard.Setup.ViewModels.SetupViewModel
 
 @{
     // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
-    Layout = System.IO.Path.Combine(Directory.GetParent(Environment.ContentRootPath + ViewContext.ExecutingFilePath).Parent.FullName, "_Layout.cshtml").Substring(Environment.ContentRootPath.Length);
+    Layout = "_Layout";
 }
 
 @{
