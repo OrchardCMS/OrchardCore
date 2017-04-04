@@ -167,7 +167,6 @@ build/
 /buildtasks
 /artifacts
 *.sln.cache
-src/Orchard.Cms.Web/Media/*
 src/OrchardCore.Modules/**/launchSettings.json
 src/OrchardCore.Themes/**/launchSettings.json
 log.xml
