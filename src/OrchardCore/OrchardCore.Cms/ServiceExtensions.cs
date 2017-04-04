@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
@@ -15,6 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddOrchardCms(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddManifestDefinition("Theme.txt", "theme");
+            services.AddExtensionLocation("Themes");
             services.AddSitesFolder("App_Data", "Sites");
             services.AddCommands();
             services.AddAuthentication();
