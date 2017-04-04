@@ -20,6 +20,13 @@
         SourceFiles="@(PackageAssetFiles)"
         DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
         ContinueOnError="true" />
+
+    <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
+      <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
+    </CreateItem>
+    <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
+      <MvcRazorFilesToCompile Include="@(MvcContentRazorFiles);Packages\**\*.cshtml" />
+    </ItemGroup>
   </Target>
 
   <!--
@@ -33,8 +40,15 @@
 
   <ItemGroup>
     <Compile Remove="Packages\**" />
+    <Content Remove="Packages\**" />
     <EmbeddedResource Remove="Packages\**" />
-    <None Include="Packages\**" CopyToPublishDirectory="Always" />
+    <None Remove="Packages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ResolvedFileToPublish Include="Packages\**">
+      <RelativePath>Packages\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+    </ResolvedFileToPublish>
   </ItemGroup>
 
 </Project>
