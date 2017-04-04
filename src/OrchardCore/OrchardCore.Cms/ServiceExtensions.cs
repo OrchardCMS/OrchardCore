@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Orchard.Environment.Extensions;
 using Orchard.Environment.Commands;
+using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
 
