@@ -10,16 +10,12 @@ namespace Orchard.HomeRoute
 {
     public class HomePageRoute : Route
     {
-        private readonly IRouteBuilder _routeBuilder;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
         private RouteValueDictionary _homeRoute;
         private IChangeToken _siteServicechangeToken;
 
         public HomePageRoute(IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
             : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
         {
-            _routeBuilder = routeBuilder;
         }
 
         protected override async Task OnRouteMatched(RouteContext context)

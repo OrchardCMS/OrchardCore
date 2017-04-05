@@ -12,8 +12,7 @@ namespace Orchard.HomeRoute
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var inlineConstraintResolver = serviceProvider.GetService<IInlineConstraintResolver>();
-            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
-            routes.Routes.Add(new HomePageRoute(httpContextAccessor, routes, inlineConstraintResolver));
+            routes.Routes.Add(new HomePageRoute(routes, inlineConstraintResolver));
         }
     }
 }
