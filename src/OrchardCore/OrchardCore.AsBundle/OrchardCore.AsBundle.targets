@@ -7,23 +7,21 @@
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
     <ItemGroup>
       <PackageAssetFiles
-          Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
-              $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-          Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
+        Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
       <ProjectAssetFiles
-          Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
-              $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-          Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
+        Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
     </ItemGroup>
     <Delete
-        Files="@(ProjectAssetFiles)"
-        Condition="!Exists('$(Temp)\OrchardCorePackages\%(RecursiveDir)%(Filename)%(Extension)')"
-        ContinueOnError="true"/>
+      Files="@(ProjectAssetFiles)"
+      Condition="!Exists('$(Temp)\OrchardCorePackages\%(RecursiveDir)%(Filename)%(Extension)')"
+      ContinueOnError="true"/>
     <Message Text="Copying package assets" Importance="high" />
     <Copy
-        SourceFiles="@(PackageAssetFiles)"
-        DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
-        ContinueOnError="true" />
+      SourceFiles="@(PackageAssetFiles)"
+      DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
+      ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
       <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
@@ -36,16 +34,16 @@
   <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
     <ItemGroup>
      <AllPackageAssetFiles
-         Include="$(MSBuildProjectDirectory)\Packages\**" />
+       Include="$(MSBuildProjectDirectory)\Packages\**" />
     </ItemGroup>
     <Delete
-        Files="@(AllPackageAssetFiles)"
-        Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
-        ContinueOnError="true" />
+      Files="@(AllPackageAssetFiles)"
+      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
+      ContinueOnError="true" />
     <RemoveDir
-        Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
-        Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
-        ContinueOnError="true" />
+      Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
+      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
+      ContinueOnError="true" />
   </Target>
 
   <!--
