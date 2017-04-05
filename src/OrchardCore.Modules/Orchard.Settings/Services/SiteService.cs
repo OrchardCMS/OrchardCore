@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
@@ -14,6 +16,9 @@ namespace Orchard.Settings.Services
         private readonly ISession _session;
 
         private const string SiteCacheKey = "Site";
+        private ChangeTokenInfo _changeTokenInfo;
+
+        public IChangeToken ChangeToken => _changeTokenInfo.ChangeToken;
 
         public SiteService(
             ISession session,
@@ -50,12 +55,14 @@ namespace Orchard.Settings.Services
 
                             _session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
+                            RenewChangeToken();
                         }
                     }
                 }
                 else
                 {
                     _memoryCache.Set(SiteCacheKey, site);
+                    RenewChangeToken();
                 }
             }
 
@@ -89,7 +96,33 @@ namespace Orchard.Settings.Services
             _session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
+            RenewChangeToken();
             return;
+        }
+
+        private void RenewChangeToken()
+        {
+            if (_changeTokenInfo != null)
+            {
+                _changeTokenInfo.TokenSource.Cancel();
+            }
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var changeToken = new CancellationChangeToken(cancellationTokenSource.Token);
+            _changeTokenInfo = new ChangeTokenInfo(changeToken, cancellationTokenSource);
+        }
+
+        private class ChangeTokenInfo
+        {
+            public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
+            {
+                ChangeToken = changeToken;
+                TokenSource = tokenSource;
+            }
+
+            public IChangeToken ChangeToken { get; }
+
+            public CancellationTokenSource TokenSource { get; }
         }
     }
 }
