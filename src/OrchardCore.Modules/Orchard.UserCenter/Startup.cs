@@ -15,7 +15,7 @@ namespace Orchard.UserCenter
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddNavigation();
+            //services.AddNavigation();
 
             services.Configure<MvcOptions>((options) =>
             {
@@ -33,7 +33,7 @@ namespace Orchard.UserCenter
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaRoute(
-                name: "UserCenter",
+                name: "Orchard.UserCenter",
                 areaName: "Orchard.UserCenter",
                 template: "usercenter",
                 defaults: new { controller = "UserCenter", action = "Index" }

@@ -20,12 +20,12 @@ namespace Orchard.UserCenter
                 return;
             }
 
-            builder
-				.Add(T["UserCenter"], design => design
-                    .Add(T["UserCenter"], "5", installed => installed
-                            .Action("Index", "UserCenter", "Orchard.UserCenter")
-                            .Permission(Permissions.AccessUserCenterPanel)
-                            ));
+            builder.Add(T["UserCenter"], "6", content => content
+    .Add(T["UserCenter"], "1", contentItems => contentItems
+        .Action("Index", "UserCenter", new { area = "Orchard.UserCenter" })
+        .Permission(Permissions.AccessUserCenterPanel)
+        .LocalNav())
+    );
         }
     }
 }
