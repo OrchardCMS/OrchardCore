@@ -25,7 +25,7 @@ namespace Orchard.Lucene
                     .AddClass("menu-design").Id("design")
                     .Add(T["Site"], "10", import => import
                         .Add(T["Lucene Indexes"], "7", indexes => indexes
-                            .Action("Index", "Admin", new { area = "Lucene" })
+                            .Action("Index", "Admin", new { area = "Orchard.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())))
                 .Add(T["Design"], design => design
