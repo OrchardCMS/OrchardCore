@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Orchard.Settings;
 
 namespace Orchard.HomeRoute
 {
@@ -12,8 +12,7 @@ namespace Orchard.HomeRoute
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var inlineConstraintResolver = serviceProvider.GetService<IInlineConstraintResolver>();
-            var siteService = serviceProvider.GetService<ISiteService>();
-            routes.Routes.Add(new HomePageRoute(siteService, routes, inlineConstraintResolver));
+            routes.Routes.Add(new HomePageRoute(routes, inlineConstraintResolver));
         }
     }
 }

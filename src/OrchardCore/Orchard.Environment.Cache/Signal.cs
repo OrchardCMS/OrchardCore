@@ -37,7 +37,7 @@ namespace Orchard.Environment.Cache
             }
         }
 
-        private class ChangeTokenInfo
+        private struct ChangeTokenInfo
         {
             public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
             {
