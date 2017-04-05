@@ -11,9 +11,18 @@ init:
   - git config --global core.autocrlf true
 build_script:
   - dotnet restore
-  - dotnet build
+  - dotnet build -c Release
+  - dotnet pack -c Release
 test_script:
   - ps: .\scripts\run-tests.ps1
 clone_depth: 1
 test: on
-deploy: off
+artifacts:
+- path: '**\*.nupkg'
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+  api_key:
+    secure: zFOa19bQQsM/YV7mrHwGdElRhCGSRq3CqZ7xACS0iEPRJk8mdNgSrjPjnMR1LOGo
+  skip_symbols: true
+  artifact: /.*\.nupkg/
