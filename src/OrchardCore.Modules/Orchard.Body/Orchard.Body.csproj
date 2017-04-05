@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <OutputType>Library</OutputType>
   </PropertyGroup>
 

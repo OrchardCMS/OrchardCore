@@ -1,17 +1,4 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup>
-    <VersionPrefix>2.0.0</VersionPrefix>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>portable</DebugType>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50;portable-net451+win8</PackageTargetFallback>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <EnableDefaultContentItems>false</EnableDefaultContentItems>
-  </PropertyGroup>
-
+  <Import Project="..\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\OrchardCore\OrchardCore.AsTheme\OrchardCore.AsTheme.props" />
-
 </Project>
