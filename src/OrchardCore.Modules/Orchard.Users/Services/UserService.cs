@@ -56,7 +56,7 @@ namespace Orchard.Users.Services
                         
             if (!identityResult.Succeeded)
             {
-                ProcessIdentityErrors(identityResult.Errors, user, reportError);
+                ProcessValidationErrors(identityResult.Errors, user, reportError);
             }
 
             return identityResult.Succeeded;
@@ -69,23 +69,23 @@ namespace Orchard.Users.Services
 
             if(!identityResult.Succeeded)
             {
-                ProcessIdentityErrors(identityResult.Errors, user, reportError);
+                ProcessValidationErrors(identityResult.Errors, user, reportError);
             }
 
             return identityResult.Succeeded;
         }
 
-        public async Task<User> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+        public Task<User> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
         {
             if(principal == null)
             {
-                return null;
+                return Task.FromResult<User>(null);
             }
 
-            return await _userManager.GetUserAsync(principal);
+            return _userManager.GetUserAsync(principal);
         }
 
-        private void ProcessIdentityErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
+        private void ProcessValidationErrors(IEnumerable<IdentityError> errors, User user, Action<string, string> reportError)
         {
             foreach (var error in errors)
             {
