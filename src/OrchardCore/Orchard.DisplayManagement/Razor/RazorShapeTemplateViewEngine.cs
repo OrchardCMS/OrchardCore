@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,20 +53,33 @@ namespace Orchard.DisplayManagement.Razor
 
         private async Task<IHtmlContent> RenderRazorViewAsync(string viewName, DisplayContext context)
         {
-            var viewEngineResult = _viewEngine.Value.ViewEngines.First().FindView(context.ViewContext, viewName, isMainPage: false);
-            if (viewEngineResult.Success)
+            var viewEngines = _viewEngine.Value.ViewEngines;
+
+            if (viewEngines.Count == 0)
             {
-                var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
-                var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
-                using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
+                throw new InvalidOperationException(string.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
+                    typeof(MvcViewOptions).FullName,
+                    nameof(MvcViewOptions.ViewEngines),
+                    typeof(IViewEngine).FullName));
+            }
+
+            for (var i = 0; i < viewEngines.Count; i++)
+            {
+                var viewEngineResult = viewEngines[0].FindView(context.ViewContext, viewName, isMainPage: false);
+                if (viewEngineResult.Success)
                 {
-                    // Forcing synchronous behavior so users don't have to await templates.
-                    var view = viewEngineResult.View;
-                    using (view as IDisposable)
+                    var bufferScope = context.ViewContext.HttpContext.RequestServices.GetRequiredService<IViewBufferScope>();
+                    var viewBuffer = new ViewBuffer(bufferScope, viewEngineResult.ViewName, ViewBuffer.PartialViewPageSize);
+                    using (var writer = new ViewBufferTextWriter(viewBuffer, context.ViewContext.Writer.Encoding))
                     {
-                        var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
-                        await viewEngineResult.View.RenderAsync(viewContext);
-                        return viewBuffer;
+                        // Forcing synchronous behavior so users don't have to await templates.
+                        var view = viewEngineResult.View;
+                        using (view as IDisposable)
+                        {
+                            var viewContext = new ViewContext(context.ViewContext, viewEngineResult.View, context.ViewContext.ViewData, writer);
+                            await viewEngineResult.View.RenderAsync(viewContext);
+                            return viewBuffer;
+                        }
                     }
                 }
             }

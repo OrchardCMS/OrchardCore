@@ -11,6 +11,7 @@ This modules provides common content fields.
 | TextField | `Text (string)` | `TextField` |
 | BooleanField | `Value (bool)` | `BooleanField` |
 | HtmlField | `Html (string)` | `HtmlField` |
+| NumericField | `Value (decimal?)` | `NumericField` |
 
 ## Usage
 
