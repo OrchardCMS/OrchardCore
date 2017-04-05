@@ -16,7 +16,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Packages\Orchard.Users\Module.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Packages\Orchard.Users\Views\Account\ChangePassword.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\Account\Login.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\Account\Register.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\Admin\Create.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\Admin\Edit.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\Admin\Index.cshtml" />
+    <None Include="Packages\Orchard.Users\Views\_ViewImports.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

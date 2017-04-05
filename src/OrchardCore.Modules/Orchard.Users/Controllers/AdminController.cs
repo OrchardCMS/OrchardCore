@@ -163,7 +163,7 @@ namespace Orchard.Users.Controllers
         public async Task<IActionResult> Create(CreateUserViewModel model)
         {
             CleanViewModel(model);
-            
+
             if (ModelState.IsValid)
             {
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
@@ -229,7 +229,7 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-                if ( userWithSameName != null && userWithSameName.Id != currentUser.Id)
+                if (userWithSameName != null && userWithSameName.Id != currentUser.Id)
                 {
                     ModelState.AddModelError(string.Empty, T["The user name is already used."]);
                 }
