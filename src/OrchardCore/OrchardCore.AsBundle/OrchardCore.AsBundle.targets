@@ -7,13 +7,13 @@
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
     <ItemGroup>
       <PackageAssetFiles
-        Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
-          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
+          Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
+              $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+          Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
       <ProjectAssetFiles
-        Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
-          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
+          Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
+              $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+          Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
     </ItemGroup>
     <Delete
         Files="@(ProjectAssetFiles)"
@@ -34,9 +34,18 @@
   </Target>
 
   <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
+    <ItemGroup>
+     <AllPackageAssetFiles
+         Include="$(MSBuildProjectDirectory)\Packages\**" />
+    </ItemGroup>
+    <Delete
+        Files="@(AllPackageAssetFiles)"
+        Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
+        ContinueOnError="true" />
     <RemoveDir
-      Directories="$(MSBuildProjectDirectory)\Packages"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')" />
+        Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
+        Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
+        ContinueOnError="true" />
   </Target>
 
   <!--
