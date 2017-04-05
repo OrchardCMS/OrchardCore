@@ -6,10 +6,14 @@
 
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
     <ItemGroup>
-      <PackageAssetFiles Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
-          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*" />
-      <ProjectAssetFiles Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
-          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*" />
+      <PackageAssetFiles
+        Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName(
+          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
+      <ProjectAssetFiles
+        Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName(
+          $([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
+        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
     </ItemGroup>
     <Delete
         Files="@(ProjectAssetFiles)"
@@ -27,6 +31,12 @@
     <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
       <MvcRazorFilesToCompile Include="@(MvcContentRazorFiles);Packages\**\*.cshtml" />
     </ItemGroup>
+  </Target>
+
+  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
+    <RemoveDir
+      Directories="$(MSBuildProjectDirectory)\Packages"
+      Condition="Exists('$(MSBuildProjectDirectory)\Packages')" />
   </Target>
 
   <!--
