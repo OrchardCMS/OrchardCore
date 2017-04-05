@@ -16,16 +16,15 @@ namespace Orchard.HomeRoute
         private RouteValueDictionary _homeRoute;
         private IChangeToken _siteServicechangeToken;
 
-        public HomePageRoute(IHttpContextAccessor httpContextAccessor, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+        public HomePageRoute(IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
             : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
         {
-            _httpContextAccessor = httpContextAccessor;
             _routeBuilder = routeBuilder;
         }
 
         protected override async Task OnRouteMatched(RouteContext context)
         {
-            var tokens = GetHomeRouteValues();
+            var tokens = GetHomeRouteValues(context.HttpContext);
 
             if (tokens != null)
             {
@@ -42,7 +41,7 @@ namespace Orchard.HomeRoute
         {
             object value;
 
-            var tokens = GetHomeRouteValues();
+            var tokens = GetHomeRouteValues(context.HttpContext);
 
             if (tokens == null)
             {
@@ -79,11 +78,10 @@ namespace Orchard.HomeRoute
             return result;
         }
 
-        private RouteValueDictionary GetHomeRouteValues()
+        private RouteValueDictionary GetHomeRouteValues(HttpContext httpContext)
         {
             if (_siteServicechangeToken == null || _siteServicechangeToken.HasChanged)
             {
-                var httpContext = _httpContextAccessor.HttpContext;
                 var siteService = httpContext.RequestServices.GetRequiredService<ISiteService>();
                 _homeRoute = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
                 _siteServicechangeToken = siteService.ChangeToken;
