@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Orchard.Settings;
 
 namespace Orchard.HomeRoute
@@ -8,18 +11,21 @@ namespace Orchard.HomeRoute
     public class HomePageRoute : Route
     {
         private readonly IRouteBuilder _routeBuilder;
-        private readonly ISiteService _siteService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomePageRoute(ISiteService siteService, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
+        private RouteValueDictionary _homeRoute;
+        private IChangeToken _siteServicechangeToken;
+
+        public HomePageRoute(IHttpContextAccessor httpContextAccessor, IRouteBuilder routeBuilder, IInlineConstraintResolver inlineConstraintResolver)
             : base(routeBuilder.DefaultHandler, "", inlineConstraintResolver)
         {
-            _siteService = siteService;
+            _httpContextAccessor = httpContextAccessor;
             _routeBuilder = routeBuilder;
         }
 
         protected override async Task OnRouteMatched(RouteContext context)
         {
-            var tokens = await GetHomeRouteValuesAsync();
+            var tokens = GetHomeRouteValues();
 
             if (tokens != null)
             {
@@ -36,7 +42,7 @@ namespace Orchard.HomeRoute
         {
             object value;
 
-            var tokens = GetHomeRouteValuesAsync().GetAwaiter().GetResult();
+            var tokens = GetHomeRouteValues();
 
             if (tokens == null)
             {
@@ -73,10 +79,17 @@ namespace Orchard.HomeRoute
             return result;
         }
 
-        private async Task<RouteValueDictionary> GetHomeRouteValuesAsync()
+        private RouteValueDictionary GetHomeRouteValues()
         {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            return siteSettings.HomeRoute;
+            if (_siteServicechangeToken == null || _siteServicechangeToken.HasChanged)
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+                var siteService = httpContext.RequestServices.GetRequiredService<ISiteService>();
+                _homeRoute = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+                _siteServicechangeToken = siteService.ChangeToken;
+            }
+
+            return _homeRoute;
         }
     }
 }
