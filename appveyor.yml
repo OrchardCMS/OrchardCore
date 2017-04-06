@@ -5,7 +5,7 @@ environment:
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
-  - ps: $env:BuildVersion= $env:APPVEYOR_BUILD_NUMBER
+  - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
 init:
   - git config --global core.autocrlf true
 build_script:
