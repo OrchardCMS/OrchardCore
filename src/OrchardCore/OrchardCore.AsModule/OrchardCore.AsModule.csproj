@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <PackageVersion>1.0.0-beta-0001</PackageVersion>
   </PropertyGroup>
 
   <!-- Add the OrchardCore.AsModule.props file in the package -->

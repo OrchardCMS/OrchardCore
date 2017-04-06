@@ -21,7 +21,6 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddWebHost();
             services.AddManifestDefinition("Module.txt", "module");
-            services.AddExtensionLocation("Modules");
             services.AddExtensionLocation("Packages");
 
             var modularServiceCollection = new ModularServiceCollection(services);

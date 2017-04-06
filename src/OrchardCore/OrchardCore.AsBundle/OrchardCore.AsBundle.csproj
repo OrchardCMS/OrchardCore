@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <PackageVersion>1.0.0-beta-0001</PackageVersion>
   </PropertyGroup>
 
   <!--
@@ -12,9 +11,10 @@
     You can optionally leave out the $targetFramework subdirectory. 
     Caution: this will make NuGet treat your packages as compatible with “any” target framework.
   -->
+
   <ItemGroup>
-    <None Include="Bundle.Build.targets" Pack="true">
-      <PackagePath>build\netstandard1.6\$(PackageId).targets</PackagePath>
+    <None Include="OrchardCore.AsBundle.targets" Pack="true">
+      <PackagePath>build\netstandard1.6\OrchardCore.AsBundle.targets</PackagePath>
     </None>
   </ItemGroup>
 
