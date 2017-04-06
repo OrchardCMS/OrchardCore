@@ -1,12 +1,11 @@
 image: Visual Studio 2017
 environment:
   nodejs_version: "6.9.1"
-
+  BuildVersion: $(appveyor_build_version)
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
-
 init:
   - git config --global core.autocrlf true
 build_script:
@@ -23,6 +22,6 @@ deploy:
 - provider: NuGet
   server: https://www.myget.org/F/orchardcore-preview/api/v2/package
   api_key:
-    secure: zFOa19bQQsM/YV7mrHwGdElRhCGSRq3CqZ7xACS0iEPRJk8mdNgSrjPjnMR1LOGo
+    secure: 7PQvuxXn5P39X5QDlDKWbNpOKJKivpqkq7umakIirAZ12CSTAiCwjtJhSBGVboPm
   skip_symbols: true
   artifact: /.*\.nupkg/
