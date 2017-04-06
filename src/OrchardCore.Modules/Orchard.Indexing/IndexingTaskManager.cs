@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.AspNetCore.Modules;
+using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using YesSql.Core.Services;
@@ -12,14 +12,14 @@ namespace Orchard.Indexing.Services
 {
     public class IndexingTaskManager : IIndexingTaskManager, IDisposable
     {
-        private readonly IClock _clock;
+        private readonly ISystemClock _clock;
         private readonly IStore _store;
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
         public IndexingTaskManager(
             IStore store,
-            IClock clock,
+            ISystemClock clock,
             ILogger<IndexingTaskManager> logger)
         {
             _store = store;
