@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
@@ -7,7 +8,7 @@ using Orchard.Lists.Models;
 
 namespace Orchard.Lists.Controllers
 {
-    //[OrchardFeature("Orchard.RemotePublishing")]
+    [Feature("Orchard.RemotePublishing")]
     public class RemotePublishingController : Controller
     {
         private readonly IContentManager _contentManager;
