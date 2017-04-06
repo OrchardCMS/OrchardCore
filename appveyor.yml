@@ -19,8 +19,8 @@ test: on
 artifacts:
 - path: '**\*.nupkg'
 deploy:
-#  on:
-#    branch: master
+  on:
+    branch: master
   provider: NuGet
   server: https://www.myget.org/F/orchardcore-preview/api/v2/package
   api_key:
