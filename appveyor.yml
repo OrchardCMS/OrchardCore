@@ -18,12 +18,12 @@ clone_depth: 1
 test: on
 artifacts:
 - path: '**\*.nupkg'
-deploy:
-  on:
-    branch: master
-  provider: NuGet
-  server: https://www.myget.org/F/orchardcore-preview/api/v2/package
-  api_key:
-    secure: 7PQvuxXn5P39X5QDlDKWbNpOKJKivpqkq7umakIirAZ12CSTAiCwjtJhSBGVboPm
-  skip_symbols: true
-  artifact: /.*\.nupkg/
+# deploy:
+#   on:
+#     branch: master
+#   provider: NuGet
+#   server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+#   api_key:
+#     secure: 7PQvuxXn5P39X5QDlDKWbNpOKJKivpqkq7umakIirAZ12CSTAiCwjtJhSBGVboPm
+#   skip_symbols: true
+#   artifact: /.*\.nupkg/
