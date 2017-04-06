@@ -24,6 +24,6 @@ deploy:
   provider: NuGet
   server: https://www.myget.org/F/orchardcore-preview/api/v2/package
   api_key:
-    secure: zFOa19bQQsM/YV7mrHwGdElRhCGSRq3CqZ7xACS0iEPRJk8mdNgSrjPjnMR1LOGo
+    secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
   skip_symbols: true
   artifact: /.*\.nupkg/
