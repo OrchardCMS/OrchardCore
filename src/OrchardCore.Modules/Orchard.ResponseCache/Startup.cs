@@ -11,6 +11,8 @@ namespace Orchard.ResponseCache
 {
     public class Startup : StartupBase
     {
+        public override int Order => -10;
+
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
             app.UseResponseCaching();

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
 using Orchard.Environment.Shell.Models;
+using System.Linq;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -85,6 +86,12 @@ namespace Microsoft.AspNetCore.Modules
         public RequestDelegate BuildTenantPipeline(ShellSettings shellSettings, IServiceProvider serviceProvider)
         {
             var startups = serviceProvider.GetServices<IStartup>();
+
+            // IStartup instances are ordered by module dependency with an Order of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal Order values.
+
+            startups = startups.OrderBy(s => s.Order);
+
             var tenantRouteBuilder = serviceProvider.GetService<IModularTenantRouteBuilder>();
             
             var appBuilder = new ApplicationBuilder(serviceProvider);
