@@ -7,10 +7,6 @@ namespace Orchard.DisplayManagement.Theming
 {
     public class ThemeLayout : Razor.RazorPage<dynamic>
     {
-        public ThemeLayout()
-        {
-        }
-
         [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
         public IModelExpressionProvider ModelExpressionProvider { get; private set; }
         [Microsoft.AspNetCore.Mvc.Razor.Internal.RazorInjectAttribute]
@@ -29,5 +25,4 @@ namespace Orchard.DisplayManagement.Theming
             Write(await DisplayAsync(ThemeLayout));
         }
     }
-
 }
