@@ -261,8 +261,31 @@ namespace Orchard.Layers.Controllers
 
 			_session.Save(contentItem);
 
-			// Clear the cache
-			_signal.SignalToken(LayerMetadataHandler.LayerChangeToken);
+            // In case the moved contentItem is the draft for a published contentItem we update it's position too.
+            // We do that because we want the position of published and draft version to be the same.
+            if (contentItem.IsPublished() == false)
+            {
+                var publishedContentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
+                if (publishedContentItem != null)
+                {
+                    layerMetadata = contentItem.As<LayerMetadata>();
+
+                    if (layerMetadata == null)
+                    {
+                        return StatusCode(403);
+                    }
+
+                    layerMetadata.Position = position;
+                    layerMetadata.Zone = zone;
+
+                    publishedContentItem.Apply(layerMetadata);
+
+                    _session.Save(publishedContentItem);
+                }
+            }
+            
+            // Clear the cache
+            _signal.SignalToken(LayerMetadataHandler.LayerChangeToken);
 			
 			if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
 			{
