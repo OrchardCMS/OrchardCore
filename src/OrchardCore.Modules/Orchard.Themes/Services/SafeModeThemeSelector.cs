@@ -1,6 +1,6 @@
 ﻿using Orchard.DisplayManagement.Theming;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Localization;
 namespace Orchard.Themes.Services
 {
     /// <summary>
@@ -9,6 +9,11 @@ namespace Orchard.Themes.Services
     /// </summary>
     public class SafeModeThemeSelector : IThemeSelector
     {
+        public SafeModeThemeSelector(IStringLocalizer<SafeModeThemeSelector> stringLocalizer)
+        {
+            T = stringLocalizer;
+        }
+        IStringLocalizer T { get; set; }
         public Task<ThemeSelectorResult> GetThemeAsync()
         {
             return Task.FromResult(new ThemeSelectorResult
@@ -17,5 +22,14 @@ namespace Orchard.Themes.Services
                 ThemeName = "SafeMode"
             });
         }
+        public bool CanSet { get { return false; } }
+        public void SetTheme(string themeName)
+        {}
+
+        public string Tag { get { return string.Empty; } }
+
+       public  LocalizedString DisplayName { get { return T["SafeMode"]; } }
+        
+      public string Name { get { return "safeMode"; } }
     };
 }
