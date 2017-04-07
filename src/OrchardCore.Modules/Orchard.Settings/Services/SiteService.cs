@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using Orchard.Environment.Cache;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
@@ -14,19 +14,22 @@ namespace Orchard.Settings.Services
     {
         private readonly IMemoryCache _memoryCache;
         private readonly ISession _session;
+        private readonly ISignal _signal;
 
-        private const string SiteCacheKey = "Site";
-        private ChangeTokenInfo _changeTokenInfo;
-
-        public IChangeToken ChangeToken => _changeTokenInfo.ChangeToken;
-
+        private const string SiteCacheKey = "SiteService";
+        
         public SiteService(
+            ISignal signal,
             ISession session,
             IMemoryCache memoryCache)
         {
+            _signal = signal;
             _session = session;
             _memoryCache = memoryCache;
         }
+
+        /// <inheritdoc/>
+        public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
 
         /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
@@ -55,14 +58,14 @@ namespace Orchard.Settings.Services
 
                             _session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
-                            RenewChangeToken();
+                            _signal.SignalToken(SiteCacheKey);
                         }
                     }
                 }
                 else
                 {
                     _memoryCache.Set(SiteCacheKey, site);
-                    RenewChangeToken();
+                    _signal.SignalToken(SiteCacheKey);
                 }
             }
 
@@ -96,33 +99,9 @@ namespace Orchard.Settings.Services
             _session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
-            RenewChangeToken();
+            _signal.SignalToken(SiteCacheKey);
+
             return;
-        }
-
-        private void RenewChangeToken()
-        {
-            if (_changeTokenInfo != null)
-            {
-                _changeTokenInfo.TokenSource.Cancel();
-            }
-
-            var cancellationTokenSource = new CancellationTokenSource();
-            var changeToken = new CancellationChangeToken(cancellationTokenSource.Token);
-            _changeTokenInfo = new ChangeTokenInfo(changeToken, cancellationTokenSource);
-        }
-
-        private class ChangeTokenInfo
-        {
-            public ChangeTokenInfo(IChangeToken changeToken, CancellationTokenSource tokenSource)
-            {
-                ChangeToken = changeToken;
-                TokenSource = tokenSource;
-            }
-
-            public IChangeToken ChangeToken { get; }
-
-            public CancellationTokenSource TokenSource { get; }
         }
     }
 }
