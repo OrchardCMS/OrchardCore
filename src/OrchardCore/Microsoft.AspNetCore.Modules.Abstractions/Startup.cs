@@ -8,15 +8,16 @@ namespace Microsoft.AspNetCore.Modules
     public abstract class StartupBase : IStartup
     {
         /// <inheritdoc />
+        public virtual int Order => 0;
+
+        /// <inheritdoc />
         public virtual void ConfigureServices(IServiceCollection services)
         {
-
         }
 
         /// <inheritdoc />
         public virtual void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-
         }
     }
 }
