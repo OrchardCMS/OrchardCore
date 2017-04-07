@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.DisplayManagement.Views;
-using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Lists.Models;
 
 namespace Orchard.Lists.RemotePublishing
 {
-    [OrchardFeature("Orchard.RemotePublishing")]
+    [Feature("Orchard.RemotePublishing")]
     public class ListMetaWeblogDriver : ContentPartDisplayDriver<ListPart>
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)

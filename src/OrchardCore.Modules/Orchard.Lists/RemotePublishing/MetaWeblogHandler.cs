@@ -17,7 +17,6 @@ using Orchard.ContentManagement.Records;
 using Orchard.Contents;
 using Orchard.Core.XmlRpc;
 using Orchard.Core.XmlRpc.Models;
-using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.MetaWeblog;
@@ -27,7 +26,7 @@ using YesSql.Core.Services;
 
 namespace Orchard.Lists.RemotePublishing
 {
-    [OrchardFeature("Orchard.RemotePublishing")]
+    [Feature("Orchard.RemotePublishing")]
     public class MetaWeblogHandler : IXmlRpcHandler
     {
         private readonly IContentManager _contentManager;
