@@ -20,8 +20,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Utilities
 
             for (int i = camel.Length - 1; i > 0; i--)
             {
-                var current = sb[i];
-                if ('A' <= current && current <= 'Z')
+                if (char.IsUpper(sb[i]))
                 {
                     sb.Insert(i, ' ');
                 }
@@ -32,7 +31,7 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Utilities
 
         public static string Ellipsize(this string text, int characterCount)
         {
-            return text.Ellipsize(characterCount, "&#160;&#8230;");
+            return text.Ellipsize(characterCount, "\u00A0\u2026");
         }
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
@@ -295,12 +294,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Utilities
                 return false;
             }
 
-            Array.Sort(chars);
-
             for (var i = 0; i < subject.Length; i++)
             {
                 char current = subject[i];
-                if (Array.BinarySearch(chars, current) >= 0)
+                if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
                 }
@@ -321,12 +318,10 @@ namespace Microsoft.AspNetCore.Mvc.Modules.Utilities
                 return false;
             }
 
-            Array.Sort(chars);
-
             for (var i = 0; i < subject.Length; i++)
             {
                 char current = subject[i];
-                if (Array.BinarySearch(chars, current) < 0)
+                if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
                 }
