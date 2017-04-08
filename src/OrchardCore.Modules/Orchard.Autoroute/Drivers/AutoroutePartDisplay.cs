@@ -11,6 +11,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Settings;
+using Orchard.Autoroute.Services;
 
 namespace Orchard.Autoroute.Drivers
 {
@@ -20,17 +21,20 @@ namespace Orchard.Autoroute.Drivers
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
         private IHttpContextAccessor _httpContextAccessor;
+        private readonly IAutorouteValidator _validator;
 
         public AutoroutePartDisplay(
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAutorouteValidator validator)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
+            _validator = validator;
         }
 
         public override IDisplayResult Edit(AutoroutePart autoroutePart)
@@ -61,13 +65,15 @@ namespace Orchard.Autoroute.Drivers
         public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Path);
-            
+
             var httpContext = _httpContextAccessor.HttpContext;
-            
             if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
             {
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
+
+            var validationErrorKeyPrefix = string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ".";
+            await _validator.ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(validationErrorKeyPrefix + key, message));
 
             return Edit(model);
         }
