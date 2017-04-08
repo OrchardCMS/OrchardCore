@@ -9,7 +9,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.ContentManagement;
 using Orchard.Data.Migration;
-using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Media.Indexes;
@@ -77,7 +76,7 @@ namespace Orchard.Media
         }
     }
 
-    [OrchardFeature("Orchard.Media.Tokens")]
+    [Feature("Orchard.Media.Tokens")]
     public class TokensStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
