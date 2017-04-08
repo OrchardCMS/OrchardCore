@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -17,9 +18,9 @@ namespace Microsoft.AspNetCore.Mvc.Modules
         private static object _synLock = new object();
 
         public SharedCompilerCacheProvider(
-            ApplicationPartManager applicationPartManager,
             IRazorViewEngineFileProviderAccessor fileProviderAccessor,
-            IHostingEnvironment env)
+            IHostingEnvironment env,
+            IEnumerable<IViewsFeatureAlteration> viewsFeatureAlterations)
         {
             lock (_synLock)
             {
@@ -35,7 +36,15 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                         },
                         feature);
 
+
+                    // Give a change for components to define custom precompiled views
+                    foreach (var alteration in viewsFeatureAlterations)
+                    {
+                        alteration.Alter(feature);
+                    }
+
                     _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
+
                 }
             }
         }
