@@ -46,7 +46,7 @@ namespace Orchard.Themes.Services
             _siteThemeService.SetSiteThemeAsync(themeName);
         }
 
-        public string Tag { get { return string.Empty; } }
+        public string Tag { get { return "site"; } }
 
         public LocalizedString DisplayName { get { return T["SiteTheme"]; } }
 

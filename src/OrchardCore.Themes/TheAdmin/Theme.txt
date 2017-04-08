@@ -3,6 +3,7 @@ AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
 Version: 2.0.x
+Tags: admin
 OrchardVersion: 2.0.x
 Description: The Admin
 FeatureDescription: The Admin

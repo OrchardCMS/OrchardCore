@@ -6,6 +6,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AllAssetFiles>Packages\**;App_Data\**</AllAssetFiles>
+    <UserSecretsId>76c6a520-811c-42ec-adfb-2eca96626e37</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
