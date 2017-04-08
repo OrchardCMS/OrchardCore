@@ -72,17 +72,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return modules;
         }
 
-        public static ModularServiceCollection WithConfiguredTenantsAndFeatures(this ModularServiceCollection modules)
-        {
-            modules.Configure(services =>
-            {
-                services.AddScoped<IShellSettingsManager, FileShellSettingsManager>();
-                services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-            });
-
-            return modules;
-        }
-
         /// <summary>
         /// Registers tenants defined in configuration.
         /// </summary>
