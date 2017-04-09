@@ -33,7 +33,7 @@ namespace Orchard.Autoroute.Services
 
             if (await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
             {
-                reportError(nameof(autoroute.Path), T["Your parmalink is already in use."]);
+                reportError(nameof(autoroute.Path), T["Your permalink is already in use."]);
             }
         }
     }
