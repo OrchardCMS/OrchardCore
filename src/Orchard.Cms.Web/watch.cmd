@@ -4,8 +4,8 @@ set "modules=%application%\..\OrchardCore.Modules"
 set "themes=%application%\..\OrchardCore.Themes"
 set "targets=/t:CopyPackageRazorFiles"
 set "props=/p:ApplicationDirectory=%application%"
-set "watch-cmd=start dotnet watch msbuild %targets% %props%"
+set "watch=start dotnet watch msbuild %targets% %props%"
 
-cd %modules%\Orchard.Demo & echo off & %watch-cmd%
-cd %modules%\Orchard.Body & echo off & %watch-cmd%
+cd %modules%\Orchard.Demo & %watch%
+cd %modules%\Orchard.Body & %watch%
 cd %application%
