@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.Tokens.Services;
 using Orchard.Tokens.Content.Services;
+using Orchard.Tokens.Content.Abstractions;
 
 namespace Orchard.Tokens.Content
 {

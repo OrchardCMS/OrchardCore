@@ -2,7 +2,7 @@
 using HandlebarsDotNet;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
-using Orchard.Tokens.Content.Services;
+using Orchard.Tokens.Content.Abstractions;
 
 namespace Orchard.Tokens
 {

@@ -15,25 +15,14 @@ namespace Orchard.Tests.Tokens.Content
             _slugService = new SlugService();
         }
 
-        [Fact]
-        public void ShouldStripContiguousDashes()
+        [Theory]
+        [InlineData("a - b", "a-b")]
+        [InlineData("a  -  -      -  -   -   -b", "a-b")]
+        [InlineData("a - b - c-- d", "a-b-c-d")]
+        public void ShouldStripContiguousDashes(string input, string expected)
         {
-            var slug = _slugService.Slugify("a - b");
-            Assert.Equal("a-b", slug);
-        }
-
-        [Fact]
-        public void ShouldStripContiguousDashes2()
-        {
-            var slug = _slugService.Slugify("a  -  -      -  -   -   -b");
-            Assert.Equal("a-b", slug);
-        }
-
-        [Fact]
-        public void ShouldStripContiguousDashesEverywhere()
-        {
-            var slug = _slugService.Slugify("a  -  b - c -- d");
-            Assert.Equal("a-b-c-d", slug);
+            var slug = _slugService.Slugify(input);
+            Assert.Equal(expected, slug);
         }
 
         [Fact]
@@ -71,39 +60,16 @@ namespace Orchard.Tests.Tokens.Content
             Assert.Equal("aceiou", slug);
         }
 
-        [Fact]
-        public void ShouldPreserveCyrilicCharacters()
+        [Theory]
+        [InlineData("джинсы_клеш", "джинсы_клеш")]
+        [InlineData("צוות_אורצ_רד", "צוות_אורצ_רד")]
+        [InlineData("调度模块允许后台任务调度", "调度模块允许后台任务调度")]
+        [InlineData("فريق_الاورشارد", "فريق_الاورشارد")]
+        [InlineData("不正なコンテナ", "不正なコンテナ")]
+        public void ShouldPreserveNonLatinCharacters(string input, string expected)
         {
-            var slug = _slugService.Slugify("джинсы_клеш");
-            Assert.Equal("джинсы_клеш", slug);
-        }
-
-        [Fact]
-        public void ShouldPreserveHebrewCharacters()
-        {
-            var slug = _slugService.Slugify("צוות_אורצ_רד");
-            Assert.Equal("צוות_אורצ_רד", slug);
-        }
-
-        [Fact]
-        public void ShouldPreserveChineseCharacters()
-        {
-            var slug = _slugService.Slugify("调度模块允许后台任务调度");
-            Assert.Equal("调度模块允许后台任务调度", slug);
-        }
-
-        [Fact]
-        public void ShouldPreserveArabicCharacters()
-        {
-            var slug = _slugService.Slugify("فريق_الاورشارد");
-            Assert.Equal("فريق_الاورشارد", slug);
-        }
-
-        [Fact]
-        public void ShouldPreserveJapaneseCharacters()
-        {
-            var slug = _slugService.Slugify("不正なコンテナ");
-            Assert.Equal("不正なコンテナ", slug);
+            var slug = _slugService.Slugify(input);
+            Assert.Equal(expected, slug);
         }
     }
 }

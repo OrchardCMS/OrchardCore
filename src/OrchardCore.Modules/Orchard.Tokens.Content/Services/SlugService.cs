@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orchard.Tokens.Content.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Orchard.Tokens.Content.Services
     {
         public string Slugify(string text)
         {
-            if(string.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
             {
                 return text;
             }

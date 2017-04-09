@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -248,6 +248,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bundles", "Bundles", "{44E4D150-C374-4353-8BA7-8C575704D13E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspects", "Aspects", "{3398AB60-2DB7-464C-B211-C4120BE75582}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Content.Abstractions", "src\OrchardCore\Orchard.Tokens.Content.Abstractions\Orchard.Tokens.Content.Abstractions.csproj", "{677113F9-C548-4EB8-B248-E03BF967FA22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -687,6 +689,10 @@ Global
 		{3657478C-3BAE-4563-9C08-63A8C64A7CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3657478C-3BAE-4563-9C08-63A8C64A7CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3657478C-3BAE-4563-9C08-63A8C64A7CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{677113F9-C548-4EB8-B248-E03BF967FA22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{677113F9-C548-4EB8-B248-E03BF967FA22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{677113F9-C548-4EB8-B248-E03BF967FA22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{677113F9-C548-4EB8-B248-E03BF967FA22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -813,5 +819,6 @@ Global
 		{3657478C-3BAE-4563-9C08-63A8C64A7CB6} = {44E4D150-C374-4353-8BA7-8C575704D13E}
 		{44E4D150-C374-4353-8BA7-8C575704D13E} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{3398AB60-2DB7-464C-B211-C4120BE75582} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
+		{677113F9-C548-4EB8-B248-E03BF967FA22} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 EndGlobal
