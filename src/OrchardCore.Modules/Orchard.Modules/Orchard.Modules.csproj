@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.ResourceManagement.Abstractions\Orchard.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>

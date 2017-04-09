@@ -10,4 +10,8 @@
     <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>

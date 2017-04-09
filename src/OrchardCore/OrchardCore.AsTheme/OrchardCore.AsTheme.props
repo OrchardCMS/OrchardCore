@@ -35,6 +35,19 @@
       ContinueOnError="true" />
   </Target>
 
+  <ItemGroup>
+    <PackageRazorFiles Include="**\*.cshtml" />
+    <Watch Include="@(PackageRazorFiles)" />
+  </ItemGroup>
+
+  <Target Name="CopyPackageRazorFiles">
+    <Message Text="Copying package razor files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(PackageRazorFiles)"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)"
+      Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')" />
+  </Target>
+
   <!-- Adds a custom .props file to the generated theme package -->
 
   <ItemGroup>
@@ -44,7 +57,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-        <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt')">
+    <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt')">
       <PackagePath>assets\$(PackageId)\Theme.txt</PackagePath>
     </None>
   </ItemGroup>

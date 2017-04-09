@@ -22,4 +22,8 @@
     <PackageReference Include="YesSql.Core" Version="2.0.0-beta-0013" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>
