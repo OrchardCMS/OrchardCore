@@ -131,7 +131,7 @@
         stop: function (event, ui) {
             var newZone = ui.item.closest('.layer-zone').data("zone");
             var metadata = ui.item.find('.layer-metadata')
-            var currentPosition = Number(metadata.data("position"));
+            var currentPosition = Number((metadata.data("position") || 0).toString().replace(",", ".").replace(" ", ""));
             var item = ui.item.closest('.list-group-item');
             var previous = item.prev('.list-group-item').find('.layer-metadata');
             var next = item.next('.list-group-item').find('.layer-metadata');
@@ -139,19 +139,22 @@
 
             var newPosition = currentPosition;
 
+            var positionOfPrevious= (previous.data("position") || 0).toString().replace(",",".").replace(" ","");
+            var positionOfNext = (next.data("position") || 0).toString().replace(",",".").replace(" ","");
+
             if (previous.length == 0 && next.length == 0) {
                 // we can keep the current position
             }
             else if (previous.length == 0 && next.length > 0) {
                 // first in the list
-                newPosition = Number(next.data("position") || 0) - 1;
+                newPosition = Number(positionOfNext) - 1;
             }
             else if (previous.length > 0 && next.length == 0) {
                 // last in the list
-                newPosition = Number(previous.data("position") || 0) + 1;
+                newPosition = Number(positionOfPrevious) + 1;
             }
             else {
-                newPosition = (Number(previous.data("position") || 0) + Number(next.data("position") || 0)) / 2;
+                newPosition = (Number(positionOfPrevious) + Number(positionOfNext)) / 2;
             }
 
             var currentZone = metadata.data("zone");
