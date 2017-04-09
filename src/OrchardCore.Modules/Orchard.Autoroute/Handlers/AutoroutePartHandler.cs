@@ -9,6 +9,8 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
+using YesSql.Core.Services;
+using Orchard.ContentManagement.Records;
 
 namespace Orchard.Autoroute.Handlers
 {
@@ -19,19 +21,22 @@ namespace Orchard.Autoroute.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
+        private readonly ISession _session;
 
         public AutoroutePartHandler(
-            IAutorouteEntries entries, 
-            ITokenizer tokenizer, 
+            IAutorouteEntries entries,
+            ITokenizer tokenizer,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
-            ITagCache tagCache)
+            ITagCache tagCache,
+            ISession session)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
             _siteService = siteService;
             _tagCache = tagCache;
+            _session = session;
         }
 
         public override void Published(PublishContentContext context, AutoroutePart part)
@@ -98,7 +103,7 @@ namespace Orchard.Autoroute.Handlers
                     .CreateViewModel()
                     .Content(part.ContentItem);
 
-                part.Path = _tokenizer.Tokenize(pattern, ctx);
+                part.Path = GenerateUniquePath(_tokenizer.Tokenize(pattern, ctx), part);
                 part.Apply();
             }
         }
@@ -107,7 +112,7 @@ namespace Orchard.Autoroute.Handlers
         {
             _tagCache.RemoveTag($"alias:{part.Path}");
         }
-        
+
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>
@@ -118,6 +123,30 @@ namespace Orchard.Autoroute.Handlers
             var pattern = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>().Pattern;
 
             return pattern;
+        }
+
+        private string GenerateUniquePath(string path, AutoroutePart context)
+        {
+            var similarPaths = _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path.StartsWith(path)).List().GetAwaiter().GetResult();
+            if (!similarPaths.Any(o => o.Path == path))
+            {
+                return path;
+            }
+
+            var version = similarPaths.Select(s => GetSlugVersion(path, s.Path)).OrderBy(i => i).LastOrDefault();
+            return version != null ? string.Format("{0}-{1}", path, version) : path;
+        }
+
+        private static int? GetSlugVersion(string path, string potentialConflictingPath)
+        {
+            var slugParts = potentialConflictingPath.Split(new[] { path }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (slugParts.Length == 0)
+            {
+                return 2;
+            }
+
+            return int.TryParse(slugParts[0].TrimStart('-'), out int v) ? (int?)++v : null;
         }
     }
 }

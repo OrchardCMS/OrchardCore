@@ -2,20 +2,12 @@
 using Orchard.Autoroute.Model;
 using Orchard.ContentManagement.Records;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 
 namespace Orchard.Autoroute.Services
 {
-    public interface IAutorouteValidator
-    {
-        Task ValidateAsync(AutoroutePart autoroute, Action<string, string> reportError);
-        Task<bool> IsUniqueAsync(string path, AutoroutePart context);
-    }
-
     public class AutorouteValidator : IAutorouteValidator
     {
         private readonly ISession _session;
@@ -25,17 +17,6 @@ namespace Orchard.Autoroute.Services
         {
             _session = session;
             T = localizer;
-        }
-
-        public async Task<bool> IsUniqueAsync(string path, AutoroutePart context)
-        {
-            var otherItemsWithSamePath = await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == path && o.ContentItemId != context.ContentItem.ContentItemId).List();
-            if (otherItemsWithSamePath.Count() > 0)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public async Task ValidateAsync(AutoroutePart autoroute, Action<string, string> reportError)
@@ -50,7 +31,7 @@ namespace Orchard.Autoroute.Services
                 reportError(nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to 1,850 characters."]);
             }
 
-            if (!await IsUniqueAsync(autoroute.Path, autoroute))
+            if (await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
             {
                 reportError(nameof(autoroute.Path), T["Your parmalink is already in use."]);
             }
