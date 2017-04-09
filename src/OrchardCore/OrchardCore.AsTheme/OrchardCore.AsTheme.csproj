@@ -13,5 +13,8 @@
       <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>
