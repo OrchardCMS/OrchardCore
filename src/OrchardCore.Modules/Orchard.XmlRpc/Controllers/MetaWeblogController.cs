@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Orchard.Environment.Extensions.Features.Attributes;
 
 namespace Orchard.Core.XmlRpc.Controllers
 {
-    [OrchardFeature("Orchard.RemotePublishing")]
+    [Feature("Orchard.RemotePublishing")]
     public class MetaWeblogController : Controller
     {
         private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;

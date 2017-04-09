@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Primitives;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace Orchard.Settings
 {

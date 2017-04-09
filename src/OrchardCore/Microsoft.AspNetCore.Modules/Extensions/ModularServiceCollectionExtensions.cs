@@ -27,7 +27,9 @@ namespace Microsoft.Extensions.DependencyInjection
             var modularServiceCollection = new ModularServiceCollection(services);
 
             // Use a single tenant and all features by default
-            modularServiceCollection.WithAllFeatures();
+            modularServiceCollection.Configure(internalServices =>
+                internalServices.AddAllFeaturesDescriptor()
+            );
 
             // Let the app change the default tenant behavior and set of features
             configure?.Invoke(modularServiceCollection);
@@ -72,17 +74,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return modules;
         }
 
-        public static ModularServiceCollection WithConfiguredTenantsAndFeatures(this ModularServiceCollection modules)
-        {
-            modules.Configure(services =>
-            {
-                services.AddScoped<IShellSettingsManager, FileShellSettingsManager>();
-                services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-            });
-
-            return modules;
-        }
-
         /// <summary>
         /// Registers tenants defined in configuration.
         /// </summary>
@@ -92,19 +83,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IShellSettingsManager, FileShellSettingsManager>();
                 services.AddScoped<IShellDescriptorManager, FileShellDescriptorManager>();
-            });
-
-            return modules;
-        }
-
-        /// <summary>
-        /// Registers a single tenant with all the available features. This is the default behavior.
-        /// </summary>
-        public static ModularServiceCollection WithAllFeatures(this ModularServiceCollection modules)
-        {
-            modules.Configure(services =>
-            {
-                services.AddAllFeaturesDescriptor();
             });
 
             return modules;
