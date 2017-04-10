@@ -1,4 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
   <!-- 
     This file is packaged with OrchardCore.AsModule.nupkg in ./build such that any Module that references
     it will get its static assets copied to $(Temp)\OrchardCorePackages
@@ -16,23 +17,23 @@
 
   <Target Name="CopyPackageAssetFiles" AfterTargets="Build">
     <Delete
-        Files="@(TempAssetFiles)"
-        Condition="!Exists('$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
-        ContinueOnError="true"/>
+      Files="@(TempAssetFiles)"
+      Condition="!Exists('$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+      ContinueOnError="true"/>
 
     <Message Text="Packaging asset files: $(MSBuildProjectName)" Importance="high" />
     
     <Copy
-        SourceFiles="@(PackageAssetFiles)"
-        DestinationFolder="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\%(RecursiveDir)" />
+      SourceFiles="@(PackageAssetFiles)"
+      DestinationFolder="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\%(RecursiveDir)" />
     
     <WriteLinesToFile
-        Condition="!Exists('$(MSBuildProjectDirectory)\Module.txt')"
-        File="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Module.txt"
-        Lines="$(ModuleManifest)"
-        Overwrite="true"
-        Encoding="Unicode"
-        ContinueOnError="true" />
+      Condition="!Exists('$(MSBuildProjectDirectory)\Module.txt')"
+      File="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Module.txt"
+      Lines="$(ModuleManifest)"
+      Overwrite="true"
+      Encoding="Unicode"
+      ContinueOnError="true" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->

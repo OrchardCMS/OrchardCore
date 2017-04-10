@@ -28,7 +28,6 @@ namespace Orchard.Nancy.Web
             // Add Nancy and support for modules
             services.AddModules(configure => configure
                 .WithConfiguration(Configuration)
-                .WithAllFeatures()
             );
         }
 

@@ -4,7 +4,7 @@
 <h1>@RenderTitleSegments(T["Edit User"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" method="post">
+<form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="form-group" asp-validation-class-for="UserName">
         <label asp-for="UserName">@T["User name"]</label>

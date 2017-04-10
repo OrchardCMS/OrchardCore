@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using Orchard.Environment.Cache;
 using YesSql.Core.Services;
 
 namespace Orchard.Settings.Services
@@ -12,16 +14,22 @@ namespace Orchard.Settings.Services
     {
         private readonly IMemoryCache _memoryCache;
         private readonly ISession _session;
+        private readonly ISignal _signal;
 
-        private const string SiteCacheKey = "Site";
-
+        private const string SiteCacheKey = "SiteService";
+        
         public SiteService(
+            ISignal signal,
             ISession session,
             IMemoryCache memoryCache)
         {
+            _signal = signal;
             _session = session;
             _memoryCache = memoryCache;
         }
+
+        /// <inheritdoc/>
+        public IChangeToken ChangeToken => _signal.GetToken(SiteCacheKey);
 
         /// <inheritdoc/>
         public async Task<ISite> GetSiteSettingsAsync()
@@ -50,12 +58,14 @@ namespace Orchard.Settings.Services
 
                             _session.Save(site);
                             _memoryCache.Set(SiteCacheKey, site);
+                            _signal.SignalToken(SiteCacheKey);
                         }
                     }
                 }
                 else
                 {
                     _memoryCache.Set(SiteCacheKey, site);
+                    _signal.SignalToken(SiteCacheKey);
                 }
             }
 
@@ -89,6 +99,8 @@ namespace Orchard.Settings.Services
             _session.Save(existing);
 
             _memoryCache.Set(SiteCacheKey, site);
+            _signal.SignalToken(SiteCacheKey);
+
             return;
         }
     }

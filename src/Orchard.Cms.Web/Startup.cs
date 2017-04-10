@@ -29,17 +29,7 @@ namespace Orchard.Cms.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddManifestDefinition("Theme.txt", "theme");
-            services.AddSitesFolder("App_Data", "Sites");
-
-            services.AddCommands();
-
-            services.AddAuthentication();
-
-            services.AddModules(configure => configure
-                .WithConfiguration(Configuration)
-                .WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons")
-            );
+            services.AddOrchardCms();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <PackageVersion>1.0.0-beta-0001</PackageVersion>
   </PropertyGroup>
 
   <!-- Add the OrchardCore.AsTheme.props file in the package -->
@@ -13,6 +12,9 @@
     <None Include="Package.Build.props" Pack="true">
       <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

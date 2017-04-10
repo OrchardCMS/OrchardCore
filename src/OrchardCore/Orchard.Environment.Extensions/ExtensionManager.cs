@@ -6,12 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Extensions.Utility;
@@ -242,7 +242,7 @@ namespace Orchard.Environment.Extensions
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
         {
-            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false))
+            foreach (FeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(FeatureAttribute), false))
             {
                 return featureAttribute.FeatureName;
             }

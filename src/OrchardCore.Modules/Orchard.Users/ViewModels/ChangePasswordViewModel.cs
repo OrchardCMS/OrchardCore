@@ -5,18 +5,15 @@ namespace Orchard.Users.ViewModels
     public class ChangePasswordViewModel
     {
         [Required]
-        public string UserName { get; set; }
-
-        [Required]
         [DataType(DataType.Password)]
         public string CurrentPassword { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string NewPassword { get; set; }
+        public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Compare("NewPassword")]
+        [Compare("Password")]
         public string PasswordConfirmation { get; set; }
     }
 }

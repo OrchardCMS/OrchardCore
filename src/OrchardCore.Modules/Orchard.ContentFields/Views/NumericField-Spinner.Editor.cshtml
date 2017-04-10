@@ -14,7 +14,7 @@
 <fieldset class="form-group">
     <div class="row col-sm">
         <label asp-for="Value">@name</label>
-        <input asp-for="Value" class="form-control content-preview-select" type="number" required="@settings.Required" />
+        <input asp-for="Value" typeof="text" class="content-preview-select" type="number" required="@settings.Required" />
         <span class="hint">@settings.Hint</span>
     </div>
 </fieldset>
