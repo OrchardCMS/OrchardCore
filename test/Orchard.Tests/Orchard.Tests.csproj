@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore.Modules\Orchard.Tokens.Content\Orchard.Tokens.Content.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.ContentManagement\Orchard.ContentManagement.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Data\Orchard.Data.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />

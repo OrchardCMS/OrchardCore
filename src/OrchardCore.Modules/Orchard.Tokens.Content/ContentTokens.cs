@@ -2,6 +2,7 @@
 using HandlebarsDotNet;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
+using Orchard.Tokens.Content.Abstractions;
 
 namespace Orchard.Tokens
 {
@@ -15,12 +16,13 @@ namespace Orchard.Tokens
             {
                 IServiceProvider serviceProvider = context.ServiceProvider;
                 var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+                var slugService = serviceProvider.GetRequiredService<ISlugService>();
 
                 ContentItem contentItem = context.Content;
 
                 string title = contentManager.PopulateAspect<ContentItemMetadata>(contentItem).DisplayText;
 
-                var slug = title?.ToLower().Replace(" ", "-");
+                var slug = slugService.Slugify(title);
                 output.Write(slug);
             });
 
