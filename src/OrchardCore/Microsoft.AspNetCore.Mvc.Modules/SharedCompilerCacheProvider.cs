@@ -36,14 +36,15 @@ namespace Microsoft.AspNetCore.Mvc.Modules
 
                     featureProviders.AddRange(viewsFeatureProviders);
 
+                    var assemblyParts =
+                        new AssemblyPart[]
+                        {
+                            new AssemblyPart(Assembly.Load(new AssemblyName(env.ApplicationName)))
+                        };
+
                     foreach (var provider in featureProviders)
                     {
-                        provider.PopulateFeature(
-                            new AssemblyPart[]
-                            {
-                                new AssemblyPart(Assembly.Load(new AssemblyName(env.ApplicationName)))
-                            },
-                            feature);
+                        provider.PopulateFeature(assemblyParts, feature);
                     }
 
                     _cache = new CompilerCache(fileProviderAccessor.FileProvider, feature.Views);
