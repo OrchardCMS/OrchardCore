@@ -12,6 +12,9 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Settings;
 using Orchard.Autoroute.Services;
+using Microsoft.Extensions.Localization;
+using YesSql.Core.Services;
+using Orchard.ContentManagement.Records;
 
 namespace Orchard.Autoroute.Drivers
 {
@@ -21,20 +24,24 @@ namespace Orchard.Autoroute.Drivers
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
         private IHttpContextAccessor _httpContextAccessor;
-        private readonly IAutorouteValidator _validator;
+        private readonly YesSql.Core.Services.ISession _session;
+        private readonly IStringLocalizer<AutoroutePartDisplay> T;
 
         public AutoroutePartDisplay(
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
-            IAutorouteValidator validator)
+            YesSql.Core.Services.ISession session,
+            IStringLocalizer<AutoroutePartDisplay> localizer
+            )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _siteService = siteService;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
-            _validator = validator;
+            _session = session;
+            T = localizer;
         }
 
         public override IDisplayResult Edit(AutoroutePart autoroutePart)
@@ -73,9 +80,29 @@ namespace Orchard.Autoroute.Drivers
             }
 
             var validationErrorKeyPrefix = string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ".";
-            await _validator.ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(validationErrorKeyPrefix + key, message));
+            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(validationErrorKeyPrefix + key, message));
 
             return Edit(model);
+        }
+
+        private async Task ValidateAsync(AutoroutePart autoroute, Action<string, string> reportError)
+        {
+            var invalidCharacters = ":?#[]@!$&'()*+,.;=<>\\|% ".ToCharArray();
+            if (autoroute.Path.IndexOfAny(invalidCharacters) > -1)
+            {
+                var invalidCharactersForMessage = string.Join(", ", invalidCharacters.Select(c => $"\"{c}\""));
+                reportError(nameof(autoroute.Path), T["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+            }
+
+            if (autoroute.Path.Length > 1850)
+            {
+                reportError(nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to 1,850 characters."]);
+            }
+
+            if (await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
+            {
+                reportError(nameof(autoroute.Path), T["Your permalink is already in use."]);
+            }
         }
     }
 }
