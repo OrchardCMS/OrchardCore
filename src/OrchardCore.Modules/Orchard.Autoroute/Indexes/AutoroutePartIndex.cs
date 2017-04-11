@@ -18,7 +18,7 @@ namespace Orchard.ContentManagement.Records
                 .Map(contentItem =>
                 {
                     var path = contentItem.As<AutoroutePart>()?.Path;
-                    if (!String.IsNullOrEmpty(path))
+                    if (!String.IsNullOrEmpty(path) && (contentItem.Published || contentItem.Latest))
                     {
                         return new AutoroutePartIndex
                         {

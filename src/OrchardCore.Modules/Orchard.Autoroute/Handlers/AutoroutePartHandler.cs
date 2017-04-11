@@ -134,7 +134,7 @@ namespace Orchard.Autoroute.Handlers
             }
 
             var version = similarPaths.Select(s => GetSlugVersion(path, s.Path)).OrderBy(i => i).LastOrDefault();
-            return version != null ? string.Format("{0}-{1}", path, version) : path;
+            return version != null ? $"{path}-{version}" : path;
         }
 
         private static int? GetSlugVersion(string path, string potentialConflictingPath)
