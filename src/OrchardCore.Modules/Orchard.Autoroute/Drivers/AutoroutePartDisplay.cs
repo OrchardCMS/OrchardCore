@@ -79,8 +79,7 @@ namespace Orchard.Autoroute.Drivers
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
 
-            var validationErrorKeyPrefix = string.IsNullOrEmpty(Prefix) ? string.Empty : Prefix + ".";
-            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(validationErrorKeyPrefix + key, message));
+            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError($"{Prefix}.{key}", message));
 
             return Edit(model);
         }
