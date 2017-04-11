@@ -46,7 +46,7 @@
                                     {
                                         contentItemSummary.Meta.Add(Html.Raw("<span class=\"badge badge-default\"><i class=\"fa fa-bookmark-o\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
 
-                                        maxPosition = Math.Max(maxPosition, Convert.ToDouble(contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)));
+                                        maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
                                         <li class="list-group-item" >
                                             @await DisplayAsync(contentItemSummary)
                                             <input type="hidden" 
