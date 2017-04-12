@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,7 +40,6 @@ namespace Orchard.Cms.Web
 
             app.UseStaticFiles();
             loggerFactory.AddConsole(Configuration);
-            app.UseMiddleware<StoreTenantNameAtHttpContextMiddleware>();
             loggerFactory.AddNLog();
             app.AddNLogWeb();
 
@@ -48,7 +48,9 @@ namespace Orchard.Cms.Web
                 loggerFactory.AddDebug();
             }
 
-            app.UseModules();
+            app.UseMiddleware<ModularTenantContainerMiddleware>();
+            app.UseMiddleware<StoreTenantNameAtHttpContextMiddleware>();
+            app.UseMiddleware<ModularTenantRouterMiddleware>();
         }
     }
 }
