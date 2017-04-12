@@ -15,6 +15,7 @@ using Orchard.Autoroute.Services;
 using Microsoft.Extensions.Localization;
 using YesSql.Core.Services;
 using Orchard.ContentManagement.Records;
+using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
 
 namespace Orchard.Autoroute.Drivers
 {
@@ -79,7 +80,7 @@ namespace Orchard.Autoroute.Drivers
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
 
-            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError($"{Prefix}.{key}", message));
+            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(Prefix, key, message));
 
             return Edit(model);
         }
