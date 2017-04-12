@@ -73,7 +73,6 @@ namespace Microsoft.AspNetCore.Modules
                             }
                         }
                     }
-                    httpContext.Items["tenant"] = shellSetting.Name;
                     await _next.Invoke(httpContext);
                 }
             }
