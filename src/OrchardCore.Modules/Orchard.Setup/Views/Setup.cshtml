@@ -16,7 +16,7 @@
         {
             foreach (var error in keyValuePair.Value.Errors)
             {
-                ViewData.ModelState.AddModelError(string.IsNullOrWhiteSpace(keyValuePair.Key) ? keyValuePair.Key : prefix+"."+keyValuePair.Key, error.ErrorMessage);
+                ViewData.ModelState.AddModelError(string.IsNullOrWhiteSpace(keyValuePair.Key) ? keyValuePair.Key : $"{prefix}.{keyValuePair.Key}", error.ErrorMessage);
             }
         }
     }

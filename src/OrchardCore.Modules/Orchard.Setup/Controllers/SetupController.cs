@@ -148,7 +148,6 @@ namespace Orchard.Setup.Controllers
                 setupContext.DatabaseTablePrefix = model.TablePrefix;
             }
 
-            setupContext.RecipeExtraParams  = this.
             var executionId = await _setupService.SetupAsync(setupContext);
 
             // Check if a component in the Setup failed
