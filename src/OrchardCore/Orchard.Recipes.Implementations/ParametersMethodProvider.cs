@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Orchard.Scripting;
+using Microsoft.Extensions.Primitives;
 
 namespace Orchard.Recipes
 {
@@ -18,7 +19,7 @@ namespace Orchard.Recipes
                 Name = "parameters",
                 Method = serviceprovider => (Func<string, object>) (name =>
                 {
-                    return environmentObject[name].Value<string>();
+                    return environmentObject[name].Value<StringValues>();
                 })
             };
         }

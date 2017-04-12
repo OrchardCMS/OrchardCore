@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using YesSql.Core.Services;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Primitives;
 
 namespace Orchard.Setup.Services
 {
@@ -181,7 +182,7 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,string>();
+                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,StringValues>();
                     recipeParams.Add(nameof(context.SiteName), context.SiteName);
                     recipeParams.Add(nameof(context.AdminUsername), context.AdminUsername);
                     recipeParams.Add(nameof(context.AdminEmail), context.AdminEmail);

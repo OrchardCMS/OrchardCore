@@ -9,6 +9,7 @@ using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
+using Orchard.DisplayManagement;
 
 namespace Orchard.Setup.Controllers
 {
@@ -128,7 +129,8 @@ namespace Orchard.Setup.Controllers
                 AdminEmail = model.Email,
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
-                Recipe = selectedRecipe
+                Recipe = selectedRecipe,
+                RecipeExtraParams = Request.Form.ToDictionary(keyValue => keyValue.Key, keyValue => keyValue.Value)
             };
 
             if (!model.DatabaseProviderPreset)
@@ -146,6 +148,7 @@ namespace Orchard.Setup.Controllers
                 setupContext.DatabaseTablePrefix = model.TablePrefix;
             }
 
+            setupContext.RecipeExtraParams  = this.
             var executionId = await _setupService.SetupAsync(setupContext);
 
             // Check if a component in the Setup failed
