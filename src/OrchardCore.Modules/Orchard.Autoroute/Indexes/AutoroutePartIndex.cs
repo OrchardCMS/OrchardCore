@@ -8,6 +8,7 @@ namespace Orchard.ContentManagement.Records
     {
         public string ContentItemId { get; set; }
         public string Path { get; set; }
+        public bool Published { get; set; }
     }
 
     public class AutoroutePartIndexProvider : IndexProvider<ContentItem>
@@ -23,7 +24,8 @@ namespace Orchard.ContentManagement.Records
                         return new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = path
+                            Path = path,
+                            Published = contentItem.Published
                         };
                     }
 

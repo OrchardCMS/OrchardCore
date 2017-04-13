@@ -21,6 +21,9 @@ namespace Orchard.Autoroute.Drivers
 {
     public class AutoroutePartDisplay : ContentPartDisplayDriver<AutoroutePart>
     {
+        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
+        public const int MaxPathLength = 1024;
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
@@ -80,28 +83,27 @@ namespace Orchard.Autoroute.Drivers
                 await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }
 
-            await ValidateAsync(model, (key, message) => updater.ModelState.AddModelError(Prefix, key, message));
+            await ValidateAsync(model, updater);
 
             return Edit(model);
         }
 
-        private async Task ValidateAsync(AutoroutePart autoroute, Action<string, string> reportError)
+        private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater)
         {
-            var invalidCharacters = ":?#[]@!$&'()*+,.;=<>\\|% ".ToCharArray();
-            if (autoroute.Path.IndexOfAny(invalidCharacters) > -1)
+            if (autoroute.Path.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path.IndexOf(' ') > -1)
             {
-                var invalidCharactersForMessage = string.Join(", ", invalidCharacters.Select(c => $"\"{c}\""));
-                reportError(nameof(autoroute.Path), T["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
-            if (autoroute.Path.Length > 1850)
+            if (autoroute.Path.Length > MaxPathLength)
             {
-                reportError(nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to 1,850 characters."]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
             if (await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
             {
-                reportError(nameof(autoroute.Path), T["Your permalink is already in use."]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is already in use."]);
             }
         }
     }
