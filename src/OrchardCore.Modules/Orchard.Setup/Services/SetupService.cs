@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.DeferredTasks;
@@ -72,12 +72,12 @@ namespace Orchard.Setup.Services
             return _recipes;
         }
 
-        public async Task<string> SetupAsync(SetupContext context)
+        public Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return await SetupInternalAsync(context);
+                return SetupInternalAsync(context);
             }
             catch
             {
