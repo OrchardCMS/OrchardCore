@@ -45,6 +45,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 null,
                 inlineConstraintResolver)
             );
+
+            builder.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(_serviceProvider));
         }
     }
 }
