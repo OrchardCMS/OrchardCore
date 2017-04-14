@@ -28,6 +28,8 @@ namespace Microsoft.AspNetCore.Mvc.Modules
                 DefaultHandler = _serviceProvider.GetRequiredService<MvcRouteHandler>()
             };
 
+            routeBuilder.Routes.Insert(0, AttributeRouting.CreateAttributeMegaRoute(appBuilder.ApplicationServices));
+
             return routeBuilder;
         }
 
