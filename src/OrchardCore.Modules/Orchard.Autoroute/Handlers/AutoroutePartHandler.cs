@@ -137,13 +137,13 @@ namespace Orchard.Autoroute.Handlers
             return version != null ? $"{path}-{version}" : path;
         }
 
-        private static int? GetSlugVersion(string path, string potentialConflictingPath)
+        private int? GetSlugVersion(string path, string potentiallyConflictingPath)
         {
-            var slugParts = potentialConflictingPath.Split(new[] { path }, StringSplitOptions.RemoveEmptyEntries);
+            var slugParts = potentiallyConflictingPath.Split(new[] { path }, StringSplitOptions.RemoveEmptyEntries);
 
             if (slugParts.Length == 0)
             {
-                return 2;
+                return 1;
             }
 
             return int.TryParse(slugParts[0].TrimStart('-'), out int v) ? (int?)++v : null;
