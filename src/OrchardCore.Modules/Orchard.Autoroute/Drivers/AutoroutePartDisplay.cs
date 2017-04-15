@@ -90,18 +90,18 @@ namespace Orchard.Autoroute.Drivers
 
         private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater)
         {
-            if (autoroute.Path.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path.IndexOf(' ') > -1)
+            if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
-            if (autoroute.Path.Length > MaxPathLength)
+            if (autoroute.Path?.Length > MaxPathLength)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
-            if (await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
+            if (autoroute.Path != null && await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is already in use."]);
             }
