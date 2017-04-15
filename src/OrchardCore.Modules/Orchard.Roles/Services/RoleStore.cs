@@ -33,9 +33,9 @@ namespace Orchard.Roles.Services
         {
         }
 
-        public async Task<RolesDocument> GetRolesAsync()
+        public Task<RolesDocument> GetRolesAsync()
         {
-            return await _memoryCache.GetOrCreateAsync(Key, async (entry) =>
+            return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
             {
                 var roles = await _session.QueryAsync<RolesDocument>().FirstOrDefault();
 
@@ -67,8 +67,6 @@ namespace Orchard.Roles.Services
         #region IRoleStore<Role>
         public async Task<IdentityResult> CreateAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -83,8 +81,6 @@ namespace Orchard.Roles.Services
 
         public async Task<IdentityResult> DeleteAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -105,8 +101,6 @@ namespace Orchard.Roles.Services
 
         public async Task<Role> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
             return role;
@@ -114,8 +108,6 @@ namespace Orchard.Roles.Services
 
         public async Task<Role> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var roles = await GetRolesAsync();
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
             return role;
@@ -123,8 +115,6 @@ namespace Orchard.Roles.Services
 
         public Task<string> GetNormalizedRoleNameAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -135,8 +125,6 @@ namespace Orchard.Roles.Services
 
         public Task<string> GetRoleIdAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -147,8 +135,6 @@ namespace Orchard.Roles.Services
 
         public Task<string> GetRoleNameAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -159,8 +145,6 @@ namespace Orchard.Roles.Services
 
         public Task SetNormalizedRoleNameAsync(Role role, string normalizedName, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -173,8 +157,6 @@ namespace Orchard.Roles.Services
 
         public Task SetRoleNameAsync(Role role, string roleName, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));
@@ -187,8 +169,6 @@ namespace Orchard.Roles.Services
 
         public async Task<IdentityResult> UpdateAsync(Role role, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (role == null)
             {
                 throw new ArgumentNullException(nameof(role));

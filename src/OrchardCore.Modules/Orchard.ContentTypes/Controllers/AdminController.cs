@@ -287,7 +287,9 @@ namespace Orchard.ContentTypes.Controllers
 
             var viewModel = new AddPartsViewModel();
             if (!await TryUpdateModelAsync(viewModel))
+            {
                 return await AddPartsTo(id);
+            }
 
             var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName);
             foreach (var partToAdd in partsToAdd)

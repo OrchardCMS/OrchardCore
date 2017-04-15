@@ -72,14 +72,14 @@ namespace Orchard.ContentManagement
             return context3.ContentItem;
         }
 
-        public async Task<ContentItem> GetAsync(string contentItemId)
+        public Task<ContentItem> GetAsync(string contentItemId)
         {
             if (contentItemId == null)
             {
                 throw new ArgumentNullException(nameof(contentItemId));
             }
 
-            return await GetAsync(contentItemId, VersionOptions.Published);
+            return GetAsync(contentItemId, VersionOptions.Published);
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
