@@ -25,7 +25,6 @@ $link-padding-left: 16px !default;
         @extend .navbar-brand;
         margin-left: 4px;
     }
-
     // Menu toggling button
     #navbar-toggler {
         @extend .navbar-toggler, .navbar-toggler-right, .hidden-sm-up;
@@ -106,8 +105,10 @@ $link-padding-left: 16px !default;
         }
 
         .chevron {
-            float: right;
-            padding-right: 20px;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin-left: -15px;
         }
 
         .icon {
@@ -147,7 +148,7 @@ $link-padding-left: 16px !default;
             color: $gray-lightest !important;
         }
 
-        li ul > li ul > li > a{
+        li ul > li ul > li > a {
             padding-left: 3 * $link-padding-left !important;
         }
     }
