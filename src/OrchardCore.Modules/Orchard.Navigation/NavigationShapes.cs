@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Environment.Navigation;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 
 namespace Orchard.Navigation
 {
@@ -41,7 +41,7 @@ namespace Orchard.Navigation
                     var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    
+
                     IEnumerable<MenuItem> menuItems = navigationManager.BuildMenu(menuName, context.DisplayContext.ViewContext);
 
                     var httpContext = httpContextAccessor.HttpContext;

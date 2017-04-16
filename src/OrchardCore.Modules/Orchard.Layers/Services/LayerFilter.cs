@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Orchard.Admin;
 using Orchard.ContentManagement.Display;
@@ -63,7 +63,7 @@ namespace Orchard.Layers.Services
 				var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), _serviceProvider);
 
 				var layersCache = new Dictionary<string, bool>();
-				
+
 				foreach (var widget in widgets)
 				{
 					var layer = layers[widget.Layer];
@@ -94,7 +94,7 @@ namespace Orchard.Layers.Services
 					}
 
 					IShape widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
-						
+
 					widgetContent.Classes.Add("widget");
 					widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
@@ -104,7 +104,7 @@ namespace Orchard.Layers.Services
 					var contentZone = layout.Zones[widget.Zone];
 					contentZone.Add(wrapper);
 				}
-				
+
 			}
 
 			await next.Invoke();
