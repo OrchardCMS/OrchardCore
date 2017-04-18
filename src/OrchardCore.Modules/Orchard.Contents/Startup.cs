@@ -17,6 +17,7 @@ using Orchard.Contents.Services;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.DisplayManagement.Descriptors;
+using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Environment.Navigation;
 using Orchard.Feeds;
 using Orchard.Indexing;
@@ -61,7 +62,7 @@ namespace Orchard.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers("Orchard.DisplayManagement");
+            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper));
 
             routes.MapAreaRoute(
                 name: "DisplayContentItem",

@@ -63,9 +63,23 @@ namespace Orchard.Mvc
 
         public static void AddTagHelpers(this IServiceProvider serviceProvider, string assemblyName)
         {
+            serviceProvider.AddTagHelpers(Assembly.Load(new AssemblyName(assemblyName)));
+        }
+
+        public static void AddTagHelpers(this IServiceProvider serviceProvider, Type type)
+        {
+            serviceProvider.AddTagHelpers(type.GetTypeInfo().Assembly);
+        }
+
+        public static void AddTagHelpers(this IServiceProvider serviceProvider, System.Reflection.TypeInfo typeInfo)
+        {
+            serviceProvider.AddTagHelpers(typeInfo.Assembly);
+        }
+
+        public static void AddTagHelpers(this IServiceProvider serviceProvider, Assembly assembly)
+        {
             serviceProvider.GetRequiredService<ApplicationPartManager>()
-                .ApplicationParts.Add(new TagHelperApplicationPart(
-                    Assembly.Load(new AssemblyName(assemblyName))));
+                .ApplicationParts.Add(new TagHelperApplicationPart(assembly));
         }
 
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
