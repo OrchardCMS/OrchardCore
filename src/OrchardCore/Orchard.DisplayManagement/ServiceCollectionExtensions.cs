@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Modules;
-using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
+using Orchard.Mvc;
+using Orchard.Mvc.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +64,7 @@ namespace Orchard.DisplayManagement
             {
                 options.Filters.Add(typeof(NotifyFilter));
             });
-		
+
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 

@@ -7410,8 +7410,10 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
       list-style: none;
       line-height: 2.5em; }
   .ta-wrapper #ta-left-sidebar .chevron {
-    float: right;
-    padding-right: 20px; }
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: -15px; }
   .ta-wrapper #ta-left-sidebar .icon {
     padding-right: 10px; }
   .ta-wrapper #ta-left-sidebar li label,

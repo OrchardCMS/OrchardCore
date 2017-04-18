@@ -73,12 +73,12 @@ namespace Orchard.Setup.Services
             return _recipes;
         }
 
-        public async Task<string> SetupAsync(SetupContext context)
+        public Task<string> SetupAsync(SetupContext context)
         {
             var initialState = _shellSettings.State;
             try
             {
-                return await SetupInternalAsync(context);
+                return SetupInternalAsync(context);
             }
             catch
             {

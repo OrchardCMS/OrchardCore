@@ -38,7 +38,7 @@ namespace Orchard.Lucene
         {
             routes.MapAreaRoute(
                 name: "Lucene.Search",
-                areaName: "Lucene",
+                areaName: "Orchard.Lucene",
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );

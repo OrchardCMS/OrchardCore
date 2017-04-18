@@ -30,9 +30,9 @@ namespace Orchard.Environment.Commands
 
         public IStringLocalizer T { get; set; }
 
-        public async Task<CommandReturnCodes> RunSingleCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
+        public Task<CommandReturnCodes> RunSingleCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
         {
-            return await RunCommandAsync(input, output, tenant, args, switches);
+            return RunCommandAsync(input, output, tenant, args, switches);
         }
 
         public async Task<CommandReturnCodes> RunCommandAsync(TextReader input, TextWriter output, string tenant, string[] args, IDictionary<string, string> switches)
@@ -116,7 +116,7 @@ namespace Orchard.Environment.Commands
             await output.WriteLineAsync();
         }
 
-        private async Task<ShellContext> CreateStandaloneEnvironmentAsync(string tenant)
+        private Task<ShellContext> CreateStandaloneEnvironmentAsync(string tenant)
         {
             // Retrieve settings for speficified tenant.
             var settingsList = _shellSettingsManager.LoadSettings();
@@ -128,13 +128,13 @@ namespace Orchard.Environment.Commands
                     throw new Exception(T["Tenant {0} does not exist", tenant]);
                 }
 
-                return await _orchardHost.CreateShellContextAsync(settings);
+                return _orchardHost.CreateShellContextAsync(settings);
             }
             else
             {
                 // In case of an uninitialized site (no default settings yet), we create a default settings instance.
                 var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, State = TenantState.Uninitialized };
-                return await _orchardHost.CreateShellContextAsync(settings);
+                return _orchardHost.CreateShellContextAsync(settings);
             }
         }
     }
