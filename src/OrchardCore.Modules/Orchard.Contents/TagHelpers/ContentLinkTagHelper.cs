@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData;
 
-namespace Orchard.Contents.Display
+namespace Orchard.Contents.TagHelpers
 {
     [HtmlTargetElement("a", Attributes = ContentLinkAdmin)]
     [HtmlTargetElement("a", Attributes = ContentLinkDisplay)]

@@ -2,7 +2,7 @@
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.TagHelpers;
 
-namespace Orchard.Menu.TagHelper
+namespace Orchard.Demo.TagHelpers
 {
 	[HtmlTargetElement("baz")]
 	public class BazTagHelper : BaseShapeTagHelper
