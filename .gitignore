@@ -169,7 +169,7 @@ build/
 *.sln.cache
 src/OrchardCore.Modules/**/launchSettings.json
 src/OrchardCore.Themes/**/launchSettings.json
-watch.cmd
+src/**/watch.cmd
 log.xml
 profiling/
 *.orig
