@@ -131,7 +131,7 @@ namespace Orchard.Setup.Controllers
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe,
-                RecipeExtraParams = Request.Form.ToDictionary<KeyValuePair<string,StringValues>,string,object>(keyValue => keyValue.Key, keyValue => keyValue.Value)
+                RecipeExtraParams = Request.Form.ToDictionary(keyValue => keyValue.Key, keyValue => keyValue.Value.ToString())
             };
 
             if (!model.DatabaseProviderPreset)

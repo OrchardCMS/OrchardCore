@@ -259,7 +259,7 @@ namespace Orchard.Recipes.Services
                     // Evaluate the expression while the result is another expression
                     while (value.StartsWith("[") && value.EndsWith("]"))
                     {
-                        value = value.Trim('[', ']');
+                        value = value.Substring(1, value.Length - 2);
                         value = (scriptingManager.Evaluate(value) ?? "").ToString();
                         ((JValue)node).Value = value;
                     }

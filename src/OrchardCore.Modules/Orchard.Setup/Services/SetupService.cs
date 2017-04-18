@@ -182,7 +182,7 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,object>();
+                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,string>();
                     recipeParams[nameof(context.SiteName)] = context.SiteName;
                     recipeParams[nameof(context.AdminUsername)] = context.AdminUsername;
                     recipeParams[nameof(context.AdminEmail)] = context.AdminEmail;
