@@ -4,7 +4,7 @@ using Orchard.Data.Migration;
 using Orchard.Recipes.Models;
 using Orchard.Recipes.RecipeSteps;
 using Orchard.Recipes.Services;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Recipes
 {

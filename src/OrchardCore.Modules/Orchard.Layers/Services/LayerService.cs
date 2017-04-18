@@ -10,7 +10,7 @@ using Orchard.Environment.Cache;
 using Orchard.Layers.Handlers;
 using Orchard.Layers.Indexes;
 using Orchard.Layers.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Layers.Services
 {

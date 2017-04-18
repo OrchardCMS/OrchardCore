@@ -13,7 +13,7 @@ using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
 using Orchard.Mvc.Utilities;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentTypes.Services
 {

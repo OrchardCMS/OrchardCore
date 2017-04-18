@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql.Core.Services;
+using YesSql;
 using Microsoft.Extensions.Localization;
 
 namespace Orchard.Setup.Services

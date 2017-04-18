@@ -1,5 +1,5 @@
 ﻿using Orchard.Users.Models;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Users.Indexes
 {

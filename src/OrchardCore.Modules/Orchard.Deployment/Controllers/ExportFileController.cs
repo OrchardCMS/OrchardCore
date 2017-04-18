@@ -7,7 +7,7 @@ using Orchard.Deployment.Core.Mvc;
 using Orchard.Deployment.Core.Services;
 using Orchard.Deployment.Services;
 using Orchard.Mvc.Utilities;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Deployment.Controllers
 {

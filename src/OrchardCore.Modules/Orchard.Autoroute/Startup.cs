@@ -20,8 +20,8 @@ using Orchard.Data.Migration;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
 using Orchard.Tokens;
-using YesSql.Core.Indexes;
-using YesSql.Core.Services;
+using YesSql.Indexes;
+using YesSql;
 
 namespace Orchard.Autoroute
 {

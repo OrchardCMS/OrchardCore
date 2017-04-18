@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Users.Services
 {

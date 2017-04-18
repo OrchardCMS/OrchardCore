@@ -22,7 +22,8 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Navigation;
 using Orchard.Settings;
-using YesSql.Core.Services;
+using YesSql;
+using YesSql.Services;
 
 namespace Orchard.Contents.Controllers
 {

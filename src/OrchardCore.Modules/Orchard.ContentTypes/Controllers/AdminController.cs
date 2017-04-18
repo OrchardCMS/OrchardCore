@@ -17,7 +17,7 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Environment.Shell;
 using Orchard.Mvc.Utilities;
-using YesSql.Core.Services;
+using YesSql;
 using System.Reflection;
 using Orchard.Mvc.ActionConstraints;
 

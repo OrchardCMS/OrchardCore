@@ -17,7 +17,7 @@ using Orchard.DisplayManagement.Views;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.Navigation;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Lists.Drivers
 {

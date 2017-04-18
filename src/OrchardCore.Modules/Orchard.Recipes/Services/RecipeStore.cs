@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Orchard.Recipes.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Recipes.Services
 {

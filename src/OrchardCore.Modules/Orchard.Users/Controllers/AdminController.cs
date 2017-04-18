@@ -17,7 +17,7 @@ using Orchard.Settings;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
-using YesSql.Core.Services;
+using YesSql;
 using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers

@@ -8,7 +8,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
 using Orchard.Environment.Cache;
 using Orchard.Recipes.Services;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.ContentManagement
 {

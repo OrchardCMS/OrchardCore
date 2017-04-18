@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenIddict.Core;
 using Orchard.OpenId.Indexes;
 using Orchard.OpenId.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.OpenId.Services
 {
