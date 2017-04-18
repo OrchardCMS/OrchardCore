@@ -6,26 +6,10 @@
 @using System.IO;
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
-@model dynamic
+@model Orchard.Setup.ViewModels.SetupViewModel
 
-@functions{
-    void AddPrefixToModelState(string prefix) {
-        var originalModelState = ViewData.ModelState.ToList();
-        ViewData.ModelState.Clear();
-        foreach (var keyValuePair in originalModelState)
-        {
-            foreach (var error in keyValuePair.Value.Errors)
-            {
-                ViewData.ModelState.AddModelError(string.IsNullOrWhiteSpace(keyValuePair.Key) ? keyValuePair.Key : $"{prefix}.{keyValuePair.Key}", error.ErrorMessage);
-            }
-        }
-    }
-}
 @{
-    var setupViewModel = Model.SetupViewModel as SetupViewModel;
-    AddPrefixToModelState(nameof(SetupViewModel));
-
-    var defaultRecipe = setupViewModel.Recipes.FirstOrDefault(x => x.Name == setupViewModel.RecipeName) ?? setupViewModel.Recipes.First();
+    var defaultRecipe = Model.Recipes.FirstOrDefault(x => x.Name == Model.RecipeName) ?? Model.Recipes.First();
     var options = identityOptions.Value;
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
@@ -72,25 +56,25 @@
     </div>
 
     <div class="row">
-        <fieldset class="form-group col-md-6" asp-validation-class-for="@setupViewModel.SiteName">
+        <fieldset class="form-group col-md-6" asp-validation-class-for="@Model.SiteName">
             <div>
-                <label asp-for="@setupViewModel.SiteName">@T["What is the name of your site?"]</label>
-                <input asp-for="@setupViewModel.SiteName" class="form-control" autofocus />
-                <span asp-validation-for="@setupViewModel.SiteName" class="text-danger">@T["The site name is required."]</span>
+                <label asp-for="@Model.SiteName">@T["What is the name of your site?"]</label>
+                <input asp-for="@Model.SiteName" class="form-control" autofocus />
+                <span asp-validation-for="@Model.SiteName" class="text-danger">@T["The site name is required."]</span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </fieldset>
         <fieldset class="form-group col-md-6">
-            <input type="hidden" asp-for="@setupViewModel.RecipeName" />
+            <input type="hidden" asp-for="@Model.RecipeName" />
             <nav>
-                <div asp-validation-class-for="@setupViewModel.RecipeName">
-                    <label asp-for="@setupViewModel.SiteName">@T["Recipe"]</label>
+                <div asp-validation-class-for="@Model.RecipeName">
+                    <label asp-for="@Model.SiteName">@T["Recipe"]</label>
                     <div id="recipes" class="dropdown">
                         <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @defaultRecipe.DisplayName
                         </button>
                         <div class="dropdown-menu">
-                            @foreach (var recipe in setupViewModel.Recipes.OrderBy(x => x.Name))
+                            @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
                             {
                                 <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
                             }
@@ -102,7 +86,7 @@
             </nav>
         </fieldset>
     </div>
-    @if (!setupViewModel.TablePrefixPreset || !setupViewModel.ConnectionStringPreset || !setupViewModel.DatabaseProviderPreset)
+    @if (!Model.TablePrefixPreset || !Model.ConnectionStringPreset || !Model.DatabaseProviderPreset)
     {
     <h6>
         @T["Database"]
@@ -110,50 +94,50 @@
     </h6>
     }
     <div class="row">
-        @if (setupViewModel.DatabaseProviderPreset)
+        @if (Model.DatabaseProviderPreset)
     {
-            <input asp-for="@setupViewModel.DatabaseProvider" type="hidden" />
-            <span asp-validation-for="@setupViewModel.DatabaseProvider" class="text-danger"></span>
+            <input asp-for="@Model.DatabaseProvider" type="hidden" />
+            <span asp-validation-for="@Model.DatabaseProvider" class="text-danger"></span>
         }
         else
         {
         <div class="form-group col-md-6">
-            <label asp-for="@setupViewModel.DatabaseProvider">@T["What type of database to use?"]</label>
-            <select asp-for="@setupViewModel.DatabaseProvider" class="form-control">
-                @foreach (var provider in setupViewModel.DatabaseProviders)
+            <label asp-for="@Model.DatabaseProvider">@T["What type of database to use?"]</label>
+            <select asp-for="@Model.DatabaseProvider" class="form-control">
+                @foreach (var provider in Model.DatabaseProviders)
     {
                 <option value="@provider.Value" data-connection-string="@provider.HasConnectionString">@provider.Name</option>
                 }
             </select>
-            <span asp-validation-for="@setupViewModel.DatabaseProvider" class="text-danger"></span>
+            <span asp-validation-for="@Model.DatabaseProvider" class="text-danger"></span>
         </div>
         }
 
-        @if (setupViewModel.TablePrefixPreset)
+        @if (Model.TablePrefixPreset)
     {
-            <input asp-for="@setupViewModel.TablePrefix" type="hidden" />
+            <input asp-for="@Model.TablePrefix" type="hidden" />
         }
         else
         {
-        <div class="form-group col-md-6" asp-validation-class-for="@setupViewModel.TablePrefix">
-            <label asp-for="@setupViewModel.TablePrefix">@T["Table Prefix"]</label>
-            <input asp-for="@setupViewModel.TablePrefix" class="form-control" />
-            <span asp-validation-for="@setupViewModel.TablePrefix" class="text-danger"></span>
+        <div class="form-group col-md-6" asp-validation-class-for="@Model.TablePrefix">
+            <label asp-for="@Model.TablePrefix">@T["Table Prefix"]</label>
+            <input asp-for="@Model.TablePrefix" class="form-control" />
+            <span asp-validation-for="@Model.TablePrefix" class="text-danger"></span>
         </div>
         }
     </div>
 
-    @if (setupViewModel.ConnectionStringPreset)
+    @if (Model.ConnectionStringPreset)
     {
-        <input asp-for="@setupViewModel.ConnectionString" type="hidden" />
+        <input asp-for="@Model.ConnectionString" type="hidden" />
     }
     else
     {
-    <fieldset class="row connectionString" asp-validation-class-for="@setupViewModel.ConnectionString">
+    <fieldset class="row connectionString" asp-validation-class-for="@Model.ConnectionString">
         <div class="form-group col-md-12">
-            <label asp-for="@setupViewModel.ConnectionString">@T["Connection string"]</label>
-            <input asp-for="@setupViewModel.ConnectionString" class="form-control" />
-            <span asp-validation-for="@setupViewModel.ConnectionString" class="text-danger"></span>
+            <label asp-for="@Model.ConnectionString">@T["Connection string"]</label>
+            <input asp-for="@Model.ConnectionString" class="form-control" />
+            <span asp-validation-for="@Model.ConnectionString" class="text-danger"></span>
             <span class="text-muted form-text small">@T["The connection string to your database instance. e.g., Data Source=<em>localhost</em>;Initial Catalog=<em>Orchard</em>;User Id=<em>userid</em>;Password=<em>password</em>"]</span>
         </div>
     </fieldset>
@@ -163,30 +147,30 @@
         <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
     </h6>
     <div class="row">
-        <div class="form-group col-md-6" asp-validation-class-for="@setupViewModel.UserName">
-            <label asp-for="@setupViewModel.UserName">@T["User name"]</label>
-            <input asp-for="@setupViewModel.UserName" class="form-control" />
-            <span asp-validation-for="@setupViewModel.UserName" class="text-danger">@T["The user name is required."]</span>
+        <div class="form-group col-md-6" asp-validation-class-for="@Model.UserName">
+            <label asp-for="@Model.UserName">@T["User name"]</label>
+            <input asp-for="@Model.UserName" class="form-control" />
+            <span asp-validation-for="@Model.UserName" class="text-danger">@T["The user name is required."]</span>
         </div>
-        <div class="form-group col-md-6" asp-validation-class-for="@setupViewModel.Email">
+        <div class="form-group col-md-6" asp-validation-class-for="@Model.Email">
             <label for="Email">@T["Email"]</label>
-            <input asp-for="@setupViewModel.Email" class="form-control" type="email"/>
-            <span asp-validation-for="@setupViewModel.Email" class="text-danger">@T["The email is invalid."]</span>
+            <input asp-for="@Model.Email" class="form-control" type="email"/>
+            <span asp-validation-for="@Model.Email" class="text-danger">@T["The email is invalid."]</span>
         </div>
     </div>
 
     <div class="row">
-        <div class="form-group col-md-6" asp-validation-class-for="@setupViewModel.Password">
-            <label asp-for="@setupViewModel.Password">@T["Password"]</label>
-            <input asp-for="@setupViewModel.Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
+        <div class="form-group col-md-6" asp-validation-class-for="@Model.Password">
+            <label asp-for="@Model.Password">@T["Password"]</label>
+            <input asp-for="@Model.Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" title="@T["Password strength"]" data-content="@passwordTooltip" />
             <div id="passwordStrength"></div>
-            <span asp-validation-for="@setupViewModel.Password" class="text-danger"></span>
+            <span asp-validation-for="@Model.Password" class="text-danger"></span>
         </div>
 
-        <div class="form-group col-md-6" asp-validation-class-for="@setupViewModel.PasswordConfirmation">
-            <label asp-for="@setupViewModel.PasswordConfirmation">@T["Password Confirmation"]</label>
-            <input asp-for="@setupViewModel.PasswordConfirmation" type="password" class="form-control" />
-            <span asp-validation-for="@setupViewModel.PasswordConfirmation" class="text-danger"></span>
+        <div class="form-group col-md-6" asp-validation-class-for="@Model.PasswordConfirmation">
+            <label asp-for="@Model.PasswordConfirmation">@T["Password Confirmation"]</label>
+            <input asp-for="@Model.PasswordConfirmation" type="password" class="form-control" />
+            <span asp-validation-for="@Model.PasswordConfirmation" class="text-danger"></span>
         </div>
     </div>
     <fieldset>

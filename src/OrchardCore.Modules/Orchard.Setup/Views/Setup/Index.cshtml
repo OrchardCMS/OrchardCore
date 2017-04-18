@@ -1,13 +1,31 @@
 ﻿@using Orchard.Setup.Controllers
 @using Microsoft.AspNetCore.Builder
 @using Microsoft.AspNetCore.Html
+@using Orchard.DisplayManagement
+@using Orchard.DisplayManagement.Views
 @using System.IO;
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> identityOptions
 @model Orchard.Setup.ViewModels.SetupViewModel
 
 @{
-    // The Setup Layout is a standard MVC layout do that it doesn't use Shapes.
+    // The Setup Layout is a standard MVC layout do that it doesn't use other Shapes than Setup.
     Layout = "_Layout";
+    var shape = Factory.Create<Orchard.Setup.ViewModels.SetupViewModel>("Setup", model => {
+        model.ConnectionString = Model.ConnectionString;
+        model.ConnectionStringPreset = Model.ConnectionStringPreset;
+        model.DatabaseProvider = Model.DatabaseProvider;
+        model.DatabaseProviderPreset = Model.DatabaseProviderPreset;
+        model.DatabaseProviders = Model.DatabaseProviders;
+        model.Email = Model.Email;
+        model.Password = Model.Password;
+        model.PasswordConfirmation = Model.PasswordConfirmation;
+        model.RecipeName = Model.RecipeName;
+        model.Recipes = Model.Recipes;
+        model.SiteName = Model.SiteName;
+        model.TablePrefix = Model.TablePrefix;
+        model.TablePrefixPreset = Model.TablePrefixPreset;
+        model.UserName = Model.UserName;
+    });
 }
-@await DisplayAsync(New.Setup(SetupViewModel: Model))
+@await DisplayAsync(shape)

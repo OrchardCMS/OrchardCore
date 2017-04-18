@@ -13,7 +13,7 @@ namespace Orchard.Setup.Services
         public string DatabaseProvider { get; set; }
         public string DatabaseConnectionString { get; set; }
         public string DatabaseTablePrefix { get; set; }
-        public IDictionary<string, StringValues> RecipeExtraParams { get; set; }
+        public IDictionary<string, object> RecipeExtraParams { get; set; }
         public IEnumerable<string> EnabledFeatures { get; set; }
         public RecipeDescriptor Recipe { get; set; }
         public IDictionary<string, string> Errors { get; set; }
