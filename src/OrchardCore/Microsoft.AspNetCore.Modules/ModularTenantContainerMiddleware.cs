@@ -73,7 +73,6 @@ namespace Microsoft.AspNetCore.Modules
                             }
                         }
                     }
-
                     await _next.Invoke(httpContext);
                 }
             }
