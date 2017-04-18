@@ -1,15 +1,21 @@
 ﻿@model Orchard.ContentFields.ViewModels.EditBooleanFieldViewModel
 @using Orchard.ContentFields.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
 }
 
-<fieldset class="form-check">
-    <label class="form-check-label">
-        <input asp-for="Value" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" /> @settings.Label
-        @if (!String.IsNullOrEmpty(settings.Hint))
-        {
-            <span class="hint">@T["— {0}", settings.Hint]</span>
-        }
-    </label>
-</fieldset>
+@{
+    // Morph the current shape to the correct editor shape based on its Editor property
+    var shape = Model as Orchard.DisplayManagement.IShape;
+    shape.Metadata.Alternates.Clear();
+    shape.Metadata.Type = "BooleanField_Editor";
+
+    if (!String.IsNullOrEmpty(settings.Editor))
+    {
+        shape.Metadata.Alternates.Add($"BooleanField_Editor__{settings.Editor}");
+    }
+}
+
+@await DisplayAsync(Model)
