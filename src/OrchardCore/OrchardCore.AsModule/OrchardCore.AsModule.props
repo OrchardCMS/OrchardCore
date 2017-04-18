@@ -8,6 +8,7 @@
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ExcludedFiles>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;.vs\**</ExcludedFiles>
+    <Temp Condition="'$(Temp)' == ''">..\..\..\temp</Temp>
   </PropertyGroup>
 
   <ItemGroup>
