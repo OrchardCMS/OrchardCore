@@ -9,10 +9,10 @@ using Orchard.Environment.Shell.Builders.Models;
 
 namespace Orchard.Mvc
 {
-	/// <summary>
-	/// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
-	/// </summary>
-	public class ShellFeatureApplicationPart :
+    /// <summary>
+    /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
+    /// </summary>
+    public class ShellFeatureApplicationPart :
         ApplicationPart,
         IApplicationPartTypeProvider,
         ICompilationReferencesProvider
@@ -65,7 +65,7 @@ namespace Orchard.Mvc
 				}
 
 				_referencePaths = DependencyContext.Default.CompileLibraries
-				.SelectMany(library => library.ResolveReferencePaths());
+				    .SelectMany(library => library.ResolveReferencePaths());
 			}
 
 			return _referencePaths;

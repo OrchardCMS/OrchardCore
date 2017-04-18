@@ -21,6 +21,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Feeds;
 using Orchard.Indexing;
 using Orchard.Lists.Settings;
+using Orchard.Mvc;
 using Orchard.Recipes;
 using Orchard.Scripting;
 using Orchard.Security.Permissions;
@@ -60,6 +61,8 @@ namespace Orchard.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            serviceProvider.AddTagHelpers("Orchard.DisplayManagement");
+
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
                 areaName: "Orchard.Contents",

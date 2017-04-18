@@ -1,8 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Orchard.ResourceManagement;
 
-namespace Orchard.Resources.TagHelpers
+namespace Orchard.ResourceManagement.TagHelpers
 {
 
     [HtmlTargetElement("link", Attributes = SrcAttributeName)]

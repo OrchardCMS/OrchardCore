@@ -1,24 +1,23 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Orchard.Mvc.LocationExpander;
-using Orchard.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.Razor.Runtime.TagHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orchard.Mvc.LocationExpander;
+using Orchard.Mvc.ModelBinding;
 
 namespace Orchard.Mvc
 {
-	public static class ModularServiceCollectionExtensions
+    public static class ModularServiceCollectionExtensions
     {
         public static ModularServiceCollection AddMvcModules(this ModularServiceCollection moduleServices,
             IServiceProvider applicationServices)
@@ -62,6 +61,13 @@ namespace Orchard.Mvc
             return services;
         }
 
+        public static void AddTagHelpers(this IServiceProvider serviceProvider, string assemblyName)
+        {
+            serviceProvider.GetRequiredService<ApplicationPartManager>()
+                .ApplicationParts.Add(new TagHelperApplicationPart(
+                    Assembly.Load(new AssemblyName(assemblyName))));
+        }
+
         internal static void AddModularFrameworkParts(IServiceProvider services, ApplicationPartManager manager)
         {
             var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
@@ -101,8 +107,6 @@ namespace Orchard.Mvc
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IApplicationModelProvider, ModularApplicationModelProvider>());
-            services.Replace(
-                ServiceDescriptor.Transient<ITagHelperTypeResolver, FeatureTagHelperTypeResolver>());
         }
     }
 }
