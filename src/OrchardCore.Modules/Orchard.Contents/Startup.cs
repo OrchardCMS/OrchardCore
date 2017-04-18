@@ -62,7 +62,7 @@ namespace Orchard.Contents
 
         public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper));
+            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).Assembly);
 
             routes.MapAreaRoute(
                 name: "DisplayContentItem",
