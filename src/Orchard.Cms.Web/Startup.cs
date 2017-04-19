@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
-using NLog.Web;
-using NLog.LayoutRenderers;
+using Orchard.Logging;
 
 namespace Orchard.Cms.Web
 {
@@ -40,9 +38,7 @@ namespace Orchard.Cms.Web
 
             app.UseStaticFiles();
             loggerFactory.AddConsole(Configuration);
-            LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
-            loggerFactory.AddNLog();
-            app.AddNLogWeb();
+            app.AddNLogWeb(loggerFactory);
 
             if (env.IsDevelopment())
             {
