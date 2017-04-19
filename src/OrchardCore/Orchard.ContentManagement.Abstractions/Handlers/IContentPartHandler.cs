@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Orchard.ContentManagement.Handlers
+﻿namespace Orchard.ContentManagement.Handlers
 {
     /// <summary>
     /// An implementation of this class is called for all the parts of a content item.
@@ -16,7 +14,7 @@ namespace Orchard.ContentManagement.Handlers
         void Loading(LoadContentContext context, ContentPart part);
         void Loaded(LoadContentContext context, ContentPart part);
         void Updating(UpdateContentContext context, ContentPart part);
-        Task UpdatedAsync(UpdateContentContext context, ContentPart part);
+        void Updated(UpdateContentContext context, ContentPart part);
         void Versioning(VersionContentContext context, ContentPart existing, ContentPart building);
         void Versioned(VersionContentContext context, ContentPart existing, ContentPart building);
         void Publishing(PublishContentContext context, ContentPart part);

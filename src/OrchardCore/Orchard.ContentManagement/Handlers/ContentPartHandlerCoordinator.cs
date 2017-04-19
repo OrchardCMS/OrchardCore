@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Drivers.Coordinators
 {
@@ -340,7 +339,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             }
         }
 
-        public async override Task UpdatedAsync(UpdateContentContext context)
+        public override void Updated(UpdateContentContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -354,7 +353,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
                 if (part != null)
                 {
-                    await _partHandlers.InvokeAsync(handler => handler.UpdatedAsync(context, part), Logger);
+                    _partHandlers.Invoke(handler => handler.Updated(context, part), Logger);
                 }
             }
         }
@@ -400,7 +399,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 }
             }
         }
-
+        
         public override void GetContentItemAspect(ContentItemAspectContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

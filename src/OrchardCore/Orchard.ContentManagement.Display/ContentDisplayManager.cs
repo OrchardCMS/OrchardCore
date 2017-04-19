@@ -171,7 +171,7 @@ namespace Orchard.ContentManagement.Display
 
             await _handlers.InvokeAsync(handler => handler.UpdateEditorAsync(contentItem, context), Logger);
 
-            await _contentHandlers.Reverse().InvokeAsync(handler => handler.UpdatedAsync(updateContentContext), Logger);
+            _contentHandlers.Reverse().Invoke(handler => handler.Updated(updateContentContext), Logger);
 
             return context.Shape;
         }

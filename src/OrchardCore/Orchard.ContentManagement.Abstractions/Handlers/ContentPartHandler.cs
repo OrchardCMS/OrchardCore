@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace Orchard.ContentManagement.Handlers
 {
@@ -77,14 +76,12 @@ namespace Orchard.ContentManagement.Handlers
             }
         }
 
-        Task IContentPartHandler.UpdatedAsync(UpdateContentContext context, ContentPart part)
+        void IContentPartHandler.Updated(UpdateContentContext context, ContentPart part)
         {
             if (part is TPart)
             {
-                return UpdatedAsync(context, (TPart)part);
+                Updated(context, (TPart)part);
             }
-
-            return Task.CompletedTask;
         }
 
         void IContentPartHandler.Versioning(VersionContentContext context, ContentPart existing, ContentPart building)
@@ -168,7 +165,7 @@ namespace Orchard.ContentManagement.Handlers
         public virtual void Loading(LoadContentContext context, TPart instance) { }
         public virtual void Loaded(LoadContentContext context, TPart instance) { }
         public virtual void Updating(UpdateContentContext context, TPart instance) { }
-        public virtual Task UpdatedAsync(UpdateContentContext context, TPart instance) { return Task.CompletedTask; }
+        public virtual void Updated(UpdateContentContext context, TPart instance) { }
         public virtual void Versioning(VersionContentContext context, TPart existing, TPart building) { }
         public virtual void Versioned(VersionContentContext context, TPart existing, TPart building) { }
         public virtual void Publishing(PublishContentContext context, TPart instance) { }
