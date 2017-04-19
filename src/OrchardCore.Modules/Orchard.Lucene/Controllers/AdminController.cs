@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Notify;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 
 namespace Orchard.Lucene.Controllers
 {
@@ -86,7 +86,7 @@ namespace Orchard.Lucene.Controllers
             {
                 return View(model);
             }
-            
+
             try
             {
                 // We call Rebuild in order to reset the index state cursor too in case the same index

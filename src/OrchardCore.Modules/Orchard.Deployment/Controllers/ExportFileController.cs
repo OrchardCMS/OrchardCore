@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Orchard.Deployment.Core.Mvc;
 using Orchard.Deployment.Core.Services;
 using Orchard.Deployment.Services;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.Deployment.Controllers
@@ -18,7 +18,7 @@ namespace Orchard.Deployment.Controllers
         private readonly ISession _session;
 
         public ExportFileController(
-            IAuthorizationService authorizationService, 
+            IAuthorizationService authorizationService,
             ISession session,
             IDeploymentManager deploymentManager)
         {

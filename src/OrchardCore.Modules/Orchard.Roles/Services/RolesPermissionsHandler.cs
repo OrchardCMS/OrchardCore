@@ -57,11 +57,14 @@ namespace Orchard.Roles
 
                 if (role != null)
                 {
-                    var permissions = role.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType);
-
-                    foreach (var permission in permissions)
+                    foreach (var claim in role.RoleClaims)
                     {
-                        string permissionName = permission.ClaimValue;
+                        if (!String.Equals(claim.ClaimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        string permissionName = claim.ClaimValue;
 
                         if (grantingNames.Contains(permissionName))
                         {

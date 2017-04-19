@@ -14,7 +14,7 @@ using Orchard.Deployment.Remote.Models;
 using Orchard.Deployment.Remote.Services;
 using Orchard.Deployment.Services;
 using Orchard.DisplayManagement.Notify;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 using YesSql.Core.Services;
 
 namespace Orchard.Deployment.Remote.Controllers
@@ -94,7 +94,7 @@ namespace Orchard.Deployment.Remote.Controllers
                 archiveContainer.ClientName = remoteInstance.ClientName;
                 archiveContainer.ApiKey = remoteInstance.ApiKey;
                 archiveContainer.ArchiveBase64 = Convert.ToBase64String(System.IO.File.ReadAllBytes(archiveFileName));
-                
+
                 using (var httpClient = new HttpClient())
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(archiveContainer));
@@ -115,7 +115,7 @@ namespace Orchard.Deployment.Remote.Controllers
             {
                 System.IO.File.Delete(archiveFileName);
             }
-            
+
             return RedirectToAction("Display", "DeploymentPlan", new { area = "Orchard.Deployment", id });
         }
     }

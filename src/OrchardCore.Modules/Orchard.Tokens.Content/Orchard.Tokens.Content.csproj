@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Content.Abstractions\Orchard.Tokens.Content.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Tokens\Orchard.Tokens.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
   </ItemGroup>

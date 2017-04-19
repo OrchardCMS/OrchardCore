@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.Mvc.Modules.Abstractions\Microsoft.AspNetCore.Mvc.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Mvc.Abstractions\Orchard.Mvc.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

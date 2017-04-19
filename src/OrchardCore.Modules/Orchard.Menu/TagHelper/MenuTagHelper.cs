@@ -2,7 +2,7 @@
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.TagHelpers;
 
-namespace Orchard.Menu.TagHelper
+namespace Orchard.Menu.TagHelpers
 {
 	[HtmlTargetElement("menu")]
 	public class MenuTagHelper : BaseShapeTagHelper
