@@ -7,7 +7,7 @@ using Orchard.ContentManagement.Metadata.Records;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.Environment.Cache;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentManagement
 {

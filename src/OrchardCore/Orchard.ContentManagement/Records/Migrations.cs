@@ -16,8 +16,8 @@ namespace Orchard.ContentManagement.Records
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                 .Column<DateTime>("PublishedUtc", column => column.Nullable())
                 .Column<DateTime>("CreatedUtc", column => column.Nullable())
-                .Column<string>("Owner", column => column.WithLength(255).Nullable())
-                .Column<string>("Author", column => column.WithLength(255).Nullable())
+                .Column<string>("Owner", column => column.Nullable().WithLength(255))
+                .Column<string>("Author", column => column.Nullable().WithLength(255))
             );
 
             SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table

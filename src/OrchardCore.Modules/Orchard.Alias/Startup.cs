@@ -13,7 +13,7 @@ using Orchard.Alias.Models;
 using Orchard.Alias.Services;
 using Orchard.Alias.Settings;
 using Orchard.Indexing;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 using Orchard.Tokens;
 
 namespace Orchard.Alias

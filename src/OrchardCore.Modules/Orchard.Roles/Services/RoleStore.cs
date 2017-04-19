@@ -10,7 +10,7 @@ using Orchard.Environment.Cache;
 using Orchard.Roles.Models;
 using Orchard.Security;
 using Orchard.Security.Services;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Roles.Services
 {

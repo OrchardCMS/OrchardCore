@@ -6,7 +6,7 @@ using Dapper;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Indexing.Services
 {
@@ -80,7 +80,7 @@ namespace Orchard.Indexing.Services
             }
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            await connection.OpenAsync();
+            connection.Open();
             var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
             
             try
@@ -141,7 +141,7 @@ namespace Orchard.Indexing.Services
             await FlushAsync();
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            await connection.OpenAsync();
+            connection.Open();
             var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
 
             try

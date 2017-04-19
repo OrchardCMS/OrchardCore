@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Orchard.Deployment.Remote.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Deployment.Remote.Services
 {

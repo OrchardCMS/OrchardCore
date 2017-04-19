@@ -9,7 +9,7 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentManagement
 {

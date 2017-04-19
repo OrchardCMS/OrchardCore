@@ -1,6 +1,6 @@
 ﻿using System;
 using Orchard.Autoroute.Model;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.ContentManagement.Records
 {

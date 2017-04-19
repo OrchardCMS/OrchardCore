@@ -9,7 +9,7 @@ using Orchard.ContentManagement.Records;
 using Orchard.Feeds;
 using Orchard.Feeds.Models;
 using Orchard.Lists.Indexes;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Lists.Feeds
 {

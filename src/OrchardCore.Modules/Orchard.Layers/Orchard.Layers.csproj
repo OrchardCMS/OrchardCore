@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-0017" />
+    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1014" />
   </ItemGroup>
 
 </Project>

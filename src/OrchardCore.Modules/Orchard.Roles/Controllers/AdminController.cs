@@ -16,7 +16,7 @@ using Orchard.Security;
 using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 using Orchard.Settings;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Roles.Controllers
 {
