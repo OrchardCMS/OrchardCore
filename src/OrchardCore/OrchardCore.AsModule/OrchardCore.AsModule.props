@@ -2,7 +2,7 @@
 
   <!-- 
     This file is packaged with OrchardCore.AsModule.nupkg in ./build such that any Module that references
-    it will get its static assets copied to $(Temp)\OrchardCorePackages
+    it will get its static assets copied to $(ApplicationDirectory)\Packages
   -->
 
   <PropertyGroup>
@@ -48,7 +48,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Module.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Module.txt')">
+    <None Include="Module.txt" Pack="true">
       <PackagePath>assets\$(PackageId)\Module.txt</PackagePath>
     </None>
   </ItemGroup>

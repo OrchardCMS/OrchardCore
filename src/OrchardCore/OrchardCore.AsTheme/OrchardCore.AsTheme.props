@@ -2,7 +2,7 @@
 
   <!--
     This file is packaged with OrchardCore.AsTheme.nupkg in ./build such that any Theme that references
-    it will get its static assets copied to $(Temp)\OrchardCorePackages
+    it will get its static assets copied to $(ApplicationDirectory)\Packages
   -->
 
   <PropertyGroup>
@@ -48,7 +48,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Theme.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Theme.txt')">
+    <None Include="Theme.txt" Pack="true">
       <PackagePath>assets\$(PackageId)\Theme.txt</PackagePath>
     </None>
   </ItemGroup>
