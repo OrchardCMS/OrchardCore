@@ -148,15 +148,14 @@ namespace Orchard.Environment.Shell
                 }
 
                 return;
-            }
-
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
-            }
+            }            
 
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
+                }
                 _runningShellTable.Add(context.Settings);
             }
         }
