@@ -6,14 +6,11 @@ install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
+  - ps: $env:Configuration="Release"
 init:
   - git config --global core.autocrlf true
 build_script:
-  - dotnet restore
-  - dotnet build -c Release
-  - dotnet pack -c Release
-test_script:
-  - ps: .\scripts\run-tests.ps1
+  - ps: .\build.ps1
 clone_depth: 1
 test: on
 artifacts:

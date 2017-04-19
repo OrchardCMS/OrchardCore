@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <ProjectsToPack Include="$(RepositoryRoot)src\OrchardCore\*\*.csproj" />
+    <ProjectsToPack Include="$(RepositoryRoot)src\OrchardCore.Modules\*\*.csproj" />
+    <ProjectsToPack Include="$(RepositoryRoot)src\OrchardCore.Themes\*\*.csproj" />
+  </ItemGroup>
+</Project>
