@@ -15,7 +15,7 @@ using Orchard.Autoroute.Services;
 using Microsoft.Extensions.Localization;
 using YesSql.Core.Services;
 using Orchard.ContentManagement.Records;
-using Microsoft.AspNetCore.Mvc.Modules.ModelBinding;
+using Orchard.Mvc.ModelBinding;
 
 namespace Orchard.Autoroute.Drivers
 {
