@@ -18,7 +18,9 @@ namespace Orchard.Logging
         {
             var context = HttpContextAccessor.HttpContext;
 
-            builder.Append(context.Features.Get<ShellSettings>().Name);
+            // If there is no ShellSettings in the Features then the log is rendered from the Host
+            var tenantName = context.Features.Get<ShellSettings>()?.Name ?? "None";
+            builder.Append(tenantName);
         }
     }
 }
