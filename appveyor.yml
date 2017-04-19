@@ -12,7 +12,7 @@ init:
 build_script:
   - ps: .\build.ps1
 clone_depth: 1
-test: on
+test: off
 artifacts:
 - path: '**\*.nupkg'
 deploy:
