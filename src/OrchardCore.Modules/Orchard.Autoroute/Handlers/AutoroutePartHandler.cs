@@ -103,7 +103,12 @@ namespace Orchard.Autoroute.Handlers
                     .CreateViewModel()
                     .Content(part.ContentItem);
 
-                part.Path = GenerateUniquePath(_tokenizer.Tokenize(pattern, ctx), part);
+                part.Path = _tokenizer.Tokenize(pattern, ctx);
+                if (!IsPathUnique(part.Path, part))
+                {
+                    part.Path = GenerateUniquePath(part.Path, part);
+                }
+
                 part.Apply();
             }
         }
@@ -127,26 +132,29 @@ namespace Orchard.Autoroute.Handlers
 
         private string GenerateUniquePath(string path, AutoroutePart context)
         {
-            var similarPaths = _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path.StartsWith(path)).List().GetAwaiter().GetResult();
-            if (!similarPaths.Any(o => o.Path == path))
+            var version = 1;
+            var unversionedPath = path;
+
+            var versionSeparatorPosition = path.LastIndexOf('-');
+            if (versionSeparatorPosition > -1)
             {
-                return path;
+                int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version);
+                unversionedPath = path.Substring(0, versionSeparatorPosition);
             }
 
-            var version = similarPaths.Select(s => GetSlugVersion(path, s.Path)).OrderBy(i => i).LastOrDefault();
-            return version != null ? $"{path}-{version}" : path;
+            while (true)
+            {
+                var versionedPath = $"{unversionedPath}-{version++}";
+                if (IsPathUnique(versionedPath, context))
+                {
+                    return versionedPath;
+                }
+            }
         }
 
-        private int? GetSlugVersion(string path, string potentiallyConflictingPath)
+        private bool IsPathUnique(string path, AutoroutePart context)
         {
-            var slugParts = potentiallyConflictingPath.Split(new[] { path }, StringSplitOptions.RemoveEmptyEntries);
-
-            if (slugParts.Length == 0)
-            {
-                return 1;
-            }
-
-            return int.TryParse(slugParts[0].TrimStart('-'), out int v) ? (int?)++v : null;
+            return _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count().GetAwaiter().GetResult() == 0;
         }
     }
 }
