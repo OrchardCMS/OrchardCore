@@ -19,7 +19,7 @@ namespace Orchard.Recipes
                 Name = "parameters",
                 Method = serviceprovider => (Func<string, object>) (name =>
                 {
-                    return environmentObject[name].Value<object>();
+                    return environmentObject[name].Value<string>();
                 })
             };
         }
