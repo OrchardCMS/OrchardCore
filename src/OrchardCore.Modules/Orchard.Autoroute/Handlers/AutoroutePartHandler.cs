@@ -11,6 +11,7 @@ using Orchard.Settings;
 using Orchard.Tokens.Services;
 using YesSql.Core.Services;
 using Orchard.ContentManagement.Records;
+using System.Threading.Tasks;
 
 namespace Orchard.Autoroute.Handlers
 {
@@ -87,7 +88,7 @@ namespace Orchard.Autoroute.Handlers
             }
         }
 
-        public override void Updated(UpdateContentContext context, AutoroutePart part)
+        public async override Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
         {
             // Compute the Path only if it's empty
             if (!String.IsNullOrWhiteSpace(part.Path))
@@ -104,9 +105,9 @@ namespace Orchard.Autoroute.Handlers
                     .Content(part.ContentItem);
 
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
-                if (!IsPathUnique(part.Path, part))
+                if (!await IsPathUniqueAsync(part.Path, part))
                 {
-                    part.Path = GenerateUniquePath(part.Path, part);
+                    part.Path = await GenerateUniquePathAsync(part.Path, part);
                 }
 
                 part.Apply();
@@ -130,7 +131,7 @@ namespace Orchard.Autoroute.Handlers
             return pattern;
         }
 
-        private string GenerateUniquePath(string path, AutoroutePart context)
+        private async Task<string> GenerateUniquePathAsync(string path, AutoroutePart context)
         {
             var version = 1;
             var unversionedPath = path;
@@ -145,16 +146,16 @@ namespace Orchard.Autoroute.Handlers
             while (true)
             {
                 var versionedPath = $"{unversionedPath}-{version++}";
-                if (IsPathUnique(versionedPath, context))
+                if (await IsPathUniqueAsync(versionedPath, context))
                 {
                     return versionedPath;
                 }
             }
         }
 
-        private bool IsPathUnique(string path, AutoroutePart context)
+        private async Task<bool> IsPathUniqueAsync(string path, AutoroutePart context)
         {
-            return _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count().GetAwaiter().GetResult() == 0;
+            return await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count() == 0;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Orchard.ContentManagement.Handlers
+﻿using System.Threading.Tasks;
+
+namespace Orchard.ContentManagement.Handlers
 {
     public interface IContentHandler
     {
@@ -11,7 +13,7 @@
         void Loading(LoadContentContext context);
         void Loaded(LoadContentContext context);
         void Updating(UpdateContentContext context);
-        void Updated(UpdateContentContext context);
+        Task UpdatedAsync(UpdateContentContext context);
         void Versioning(VersionContentContext context);
         void Versioned(VersionContentContext context);
         void Publishing(PublishContentContext context);
