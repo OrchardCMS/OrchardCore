@@ -14,10 +14,9 @@
     <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
   </ItemGroup>
 
-  <Target Name="CheckManifestFile" AfterTargets="Build">
-    <Message Text="Checking manifest file: $(MSBuildProjectName)" Importance="high" />
+  <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('Theme.txt')">
+    <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      Condition="!Exists('Theme.txt')"
       File="Theme.txt"
       Lines="$(ThemeManifest)"
       Overwrite="true"
