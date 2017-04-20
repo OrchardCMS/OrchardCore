@@ -27,18 +27,16 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
+  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('$(MSBuildProjectDirectory)\Packages')">
     <ItemGroup>
      <AllPackageAssetFiles
        Include="$(MSBuildProjectDirectory)\Packages\**" />
     </ItemGroup>
     <Delete
       Files="@(AllPackageAssetFiles)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
       ContinueOnError="true" />
     <RemoveDir
       Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
       ContinueOnError="true" />
   </Target>
 
