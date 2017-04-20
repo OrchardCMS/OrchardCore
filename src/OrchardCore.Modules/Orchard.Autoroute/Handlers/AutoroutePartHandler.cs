@@ -6,11 +6,11 @@ using Orchard.Autoroute.Services;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Records;
 using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
-using YesSql.Core.Services;
-using Orchard.ContentManagement.Records;
+using YesSql;
 
 namespace Orchard.Autoroute.Handlers
 {
@@ -21,7 +21,7 @@ namespace Orchard.Autoroute.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
-        private readonly ISession _session;
+        private readonly YesSql.ISession _session;
 
         public AutoroutePartHandler(
             IAutorouteEntries entries,
@@ -29,7 +29,7 @@ namespace Orchard.Autoroute.Handlers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             ITagCache tagCache,
-            ISession session)
+            YesSql.ISession session)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;

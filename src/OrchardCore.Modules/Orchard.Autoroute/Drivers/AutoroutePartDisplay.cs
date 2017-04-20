@@ -3,19 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
 using Orchard.Autoroute.ViewModels;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Records;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Settings;
-using Orchard.Autoroute.Services;
-using Microsoft.Extensions.Localization;
-using YesSql.Core.Services;
-using Orchard.ContentManagement.Records;
 using Orchard.Mvc.ModelBinding;
+using Orchard.Settings;
+using YesSql;
 
 namespace Orchard.Autoroute.Drivers
 {
@@ -27,8 +26,8 @@ namespace Orchard.Autoroute.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
-        private IHttpContextAccessor _httpContextAccessor;
-        private readonly YesSql.Core.Services.ISession _session;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly YesSql.ISession _session;
         private readonly IStringLocalizer<AutoroutePartDisplay> T;
 
         public AutoroutePartDisplay(
@@ -36,7 +35,7 @@ namespace Orchard.Autoroute.Drivers
             ISiteService siteService,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
-            YesSql.Core.Services.ISession session,
+            YesSql.ISession session,
             IStringLocalizer<AutoroutePartDisplay> localizer
             )
         {
