@@ -2,7 +2,7 @@
 
   <!-- 
     This file is packaged with OrchardCore.AsModule.nupkg in ./build such that any Module that references
-    it will get its static assets copied to $(Temp)\OrchardCorePackages
+    it will get its static assets copied to $(ApplicationDirectory)\Packages
   -->
 
   <PropertyGroup>
@@ -12,28 +12,30 @@
 
   <ItemGroup>
     <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
-    <TempAssetFiles Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\**\*" />
   </ItemGroup>
 
-  <Target Name="CopyPackageAssetFiles" AfterTargets="Build">
-    <Delete
-      Files="@(TempAssetFiles)"
-      Condition="!Exists('$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
-      ContinueOnError="true"/>
-
-    <Message Text="Packaging asset files: $(MSBuildProjectName)" Importance="high" />
-    
-    <Copy
-      SourceFiles="@(PackageAssetFiles)"
-      DestinationFolder="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\%(RecursiveDir)" />
-    
+  <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('Module.txt')">
+    <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      Condition="!Exists('$(MSBuildProjectDirectory)\Module.txt')"
-      File="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Module.txt"
+      File="Module.txt"
       Lines="$(ModuleManifest)"
       Overwrite="true"
       Encoding="Unicode"
       ContinueOnError="true" />
+  </Target>
+
+  <Target Name="CopyPackageAssetFiles" Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')">
+    <ItemGroup>
+      <ApplicationAssetFiles Include="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\**\*" />
+    </ItemGroup>
+    <Delete
+      Files="@(ApplicationAssetFiles)"
+      Condition="!Exists('$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+      ContinueOnError="true"/>
+    <Message Text="Packaging asset files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(PackageAssetFiles)"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
@@ -45,7 +47,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="$(Temp)\OrchardCorePackages\$(MSBuildProjectName)\Module.txt" Pack="true" Condition="!Exists('$(MSBuildProjectDirectory)\Module.txt')">
+    <None Include="Module.txt" Pack="true">
       <PackagePath>assets\$(PackageId)\Module.txt</PackagePath>
     </None>
   </ItemGroup>
