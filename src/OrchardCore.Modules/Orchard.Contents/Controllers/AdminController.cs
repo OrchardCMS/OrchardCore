@@ -496,6 +496,12 @@ namespace Orchard.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
+            // The content item needs to be marked as saved (again) in case the drivers or the handlers have
+            // executed some query which would flush the saved entities. In this case the changes happening in handlers 
+            // would not be taken into account.
+
+            _session.Save(contentItem);
+
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null
             //    && !String.Equals(contentItem.As<IAliasAspect>().Path, previousRoute, StringComparison.OrdinalIgnoreCase))
