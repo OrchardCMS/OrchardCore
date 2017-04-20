@@ -38,6 +38,18 @@
       DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
   </Target>
 
+  <ItemGroup>
+    <PackageRazorFiles Include="**\*.cshtml" />
+    <Watch Include="@(PackageRazorFiles)" />
+  </ItemGroup>
+
+  <Target Name="CopyPackageRazorFiles" Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')">
+    <Message Text="Copying package razor files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(PackageRazorFiles)"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
+  </Target>
+
   <!-- Adds a custom .props file to the generated module package -->
   
   <ItemGroup>
