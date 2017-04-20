@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Internal;
+using Microsoft.AspNetCore.Modules;
 
 namespace Orchard.ContentManagement.Handlers
 {
     public class UpdateContentsHandler : ContentHandlerBase
     {
-        private readonly ISystemClock _clock;
+        private readonly IClock _clock;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UpdateContentsHandler(ISystemClock clock, IHttpContextAccessor httpContextAccessor)
+        public UpdateContentsHandler(IClock clock, IHttpContextAccessor httpContextAccessor)
         {
             _clock = clock;
             _httpContextAccessor = httpContextAccessor;
@@ -17,8 +17,8 @@ namespace Orchard.ContentManagement.Handlers
         public override void Creating(CreateContentContext context)
         {
             var utcNow = _clock.UtcNow;
-            context.ContentItem.CreatedUtc = utcNow.DateTime;
-            context.ContentItem.ModifiedUtc = utcNow.DateTime;
+            context.ContentItem.CreatedUtc = utcNow;
+            context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
             if (context.ContentItem.Owner == null && (httpContext?.User?.Identity?.IsAuthenticated ?? false))
@@ -29,7 +29,7 @@ namespace Orchard.ContentManagement.Handlers
 
         public override void Updating(UpdateContentContext context)
         {
-            var utcNow = _clock.UtcNow.DateTime;
+            var utcNow = _clock.UtcNow;
             context.ContentItem.ModifiedUtc = utcNow;
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext?.User?.Identity?.IsAuthenticated ?? false)
@@ -42,7 +42,7 @@ namespace Orchard.ContentManagement.Handlers
 
         public override void Versioning(VersionContentContext context)
         {
-            var utcNow = _clock.UtcNow.DateTime;
+            var utcNow = _clock.UtcNow;
 
             context.BuildingContentItem.CreatedUtc = context.ContentItem.CreatedUtc ?? utcNow;
             context.BuildingContentItem.PublishedUtc = context.ContentItem.PublishedUtc;
@@ -51,7 +51,7 @@ namespace Orchard.ContentManagement.Handlers
 
         public override void Published(PublishContentContext context)
         {
-            var utcNow = _clock.UtcNow.DateTime;
+            var utcNow = _clock.UtcNow;
 
             // The first time the content is published, reassign the CreateUtc value
             if(!context.ContentItem.PublishedUtc.HasValue)

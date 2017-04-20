@@ -10,7 +10,7 @@ using Orchard.Environment.Cache;
 using Orchard.Layers.Handlers;
 using Orchard.Layers.Indexes;
 using Orchard.Layers.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Layers.Services
 {
@@ -62,18 +62,18 @@ namespace Orchard.Layers.Services
 			return layers;
 		}
 
-		public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
+		public Task<IEnumerable<LayerMetadata>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
 		{
-			return await _memoryCache.GetOrCreateAsync("Orchard.Layers:Layers" + predicate.ToString(), async entry =>
+			return _memoryCache.GetOrCreateAsync("Orchard.Layers:Layers" + predicate.ToString(), async entry =>
 			{
 				entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
 
 				var allWidgets = await _session
-				.QueryAsync<ContentItem, LayerMetadataIndex>()
-				.With(predicate)
-				.List();
+				    .QueryAsync<ContentItem, LayerMetadataIndex>()
+				    .With(predicate)
+				    .List();
 
-				return allWidgets
+				return (IEnumerable<LayerMetadata>)allWidgets
 					.Select(x => x.As<LayerMetadata>())
 					.Where(x => x != null)
 					.OrderBy(x => x.Position)

@@ -75,7 +75,7 @@ You can add your favourite application framework to the pipeline, easily. The be
 The modular framework wrappers below are designed to work directly with the modular application framework, so avoid just adding the raw framework and expect it to just work.
 
 ### Asp.Net Mvc
-Within your hosting application add a reference to `Microsoft.AspNetCore.Mvc.Modules`
+Within your hosting application add a reference to `Orchard.Mvc.Core`
 
 Next, within `Startup.cs` modify the method `AddModuleServices` to look like this
 
@@ -91,7 +91,7 @@ services.AddModuleServices(configure => configure
 Thats it, done. Asp.Net Mvc is now part of your pipeline
 
 ### NancyFx
-Within your hosting application add a reference to `Microsoft.AspNetCore.Nancy.Modules`
+Within your hosting application add a reference to `Orchard.Nancy.Core`
 
 Next, within `Startup.cs` modify the method `Configure` to look like this
 

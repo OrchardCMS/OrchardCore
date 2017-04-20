@@ -17,7 +17,7 @@ using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.Lists.Services;
 using Orchard.Lists.Settings;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Lists
 {

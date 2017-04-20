@@ -1,7 +1,7 @@
 ﻿using System;
 using HandlebarsDotNet;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Internal;
 using Orchard.Settings;
 
 namespace Orchard.Tokens
@@ -13,11 +13,11 @@ namespace Orchard.Tokens
             handlebars.RegisterHelper("dateformat", (output, context, arguments) =>
             {
                 IServiceProvider serviceProvider = context.ServiceProvider;
-                var clock = serviceProvider.GetRequiredService<ISystemClock>();
+                var clock = serviceProvider.GetRequiredService<IClock>();
                 var siteService = serviceProvider.GetRequiredService<ISiteService>();
                 var site = siteService.GetSiteSettingsAsync().Result;
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(site.TimeZone);
-                var now = TimeZoneInfo.ConvertTime(clock.UtcNow.DateTime, TimeZoneInfo.Utc, timeZone);
+                var now = TimeZoneInfo.ConvertTime(clock.UtcNow, TimeZoneInfo.Utc, timeZone);
 
                 var format = arguments[0].ToString();
                 output.Write(now.ToString(format));

@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
+using Orchard.Mvc.ActionConstraints;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
@@ -347,7 +347,7 @@ namespace Orchard.OpenId.Controllers
                     identity.AddClaim(claim.Type, claim.Value, OpenIdConnectConstants.Destinations.AccessToken, OpenIdConnectConstants.Destinations.IdentityToken);
                 }
             }
-            
+
             var ticket = new AuthenticationTicket(
                 new ClaimsPrincipal(identity),
                 new AuthenticationProperties(),

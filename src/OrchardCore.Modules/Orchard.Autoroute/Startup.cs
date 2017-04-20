@@ -20,8 +20,8 @@ using Orchard.Data.Migration;
 using Orchard.Indexing;
 using Orchard.Security.Permissions;
 using Orchard.Tokens;
-using YesSql.Core.Indexes;
-using YesSql.Core.Services;
+using YesSql.Indexes;
+using YesSql;
 
 namespace Orchard.Autoroute
 {
@@ -50,10 +50,10 @@ namespace Orchard.Autoroute
         {
             var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
             var session = serviceProvider.GetRequiredService<ISession>();
-            var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().List().GetAwaiter().GetResult();
+            var autoroutes = session.QueryIndexAsync<AutoroutePartIndex>().Where(o => o.Published).List().GetAwaiter().GetResult();
 
             entries.AddEntries(autoroutes.Select(x => new AutorouteEntry { ContentItemId = x.ContentItemId, Path = x.Path }));
-            
+
             var autorouteRoute = new AutorouteRoute(entries, routes.DefaultHandler);
 
             routes.Routes.Insert(0, autorouteRoute);

@@ -12,7 +12,7 @@ using Orchard.Deployment.Remote.Services;
 using Orchard.Deployment.Services;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Recipes.Services;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Deployment.Remote.Controllers
 {

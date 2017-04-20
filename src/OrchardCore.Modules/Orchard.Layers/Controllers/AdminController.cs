@@ -16,7 +16,7 @@ using Orchard.Layers.Models;
 using Orchard.Layers.Services;
 using Orchard.Layers.ViewModels;
 using Orchard.Settings;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Layers.Controllers
 {

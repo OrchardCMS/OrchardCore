@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using Orchard.Hosting;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -73,7 +72,6 @@ namespace Microsoft.AspNetCore.Modules
                             }
                         }
                     }
-
                     await _next.Invoke(httpContext);
                 }
             }

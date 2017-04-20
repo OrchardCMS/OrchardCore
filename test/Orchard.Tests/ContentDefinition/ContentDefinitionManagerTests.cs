@@ -8,7 +8,7 @@
 //using System.Linq;
 //using System.Threading.Tasks;
 //using Xunit;
-//using YesSql.Core.Services;
+//using YesSql;
 
 //namespace Orchard.Tests.ContentDefinition
 //{

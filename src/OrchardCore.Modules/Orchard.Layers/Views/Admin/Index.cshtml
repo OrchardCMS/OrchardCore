@@ -1,4 +1,5 @@
-﻿@using Orchard.ContentManagement.Metadata.Settings;
+﻿@using System.Globalization;
+@using Orchard.ContentManagement.Metadata.Settings;
 @model Orchard.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
@@ -52,7 +53,7 @@
                                                    class="layer-metadata" 
                                                    data-zone="@zone"
                                                    data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
-                                                   data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position"
+                                                   data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
                                                    data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" 
                                             />
                                         </li>

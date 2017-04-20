@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.Settings;
@@ -13,14 +13,14 @@ namespace Orchard.DisplayManagement.Shapes
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
 
-        private readonly ISystemClock _clock;
+        private readonly IClock _clock;
         private readonly ISiteService _siteService;
 
         //private readonly IDateLocalizationServices _dateLocalizationServices;
         //private readonly IDateTimeFormatProvider _dateTimeLocalization;
 
         public DateTimeShapes(
-            ISystemClock clock,
+            IClock clock,
             IPluralStringLocalizer<DateTimeShapes> localizer,
             ISiteService siteService
             //IDateLocalizationServices dateLocalizationServices,
@@ -39,8 +39,8 @@ namespace Orchard.DisplayManagement.Shapes
         [Shape]
         public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
         {
-            Utc = Utc ?? _clock.UtcNow.DateTime;
-            Origin = Origin ?? _clock.UtcNow.DateTime;
+            Utc = Utc ?? _clock.UtcNow;
+            Origin = Origin ?? _clock.UtcNow;
 
             var time = _clock.UtcNow - Utc.Value;
 
@@ -89,7 +89,7 @@ namespace Orchard.DisplayManagement.Shapes
         {
             if (Utc == null)
             {
-                Utc = _clock.UtcNow.DateTime;
+                Utc = _clock.UtcNow;
             }
 
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById((await _siteService.GetSiteSettingsAsync()).TimeZone);
