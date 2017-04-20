@@ -20,6 +20,8 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
     {
+        private static EventId TenantNotStarted = new EventId(0);
+
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
@@ -119,7 +121,7 @@ namespace Orchard.Environment.Shell
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"A tenant could not be started: {settings.Name}", ex);
+                        _logger.LogError(TenantNotStarted, ex, $"A tenant could not be started: {settings.Name}");
 
                         if (ex.IsFatal())
                         {
@@ -148,7 +150,7 @@ namespace Orchard.Environment.Shell
                 }
 
                 return;
-            }            
+            }
 
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
