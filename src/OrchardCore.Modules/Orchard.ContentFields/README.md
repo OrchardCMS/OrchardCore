@@ -10,6 +10,7 @@ This modules provides common content fields.
 | --- | --- | --- |
 | TextField | `Text (string)` | `TextField` |
 | BooleanField | `Value (bool)` | `BooleanField` |
+| Enumerationield | `Value (string)` | `EnumerationField` |
 | HtmlField | `Html (string)` | `HtmlField` |
 | NumericField | `Value (decimal?)` | `NumericField` |
 

@@ -1,0 +1,32 @@
+﻿@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@using Orchard.ContentFields.Settings;
+@using Orchard.ContentManagement.Metadata.Models
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<EnumerationFieldSettings>();
+    string name = Model.PartFieldDefinition.DisplayName();
+    string[] options = (!String.IsNullOrWhiteSpace(settings.Options)) ? settings.Options.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None) : new string[] { T["Select an option"].ToString() };
+}
+
+<fieldset class="form-group">
+    <div class="row col-sm">
+        <label asp-for="Value">@name</label>
+        @*<input name="@Html.NameFor(m => m.Value)" type="hidden" />*@
+    </div>
+    @{
+        int index = 0;
+        foreach (var option in options)
+        {
+            index++;
+            if (!string.IsNullOrWhiteSpace(option))
+            {
+                <div class="form-check">
+                    <label for="@Html.IdFor(m => m.Value)-@index" class="form-check-label">
+                        <input class="form-check-input" type="checkbox" id="@Html.IdFor(m => m.Value)-@index" name="@Html.NameFor(m => m.Value)" value="@option" @((Model.Field.SelectedValues != null && Model.Field.SelectedValues.Contains(option)) ? "checked=\"checked\"" : "") />
+                        @T[option]
+                    </label>
+                </div>
+            }
+        }
+    }
+    <span class="hint">@settings.Hint</span>
+</fieldset>
