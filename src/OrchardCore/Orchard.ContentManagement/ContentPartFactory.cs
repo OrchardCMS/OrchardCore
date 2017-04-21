@@ -30,9 +30,6 @@ public class ContentPartFactory : IContentPartFactory
 
     public Type GetContentPartType(string partName)
     {
-        Type result = null;
-        _contentPartTypes.TryGetValue(partName, out result);
-
-        return result;
+        return _contentPartTypes.GetOrAdd(partName, _ => typeof(ContentPart));
     }
 }

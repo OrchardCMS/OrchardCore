@@ -69,7 +69,7 @@ namespace Orchard.ContentManagement.Display
             {
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partTypeName) ?? typeof(ContentPart);
+                var partType = _contentPartFactory.GetContentPartType(partTypeName);
                 var part = contentItem.Get(partType, partName) as ContentPart;
 
                 foreach (var displayDriver in _partDisplayDrivers)
