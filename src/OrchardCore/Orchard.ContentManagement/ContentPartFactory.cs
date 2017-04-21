@@ -5,8 +5,8 @@ using System.Collections.Generic;
 namespace Orchard.ContentManagement
 {
     /// <summary>
-    /// Implements <see cref="IContentPartFactory"/> by resolving all registered <see cref="ContentPart"/> types
-    /// and memoizing a statically typed <see cref="IContentElementActivator"/>.
+    /// Implements <see cref="ITypeActivatorFactory{ContentPart}"/> by resolving all registered <see cref="ContentPart"/> types
+    /// and memoizing a statically typed <see cref="ITypeActivator{ContentPart}"/>.
     /// </summary>
     public class ContentPartFactory : ITypeActivatorFactory<ContentPart>
     {
@@ -30,18 +30,6 @@ namespace Orchard.ContentManagement
         public ITypeActivator<ContentPart> GetTypeActivator(string partName)
         {
             return _contentPartActivators.GetOrAdd(partName, _ => ContentPartActivator);
-        }
-    }
-
-    internal class GenericTypeActivator<T, TInstance> : ITypeActivator<TInstance> where T : TInstance, new()
-    {
-        /// <inheritdoc />
-        public Type Type => typeof(T);
-
-        /// <inheritdoc />
-        public TInstance CreateInstance()
-        {
-            return new T();
         }
     }
 }

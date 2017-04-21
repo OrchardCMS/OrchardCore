@@ -14,12 +14,12 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartHandler> _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentFieldFactory _contentFieldFactory;
+        private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
 
         public ContentPartHandlerCoordinator(
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentPartHandler> partHandlers,
-            IContentFieldFactory contentFieldFactory,
+            ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentPartHandlerCoordinator> logger)
         {
@@ -175,12 +175,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
                     if (!part.Has(fieldName))
                     {
-                        var field = _contentFieldFactory.CreateContentField(partFieldDefinition.FieldDefinition.Name);
-
-                        if (field != null)
-                        {
-                            context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, field);
-                        }
+                        var activator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
+                        context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, activator.CreateInstance());
                     }
                 }
             }
