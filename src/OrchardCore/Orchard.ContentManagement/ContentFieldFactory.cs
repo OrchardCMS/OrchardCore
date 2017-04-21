@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Orchard.ContentManagement
@@ -12,24 +11,29 @@ namespace Orchard.ContentManagement
     {
         private ITypeActivator<ContentField> ContentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
 
-        private readonly ConcurrentDictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
+        private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
 
         public ContentFieldFactory(IEnumerable<ContentField> contentFields)
         {
-            _contentFieldActivators = new ConcurrentDictionary<string, ITypeActivator<ContentField>>();
+            _contentFieldActivators = new Dictionary<string, ITypeActivator<ContentField>>();
 
             foreach (var contentField in contentFields)
             {
                 var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(contentField.GetType(), typeof(ContentField));
                 var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);
-                _contentFieldActivators.TryAdd(contentField.GetType().Name, activator);
+                _contentFieldActivators.Add(contentField.GetType().Name, activator);
             }
         }
 
         /// <inheritdoc />
-        public ITypeActivator<ContentField> GetTypeActivator(string partName)
+        public ITypeActivator<ContentField> GetTypeActivator(string fieldName)
         {
-            return _contentFieldActivators.GetOrAdd(partName, _ => ContentFieldActivator);
+            if (_contentFieldActivators.TryGetValue(fieldName, out var activator))
+            {
+                return activator;
+            }
+
+            return ContentFieldActivator;
         }
     }
 }
