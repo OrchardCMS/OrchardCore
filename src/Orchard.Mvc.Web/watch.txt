@@ -1,0 +1,1 @@
+..\OrchardCore.Modules\Orchard.Mvc.HelloWorld\Orchard.Mvc.HelloWorld.csproj

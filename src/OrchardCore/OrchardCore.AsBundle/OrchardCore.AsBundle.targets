@@ -40,7 +40,7 @@
       ContinueOnError="true" />
   </Target>
 
-  <Target Name="ClearWatchProjects" BeforeTargets="_CollectWatchProjects" Condition="Exists('watch.txt')">
+  <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects" Condition="Exists('watch.txt')">
     <ItemGroup>
       <ProjectReference Remove="@(ProjectReference)" />
     </ItemGroup>
