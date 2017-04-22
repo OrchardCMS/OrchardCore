@@ -8,7 +8,7 @@
     <Message Text="Copying package assets" Importance="high" />
     <Copy
       SourceFiles="@(PackageAssetFiles)"
-      DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
+      DestinationFolder="Packages\%(RecursiveDir)"
       ContinueOnError="true" />
 
     <MSBuild
@@ -27,16 +27,16 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('$(MSBuildProjectDirectory)\Packages')">
+  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
     <ItemGroup>
      <AllPackageAssetFiles
-       Include="$(MSBuildProjectDirectory)\Packages\**" />
+       Include="Packages\**" />
     </ItemGroup>
     <Delete
       Files="@(AllPackageAssetFiles)"
       ContinueOnError="true" />
     <RemoveDir
-      Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
+      Directories="Packages\%(AllPackageAssetFiles.RecursiveDir)"
       ContinueOnError="true" />
   </Target>
 

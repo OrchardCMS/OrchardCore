@@ -30,7 +30,7 @@
     </ItemGroup>
     <Delete
       Files="@(ApplicationAssetFiles)"
-      Condition="!Exists('$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+      Condition="!Exists('%(RecursiveDir)%(Filename)%(Extension)')"
       ContinueOnError="true"/>
     <Message Text="Packaging asset files: $(MSBuildProjectName)" Importance="high" />
     <Copy
