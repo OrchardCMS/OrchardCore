@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Events\Orchard.Events.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\Orchard.Localization\Orchard.Localization.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Parser.Yaml\Orchard.Parser.Yaml.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\Orchard.Recipes.Implementations\Orchard.Recipes.Implementations.csproj" />
   </ItemGroup>
@@ -39,6 +40,21 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Localization\POSampleFiles.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PoSampleFiles.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Localization\PoSampleFiles.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PoSampleFiles.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
