@@ -1,0 +1,2 @@
+..\OrchardCore.Modules\Orchard.Demo\Orchard.Demo.csproj
+..\OrchardCore.Modules\Orchard.Body\Orchard.Body.csproj

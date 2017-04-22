@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <PackageRazorFiles Include="**\*.cshtml" />
-    <Watch Include="@(PackageRazorFiles)" />
   </ItemGroup>
 
   <Target Name="CopyPackageRazorFiles" Condition="'$(ApplicationDirectory)' != '' And Exists('$(ApplicationDirectory)')">

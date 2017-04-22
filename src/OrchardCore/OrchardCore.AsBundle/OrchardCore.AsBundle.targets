@@ -40,6 +40,33 @@
       ContinueOnError="true" />
   </Target>
 
+  <Target Name="ClearWatchProjects" BeforeTargets="_CollectWatchProjects" Condition="Exists('watch.txt')">
+    <ItemGroup>
+      <ProjectReference Remove="@(ProjectReference)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="WatchPackageRazorFiles" BeforeTargets="_WriteGeneratedWatchList" Condition="Exists('watch.txt')">
+    <ReadLinesFromFile File="watch.txt">
+      <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
+    </ReadLinesFromFile>
+    <ItemGroup>
+      <ProjectsToWatchFullPath Include="%(ProjectsToWatch.FullPath)" />
+      <Watch Include="%(ProjectsToWatchFullPath.RelativeDir)**\*.cshtml" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyPackageRazorFiles" Condition="Exists('watch.txt')">
+    <ReadLinesFromFile File="watch.txt">
+      <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
+    </ReadLinesFromFile>
+    <MSBuild
+      Targets="CopyPackageRazorFiles"
+      Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
+      Projects="%(ProjectsToWatch.FullPath)">
+    </MSBuild>
+  </Target>
+
   <!--
     Defines msbuild props and items on a Bundle package to publish all extensions assets (local and packages).
   -->
