@@ -13,11 +13,16 @@ namespace Orchard.Diagnostics
     {
         private readonly FileExtensionContentTypeProvider _contentTypeProvider = new FileExtensionContentTypeProvider();
 
+        private readonly IHostingEnvironment _hostingEnvironment;
+
+        public Startup(IHostingEnvironment hostingEnvironment)
+        {
+            _hostingEnvironment = hostingEnvironment;
+        }
+
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var env = serviceProvider.GetService<IHostingEnvironment>();
-
-            if (!env.IsDevelopment())
+            if (!_hostingEnvironment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
             }
