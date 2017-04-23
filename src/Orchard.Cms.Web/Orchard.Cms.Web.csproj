@@ -9,20 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="App_Data\**" />
-    <Content Remove="App_Data\**" />
-    <EmbeddedResource Remove="App_Data\**" />
-    <None Remove="App_Data\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ResolvedFileToPublish Include="App_Data\**">
-      <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-    </ResolvedFileToPublish>
   </ItemGroup>
 
   <ItemGroup>

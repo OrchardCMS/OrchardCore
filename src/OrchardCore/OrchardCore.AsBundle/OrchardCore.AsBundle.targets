@@ -75,11 +75,24 @@
     <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
   </PropertyGroup>
 
+  <ItemGroup Condition="Exists('App_Data\Sites')">
+    <Compile Remove="App_Data\**" />
+    <Content Remove="App_Data\**" />
+    <EmbeddedResource Remove="App_Data\**" />
+    <None Remove="App_Data\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Packages\**" />
     <Content Remove="Packages\**" />
     <EmbeddedResource Remove="Packages\**" />
     <None Remove="Packages\**" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('App_Data\Sites')">
+    <ResolvedFileToPublish Include="App_Data\**" Exclude="App_Data\**\*.log">
+      <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+    </ResolvedFileToPublish>
   </ItemGroup>
 
   <ItemGroup>
