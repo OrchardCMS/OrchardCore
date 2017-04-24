@@ -30,6 +30,7 @@
     <WriteLinesToFile
       File="obj/$(MSBuildProjectFile).dotnetwatch.txt"
       Lines="@(PackageProjectReferences)"
+      Condition="'@(PackageProjectReferences)' != ''"
       Overwrite="true"
       Encoding="Unicode"
       ContinueOnError="true" />
