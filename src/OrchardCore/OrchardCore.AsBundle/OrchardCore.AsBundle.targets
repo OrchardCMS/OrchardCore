@@ -1,5 +1,9 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <DotnetWatchList>obj/$(MSBuildProjectFile).dotnetwatch.txt</DotnetWatchList>
+  </PropertyGroup>
+
   <!--
     Defines msbuild tasks on a Bundle package to copy all extensions assets to the project folder.
   -->
@@ -28,7 +32,7 @@
 
     <Message Text="Generating watch file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      File="obj/$(MSBuildProjectFile).dotnetwatch.txt"
+      File="$(DotnetWatchList)"
       Lines="@(PackageProjectReferences)"
       Condition="'@(PackageProjectReferences)' != ''"
       Overwrite="true"
@@ -43,7 +47,8 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
+  <Target Name="CleanPackageAssets" AfterTargets="Clean"
+          Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
     <ItemGroup>
      <AllPackageAssetFiles Include="Packages\**" />
     </ItemGroup>
@@ -56,15 +61,15 @@
   </Target>
 
   <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true'">
     <ItemGroup>
       <ProjectReference Remove="@(ProjectReference)" />
     </ItemGroup>
   </Target>
 
   <Target Name="WatchPackageRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
-    <ReadLinesFromFile File="obj/$(MSBuildProjectFile).dotnetwatch.txt">
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('$(DotnetWatchList)')">
+    <ReadLinesFromFile File="$(DotnetWatchList)">
       <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
     </ReadLinesFromFile>
     <ItemGroup>
@@ -73,8 +78,8 @@
   </Target>
 
   <Target Name="CopyPackageRazorFiles"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
-    <ReadLinesFromFile File="obj/$(MSBuildProjectFile).dotnetwatch.txt">
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('$(DotnetWatchList)')">
+    <ReadLinesFromFile File="$(DotnetWatchList)">
       <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
     </ReadLinesFromFile>
     <ItemGroup>
