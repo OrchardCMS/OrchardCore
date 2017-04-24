@@ -5,22 +5,18 @@
   -->
 
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
-    <ItemGroup>
-      <PackageAssetFiles
-        Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
-      <ProjectAssetFiles
-        Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
-    </ItemGroup>
-    <Delete
-      Files="@(ProjectAssetFiles)"
-      Condition="!Exists('$(Temp)\OrchardCorePackages\%(RecursiveDir)%(Filename)%(Extension)')"
-      ContinueOnError="true"/>
     <Message Text="Copying package assets" Importance="high" />
     <Copy
       SourceFiles="@(PackageAssetFiles)"
       DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
+      ContinueOnError="true" />
+
+    <MSBuild
+      Targets="CopyPackageAssetFiles"
+      BuildInParallel="$(BuildInParallel)"
+      Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != '' And (Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)Theme.txt'))"
       ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
@@ -31,18 +27,16 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
+  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('$(MSBuildProjectDirectory)\Packages')">
     <ItemGroup>
      <AllPackageAssetFiles
        Include="$(MSBuildProjectDirectory)\Packages\**" />
     </ItemGroup>
     <Delete
       Files="@(AllPackageAssetFiles)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
       ContinueOnError="true" />
     <RemoveDir
       Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
       ContinueOnError="true" />
   </Target>
 
@@ -52,7 +46,6 @@
 
   <PropertyGroup>
     <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
-    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
   </PropertyGroup>
 
   <ItemGroup>

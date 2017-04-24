@@ -71,8 +71,7 @@ namespace Orchard.Resources
 
             manifest
                 .DefineScript("bootstrap")
-                .SetDependencies("jQuery")
-                .SetDependencies("tether")
+                .SetDependencies("jQuery", "tether")
                 .SetUrl("/Orchard.Resources/Scripts/bootstrap.min.js", "/Orchard.Resources/Scripts/bootstrap.js")
                 .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js")
                 .SetCdnIntegrity("sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn")

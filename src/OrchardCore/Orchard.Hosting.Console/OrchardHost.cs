@@ -32,11 +32,11 @@ namespace Orchard.Hosting
                 serviceProvider, _logger, args);
         }
 
-        public async Task<CommandReturnCodes> RunAsync()
+        public Task<CommandReturnCodes> RunAsync()
         {
             try
             {
-                return await DoRunAsync();
+                return DoRunAsync();
             }
             catch (Exception e)
             {
@@ -45,7 +45,7 @@ namespace Orchard.Hosting
                 {
                     _logger.LogError("  {0}", e.Message);
                 }
-                return CommandReturnCodes.Fail;
+                return Task.FromResult(CommandReturnCodes.Fail);
             }
         }
 
@@ -81,9 +81,9 @@ namespace Orchard.Hosting
             return _commandHostContextProvider.CreateContext();
         }
 
-        private async Task<CommandReturnCodes> ExecuteSingleCommandAsync(CommandHostContext context)
+        private Task<CommandReturnCodes> ExecuteSingleCommandAsync(CommandHostContext context)
         {
-            return await context.CommandHost.RunCommandAsync(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
+            return context.CommandHost.RunCommandAsync(_input, _output, context.Arguments.Tenant, context.Arguments.Arguments.ToArray(), context.Arguments.Switches);
         }
         
         public async Task<CommandReturnCodes> ExecuteInteractiveAsync(CommandHostContext context)
@@ -141,10 +141,10 @@ namespace Orchard.Hosting
             return context;
         }
 
-        private async Task<CommandReturnCodes> RunCommandInSessionAsync(CommandHostContext context, string command)
+        private Task<CommandReturnCodes> RunCommandInSessionAsync(CommandHostContext context, string command)
         {
             var args = new OrchardParametersParser().Parse(new CommandParametersParser().Parse(new CommandParser().Parse(command)));
-            return await context.CommandHost.RunCommandAsync(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
+            return context.CommandHost.RunCommandAsync(_input, _output, args.Tenant, args.Arguments.ToArray(), args.Switches);
         }
 
         private async Task DisplayInteractiveHelpAsync()

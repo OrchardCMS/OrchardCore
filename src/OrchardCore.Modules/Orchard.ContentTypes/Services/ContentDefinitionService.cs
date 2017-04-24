@@ -12,8 +12,8 @@ using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
-using YesSql.Core.Services;
+using Orchard.Mvc.Utilities;
+using YesSql;
 
 namespace Orchard.ContentTypes.Services
 {

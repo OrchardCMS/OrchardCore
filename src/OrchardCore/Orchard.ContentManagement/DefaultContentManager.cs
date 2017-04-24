@@ -9,7 +9,7 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentManagement
 {
@@ -72,14 +72,14 @@ namespace Orchard.ContentManagement
             return context3.ContentItem;
         }
 
-        public async Task<ContentItem> GetAsync(string contentItemId)
+        public Task<ContentItem> GetAsync(string contentItemId)
         {
             if (contentItemId == null)
             {
                 throw new ArgumentNullException(nameof(contentItemId));
             }
 
-            return await GetAsync(contentItemId, VersionOptions.Published);
+            return GetAsync(contentItemId, VersionOptions.Published);
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)

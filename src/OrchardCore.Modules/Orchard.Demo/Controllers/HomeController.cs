@@ -11,7 +11,7 @@ using Orchard.Demo.Services;
 using Orchard.DisplayManagement;
 using Orchard.Environment.Cache;
 using Orchard.Events;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Demo.Controllers
 {

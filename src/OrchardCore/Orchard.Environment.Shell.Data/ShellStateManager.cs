@@ -2,7 +2,7 @@
 using Orchard.Environment.Shell.State;
 using System.Linq;
 using System.Threading.Tasks;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Environment.Shell
 {

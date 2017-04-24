@@ -15,10 +15,11 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="YesSql.Storage.Sql" Version="1.0.0-beta-0005" />
-    <PackageReference Include="MySqlConnector" Version="0.14.0" />
-    <PackageReference Include="Npgsql" Version="3.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1014" />
+    <PackageReference Include="YesSql.Provider.MySql" Version="1.0.0-beta-1014" />
+    <PackageReference Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1014" />
+    <PackageReference Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1014" />
   </ItemGroup>
 
 </Project>

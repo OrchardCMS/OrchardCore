@@ -1,25 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Orchard.ContentManagement;
 
-public class ContentFieldFactory : IContentFieldFactory
+namespace Orchard.ContentManagement
 {
-    private readonly IEnumerable<ContentField> _contentFields;
-    
-    public ContentFieldFactory(IEnumerable<ContentField> contentFields)
+    /// <summary>
+    /// Implements <see cref="ITypeActivatorFactory{ContentField}"/> by resolving all registered <see cref="ContentField"/> types
+    /// and memoizing a statically typed <see cref="ITypeActivator{ContentField}"/>.
+    /// </summary>
+    public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
     {
-        _contentFields = contentFields;
-    }
+        private ITypeActivator<ContentField> ContentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
 
-    public ContentField CreateContentField(string FieldName)
-    {
-        var contentField = _contentFields.FirstOrDefault(x => x.GetType().Name == FieldName);
-        if (contentField != null)
-        { 
-            return (ContentField)Activator.CreateInstance(contentField.GetType());
+        private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
+
+        public ContentFieldFactory(IEnumerable<ContentField> contentFields)
+        {
+            _contentFieldActivators = new Dictionary<string, ITypeActivator<ContentField>>();
+
+            foreach (var contentField in contentFields)
+            {
+                var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(contentField.GetType(), typeof(ContentField));
+                var activator = (ITypeActivator<ContentField>)Activator.CreateInstance(activatorType);
+                _contentFieldActivators.Add(contentField.GetType().Name, activator);
+            }
         }
 
-        return null;
+        /// <inheritdoc />
+        public ITypeActivator<ContentField> GetTypeActivator(string fieldName)
+        {
+            if (_contentFieldActivators.TryGetValue(fieldName, out var activator))
+            {
+                return activator;
+            }
+
+            return ContentFieldActivator;
+        }
     }
 }

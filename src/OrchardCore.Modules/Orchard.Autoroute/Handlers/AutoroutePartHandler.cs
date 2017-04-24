@@ -6,9 +6,11 @@ using Orchard.Autoroute.Services;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Records;
 using Orchard.Environment.Cache;
 using Orchard.Settings;
 using Orchard.Tokens.Services;
+using YesSql;
 
 namespace Orchard.Autoroute.Handlers
 {
@@ -19,19 +21,22 @@ namespace Orchard.Autoroute.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
+        private readonly YesSql.ISession _session;
 
         public AutoroutePartHandler(
-            IAutorouteEntries entries, 
-            ITokenizer tokenizer, 
+            IAutorouteEntries entries,
+            ITokenizer tokenizer,
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
-            ITagCache tagCache)
+            ITagCache tagCache,
+            YesSql.ISession session)
         {
             _tokenizer = tokenizer;
             _contentDefinitionManager = contentDefinitionManager;
             _entries = entries;
             _siteService = siteService;
             _tagCache = tagCache;
+            _session = session;
         }
 
         public override void Published(PublishContentContext context, AutoroutePart part)
@@ -99,6 +104,11 @@ namespace Orchard.Autoroute.Handlers
                     .Content(part.ContentItem);
 
                 part.Path = _tokenizer.Tokenize(pattern, ctx);
+                if (!IsPathUnique(part.Path, part))
+                {
+                    part.Path = GenerateUniquePath(part.Path, part);
+                }
+
                 part.Apply();
             }
         }
@@ -107,7 +117,7 @@ namespace Orchard.Autoroute.Handlers
         {
             _tagCache.RemoveTag($"alias:{part.Path}");
         }
-        
+
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>
@@ -118,6 +128,33 @@ namespace Orchard.Autoroute.Handlers
             var pattern = contentTypePartDefinition.Settings.ToObject<AutoroutePartSettings>().Pattern;
 
             return pattern;
+        }
+
+        private string GenerateUniquePath(string path, AutoroutePart context)
+        {
+            var version = 1;
+            var unversionedPath = path;
+
+            var versionSeparatorPosition = path.LastIndexOf('-');
+            if (versionSeparatorPosition > -1)
+            {
+                int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version);
+                unversionedPath = path.Substring(0, versionSeparatorPosition);
+            }
+
+            while (true)
+            {
+                var versionedPath = $"{unversionedPath}-{version++}";
+                if (IsPathUnique(versionedPath, context))
+                {
+                    return versionedPath;
+                }
+            }
+        }
+
+        private bool IsPathUnique(string path, AutoroutePart context)
+        {
+            return _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count().GetAwaiter().GetResult() == 0;
         }
     }
 }

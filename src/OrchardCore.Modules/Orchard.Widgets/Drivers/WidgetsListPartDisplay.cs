@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
+using Orchard.Mvc.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
@@ -80,7 +80,7 @@ namespace Orchard.Widgets.Drivers
                 var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
                 m.AvailableZones = settings.Zones;
-                
+
                 m.WidgetsListPart = widgetPart;
                 m.Updater = context.Updater;
             });

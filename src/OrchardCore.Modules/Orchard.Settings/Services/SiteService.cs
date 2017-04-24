@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using Orchard.Environment.Cache;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Settings.Services
 {

@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Mvc.Modules\Microsoft.AspNetCore.Mvc.Modules.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Mvc.Core\Orchard.Mvc.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Scripting.Core\Orchard.Scripting.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Scripting.JavaScript\Orchard.Scripting.JavaScript.csproj" />
   </ItemGroup>

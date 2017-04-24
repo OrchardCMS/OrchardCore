@@ -1,6 +1,6 @@
 ﻿using System;
 using Orchard.Autoroute.Model;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.ContentManagement.Records
 {
@@ -8,6 +8,7 @@ namespace Orchard.ContentManagement.Records
     {
         public string ContentItemId { get; set; }
         public string Path { get; set; }
+        public bool Published { get; set; }
     }
 
     public class AutoroutePartIndexProvider : IndexProvider<ContentItem>
@@ -18,12 +19,13 @@ namespace Orchard.ContentManagement.Records
                 .Map(contentItem =>
                 {
                     var path = contentItem.As<AutoroutePart>()?.Path;
-                    if (!String.IsNullOrEmpty(path))
+                    if (!String.IsNullOrEmpty(path) && (contentItem.Published || contentItem.Latest))
                     {
                         return new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = path
+                            Path = path,
+                            Published = contentItem.Published
                         };
                     }
 

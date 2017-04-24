@@ -10,7 +10,7 @@ using Orchard.Deployment.Indexes;
 using Orchard.Deployment.Services;
 using Orchard.Deployment.Steps;
 using Orchard.Environment.Navigation;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Deployment
 {

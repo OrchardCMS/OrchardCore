@@ -10,7 +10,7 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Settings;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentPreview.Controllers
 {

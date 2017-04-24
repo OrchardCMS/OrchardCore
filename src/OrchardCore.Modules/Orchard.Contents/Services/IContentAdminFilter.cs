@@ -3,7 +3,7 @@ using Orchard.Contents.ViewModels;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Navigation;
 using System.Threading.Tasks;
-using YesSql.Core.Query;
+using YesSql;
 
 namespace Orchard.Contents.Services
 {

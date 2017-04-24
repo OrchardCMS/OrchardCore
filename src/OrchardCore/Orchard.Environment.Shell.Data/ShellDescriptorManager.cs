@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Events;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Environment.Shell.Data.Descriptors
 {

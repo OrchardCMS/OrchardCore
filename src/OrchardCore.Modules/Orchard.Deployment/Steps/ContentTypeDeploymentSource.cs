@@ -2,7 +2,8 @@
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
-using YesSql.Core.Services;
+using YesSql;
+using YesSql.Services;
 
 namespace Orchard.Deployment.Steps
 {

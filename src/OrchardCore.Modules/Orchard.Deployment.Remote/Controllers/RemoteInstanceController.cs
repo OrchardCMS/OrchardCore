@@ -8,7 +8,7 @@ using Orchard.Admin;
 using Orchard.Deployment.Remote.Services;
 using Orchard.Deployment.Remote.ViewModels;
 using Orchard.DisplayManagement.Notify;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Deployment.Remote.Controllers
 {

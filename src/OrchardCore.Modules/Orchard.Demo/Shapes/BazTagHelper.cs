@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace Orchard.Demo.Shapes
+namespace Orchard.Demo.TagHelpers.Intellisense
 {
     public class BazTagHelper : TagHelper
     {

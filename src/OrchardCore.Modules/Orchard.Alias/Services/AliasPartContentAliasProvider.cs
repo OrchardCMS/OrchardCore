@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Orchard.ContentManagement;
 using Orchard.Alias.Indexes;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Alias.Services
 {

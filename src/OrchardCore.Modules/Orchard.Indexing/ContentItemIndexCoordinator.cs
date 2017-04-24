@@ -10,13 +10,13 @@ namespace Orchard.Indexing
     public class ContentItemIndexCoordinator : IContentItemIndexHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentPartFactory _contentPartFactory;
+        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartIndexHandler> _partIndexHandlers;
         private readonly IEnumerable<IContentFieldIndexHandler> _fieldIndexHandlers;
 
         public ContentItemIndexCoordinator(
             IContentDefinitionManager contentDefinitionManager,
-            IContentPartFactory contentPartFactory,
+            ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentPartIndexHandler> partIndexHandlers,
             IEnumerable<IContentFieldIndexHandler> fieldIndexHandlers,
             ILogger<ContentItemIndexCoordinator> logger)
@@ -43,8 +43,8 @@ namespace Orchard.Indexing
             {
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partTypeName) ?? typeof(ContentPart);
-                var part = (ContentPart)context.ContentItem.Get(partType, partName);
+                var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
+                var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
                 var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
 

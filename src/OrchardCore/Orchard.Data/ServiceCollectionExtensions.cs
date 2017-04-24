@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -12,9 +12,13 @@ using MySql.Data.MySqlClient;
 using Npgsql;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
-using YesSql.Core.Indexes;
-using YesSql.Core.Services;
+using YesSql.Indexes;
 using YesSql.Storage.Sql;
+using YesSql;
+using YesSql.Provider.MySql;
+using YesSql.Provider.Sqlite;
+using YesSql.Provider.SqlServer;
+using YesSql.Provider.PostgreSql;
 
 namespace Orchard.Data
 {
@@ -79,6 +83,11 @@ namespace Orchard.Data
                     ConnectionFactory = connectionFactory,
                     IsolationLevel = isolationLevel
                 };
+
+                storeConfiguration.RegisterMySql();
+                storeConfiguration.RegisterSqLite();
+                storeConfiguration.RegisterSqlServer();
+                storeConfiguration.RegisterPostgreSql();
 
                 if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
                 {

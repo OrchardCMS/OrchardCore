@@ -18,7 +18,7 @@ using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.Services;
 using Microsoft.AspNetCore.DataProtection;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Users
 {

@@ -20,6 +20,8 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellHost : IShellHost, IShellDescriptorManagerEventHandler
     {
+        private static EventId TenantNotStarted = new EventId(0);
+
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly IRunningShellTable _runningShellTable;
@@ -119,7 +121,7 @@ namespace Orchard.Environment.Shell
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"A tenant could not be started: {settings.Name}", ex);
+                        _logger.LogError(TenantNotStarted, ex, $"A tenant could not be started: {settings.Name}");
 
                         if (ex.IsFatal())
                         {
@@ -150,13 +152,12 @@ namespace Orchard.Environment.Shell
                 return;
             }
 
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
-            }
-
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
+                if (_logger.IsEnabled(LogLevel.Debug))
+                {
+                    _logger.LogDebug("Registering shell context for tenant {0}", context.Settings.Name);
+                }
                 _runningShellTable.Add(context.Settings);
             }
         }
@@ -164,7 +165,7 @@ namespace Orchard.Environment.Shell
         /// <summary>
         /// Creates a shell context based on shell settings
         /// </summary>
-        public async Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
+        public Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
             if (settings.State == TenantState.Uninitialized)
             {
@@ -173,7 +174,7 @@ namespace Orchard.Environment.Shell
                     _logger.LogDebug("Creating shell context for tenant {0} setup", settings.Name);
                 }
 
-                return await _shellContextFactory.CreateSetupContextAsync(settings);
+                return _shellContextFactory.CreateSetupContextAsync(settings);
             }
             else if (settings.State == TenantState.Disabled)
             {
@@ -182,7 +183,7 @@ namespace Orchard.Environment.Shell
                     _logger.LogDebug("Creating disabled shell context for tenant {0} setup", settings.Name);
                 }
 
-                return new ShellContext { Settings = settings };
+                return Task.FromResult(new ShellContext { Settings = settings });
             }
             else if(settings.State == TenantState.Running || settings.State == TenantState.Initializing)
             {
@@ -191,7 +192,7 @@ namespace Orchard.Environment.Shell
                     _logger.LogDebug("Creating shell context for tenant {0}", settings.Name);
                 }
 
-                return await _shellContextFactory.CreateShellContextAsync(settings);
+                return _shellContextFactory.CreateShellContextAsync(settings);
             }
             else
             {

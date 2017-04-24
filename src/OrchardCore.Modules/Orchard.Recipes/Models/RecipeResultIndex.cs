@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Recipes.Models
 {

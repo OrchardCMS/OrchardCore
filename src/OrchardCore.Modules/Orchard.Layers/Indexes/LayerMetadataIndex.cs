@@ -1,6 +1,6 @@
 ﻿using Orchard.ContentManagement;
 using Orchard.Layers.Models;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Layers.Indexes
 {

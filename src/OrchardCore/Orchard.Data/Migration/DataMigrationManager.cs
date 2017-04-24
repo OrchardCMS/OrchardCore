@@ -8,7 +8,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.Data.Migration.Records;
 using Orchard.Environment.Extensions;
-using YesSql.Core.Services;
+using YesSql;
+using YesSql.Sql;
 
 namespace Orchard.Data.Migration
 {
@@ -151,89 +152,87 @@ namespace Orchard.Data.Migration
             // apply update methods to each migration class for the module
             foreach (var migration in migrations)
             {
-                _session.ExecuteMigration(schemaBuilder =>
+                var schemaBuilder = new SchemaBuilder(_session);
+                migration.SchemaBuilder = schemaBuilder;
+
+                // copy the object for the Linq query
+                var tempMigration = migration;
+
+                // get current version for this migration
+                var dataMigrationRecord = GetDataMigrationRecordAsync(tempMigration).Result;
+
+                var current = 0;
+                if (dataMigrationRecord != null)
                 {
-                    migration.SchemaBuilder = schemaBuilder;
+                    current = dataMigrationRecord.Version.Value;
+                }
+                else
+                {
+                    dataMigrationRecord = new Records.DataMigration { DataMigrationClass = migration.GetType().FullName };
+                    _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
+                }
 
-                    // copy the object for the Linq query
-                    var tempMigration = migration;
-
-                    // get current version for this migration
-                    var dataMigrationRecord = GetDataMigrationRecordAsync(tempMigration).Result;
-
-                    var current = 0;
-                    if (dataMigrationRecord != null)
+                try
+                {
+                    // do we need to call Create() ?
+                    if (current == 0)
                     {
-                        current = dataMigrationRecord.Version.Value;
-                    }
-                    else
-                    {
-                        dataMigrationRecord = new Records.DataMigration { DataMigrationClass = migration.GetType().FullName };
-                        _dataMigrationRecord.DataMigrations.Add(dataMigrationRecord);
-                    }
+                        // try to resolve a Create method
 
-                    try
-                    {
-                        // do we need to call Create() ?
-                        if (current == 0)
+                        var createMethod = GetCreateMethod(migration);
+                        if (createMethod != null)
                         {
-                            // try to resolve a Create method
-
-                            var createMethod = GetCreateMethod(migration);
-                            if (createMethod != null)
-                            {
-                                current = (int)createMethod.Invoke(migration, new object[0]);
-                            }
+                            current = (int)createMethod.Invoke(migration, new object[0]);
                         }
+                    }
 
-                        var lookupTable = CreateUpgradeLookupTable(migration);
+                    var lookupTable = CreateUpgradeLookupTable(migration);
 
-                        while (lookupTable.ContainsKey(current))
+                    while (lookupTable.ContainsKey(current))
+                    {
+                        try
                         {
-                            try
+                            if (_logger.IsEnabled(LogLevel.Information))
                             {
-                                if (_logger.IsEnabled(LogLevel.Information))
-                                {
-                                    _logger.LogInformation("Applying migration for {0} from version {1}.", featureId, current);
-                                }
-                                current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                                _logger.LogInformation("Applying migration for {0} from version {1}.", featureId, current);
                             }
-                            catch (Exception ex)
+                            current = (int)lookupTable[current].Invoke(migration, new object[0]);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (ex.IsFatal())
                             {
-                                if (ex.IsFatal())
-                                {
-                                    throw;
-                                }
-                                _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", featureId, current);
                                 throw;
                             }
-                        }
-
-                        // if current is 0, it means no upgrade/create method was found or succeeded
-                        if (current == 0)
-                        {
-                            return;
-                        }
-
-                        dataMigrationRecord.Version = current;
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.IsFatal())
-                        {
+                            _logger.LogError(0, "An unexpected error occurred while applying migration on {0} from version {1}.", featureId, current);
                             throw;
                         }
-                        _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
-                        _session.Cancel();
-                        throw new Exception(T["Error while running migration version {0} for {1}.", current, featureId], ex);
                     }
-                    finally
+
+                    // if current is 0, it means no upgrade/create method was found or succeeded
+                    if (current == 0)
                     {
-                        // Persist data migrations
-                        _session.Save(_dataMigrationRecord);
+                        return;
                     }
-                });
-			}
+
+                    dataMigrationRecord.Version = current;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.IsFatal())
+                    {
+                        throw;
+                    }
+                    _logger.LogError(0, "Error while running migration version {0} for {1}.", current, featureId);
+                    _session.Cancel();
+                    throw new Exception(T["Error while running migration version {0} for {1}.", current, featureId], ex);
+                }
+                finally
+                {
+                    // Persist data migrations
+                    _session.Save(_dataMigrationRecord);
+                }
+            }
         }
 
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)

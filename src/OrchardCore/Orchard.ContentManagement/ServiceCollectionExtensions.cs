@@ -7,8 +7,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
 using Orchard.Environment.Cache;
-using Orchard.Recipes.Services;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.ContentManagement
 {
@@ -24,8 +23,8 @@ namespace Orchard.ContentManagement
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandler, UpdateContentsHandler>();
             services.AddScoped<IContentHandler, ContentPartHandlerCoordinator>();
-            services.AddSingleton<IContentPartFactory, ContentPartFactory>();
-            services.AddSingleton<IContentFieldFactory, ContentFieldFactory>();
+            services.AddSingleton<ITypeActivatorFactory<ContentPart>, ContentPartFactory>();
+            services.AddSingleton<ITypeActivatorFactory<ContentField>, ContentFieldFactory>();
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
             services.AddScoped<IContentAliasManager, ContentAliasManager>();
