@@ -15,7 +15,7 @@
         /// </summary>
         public bool Draftable { get; set; }
         /// <summary>
-        /// Used to determine if a published instance of this content type can be updated
+        /// Used to determine if this content type does not use versioning on publishing
         /// </summary>
         public bool Updatable { get; set; }
         /// <summary>
