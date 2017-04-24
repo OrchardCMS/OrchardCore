@@ -1,38 +1,39 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Orchard.ContentManagement;
 
-public class ContentPartFactory : IContentPartFactory
+namespace Orchard.ContentManagement
 {
-    private readonly ConcurrentDictionary<string, Type> _contentPartTypes;
-
-    public ContentPartFactory(IEnumerable<ContentPart> contentParts)
+    /// <summary>
+    /// Implements <see cref="ITypeActivatorFactory{ContentPart}"/> by resolving all registered <see cref="ContentPart"/> types
+    /// and memoizing a statically typed <see cref="ITypeActivator{ContentPart}"/>.
+    /// </summary>
+    public class ContentPartFactory : ITypeActivatorFactory<ContentPart>
     {
-        _contentPartTypes = new ConcurrentDictionary<string, Type>();
+        private ITypeActivator<ContentPart> ContentPartActivator = new GenericTypeActivator<ContentPart, ContentPart>();
 
-        foreach(var contentPart in contentParts)
+        private readonly Dictionary<string, ITypeActivator<ContentPart>> _contentPartActivators;
+
+        public ContentPartFactory(IEnumerable<ContentPart> contentParts)
         {
-            _contentPartTypes.TryAdd(contentPart.GetType().Name, contentPart.GetType());
-        }
-    }
+            _contentPartActivators = new Dictionary<string, ITypeActivator<ContentPart>>();
 
-    public ContentPart CreateContentPart(string partName)
-    {
-        var type = GetContentPartType(partName);
-        if (type != null)
-        { 
-            return (ContentPart)Activator.CreateInstance(type);
+            foreach (var contentPart in contentParts)
+            {
+                var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
+                var activator = (ITypeActivator<ContentPart>)Activator.CreateInstance(activatorType);
+                _contentPartActivators.Add(contentPart.GetType().Name, activator);
+            }
         }
 
-        return null;
-    }
+        /// <inheritdoc />
+        public ITypeActivator<ContentPart> GetTypeActivator(string partName)
+        {
+            if (_contentPartActivators.TryGetValue(partName, out var activator))
+            {
+                return activator;
+            }
 
-    public Type GetContentPartType(string partName)
-    {
-        Type result = null;
-        _contentPartTypes.TryGetValue(partName, out result);
-
-        return result;
+            return ContentPartActivator;
+        }
     }
 }
