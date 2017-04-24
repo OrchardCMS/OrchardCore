@@ -11,12 +11,27 @@
       DestinationFolder="Packages\%(RecursiveDir)"
       ContinueOnError="true" />
 
+    <ItemGroup Condition="'@(_MSBuildProjectReferenceExistent)' != ''">
+      <PackageProjectReferences
+        Include="@(_MSBuildProjectReferenceExistent)"
+        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)Theme.txt')" />
+    </ItemGroup>
+
     <MSBuild
       Targets="CopyPackageAssetFiles"
       BuildInParallel="$(BuildInParallel)"
       Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
-      Projects="@(_MSBuildProjectReferenceExistent)"
-      Condition="'@(_MSBuildProjectReferenceExistent)' != '' And (Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)Theme.txt'))"
+      Projects="@(PackageProjectReferences)"
+      Condition="'@(PackageProjectReferences)' != ''"
+      ContinueOnError="true">
+    </MSBuild>
+
+    <Message Text="Generating watch file: $(MSBuildProjectName)" Importance="high" />
+    <WriteLinesToFile
+      File="obj/$(MSBuildProjectFile).dotnetwatch.txt"
+      Lines="@(PackageProjectReferences)"
+      Overwrite="true"
+      Encoding="Unicode"
       ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
@@ -29,8 +44,7 @@
 
   <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
     <ItemGroup>
-     <AllPackageAssetFiles
-       Include="Packages\**" />
+     <AllPackageAssetFiles Include="Packages\**" />
     </ItemGroup>
     <Delete
       Files="@(AllPackageAssetFiles)"
@@ -40,14 +54,16 @@
       ContinueOnError="true" />
   </Target>
 
-  <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects" Condition="Exists('watch.txt')">
+  <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects"
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
     <ItemGroup>
       <ProjectReference Remove="@(ProjectReference)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="WatchPackageRazorFiles" BeforeTargets="_WriteGeneratedWatchList" Condition="Exists('watch.txt')">
-    <ReadLinesFromFile File="watch.txt">
+  <Target Name="WatchPackageRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
+    <ReadLinesFromFile File="obj/$(MSBuildProjectFile).dotnetwatch.txt">
       <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
     </ReadLinesFromFile>
     <ItemGroup>
@@ -56,15 +72,20 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CopyPackageRazorFiles" Condition="Exists('watch.txt')">
-    <ReadLinesFromFile File="watch.txt">
+  <Target Name="CopyPackageRazorFiles"
+          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('obj/$(MSBuildProjectFile).dotnetwatch.txt')">
+    <ReadLinesFromFile File="obj/$(MSBuildProjectFile).dotnetwatch.txt">
       <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
     </ReadLinesFromFile>
-    <MSBuild
-      Targets="CopyPackageRazorFiles"
-      Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
-      Projects="%(ProjectsToWatch.FullPath)">
-    </MSBuild>
+    <ItemGroup>
+      <PackageRazorFiles Include="%(ProjectsToWatch.RootDir)%(Directory)**\*.cshtml">
+        <ProjectName>%(Filename)</ProjectName>
+      </PackageRazorFiles>
+    </ItemGroup>
+    <Message Text="Copying package razor files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(PackageRazorFiles)"
+      DestinationFolder="Packages\%(ProjectName)\%(RecursiveDir)" />
   </Target>
 
   <!--
