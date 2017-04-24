@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Add the OrchardCore.AsModule.props file in the package -->
+  <ItemGroup>
+    <None Include="OrchardCore.AsModule.props" Pack="true">
+      <PackagePath>build\netstandard1.6\OrchardCore.AsModule.props</PackagePath>
+    </None>
+    <None Include="Package.Build.props" Pack="true">
+      <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

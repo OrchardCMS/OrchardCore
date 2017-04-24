@@ -27,12 +27,22 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Ro
 
 ## Getting Started
 
-- Install the latest versions (current) for both Runtime and SDK of .NET Core from this page https://www.microsoft.com/net/download/core
 - Clone the repository using the command `git clone https://github.com/OrchardCMS/Orchard2.git` and checkout the `master` branch. 
-- Run the `build.cmd` file included in the repository to dotnet CLI and build the solution.
+
+### Command line
+
+- Install the latest versions (current) for both Runtime and SDK of .NET Core from this page https://www.microsoft.com/net/download/core
+- Call `dotnet restore`.
+- Call `dotnet build`.
 - Next navigate to `D:\Orchard2\src\Orchard.Cms.Web` or wherever your respective folder is on the command line in Administrator mode.
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
+
+### Visual Studio 2017
+
+- Download Visual Studio 2017 (any edition) from https://www.visualstudio.com/downloads/
+- Open `Orchard.sln`
+- Ensure `OrchardCore.Cms` is the startup project and run it
 
 ### Contributing
 

@@ -1,15 +1,29 @@
+image: Visual Studio 2017
 environment:
   nodejs_version: "6.9.1"
-
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
-
+  - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
 init:
   - git config --global core.autocrlf true
 build_script:
-  - build.cmd --quiet verify
+  - dotnet restore
+  - dotnet build -c Release
+  - dotnet pack -c Release
+test_script:
+  - ps: .\scripts\run-tests.ps1
 clone_depth: 1
-test: off
-deploy: off
+test: on
+artifacts:
+- path: '**\*.nupkg'
+deploy:
+  on:
+    branch: master
+  provider: NuGet
+  server: https://www.myget.org/F/orchardcore-preview/api/v2/package
+  api_key:
+    secure: 8Fp2ETunhU6PvhlotuQXTZ7WkG1FikJ3BM7YLAZyfmbpy00knABu5yL7MhJ9uNcl
+  skip_symbols: true
+  artifact: /.*\.nupkg/

@@ -1,0 +1,10 @@
+﻿@using Orchard.Mvc.Utilities
+<button class="primaryAction btn btn-primary" type="submit">@T["Save"]</button>
+
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
+
+@if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) {
+    <a id="button-cancel" href="@returnUrl" class="button">@T["Cancel"]</a>
+}

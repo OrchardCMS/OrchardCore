@@ -1,0 +1,7 @@
+﻿@using Orchard.ContentManagement
+@using Orchard.Mvc.Utilities
+@{
+    ContentItem contentItem = Model.ContentItem;
+    //Html.AddPageClassNames("preview", "detail-" + contentItem.ContentType.HtmlClassify());
+}
+@await DisplayAsync(Model)
