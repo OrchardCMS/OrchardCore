@@ -67,8 +67,7 @@
       <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
     </ReadLinesFromFile>
     <ItemGroup>
-      <ProjectsToWatchFullPath Include="%(ProjectsToWatch.FullPath)" />
-      <Watch Include="%(ProjectsToWatchFullPath.RelativeDir)**\*.cshtml" />
+      <Watch Include="%(ProjectsToWatch.RootDir)%(Directory)**\*.cshtml" />
     </ItemGroup>
   </Target>
 
