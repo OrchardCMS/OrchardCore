@@ -17,8 +17,8 @@ namespace Orchard.Tests.Localization
             // msgstr "Error desconegut del sistema"
             var entries = ParseText(PoSampleFiles.SimpleEntry);
 
-            Assert.Equal("Unknown system error", entries[0].MessageId);
-            Assert.Equal("Error desconegut del sistema", entries[0].Values[0]);
+            Assert.Equal("Unknown system error", entries[0].Key);
+            Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Orchard.Tests.Localization
             // msgstr "Error desconegut del sistema"
             var entries = ParseText(PoSampleFiles.EntryWithContext);
 
-            Assert.Equal("Orchard.Localization", entries[0].Context);
+            Assert.Equal("Orchard.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
         }
 
         [Fact]
@@ -71,9 +71,8 @@ namespace Orchard.Tests.Localization
 
             var entries = ParseText(PoSampleFiles.EntryWithComments);
 
-            Assert.Equal("Orchard.Localization", entries[0].Context);
-            Assert.Equal("Unknown system error", entries[0].MessageId);
-            Assert.Equal("Error desconegut del sistema", entries[0].Values[0]);
+            Assert.Equal("Orchard.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
+            Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
         }
 
         [Fact]
@@ -84,8 +83,8 @@ namespace Orchard.Tests.Localization
 
             var entries = ParseText(PoSampleFiles.EntryWithQuotes);
 
-            Assert.Equal("Foo \"{0}\"", entries[0].MessageId);
-            Assert.Equal("Foo \"{0}\"", entries[0].Values[0]);
+            Assert.Equal("Foo \"{0}\"", entries[0].Key);
+            Assert.Equal("Foo \"{0}\"", entries[0].Translations[0]);
         }
 
         [Fact]
@@ -100,8 +99,8 @@ namespace Orchard.Tests.Localization
 
             var entries = ParseText(PoSampleFiles.EntryWithMultilineText);
 
-            Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].MessageId);
-            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Values[0]);
+            Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
+            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
         }
 
         [Fact]
@@ -112,8 +111,8 @@ namespace Orchard.Tests.Localization
 
             var entries = ParseText(PoSampleFiles.EntryWithEscapedCharacters);
 
-            Assert.Equal("Line:\t\"{0}\"\n", entries[0].MessageId);
-            Assert.Equal("Line:\t\"{0}\"\n", entries[0].Values[0]);
+            Assert.Equal("Line:\t\"{0}\"\n", entries[0].Key);
+            Assert.Equal("Line:\t\"{0}\"\n", entries[0].Translations[0]);
         }
 
         [Fact]
@@ -127,10 +126,10 @@ namespace Orchard.Tests.Localization
 
             var entries = ParseText(PoSampleFiles.EntryWithPlural);
 
-            Assert.Equal("book", entries[0].MessageId);
-            Assert.Equal("kniha", entries[0].Values[0]);
-            Assert.Equal("knihy", entries[0].Values[1]);
-            Assert.Equal("knih", entries[0].Values[2]);
+            Assert.Equal("book", entries[0].Key);
+            Assert.Equal("kniha", entries[0].Translations[0]);
+            Assert.Equal("knihy", entries[0].Translations[1]);
+            Assert.Equal("knih", entries[0].Translations[2]);
         }
 
         [Fact]
@@ -150,16 +149,14 @@ namespace Orchard.Tests.Localization
 
             Assert.Equal(2, entries.Length);
 
-            Assert.Equal("Orchard.FileSystems.Media.FileSystemStorageProvider", entries[0].Context);
-            Assert.Equal("File {0} does not exist", entries[0].MessageId);
-            Assert.Equal("Soubor {0} neexistuje", entries[0].Values[0]);
+            Assert.Equal("Orchard.FileSystems.Media.FileSystemStorageProvider|File {0} does not exist", entries[0].Key, ignoreCase: true);
+            Assert.Equal("Soubor {0} neexistuje", entries[0].Translations[0]);
 
-            Assert.Equal("Orchard.FileSystems.Media.Directory", entries[1].Context);
-            Assert.Equal("Directory {0} does not exist", entries[1].MessageId);
-            Assert.Equal("Složka {0} neexistuje", entries[1].Values[0]);
+            Assert.Equal("Orchard.FileSystems.Media.Directory|Directory {0} does not exist", entries[1].Key, ignoreCase: true);
+            Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
         }
 
-        private PoEntry[] ParseText(string text)
+        private CultureDictionaryRecord[] ParseText(string text)
         {
             var parser = new PoParser();
 

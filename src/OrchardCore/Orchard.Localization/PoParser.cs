@@ -15,9 +15,9 @@ namespace Orchard.Localization
             { 't', '\t' }
         };
 
-        public IEnumerable<PoEntry> Parse(TextReader reader)
+        public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
         {
-            var entryBuilder = new PoFileEntryBuilder();
+            var entryBuilder = new DictionaryRecordBuilder();
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -31,7 +31,7 @@ namespace Orchard.Localization
                 // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
                 if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushEntry)
                 {
-                    yield return entryBuilder.BuildEntryAndReset();
+                    yield return entryBuilder.BuildRecordAndReset();
                 }
 
                 entryBuilder.Set(context, content);
@@ -39,7 +39,7 @@ namespace Orchard.Localization
 
             if (entryBuilder.ShouldFlushEntry)
             {
-                yield return entryBuilder.BuildEntryAndReset();
+                yield return entryBuilder.BuildRecordAndReset();
             }
         }
 
@@ -125,7 +125,7 @@ namespace Orchard.Localization
             }
         }
 
-        private class PoFileEntryBuilder
+        private class DictionaryRecordBuilder
         {
             private List<string> _values;
             private IEnumerable<string> _validValues => _values.Where(value => !string.IsNullOrEmpty(value));
@@ -139,7 +139,7 @@ namespace Orchard.Localization
             public bool IsValid => !string.IsNullOrEmpty(MessageId) && _validValues.Any();
             public bool ShouldFlushEntry => IsValid && _context == PoContext.Translation;
 
-            public PoFileEntryBuilder()
+            public DictionaryRecordBuilder()
             {
                 _values = new List<string>();
             }
@@ -172,19 +172,14 @@ namespace Orchard.Localization
                 }
             }
 
-            public PoEntry BuildEntryAndReset()
+            public CultureDictionaryRecord BuildRecordAndReset()
             {
                 if (!IsValid)
                 {
                     return null;
                 }
 
-                var result = new PoEntry()
-                {
-                    MessageId = MessageId,
-                    Context = MessageContext,
-                    Values = _validValues.ToArray()
-                };
+                var result = new CultureDictionaryRecord(MessageId, MessageContext, _validValues.ToArray());
 
                 MessageId = null;
                 MessageContext = null;
