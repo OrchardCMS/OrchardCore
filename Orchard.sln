@@ -253,7 +253,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Content.Abst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Logging.NLog", "src\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj", "{00677E44-3048-4BAA-8F97-B577CC0EB788}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Localization", "src\OrchardCore\Orchard.Localization\Orchard.Localization.csproj", "{FC91C6D5-9554-4B57-8C83-85B1318DEEDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Localization.Core", "src\OrchardCore\Orchard.Localization.Core\Orchard.Localization.Core.csproj", "{FC91C6D5-9554-4B57-8C83-85B1318DEEDB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Localization.Abstractions", "src\OrchardCore\Orchard.Localization.Abstractions\Orchard.Localization.Abstractions.csproj", "{8E024637-1E53-4EFE-A473-BE5AC77FC4C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Localization", "src\OrchardCore.Modules\Orchard.Localization\Orchard.Localization.csproj", "{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -705,6 +709,14 @@ Global
 		{FC91C6D5-9554-4B57-8C83-85B1318DEEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC91C6D5-9554-4B57-8C83-85B1318DEEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC91C6D5-9554-4B57-8C83-85B1318DEEDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E024637-1E53-4EFE-A473-BE5AC77FC4C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E024637-1E53-4EFE-A473-BE5AC77FC4C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E024637-1E53-4EFE-A473-BE5AC77FC4C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E024637-1E53-4EFE-A473-BE5AC77FC4C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -834,5 +846,7 @@ Global
 		{677113F9-C548-4EB8-B248-E03BF967FA22} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{00677E44-3048-4BAA-8F97-B577CC0EB788} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{FC91C6D5-9554-4B57-8C83-85B1318DEEDB} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{8E024637-1E53-4EFE-A473-BE5AC77FC4C3} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{C21B85D6-D1B3-4281-8CC2-2F6AD15738CC} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 EndGlobal

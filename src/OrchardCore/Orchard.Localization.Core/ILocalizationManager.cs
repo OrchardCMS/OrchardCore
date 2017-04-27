@@ -1,4 +1,6 @@
-﻿namespace Orchard.Localization
+﻿using Orchard.Localization.Abstractions;
+
+namespace Orchard.Localization.Core
 {
     public interface ILocalizationManager
     {

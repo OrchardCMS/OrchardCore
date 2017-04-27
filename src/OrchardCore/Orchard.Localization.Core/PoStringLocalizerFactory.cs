@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Core
 {
     public class PoStringLocalizerFactory : IStringLocalizerFactory
     {

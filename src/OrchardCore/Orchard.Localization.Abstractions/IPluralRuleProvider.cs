@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Abstractions
 {
     public interface IPluralRuleProvider
     {

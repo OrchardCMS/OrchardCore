@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Localization;
+using Orchard.Localization.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Core
 {
     public class PoStringLocalizer : IStringLocalizer
     {
@@ -17,6 +18,9 @@ namespace Orchard.Localization
         {
             _localizationManager = localizationManager;
             Context = context;
+
+            var culture = CultureInfo.CurrentUICulture.Name;
+            _dictionary = localizationManager.GetDictionary(culture);
         }
 
         public LocalizedString this[string name]

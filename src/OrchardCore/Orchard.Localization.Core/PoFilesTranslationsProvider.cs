@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell;
+using Orchard.Localization.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Core
 {
     public class PoFilesTranslationsProvider : ITranslationProvider
     {

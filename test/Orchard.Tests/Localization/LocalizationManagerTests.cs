@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Orchard.Localization;
+using Orchard.Localization.Abstractions;
+using Orchard.Localization.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;

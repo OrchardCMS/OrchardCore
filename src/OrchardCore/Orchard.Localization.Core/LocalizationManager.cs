@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
+using Orchard.Localization.Abstractions;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Core
 {
     public class LocalizationManager : ILocalizationManager
     {

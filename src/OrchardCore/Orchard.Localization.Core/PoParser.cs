@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Orchard.Localization.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orchard.Localization
+namespace Orchard.Localization.Core
 {
     public class PoParser
     {
