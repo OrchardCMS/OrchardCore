@@ -84,7 +84,7 @@ namespace Orchard.Lucene.Controllers
                 });
             }
 
-            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.SearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
+            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             var contentItemIds = new List<string>();

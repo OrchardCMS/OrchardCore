@@ -1,5 +1,5 @@
-﻿using System;
-using Orchard.Lucene.Settings;
+using System;
+using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -8,6 +8,8 @@ using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Lucene.Services;
+using Orchard.Lucene.Settings;
 using Orchard.Security.Permissions;
 using Orchard.Settings.Services;
 
@@ -28,6 +30,7 @@ namespace Orchard.Lucene
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<LuceneIndexProvider>();
+            services.AddSingleton<LuceneAnalyzerManager>();
 
             services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
 
@@ -42,6 +45,9 @@ namespace Orchard.Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
+
+            var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
+            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 }

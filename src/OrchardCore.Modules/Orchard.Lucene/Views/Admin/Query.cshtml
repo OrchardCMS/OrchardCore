@@ -1,4 +1,4 @@
-﻿@model AdminQueryViewModel
+@model AdminQueryViewModel
 @using Orchard.ContentManagement;
 @inject IContentManager ContentManager
 
@@ -14,7 +14,7 @@
                 <button type="submit" class="btn btn-primary">@T["Query"]</button>
             </span>
         </div>
-        <span class="hint">@T["You can use the query <a href=\"{0}\">*:*</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Lucene", Query = "*:*", IndexName = Model.IndexName }))]</span>
+        <span class="hint">@T["You can use the query <a href=\"{0}\">*:*</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Orchard.Lucene", Query = "*:*", IndexName = Model.IndexName }))]</span>
         <span class="hint">@T["See {0} for more examples.", Html.Raw("<a href=\"https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html\">https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html</a>")]</span>
 </div>
 

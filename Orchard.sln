@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26424.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -252,6 +252,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Content.Abstractions", "src\OrchardCore\Orchard.Tokens.Content.Abstractions\Orchard.Tokens.Content.Abstractions.csproj", "{677113F9-C548-4EB8-B248-E03BF967FA22}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Logging.NLog", "src\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj", "{00677E44-3048-4BAA-8F97-B577CC0EB788}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Queries", "src\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj", "{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -699,6 +701,10 @@ Global
 		{00677E44-3048-4BAA-8F97-B577CC0EB788}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00677E44-3048-4BAA-8F97-B577CC0EB788}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00677E44-3048-4BAA-8F97-B577CC0EB788}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -827,5 +833,6 @@ Global
 		{3398AB60-2DB7-464C-B211-C4120BE75582} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{677113F9-C548-4EB8-B248-E03BF967FA22} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{00677E44-3048-4BAA-8F97-B577CC0EB788} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 EndGlobal
