@@ -115,7 +115,7 @@ namespace Orchard.Queries
                             throw new ArgumentException($"Invalid term in terms query");
                         }
 
-                        boolQuery.Add(CreateQuery((JObject)item), BooleanClause.Occur.SHOULD);
+                        boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), BooleanClause.Occur.SHOULD);
                     }
 
                     break;
