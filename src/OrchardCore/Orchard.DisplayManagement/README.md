@@ -1,4 +1,4 @@
-﻿# Orchard.DisplayManagement
+# Orchard.DisplayManagement
 
 ## Placement files
 

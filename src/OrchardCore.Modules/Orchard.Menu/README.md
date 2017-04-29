@@ -1,4 +1,4 @@
-﻿# Menu (Orchard.Menu)
+# Menu (Orchard.Menu)
 
 ## CREDITS
 
