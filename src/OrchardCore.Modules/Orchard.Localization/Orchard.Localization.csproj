@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Localization.Abstractions\Orchard.Localization.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Localization.Core\Orchard.Localization.Core.csproj" />
   </ItemGroup>

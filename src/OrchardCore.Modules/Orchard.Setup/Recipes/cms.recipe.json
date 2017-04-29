@@ -20,6 +20,7 @@
         "Orchard.Commons",
         "Orchard.Diagnostics",
         "Orchard.DynamicCache",
+        "Orchard.Localization",
         "Orchard.Modules",
         "Orchard.Navigation",
         "Orchard.OpenId",

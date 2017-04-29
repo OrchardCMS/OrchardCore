@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
@@ -8,4 +8,5 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
   </ItemGroup>
+
 </Project>

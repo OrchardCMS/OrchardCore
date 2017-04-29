@@ -30,7 +30,7 @@ namespace Orchard.Localization.Core
                 }
 
                 // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
-                if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushEntry)
+                if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushRecord)
                 {
                     yield return entryBuilder.BuildRecordAndReset();
                 }
@@ -38,7 +38,7 @@ namespace Orchard.Localization.Core
                 entryBuilder.Set(context, content);
             }
 
-            if (entryBuilder.ShouldFlushEntry)
+            if (entryBuilder.ShouldFlushRecord)
             {
                 yield return entryBuilder.BuildRecordAndReset();
             }
@@ -138,7 +138,7 @@ namespace Orchard.Localization.Core
             public IEnumerable<string> Values => _values;
 
             public bool IsValid => !string.IsNullOrEmpty(MessageId) && _validValues.Any();
-            public bool ShouldFlushEntry => IsValid && _context == PoContext.Translation;
+            public bool ShouldFlushRecord => IsValid && _context == PoContext.Translation;
 
             public DictionaryRecordBuilder()
             {

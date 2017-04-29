@@ -15,4 +15,5 @@
     <ProjectReference Include="..\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\Orchard.Localization.Abstractions\Orchard.Localization.Abstractions.csproj" />
   </ItemGroup>
+
 </Project>

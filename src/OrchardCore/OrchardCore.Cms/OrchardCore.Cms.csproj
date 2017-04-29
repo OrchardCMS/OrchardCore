@@ -15,6 +15,7 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Localization\Orchard.Localization.csproj" />
     <ProjectReference Include="..\OrchardCore.AsBundle\OrchardCore.AsBundle.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Admin\Orchard.Admin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\Orchard.Alias\Orchard.Alias.csproj" PrivateAssets="none" />

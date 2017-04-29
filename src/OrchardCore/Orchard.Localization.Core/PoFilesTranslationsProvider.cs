@@ -6,6 +6,7 @@ using Orchard.Localization.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Orchard.Localization.Core
@@ -37,7 +38,7 @@ namespace Orchard.Localization.Core
         public void LoadTranslationsToDictionary(string cultureName, CultureDictionary dictionary)
         {
             var corePath = Path.Combine(_root, "Core", "App_Data", "Localization", cultureName, "orchard.core.po");
-            dictionary.MergeTranslations(Load(corePath));
+            LoadFileToDictionary(corePath, dictionary);
 
             foreach (var extension in _extensionsManager.GetExtensions())
             {
@@ -50,17 +51,17 @@ namespace Orchard.Localization.Core
                 }
 
                 var extensionPath = Path.Combine(_root, extension.SubPath, "App_Data", "Localization", cultureName, filename);
-                dictionary.MergeTranslations(Load(extensionPath));
+                LoadFileToDictionary(extensionPath, dictionary);
             }
 
             var rootLocalizationPath = Path.Combine(_root, _rootContainer, "Localization", cultureName, "orchard.root.po");
-            dictionary.MergeTranslations(Load(rootLocalizationPath));
+            LoadFileToDictionary(rootLocalizationPath, dictionary);
 
             var shellPath = Path.Combine(_root, _rootContainer, _shellContainer, _shellName, "Localization", cultureName, "orchard.po");
-            dictionary.MergeTranslations(Load(shellPath));
+            LoadFileToDictionary(shellPath, dictionary);
         }
 
-        private IEnumerable<CultureDictionaryRecord> Load(string path)
+        private void LoadFileToDictionary(string path, CultureDictionary dictionary)
         {
             if (File.Exists(path))
             {
@@ -68,12 +69,10 @@ namespace Orchard.Localization.Core
                 {
                     using (var reader = new StreamReader(stream))
                     {
-                        return _parser.Parse(reader);
+                        dictionary.MergeTranslations(_parser.Parse(reader));
                     }
                 }
             }
-
-            return new CultureDictionaryRecord[0];
         }
     }
 }
