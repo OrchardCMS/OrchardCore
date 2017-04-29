@@ -21,8 +21,7 @@ namespace Orchard.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            context.Builder.Hint(model.Hint);
-            context.Builder.WithSetting(nameof(model.Label), model.Label);
+            context.Builder.MergeSettings(model);
 
             return Edit(partFieldDefinition);
         }
