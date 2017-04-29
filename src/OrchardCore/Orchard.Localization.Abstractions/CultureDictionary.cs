@@ -9,8 +9,12 @@ namespace Orchard.Localization.Abstractions
         private IDictionary<string, string[]> _translations;
 
         public string CultureName { get; private set; }
+
         public Func<int, int> PluralRule { get; private set; }
+
         public string[] this[string key] => _translations.ContainsKey(key) ? _translations[key] : null;
+
+        public IDictionary<string, string[]> Translations => _translations;
 
         public CultureDictionary(string cultureName, Func<int, int> pluralRule)
         {

@@ -1,17 +1,31 @@
 ﻿using Orchard.Localization.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Orchard.Localization.Core
 {
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
-        public Func<int, int> GetRule(string cultureName)
+        private static Func<int, int> DefaultRule = n => (n != 1 ? 1 : 0);
+
+        public Func<int, int> GetRule(CultureInfo culture)
+        {
+            var rule = GetRule(culture.Name);
+
+            if (rule == null && culture.Parent != null)
+            {
+                rule = GetRule(culture.Parent.Name);
+            }
+
+            return rule ?? DefaultRule;
+        }
+
+        private Func<int, int> GetRule(string cultureName)
         {
             switch (cultureName)
             {
-                // nplural=1
                 case "ay":
                 case "bo":
                 case "cgg":
@@ -35,11 +49,10 @@ namespace Orchard.Localization.Core
                 case "ug":
                 case "vi":
                 case "wo":
-                case "zh_CN":
-                case "zh_HK":
-                case "zh_TW":
+                case "zh-CN":
+                case "zh-HK":
+                case "zh-TW":
                     return n => 0;
-                // nplural=2
                 case "ach":
                 case "ak":
                 case "am":
@@ -53,7 +66,7 @@ namespace Orchard.Localization.Core
                 case "mg":
                 case "mi":
                 case "oc":
-                case "pt_BR":
+                case "pt-BR":
                 case "tg":
                 case "ti":
                 case "tr":
@@ -77,7 +90,7 @@ namespace Orchard.Localization.Core
                 case "en":
                 case "eo":
                 case "es":
-                case "es_AR":
+                case "es-AR":
                 case "et":
                 case "eu":
                 case "ff":
@@ -142,7 +155,6 @@ namespace Orchard.Localization.Core
                     return n => (n != 0 ? 1 : 0);
                 case "mk":
                     return n => (n == 1 || n % 10 == 1 ? 0 : 1);
-                // nplural=3
                 case "be":
                 case "bs":
                 case "hr":
@@ -159,7 +171,6 @@ namespace Orchard.Localization.Core
                     return n => (n == 0 ? 0 : n == 1 ? 1 : 2);
                 case "ro":
                     return n => (n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2);
-                // nplural=4
                 case "cy":
                     return n => ((n == 1) ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3);
                 case "gd":
@@ -176,14 +187,13 @@ namespace Orchard.Localization.Core
                     return n => (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2);
                 case "sk":
                     return n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-                // nplural=5
                 case "ga":
                     return n => (n == 1 ? 0 : n == 2 ? 1 : (n > 2 && n < 7) ? 2 : (n > 6 && n < 11) ? 3 : 4);
-                // nplural=6
                 case "ar":
                     return n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
             }
-            return n => (n != 1 ? 1 : 0);
+
+            return null;
         }
     }
 }

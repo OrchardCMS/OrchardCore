@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Orchard.Localization.Core
@@ -16,12 +17,12 @@ namespace Orchard.Localization.Core
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PoStringLocalizer(null, _localizationManager);
+            return new PoStringLocalizer(CultureInfo.CurrentUICulture, null, _localizationManager);
         }
 
         public IStringLocalizer Create(string baseName, string location)
         {
-            return new PoStringLocalizer(null, _localizationManager);
+            return new PoStringLocalizer(CultureInfo.CurrentUICulture, null, _localizationManager);
         }
     }
 }

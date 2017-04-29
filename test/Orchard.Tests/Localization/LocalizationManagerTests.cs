@@ -5,6 +5,7 @@ using Orchard.Localization.Abstractions;
 using Orchard.Localization.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Orchard.Tests.Localization
         public LocalizationManagerTests()
         {
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
-            _pluralRuleProvider.Setup(o => o.GetRule(It.Is<string>(culture => culture == "cs"))).Returns(_csPluralRule);
+            _pluralRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(_csPluralRule);
 
             _translationProvider = new Mock<ITranslationProvider>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -35,7 +36,7 @@ namespace Orchard.Tests.Localization
             );
             var manager = new LocalizationManager(_pluralRuleProvider.Object, _translationProvider.Object, _memoryCache);
 
-            var dictionary = manager.GetDictionary("cs");
+            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal("cs", dictionary.CultureName);
             Assert.Equal(_csPluralRule, dictionary.PluralRule);
@@ -50,7 +51,7 @@ namespace Orchard.Tests.Localization
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
             var manager = new LocalizationManager(_pluralRuleProvider.Object, _translationProvider.Object, _memoryCache);
 
-            var dictionary = manager.GetDictionary("cs");
+            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal(dictionary["ball"], dictionaryRecord.Translations);
         }
