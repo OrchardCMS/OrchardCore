@@ -19,7 +19,7 @@ namespace Orchard.Tests.Localization
 
             dictionary.MergeTranslations(new[] { record });
 
-            Assert.Equal(dictionary[record.Key], record.Translations);
+            Assert.Equal(dictionary.Translations[record.Key], record.Translations);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Orchard.Tests.Localization
             dictionary.MergeTranslations(new[] { record });
             dictionary.MergeTranslations(new[] { record2 });
 
-            Assert.Equal(dictionary[record.Key], record2.Translations);
+            Assert.Equal(dictionary.Translations[record.Key], record2.Translations);
         }
 
         [Fact]

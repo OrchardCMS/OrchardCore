@@ -129,6 +129,37 @@ namespace Orchard.Tests.Localization
             Assert.Equal("Stránka (ID:1) byla smazána.", translation);
         }
 
+        [Theory]
+        [InlineData("car", 1)]
+        [InlineData("cars", 2)]
+        public void LocalizerReturnsOriginalTextForPluralIfTranslationDoesntExist(string expected, int count)
+        {
+            SetupDictionary("cs", new[] {
+                new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" }),
+            });
+            var localizer = new PoStringLocalizer(new CultureInfo("cs"), null, _localizationManager.Object);
+
+            var translation = localizer.Plural("car", "cars", count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
+        [InlineData("míč", 1)]
+        [InlineData("2 míče", 2)]
+        [InlineData("5 míčů", 5)]
+        public void LocalizerReturnsTranslationInCorrectPluralForm(string expected, int count)
+        {
+            SetupDictionary("cs", new[] {
+                new CultureDictionaryRecord("ball", null, new[] { "míč", "{0} míče", "{0} míčů" }),
+            });
+            var localizer = new PoStringLocalizer(new CultureInfo("cs"), null, _localizationManager.Object);
+
+            var translation = localizer.Plural("ball", "{0} balls", count, count);
+
+            Assert.Equal(expected, translation);
+        }
+
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
             var dictionary = new CultureDictionary(cultureName, _csPluralRule);

@@ -53,7 +53,7 @@ namespace Orchard.Tests.Localization
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
-            Assert.Equal(dictionary["ball"], dictionaryRecord.Translations);
+            Assert.Equal(dictionary.Translations["ball"], dictionaryRecord.Translations);
         }
     }
 }

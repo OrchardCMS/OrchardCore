@@ -22,7 +22,7 @@ namespace Orchard.Localization.Core
             _localizationManager = localizationManager;
             _dictionary = localizationManager.GetDictionary(culture);
 
-            if(culture.Parent != null)
+            if (culture.Parent != null)
             {
                 _parentCultureDictionary = localizationManager.GetDictionary(culture.Parent);
             }
@@ -32,7 +32,12 @@ namespace Orchard.Localization.Core
         {
             get
             {
-                var translation = GetTranslation(name, Context);
+                if (name == null)
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                var translation = GetTranslation(name, Context, null);
                 return new LocalizedString(name, translation ?? name, translation == null);
             }
         }
@@ -41,8 +46,23 @@ namespace Orchard.Localization.Core
         {
             get
             {
-                var translation = GetTranslation(name, Context);
-                var formatted = string.Format(translation ?? name, arguments);
+                if (name == null)
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                string translation;
+                var defaultTranslation = name;
+
+                var pluralArgument = arguments.FirstOrDefault() as PluralArgument;
+                if(pluralArgument != null)
+                {
+                    defaultTranslation = pluralArgument.Count != 1 ? pluralArgument.PluralText : name;
+                    arguments = arguments.Length > 1 ? (object[])arguments[1] : new object[0];
+                }
+
+                translation = GetTranslation(name, Context, pluralArgument?.Count);
+                var formatted = string.Format(translation ?? defaultTranslation, arguments);
                 return new LocalizedString(name, formatted, translation == null);
             }
         }
@@ -57,14 +77,19 @@ namespace Orchard.Localization.Core
             return new PoStringLocalizer(culture, Context, _localizationManager);
         }
 
-        private string GetTranslation(string name, string context)
+        private string GetTranslation(string name, string context, int? count)
         {
             var key = CultureDictionaryRecord.GetKey(name, context);
-            var translation = _dictionary[key]?[0];
-            translation = translation ?? _parentCultureDictionary?[key]?[0]; // falback to the parent culture
-            if (context != null)
+            var translation = _dictionary[key, count];
+
+            if (translation == null && _parentCultureDictionary != null)
             {
-                translation = translation ?? GetTranslation(name, null); // falback to the translation without context
+                translation = _parentCultureDictionary[key, count]; // fallback to the parent culture
+            }
+
+            if (translation == null && context != null)
+            {
+                translation = GetTranslation(name, null, count); // fallback to the translation without context
             }
 
             return translation;
