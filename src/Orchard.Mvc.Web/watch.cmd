@@ -1,1 +1,1 @@
-dotnet watch msbuild /t:CopyPackageRazorFiles
+dotnet watch msbuild /t:CopyModuleProjectRazorFiles

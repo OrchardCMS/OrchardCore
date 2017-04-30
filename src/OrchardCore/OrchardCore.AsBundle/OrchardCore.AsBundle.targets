@@ -1,11 +1,11 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <DotnetWatchList>obj/$(MSBuildProjectFile).dotnetwatch.txt</DotnetWatchList>
+    <ModuleProjectReferencesFile>obj/$(MSBuildProjectFile).ModuleProjectReferences.txt</ModuleProjectReferencesFile>
   </PropertyGroup>
 
   <!--
-    Defines msbuild tasks on a Bundle package to copy all extensions assets to the project folder.
+    Defines msbuild tasks on a Bundle package to copy all modules assets (projects and packages) to the "Packages" folder.
   -->
 
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
@@ -16,7 +16,7 @@
       ContinueOnError="true" />
 
     <ItemGroup Condition="'@(_MSBuildProjectReferenceExistent)' != ''">
-      <PackageProjectReferences
+      <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
         Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)Theme.txt')" />
     </ItemGroup>
@@ -25,16 +25,16 @@
       Targets="CopyPackageAssetFiles"
       BuildInParallel="$(BuildInParallel)"
       Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
-      Projects="@(PackageProjectReferences)"
-      Condition="'@(PackageProjectReferences)' != ''"
+      Projects="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
       ContinueOnError="true">
     </MSBuild>
 
-    <Message Text="Generating watch file: $(MSBuildProjectName)" Importance="high" />
+    <Message Text="Generating module project references file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      File="$(DotnetWatchList)"
-      Lines="@(PackageProjectReferences)"
-      Condition="'@(PackageProjectReferences)' != ''"
+      File="$(ModuleProjectReferencesFile)"
+      Lines="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
       Overwrite="true"
       Encoding="Unicode"
       ContinueOnError="true" />
@@ -61,40 +61,40 @@
   </Target>
 
   <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true'">
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true'">
     <ItemGroup>
       <ProjectReference Remove="@(ProjectReference)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="WatchPackageRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('$(DotnetWatchList)')">
-    <ReadLinesFromFile File="$(DotnetWatchList)">
-      <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
+  <Target Name="WatchModuleProjectRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
+    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
+      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
     </ReadLinesFromFile>
     <ItemGroup>
-      <Watch Include="%(ProjectsToWatch.RootDir)%(Directory)**\*.cshtml" />
+      <Watch Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml" />
     </ItemGroup>
   </Target>
 
-  <Target Name="CopyPackageRazorFiles"
-          Condition="'$(WatchOnlyPackageRazorFiles)' == 'true' And Exists('$(DotnetWatchList)')">
-    <ReadLinesFromFile File="$(DotnetWatchList)">
-      <Output TaskParameter="Lines" ItemName="ProjectsToWatch" />
+  <Target Name="CopyModuleProjectRazorFiles"
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
+    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
+      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
     </ReadLinesFromFile>
     <ItemGroup>
-      <PackageRazorFiles Include="%(ProjectsToWatch.RootDir)%(Directory)**\*.cshtml">
+      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
         <ProjectName>%(Filename)</ProjectName>
-      </PackageRazorFiles>
+      </ModuleProjectRazorFiles>
     </ItemGroup>
-    <Message Text="Copying package razor files: $(MSBuildProjectName)" Importance="high" />
+    <Message Text="Copying module project razor files: $(MSBuildProjectName)" Importance="high" />
     <Copy
-      SourceFiles="@(PackageRazorFiles)"
+      SourceFiles="@(ModuleProjectRazorFiles)"
       DestinationFolder="Packages\%(ProjectName)\%(RecursiveDir)" />
   </Target>
 
   <!--
-    Defines msbuild props and items on a Bundle package to publish all extensions assets (local and packages).
+    Defines msbuild props and items on a Bundle package to publish all modules assets (projects and packages).
   -->
 
   <PropertyGroup>

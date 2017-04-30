@@ -1,8 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- 
-    This file is packaged with OrchardCore.AsModule.nupkg in ./build such that any Module that references
-    it will get its static assets copied to $(ApplicationDirectory)\Packages
+    This file is packaged with "OrchardCore.AsModule.nupkg" in "./build" such that any Module that references
+    it will get its static assets copied to "$(ApplicationDirectory)\Packages".
   -->
 
   <PropertyGroup>
