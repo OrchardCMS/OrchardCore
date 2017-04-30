@@ -5,7 +5,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <WatchOnlyPackageRazorFiles>true</WatchOnlyPackageRazorFiles>
+    <WatchOnlyModuleProjectRazorFiles>true</WatchOnlyModuleProjectRazorFiles>
   </PropertyGroup>
 
   <ItemGroup>
