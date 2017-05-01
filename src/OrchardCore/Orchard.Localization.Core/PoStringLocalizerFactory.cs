@@ -17,12 +17,13 @@ namespace Orchard.Localization.Core
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PoStringLocalizer(CultureInfo.CurrentUICulture, null, _localizationManager);
+            return new PoStringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager);
         }
 
         public IStringLocalizer Create(string baseName, string location)
         {
-            return new PoStringLocalizer(CultureInfo.CurrentUICulture, null, _localizationManager);
+            var relativeName = baseName.Replace(location, string.Empty).Trim('.');
+            return new PoStringLocalizer(CultureInfo.CurrentUICulture, relativeName, _localizationManager);
         }
     }
 }
