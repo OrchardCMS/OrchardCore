@@ -1,4 +1,4 @@
-﻿# Content Fields (Orchard.ContentFields)
+# Content Fields (Orchard.ContentFields)
 
 ## Purpose
 
