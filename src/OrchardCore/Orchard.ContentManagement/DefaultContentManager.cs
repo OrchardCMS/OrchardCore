@@ -288,7 +288,6 @@ namespace Orchard.ContentManagement
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(existingContentItem.ContentType);
             if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
             {
-
                 if (existingContentItem.Latest && existingContentItem.Number > 1)
                 {
                     var previousVersion = await _session
