@@ -19,6 +19,7 @@ os:
   - osx
 osx_image: xcode8.2
 script:
-  - dotnet restore
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then dotnet restore; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
   - dotnet test -c Release ./test/Orchard.Tests/Orchard.Tests.csproj
