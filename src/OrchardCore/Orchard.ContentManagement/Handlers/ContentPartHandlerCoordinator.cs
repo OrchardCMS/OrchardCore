@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement.Handlers;
@@ -11,15 +11,15 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
     /// </summary>
     public class ContentPartHandlerCoordinator : ContentHandlerBase
     {
-        private readonly IContentPartFactory _contentPartFactory;
+        private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartHandler> _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentFieldFactory _contentFieldFactory;
+        private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
 
         public ContentPartHandlerCoordinator(
-            IContentPartFactory contentPartFactory,
+            ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentPartHandler> partHandlers,
-            IContentFieldFactory contentFieldFactory,
+            ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ContentPartHandlerCoordinator> logger)
         {
@@ -47,7 +47,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
 
                 // We create the part from it's known type or from a generic one
-                var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
+                var part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
 
                 _partHandlers.Invoke(handler => handler.Activating(context, part), Logger);
 
@@ -64,8 +64,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, partName) as ContentPart;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, partName) as ContentPart;
 
                 if (part != null)
                 {
@@ -83,9 +83,9 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {
@@ -103,9 +103,9 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {
@@ -123,9 +123,9 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
                 _partHandlers.Invoke(handler => handler.Initializing(context, part), Logger);
             }
         }
@@ -139,9 +139,9 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {
@@ -164,7 +164,7 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
                 var partName = typePartDefinition.PartDefinition.Name;
                 if (!context.ContentItem.Has(partName))
                 {
-                    var part = _contentPartFactory.CreateContentPart(partName) ?? new ContentPart();
+                    var part = _contentPartFactory.GetTypeActivator(partName).CreateInstance();
                     _partHandlers.Invoke(handler => handler.Loading(context, part), Logger);
                 }
 
@@ -175,12 +175,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
 
                     if (!part.Has(fieldName))
                     {
-                        var field = _contentFieldFactory.CreateContentField(partFieldDefinition.FieldDefinition.Name);
-
-                        if (field != null)
-                        {
-                            context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, field);
-                        }
+                        var activator = _contentFieldFactory.GetTypeActivator(partFieldDefinition.FieldDefinition.Name);
+                        context.ContentItem.Get<ContentPart>(typePartDefinition.Name).Weld(fieldName, activator.CreateInstance());
                     }
                 }
             }
@@ -195,9 +191,9 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {
@@ -215,8 +211,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -234,8 +230,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -253,8 +249,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -272,8 +268,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -291,8 +287,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -310,8 +306,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -329,8 +325,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -348,8 +344,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart; ;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
 
                 if (part != null)
                 {
@@ -367,10 +363,10 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var buildingPart = context.BuildingContentItem.Get(partType, partName) as ContentPart;
-                var existingPart = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var buildingPart = context.BuildingContentItem.Get(activator.Type, partName) as ContentPart;
+                var existingPart = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (buildingPart != null && existingPart != null)
                 {
@@ -388,10 +384,10 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
+                var activator = _contentPartFactory.GetTypeActivator(partName);
 
-                var buildingPart = (ContentPart)context.BuildingContentItem.Get(partType, partName);
-                var existingPart = (ContentPart)context.ContentItem.Get(partType, typePartDefinition.Name);
+                var buildingPart = (ContentPart)context.BuildingContentItem.Get(activator.Type, partName);
+                var existingPart = (ContentPart)context.ContentItem.Get(activator.Type, typePartDefinition.Name);
 
                 if (buildingPart != null && existingPart != null)
                 {
@@ -409,8 +405,8 @@ namespace Orchard.ContentManagement.Drivers.Coordinators
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
                 var partName = typePartDefinition.PartDefinition.Name;
-                var partType = _contentPartFactory.GetContentPartType(partName) ?? typeof(ContentPart);
-                var part = context.ContentItem.Get(partType, typePartDefinition.Name) as ContentPart;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
                 if (part != null)
                 {

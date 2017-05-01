@@ -1,4 +1,4 @@
-﻿# Resources (Orchard.Resources)
+# Resources (Orchard.Resources)
 
 ## Purpose
 

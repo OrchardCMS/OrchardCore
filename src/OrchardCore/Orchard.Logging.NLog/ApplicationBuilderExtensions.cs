@@ -8,7 +8,7 @@ namespace Orchard.Logging
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder AddNLogWeb(this IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public static IApplicationBuilder UseNLogWeb(this IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
             loggerFactory.AddNLog();
