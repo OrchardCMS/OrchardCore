@@ -1,14 +1,7 @@
 language: csharp
-sudo: false
+sudo: required
 dist: trusty
-dotnet: 1.0.0
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main'
-      key_url: 'https://apt-mo.trafficmanager.net/keys/microsoft.asc'
-    packages:
-    - dotnet-dev-1.0.1
+dotnet: 1.0.0-preview2-1-003177
 env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -19,10 +12,7 @@ os:
   - linux
   - osx
 osx_image: xcode8.2
-before_install:  
-  - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi  
-before_script:
-  - dotnet restore
 script:
-  - dotnet build
-  - dotnet test
+  - dotnet restore
+  - dotnet build -c Release
+  - dotnet test -c Release ./test/Orchard.Tests/Orchard.Tests.csproj
