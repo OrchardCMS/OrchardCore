@@ -20,9 +20,9 @@ namespace Orchard.ContentManagement.Metadata.Settings
             return builder.WithSetting("Draftable", draftable.ToString());
         }
 
-        public static ContentTypeDefinitionBuilder Updatable(this ContentTypeDefinitionBuilder builder, bool updatable = true)
+        public static ContentTypeDefinitionBuilder Versionable(this ContentTypeDefinitionBuilder builder, bool versionable = true)
         {
-            return builder.WithSetting("Updatable", updatable.ToString());
+            return builder.WithSetting("Versionable", versionable.ToString());
         }
 
         public static ContentTypeDefinitionBuilder Securable(this ContentTypeDefinitionBuilder builder, bool securable = true)

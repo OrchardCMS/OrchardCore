@@ -1,4 +1,4 @@
-@model ContentTypeSettingsViewModel
+﻿@model ContentTypeSettingsViewModel
 
 <fieldset class="form-group">
     <label asp-for="Creatable">
@@ -25,10 +25,10 @@
 </fieldset>
 
 <fieldset class="form-group">
-    <label asp-for="Updatable">
-        <input asp-for="Updatable" type="checkbox">
-        @T["Updatable"]
-        <span class="hint">@T["Determines if this content type does not use versioning on publishing."]</span>
+    <label asp-for="Versionable">
+        <input asp-for="Versionable" type="checkbox">
+        @T["Versionable"]
+        <span class="hint">@T["Determines if this content type supports versioning."]</span>
     </label>
 </fieldset>
 

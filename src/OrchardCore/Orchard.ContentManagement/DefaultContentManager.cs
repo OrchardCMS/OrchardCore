@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.Records;
 using YesSql;
 
@@ -284,6 +285,32 @@ namespace Orchard.ContentManagement
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(existingContentItem.ContentType);
+            if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
+            {
+
+                if (existingContentItem.Latest && existingContentItem.Number > 1)
+                {
+                    var previousVersion = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                            x.ContentItemId == existingContentItem.ContentItemId &&
+                            x.Number == existingContentItem.Number - 1)
+                        .FirstOrDefault();
+
+                    _session.Save(existingContentItem);
+
+                    if (previousVersion != null)
+                    {
+                        previousVersion.Latest = true;
+                        previousVersion.Number = existingContentItem.Number;
+                        previousVersion.Data = new JObject(existingContentItem.Data);
+                        existingContentItem.Latest = false;
+                        existingContentItem.Number -= 1;
+                        return previousVersion;
+                    }
+                }
+            }
+
             var buildingContentItem = New(existingContentItem.ContentType);
 
             ContentItem latestVersion;

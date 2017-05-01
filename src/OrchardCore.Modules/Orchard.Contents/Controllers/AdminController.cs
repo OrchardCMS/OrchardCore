@@ -450,17 +450,11 @@ namespace Orchard.Contents.Controllers
                 return Unauthorized();
             }
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentType);
-
-            if (content.IsPublished() &&
-                typeDefinition.Settings.ToObject<ContentTypeSettings>().Updatable)
-            {
-                await _contentManager.UnpublishAsync(content);
-            }
-
             return await EditPOST(contentItemId, returnUrl, async contentItem =>
             {
                 await _contentManager.PublishAsync(contentItem);
+
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content has been published."]

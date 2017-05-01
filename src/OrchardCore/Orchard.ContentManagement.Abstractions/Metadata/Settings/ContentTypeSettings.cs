@@ -15,9 +15,9 @@
         /// </summary>
         public bool Draftable { get; set; }
         /// <summary>
-        /// Used to determine if this content type does not use versioning on publishing
+        /// Used to determine if this content type supports versioning
         /// </summary>
-        public bool Updatable { get; set; }
+        public bool Versionable { get; set; }
         /// <summary>
         /// Defines the stereotype of the type
         /// </summary>
