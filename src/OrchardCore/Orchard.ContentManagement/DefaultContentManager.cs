@@ -288,7 +288,7 @@ namespace Orchard.ContentManagement
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(existingContentItem.ContentType);
             if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
             {
-                if (existingContentItem.Latest && existingContentItem.Number > 1)
+                if (existingContentItem.Latest && existingContentItem.Published && existingContentItem.Number > 1)
                 {
                     var previousVersion = await _session
                         .QueryAsync<ContentItem, ContentItemIndex>(x =>
@@ -305,6 +305,7 @@ namespace Orchard.ContentManagement
                         previousVersion.Data = new JObject(existingContentItem.Data);
                         existingContentItem.Latest = false;
                         existingContentItem.Number -= 1;
+
                         return previousVersion;
                     }
                 }
