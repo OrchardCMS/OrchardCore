@@ -454,7 +454,7 @@ namespace Orchard.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(content.ContentType);
+                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? T["Your content has been published."]
