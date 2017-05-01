@@ -63,4 +63,11 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="OrchardCore.Cms.props" Pack="true">
+      <PackagePath>build\netstandard1.6\OrchardCore.Cms.props</PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>
