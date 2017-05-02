@@ -17,7 +17,7 @@
   <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('Module.txt')">
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      File="Module.txt"
+      File="obj\Module.txt"
       Lines="$(ModuleManifest)"
       Overwrite="true"
       Encoding="Unicode"
@@ -36,6 +36,10 @@
     <Copy
       SourceFiles="@(PackageAssetFiles)"
       DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
+    <Copy
+      SourceFiles="obj\Module.txt"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)"
+      Condition="!Exists('Module.txt')" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
@@ -47,7 +51,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="Module.txt" Pack="true">
+    <None Include="obj\Module.txt" Pack="true" Condition="!Exists('Module.txt')">
       <PackagePath>assets\$(PackageId)\Module.txt</PackagePath>
     </None>
   </ItemGroup>

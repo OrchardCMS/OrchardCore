@@ -17,7 +17,7 @@
   <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('Theme.txt')">
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      File="Theme.txt"
+      File="obj\Theme.txt"
       Lines="$(ThemeManifest)"
       Overwrite="true"
       Encoding="Unicode"
@@ -36,6 +36,10 @@
     <Copy
       SourceFiles="@(PackageAssetFiles)"
       DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
+    <Copy
+      SourceFiles="obj\Theme.txt"
+      DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)"
+      Condition="!Exists('Theme.txt')" />
   </Target>
 
   <!-- Adds a custom .props file to the generated theme package -->
@@ -47,7 +51,7 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="Theme.txt" Pack="true">
+    <None Include="obj\Theme.txt" Pack="true" Condition="!Exists('Theme.txt')">
       <PackagePath>assets\$(PackageId)\Theme.txt</PackagePath>
     </None>
   </ItemGroup>

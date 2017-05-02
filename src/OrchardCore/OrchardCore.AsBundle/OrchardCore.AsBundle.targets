@@ -18,7 +18,10 @@
     <ItemGroup Condition="'@(_MSBuildProjectReferenceExistent)' != ''">
       <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
-        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)Theme.txt')" />
+        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt')" />
+      <ModuleProjectReferences
+        Include="@(_MSBuildProjectReferenceExistent)"
+        Condition="Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
     </ItemGroup>
 
     <MSBuild
