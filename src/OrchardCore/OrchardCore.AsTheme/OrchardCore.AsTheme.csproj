@@ -9,12 +9,9 @@
     <None Include="OrchardCore.AsTheme.props" Pack="true">
       <PackagePath>build\netstandard1.6\OrchardCore.AsTheme.props</PackagePath>
     </None>
-    <None Include="Package.Build.props" Pack="true">
-      <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.AsModule\OrchardCore.AsModule.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>

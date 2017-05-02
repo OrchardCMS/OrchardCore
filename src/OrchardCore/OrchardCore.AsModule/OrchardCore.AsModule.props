@@ -8,16 +8,17 @@
   <PropertyGroup>
     <ModuleManifest>Name: $(MSBuildProjectName)</ModuleManifest>
     <ExcludedFiles>**\*.cs;*.csproj*;obj\**;bin\**;Assets.json;Assets\**;Properties\**;*.props;*.targets;.vs\**</ExcludedFiles>
+    <ModuleType Condition="'$(ModuleType)' == ''">Module</ModuleType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageAssetFiles Include="**\*" Exclude="$(ExcludedFiles)" />
   </ItemGroup>
 
-  <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('Module.txt')">
+  <Target Name="CheckManifestFile" AfterTargets="Build" Condition="!Exists('$(ModuleType).txt')">
     <Message Text="Generating manifest file: $(MSBuildProjectName)" Importance="high" />
     <WriteLinesToFile
-      File="obj\Module.txt"
+      File="obj\$(ModuleType).txt"
       Lines="$(ModuleManifest)"
       Overwrite="true"
       Encoding="Unicode"
@@ -37,9 +38,9 @@
       SourceFiles="@(PackageAssetFiles)"
       DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)\%(RecursiveDir)" />
     <Copy
-      SourceFiles="obj\Module.txt"
+      SourceFiles="obj\$(ModuleType).txt"
       DestinationFolder="$(ApplicationDirectory)\Packages\$(MSBuildProjectName)"
-      Condition="!Exists('Module.txt')" />
+      Condition="!Exists('$(ModuleType).txt')" />
   </Target>
 
   <!-- Adds a custom .props file to the generated module package -->
@@ -51,8 +52,8 @@
     <None Include="**\*" Exclude="$(ExcludedFiles)" Pack="true">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Include="obj\Module.txt" Pack="true" Condition="!Exists('Module.txt')">
-      <PackagePath>assets\$(PackageId)\Module.txt</PackagePath>
+    <None Include="obj\$(ModuleType).txt" Pack="true" Condition="!Exists('$(ModuleType).txt')">
+      <PackagePath>assets\$(PackageId)\$(ModuleType).txt</PackagePath>
     </None>
   </ItemGroup>
   
