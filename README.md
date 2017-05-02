@@ -7,11 +7,8 @@ Orchard 2 is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/
 
 ## Build Status
 
-| Build server| Platform       | Status                                                                                                                                                                  |
-|-------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AppVeyor    | Windows        | [![Build status](https://ci.appveyor.com/api/projects/status/ilx2dx9wvmm2cjdp/branch/master?svg=true)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master) |
-| Travis      | Linux / OS X   | [![Build Status](https://travis-ci.org/OrchardCMS/Orchard2.svg?branch=master)](https://travis-ci.org/OrchardCMS/Orchard2)                                                 |
-| MyGet       | Windows        | [![brochard MyGet Build Status](https://www.myget.org/BuildSource/Badge/brochard?identifier=098718e3-f53d-4bcd-b29e-cb9da86823c0)](https://www.myget.org/)              |
+[![Build Status](https://img.shields.io/travis/OrchardCMS/Orchard2.svg?label=travis-ci&branch=master&style=flat-square)](https://travis-ci.org/OrchardCMS/Orchard2/branches)
+[![Build status](https://img.shields.io/appveyor/ci/alexbocharov/orchard2/master.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/alexbocharov/orchard2/branch/master)
 
 ## Orchard CMS
 
@@ -19,9 +16,9 @@ Orchard is a free, [open source](https://github.com/OrchardCMS/Orchard), communi
 
 ## Status
 
-### Alpha
+### Beta
 
-The software is complete enough for internal testing. This is typically done by people other than the software engineers who wrote it, but still within the same organization or community that developed the software.
+The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/Orchard2/wiki/Roadmap).
 
