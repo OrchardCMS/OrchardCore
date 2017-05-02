@@ -32,9 +32,6 @@ markdown_extensions:
   - markdown.extensions.footnotes
   - markdown.extensions.meta
   - markdown.extensions.toc(permalink=Link)
-  - pymdownx.magiclink
-  - pymdownx.mark
-  - pymdownx.tasklist(custom_checkbox=true)
   
 # Page tree
 pages:
