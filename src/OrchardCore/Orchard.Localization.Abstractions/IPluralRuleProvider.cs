@@ -3,8 +3,14 @@ using System.Globalization;
 
 namespace Orchard.Localization.Abstractions
 {
+
+    public delegate int PluralRuleDelegate(int count);
+
+
     public interface IPluralRuleProvider
     {
-        Func<int, int> GetRule(CultureInfo culture);
+        int Priority { get; }
+
+        PluralRuleDelegate GetRule(CultureInfo culture);
     }
 }

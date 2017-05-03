@@ -8,189 +8,55 @@ namespace Orchard.Localization.Core
 {
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
-        private static Func<int, int> DefaultRule = n => (n != 1 ? 1 : 0);
+        private static Dictionary<string, PluralRuleDelegate> Rules;
 
-        public Func<int, int> GetRule(CultureInfo culture)
+        static DefaultPluralRuleProvider()
         {
-            var rule = GetRule(culture.Name);
+            Rules = new Dictionary<string, PluralRuleDelegate>();
 
-            if (rule == null && culture.Parent != null)
-            {
-                rule = GetRule(culture.Parent.Name);
-            }
-
-            return rule ?? DefaultRule;
+            AddRule(new[] { "ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh-CN", "zh-HK", "zh-TW" }, n => 0);
+            AddRule(new[] { "ach", "ak", "am", "arn", "br", "fil", "fr", "gun", "ln", "mfe", "mg", "mi", "oc", "pt-BR", "tg", "ti", "tr", "uz", "wa" }, n => (n > 1 ? 1 : 0));
+            AddRule(new[] { "af", "an", "anp", "as", "ast", "az", "bg", "bn", "brx", "ca", "da", "de", "doi", "el", "en", "eo", "es", "es-AR", "et", "eu", "ff", "fi", "fo", "fur", "fy", "gl", "gu", "ha", "he", "hi", "hne", "hu", "hy", "ia", "it", "kl", "kn", "ku", "lb", "mai", "ml", "mn", "mni", "mr", "nah", "nap", "nb", "ne", "nl", "nn", "no", "nso", "or", "pa", "pap", "pms", "ps", "pt", "rm", "rw", "sat", "sco", "sd", "se", "si", "so", "son", "sq", "sv", "sw", "ta", "te", "tk", "ur", "yo" }, n => (n != 1 ? 1 : 0));
+            AddRule(new[] { "is" }, n => (n % 10 != 1 || n % 100 == 11 ? 1 : 0));
+            AddRule(new[] { "jv" }, n => (n != 0 ? 1 : 0));
+            AddRule(new[] { "mk" }, n => (n == 1 || n % 10 == 1 ? 0 : 1));
+            AddRule(new[] { "be", "bs", "hr", "lt" }, n => (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2));
+            AddRule(new[] { "cs" }, n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2));
+            AddRule(new[] { "csb", "pl" }, n => ((n == 1) ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2));
+            AddRule(new[] { "lv" }, n => (n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2));
+            AddRule(new[] { "mnk" }, n => (n == 0 ? 0 : n == 1 ? 1 : 2));
+            AddRule(new[] { "ro" }, n => (n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2));
+            AddRule(new[] { "cy" }, n => ((n == 1) ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3));
+            AddRule(new[] { "gd" }, n => ((n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3));
+            AddRule(new[] { "kw" }, n => ((n == 1) ? 0 : (n == 2) ? 1 : (n == 3) ? 2 : 3));
+            AddRule(new[] { "mt" }, n => (n == 1 ? 0 : n == 0 || (n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20) ? 2 : 3));
+            AddRule(new[] { "sl" }, n => (n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0));
+            AddRule(new[] { "ru", "sr", "uk" }, n => (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2));
+            AddRule(new[] { "sk" }, n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2));
+            AddRule(new[] { "ga" }, n => (n == 1 ? 0 : n == 2 ? 1 : (n > 2 && n < 7) ? 2 : (n > 6 && n < 11) ? 3 : 4));
+            AddRule(new[] { "ar" }, n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5));
         }
 
-        private Func<int, int> GetRule(string cultureName)
+        private static void AddRule(string[] cultures, PluralRuleDelegate rule)
         {
-            switch (cultureName)
+            foreach (var culture in cultures)
             {
-                case "ay":
-                case "bo":
-                case "cgg":
-                case "dz":
-                case "fa":
-                case "id":
-                case "ja":
-                case "jbo":
-                case "ka":
-                case "kk":
-                case "km":
-                case "ko":
-                case "ky":
-                case "lo":
-                case "ms":
-                case "my":
-                case "sah":
-                case "su":
-                case "th":
-                case "tt":
-                case "ug":
-                case "vi":
-                case "wo":
-                case "zh-CN":
-                case "zh-HK":
-                case "zh-TW":
-                    return n => 0;
-                case "ach":
-                case "ak":
-                case "am":
-                case "arn":
-                case "br":
-                case "fil":
-                case "fr":
-                case "gun":
-                case "ln":
-                case "mfe":
-                case "mg":
-                case "mi":
-                case "oc":
-                case "pt-BR":
-                case "tg":
-                case "ti":
-                case "tr":
-                case "uz":
-                case "wa":
-                    return n => (n > 1 ? 1 : 0);
-                case "af":
-                case "an":
-                case "anp":
-                case "as":
-                case "ast":
-                case "az":
-                case "bg":
-                case "bn":
-                case "brx":
-                case "ca":
-                case "da":
-                case "de":
-                case "doi":
-                case "el":
-                case "en":
-                case "eo":
-                case "es":
-                case "es-AR":
-                case "et":
-                case "eu":
-                case "ff":
-                case "fi":
-                case "fo":
-                case "fur":
-                case "fy":
-                case "gl":
-                case "gu":
-                case "ha":
-                case "he":
-                case "hi":
-                case "hne":
-                case "hu":
-                case "hy":
-                case "ia":
-                case "it":
-                case "kl":
-                case "kn":
-                case "ku":
-                case "lb":
-                case "mai":
-                case "ml":
-                case "mn":
-                case "mni":
-                case "mr":
-                case "nah":
-                case "nap":
-                case "nb":
-                case "ne":
-                case "nl":
-                case "nn":
-                case "no":
-                case "nso":
-                case "or":
-                case "pa":
-                case "pap":
-                case "pms":
-                case "ps":
-                case "pt":
-                case "rm":
-                case "rw":
-                case "sat":
-                case "sco":
-                case "sd":
-                case "se":
-                case "si":
-                case "so":
-                case "son":
-                case "sq":
-                case "sv":
-                case "sw":
-                case "ta":
-                case "te":
-                case "tk":
-                case "ur":
-                case "yo":
-                    return n => (n != 1 ? 1 : 0);
-                case "is":
-                    return n => (n % 10 != 1 || n % 100 == 11 ? 1 : 0);
-                case "jv":
-                    return n => (n != 0 ? 1 : 0);
-                case "mk":
-                    return n => (n == 1 || n % 10 == 1 ? 0 : 1);
-                case "be":
-                case "bs":
-                case "hr":
-                case "lt":
-                    return n => (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2);
-                case "cs":
-                    return n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-                case "csb":
-                case "pl":
-                    return n => ((n == 1) ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2);
-                case "lv":
-                    return n => (n % 10 == 1 && n % 100 != 11 ? 0 : n != 0 ? 1 : 2);
-                case "mnk":
-                    return n => (n == 0 ? 0 : n == 1 ? 1 : 2);
-                case "ro":
-                    return n => (n == 1 ? 0 : (n == 0 || (n % 100 > 0 && n % 100 < 20)) ? 1 : 2);
-                case "cy":
-                    return n => ((n == 1) ? 0 : (n == 2) ? 1 : (n != 8 && n != 11) ? 2 : 3);
-                case "gd":
-                    return n => ((n == 1 || n == 11) ? 0 : (n == 2 || n == 12) ? 1 : (n > 2 && n < 20) ? 2 : 3);
-                case "kw":
-                    return n => ((n == 1) ? 0 : (n == 2) ? 1 : (n == 3) ? 2 : 3);
-                case "mt":
-                    return n => (n == 1 ? 0 : n == 0 || (n % 100 > 1 && n % 100 < 11) ? 1 : (n % 100 > 10 && n % 100 < 20) ? 2 : 3);
-                case "sl":
-                    return n => (n % 100 == 1 ? 1 : n % 100 == 2 ? 2 : n % 100 == 3 || n % 100 == 4 ? 3 : 0);
-                case "ru":
-                case "sr":
-                case "uk":
-                    return n => (n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2);
-                case "sk":
-                    return n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
-                case "ga":
-                    return n => (n == 1 ? 0 : n == 2 ? 1 : (n > 2 && n < 7) ? 2 : (n > 6 && n < 11) ? 3 : 4);
-                case "ar":
-                    return n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
+                Rules.Add(culture, rule);
+            }
+        }
+
+        public int Priority => 0;
+
+        PluralRuleDelegate IPluralRuleProvider.GetRule(CultureInfo culture)
+        {
+            if (Rules.TryGetValue(culture.Name, out var rule))
+            {
+                return rule;
+            }
+
+            if (culture.Parent != null && Rules.TryGetValue(culture.Parent.Name, out rule))
+            {
+                return rule;
             }
 
             return null;

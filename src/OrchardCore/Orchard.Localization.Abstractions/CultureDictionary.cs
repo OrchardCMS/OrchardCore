@@ -6,11 +6,9 @@ namespace Orchard.Localization.Abstractions
 {
     public class CultureDictionary
     {
-        private IDictionary<string, string[]> _translations;
-
         public string CultureName { get; private set; }
 
-        public Func<int, int> PluralRule { get; private set; }
+        public PluralRuleDelegate PluralRule { get; private set; }
 
         public string this[string key] => this[key, null];
 
@@ -18,32 +16,31 @@ namespace Orchard.Localization.Abstractions
         {
             get
             {
-                if(key == null)
+                if (key == null)
                 {
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                var translations = _translations.ContainsKey(key) ? _translations[key] : null;
-                if (translations == null)
+                if (!Translations.TryGetValue(key, out string[] translations))
                 {
                     return null;
                 }
 
                 var pluralForm = count.HasValue ? PluralRule(count.Value) : 0;
-                if (pluralForm < translations.Length)
+                if (pluralForm >= translations.Length)
                 {
-                    return translations[pluralForm];
+                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.");
                 }
 
-                return null;
+                return translations[pluralForm];
             }
         }
 
-        public IDictionary<string, string[]> Translations => _translations;
+        public IDictionary<string, string[]> Translations { get; private set; }
 
-        public CultureDictionary(string cultureName, Func<int, int> pluralRule)
+        public CultureDictionary(string cultureName, PluralRuleDelegate pluralRule)
         {
-            _translations = new Dictionary<string, string[]>();
+            Translations = new Dictionary<string, string[]>();
             CultureName = cultureName;
             PluralRule = pluralRule;
         }
@@ -52,7 +49,7 @@ namespace Orchard.Localization.Abstractions
         {
             foreach (var record in records)
             {
-                _translations[record.Key] = record.Translations;
+                Translations[record.Key] = record.Translations;
             }
         }
     }

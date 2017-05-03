@@ -3,27 +3,30 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Localization.Core
 {
-    public class PoStringLocalizerFactory : IStringLocalizerFactory
+    public class StringLocalizerFactory : IStringLocalizerFactory
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly ILogger _logger;
 
-        public PoStringLocalizerFactory(ILocalizationManager localizationManager)
+        public StringLocalizerFactory(ILocalizationManager localizationManager, ILogger logger)
         {
             _localizationManager = localizationManager;
+            _logger = logger;
         }
 
         public IStringLocalizer Create(Type resourceSource)
         {
-            return new PoStringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager);
+            return new StringLocalizer(CultureInfo.CurrentUICulture, resourceSource.FullName, _localizationManager, _logger);
         }
 
         public IStringLocalizer Create(string baseName, string location)
         {
             var relativeName = baseName.Replace(location, string.Empty).Trim('.');
-            return new PoStringLocalizer(CultureInfo.CurrentUICulture, relativeName, _localizationManager);
+            return new StringLocalizer(CultureInfo.CurrentUICulture, relativeName, _localizationManager, _logger);
         }
     }
 }

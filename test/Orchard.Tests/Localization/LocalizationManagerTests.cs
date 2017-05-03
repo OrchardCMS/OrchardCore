@@ -13,7 +13,7 @@ namespace Orchard.Tests.Localization
 {
     public class LocalizationManagerTests
     {
-        private Func<int, int> _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private PluralRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
         private Mock<IPluralRuleProvider> _pluralRuleProvider;
         private Mock<ITranslationProvider> _translationProvider;
         private IMemoryCache _memoryCache;
@@ -30,7 +30,7 @@ namespace Orchard.Tests.Localization
         [Fact]
         public void GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists()
         {
-            _translationProvider.Setup(o => o.LoadTranslationsToDictionary(
+            _translationProvider.Setup(o => o.LoadTranslations(
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
@@ -47,7 +47,7 @@ namespace Orchard.Tests.Localization
         {
             var dictionaryRecord = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" });
             _translationProvider
-                .Setup(o => o.LoadTranslationsToDictionary(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
+                .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
             var manager = new LocalizationManager(_pluralRuleProvider.Object, _translationProvider.Object, _memoryCache);
 

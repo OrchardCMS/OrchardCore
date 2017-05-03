@@ -15,7 +15,6 @@
     <ProjectReference Include="..\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
     <ProjectReference Include="..\Orchard.Localization.Abstractions\Orchard.Localization.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Localization.PortableObject\Orchard.Localization.PortableObject.csproj" />
   </ItemGroup>
 
 </Project>

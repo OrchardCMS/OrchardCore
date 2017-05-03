@@ -27,7 +27,7 @@ namespace Orchard.Localization.Abstractions
                 return messageId;
             }
 
-            return $"{context.ToLowerInvariant()}|{messageId}";
+            return context.ToLowerInvariant()+ "|" + messageId;
         }
     }
 }

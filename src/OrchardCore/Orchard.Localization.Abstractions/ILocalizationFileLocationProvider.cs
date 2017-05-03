@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Orchard.Localization.Abstractions
 {
-    public interface ITranslationProvider
+    public interface ILocalizationFileLocationProvider
     {
-        void LoadTranslations(string cultureName, CultureDictionary dictionary);
+        IEnumerable<string> GetLocations(string cultureName);
     }
 }

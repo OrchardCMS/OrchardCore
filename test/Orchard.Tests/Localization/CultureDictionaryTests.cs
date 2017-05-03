@@ -9,7 +9,7 @@ namespace Orchard.Tests.Localization
 {
     public class CultureDictionaryTests
     {
-        private static Func<int, int> _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private static PluralRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
 
         [Fact]
         public void MergeAddsRecordToEmptyDictionary()
@@ -43,6 +43,16 @@ namespace Orchard.Tests.Localization
             var translation = dictionary["ball"];
 
             Assert.Null(translation);
+        }
+
+        [Fact]
+        public void IntexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
+        {
+            var dictionary = new CultureDictionary("cs", _csPluralRule);
+            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče"});
+            dictionary.MergeTranslations(new[] { record });
+
+            Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
         }
     }
 }

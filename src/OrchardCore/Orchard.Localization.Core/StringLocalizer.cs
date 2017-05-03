@@ -5,21 +5,25 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Orchard.Localization.Core
 {
-    public class PoStringLocalizer : IStringLocalizer
+    public class StringLocalizer : IStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
+        private readonly ILogger _logger;
+
         private CultureDictionary _dictionary;
         private CultureDictionary _parentCultureDictionary;
 
         public string Context { get; private set; }
 
-        public PoStringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager)
+        public StringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager, ILogger logger)
         {
             Context = context;
             _localizationManager = localizationManager;
+            _logger = logger;
             _dictionary = localizationManager.GetDictionary(culture);
 
             if (culture.Parent != null)
@@ -74,25 +78,33 @@ namespace Orchard.Localization.Core
 
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            return new PoStringLocalizer(culture, Context, _localizationManager);
+            return new StringLocalizer(culture, Context, _localizationManager, _logger);
         }
 
         private string GetTranslation(string name, string context, int? count)
         {
             var key = CultureDictionaryRecord.GetKey(name, context);
-            var translation = _dictionary[key, count];
-
-            if (translation == null && _parentCultureDictionary != null)
+            try
             {
-                translation = _parentCultureDictionary[key, count]; // fallback to the parent culture
+                var translation = _dictionary[key, count];
+
+                if (translation == null && _parentCultureDictionary != null)
+                {
+                    translation = _parentCultureDictionary[key, count]; // fallback to the parent culture
+                }
+
+                if (translation == null && context != null)
+                {
+                    translation = GetTranslation(name, null, count); // fallback to the translation without context
+                }
+
+                return translation;
+            } catch (PluralFormNotFoundException ex)
+            {
+                _logger.LogWarning(ex.Message);
             }
 
-            if (translation == null && context != null)
-            {
-                translation = GetTranslation(name, null, count); // fallback to the translation without context
-            }
-
-            return translation;
+            return null;
         }
     }
 }
