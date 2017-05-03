@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.0
+VisualStudioVersion = 15.0.26501.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -258,6 +258,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Lucene.Abstractions", "src\OrchardCore\Orchard.Lucene.Abstractions\Orchard.Lucene.Abstractions.csproj", "{78F13261-B843-4590-8DD5-E9491874D0CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Lucene.Core", "src\OrchardCore\Orchard.Lucene.Core\Orchard.Lucene.Core.csproj", "{F621B369-15FD-4923-98AD-17740C24CD5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchard.Queries.Abstractions", "src\OrchardCore\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj", "{AEB44D2A-1493-4550-8B13-EB611B1FB12C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -717,6 +719,10 @@ Global
 		{F621B369-15FD-4923-98AD-17740C24CD5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F621B369-15FD-4923-98AD-17740C24CD5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F621B369-15FD-4923-98AD-17740C24CD5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEB44D2A-1493-4550-8B13-EB611B1FB12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEB44D2A-1493-4550-8B13-EB611B1FB12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEB44D2A-1493-4550-8B13-EB611B1FB12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEB44D2A-1493-4550-8B13-EB611B1FB12C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -848,5 +854,6 @@ Global
 		{4FC00B36-DF0A-400F-8E1A-E700B5D58F98} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{78F13261-B843-4590-8DD5-E9491874D0CD} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{F621B369-15FD-4923-98AD-17740C24CD5C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{AEB44D2A-1493-4550-8B13-EB611B1FB12C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 EndGlobal

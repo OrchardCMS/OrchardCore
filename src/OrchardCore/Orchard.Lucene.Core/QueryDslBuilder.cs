@@ -19,6 +19,22 @@ namespace Orchard.Lucene
 
         public Query CreateQuery(LuceneQueryContext context, JObject queryObj)
         {
+            var queryProp = queryObj["query"] as JObject;
+
+            if (queryProp == null)
+            {
+                throw new ArgumentException("Query DSL requires a [query] property");
+            }
+
+            Query query = CreateQueryFragment(context, queryProp);
+
+            var sortProp = queryObj["sort"];
+            
+            return query;
+        }
+
+        public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
+        {
             var first = queryObj.Properties().First();
 
             Query query = null;
@@ -33,16 +49,12 @@ namespace Orchard.Lucene
                 }
             }
 
-            if (query == null)
-            {
-                throw new ArgumentException("Invalid query");
-            }
-
             return query;
         }
-                                 
+
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
+
             if (String.IsNullOrEmpty(text))
             {
                 return new List<string>();

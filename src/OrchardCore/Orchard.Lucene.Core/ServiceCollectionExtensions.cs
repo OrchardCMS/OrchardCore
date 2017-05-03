@@ -20,7 +20,6 @@ namespace Orchard.Lucene
             services.AddSingleton<ILuceneQueryProvider, QueryStringQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RangeQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RegexpQueryProvider>();
-            services.AddSingleton<ILuceneQueryProvider, RootQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, SimpleQueryStringQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, TermQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, TermsQueryProvider>();

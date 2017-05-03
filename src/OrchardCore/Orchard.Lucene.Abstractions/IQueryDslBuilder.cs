@@ -6,5 +6,6 @@ namespace Orchard.Lucene
     public interface IQueryDslBuilder
     {
         Query CreateQuery(LuceneQueryContext context, JObject query);
+        Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj);
     }
 }

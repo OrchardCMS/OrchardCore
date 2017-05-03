@@ -52,7 +52,7 @@ namespace Orchard.Lucene.QueryProviders
                             {
                                 throw new ArgumentException($"Invalid value in boolean query");
                             }
-                            boolQuery.Add(builder.CreateQuery(context, (JObject)item), occur);
+                            boolQuery.Add(builder.CreateQueryFragment(context, (JObject)item), occur);
                         }
                         break;
                     default: throw new ArgumentException($"Invalid value in boolean query");
