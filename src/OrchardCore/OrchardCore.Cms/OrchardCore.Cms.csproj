@@ -5,6 +5,13 @@
     <IgnorePackageAssets>true</IgnorePackageAssets>
   </PropertyGroup>
 
+  <!-- Add a ".props" file in the package specific to the "Cms" bundle -->
+  <ItemGroup>
+    <None Include="OrchardCore.Cms.props" Pack="true">
+      <PackagePath>build\netstandard1.6\OrchardCore.Cms.props</PackagePath>
+    </None>
+  </ItemGroup>
+
   <!--
     When a package is not directly referenced, e.g only through the reference of this bundle package,
     the files in its build folder are not evaluated on building if this folder is marked as private.
@@ -62,12 +69,6 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="OrchardCore.Cms.props" Pack="true">
-      <PackagePath>build\netstandard1.6\OrchardCore.Cms.props</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
