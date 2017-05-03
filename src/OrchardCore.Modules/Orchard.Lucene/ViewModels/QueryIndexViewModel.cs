@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Orchard.Queries.ViewModels
+namespace Orchard.Lucene.ViewModels
 {
-    public class AdminIndexViewModel
+    public class QueryIndexViewModel
     {
         public string Query { get; set; }
         public string IndexName { get; set; }

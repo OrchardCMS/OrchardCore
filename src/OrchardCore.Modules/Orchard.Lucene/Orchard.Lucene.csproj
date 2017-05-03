@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Indexing.Abstractions\Orchard.Indexing.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
@@ -16,6 +17,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.SiteSettings.Core\Orchard.SiteSettings.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Lucene.Core\Orchard.Lucene.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +25,12 @@
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-alpha" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Views\Query\Index.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

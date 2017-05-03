@@ -24,12 +24,15 @@
       <PackagePath>assets\$(PackageId)\</PackagePath>
       <Pack>true</Pack>
     </None>
-    <None Update="Views\Admin\Index.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
     <None Update="Views\_ViewImports.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\Admin\" />
   </ItemGroup>
 
 </Project>

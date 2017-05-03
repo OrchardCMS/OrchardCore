@@ -4,31 +4,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Orchard.Lucene;
+using Orchard.Admin;
 using Orchard.Lucene.Services;
-using Orchard.Queries.ViewModels;
+using Orchard.Lucene.ViewModels;
 
-namespace Orchard.Queries.Controllers
+namespace Orchard.Lucene.Controllers
 {
-    public class AdminController : Controller
+    [Admin]
+    public class QueryController : Controller
     {
         private readonly LuceneIndexProvider _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
- 
-        public AdminController(
+        private readonly IQueryDslBuilder _queryDslBuilder;
+
+        public QueryController(
             LuceneIndexProvider luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
-            LuceneAnalyzerManager luceneAnalyzerManager)
+            LuceneAnalyzerManager luceneAnalyzerManager,
+            IQueryDslBuilder queryDslBuilder)
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
+            _queryDslBuilder = queryDslBuilder;
         }
 
         public IActionResult Index()
         {
-            var model = new AdminIndexViewModel
+            var model = new QueryIndexViewModel
             {
                 IndexName = "Search",
                 Query = ""
@@ -38,7 +42,7 @@ namespace Orchard.Queries.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(AdminIndexViewModel model)
+        public async Task<IActionResult> Index(QueryIndexViewModel model)
         {
             if (!_luceneIndexProvider.Exists(model.IndexName))
             {
@@ -57,8 +61,8 @@ namespace Orchard.Queries.Controllers
 
             // TODO: Configure a default analyzer for the query
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
-            var queryDslBuilder = new QueryDslBuilder(analyzer);
-            var query = queryDslBuilder.BuildQuery(JObject.Parse(model.Query));
+            var context = new LuceneQueryContext(LuceneSettings.DefaultVersion, analyzer);
+            var query = _queryDslBuilder.CreateQuery(context, JObject.Parse(model.Query));
 
             _luceneIndexProvider.Search(model.IndexName, searcher =>
             {

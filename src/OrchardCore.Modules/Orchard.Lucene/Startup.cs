@@ -35,6 +35,7 @@ namespace Orchard.Lucene
             services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+            services.AddLuceneQueries();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
