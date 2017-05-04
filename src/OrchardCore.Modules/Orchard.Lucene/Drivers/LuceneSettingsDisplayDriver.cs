@@ -11,9 +11,9 @@ namespace Orchard.Lucene.Drivers
 {
     public class LuceneSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<LuceneSettings>
     {
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
 
-        public LuceneSiteSettingsDisplayDriver(LuceneIndexProvider luceneIndexProvider)
+        public LuceneSiteSettingsDisplayDriver(LuceneIndexManager luceneIndexProvider)
         {
             _luceneIndexProvider = luceneIndexProvider;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +20,7 @@ namespace Orchard.Lucene
         private const int BatchSize = 100;
 
         private readonly LuceneIndexingState _indexingState;
-        private readonly LuceneIndexProvider _indexProvider;
+        private readonly LuceneIndexManager _indexProvider;
         private readonly IIndexingTaskManager _indexTaskManager;
         private readonly IEnumerable<IContentItemIndexHandler> _indexHandlers;
         private readonly IContentManager _contentManager;
@@ -28,7 +28,7 @@ namespace Orchard.Lucene
 
         public LuceneIndexingService(
             LuceneIndexingState indexingState, 
-            LuceneIndexProvider indexProvider, 
+            LuceneIndexManager indexProvider, 
             IIndexingTaskManager indexTaskManager,
             IEnumerable<IContentItemIndexHandler> indexHandlers,
             IContentManager contentManager,

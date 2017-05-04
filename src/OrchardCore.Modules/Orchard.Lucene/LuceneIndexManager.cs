@@ -1,9 +1,10 @@
-﻿using System;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Lucene.Net.Analysis.Standard;
-using LuceneNetCodecs = Lucene.Net.Codecs;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -14,10 +15,15 @@ using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
 using Directory = System.IO.Directory;
+using LuceneNetCodecs = Lucene.Net.Codecs;
 
 namespace Orchard.Lucene
 {
-    public class LuceneIndexProvider
+    /// <summary>
+    /// Provides methods to manage physical Lucene indices.
+    /// This class is provided as a singleton to that the index searcher can be reused across requests.
+    /// </summary>
+    public class LuceneIndexManager : IDisposable
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly string _rootPath;
@@ -25,14 +31,14 @@ namespace Orchard.Lucene
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
 
-        static LuceneIndexProvider()
+        static LuceneIndexManager()
         {
             SPIClassIterator<LuceneNetCodecs.Codec>.Types.Add(typeof(LuceneNetCodecs.Lucene46.Lucene46Codec));
             SPIClassIterator<LuceneNetCodecs.PostingsFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene41.Lucene41PostingsFormat));
             SPIClassIterator<LuceneNetCodecs.DocValuesFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene45.Lucene45DocValuesFormat));
         }
 
-        public LuceneIndexProvider(
+        public LuceneIndexManager(
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             ShellSettings shellSettings
@@ -58,11 +64,7 @@ namespace Orchard.Lucene
                 path.Create();
             }
 
-            using (var directory = FSDirectory.Open(path))
-            using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))))
-            {
-
-            }
+            GetWriter(indexName);
         }
 
         public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
@@ -77,12 +79,11 @@ namespace Orchard.Lucene
             //    }
             //}
 
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+            GetWriter(indexName).DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
 
-            using (var directory = FSDirectory.Open(path))
-            using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
+            if (_indexPools.TryRemove(indexName, out var pool))
             {
-                iwriter.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
+                pool.MakeDirty();
             }
         }
 
@@ -94,6 +95,11 @@ namespace Orchard.Lucene
             {
                 Directory.Delete(indexFolder, true);
             }
+
+            if (_indexPools.TryRemove(indexName, out var pool))
+            {
+                pool.MakeDirty();
+            }
         }
 
         public bool Exists(string indexName)
@@ -104,11 +110,6 @@ namespace Orchard.Lucene
             }
 
             return Directory.Exists(Path.Combine(_rootPath, indexName));
-        }
-
-        public int GetLastIndexDocumentId(string indexName)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<string> List()
@@ -127,50 +128,33 @@ namespace Orchard.Lucene
             //    var content = JsonConvert.SerializeObject(indexDocument);
             //    File.WriteAllText(filename, content);
             //}
-
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            if (!path.Exists)
+            
+            var writer = GetWriter(indexName);
+            foreach (var indexDocument in indexDocuments)
             {
-                path.Create();
+                writer.AddDocument(CreateLuceneDocument(indexDocument));
             }
 
-            using (var directory = FSDirectory.Open(path))
+            if (_indexPools.TryRemove(indexName, out var pool))
             {
-                using (var iwriter = new IndexWriter(directory, new IndexWriterConfig(LuceneVersion.LUCENE_48, new StandardAnalyzer(LuceneVersion.LUCENE_48))))
-                {
-                    foreach (var indexDocument in indexDocuments)
-                    {
-                        iwriter.AddDocument(CreateLuceneDocument(indexDocument));
-                    }
-                }
+                pool.MakeDirty();
             }
         }
 
         public void Search(string indexName, Action<IndexSearcher> searcher)
         {
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            using (var directory = FSDirectory.Open(path))
+            using (var reader = GetReader(indexName))
             {
-                using (var indexReader = DirectoryReader.Open(directory))
-                {
-                    var iSearcher = new IndexSearcher(indexReader);
-                    searcher(iSearcher);
-                }
+                var indexSearcher = new IndexSearcher(reader.IndexReader);
+                searcher(indexSearcher);
             }
         }
 
-        public void Read(string indexName, Action<DirectoryReader> reader)
+        public void Read(string indexName, Action<IndexReader> reader)
         {
-            var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
-
-            using (var directory = FSDirectory.Open(path))
+            using (var indexReader = GetReader(indexName))
             {
-                using (var indexReader = DirectoryReader.Open(directory))
-                {
-                    reader(indexReader);
-                }
+                reader(indexReader.IndexReader);
             }
         }
 
@@ -230,15 +214,129 @@ namespace Orchard.Lucene
                         }
                         break;
                 }
-
             }
 
             return doc;
         }
 
+        private BaseDirectory GetDirectory(string indexName)
+        {
+            return _directories.GetOrAdd(indexName, n =>
+            {
+                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+                if (!path.Exists)
+                {
+                    path.Create();
+                }
+
+                return FSDirectory.Open(path);
+            });
+        }
+
+        private IndexWriter GetWriter(string indexName)
+        {
+            return _writers.GetOrAdd(indexName, n =>
+            {
+                var directory = GetDirectory(indexName);
+                return new IndexWriter(directory, new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion)));
+            });
+        }
+
+        private IndexReaderPool.IndexReaderLease GetReader(string indexName)
+        {
+            var pool = _indexPools.GetOrAdd(indexName, n =>
+            {
+                var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
+
+                var directory = GetDirectory(indexName);
+                var reader = DirectoryReader.Open(directory);
+                return new IndexReaderPool(reader);
+            });
+
+            return pool.Acquire();
+        }
+
         private string GetFilename(string indexName, int documentId)
         {
             return Path.Combine(_rootPath, indexName, documentId + ".json");
+        }
+
+        public void Dispose()
+        {
+            foreach(var writer in _writers.Values)
+            {
+                writer.Dispose();
+            }
+
+            foreach (var directory in _directories.Values)
+            {
+                directory.Dispose();
+            }
+
+            foreach(var reader in _indexPools.Values)
+            {
+                reader.Dispose();
+            }
+        }
+
+        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>();
+        private ConcurrentDictionary<string, BaseDirectory> _directories = new ConcurrentDictionary<string, BaseDirectory>();
+        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>();
+    }
+
+    internal class IndexReaderPool : IDisposable
+    {
+        private bool _dirty;
+        private int _count;
+        private IndexReader _reader;
+
+        public IndexReaderPool(IndexReader reader)
+        {
+            _reader = reader;
+        }
+
+        public void MakeDirty()
+        {
+            _dirty = true;
+        }
+
+        public IndexReaderLease Acquire()
+        {
+            return new IndexReaderLease(this, _reader);
+        }
+
+        public void Release()
+        {
+            if (_dirty && _count == 0)
+            {
+                _reader.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            _reader.Dispose();
+        }
+
+        public struct IndexReaderLease : IDisposable
+        {
+            private IndexReaderPool _pool;
+
+            public IndexReaderLease(IndexReaderPool pool, IndexReader reader)
+            {
+                _pool = pool;
+                Interlocked.Increment(ref _pool._count);
+                IndexReader = reader;
+            }
+
+            public IndexReader IndexReader { get; }
+
+            public void Dispose()
+            {
+                var count = Interlocked.Decrement(ref _pool._count);
+                _pool.Release();
+            }
         }
     }
 }

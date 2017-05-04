@@ -16,13 +16,13 @@ namespace Orchard.Lucene.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
 
         public AdminController(
-            LuceneIndexProvider luceneIndexProvider,
+            LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
             INotifier notifier,

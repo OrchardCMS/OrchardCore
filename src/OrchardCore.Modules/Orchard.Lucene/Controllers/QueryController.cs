@@ -13,13 +13,13 @@ namespace Orchard.Lucene.Controllers
     [Admin]
     public class QueryController : Controller
     {
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly IQueryDslBuilder _queryDslBuilder;
 
         public QueryController(
-            LuceneIndexProvider luceneIndexProvider,
+            LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             LuceneAnalyzerManager luceneAnalyzerManager,
             IQueryDslBuilder queryDslBuilder)

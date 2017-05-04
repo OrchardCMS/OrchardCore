@@ -17,7 +17,7 @@ namespace Orchard.Lucene.Controllers
     public class SearchController : Controller
     {
         private readonly ISiteService _siteService;
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IContentManager _contentManager;
 
@@ -25,7 +25,7 @@ namespace Orchard.Lucene.Controllers
 
         public SearchController(
             ISiteService siteService,
-            LuceneIndexProvider luceneIndexProvider,
+            LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             IContentManager contentManager,
             ILogger<SearchController> logger
