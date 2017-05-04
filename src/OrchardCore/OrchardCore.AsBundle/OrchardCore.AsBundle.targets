@@ -15,7 +15,7 @@
       DestinationFolder="Packages\%(RecursiveDir)"
       ContinueOnError="true" />
 
-    <ItemGroup Condition="'@(_MSBuildProjectReferenceExistent)' != ''">
+    <ItemGroup>
       <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
         Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
