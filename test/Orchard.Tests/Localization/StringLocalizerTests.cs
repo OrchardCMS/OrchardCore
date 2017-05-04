@@ -13,6 +13,7 @@ namespace Orchard.Tests.Localization
     public class StringLocalizerTests
     {
         private static PluralRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private static PluralRuleDelegate _enPluralRule = n => (n == 1) ? 0 : 1;
         private Mock<ILocalizationManager> _localizationManager;
         private Mock<ILogger> _logger;
 
@@ -142,7 +143,7 @@ namespace Orchard.Tests.Localization
             });
             var localizer = new StringLocalizer(new CultureInfo("cs"), null, _localizationManager.Object, _logger.Object);
 
-            var translation = localizer.Plural("car", "cars", count);
+            var translation = localizer.Plural(count, "car", "cars");
 
             Assert.Equal(expected, translation);
         }
@@ -158,18 +159,51 @@ namespace Orchard.Tests.Localization
             });
             var localizer = new StringLocalizer(new CultureInfo("cs"), null, _localizationManager.Object, _logger.Object);
 
-            var translation = localizer.Plural("ball", "{0} balls", count, count);
+            var translation = localizer.Plural(count, "ball", "{0} balls", count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
+        [InlineData("míč", 1)]
+        [InlineData("2 míče", 2)]
+        [InlineData("5 míčů", 5)]
+        public void LocalizerReturnsOriginalValuesIfTranslationDoesntExistAndMultiplePluraflFormsAreSpecified(string expected, int count)
+        {
+            SetupDictionary("en", new CultureDictionaryRecord[] { });
+            var localizer = new StringLocalizer(new CultureInfo("en"), null, _localizationManager.Object, _logger.Object);
+
+            var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+
+            Assert.Equal(expected, translation);
+        }
+
+        [Theory]
+        [InlineData("ball", 1)]
+        [InlineData("2 balls", 2)]
+        public void LocalizerReturnsCorrectPluralFormIfMultiplePluraflFormsAreSpecified(string expected, int count)
+        {
+            SetupDictionary("en", new CultureDictionaryRecord[] {
+                new CultureDictionaryRecord("míč", null, new[] { "ball", "{0} balls" })
+            }, _enPluralRule);
+            var localizer = new StringLocalizer(new CultureInfo("en"), null, _localizationManager.Object, _logger.Object);
+
+            var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
 
             Assert.Equal(expected, translation);
         }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)
         {
-            var dictionary = new CultureDictionary(cultureName, _csPluralRule);
+            SetupDictionary(cultureName, records, _csPluralRule);
+        }
+
+        private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records, PluralRuleDelegate pluralRule)
+        {
+            var dictionary = new CultureDictionary(cultureName, pluralRule);
             dictionary.MergeTranslations(records);
 
             _localizationManager.Setup(o => o.GetDictionary(It.Is<CultureInfo>(c => c.Name == cultureName))).Returns(dictionary);
-
         }
     }
 }

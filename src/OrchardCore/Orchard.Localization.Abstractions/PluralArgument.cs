@@ -6,7 +6,7 @@ namespace Orchard.Localization.Abstractions
 {
     public class PluralArgument
     {
-        public string PluralText { get; set; }
+        public string[] PluralForms { get; set; }
         public int Count { get; set; }
     }
 }

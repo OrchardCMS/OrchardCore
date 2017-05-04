@@ -55,18 +55,18 @@ namespace Orchard.Localization.Core
                     throw new ArgumentNullException(nameof(name));
                 }
 
-                string translation;
-                var defaultTranslation = name;
+                var defaultPluralForms = new[] { name };
+                int? count = null;
 
-                var pluralArgument = arguments.FirstOrDefault() as PluralArgument;
-                if(pluralArgument != null)
+                if (arguments.LastOrDefault() is PluralArgument pluralArgument)
                 {
-                    defaultTranslation = pluralArgument.Count != 1 ? pluralArgument.PluralText : name;
-                    arguments = arguments.Length > 1 ? (object[])arguments[1] : new object[0];
+                    count = pluralArgument.Count;
+                    defaultPluralForms = pluralArgument.PluralForms;
+                    Array.Resize(ref arguments, arguments.Length - 1); // remove PluralArgument from arguments
                 }
 
-                translation = GetTranslation(name, Context, pluralArgument?.Count);
-                var formatted = string.Format(translation ?? defaultTranslation, arguments);
+                var translation = GetTranslation(name, Context, count);
+                var formatted = string.Format(translation ?? GetTranslation(defaultPluralForms, count), arguments);
                 return new LocalizedString(name, formatted, translation == null);
             }
         }
@@ -79,6 +79,17 @@ namespace Orchard.Localization.Core
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             return new StringLocalizer(culture, Context, _localizationManager, _logger);
+        }
+
+        private string GetTranslation(string[] pluralForms, int? count)
+        {
+            var pluralForm = count.HasValue ? _dictionary.PluralRule(count.Value) : 0;
+            if (pluralForm >= pluralForms.Length)
+            {
+                throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist in values provided by the IStringLocalizer.Plural method. Provided values: {pluralForms}");
+            }
+
+            return pluralForms[pluralForm];
         }
 
         private string GetTranslation(string name, string context, int? count)
@@ -99,7 +110,8 @@ namespace Orchard.Localization.Core
                 }
 
                 return translation;
-            } catch (PluralFormNotFoundException ex)
+            }
+            catch (PluralFormNotFoundException ex)
             {
                 _logger.LogWarning(ex.Message);
             }

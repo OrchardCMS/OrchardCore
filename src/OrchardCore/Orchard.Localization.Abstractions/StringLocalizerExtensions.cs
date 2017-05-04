@@ -2,19 +2,35 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Orchard.Localization.Abstractions
 {
     public static class StringLocalizerExtensions
     {
-        public static LocalizedString Plural(this IStringLocalizer localizer, string name, string pluralText, int count, params object[] arguments)
+        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string singular, string plural, params object[] arguments)
         {
-            if(pluralText == null)
+            if (plural == null)
             {
-                throw new ArgumentNullException(nameof(pluralText), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
+                throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            return localizer[name, new object[] { new PluralArgument() { PluralText = pluralText, Count = count }, arguments }];
+            return localizer[singular, arguments.Concat(new[] { new PluralArgument() { PluralForms = new[] { singular, plural }, Count = count } }).ToArray()];
+        }
+
+        public static LocalizedString Plural(this IStringLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
+        {
+            if (pluralForms == null)
+            {
+                throw new ArgumentNullException(nameof(pluralForms), "PluralForms array can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
+            }
+
+            if (pluralForms.Length == 0)
+            {
+                throw new ArgumentException(nameof(pluralForms), "PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
+            }
+
+            return localizer[pluralForms[0], arguments.Concat(new[] { new PluralArgument() { PluralForms = pluralForms, Count = count } }).ToArray()];
         }
     }
 }
