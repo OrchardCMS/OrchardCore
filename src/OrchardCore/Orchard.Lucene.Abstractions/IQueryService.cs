@@ -3,9 +3,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Orchard.Lucene
 {
-    public interface IQueryDslBuilder
+    public interface IQueryService
     {
-        Query CreateQuery(LuceneQueryContext context, JObject query);
+        TopDocs Search(LuceneQueryContext context, JObject queryObj);
         Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj);
     }
 }

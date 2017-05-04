@@ -16,18 +16,18 @@ namespace Orchard.Lucene.Controllers
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly IQueryDslBuilder _queryDslBuilder;
+        private readonly IQueryService _queryService;
 
         public QueryController(
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            IQueryDslBuilder queryDslBuilder)
+            IQueryService queryService)
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
-            _queryDslBuilder = queryDslBuilder;
+            _queryService = queryService;
         }
 
         public IActionResult Index()
@@ -60,13 +60,12 @@ namespace Orchard.Lucene.Controllers
             stopwatch.Start();
 
             // TODO: Configure a default analyzer for the query
-            var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
-            var context = new LuceneQueryContext(LuceneSettings.DefaultVersion, analyzer);
-            var query = _queryDslBuilder.CreateQuery(context, JObject.Parse(model.Query));
 
             _luceneIndexProvider.Search(model.IndexName, searcher =>
             {
-                var docs = searcher.Search(query, 10);
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
+                var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
+                var docs = _queryService.Search(context, JObject.Parse(model.Query));
                 model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
             });
 

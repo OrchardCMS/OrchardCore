@@ -6,7 +6,7 @@ namespace Orchard.Lucene.QueryProviders
 {
     public class QueryStringQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(IQueryDslBuilder builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "query_string")
             {

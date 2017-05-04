@@ -8,7 +8,7 @@ namespace Orchard.Lucene.QueryProviders
 {
     public class MatchPhraseQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(IQueryDslBuilder builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "match_phrase")
             {
@@ -44,7 +44,7 @@ namespace Orchard.Lucene.QueryProviders
                 default: throw new ArgumentException("Invalid wildcard query");
             }
 
-            foreach (var term in QueryDslBuilder.Tokenize(first.Name, value.Value<string>(), context.DefaultAnalyzer))
+            foreach (var term in QueryService.Tokenize(first.Name, value.Value<string>(), context.DefaultAnalyzer))
             {
                 phraseQuery.Add(new Term(first.Name, term));
             }

@@ -8,16 +8,16 @@ using Newtonsoft.Json.Linq;
 
 namespace Orchard.Lucene
 {
-    public class QueryDslBuilder : IQueryDslBuilder
+    public class QueryService : IQueryService
     {
         private readonly IEnumerable<ILuceneQueryProvider> _queryProviders;
 
-        public QueryDslBuilder(IEnumerable<ILuceneQueryProvider> queryProviders)
+        public QueryService(IEnumerable<ILuceneQueryProvider> queryProviders)
         {
             _queryProviders = queryProviders;
         }
 
-        public Query CreateQuery(LuceneQueryContext context, JObject queryObj)
+        public TopDocs Search(LuceneQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -28,9 +28,33 @@ namespace Orchard.Lucene
 
             Query query = CreateQueryFragment(context, queryProp);
 
-            var sortProp = queryObj["sort"];
-            
-            return query;
+            var sortProperty = queryObj["sort"];
+            var fromProperty = queryObj["from"];
+            var sizeProperty = queryObj["size"];
+
+            var size = sizeProperty?.Value<int>() ?? 50;
+
+            string sortField = null;
+            string sortOrder = null;
+
+            if (sortProperty != null)
+            {
+                if (sortProperty.Type == JTokenType.String)
+                {
+                    sortField = sortProperty.ToString();
+                }
+                else if (sortProperty.Type == JTokenType.Object)
+                {
+                    sortField = ((JProperty)sortProperty.First).Name;
+                    sortOrder = ((JProperty)sortProperty.First).Value["order"].ToString();
+                }
+            }
+
+            var docs = context.IndexSearcher.Search(query, size,
+                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortField.Type_e.STRING, sortOrder == "desc"))
+                );
+
+            return docs;
         }
 
         public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)

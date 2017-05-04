@@ -5,6 +5,6 @@ namespace Orchard.Lucene
 {
     public interface ILuceneQueryProvider
     {
-        Query CreateQuery(IQueryDslBuilder builder, LuceneQueryContext context, string type, JObject query);
+        Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query);
     }
 }
