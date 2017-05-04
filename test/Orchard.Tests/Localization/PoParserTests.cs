@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 using Orchard.Localization.PortableObject;
+using System.Reflection;
 
 namespace Orchard.Tests.Localization
 {
@@ -18,7 +19,7 @@ namespace Orchard.Tests.Localization
         {
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
-            var entries = ParseText(PoSampleFiles.SimpleEntry);
+            var entries = ParseText("SimpleEntry");
 
             Assert.Equal("Unknown system error", entries[0].Key);
             Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
@@ -29,7 +30,7 @@ namespace Orchard.Tests.Localization
         {
             // "msgid "Unknown system error"
             // "msgstr ""
-            var entries = ParseText(PoSampleFiles.EntryWithoutTranslation);
+            var entries = ParseText("EntryWithoutTranslation");
 
             Assert.Empty(entries);
         }
@@ -42,7 +43,7 @@ namespace Orchard.Tests.Localization
             // "POT-Creation-Date: 2016-06-22 17:06+0200\n"
             // "PO-Revision-Date: 2016-08-01 11:57+0200\n"
             // "X-Poedit-Basepath: ../../..\n"
-            var entries = ParseText(PoSampleFiles.PoeditHeader);
+            var entries = ParseText("PoeditHeader");
 
             Assert.Empty(entries);
         }
@@ -53,7 +54,7 @@ namespace Orchard.Tests.Localization
             // msgctxt "Orchard.Localization"
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
-            var entries = ParseText(PoSampleFiles.EntryWithContext);
+            var entries = ParseText("EntryWithContext");
 
             Assert.Equal("Orchard.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
         }
@@ -72,7 +73,7 @@ namespace Orchard.Tests.Localization
             // msgid "Unknown system error"
             // msgstr "Error desconegut del sistema"
 
-            var entries = ParseText(PoSampleFiles.EntryWithComments);
+            var entries = ParseText("EntryWithComments");
 
             Assert.Equal("Orchard.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
             Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
@@ -84,7 +85,7 @@ namespace Orchard.Tests.Localization
             // msgid "Foo \"{0}\""
             // msgstr "Foo \"{0}\""
 
-            var entries = ParseText(PoSampleFiles.EntryWithQuotes);
+            var entries = ParseText("EntryWithQuotes");
 
             Assert.Equal("Foo \"{0}\"", entries[0].Key);
             Assert.Equal("Foo \"{0}\"", entries[0].Translations[0]);
@@ -100,7 +101,7 @@ namespace Orchard.Tests.Localization
             // "Here is an example of how one might continue a very long translation\n"
             // "for the common case the string represents multi-line output."
 
-            var entries = ParseText(PoSampleFiles.EntryWithMultilineText);
+            var entries = ParseText("EntryWithMultilineText");
 
             Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
             Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
@@ -112,7 +113,7 @@ namespace Orchard.Tests.Localization
             // msgid "Line:\t\"{0}\"\n"
             // msgstr "Line:\t\"{0}\"\n"
 
-            var entries = ParseText(PoSampleFiles.EntryWithEscapedCharacters);
+            var entries = ParseText("EntryWithEscapedCharacters");
 
             Assert.Equal("Line:\t\"{0}\"\n", entries[0].Key);
             Assert.Equal("Line:\t\"{0}\"\n", entries[0].Translations[0]);
@@ -127,7 +128,7 @@ namespace Orchard.Tests.Localization
             // msgstr[1] "knihy"
             // msgstr[2] "knih"
 
-            var entries = ParseText(PoSampleFiles.EntryWithPlural);
+            var entries = ParseText("EntryWithPlural");
 
             Assert.Equal("book", entries[0].Key);
             Assert.Equal("kniha", entries[0].Translations[0]);
@@ -148,7 +149,7 @@ namespace Orchard.Tests.Localization
             // msgid "Directory {0} does not exist"
             // msgstr "Složka {0} neexistuje"
 
-            var entries = ParseText(PoSampleFiles.MultipleEntries);
+            var entries = ParseText("MultipleEntries");
 
             Assert.Equal(2, entries.Length);
 
@@ -159,13 +160,17 @@ namespace Orchard.Tests.Localization
             Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
         }
 
-        private CultureDictionaryRecord[] ParseText(string text)
+        private CultureDictionaryRecord[] ParseText(string resourceName)
         {
             var parser = new PoParser();
 
-            using (var reader = new StringReader(text))
+            var testAssembly = typeof(PoParserTests).GetTypeInfo().Assembly;
+            using (var resource = testAssembly.GetManifestResourceStream("Orchard.Tests.Localization.PoFiles." + resourceName + ".po"))
             {
-                return parser.Parse(reader).ToArray();
+                using (var reader = new StreamReader(resource))
+                {
+                    return parser.Parse(reader).ToArray();
+                }
             }
         }
     }

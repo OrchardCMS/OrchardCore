@@ -1,0 +1,2 @@
+﻿msgid "Foo \"{0}\""
+msgstr "Foo \"{0}\""

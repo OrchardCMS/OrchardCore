@@ -70,7 +70,7 @@ namespace Orchard.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
-            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, _translationProvider.Object, _memoryCache);
 
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
