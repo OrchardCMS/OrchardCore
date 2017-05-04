@@ -5,24 +5,25 @@ using Microsoft.Extensions.Caching.Memory;
 using Orchard.Localization.Abstractions;
 using System.Globalization;
 using System.Threading;
+using System.Linq;
 
 namespace Orchard.Localization.Core
 {
     public class LocalizationManager : ILocalizationManager
     {
-        private static Func<int, int> DefaultRule = n => (n != 1 ? 1 : 0);
+        private static PluralRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
         private const string CacheKeyPrefix = "CultureDictionary-";
 
-        private readonly IPluralRuleProvider _pluralRuleProvider;
+        private readonly IEnumerable<IPluralRuleProvider> _pluralRuleProviders;
         private readonly ITranslationProvider _translationProvider;
         private readonly IMemoryCache _cache;
         
         public LocalizationManager(
-            IPluralRuleProvider pluralRuleProvider,
+            IEnumerable<IPluralRuleProvider> pluralRuleProviders,
             ITranslationProvider translationProvider,
             IMemoryCache cache)
         {
-            _pluralRuleProvider = pluralRuleProvider;
+            _pluralRuleProviders = pluralRuleProviders;
             _translationProvider = translationProvider;
             _cache = cache;
         }
@@ -31,7 +32,8 @@ namespace Orchard.Localization.Core
         {
             var cachedDictionary = _cache.GetOrCreate(GetCacheKey(culture.Name), k => new Lazy<CultureDictionary>(() =>
             {
-                var dictionary = new CultureDictionary(culture.Name, _pluralRuleProvider.GetRule(culture));
+                var pluralRule = _pluralRuleProviders.OrderByDescending(o => o.Priority).Select(o => o.GetRule(culture)).FirstOrDefault(rule => rule != null);
+                var dictionary = new CultureDictionary(culture.Name, pluralRule ?? DefaultPluralRule);
                 _translationProvider.LoadTranslations(culture.Name, dictionary);
 
                 return dictionary;

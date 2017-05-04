@@ -21,6 +21,7 @@ namespace Orchard.Tests.Localization
         public LocalizationManagerTests()
         {
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
+            _pluralRuleProvider.SetupGet(o => o.Priority).Returns(0);
             _pluralRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(_csPluralRule);
 
             _translationProvider = new Mock<ITranslationProvider>();
@@ -34,7 +35,7 @@ namespace Orchard.Tests.Localization
                 It.Is<string>(culture => culture == "cs"),
                 It.IsAny<CultureDictionary>())
             );
-            var manager = new LocalizationManager(_pluralRuleProvider.Object, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
@@ -49,11 +50,32 @@ namespace Orchard.Tests.Localization
             _translationProvider
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
-            var manager = new LocalizationManager(_pluralRuleProvider.Object, _translationProvider.Object, _memoryCache);
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
 
             var dictionary = manager.GetDictionary(new CultureInfo("cs"));
 
             Assert.Equal(dictionary.Translations["ball"], dictionaryRecord.Translations);
+        }
+
+        [Fact]
+        public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
+        {
+            PluralRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
+
+            var highPriorityRuleProvider = new Mock<IPluralRuleProvider>();
+            highPriorityRuleProvider.SetupGet(o => o.Priority).Returns(10);
+            highPriorityRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(csPluralRuleOverride);
+
+            _translationProvider.Setup(o => o.LoadTranslations(
+                It.Is<string>(culture => culture == "cs"),
+                It.IsAny<CultureDictionary>())
+            );
+            var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, _translationProvider.Object, _memoryCache);
+
+
+            var dictionary = manager.GetDictionary(new CultureInfo("cs"));
+
+            Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);
         }
     }
 }
