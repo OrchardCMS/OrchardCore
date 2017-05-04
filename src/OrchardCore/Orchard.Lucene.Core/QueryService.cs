@@ -33,6 +33,7 @@ namespace Orchard.Lucene
             var sizeProperty = queryObj["size"];
 
             var size = sizeProperty?.Value<int>() ?? 50;
+            var from = fromProperty?.Value<int>() ?? 0;
 
             string sortField = null;
             string sortOrder = null;
@@ -50,9 +51,16 @@ namespace Orchard.Lucene
                 }
             }
 
-            var docs = context.IndexSearcher.Search(query, size,
+            TopDocs docs = context.IndexSearcher.Search(
+                query, 
+                size + from,
                 sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortField.Type_e.STRING, sortOrder == "desc"))
-                );
+            );
+
+            if (from > 0)
+            {
+                docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+            }
 
             return docs;
         }
