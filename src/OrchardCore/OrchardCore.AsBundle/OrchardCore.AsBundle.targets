@@ -19,6 +19,7 @@
       <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
         Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt')" />
+
       <ModuleProjectReferences
         Include="@(_MSBuildProjectReferenceExistent)"
         Condition="Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
@@ -33,7 +34,9 @@
       ContinueOnError="true">
     </MSBuild>
 
-    <Message Text="Generating module project references file: $(MSBuildProjectName)" Importance="high" />
+    <Message Text="Generating module project references file: $(MSBuildProjectName)"
+      Condition="'@(ModuleProjectReferences)' != ''" Importance="high" />
+
     <WriteLinesToFile
       File="$(ModuleProjectReferencesFile)"
       Lines="@(ModuleProjectReferences)"
