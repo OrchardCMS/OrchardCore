@@ -281,7 +281,7 @@ namespace Orchard.ContentManagement
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
-            var HighestVersion = await _session.QueryAsync<ContentItem, ContentItemIndex>()
+            var highestVersion = await _session.QueryAsync<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId == existingContentItem.ContentItemId)
                 .OrderByDescending(x => x.Number)
                 .FirstOrDefault();
@@ -308,9 +308,9 @@ namespace Orchard.ContentManagement
                 latestVersion.Latest = false;
             }
 
-            if (HighestVersion != null)
+            if (highestVersion != null)
             {
-                buildingContentItem.Number = HighestVersion.Number + 1;
+                buildingContentItem.Number = highestVersion.Number + 1;
             }
             else
             {
@@ -436,9 +436,9 @@ namespace Orchard.ContentManagement
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
 
-            _session.Save(contentItem);
-
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
+
+            _session.Save(contentItem);
 
             if (publishedItem != null)
             {
