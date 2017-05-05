@@ -155,10 +155,7 @@ namespace Orchard.ContentManagement
 
             if (contentItem == null)
             {
-                if (!options.IsDraftRequired)
-                {
-                    return null;
-                }
+                return null;
             }
 
             // Return item if obtained earlier in session
@@ -188,13 +185,9 @@ namespace Orchard.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
                     contentItem = await BuildNewVersionAsync(contentItem);
                 }
 
-                // Save the new version
                 _session.Save(contentItem);
             }
 
@@ -228,15 +221,19 @@ namespace Orchard.ContentManagement
 
             if (previous != null)
             {
-                _session.Save(previous);
                 previous.Published = false;
             }
 
             contentItem.Published = true;
 
+            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
+
             _session.Save(contentItem);
 
-            Handlers.Reverse().Invoke(handler => handler.Published(context), _logger);
+            if (previous != null)
+            {
+                _session.Save(previous);
+            }
         }
 
         public async Task UnpublishAsync(ContentItem contentItem)
@@ -277,13 +274,18 @@ namespace Orchard.ContentManagement
 
             publishedItem.Published = false;
             
-            _session.Save(publishedItem);
-
             Handlers.Reverse().Invoke(handler => handler.Unpublished(context), _logger);
+
+            _session.Save(publishedItem);
         }
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
+            var HighestVersion = await _session.QueryAsync<ContentItem, ContentItemIndex>()
+                .Where(x => x.ContentItemId == existingContentItem.ContentItemId)
+                .OrderByDescending(x => x.Number)
+                .FirstOrDefault();
+
             var buildingContentItem = New(existingContentItem.ContentType);
 
             ContentItem latestVersion;
@@ -304,7 +306,11 @@ namespace Orchard.ContentManagement
             if (latestVersion != null)
             {
                 latestVersion.Latest = false;
-                buildingContentItem.Number = latestVersion.Number + 1;
+            }
+
+            if (HighestVersion != null)
+            {
+                buildingContentItem.Number = HighestVersion.Number + 1;
             }
             else
             {
@@ -319,6 +325,11 @@ namespace Orchard.ContentManagement
 
             Handlers.Invoke(handler => handler.Versioning(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Versioned(context), _logger);
+
+            if (latestVersion != null)
+            {
+                _session.Save(latestVersion);
+            }
 
             return context.BuildingContentItem;
         }
@@ -400,10 +411,14 @@ namespace Orchard.ContentManagement
             {
                 version.Published = false;
                 version.Latest = false;
-                _session.Save(version);
             }
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+
+            foreach (var version in activeVersions)
+            {
+                _session.Save(version);
+            }
         }
 
         public async Task DiscardDraftAsync(ContentItem contentItem)
@@ -418,9 +433,10 @@ namespace Orchard.ContentManagement
             Handlers.Invoke(handler => handler.Removing(context), _logger);
 
             contentItem.Latest = false;
-            _session.Save(contentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Removed(context), _logger);
+
+            _session.Save(contentItem);
 
             var publishedItem = await GetAsync(contentItem.ContentItemId, VersionOptions.Published);
 
