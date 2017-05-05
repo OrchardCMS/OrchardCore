@@ -10,6 +10,7 @@ using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
 using Orchard.Lucene.Services;
 using Orchard.Lucene.Settings;
+using Orchard.Queries;
 using Orchard.Security.Permissions;
 using Orchard.Settings.Services;
 
@@ -36,6 +37,7 @@ namespace Orchard.Lucene
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             services.AddLuceneQueries();
+            services.AddSingleton<IQuerySource, LuceneQuerySource>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

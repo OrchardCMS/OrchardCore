@@ -1,9 +1,32 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Orchard.Queries
 {
     public interface IQueryManager
     {
-        IEnumerable<IQuerySource> GetQuerySources();
+        /// <summary>
+        /// Returns a list of all store <see cref="Query"/>.
+        /// </summary>
+        Task<IEnumerable<Query>> ListQueriesAsync();
+
+        /// <summary>
+        /// Saves the specific <see cref="Query"/>.
+        /// </summary>
+        /// <param name="query">The <see cref="Query"/> instance to save.</param>
+        Task SaveQueryAsync(Query query);
+
+        /// <summary>
+        /// Deletes the specified <see cref="Query"/>.
+        /// </summary>
+        /// <param name="name">The name of the query to delete.</param>
+        Task DeleteQueryAsync(string name);
+
+        /// <summary>
+        /// Gets the <see cref="Query"/> instance with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<Query> GetQueryAsync(string name);
     }
 }

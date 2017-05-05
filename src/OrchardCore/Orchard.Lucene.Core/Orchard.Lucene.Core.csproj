@@ -10,6 +10,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-alpha" />
     <ProjectReference Include="..\Orchard.Lucene.Abstractions\Orchard.Lucene.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

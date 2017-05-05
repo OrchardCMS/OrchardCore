@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Queries.Abstractions\Orchard.Queries.Abstractions.csproj" />
     <ProjectReference Include="..\Orchard.Lucene\Orchard.Lucene.csproj" />
   </ItemGroup>
 
@@ -24,15 +25,15 @@
       <PackagePath>assets\$(PackageId)\</PackagePath>
       <Pack>true</Pack>
     </None>
+    <None Update="Views\Admin\Index.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\Query - Copy.Summary.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
     <None Update="Views\_ViewImports.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="ViewModels\" />
-    <Folder Include="Views\Admin\" />
   </ItemGroup>
 
 </Project>
