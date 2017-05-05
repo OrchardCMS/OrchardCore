@@ -12,7 +12,7 @@ namespace Orchard.Localization.Core
         private readonly ILocalizationManager _localizationManager;
         private readonly ILogger _logger;
 
-        public StringLocalizerFactory(ILocalizationManager localizationManager, ILogger logger)
+        public StringLocalizerFactory(ILocalizationManager localizationManager, ILogger<StringLocalizerFactory> logger)
         {
             _localizationManager = localizationManager;
             _logger = logger;
