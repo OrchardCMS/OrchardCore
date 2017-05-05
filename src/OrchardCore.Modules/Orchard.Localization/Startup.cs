@@ -25,7 +25,7 @@ namespace Orchard.Localization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOrchardLocalization();
+            services.AddOrchardLocalization(options => options.ResourcesPath = "Localization");
         }
     }
 }

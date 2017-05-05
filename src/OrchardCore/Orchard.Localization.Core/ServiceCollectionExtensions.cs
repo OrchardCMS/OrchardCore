@@ -15,13 +15,15 @@ namespace Orchard.Localization.Core
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddOrchardLocalization(this IServiceCollection services)
+        public static IServiceCollection AddOrchardLocalization(this IServiceCollection services, Action<LocalizationOptions> setupAction)
         {
             services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
             services.AddScoped<ITranslationProvider, PoFilesTranslationsProvider>();
             services.AddScoped<ILocalizationFileLocationProvider, DefaultPoFileLocationProvider>();
             services.AddScoped<ILocalizationManager, LocalizationManager>();
             services.AddScoped<IStringLocalizerFactory, StringLocalizerFactory>();
+
+            services.Configure(setupAction);
 
             return services;
         }
