@@ -113,6 +113,12 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsLatest)
             {
+                // Check if the latest is already loaded
+                if (_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    return contentItem;
+                }
+
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
@@ -130,19 +136,23 @@ namespace Orchard.ContentManagement
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefault();
+                // Check if the latest is already loaded
+                if (!_contentManagerSession.RecallLatestItemId(contentItemId, out contentItem))
+                {
+                    // Loaded whatever is the latest as it will be cloned
+                    contentItem = await _session
+                        .QueryAsync<ContentItem, ContentItemIndex>()
+                        .Where(x =>
+                            x.ContentItemId == contentItemId &&
+                            x.Latest == true)
+                        .FirstOrDefault();
+                }
             }
             else if (options.IsPublished)
             {
                 // If the published version is requested and is already loaded, we can
                 // return it right away
-                if(_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
+                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
                 {
                     return contentItem;
                 }
