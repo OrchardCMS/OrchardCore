@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
@@ -11,9 +11,9 @@ namespace Orchard.Settings.Services
     /// for a specific section of the configuration.
     /// </summary>
     /// <typeparam name="TSection"></typeparam>
-    public abstract class SiteSettingsSectionDisplayDriver<TSection> : DisplayDriverBase, ISiteSettingsDisplayDriver where TSection : new()
+    public abstract class SiteSettingsSectionDisplayDriver<TSection> : DisplayDriver<ISite> where TSection : new()
     {
-        Task<IDisplayResult> ISiteSettingsDisplayDriver.BuildEditorAsync(ISite site, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
             JToken property;
             TSection section;
@@ -32,7 +32,7 @@ namespace Orchard.Settings.Services
             return EditAsync(section, context);
         }
 
-        Task<IDisplayResult> ISiteSettingsDisplayDriver.UpdateEditorAsync(ISite site, UpdateEditorContext context)
+        public override Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
             JToken property;
             TSection section;

@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Orchard.Lucene;
-using Orchard.Lucene.ViewModels;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
+using Orchard.Lucene.ViewModels;
 using Orchard.Settings.Services;
 
 namespace Orchard.Lucene.Drivers

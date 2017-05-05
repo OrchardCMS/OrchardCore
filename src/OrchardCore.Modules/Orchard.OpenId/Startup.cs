@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.OpenId.Drivers;
@@ -20,6 +21,7 @@ using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
+using Orchard.Settings;
 using Orchard.Settings.Services;
 using YesSql.Indexes;
 
@@ -101,7 +103,7 @@ namespace Orchard.OpenId
             services.AddScoped<IIndexProvider, OpenIdTokenIndexProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<ISiteSettingsDisplayDriver, OpenIdSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, OpenIdSiteSettingsDisplayDriver>();
             services.AddScoped<IOpenIdService, OpenIdService>();
             services.AddRecipeExecutionStep<OpenIdSettingsStep>();
             services.AddRecipeExecutionStep<OpenIdApplicationStep>();
