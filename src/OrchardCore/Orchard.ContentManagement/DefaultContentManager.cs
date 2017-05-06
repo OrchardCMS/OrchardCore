@@ -301,9 +301,10 @@ namespace Orchard.ContentManagement
                     if (previousVersion != null)
                     {
                         previousVersion.Latest = true;
-                        previousVersion.Number = existingContentItem.Number + 1;
+                        previousVersion.Number = existingContentItem.Number;
                         previousVersion.Data = new JObject(existingContentItem.Data);
                         existingContentItem.Latest = false;
+                        existingContentItem.Number -= 1;
 
                         return previousVersion;
                     }

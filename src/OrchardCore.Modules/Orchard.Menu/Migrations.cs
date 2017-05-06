@@ -17,7 +17,6 @@ namespace Orchard.Menu
         {
             _contentDefinitionManager.AlterTypeDefinition("Menu", menu => menu
                 .Draftable()
-                .Versionable()
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
