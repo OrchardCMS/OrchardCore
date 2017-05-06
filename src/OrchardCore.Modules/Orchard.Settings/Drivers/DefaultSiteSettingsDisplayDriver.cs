@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Views;
@@ -14,7 +14,7 @@ namespace Orchard.Settings.Drivers
         {
             return Task.FromResult<IDisplayResult>(
                 Combine(
-                    Shape<SiteSettingsViewModel>("SiteSettings_Edit", model =>
+                    Shape<SiteSettingsViewModel>("Settings_Edit", model =>
                     {
                         model.SiteName = site.SiteName;
                         model.TimeZone = site.TimeZone;

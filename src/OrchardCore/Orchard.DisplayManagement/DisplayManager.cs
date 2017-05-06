@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
@@ -12,9 +12,6 @@ namespace Orchard.DisplayManagement
 {
     public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel>
     {
-        private static readonly string TypeName = typeof(TModel).Name;
-        private static readonly string EditShapeType = typeof(TModel).Name + "_Edit";
-
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IShapeFactory _shapeFactory;
@@ -43,7 +40,7 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
-            var actualShapeType = TypeName;
+            var actualShapeType = model.GetType().Name;
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
 
             // _[DisplayType] is only added for the ones different than Detail
@@ -77,7 +74,7 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> BuildEditorAsync(TModel model, IUpdateModel updater, string group = null)
         {
-            dynamic shape = CreateContentShape(EditShapeType);
+            dynamic shape = CreateContentShape(model.GetType().Name + "_Edit");
 
             var context = new BuildEditorContext(
                 shape,
@@ -104,7 +101,7 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> UpdateEditorAsync(TModel model, IUpdateModel updater, string group = null)
         {
-            dynamic shape = CreateContentShape(EditShapeType);
+            dynamic shape = CreateContentShape(model.GetType().Name + "_Edit");
 
             var context = new UpdateEditorContext(
                 shape,
