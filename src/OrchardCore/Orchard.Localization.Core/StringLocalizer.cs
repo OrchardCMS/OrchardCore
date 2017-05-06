@@ -58,11 +58,11 @@ namespace Orchard.Localization.Core
                 var defaultPluralForms = new[] { name };
                 int? count = null;
 
-                if (arguments.LastOrDefault() is PluralArgument pluralArgument)
+                if (arguments.Length >= 2 && arguments[arguments.Length - 2] is int argumentCount && arguments[arguments.Length - 1] is string[] pluralForms)
                 {
-                    count = pluralArgument.Count;
-                    defaultPluralForms = pluralArgument.PluralForms;
-                    Array.Resize(ref arguments, arguments.Length - 1); // remove PluralArgument from arguments
+                    count = argumentCount;
+                    defaultPluralForms = pluralForms;
+                    Array.Resize(ref arguments, arguments.Length - 2); // remove plural related data from arguments
                 }
 
                 var translation = GetTranslation(name, Context, count);

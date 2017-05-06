@@ -82,14 +82,27 @@ namespace Orchard.Tests.Localization
         [Fact]
         public void ParseOnlyTrimsLeadingAndTrailingQuotes()
         {
-            // msgid "Foo \"{0}\""
-            // msgstr "Foo \"{0}\""
+            // msgid "\"{0}\""
+            // msgstr "\"{0}\""
 
             var entries = ParseText("EntryWithQuotes");
 
-            Assert.Equal("Foo \"{0}\"", entries[0].Key);
-            Assert.Equal("Foo \"{0}\"", entries[0].Translations[0]);
+            Assert.Equal("\"{0}\"", entries[0].Key);
+            Assert.Equal("\"{0}\"", entries[0].Translations[0]);
         }
+
+        [Fact]
+        public void ParseHandleUnclosedQuote()
+        {
+            // msgctxt "
+            // msgid "Foo \"{0}\""
+            // msgstr "Foo \"{0}\""
+
+            var entries = ParseText("EntryWithUnclosedQuote");
+
+            Assert.Equal("Foo \"{0}\"", entries[0].Key);
+        }
+
 
         [Fact]
         public void ParseHandlesMultilineEntry()

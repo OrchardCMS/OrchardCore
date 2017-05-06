@@ -8,7 +8,7 @@ namespace Orchard.Localization.Abstractions
     {
         public string CultureName { get; private set; }
 
-        public PluralRuleDelegate PluralRule { get; private set; }
+        public PluralizationRuleDelegate PluralRule { get; private set; }
 
         public string this[string key] => this[key, null];
 
@@ -38,7 +38,7 @@ namespace Orchard.Localization.Abstractions
 
         public IDictionary<string, string[]> Translations { get; private set; }
 
-        public CultureDictionary(string cultureName, PluralRuleDelegate pluralRule)
+        public CultureDictionary(string cultureName, PluralizationRuleDelegate pluralRule)
         {
             Translations = new Dictionary<string, string[]>();
             CultureName = cultureName;

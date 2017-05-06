@@ -11,13 +11,13 @@ namespace Orchard.Localization.Core
 {
     public class LocalizationManager : ILocalizationManager
     {
-        private static PluralRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
+        private static PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
         private const string CacheKeyPrefix = "CultureDictionary-";
 
         private readonly IEnumerable<IPluralRuleProvider> _pluralRuleProviders;
         private readonly ITranslationProvider _translationProvider;
         private readonly IMemoryCache _cache;
-        
+
         public LocalizationManager(
             IEnumerable<IPluralRuleProvider> pluralRuleProviders,
             ITranslationProvider translationProvider,
@@ -32,7 +32,7 @@ namespace Orchard.Localization.Core
         {
             var cachedDictionary = _cache.GetOrCreate(GetCacheKey(culture.Name), k => new Lazy<CultureDictionary>(() =>
             {
-                var pluralRule = _pluralRuleProviders.OrderByDescending(o => o.Priority).Select(o => o.GetRule(culture)).FirstOrDefault(rule => rule != null);
+                var pluralRule = _pluralRuleProviders.OrderBy(o => o.Order).Select(o => o.GetRule(culture)).FirstOrDefault(rule => rule != null);
                 var dictionary = new CultureDictionary(culture.Name, pluralRule ?? DefaultPluralRule);
                 _translationProvider.LoadTranslations(culture.Name, dictionary);
 

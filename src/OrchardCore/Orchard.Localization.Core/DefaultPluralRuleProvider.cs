@@ -8,11 +8,11 @@ namespace Orchard.Localization.Core
 {
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
-        private static Dictionary<string, PluralRuleDelegate> Rules;
+        private static Dictionary<string, PluralizationRuleDelegate> Rules;
 
         static DefaultPluralRuleProvider()
         {
-            Rules = new Dictionary<string, PluralRuleDelegate>();
+            Rules = new Dictionary<string, PluralizationRuleDelegate>();
 
             AddRule(new[] { "ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh-CN", "zh-HK", "zh-TW" }, n => 0);
             AddRule(new[] { "ach", "ak", "am", "arn", "br", "fil", "fr", "gun", "ln", "mfe", "mg", "mi", "oc", "pt-BR", "tg", "ti", "tr", "uz", "wa" }, n => (n > 1 ? 1 : 0));
@@ -37,7 +37,7 @@ namespace Orchard.Localization.Core
             AddRule(new[] { "ar" }, n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5));
         }
 
-        private static void AddRule(string[] cultures, PluralRuleDelegate rule)
+        private static void AddRule(string[] cultures, PluralizationRuleDelegate rule)
         {
             foreach (var culture in cultures)
             {
@@ -45,9 +45,9 @@ namespace Orchard.Localization.Core
             }
         }
 
-        public int Priority => 0;
+        public int Order => 0;
 
-        PluralRuleDelegate IPluralRuleProvider.GetRule(CultureInfo culture)
+        PluralizationRuleDelegate IPluralRuleProvider.GetRule(CultureInfo culture)
         {
             if (Rules.TryGetValue(culture.Name, out var rule))
             {

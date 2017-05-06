@@ -13,7 +13,7 @@ namespace Orchard.Tests.Localization
 {
     public class LocalizationManagerTests
     {
-        private PluralRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
         private Mock<IPluralRuleProvider> _pluralRuleProvider;
         private Mock<ITranslationProvider> _translationProvider;
         private IMemoryCache _memoryCache;
@@ -21,7 +21,7 @@ namespace Orchard.Tests.Localization
         public LocalizationManagerTests()
         {
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
-            _pluralRuleProvider.SetupGet(o => o.Priority).Returns(0);
+            _pluralRuleProvider.SetupGet(o => o.Order).Returns(0);
             _pluralRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(_csPluralRule);
 
             _translationProvider = new Mock<ITranslationProvider>();
@@ -60,10 +60,10 @@ namespace Orchard.Tests.Localization
         [Fact]
         public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
         {
-            PluralRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
+            PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
 
             var highPriorityRuleProvider = new Mock<IPluralRuleProvider>();
-            highPriorityRuleProvider.SetupGet(o => o.Priority).Returns(10);
+            highPriorityRuleProvider.SetupGet(o => o.Order).Returns(-1);
             highPriorityRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(csPluralRuleOverride);
 
             _translationProvider.Setup(o => o.LoadTranslations(

@@ -24,6 +24,7 @@
     <None Remove="Localization\PoFiles\EntryWithoutTranslation.po" />
     <None Remove="Localization\PoFiles\EntryWithPlural.po" />
     <None Remove="Localization\PoFiles\EntryWithQuotes.po" />
+    <None Remove="Localization\PoFiles\EntryWithUnclosedQuote.po" />
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
@@ -37,6 +38,7 @@
     <EmbeddedResource Include="Localization\PoFiles\EntryWithoutTranslation.po" />
     <EmbeddedResource Include="Localization\PoFiles\EntryWithPlural.po" />
     <EmbeddedResource Include="Localization\PoFiles\EntryWithQuotes.po" />
+    <EmbeddedResource Include="Localization\PoFiles\EntryWithUnclosedQuote.po" />
     <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
     <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />

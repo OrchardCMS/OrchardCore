@@ -1,2 +1,2 @@
-﻿msgid "Foo \"{0}\""
-msgstr "Foo \"{0}\""
+﻿msgid "\"{0}\""
+msgstr "\"{0}\""

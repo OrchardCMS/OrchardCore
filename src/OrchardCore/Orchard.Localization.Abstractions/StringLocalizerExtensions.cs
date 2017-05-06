@@ -15,7 +15,7 @@ namespace Orchard.Localization.Abstractions
                 throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            return localizer[singular, arguments.Concat(new[] { new PluralArgument() { PluralForms = new[] { singular, plural }, Count = count } }).ToArray()];
+            return localizer[singular, arguments.Concat(new object[] { count, new[] { singular, plural } }).ToArray()];
         }
 
         public static LocalizedString Plural(this IStringLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
@@ -30,7 +30,7 @@ namespace Orchard.Localization.Abstractions
                 throw new ArgumentException(nameof(pluralForms), "PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extention.");
             }
 
-            return localizer[pluralForms[0], arguments.Concat(new[] { new PluralArgument() { PluralForms = pluralForms, Count = count } }).ToArray()];
+            return localizer[pluralForms[0], arguments.Concat(new object[] { count, pluralForms }).ToArray()];
         }
     }
 }

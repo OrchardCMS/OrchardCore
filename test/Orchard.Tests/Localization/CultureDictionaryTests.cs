@@ -9,7 +9,7 @@ namespace Orchard.Tests.Localization
 {
     public class CultureDictionaryTests
     {
-        private static PluralRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+        private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
 
         [Fact]
         public void MergeAddsRecordToEmptyDictionary()
