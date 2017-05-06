@@ -162,6 +162,66 @@ namespace Orchard.ContentManagement
                 }
             }
 
+            contentItem = Load(contentItem);
+
+            if (options.IsDraftRequired)
+            {
+                // When draft is required and latest is published a new version is added
+                if (contentItem.Published)
+                {
+                    ContentItem previousVersion = null;
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // Check if not versionable, meaning that we only use the 2 last versions
+                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true) &&
+                        contentItem.Number > 1)
+                    {
+                        // Try to load the previous version
+                        previousVersion = await _session
+                            .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                                x.ContentItemId == contentItem.ContentItemId &&
+                                x.Number == contentItem.Number - 1)
+                            .FirstOrDefault();
+
+                        if (previousVersion != null)
+                        {
+                            previousVersion = Load(previousVersion);
+                        }
+                    }
+
+                    // Save the current version
+                    _session.Save(contentItem);
+
+                    // Check if the previous version has been loaded
+                    if (previousVersion != null)
+                    {
+                        // Then use it as a new draft
+                        previousVersion.Latest = true;
+                        previousVersion.Data = new JObject(contentItem.Data);
+                        contentItem.Latest = false;
+
+                        // Swap version numbers
+                        previousVersion.Number += 1;
+                        contentItem.Number -= 1;
+
+                        contentItem = previousVersion;
+                    }
+                    else
+                    {
+                        contentItem = await BuildNewVersionAsync(contentItem);
+                    }
+
+                }
+
+                // Save the new version
+                _session.Save(contentItem);
+            }
+
+            return contentItem;
+        }
+
+        private ContentItem Load(ContentItem contentItem)
+        {
             // Return item if obtained earlier in session
             // If IsPublished is required then the test has already been checked before
             ContentItem recalled = null;
@@ -177,29 +237,12 @@ namespace Orchard.ContentManagement
                 Handlers.Invoke(handler => handler.Loading(context), _logger);
                 Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
 
-                contentItem = context.ContentItem;
+                return context.ContentItem;
             }
             else
             {
-                contentItem = recalled;
+                return recalled;
             }
-
-            if (options.IsDraftRequired)
-            {
-                // When draft is required and latest is published a new version is added
-                if (contentItem.Published)
-                {
-                    // Save the previous version
-                    _session.Save(contentItem);
-
-                    contentItem = await BuildNewVersionAsync(contentItem);
-                }
-
-                // Save the new version
-                _session.Save(contentItem);
-            }
-
-            return contentItem;
         }
 
         public async Task PublishAsync(ContentItem contentItem)
@@ -285,32 +328,6 @@ namespace Orchard.ContentManagement
 
         protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(existingContentItem.ContentType);
-            if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
-            {
-                if (existingContentItem.Latest && existingContentItem.Published && existingContentItem.Number > 1)
-                {
-                    var previousVersion = await _session
-                        .QueryAsync<ContentItem, ContentItemIndex>(x =>
-                            x.ContentItemId == existingContentItem.ContentItemId &&
-                            x.Number == existingContentItem.Number - 1)
-                        .FirstOrDefault();
-
-                    _session.Save(existingContentItem);
-
-                    if (previousVersion != null)
-                    {
-                        previousVersion.Latest = true;
-                        previousVersion.Number = existingContentItem.Number;
-                        previousVersion.Data = new JObject(existingContentItem.Data);
-                        existingContentItem.Latest = false;
-                        existingContentItem.Number -= 1;
-
-                        return previousVersion;
-                    }
-                }
-            }
-
             var buildingContentItem = New(existingContentItem.ContentType);
 
             ContentItem latestVersion;
