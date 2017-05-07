@@ -176,11 +176,12 @@ namespace Orchard.ContentManagement
                     if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
                     {
                         // Try to load the highest of the 2 closest versions
+                        // Or another existing version which might be higher
                         existingVersion = await _session
                             .QueryAsync<ContentItem, ContentItemIndex>(x =>
                                 x.ContentItemId == contentItem.ContentItemId &&
                                 (x.Number == contentItem.Number - 1 ||
-                                x.Number == contentItem.Number + 1))
+                                x.Number > contentItem.Number))
                             .OrderByDescending(x => x.Number)
                             .FirstOrDefault();
 
