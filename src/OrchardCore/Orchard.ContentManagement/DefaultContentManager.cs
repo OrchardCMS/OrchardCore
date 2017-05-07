@@ -169,42 +169,38 @@ namespace Orchard.ContentManagement
                 // When draft is required and latest is published a new version is added
                 if (contentItem.Published)
                 {
-                    ContentItem previousVersion = null;
+                    ContentItem existingVersion = null;
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                    // Check if not versionable, meaning that we only use the 2 last versions
-                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true) &&
-                        contentItem.Number > 1)
+                    // Check if not versionable, meaning that we only use 2 versions
+                    if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
                     {
-                        // Try to load the previous version
-                        previousVersion = await _session
+                        // Try to load an existing version
+                        existingVersion = await _session
                             .QueryAsync<ContentItem, ContentItemIndex>(x =>
                                 x.ContentItemId == contentItem.ContentItemId &&
-                                x.Number == contentItem.Number - 1)
+                                x.Number != contentItem.Number)
+                            .OrderByDescending(x => x.Number)
                             .FirstOrDefault();
 
-                        if (previousVersion != null)
+                        if (existingVersion != null)
                         {
-                            previousVersion = Load(previousVersion);
+                            existingVersion = Load(existingVersion);
                         }
                     }
 
-                    // Save the current version
+                    // Save the previous version
                     _session.Save(contentItem);
 
-                    // Check if the previous version has been loaded
-                    if (previousVersion != null)
+                    // Check if an existing version has been loaded
+                    if (existingVersion != null)
                     {
                         // Then use it as a new draft
-                        previousVersion.Latest = true;
-                        previousVersion.Data = new JObject(contentItem.Data);
+                        existingVersion.Latest = true;
+                        existingVersion.Data = new JObject(contentItem.Data);
                         contentItem.Latest = false;
 
-                        // Swap version numbers
-                        previousVersion.Number += 1;
-                        contentItem.Number -= 1;
-
-                        contentItem = previousVersion;
+                        contentItem = existingVersion;
                     }
                     else
                     {
