@@ -303,16 +303,19 @@ namespace Orchard.ContentManagement
                 latestVersion.Latest = false;
             }
 
-            var highestVersionNumber = Math.Max(latestVersion?.Number ?? 0, existingContentItem.Number);
+            // Use the highest of the existing version and the latest which might be different
+            var versionNumber = Math.Max(latestVersion?.Number ?? 0, existingContentItem.Number);
 
+            // Look for another existing version which might be higher
             var highestVersion = await _session
                 .QueryAsync<ContentItem, ContentItemIndex>(x =>
                     x.ContentItemId == existingContentItem.ContentItemId &&
-                    x.Number > highestVersionNumber)
+                    x.Number > versionNumber)
                 .OrderByDescending(x => x.Number)
                 .FirstOrDefault();
 
-            buildingContentItem.Number = Math.Max(highestVersion?.Number ?? 0, highestVersionNumber) + 1;
+            // The new version should always be the next highest available number
+            buildingContentItem.Number = (highestVersion?.Number ?? versionNumber) + 1;
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
             buildingContentItem.Latest = true;
