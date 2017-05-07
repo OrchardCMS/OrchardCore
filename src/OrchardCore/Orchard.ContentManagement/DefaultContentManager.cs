@@ -175,11 +175,12 @@ namespace Orchard.ContentManagement
                     // Check if not versionable, meaning that we only use 2 versions
                     if (!(contentTypeDefinition?.Settings.ToObject<ContentTypeSettings>().Versionable ?? true))
                     {
-                        // Try to load an existing version
+                        // Try to load the highest of the 2 closest versions
                         existingVersion = await _session
                             .QueryAsync<ContentItem, ContentItemIndex>(x =>
                                 x.ContentItemId == contentItem.ContentItemId &&
-                                x.Number != contentItem.Number)
+                                (x.Number == contentItem.Number - 1 ||
+                                x.Number == contentItem.Number + 1))
                             .OrderByDescending(x => x.Number)
                             .FirstOrDefault();
 
