@@ -55,7 +55,7 @@ namespace Orchard.DisplayManagement
             return null;
         }
 
-        protected dynamic CreateContentShape(string actualShapeType)
+        protected IShape CreateContentShape(string actualShapeType)
         {
             return _shapeFactory.Create(actualShapeType, () => new ZoneHolding(() => _shapeFactory.Create("ContentZone", Arguments.Empty)));
         }

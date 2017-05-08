@@ -40,7 +40,8 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
-            var actualShapeType = model.GetType().Name;
+            var actualShapeType = typeof(TModel).Name;
+
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
 
             // _[DisplayType] is only added for the ones different than Detail
@@ -49,7 +50,10 @@ namespace Orchard.DisplayManagement
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            dynamic shape = CreateContentShape(actualShapeType);
+            var shape = CreateContentShape(actualShapeType);
+
+            // This provides a way to default a safe default and customize for each model type
+            shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
 
             var context = new BuildDisplayContext(
                 shape,
