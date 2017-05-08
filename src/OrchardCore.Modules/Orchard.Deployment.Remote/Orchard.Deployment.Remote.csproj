@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Deployment.Core\Orchard.Deployment.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />

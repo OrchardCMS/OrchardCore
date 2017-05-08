@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Routing;
+using Orchard.Entities;
 
 namespace Orchard.Settings
 {
-    public interface ISite
+    public interface ISite : IEntity
     {
         string SiteName { get; set; }
         string SiteSalt { get; set; }
@@ -18,6 +18,5 @@ namespace Orchard.Settings
         int MaxPagedCount { get; set; }
         string BaseUrl { get; set; }
         RouteValueDictionary HomeRoute { get; set; }
-        JObject Properties { get; set; }
     }
 }

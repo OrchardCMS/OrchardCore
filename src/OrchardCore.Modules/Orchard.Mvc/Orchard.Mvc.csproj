@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Modules\Microsoft.AspNetCore.Modules.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Mvc.Core\Orchard.Mvc.Core.csproj" />
   </ItemGroup>

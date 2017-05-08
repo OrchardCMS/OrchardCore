@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
 using Orchard.Lucene.Services;
 using Orchard.Lucene.Settings;
 using Orchard.Queries;
 using Orchard.Security.Permissions;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 
 namespace Orchard.Lucene
 {
@@ -33,7 +34,7 @@ namespace Orchard.Lucene
             services.AddSingleton<LuceneIndexManager>();
             services.AddSingleton<LuceneAnalyzerManager>();
 
-            services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             services.AddLuceneQueries();

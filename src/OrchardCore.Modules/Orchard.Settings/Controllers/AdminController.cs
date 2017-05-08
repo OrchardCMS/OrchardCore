@@ -1,24 +1,24 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
-using Orchard.Settings.Services;
 using Orchard.Settings.ViewModels;
 
 namespace Orchard.Settings.Controllers
 {
     public class AdminController : Controller, IUpdateModel
     {
-        private readonly ISiteSettingsDisplayManager _siteSettingsDisplayManager;
+        private readonly IDisplayManager<ISite> _siteSettingsDisplayManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
         public AdminController(
             ISiteService siteService,
-            ISiteSettingsDisplayManager siteSettingsDisplayManager,
+            IDisplayManager<ISite> siteSettingsDisplayManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> h)
@@ -39,10 +39,12 @@ namespace Orchard.Settings.Controllers
                 return Unauthorized();
             }
 
+            var site = await _siteService.GetSiteSettingsAsync();
+
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(this, groupId);
+            viewModel.Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, this, groupId);
 
             return View(viewModel);
         }
@@ -56,10 +58,12 @@ namespace Orchard.Settings.Controllers
                 return Unauthorized();
             }
 
+            var site = await _siteService.GetSiteSettingsAsync();
+
             var viewModel = new AdminIndexViewModel();
 
             viewModel.GroupId = groupId;
-            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(this, groupId);
+            viewModel.Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, this, groupId);
 
             if (ModelState.IsValid)
             {

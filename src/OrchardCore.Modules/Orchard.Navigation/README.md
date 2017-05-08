@@ -1,4 +1,4 @@
-﻿# Navigation (Orchard.Navigation)
+# Navigation (Orchard.Navigation)
 
 ## Purpose
 

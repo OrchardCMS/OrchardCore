@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
@@ -27,9 +29,8 @@ namespace Orchard.Settings
             services.AddScoped<ISiteService, SiteService>();
 
             // Site Settings editor
-            services.AddScoped<ISiteSettingsDisplayManager, SiteSettingsDisplayManager>();
-            services.AddScoped<ISiteSettingsDisplayHandler, SiteSettingsDisplayCoordinator>();
-            services.AddScoped<ISiteSettingsDisplayDriver, DefaultSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayManager<ISite>, DisplayManager<ISite>>();
+            services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
         }
 

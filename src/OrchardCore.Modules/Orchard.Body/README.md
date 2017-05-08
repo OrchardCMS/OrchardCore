@@ -1,4 +1,4 @@
-﻿# Body (Orchard.Body)
+# Body (Orchard.Body)
 
 ## Editors
 

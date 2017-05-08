@@ -166,6 +166,7 @@ build/
 /buildazure
 /buildtasks
 /artifacts
+site/
 *.sln.cache
 src/OrchardCore.Modules/**/launchSettings.json
 src/OrchardCore.Themes/**/launchSettings.json

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
+using Orchard.Entities;
 using Orchard.Indexing;
 using Orchard.Settings;
 
