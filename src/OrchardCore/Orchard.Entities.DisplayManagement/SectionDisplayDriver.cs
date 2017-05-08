@@ -4,23 +4,45 @@ using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
-namespace Orchard.Settings.Services
+namespace Orchard.Entities.DisplayManagement
 {
     /// <summary>
-    /// A concrete implementation of this class will be able to take part in the rendering of the site settings shape
-    /// for a specific section of the configuration.
+    /// A concrete implementation of this class will be able to take part in the rendering of an <see cref="IEntity"/>
+    /// shape instance for a specific section of the object. A section represents a property of an entity instance
+    /// where the name of the property is the type of the section.
     /// </summary>
-    /// <typeparam name="TSection"></typeparam>
-    public abstract class SiteSettingsSectionDisplayDriver<TSection> : DisplayDriver<ISite> where TSection : new()
+    /// <typeparam name="TSection">The type of the section this driver handles.</typeparam>
+    public abstract class SectionDisplayDriver<TModel, TSection> : DisplayDriver<TModel>
+        where TSection : new()
+        where TModel : class, IEntity
     {
-        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
+        public override Task<IDisplayResult> DisplayAsync(TModel model, BuildDisplayContext context)
         {
             JToken property;
             TSection section;
 
             var typeName = typeof(TSection).Name;
 
-            if (!site.Properties.TryGetValue(typeName, out property))
+            if (!model.Properties.TryGetValue(typeName, out property))
+            {
+                section = new TSection();
+            }
+            else
+            {
+                section = property.ToObject<TSection>();
+            }
+
+            return DisplayAsync(section, context);
+        }
+
+        public override Task<IDisplayResult> EditAsync(TModel model, BuildEditorContext context)
+        {
+            JToken property;
+            TSection section;
+
+            var typeName = typeof(TSection).Name;
+
+            if (!model.Properties.TryGetValue(typeName, out property))
             {
                 section = new TSection();
             }
@@ -32,14 +54,14 @@ namespace Orchard.Settings.Services
             return EditAsync(section, context);
         }
 
-        public override Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
+        public override Task<IDisplayResult> UpdateAsync(TModel model, UpdateEditorContext context)
         {
             JToken property;
             TSection section;
 
             var typeName = typeof(TSection).Name;
 
-            if (!site.Properties.TryGetValue(typeName, out property))
+            if (!model.Properties.TryGetValue(typeName, out property))
             {
                 section = new TSection();
             }
@@ -57,10 +79,25 @@ namespace Orchard.Settings.Services
 
             if (context.Updater.ModelState.IsValid)
             {
-                site.Properties[typeName] = JObject.FromObject(section);
+                model.Properties[typeName] = JObject.FromObject(section);
             }
 
             return result;
+        }
+
+        public virtual Task<IDisplayResult> DisplayAsync(TSection section, BuildDisplayContext context)
+        {
+            return Task.FromResult(Display(section, context));
+        }
+
+        public virtual IDisplayResult Display(TSection section, BuildDisplayContext context)
+        {
+            return Display(section);
+        }
+
+        public virtual IDisplayResult Display(TSection section)
+        {
+            return null;
         }
 
         public virtual Task<IDisplayResult> EditAsync(TSection section, BuildEditorContext context)
@@ -92,6 +129,5 @@ namespace Orchard.Settings.Services
         {
             return Task.FromResult<IDisplayResult>(null);
         }
-
     }
 }

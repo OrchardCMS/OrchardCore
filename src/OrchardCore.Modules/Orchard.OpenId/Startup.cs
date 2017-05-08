@@ -22,7 +22,6 @@ using Orchard.OpenId.Settings;
 using Orchard.Recipes;
 using Orchard.Security.Permissions;
 using Orchard.Settings;
-using Orchard.Settings.Services;
 using YesSql.Indexes;
 
 namespace Orchard.OpenId
