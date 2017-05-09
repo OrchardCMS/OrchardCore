@@ -78,7 +78,13 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> BuildEditorAsync(TModel model, IUpdateModel updater, string group = null)
         {
-            dynamic shape = CreateContentShape(model.GetType().Name + "_Edit");
+            var actualShapeType = typeof(TModel).Name + "_Edit";
+
+            var shape = CreateContentShape(actualShapeType);
+
+            // This provides a way to default a safe default and customize for each model type
+            shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
+            shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
 
             var context = new BuildEditorContext(
                 shape,
@@ -105,7 +111,13 @@ namespace Orchard.DisplayManagement
 
         public async Task<dynamic> UpdateEditorAsync(TModel model, IUpdateModel updater, string group = null)
         {
-            dynamic shape = CreateContentShape(model.GetType().Name + "_Edit");
+            var actualShapeType = typeof(TModel).Name + "_Edit";
+
+            var shape = CreateContentShape(actualShapeType);
+
+            // This provides a way to default a safe default and customize for each model type
+            shape.Metadata.Alternates.Add($"{model.GetType().Name}_Edit");
+            shape.Metadata.Alternates.Add($"{actualShapeType}__{model.GetType().Name}");
 
             var context = new UpdateEditorContext(
                 shape,

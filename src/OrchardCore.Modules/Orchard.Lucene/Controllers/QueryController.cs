@@ -73,26 +73,5 @@ namespace Orchard.Lucene.Controllers
 
             return View(model);
         }
-
-
-        public async Task<IActionResult> Create()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
-            {
-                return Unauthorized();
-            }
-
-            return View();
-        }
-
-        public async Task<IActionResult> Create()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
-            {
-                return Unauthorized();
-            }
-
-            return View();
-        }
     }
 }

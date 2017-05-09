@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
+using Orchard.Queries.Drivers;
 using Orchard.Queries.Services;
 
 namespace Orchard.Queries
@@ -17,6 +20,9 @@ namespace Orchard.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
+            services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
+
+            services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

@@ -35,6 +35,7 @@ namespace Orchard.Lucene
             services.AddSingleton<LuceneAnalyzerManager>();
 
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             services.AddLuceneQueries();

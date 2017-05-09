@@ -1,4 +1,4 @@
-﻿using Orchard.Security.Permissions;
+using Orchard.Security.Permissions;
 using System.Collections.Generic;
 
 namespace Orchard.Lucene

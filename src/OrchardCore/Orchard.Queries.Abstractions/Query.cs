@@ -3,10 +3,15 @@ namespace Orchard.Queries
 {
     public class Query
     {
+        protected Query(string source)
+        {
+            Source = source;
+        }
+
         /// <summary>
-        /// Gets the technical name of the query.
+        /// Gets or sets the technical name of the query.
         /// </summary>
-        public string Name { get; }
+        public string Name { get; set;  }
 
         /// <summary>
         /// Gets the name of the source for this query.

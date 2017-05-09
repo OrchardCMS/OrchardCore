@@ -8,22 +8,27 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Navigation;
 using Orchard.Queries.ViewModels;
 using Orchard.Settings;
+using YesSql;
 
 namespace Orchard.Queries.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
+        private readonly IDisplayManager<Query> _displayManager;
+        private readonly ISession _session;
 
         public AdminController(
+            IDisplayManager<Query> displayManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -31,15 +36,20 @@ namespace Orchard.Queries.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IQueryManager queryManager,
-            IEnumerable<IQuerySource> querySources)
+            IEnumerable<IQuerySource> querySources,
+            ISession session)
         {
+            _session = session;
+            _displayManager = displayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
             _queryManager = queryManager;
             _querySources = querySources;
             New = shapeFactory;
             _notifier = notifier;
+
             T = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public dynamic New { get; set; }
@@ -82,22 +92,152 @@ namespace Orchard.Queries.Controllers
 
             var model = new QueriesIndexViewModel
             {
-                Queries = results.Select(x =>
-                {
-                    IShape shape = New.Query_SummaryAdmin(Name: x.Name);
-                    shape.Metadata.Alternates.Add("Query_SummaryAdmin__" + x.Name);
-                    return new QueryEntry
-                    {
-                        Query = x,
-                        Shape = shape
-                    };
-                }).ToList(),
+                Queries = new List<QueryEntry>(),
                 Options = options,
                 Pager = pagerShape,
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()
             };
 
+            foreach (var query in results)
+            {
+                model.Queries.Add(new QueryEntry {
+                    Query = query,
+                    Shape = await _displayManager.BuildDisplayAsync(query, this, "SummaryAdmin")
+                });
+            }
+
             return View(model);
+        }
+
+        public async Task<IActionResult> Create(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Unauthorized();
+            }
+            
+            var query = _querySources.FirstOrDefault(x => x.Name == id)?.Create();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            var model = new QueriesCreateViewModel
+            {
+                Editor = await _displayManager.BuildEditorAsync(query, this),
+                SourceName = id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Create))]
+        public async Task<IActionResult> CreatePost(QueriesCreateViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Unauthorized();
+            }
+            
+            var query = _querySources.FirstOrDefault(x => x.Name == model.SourceName)?.Create();
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            var editor = await _displayManager.UpdateEditorAsync(query, this);
+
+            if (ModelState.IsValid)
+            {
+                await _queryManager.SaveQueryAsync(query);
+
+                _notifier.Success(H["Query created successfully"]);
+                return RedirectToAction("Index");
+            }
+
+            // If we got this far, something failed, redisplay form
+            model.Editor = editor;
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Unauthorized();
+            }
+
+            var query = await _queryManager.GetQueryAsync(id);
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            var model = new QueriesEditViewModel
+            {
+                SourceName = query.Source,
+                Name = query.Name,
+                Editor = await _displayManager.BuildEditorAsync(query, this)
+            };   
+
+            return View(model);
+        }
+
+        [HttpPost, ActionName("Edit")]
+        public async Task<IActionResult> EditPost(QueriesEditViewModel model)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Unauthorized();
+            }
+
+            var query = await _queryManager.GetQueryAsync(model.Name);
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            var editor = await _displayManager.UpdateEditorAsync(query, this);
+
+            if (ModelState.IsValid)
+            {
+                await _queryManager.SaveQueryAsync(query);
+
+                _notifier.Success(H["Query updated successfully"]);
+                return RedirectToAction("Index");
+            }
+
+            model.Editor = editor;
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Unauthorized();
+            }
+
+            var query = await _queryManager.GetQueryAsync(id);
+
+            if (query == null)
+            {
+                return NotFound();
+            }
+
+            await _queryManager.DeleteQueryAsync(id);
+
+            _notifier.Success(H["Query deleted successfully"]);
+
+            return RedirectToAction("Index");
         }
     }
 }

@@ -27,6 +27,11 @@ namespace Orchard.Lucene
 
         public string Name => "Lucene";
 
+        public Query Create()
+        {
+            return new LuceneQuery();
+        }
+
         public Task<JToken> ExecuteQueryAsync(Query query)
         {
             var luceneQuery = query as LuceneQuery;
