@@ -3,17 +3,18 @@ using Orchard.Environment.Commands;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Shell.Data;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection AddOrchardCms(this IServiceCollection services)
+        public static IServiceCollection AddOrchardCms(this IServiceCollection services, params string[] extraDefaultFeatureIds)
         {
-            return AddOrchardCms(services, null);
+            return AddOrchardCms(services, null, extraDefaultFeatureIds);
         }
 
-        public static IServiceCollection AddOrchardCms(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddOrchardCms(this IServiceCollection services, IConfiguration configuration, params string[] extraDefaultFeatureIds)
         {
             services.AddManifestDefinition("Theme.txt", "theme");
             services.AddExtensionLocation("Themes");
@@ -27,7 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     modules.WithConfiguration(configuration);
                 }
 
-                modules.WithDefaultFeatures("Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons");
+                var defultFeatureIds = new string[] { "Orchard.Mvc", "Orchard.Settings", "Orchard.Setup", "Orchard.Recipes", "Orchard.Commons" };
+                modules.WithDefaultFeatures(defultFeatureIds.Union(extraDefaultFeatureIds).ToArray());
             });
 
             return services;
