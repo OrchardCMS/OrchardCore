@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Orchard.Lucene
 {
-    public interface IQueryService
+    public interface ILuceneQueryService
     {
         TopDocs Search(LuceneQueryContext context, JObject queryObj);
         Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj);

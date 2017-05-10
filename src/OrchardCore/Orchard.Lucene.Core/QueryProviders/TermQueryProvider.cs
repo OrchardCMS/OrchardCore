@@ -8,7 +8,7 @@ namespace Orchard.Lucene.QueryProviders
 {
     public class TermQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "term")
             {

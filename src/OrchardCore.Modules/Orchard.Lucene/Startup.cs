@@ -51,6 +51,13 @@ namespace Orchard.Lucene
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
 
+            routes.MapAreaRoute(
+                name: "Api.Lucene.Search",
+                areaName: "Orchard.Lucene",
+                template: "api/lucene/content",
+                defaults: new { controller = "Api", action = "Content" }
+            );
+
             var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
             luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }

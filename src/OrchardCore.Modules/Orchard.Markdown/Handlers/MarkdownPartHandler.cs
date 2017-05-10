@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.MetaData;
@@ -36,8 +37,7 @@ namespace Orchard.Markdown.Handlers
 
                 if (settings.RenderTokens)
                 {
-                    var tokenContext = _tokenizer.CreateViewModel().Content(part.ContentItem);
-                    html = _tokenizer.Tokenize(html, tokenContext);
+                    html = _tokenizer.Tokenize(html, new Dictionary<string, object> { ["Content"] = part.ContentItem });
                 }
 
                 bodyAspect.Body = new HtmlString(html);

@@ -8,11 +8,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Orchard.Lucene
 {
-    public class QueryService : IQueryService
+    public class LuceneQueryService : ILuceneQueryService
     {
         private readonly IEnumerable<ILuceneQueryProvider> _queryProviders;
 
-        public QueryService(IEnumerable<ILuceneQueryProvider> queryProviders)
+        public LuceneQueryService(IEnumerable<ILuceneQueryProvider> queryProviders)
         {
             _queryProviders = queryProviders;
         }

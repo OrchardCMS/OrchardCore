@@ -10,7 +10,7 @@ namespace Orchard.Lucene
         /// </summary>
         public static IServiceCollection AddLuceneQueries(this IServiceCollection services)
         {
-            services.AddScoped<IQueryService, QueryService>();
+            services.AddScoped<ILuceneQueryService, LuceneQueryService>();
 
             services.AddSingleton<ILuceneQueryProvider, BooleanQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, FuzzyQueryProvider>();

@@ -8,7 +8,7 @@ namespace Orchard.Lucene.QueryProviders
 {
     public class MatchQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "match")
             {
@@ -22,7 +22,7 @@ namespace Orchard.Lucene.QueryProviders
             switch (first.Value.Type)
             {
                 case JTokenType.String:
-                    foreach (var term in QueryService.Tokenize(first.Name, first.Value.ToString(), context.DefaultAnalyzer))
+                    foreach (var term in LuceneQueryService.Tokenize(first.Name, first.Value.ToString(), context.DefaultAnalyzer))
                     {
                         boolQuery.Add(new TermQuery(new Term(first.Name, term)), BooleanClause.Occur.SHOULD);
                     }
@@ -42,7 +42,7 @@ namespace Orchard.Lucene.QueryProviders
                         occur = op.ToString() == "and" ? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD;
                     }
 
-                    var terms = QueryService.Tokenize(first.Name, value, context.DefaultAnalyzer);
+                    var terms = LuceneQueryService.Tokenize(first.Name, value, context.DefaultAnalyzer);
 
                     if (!terms.Any())
                     {

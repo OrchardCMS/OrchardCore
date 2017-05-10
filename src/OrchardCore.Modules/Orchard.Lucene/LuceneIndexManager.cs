@@ -29,6 +29,10 @@ namespace Orchard.Lucene
         private readonly string _rootPath;
         private readonly DirectoryInfo _rootDirectory;
 
+        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>();
+        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>();
+        private IndexWriter _writer;
+
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
 
         static LuceneIndexManager()
@@ -64,41 +68,41 @@ namespace Orchard.Lucene
                 path.Create();
             }
 
-            GetWriter(indexName);
+            Write(indexName, _ => { }, true);
         }
 
         public void DeleteDocuments(string indexName, IEnumerable<string> contentItemIds)
         {
-            // FOR DEBUG ONLY
-            //foreach (var documentId in documentIds)
-            //{
-            //    var filename = GetFilename(indexName, documentId);
-            //    if (File.Exists(filename))
-            //    {
-            //        File.Delete(filename);
-            //    }
-            //}
-
-            GetWriter(indexName).DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
-
-            if (_indexPools.TryRemove(indexName, out var pool))
+            Write(indexName, writer =>
             {
-                pool.MakeDirty();
-            }
+                writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
+
+                writer.Commit();
+
+                if (_indexPools.TryRemove(indexName, out var pool))
+                {
+                    pool.MakeDirty();
+                }
+            });
         }
 
         public void DeleteIndex(string indexName)
         {
-            var indexFolder = Path.Combine(_rootPath, indexName);
-
-            if (Directory.Exists(indexFolder))
+            lock (this)
             {
-                Directory.Delete(indexFolder, true);
-            }
+                Write(indexName, null, true);
 
-            if (_indexPools.TryRemove(indexName, out var pool))
-            {
-                pool.MakeDirty();
+                var indexFolder = Path.Combine(_rootPath, indexName);
+
+                if (Directory.Exists(indexFolder))
+                {
+                    Directory.Delete(indexFolder, true);
+                }
+
+                if (_indexPools.TryRemove(indexName, out var pool))
+                {
+                    pool.MakeDirty();
+                }
             }
         }
 
@@ -121,24 +125,20 @@ namespace Orchard.Lucene
 
         public void StoreDocuments(string indexName, IEnumerable<DocumentIndex> indexDocuments)
         {
-            // FOR DEBUG ONLY
-            //foreach(var indexDocument in indexDocuments)
-            //{
-            //    var filename = GetFilename(indexName, indexDocument.DocumentId);
-            //    var content = JsonConvert.SerializeObject(indexDocument);
-            //    File.WriteAllText(filename, content);
-            //}
-            
-            var writer = GetWriter(indexName);
-            foreach (var indexDocument in indexDocuments)
+            Write(indexName, writer =>
             {
-                writer.AddDocument(CreateLuceneDocument(indexDocument));
-            }
+                foreach (var indexDocument in indexDocuments)
+                {
+                    writer.AddDocument(CreateLuceneDocument(indexDocument));
+                }
 
-            if (_indexPools.TryRemove(indexName, out var pool))
-            {
-                pool.MakeDirty();
-            }
+                writer.Commit();
+
+                if (_indexPools.TryRemove(indexName, out var pool))
+                {
+                    pool.MakeDirty();
+                }
+            });
         }
 
         public void Search(string indexName, Action<IndexSearcher> searcher)
@@ -219,9 +219,9 @@ namespace Orchard.Lucene
             return doc;
         }
 
-        private BaseDirectory GetDirectory(string indexName)
+        private BaseDirectory CreateDirectory(string indexName)
         {
-            return _directories.GetOrAdd(indexName, n =>
+            lock (this)
             {
                 var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
 
@@ -231,16 +231,33 @@ namespace Orchard.Lucene
                 }
 
                 return FSDirectory.Open(path);
-            });
+            }
         }
 
-        private IndexWriter GetWriter(string indexName)
+        private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
-            return _writers.GetOrAdd(indexName, n =>
+            if (_writer == null)
             {
-                var directory = GetDirectory(indexName);
-                return new IndexWriter(directory, new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion)));
-            });
+                lock (this)
+                {
+                    var directory = CreateDirectory(indexName);
+                    var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion));
+                    config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE_OR_APPEND);
+
+                    _writer = new IndexWriter(directory, config);
+                }
+            }
+
+            action?.Invoke(_writer);
+
+            if (close)
+            {
+                lock(this)
+                {
+                    _writer.Dispose();
+                    _writer = null;
+                }
+            }
         }
 
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
@@ -249,7 +266,7 @@ namespace Orchard.Lucene
             {
                 var path = new DirectoryInfo(Path.Combine(_rootPath, indexName));
 
-                var directory = GetDirectory(indexName);
+                var directory = CreateDirectory(indexName);
                 var reader = DirectoryReader.Open(directory);
                 return new IndexReaderPool(reader);
             });
@@ -269,20 +286,11 @@ namespace Orchard.Lucene
                 writer.Dispose();
             }
 
-            foreach (var directory in _directories.Values)
-            {
-                directory.Dispose();
-            }
-
             foreach(var reader in _indexPools.Values)
             {
                 reader.Dispose();
             }
         }
-
-        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>();
-        private ConcurrentDictionary<string, BaseDirectory> _directories = new ConcurrentDictionary<string, BaseDirectory>();
-        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>();
     }
 
     internal class IndexReaderPool : IDisposable

@@ -16,13 +16,13 @@ namespace Orchard.Lucene.Controllers
         private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
-        private readonly IQueryService _queryService;
+        private readonly ILuceneQueryService _queryService;
 
         public QueryController(
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             LuceneAnalyzerManager luceneAnalyzerManager,
-            IQueryService queryService)
+            ILuceneQueryService queryService)
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;

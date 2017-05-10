@@ -2,26 +2,47 @@
 @using Orchard.ContentManagement;
 @inject IContentManager ContentManager
 
-<h1>@RenderTitleSegments(T["Query"])</h1>
+@{ 
+    var allQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"
+{
+  ""query"": {
+        ""query_string"": {
+            ""query"": ""*:*"" }
+    }
+}"));
 
-<form asp-action="Query" method="get">
-    <input asp-for="IndexName" type="hidden" value="@Model.IndexName" />
+}
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["Lucene Query"])</h1>
+
+<form asp-action="Query" method="post">
+    <input asp-for="IndexName" type="hidden" />
 
     <div class="form-group">
-        <div class="input-group">
-            <input asp-for="Query" type="text" class="form-control" autofocus />
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary">@T["Query"]</button>
-            </span>
-        </div>
-        <span class="hint">@T["You can use the query <a href=\"{0}\">*:*</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Orchard.Lucene", Query = "*:*", IndexName = Model.IndexName }))]</span>
+        <label asp-for="DecodedQuery">@T["Template"]</label>
+        <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+        <span class="hint">@T["You can use the query <a href=\"{0}\">*:*</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Orchard.Lucene", Query = allQuery, IndexName = Model.IndexName }))]</span>
         <span class="hint">@T["See {0} for more examples.", Html.Raw("<a href=\"https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html\">https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html</a>")]</span>
-</div>
+    </div>
 
     <div class="form-group">
-        
+        <label asp-for="Parameters">@T["Parameters"]</label>
+        <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
+        <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@T["Query"]</button>
     </div>
 </form>
+
+@if (Model.Elapsed != TimeSpan.Zero)
+{
+    <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
+}
 
 <ul class="list-group">
     @foreach (var document in Model.Documents)
@@ -66,3 +87,10 @@
         </li>
     }
 </ul>
+
+<script at="Foot">
+    $(function() {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>

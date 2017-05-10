@@ -4,6 +4,15 @@
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
 <style asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.css"></style>
 
+<fieldset class="form-group">
+    <select asp-for="Index" class="form-control">
+        @foreach(var index in Model.Indices)
+        {
+            <option value="@index">@index</option>
+        }
+    </select>
+    <span class="hint">@T["The lucene index to search on"]</span>
+</fieldset>
 
 <fieldset class="form-group">
     <label asp-for="Query">@T["Query"]</label>
@@ -11,7 +20,7 @@
 </fieldset>
 
 <script at="Foot">
-    $(function() {
-        var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'));
-    });
+$(function() {
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'));
+});
 </script>

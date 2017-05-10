@@ -1,16 +1,18 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Lucene.Net.Analysis.Standard;
-using Lucene.Net.QueryParsers.Classic;
-using Orchard.Lucene.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Notify;
+using Orchard.Lucene.Services;
+using Orchard.Lucene.ViewModels;
 using Orchard.Mvc.Utilities;
+using Orchard.Tokens.Services;
 
 namespace Orchard.Lucene.Controllers
 {
@@ -20,11 +22,15 @@ namespace Orchard.Lucene.Controllers
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+        private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
+        private readonly ILuceneQueryService _queryService;
 
         public AdminController(
             LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
+            LuceneAnalyzerManager luceneAnalyzerManager,
+            ILuceneQueryService queryService,
             INotifier notifier,
             IStringLocalizer<AdminController> s,
             IHtmlLocalizer<AdminController> h,
@@ -33,6 +39,9 @@ namespace Orchard.Lucene.Controllers
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
+            _luceneAnalyzerManager = luceneAnalyzerManager;
+            _queryService = queryService;
+
             _notifier = notifier;
             S = s;
             H = h;
@@ -173,7 +182,14 @@ namespace Orchard.Lucene.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Query(AdminQueryViewModel model)
+        public Task<IActionResult> Query(string indexName, string query, [FromServices] ITokenizer tokenizer)
+        {
+            query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query }, tokenizer);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Query(AdminQueryViewModel model, [FromServices] ITokenizer tokenizer)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
@@ -185,21 +201,43 @@ namespace Orchard.Lucene.Controllers
                 return NotFound();
             }
 
-            if (String.IsNullOrWhiteSpace(model.Query))
+            if (String.IsNullOrWhiteSpace(model.DecodedQuery))
             {
                 return View(model);
             }
 
+            if (String.IsNullOrEmpty(model.Parameters))
+            {
+                model.Parameters = "{ }";
+            }
+
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
-            var queryParser = new QueryParser(LuceneSettings.DefaultVersion, "", new StandardAnalyzer(LuceneSettings.DefaultVersion));
-            var query = queryParser.Parse(model.Query);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             _luceneIndexProvider.Search(model.IndexName, searcher =>
             {
-                var docs = searcher.Search(query, 10);
-                model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-            });
+                var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
+                var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
+
+                var tokenizedContent = tokenizer.Tokenize(model.DecodedQuery, JObject.Parse(model.Parameters));
+
+                try
+                {
+                    var parameterizedQuery = JObject.Parse(tokenizedContent);
+                    var docs = _queryService.Search(context, parameterizedQuery);
+                    model.Documents = docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                }
+                catch(Exception e)
+                {
+                    Logger.LogError("Error while executing query: {0}", e.Message);
+                    ModelState.AddModelError(nameof(model.DecodedQuery), "Invalid query");
+                }
+
+                stopwatch.Stop();
+                model.Elapsed = stopwatch.Elapsed;
+            });            
 
             return View(model);
         }

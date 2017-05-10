@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -7,6 +8,6 @@ namespace Orchard.Queries
     {
         string Name { get; }
         Query Create();
-        Task<JToken> ExecuteQueryAsync(Query query);
+        Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
     }
 }

@@ -5,11 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Core\Orchard.Tokens.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Content.Abstractions\Orchard.Tokens.Content.Abstractions.csproj" />
-    <ProjectReference Include="..\Orchard.Tokens\Orchard.Tokens.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

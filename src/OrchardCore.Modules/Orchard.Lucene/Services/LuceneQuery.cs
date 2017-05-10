@@ -9,7 +9,7 @@ namespace Orchard.Lucene
         {
         }
 
-        public string IndexName { get; set; }
-        public JObject Content { get; set; }
+        public string Index { get; set; }
+        public string Template { get; set; }
     }
 }

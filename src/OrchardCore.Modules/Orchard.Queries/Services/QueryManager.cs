@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Linq;
 using Orchard.Environment.Cache;
 using YesSql;
 
@@ -12,17 +14,20 @@ namespace Orchard.Queries.Services
         private readonly IMemoryCache _memoryCache;
         private readonly ISession _session;
         private readonly ISignal _signal;
+        private IEnumerable<IQuerySource> _querySources;
 
         private const string QueriesDocumentCacheKey = nameof(QueriesDocumentCacheKey);
 
         public QueryManager(
             ISignal signal,
             ISession session,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IEnumerable<IQuerySource> querySources)
         {
             _session = session;
             _memoryCache = memoryCache;
             _signal = signal;
+            _querySources = querySources;
         }
 
         public async Task DeleteQueryAsync(string name)
@@ -104,6 +109,18 @@ namespace Orchard.Queries.Services
             }
 
             return queries;
+        }
+
+        public Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        {
+            var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
+            
+            if (querySource == null)
+            {
+                throw new ArgumentException("Query source not found: " + query.Source);
+            }
+
+            return querySource.ExecuteQueryAsync(query, parameters);
         }
     }
 }

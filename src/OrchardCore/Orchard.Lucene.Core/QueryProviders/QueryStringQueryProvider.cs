@@ -6,7 +6,7 @@ namespace Orchard.Lucene.QueryProviders
 {
     public class QueryStringQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(IQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
         {
             if (type != "query_string")
             {
@@ -14,6 +14,8 @@ namespace Orchard.Lucene.QueryProviders
             }
 
             var queryString = query["query"]?.Value<string>();
+            var defaultField = query["default_field"]?.Value<string>();
+            
             var queryParser = new QueryParser(context.DefaultVersion, "", context.DefaultAnalyzer);
             return queryParser.Parse(queryString);
         }

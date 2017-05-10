@@ -1,6 +1,6 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
@@ -12,36 +12,51 @@ namespace Orchard.Lucene.Drivers
     public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
     {
         private IStringLocalizer _stringLocalizer;
+        private LuceneIndexManager _luceneIndexManager;
 
-        public LuceneQueryDisplayDriver(IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer)
+        public LuceneQueryDisplayDriver(
+            IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,
+            LuceneIndexManager luceneIndexManager)
         {
+            _luceneIndexManager = luceneIndexManager;
             _stringLocalizer = stringLocalizer;
+        }
+
+        public override IDisplayResult Display(LuceneQuery query, IUpdateModel updater)
+        {
+            return Combine(
+                Shape("LuceneQuery_SummaryAdmin", model =>
+                {
+                    model.Query = query;
+
+                    return Task.CompletedTask;
+                }).Location("Content:5"),
+                Shape("LuceneQuery_Buttons_SummaryAdmin", model =>
+                {
+                    model.Query = query;
+
+                    return Task.CompletedTask;
+                }).Location("Actions:2")
+            );
         }
 
         public override IDisplayResult Edit(LuceneQuery query, IUpdateModel updater)
         {
             return Shape<LuceneQueryViewModel>("LuceneQuery_Edit", model =>
             {
-                model.Query = query.Content?.ToString(Newtonsoft.Json.Formatting.Indented);
-                model.Index = query.IndexName;
+                model.Query = query.Template;
+                model.Index = query.Index;
+                model.Indices = _luceneIndexManager.List().ToArray();
             }).Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
             var viewModel = new LuceneQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Index, m => m.Query))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Index, m => m.Query, m => m.Index))
             {
-                try
-                {
-                    model.Content = JObject.Parse(viewModel.Query);
-                }
-                catch
-                {
-                    updater.ModelState.AddModelError(nameof(viewModel.Query), _stringLocalizer["Invalid format"]);
-                }
-
-                model.IndexName = viewModel.Index;
+                model.Template = viewModel.Query;
+                model.Index = viewModel.Index;
             }
 
             return Edit(model);
