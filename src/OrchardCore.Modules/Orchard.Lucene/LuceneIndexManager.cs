@@ -29,8 +29,8 @@ namespace Orchard.Lucene
         private readonly string _rootPath;
         private readonly DirectoryInfo _rootDirectory;
 
-        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>();
-        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>();
+        private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
+        private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>(StringComparer.OrdinalIgnoreCase);
         private IndexWriter _writer;
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
