@@ -39,7 +39,10 @@ namespace Orchard.Lucene
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             services.AddLuceneQueries();
-            services.AddSingleton<IQuerySource, LuceneQuerySource>();
+
+            // LuceneQuerySource is registered for both the Queries module and local usage
+            services.AddScoped<IQuerySource, LuceneQuerySource>();
+            services.AddScoped<LuceneQuerySource>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -52,10 +55,17 @@ namespace Orchard.Lucene
             );
 
             routes.MapAreaRoute(
-                name: "Api.Lucene.Search",
+                name: "Api.Lucene.Content",
                 areaName: "Orchard.Lucene",
                 template: "api/lucene/content",
                 defaults: new { controller = "Api", action = "Content" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Api.Lucene.Documents",
+                areaName: "Orchard.Lucene",
+                template: "api/lucene/documents",
+                defaults: new { controller = "Api", action = "Documents" }
             );
 
             var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();

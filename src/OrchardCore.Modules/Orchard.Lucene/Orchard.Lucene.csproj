@@ -38,9 +38,6 @@
     <None Update="Views\Query-Lucene.Link.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
-    <None Update="Views\Query\Index.cshtml">
-      <PackagePath>assets\$(PackageId)\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

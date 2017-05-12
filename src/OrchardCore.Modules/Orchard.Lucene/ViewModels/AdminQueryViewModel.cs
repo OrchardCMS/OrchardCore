@@ -13,6 +13,9 @@ namespace Orchard.Lucene.ViewModels
         public string Parameters { get; set; }
 
         [BindNever]
+        public string[] Indices { get; set; }
+
+        [BindNever]
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]

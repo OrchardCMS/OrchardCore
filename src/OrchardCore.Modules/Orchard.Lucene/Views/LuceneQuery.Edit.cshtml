@@ -2,9 +2,9 @@
 
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
 <script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
-<style asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.css"></style>
 
 <fieldset class="form-group">
+    <label asp-for="Index">@T["Index"]</label>
     <select asp-for="Index" class="form-control">
         @foreach(var index in Model.Indices)
         {
@@ -17,10 +17,11 @@
 <fieldset class="form-group">
     <label asp-for="Query">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>
+    <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
 </fieldset>
 
 <script at="Foot">
 $(function() {
-    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'));
+    var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
 });
 </script>

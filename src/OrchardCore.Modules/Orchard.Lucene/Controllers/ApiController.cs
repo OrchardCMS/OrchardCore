@@ -1,5 +1,4 @@
-using System;
-using System.Dynamic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
-using Orchard.Lucene.ViewModels;
-using Orchard.Queries;
 using YesSql;
 using YesSql.Services;
 
@@ -18,25 +15,48 @@ namespace Orchard.Lucene.Controllers
     {
         [HttpPost, HttpGet]
         public async Task<IActionResult> Content(
-            ApiQueryViewModel model, 
-            [FromServices] IQueryManager queryManager,
+            string indexName,
+            string query,
+            string parameters,
+            [FromServices] LuceneQuerySource luceneQuerySource,
             [FromServices] ISession session)
         {
             var luceneQuery = new LuceneQuery
             {
-                Index = model.IndexName,
-                Template = model.Query
+                Index = indexName,
+                Template = query
             };
 
-            var parameters = String.IsNullOrEmpty(model.Parameters) ? new JObject() : JObject.Parse(model.Parameters);
+            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
 
-            var result = await queryManager.ExecuteQueryAsync(luceneQuery, parameters);
+            var result = await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
-            // Load corresponding content items
-            var contentItemIds = (result as JArray).Select(x => ((JObject)x)["ContentItemId"].Value<string>()).ToArray();
-            var contentItems = await session.QueryAsync<ContentItem, ContentItemIndex>(x => x.Published && x.ContentItemId.IsIn(contentItemIds)).List();
+            // Load corresponding content item versions
+            var contentItemVersionIds = (result as JArray).Select(x => ((JObject)x)["Content.ContentItem.ContentItemVersionId"].Value<string>()).ToArray();
+            var contentItems = await session.QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).List();
 
             return new ObjectResult(contentItems);
+        }
+
+        [HttpPost, HttpGet]
+        public async Task<IActionResult> Documents(
+            string indexName,
+            string query,
+            string parameters,
+            [FromServices] LuceneQuerySource luceneQuerySource,
+            [FromServices] ISession session)
+        {
+            var luceneQuery = new LuceneQuery
+            {
+                Index = indexName,
+                Template = query
+            };
+
+            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+
+            var result = await luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+
+            return new ObjectResult(result);
         }
     }
 }

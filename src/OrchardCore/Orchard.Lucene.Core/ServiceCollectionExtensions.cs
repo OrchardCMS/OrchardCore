@@ -14,10 +14,11 @@ namespace Orchard.Lucene
 
             services.AddSingleton<ILuceneQueryProvider, BooleanQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, FuzzyQueryProvider>();
-            services.AddSingleton<ILuceneQueryProvider, MatchPhraseQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, MatchQueryProvider>();
-            services.AddSingleton<ILuceneQueryProvider, PrefixQueryProvider>();
+            services.AddSingleton<ILuceneQueryProvider, MatchAllQueryProvider>();
+            services.AddSingleton<ILuceneQueryProvider, MatchPhraseQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, QueryStringQueryProvider>();
+            services.AddSingleton<ILuceneQueryProvider, PrefixQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RangeQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, RegexpQueryProvider>();
             services.AddSingleton<ILuceneQueryProvider, SimpleQueryStringQueryProvider>();

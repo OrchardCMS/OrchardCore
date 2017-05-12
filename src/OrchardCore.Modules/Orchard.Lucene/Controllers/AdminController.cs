@@ -18,7 +18,7 @@ namespace Orchard.Lucene.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly LuceneIndexManager _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
@@ -26,7 +26,7 @@ namespace Orchard.Lucene.Controllers
         private readonly ILuceneQueryService _queryService;
 
         public AdminController(
-            LuceneIndexManager luceneIndexProvider,
+            LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
             IAuthorizationService authorizationService,
             LuceneAnalyzerManager luceneAnalyzerManager,
@@ -36,7 +36,7 @@ namespace Orchard.Lucene.Controllers
             IHtmlLocalizer<AdminController> h,
             ILogger<AdminController> logger)
         {
-            _luceneIndexProvider = luceneIndexProvider;
+            _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
             _luceneAnalyzerManager = luceneAnalyzerManager;
@@ -56,7 +56,7 @@ namespace Orchard.Lucene.Controllers
         {
             var viewModel = new AdminIndexViewModel();
 
-            viewModel.Indexes = _luceneIndexProvider.List().Select(s => new IndexViewModel { Name = s }).ToArray();
+            viewModel.Indexes = _luceneIndexManager.List().Select(s => new IndexViewModel { Name = s }).ToArray();
 
             return View(viewModel);
         }
@@ -86,7 +86,7 @@ namespace Orchard.Lucene.Controllers
 
             ValidateModel(model);
 
-            if (_luceneIndexProvider.Exists(model.IndexName))
+            if (_luceneIndexManager.Exists(model.IndexName))
             {
                 ModelState.AddModelError(nameof(AdminEditViewModel.IndexName), S["An index named {0} already exists."]);
             }
@@ -122,7 +122,7 @@ namespace Orchard.Lucene.Controllers
                 return Unauthorized();
             }
 
-            if (!_luceneIndexProvider.Exists(id))
+            if (!_luceneIndexManager.Exists(id))
             {
                 return NotFound();
             }
@@ -142,7 +142,7 @@ namespace Orchard.Lucene.Controllers
                 return Unauthorized();
             }
 
-            if (!_luceneIndexProvider.Exists(id))
+            if (!_luceneIndexManager.Exists(id))
             {
                 return NotFound();
             }
@@ -162,14 +162,14 @@ namespace Orchard.Lucene.Controllers
                 return Unauthorized();
             }
 
-            if (!_luceneIndexProvider.Exists(model.IndexName))
+            if (!_luceneIndexManager.Exists(model.IndexName))
             {
                 return NotFound();
             }
 
             try
             {
-                _luceneIndexProvider.DeleteIndex(model.IndexName);
+                _luceneIndexManager.DeleteIndex(model.IndexName);
 
                 _notifier.Success(H["Index <em>{0}</em> deleted successfully", model.IndexName]);
             }
@@ -196,7 +196,20 @@ namespace Orchard.Lucene.Controllers
                 return Unauthorized();
             }
 
-            if (!_luceneIndexProvider.Exists(model.IndexName))
+            model.Indices = _luceneIndexManager.List().ToArray();
+
+            // Can't query if there are no indices
+            if (model.Indices.Length == 0)
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (String.IsNullOrEmpty(model.IndexName))
+            {
+                model.IndexName = model.Indices[0];
+            }
+
+            if (!_luceneIndexManager.Exists(model.IndexName))
             {
                 return NotFound();
             }
@@ -216,7 +229,7 @@ namespace Orchard.Lucene.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _luceneIndexProvider.Search(model.IndexName, searcher =>
+            _luceneIndexManager.Search(model.IndexName, searcher =>
             {
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);

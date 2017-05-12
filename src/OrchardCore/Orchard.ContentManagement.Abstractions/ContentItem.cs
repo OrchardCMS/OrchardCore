@@ -20,9 +20,14 @@ namespace Orchard.ContentManagement
         public int Id { get; set; }
 
         /// <summary>
-        /// The logical identifier of the content item.
+        /// The logical identifier of the content item across versions.
         /// </summary>
         public string ContentItemId { get; set; }
+
+        /// <summary>
+        /// The logical identifier of the versioned content item.
+        /// </summary>
+        public string ContentItemVersionId { get; set; }
 
         /// <summary>
         /// The content type of the content item.

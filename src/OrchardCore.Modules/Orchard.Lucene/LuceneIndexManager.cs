@@ -187,11 +187,11 @@ namespace Orchard.Lucene
                     case DocumentIndex.Types.DateTime:
                         if (entry.Value.Value is DateTimeOffset)
                         {
-                            doc.Add(new StringField(entry.Key, ((DateTimeOffset)entry.Value.Value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"), store));
+                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTimeOffset)entry.Value.Value).UtcDateTime, DateTools.Resolution.SECOND), store));
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Key, ((DateTime)entry.Value.Value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"), store));
+                            doc.Add(new StringField(entry.Key, DateTools.DateToString(((DateTime)entry.Value.Value).ToUniversalTime(), DateTools.Resolution.SECOND), store));
                         }
                         break;
 

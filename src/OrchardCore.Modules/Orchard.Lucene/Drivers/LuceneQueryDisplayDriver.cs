@@ -53,7 +53,7 @@ namespace Orchard.Lucene.Drivers
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
             var viewModel = new LuceneQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Index, m => m.Query, m => m.Index))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index))
             {
                 model.Template = viewModel.Query;
                 model.Index = viewModel.Index;
