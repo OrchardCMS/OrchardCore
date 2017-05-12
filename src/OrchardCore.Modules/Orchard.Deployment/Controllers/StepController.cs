@@ -197,6 +197,7 @@ namespace Orchard.Deployment.Controllers
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
             }
 
+            _notifier.Error(H["The deployment plan step has validation errors"]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
