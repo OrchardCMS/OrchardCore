@@ -6,6 +6,7 @@ namespace Orchard.Queries
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageQueries = new Permission("ManageQueries", "Manage queries");
+        public static readonly Permission ExecuteQueryApi = new Permission("ExecuteQueryApi", "Execute Query Api", new[] { ManageQueries });
 
         public IEnumerable<Permission> GetPermissions()
         {
@@ -21,7 +22,7 @@ namespace Orchard.Queries
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { ManageQueries }
+                    Permissions = new[] { ManageQueries, ExecuteQueryApi }
                 }
             };
         }

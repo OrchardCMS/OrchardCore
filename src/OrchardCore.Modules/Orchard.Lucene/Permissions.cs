@@ -5,7 +5,8 @@ namespace Orchard.Lucene
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageIndexes = new Permission("ManageIndexes") { Description = "Manage Indexes" };
+        public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
+        public static readonly Permission QueryLuceneApi = new Permission("QueryLuceneApi", "Query Lucene Api", new[] { ManageIndexes });
 
         public IEnumerable<Permission> GetPermissions()
         {
@@ -23,6 +24,11 @@ namespace Orchard.Lucene
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageIndexes }
+                },
+                new PermissionStereotype
+                {
+                    Name = "Editor",
+                    Permissions = new[] { QueryLuceneApi }
                 }
             };
         }

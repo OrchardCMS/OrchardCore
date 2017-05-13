@@ -27,6 +27,12 @@ namespace Orchard.Queries
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            routes.MapAreaRoute(
+                name: "Api.Queries.Query",
+                areaName: "Orchard.Queries",
+                template: "api/queries/{name}",
+                defaults: new { controller = "Api", action = "Query" }
+            );
         }
     }
 }
