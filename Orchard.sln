@@ -285,6 +285,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribWebAPI", "src\Orchar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPIBundle", "src\OrchardCore.DistribWebAPI\Bundles\PCCOM.Distrib.WebAPIBundle\PCCOM.Distrib.WebAPIBundle.csproj", "{07C9225E-57C0-4A7F-9B2D-9979FAF88849}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PCCOM.Distrib.WebAPI.WebClients", "src\OrchardCore.DistribWebAPI\Modules\PCCOM.Distrib.WebAPI.WebClients\PCCOM.Distrib.WebAPI.WebClients.csproj", "{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -783,6 +785,10 @@ Global
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -926,5 +932,6 @@ Global
 		{EB309DE8-C472-44FB-9643-CFE6E3FAFF0B} = {28371F92-C102-40BC-B6F4-59C8BB4069A8}
 		{E97765ED-9CE1-46E0-A5E7-0FD97A347B13} = {FFD613A8-F2EC-4FC6-ACFE-CC8A5A6C2F35}
 		{07C9225E-57C0-4A7F-9B2D-9979FAF88849} = {7AEE2DA8-30A8-4046-8F92-61B7D6B55EB7}
+		{ED74E0D7-5EFC-4250-B9EB-B01024BF15A7} = {28371F92-C102-40BC-B6F4-59C8BB4069A8}
 	EndGlobalSection
 EndGlobal
