@@ -31,7 +31,6 @@ namespace Orchard.Lucene
 
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>(StringComparer.OrdinalIgnoreCase);
-        private IndexWriter _writer;
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
 
@@ -90,18 +89,21 @@ namespace Orchard.Lucene
         {
             lock (this)
             {
-                Write(indexName, null, true);
+                if (_writers.TryRemove(indexName, out var writer))
+                {
+                    writer.Dispose();
+                }
 
+                if (_indexPools.TryRemove(indexName, out var reader))
+                {
+                    reader.Dispose();
+                }
+                
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
                 if (Directory.Exists(indexFolder))
                 {
                     Directory.Delete(indexFolder, true);
-                }
-
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
                 }
             }
         }
@@ -236,27 +238,21 @@ namespace Orchard.Lucene
 
         private void Write(string indexName, Action<IndexWriter> action, bool close = false)
         {
-            if (_writer == null)
+            var writer = _writers.GetOrAdd(indexName, name =>
             {
-                lock (this)
-                {
-                    var directory = CreateDirectory(indexName);
-                    var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion));
-                    config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE_OR_APPEND);
+                var directory = CreateDirectory(indexName);
+                var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion));
+                config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE_OR_APPEND);
 
-                    _writer = new IndexWriter(directory, config);
-                }
-            }
+                return new IndexWriter(directory, config);
+            });
 
-            action?.Invoke(_writer);
+            action?.Invoke(writer);
 
             if (close)
             {
-                lock(this)
-                {
-                    _writer.Dispose();
-                    _writer = null;
-                }
+                _writers.TryRemove(indexName, out writer);
+                writer.Dispose();
             }
         }
 
