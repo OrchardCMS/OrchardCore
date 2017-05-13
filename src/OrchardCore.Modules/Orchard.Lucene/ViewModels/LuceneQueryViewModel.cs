@@ -10,5 +10,6 @@ namespace Orchard.Lucene.ViewModels
         public string Index { get; set; }
         [Required]
         public string Query { get; set; }
+        public bool ReturnContentItems { get; set; }
     }
 }

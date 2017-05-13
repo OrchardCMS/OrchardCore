@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using Orchard.Queries;
 
 namespace Orchard.Lucene
@@ -11,5 +10,6 @@ namespace Orchard.Lucene
 
         public string Index { get; set; }
         public string Template { get; set; }
+        public bool ReturnContentItems { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -89,7 +89,7 @@ namespace Orchard.Lucene.Controllers
 
             var contentItemIds = new List<string>();
 
-            _luceneIndexProvider.Search(indexName, searcher =>
+            await _luceneIndexProvider.SearchAsync(indexName, searcher =>
             {
                 // Fetch one more result than PageSize to generate "More" links
                 TopScoreDocCollector collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
@@ -102,6 +102,8 @@ namespace Orchard.Lucene.Controllers
                     var d = searcher.Doc(hit.Doc, IdSet);
                     contentItemIds.Add(d.GetField("ContentItemId").StringValue);
                 }
+
+                return Task.CompletedTask;
             });
 
             var contentItems = new List<ContentItem>();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
@@ -143,12 +144,12 @@ namespace Orchard.Lucene
             });
         }
 
-        public void Search(string indexName, Action<IndexSearcher> searcher)
+        public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
         {
             using (var reader = GetReader(indexName))
             {
                 var indexSearcher = new IndexSearcher(reader.IndexReader);
-                searcher(indexSearcher);
+                await searcher(indexSearcher);
             }
         }
 

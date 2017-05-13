@@ -229,7 +229,7 @@ namespace Orchard.Lucene.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _luceneIndexManager.Search(model.IndexName, searcher =>
+            await _luceneIndexManager.SearchAsync(model.IndexName, searcher =>
             {
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
@@ -250,6 +250,8 @@ namespace Orchard.Lucene.Controllers
 
                 stopwatch.Stop();
                 model.Elapsed = stopwatch.Elapsed;
+
+                return Task.CompletedTask;
             });            
 
             return View(model);

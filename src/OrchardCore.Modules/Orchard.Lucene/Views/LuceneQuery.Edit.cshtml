@@ -14,6 +14,13 @@
     <span class="hint">@T["The lucene index to search on"]</span>
 </fieldset>
 
+<fieldset class="form-check">
+    <label class="form-check-label">
+        <input asp-for="ReturnContentItems" type="checkbox" class="form-check-input" checked="@Model.ReturnContentItems" /> @T["Return Content Items"]
+        <span class="hint">@T["Check to return the corresponding content items."]</span>
+    </label>
+</fieldset>
+
 <fieldset class="form-group">
     <label asp-for="Query">@T["Query"]</label>
     <textarea asp-for="Query" rows="12" class="form-control"></textarea>

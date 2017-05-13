@@ -46,6 +46,7 @@ namespace Orchard.Lucene.Drivers
             {
                 model.Query = query.Template;
                 model.Index = query.Index;
+                model.ReturnContentItems = query.ReturnContentItems;
                 model.Indices = _luceneIndexManager.List().ToArray();
             }).Location("Content:5");
         }
@@ -53,10 +54,11 @@ namespace Orchard.Lucene.Drivers
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
             var viewModel = new LuceneQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems))
             {
                 model.Template = viewModel.Query;
                 model.Index = viewModel.Index;
+                model.ReturnContentItems = viewModel.ReturnContentItems;
             }
 
             return Edit(model);
