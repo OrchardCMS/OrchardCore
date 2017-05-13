@@ -1,0 +1,7 @@
+﻿Name: Orchard.Diagnostics.Elm
+Author: The Orchard Team
+Website: http://orchardproject.net
+Version: 2.0.x
+OrchardVersion: 2.0.x
+Description: Enables the Elm logging service
+Category: Diagnostics

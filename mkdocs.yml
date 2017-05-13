@@ -1,5 +1,5 @@
 site_name: Orchard Core Documentation
-theme: material
+theme: readthedocs
 
 # Repository
 repo_name: OrchardCMS/Orchard2
@@ -7,27 +7,12 @@ repo_url: https://github.com/OrchardCMS/Orchard2
 
 # Options
 docs_dir: src
-extra:
-  logo: 'images/orchard-logo.png'
-  font:
-    text: 'Open Sans'
-  palette:
-    primary: 'green'
-    accent: 'light blue'
-  social:
-    - type: 'globe'
-      link: 'http://orchardproject.net'
-    - type: 'github-alt'
-      link: 'https://github.com/OrchardCMS'
-    - type: 'twitter'
-      link: 'https://twitter.com/OrchardCMS'
 extra_css: []
 extra_javascript: []
 
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
-  - markdown.extensions.codehilite(guess_lang=false)
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
@@ -36,7 +21,7 @@ markdown_extensions:
 # Page tree
 pages:
     - About Orchard Core: index.md
-    - ASP.NET Core Modules: OrchardCore\Microsoft.AspNetCore.Modules\README.md
+    - ASP.NET Core Modules: OrchardCore/Microsoft.AspNetCore.Modules/README.md
     - CMS Modules:
         - Body: OrchardCore.Modules/Orchard.Body/README.md
         - Content Fields: OrchardCore.Modules/Orchard.ContentFields/README.md
