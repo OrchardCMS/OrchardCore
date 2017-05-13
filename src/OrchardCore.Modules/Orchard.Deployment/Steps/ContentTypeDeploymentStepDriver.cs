@@ -1,20 +1,13 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Deployment.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.Deployment.Steps
 {
-    public class ContentTypeDeploymentStepDriver : DeploymentStepDisplayDriver<ContentTypeDeploymentStep>
+    public class ContentTypeDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentTypeDeploymentStep>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        public ContentTypeDeploymentStepDriver(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
         public override IDisplayResult Display(ContentTypeDeploymentStep step)
         {
             return 

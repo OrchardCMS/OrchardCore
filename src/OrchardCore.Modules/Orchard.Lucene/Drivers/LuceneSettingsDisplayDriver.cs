@@ -1,15 +1,15 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Orchard.Lucene;
-using Orchard.Lucene.ViewModels;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Settings.Services;
+using Orchard.Entities.DisplayManagement;
+using Orchard.Lucene.ViewModels;
+using Orchard.Settings;
 
 namespace Orchard.Lucene.Drivers
 {
-    public class LuceneSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<LuceneSettings>
+    public class LuceneSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
         private readonly LuceneIndexProvider _luceneIndexProvider;
 

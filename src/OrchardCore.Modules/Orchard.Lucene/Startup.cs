@@ -1,15 +1,16 @@
-﻿using System;
-using Orchard.Lucene.Settings;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Lucene.Settings;
 using Orchard.Security.Permissions;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 
 namespace Orchard.Lucene
 {
@@ -29,7 +30,7 @@ namespace Orchard.Lucene
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<LuceneIndexProvider>();
 
-            services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }

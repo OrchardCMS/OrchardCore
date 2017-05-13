@@ -1,9 +1,9 @@
-﻿using Orchard.Deployment.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.Deployment.Steps
 {
-    public class AllContentDeploymentStepDriver : DeploymentStepDisplayDriver<AllContentDeploymentStep>
+    public class AllContentDeploymentStepDriver : DisplayDriver<DeploymentStep, AllContentDeploymentStep>
     {
         public override IDisplayResult Display(AllContentDeploymentStep step)
         {
