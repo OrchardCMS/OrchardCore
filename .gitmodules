@@ -1,0 +1,4 @@
+[submodule "src/OrchardCore.DistribWebAPI"]
+	path = src/OrchardCore.DistribWebAPI
+	url = https://github.com/xkproject/OrchardCore.DistribWebAPI.git
+	branch = master
