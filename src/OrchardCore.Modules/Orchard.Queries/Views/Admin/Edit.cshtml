@@ -1,0 +1,20 @@
+@model QueriesEditViewModel
+
+<h1>@RenderTitleSegments(T["Edit '{0}' query", Model.Name])</h1>
+<form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+
+    @if (Model.Editor.Content != null)
+    {
+        @await DisplayAsync(Model.Editor.Content)
+    }
+
+    @if (Model.Editor.Content != null)
+    {
+        <fieldset class="form-group">
+            @await DisplayAsync(Model.Editor.Actions)
+        </fieldset>
+    }
+
+    <input type="hidden" asp-for="Name" />
+</form>

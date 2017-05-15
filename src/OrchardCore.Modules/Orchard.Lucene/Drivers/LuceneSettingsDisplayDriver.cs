@@ -1,19 +1,19 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Orchard.Lucene;
-using Orchard.Lucene.ViewModels;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
-using Orchard.Settings.Services;
+using Orchard.Entities.DisplayManagement;
+using Orchard.Lucene.ViewModels;
+using Orchard.Settings;
 
 namespace Orchard.Lucene.Drivers
 {
-    public class LuceneSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<LuceneSettings>
+    public class LuceneSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
 
-        public LuceneSiteSettingsDisplayDriver(LuceneIndexProvider luceneIndexProvider)
+        public LuceneSiteSettingsDisplayDriver(LuceneIndexManager luceneIndexProvider)
         {
             _luceneIndexProvider = luceneIndexProvider;
         }
@@ -23,7 +23,7 @@ namespace Orchard.Lucene.Drivers
             return Shape<LuceneSettingsViewModel>("LuceneSettings_Edit", model =>
                 {
                     model.SearchIndex = section.SearchIndex;
-                    model.SearchFields = String.Join(", ", section.SearchFields ?? new string[0]);
+                    model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
                     model.SearchIndexes = _luceneIndexProvider.List();
                 }).Location("Content:2").OnGroup("search");
         }
@@ -37,7 +37,7 @@ namespace Orchard.Lucene.Drivers
                 await updater.TryUpdateModelAsync(model, Prefix);
 
                 section.SearchIndex = model.SearchIndex;
-                section.SearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return Edit(section);

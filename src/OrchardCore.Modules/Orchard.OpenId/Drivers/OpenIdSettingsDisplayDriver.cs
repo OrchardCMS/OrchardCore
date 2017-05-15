@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -8,14 +8,15 @@ using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.DisplayManagement.Views;
+using Orchard.Entities.DisplayManagement;
 using Orchard.OpenId.Services;
 using Orchard.OpenId.Settings;
 using Orchard.OpenId.ViewModels;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 
 namespace Orchard.OpenId.Drivers
 {
-    public class OpenIdSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<OpenIdSettings>
+    public class OpenIdSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdSettings>
     {
         private const string RestartPendingCacheKey = "OpenIdSiteSettings_RestartPending";
         private const string SettingsGroupId = "open id";

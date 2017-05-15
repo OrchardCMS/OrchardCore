@@ -13,7 +13,7 @@ build_script:
   - dotnet build -c Release
   - dotnet pack -c Release
 test_script:
-  - ps: .\scripts\run-tests.ps1
+  - dotnet test -c Release .\test\Orchard.Tests\Orchard.Tests.csproj
 clone_depth: 1
 test: on
 artifacts:

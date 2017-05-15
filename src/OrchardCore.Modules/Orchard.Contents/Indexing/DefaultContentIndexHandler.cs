@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Orchard.Indexing;
 
 namespace Orchard.Contents.Indexing
@@ -12,6 +12,13 @@ namespace Orchard.Contents.Indexing
                 new DocumentIndex.DocumentIndexEntry(
                     context.ContentItem.ContentItemId, 
                     DocumentIndex.Types.Text, 
+                    DocumentIndexOptions.Store));
+
+            context.DocumentIndex.Entries.Add(
+                "Content.ContentItem.ContentItemVersionId",
+                new DocumentIndex.DocumentIndexEntry(
+                    context.ContentItem.ContentItemVersionId,
+                    DocumentIndex.Types.Text,
                     DocumentIndexOptions.Store));
 
             context.DocumentIndex.Entries.Add(

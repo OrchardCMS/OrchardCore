@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
@@ -7,6 +7,9 @@ using Orchard.ContentManagement.MetaData;
 
 namespace Orchard.Indexing
 {
+    /// <summary>
+    /// Enumerates all parts and fields of content item to extract indexed properties.
+    /// </summary>
     public class ContentItemIndexCoordinator : IContentItemIndexHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
