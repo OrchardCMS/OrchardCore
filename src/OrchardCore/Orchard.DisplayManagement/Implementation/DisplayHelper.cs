@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -10,17 +10,17 @@ namespace Orchard.DisplayManagement.Implementation
 {
     public class DisplayHelper : DynamicObject
     {
-        private readonly IHtmlDisplay _displayManager;
+        private readonly IHtmlDisplay _htmlDisplay;
         private readonly IShapeFactory _shapeFactory;
         private readonly IServiceProvider _serviceProvider;
 
         public DisplayHelper(
-            IHtmlDisplay displayManager,
+            IHtmlDisplay htmlDisplay,
             IShapeFactory shapeFactory,
             ViewContext viewContext,
             IServiceProvider serviceProvider)
         {
-            _displayManager = displayManager;
+            _htmlDisplay = htmlDisplay;
             _shapeFactory = shapeFactory;
             ViewContext = viewContext;
             _serviceProvider = serviceProvider;
@@ -84,7 +84,7 @@ namespace Orchard.DisplayManagement.Implementation
                 ServiceProvider = _serviceProvider
             };
 
-            return _displayManager.ExecuteAsync(context);
+            return _htmlDisplay.ExecuteAsync(context);
         }
 
         public async Task<IHtmlContent> ShapeExecuteAsync(IEnumerable<object> shapes)

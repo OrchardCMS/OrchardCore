@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Orchard.Alias.Models;
 using Orchard.Alias.Settings;
@@ -41,11 +42,7 @@ namespace Orchard.Alias.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                var ctx = _tokenizer
-                    .CreateViewModel()
-                    .Content(part.ContentItem);
-
-                part.Alias = _tokenizer.Tokenize(pattern, ctx);
+                part.Alias = _tokenizer.Tokenize(pattern, new Dictionary<string, object> { ["Content"] = part.ContentItem });
             }
         }
         

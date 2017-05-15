@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Routing;
+using Orchard.Entities;
 
 namespace Orchard.Settings
 {
-    public class SiteSettings : ISite
+    public class SiteSettings : Entity, ISite
     {
-        public SiteSettings()
-        {
-            Properties = new JObject();
-        }
-
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public string Culture { get; set; }
@@ -23,6 +18,5 @@ namespace Orchard.Settings
         public string TimeZone { get; set; }
         public bool UseCdn { get; set; }
         public RouteValueDictionary HomeRoute { get; set; }
-        public JObject Properties { get; set; }
     }
 }
