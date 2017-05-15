@@ -1,15 +1,19 @@
-﻿using System;
-using Orchard.Lucene.Settings;
+using System;
+using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
 using Orchard.ContentTypes.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Lucene.Services;
+using Orchard.Lucene.Settings;
+using Orchard.Queries;
 using Orchard.Security.Permissions;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 
 namespace Orchard.Lucene
 {
@@ -27,11 +31,18 @@ namespace Orchard.Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<LuceneIndexProvider>();
+            services.AddSingleton<LuceneIndexManager>();
+            services.AddSingleton<LuceneAnalyzerManager>();
 
-            services.AddScoped<ISiteSettingsDisplayDriver, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+            services.AddLuceneQueries();
+
+            // LuceneQuerySource is registered for both the Queries module and local usage
+            services.AddScoped<IQuerySource, LuceneQuerySource>();
+            services.AddScoped<LuceneQuerySource>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
@@ -42,6 +53,23 @@ namespace Orchard.Lucene
                 template: "Search/{id?}",
                 defaults: new { controller = "Search", action = "Index", id = "" }
             );
+
+            routes.MapAreaRoute(
+                name: "Api.Lucene.Content",
+                areaName: "Orchard.Lucene",
+                template: "api/lucene/content",
+                defaults: new { controller = "Api", action = "Content" }
+            );
+
+            routes.MapAreaRoute(
+                name: "Api.Lucene.Documents",
+                areaName: "Orchard.Lucene",
+                template: "api/lucene/documents",
+                defaults: new { controller = "Api", action = "Documents" }
+            );
+
+            var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
+            luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
         }
     }
 }

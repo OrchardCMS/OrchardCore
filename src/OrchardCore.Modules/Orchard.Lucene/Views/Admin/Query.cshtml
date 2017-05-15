@@ -1,68 +1,88 @@
-﻿@model AdminQueryViewModel
+@model AdminQueryViewModel
 @using Orchard.ContentManagement;
 @inject IContentManager ContentManager
 
-<h1>@RenderTitleSegments(T["Query"])</h1>
+@{ 
+    var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"{
+  ""query"": {
+    ""match_all"": { }
+  }
+}"));
 
-<form asp-action="Query" method="get">
-    <input asp-for="IndexName" type="hidden" value="@Model.IndexName" />
+}
+
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/codemirror.js" depends-on="admin" at="Foot"></script>
+<script asp-src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/javascript/javascript.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["Lucene Query"])</h1>
+
+<form asp-action="Query" method="post">
+
+    <fieldset class="form-group">
+        <label asp-for="IndexName">@T["Index"]</label>
+        <select asp-for="IndexName" class="form-control">
+            @foreach (var index in Model.Indices)
+            {
+                <option value="@index">@index</option>
+            }
+        </select>
+        <span class="hint">@T["The lucene index to search on"]</span>
+    </fieldset>
+
 
     <div class="form-group">
-        <div class="input-group">
-            <input asp-for="Query" type="text" class="form-control" autofocus />
-            <span class="input-group-btn">
-                <button type="submit" class="btn btn-primary">@T["Query"]</button>
-            </span>
-        </div>
-        <span class="hint">@T["You can use the query <a href=\"{0}\">*:*</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Lucene", Query = "*:*", IndexName = Model.IndexName }))]</span>
-        <span class="hint">@T["See {0} for more examples.", Html.Raw("<a href=\"https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html\">https://lucene.apache.org/core/4_10_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html</a>")]</span>
-</div>
+        <label asp-for="DecodedQuery">@T["Template"]</label>
+        <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
+        <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "Orchard.Lucene", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
+        <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
+    </div>
 
     <div class="form-group">
-        
+        <label asp-for="Parameters">@T["Parameters"]</label>
+        <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
+        <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@T["Query"]</button>
     </div>
 </form>
 
-<ul class="list-group">
-    @foreach (var document in Model.Documents)
-    {
-        var contentItemId = document.GetField("ContentItemId").StringValue;
-        var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
-        
-        <li class="list-group-item">
-            <a admin-for="@contentItem" />
-            
-            <div class="float-right">
-                <a class="btn btn-primary btn-sm" data-toggle="modal" href="#doc-details-@contentItem.Id" aria-expanded="false" aria-controls="doc-details-@contentItem.Id">
-                    @T["Show fields"]
-                </a>
+@if (Model.Elapsed != TimeSpan.Zero)
+{
+    <span class="text-muted">@T["Query executed in {0} ms", Model.Elapsed.TotalMilliseconds]</span>
+}
 
-                <div class="modal fade" id="doc-details-@contentItem.Id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>@T["Field name"]</th>
-                                            <th>@T["Value"]</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var field in document)
-                                        {
-                                            <tr>
-                                                <td><code>@field.Name</code></td>
-                                                <td>@field.StringValue</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
-    }
-</ul>
+@if (Model.Documents.Any())
+{
+    <table class="table table-striped table-hover table-responsive">
+        <thead>
+            <tr>
+                <th>#</th>
+                @foreach (var field in Model.Documents.First())
+                {
+                <th>@field.Name</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{ int row = 1; }
+            @foreach (var document in Model.Documents)
+            {
+            <tr>
+                <th scope="row">@(row++)</th>
+                @foreach (var field in document)
+                {
+                    <td>@field.StringValue</td>
+                }
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+<script at="Foot">
+    $(function() {
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
+    });
+</script>

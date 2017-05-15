@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\Orchard.Entities\Orchard.Entities.csproj" />
+  </ItemGroup>
+
+</Project>

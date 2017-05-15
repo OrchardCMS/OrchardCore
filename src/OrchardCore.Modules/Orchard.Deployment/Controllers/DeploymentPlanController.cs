@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Orchard.Admin;
-using Orchard.Deployment.Editors;
 using Orchard.Deployment.Indexes;
 using Orchard.Deployment.ViewModels;
 using Orchard.DisplayManagement;
@@ -24,16 +23,16 @@ namespace Orchard.Deployment.Controllers
     public class DeploymentPlanController : Controller, IUpdateModel
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDeploymentStepDisplayManager _displayManager;
-        private readonly IEnumerable<IDeploymentStepDisplayDriver> _drivers;
+        private readonly IDisplayManager<DeploymentStep> _displayManager;
+        private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
-            IDeploymentStepDisplayManager displayManager,
-            IEnumerable<IDeploymentStepDisplayDriver> drivers,
+            IDisplayManager<DeploymentStep> displayManager,
+            IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -42,7 +41,7 @@ namespace Orchard.Deployment.Controllers
             INotifier notifier)
         {
             _displayManager = displayManager;
-            _drivers = drivers;
+            _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _siteService = siteService;
@@ -125,15 +124,18 @@ namespace Orchard.Deployment.Controllers
             var items = new List<dynamic>();
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                var item = await _displayManager.DisplayStepAsync(step, this, "Summary");
+                var item = await _displayManager.BuildDisplayAsync(step, this, "Summary");
+                item.DeploymentStep = step;
                 items.Add(item);
             }
 
             var thumbnails = new Dictionary<string, dynamic>();
-            foreach (var driver in _drivers)
+            foreach (var factory in _factories)
             {
-                var thumbnail = await _displayManager.DisplayStepAsync(driver.Create(), this, "Thumbnail");
-                thumbnails.Add(driver.Type.Name, thumbnail);
+                var step = factory.Create();
+                var thumbnail = await _displayManager.BuildDisplayAsync(step, this, "Thumbnail");
+                thumbnail.DeploymentStep = step;
+                thumbnails.Add(factory.Name, thumbnail);
             }
 
             var model = new DisplayDeploymentPlanViewModel

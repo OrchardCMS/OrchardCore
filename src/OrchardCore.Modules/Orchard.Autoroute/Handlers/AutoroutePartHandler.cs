@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Orchard.Autoroute.Model;
 using Orchard.Autoroute.Models;
@@ -99,11 +100,7 @@ namespace Orchard.Autoroute.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                var ctx = _tokenizer
-                    .CreateViewModel()
-                    .Content(part.ContentItem);
-
-                part.Path = _tokenizer.Tokenize(pattern, ctx);
+                part.Path = _tokenizer.Tokenize(pattern, new Dictionary<string, object> { ["Content"] = part.ContentItem });
                 if (!IsPathUnique(part.Path, part))
                 {
                     part.Path = GenerateUniquePath(part.Path, part);

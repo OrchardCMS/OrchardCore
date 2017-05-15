@@ -1,4 +1,4 @@
-﻿// Custom variables
+// Custom variables
 
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
@@ -371,3 +371,4 @@ ul.pager li a {
     /* preventing last bottom item is not visible when scrolling to bottom */
     padding-bottom: 100px;
 }
+

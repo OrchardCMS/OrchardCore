@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +61,7 @@ namespace Orchard.ContentManagement
             var context2 = new ActivatedContentContext(context.Builder.Build());
 
             context2.ContentItem.ContentItemId = _idGenerator.GenerateUniqueId(context2.ContentItem);
+            context2.ContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(context2.ContentItem);
 
             Handlers.Reverse().Invoke(handler => handler.Activated(context2), _logger);
 
@@ -87,32 +88,7 @@ namespace Orchard.ContentManagement
         {
             ContentItem contentItem = null;
 
-            // obtain the root records based on version options
-            if (options.VersionRecordId != 0)
-            {
-                if (_contentManagerSession.RecallVersionId(options.VersionRecordId, out contentItem))
-                {
-                    return contentItem;
-                }
-
-                contentItem = await _session.GetAsync<ContentItem>(options.VersionRecordId);
-            }
-            else if (options.VersionNumber != 0)
-            {
-                if (_contentManagerSession.RecallContentItemId(contentItemId, options.VersionNumber, out contentItem))
-                {
-                    return contentItem;
-                }
-
-                contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Number == options.VersionNumber
-                    )
-                    .FirstOrDefault();
-            }
-            else if (options.IsLatest)
+            if (options.IsLatest)
             {
                 contentItem = await _session
                     .QueryAsync<ContentItem, ContentItemIndex>()
@@ -243,6 +219,29 @@ namespace Orchard.ContentManagement
             }
         }
 
+        public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
+        {
+            var contentItem = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => 
+                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefault();
+
+            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
+            {
+                // store in session prior to loading to avoid some problems with simple circular dependencies
+                _contentManagerSession.Store(contentItem);
+
+                // create a context with a new instance to load
+                var context = new LoadContentContext(contentItem);
+
+                // invoke handlers to acquire state, or at least establish lazy loading callbacks
+                Handlers.Invoke(handler => handler.Loading(context), _logger);
+                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
+
+                contentItem = context.ContentItem;
+            }
+
+            return contentItem;
+        }
+
         public async Task PublishAsync(ContentItem contentItem)
         {
             if (contentItem.Published)
@@ -354,6 +353,7 @@ namespace Orchard.ContentManagement
             }
 
             buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
+            buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
             buildingContentItem.Latest = true;
             buildingContentItem.Data = new JObject(existingContentItem.Data);
 
@@ -379,12 +379,11 @@ namespace Orchard.ContentManagement
                 contentItem.Published = true;
             }
 
-            // Version may be specified
-            if (options.VersionNumber != 0)
+            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
-                contentItem.Number = options.VersionNumber;
+                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
-
+            
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {
