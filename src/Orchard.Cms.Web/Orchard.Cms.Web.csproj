@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Modules\Orchard.Queries\Orchard.Queries.csproj" />
     <ProjectReference Include="..\OrchardCore\Orchard.Hosting.Console\Orchard.Hosting.Console.csproj" />
     <ProjectReference Include="..\OrchardCore\Orchard.Logging.NLog\Orchard.Logging.NLog.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Cms\OrchardCore.Cms.csproj" />

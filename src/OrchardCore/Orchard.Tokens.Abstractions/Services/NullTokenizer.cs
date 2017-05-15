@@ -1,15 +1,10 @@
-﻿using System.Dynamic;
+using System.Collections.Generic;
 
 namespace Orchard.Tokens.Services
 {
     public class NullTokenizer : ITokenizer
     {
-        public dynamic CreateViewModel()
-        {
-            return new ExpandoObject();
-        }
-
-        public string Tokenize(string template, object context)
+        public string Tokenize(string template, IDictionary<string, object> context)
         {
             return template;
         }

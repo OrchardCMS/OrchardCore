@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Models;
 using Orchard.Indexing;
@@ -33,11 +33,18 @@ namespace Orchard.Contents.Indexing
             if (contentItemMetadata?.DisplayText != null)
             {
                 context.DocumentIndex.Entries.Add(
+                "Content.ContentItemMetadata.DisplayText.Analyzed",
+                new DocumentIndex.DocumentIndexEntry(
+                    contentItemMetadata.DisplayText,
+                    DocumentIndex.Types.Text,
+                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize));
+
+                context.DocumentIndex.Entries.Add(
                 "Content.ContentItemMetadata.DisplayText",
                 new DocumentIndex.DocumentIndexEntry(
                     contentItemMetadata.DisplayText,
                     DocumentIndex.Types.Text,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize | DocumentIndexOptions.Store));
+                    DocumentIndexOptions.Store));
             }
 
             return Task.CompletedTask;

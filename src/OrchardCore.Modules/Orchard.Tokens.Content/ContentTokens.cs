@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using HandlebarsDotNet;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.Tokens.Content.Abstractions;
@@ -8,15 +9,15 @@ namespace Orchard.Tokens
 {
     public static class ContentTokens
     {
-        public static void RegisterContentTokens(this IHandlebars handlebars)
+        public static void RegisterContentTokens(this IHandlebars handlebars, IHttpContextAccessor httpContextAccessor)
         {
             // Renders a slug for the current content item. Do not use to represent the url
             // as the content item as it might be different than the computed slug.
             handlebars.RegisterHelper("slug", (output, context, arguments) =>
             {
-                IServiceProvider serviceProvider = context.ServiceProvider;
-                var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-                var slugService = serviceProvider.GetRequiredService<ISlugService>();
+                var services = httpContextAccessor.HttpContext.RequestServices;
+                var contentManager = services.GetRequiredService<IContentManager>();
+                var slugService = services.GetRequiredService<ISlugService>();
 
                 ContentItem contentItem = context.Content;
 
@@ -39,8 +40,8 @@ namespace Orchard.Tokens
 
                 if (containerId != null)
                 {
-                    IServiceProvider serviceProvider = context.ServiceProvider;
-                    var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+                    var services = httpContextAccessor.HttpContext.RequestServices;
+                    var contentManager = services.GetRequiredService<IContentManager>();
 
                     var container = contentManager.GetAsync(containerId).GetAwaiter().GetResult();
 

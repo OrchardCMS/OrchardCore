@@ -1,4 +1,4 @@
-﻿@model Orchard.Body.ViewModels.BodyPartViewModel
+@model Orchard.Body.ViewModels.BodyPartViewModel
 @inject Orchard.Tokens.Services.ITokenizer Tokenizer
 @using Orchard.Mvc.Utilities
 
@@ -7,8 +7,7 @@
 
     if (Model.TypePartSettings.RenderTokens)
     {
-        var context = Tokenizer.CreateViewModel().Content(Model.BodyPart.ContentItem);
-        body = Tokenizer.Tokenize(body, context);
+        body = Tokenizer.Tokenize(body, new Dictionary<string, object> { ["Content"] = Model.BodyPart.ContentItem });
     }
 }
 

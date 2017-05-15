@@ -1,32 +1,25 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Orchard.ContentManagement.MetaData;
-using Orchard.Deployment.Editors;
+using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.Deployment.Steps
 {
-    public class ContentTypeDeploymentStepDriver : DeploymentStepDisplayDriver<ContentTypeDeploymentStep>
+    public class ContentTypeDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentTypeDeploymentStep>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        public ContentTypeDeploymentStepDriver(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
         public override IDisplayResult Display(ContentTypeDeploymentStep step)
         {
             return 
                 Combine(
-                    Shape("ContentTypeDeploymentStep", step).Location("Summary", "Content"),
-                    Shape("ContentTypeDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+                    Shape("ContentTypeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    Shape("ContentTypeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(ContentTypeDeploymentStep step)
         {
-            return Shape("ContentTypeDeploymentStep_Edit", step).Location("Content");
+            return Shape("ContentTypeDeploymentStep_Fields_Edit", step).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDeploymentStep step, IUpdateModel updater)

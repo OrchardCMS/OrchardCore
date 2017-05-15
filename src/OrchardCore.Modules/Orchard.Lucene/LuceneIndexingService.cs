@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
+using Orchard.Entities;
 using Orchard.Indexing;
 using Orchard.Settings;
 
@@ -20,7 +21,7 @@ namespace Orchard.Lucene
         private const int BatchSize = 100;
 
         private readonly LuceneIndexingState _indexingState;
-        private readonly LuceneIndexProvider _indexProvider;
+        private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexTaskManager;
         private readonly IEnumerable<IContentItemIndexHandler> _indexHandlers;
         private readonly IContentManager _contentManager;
@@ -28,7 +29,7 @@ namespace Orchard.Lucene
 
         public LuceneIndexingService(
             LuceneIndexingState indexingState, 
-            LuceneIndexProvider indexProvider, 
+            LuceneIndexManager indexManager, 
             IIndexingTaskManager indexTaskManager,
             IEnumerable<IContentItemIndexHandler> indexHandlers,
             IContentManager contentManager,
@@ -36,7 +37,7 @@ namespace Orchard.Lucene
             ILogger<LuceneIndexingService> logger)
         {
             _indexingState = indexingState;
-            _indexProvider = indexProvider;
+            _indexManager = indexManager;
             _indexTaskManager = indexTaskManager;
             _indexHandlers = indexHandlers;
             _contentManager = contentManager;
@@ -49,13 +50,14 @@ namespace Orchard.Lucene
 
         public async Task ProcessContentItemsAsync()
         {
+            
             // TODO: Lock over the filesystem
 
             var allIndexes = new Dictionary<string, int>();
 
             // Find the lowest task id to process
             int lastTaskId = int.MaxValue;
-            foreach (var indexName in _indexProvider.List())
+            foreach (var indexName in _indexManager.List())
             {
                 var taskId = _indexingState.GetLastTaskId(indexName);
                 lastTaskId = Math.Min(lastTaskId, taskId);
@@ -87,7 +89,7 @@ namespace Orchard.Lucene
 
                         if (index.Value < task.Id)
                         {
-                            _indexProvider.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
+                            _indexManager.DeleteDocuments(index.Key, new string[] { task.ContentItemId });
                         }
                     }
 
@@ -103,7 +105,7 @@ namespace Orchard.Lucene
                         {
                             if (index.Value < task.Id)
                             {
-                                _indexProvider.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
+                                _indexManager.StoreDocuments(index.Key, new DocumentIndex[] { context.DocumentIndex });
                             }
                         }
                     }
@@ -140,8 +142,8 @@ namespace Orchard.Lucene
         /// </summary>
         public void RebuildIndex(string indexName)
         {
-            _indexProvider.DeleteIndex(indexName);
-            _indexProvider.CreateIndex(indexName);
+            _indexManager.DeleteIndex(indexName);
+            _indexManager.CreateIndex(indexName);
 
             ResetIndex(indexName);
         }

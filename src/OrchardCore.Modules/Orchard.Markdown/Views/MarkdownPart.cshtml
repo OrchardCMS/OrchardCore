@@ -1,4 +1,4 @@
-﻿@model Orchard.Markdown.ViewModels.MarkdownPartViewModel
+@model Orchard.Markdown.ViewModels.MarkdownPartViewModel
 @inject Orchard.Tokens.Services.ITokenizer Tokenizer
 
 @{ 
@@ -7,8 +7,7 @@
 
     if (Model.TypePartSettings.RenderTokens)
     {
-        var context = Tokenizer.CreateViewModel().Content(Model.MarkdownPart.ContentItem);
-        html = Tokenizer.Tokenize(html, context);
+        html = Tokenizer.Tokenize(html, new Dictionary<string, object> { ["Content"] = Model.MarkdownPart.ContentItem });
     }
 }
 
