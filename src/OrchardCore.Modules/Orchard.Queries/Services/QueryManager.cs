@@ -32,9 +32,12 @@ namespace Orchard.Queries.Services
 
         public async Task DeleteQueryAsync(string name)
         {
+            // Ensure QueriesDocument exists 
+            await GetDocumentAsync();
+
             // Load the currently saved object otherwise it would create a new document
             // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Update method in Session
+            // TODO: Solve by having an Import method in Session
 
             var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
 
@@ -63,9 +66,12 @@ namespace Orchard.Queries.Services
 
         public async Task SaveQueryAsync(Query query)
         {
+            // Ensure QueriesDocument exists 
+            await GetDocumentAsync();
+
             // Load the currently saved object otherwise it would create a new document
             // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Update method in Session
+            // TODO: Solve by having an Import method in Session
 
             var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
 

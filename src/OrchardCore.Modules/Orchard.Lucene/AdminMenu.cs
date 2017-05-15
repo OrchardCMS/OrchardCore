@@ -30,6 +30,7 @@ namespace Orchard.Lucene
                             .LocalNav())
                         .Add(T["Lucene Queries"], "8", queries => queries
                             .Action("Query", "Admin", new { area = "Orchard.Lucene" })
+                            .Permission(Permissions.ManageIndexes)
                             .LocalNav())))
                 .Add(T["Design"], design => design
                     .Add(T["Settings"], settings => settings

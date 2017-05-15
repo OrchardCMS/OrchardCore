@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Tokenattributes;
 using Lucene.Net.Search;
@@ -17,7 +18,7 @@ namespace Orchard.Lucene
             _queryProviders = queryProviders;
         }
 
-        public TopDocs Search(LuceneQueryContext context, JObject queryObj)
+        public Task<TopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject;
 
@@ -62,7 +63,7 @@ namespace Orchard.Lucene
                 docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
             }
 
-            return docs;
+            return Task.FromResult(docs);
         }
 
         public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)

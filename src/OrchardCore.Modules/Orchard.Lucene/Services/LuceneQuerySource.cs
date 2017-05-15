@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Records;
@@ -57,7 +56,7 @@ namespace Orchard.Lucene
 
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer("standardanalyzer");
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
-                var docs = _queryService.Search(context, parameterizedQuery);
+                var docs = await _queryService.SearchAsync(context, parameterizedQuery);
 
                 if (luceneQuery.ReturnContentItems)
                 {
