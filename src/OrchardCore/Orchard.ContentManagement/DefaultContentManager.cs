@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -196,8 +196,6 @@ namespace Orchard.ContentManagement
 
         private ContentItem Load(ContentItem contentItem)
         {
-            // Return item if obtained earlier in session
-            // If IsPublished is required then the test has already been checked before
             ContentItem recalled = null;
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out recalled))
             {
@@ -213,10 +211,8 @@ namespace Orchard.ContentManagement
 
                 return context.ContentItem;
             }
-            else
-            {
-                return recalled;
-            }
+
+            return recalled;
         }
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
@@ -224,22 +220,7 @@ namespace Orchard.ContentManagement
             var contentItem = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => 
                     x.ContentItemVersionId == contentItemVersionId).FirstOrDefault();
 
-            if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
-            {
-                // store in session prior to loading to avoid some problems with simple circular dependencies
-                _contentManagerSession.Store(contentItem);
-
-                // create a context with a new instance to load
-                var context = new LoadContentContext(contentItem);
-
-                // invoke handlers to acquire state, or at least establish lazy loading callbacks
-                Handlers.Invoke(handler => handler.Loading(context), _logger);
-                Handlers.Reverse().Invoke(handler => handler.Loaded(context), _logger);
-
-                contentItem = context.ContentItem;
-            }
-
-            return contentItem;
+            return Load(contentItem);
         }
 
         public async Task PublishAsync(ContentItem contentItem)
