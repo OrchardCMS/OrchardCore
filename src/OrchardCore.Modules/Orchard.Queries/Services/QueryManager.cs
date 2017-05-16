@@ -117,7 +117,7 @@ namespace Orchard.Queries.Services
             return queries;
         }
 
-        public Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
             

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace Orchard.Queries
 {
@@ -35,6 +34,6 @@ namespace Orchard.Queries
         /// </summary>
         /// <param name="query">The query to execute.</param>
         /// <returns>The result of the query.</returns>
-        Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
     }
 }
