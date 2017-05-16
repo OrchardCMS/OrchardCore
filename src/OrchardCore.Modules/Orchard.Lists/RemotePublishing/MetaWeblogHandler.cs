@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -23,6 +23,8 @@ using Orchard.MetaWeblog;
 using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 using YesSql.Core.Services;
+using Orchard.Media;
+using System.IO;
 
 namespace Orchard.Lists.RemotePublishing
 {
@@ -33,6 +35,7 @@ namespace Orchard.Lists.RemotePublishing
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IMediaFileStore _mediaFileStore;
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
@@ -43,6 +46,7 @@ namespace Orchard.Lists.RemotePublishing
             ISession session,
             HtmlEncoder htmlEncoder,
             IContentDefinitionManager contentDefinitionManager,
+            IMediaFileStore mediaFileStore,
             IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
             ILogger<MetaWeblogHandler> logger,
             IStringLocalizer<MetaWeblogHandler> localizer)
@@ -53,6 +57,7 @@ namespace Orchard.Lists.RemotePublishing
             _metaWeblogDrivers = metaWeblogDrivers;
             _session = session;
             _htmlEncoder = htmlEncoder;
+            _mediaFileStore = mediaFileStore;
             _membershipService = membershipService;
             Logger = logger;
             T = localizer;
@@ -69,7 +74,6 @@ namespace Orchard.Lists.RemotePublishing
             {
                 driver.SetCapabilities((name, value) => { options.SetElementValue(XName.Get(name, manifestUri), value); });
             }
-
         }
 
         public async Task ProcessAsync(XmlRpcContext context)
@@ -141,16 +145,44 @@ namespace Orchard.Lists.RemotePublishing
                     context.Drivers);
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
+
+            if (context.RpcMethodCall.MethodName == "metaWeblog.newMediaObject")
+            {
+                var result = await MetaWeblogNewMediaObjectAsync(
+                    Convert.ToString(context.RpcMethodCall.Params[1].Value),
+                    Convert.ToString(context.RpcMethodCall.Params[2].Value),
+                    (XRpcStruct)context.RpcMethodCall.Params[3].Value);
+                context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
+            }
+        }
+
+        private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
+        {
+            var user = await ValidateUserAsync(userName, password);
+            
+            var name = file.Optional<string>("name");
+            var bits = file.Optional<byte[]>("bits");
+
+            string directoryName = Path.GetDirectoryName(name);            
+            string filePath = _mediaFileStore.Combine(directoryName, Path.GetFileName(name));
+            bool saved = await _mediaFileStore.TrySaveStreamAsync(filePath, new MemoryStream(bits));
+             
+            string publicUrl = _mediaFileStore.GetPublicUrl(filePath);
+
+            return new XRpcStruct() // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
+                .Set("file", publicUrl)
+                .Set("url", publicUrl) 
+                .Set("type", file.Optional<string>("type"));
         }
 
         private async Task<XRpcArray> MetaWeblogGetUserBlogsAsync(XmlRpcContext context, string userName, string password)
         {
             var user = await ValidateUserAsync(userName, password);
-            
+
             XRpcArray array = new XRpcArray();
 
             // Look for all types using ListPart
-            foreach(var type in _contentDefinitionManager.ListTypeDefinitions())
+            foreach (var type in _contentDefinitionManager.ListTypeDefinitions())
             {
                 if (!type.Parts.Any(x => x.Name == nameof(ListPart)))
                 {
@@ -231,7 +263,7 @@ namespace Orchard.Lists.RemotePublishing
             var user = await ValidateUserAsync(userName, password);
 
             // User needs permission to edit or publish its own blog posts
-            await CheckAccessAsync(publish ? Permissions.PublishContent: Permissions.EditContent, user, null);
+            await CheckAccessAsync(publish ? Permissions.PublishContent : Permissions.EditContent, user, null);
 
             var list = await _contentManager.GetAsync(contentItemId);
 
@@ -305,7 +337,7 @@ namespace Orchard.Lists.RemotePublishing
 
             var postStruct = CreateBlogStruct(context, contentItem);
 
-            foreach(var driver in _metaWeblogDrivers)
+            foreach (var driver in _metaWeblogDrivers)
             {
                 driver.BuildPost(postStruct, context, contentItem);
             }
@@ -336,13 +368,13 @@ namespace Orchard.Lists.RemotePublishing
                 throw new Exception(T["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
             }
 
-            await CheckAccessAsync(publish ? Permissions.PublishContent: Permissions.EditContent, user, contentItem);
+            await CheckAccessAsync(publish ? Permissions.PublishContent : Permissions.EditContent, user, contentItem);
 
             foreach (var driver in _metaWeblogDrivers)
             {
                 driver.EditPost(content, contentItem);
             }
-            
+
             // try to get the UTC timezone by default
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
@@ -404,7 +436,7 @@ namespace Orchard.Lists.RemotePublishing
 
         private async Task<ClaimsPrincipal> ValidateUserAsync(string userName, string password)
         {
-            if(!await _membershipService.CheckPasswordAsync(userName, password))
+            if (!await _membershipService.CheckPasswordAsync(userName, password))
             {
                 throw new InvalidOperationException(T["The username or e-mail or password provided is incorrect."].Value);
             }
@@ -424,9 +456,9 @@ namespace Orchard.Lists.RemotePublishing
             var metadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
 
             var url = context.Url.Action(
-                metadata.DisplayRouteValues["action"].ToString(), 
-                metadata.DisplayRouteValues["controller"].ToString(), 
-                metadata.DisplayRouteValues, 
+                metadata.DisplayRouteValues["action"].ToString(),
+                metadata.DisplayRouteValues["controller"].ToString(),
+                metadata.DisplayRouteValues,
                 context.HttpContext.Request.Scheme);
 
             if (contentItem.HasDraft())
@@ -445,7 +477,7 @@ namespace Orchard.Lists.RemotePublishing
                 blogStruct.Set("date_created_gmt", contentItem.PublishedUtc);
             }
 
-            foreach(var driver in _metaWeblogDrivers)
+            foreach (var driver in _metaWeblogDrivers)
             {
                 driver.BuildPost(blogStruct, context, contentItem);
             }

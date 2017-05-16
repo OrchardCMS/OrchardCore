@@ -173,6 +173,14 @@ namespace Orchard.StorageProviders.FileSystem
         {
             try
             {
+                var subfolder = Path.GetDirectoryName(subpath);
+                var mediaFolder = await GetFolderAsync(subfolder);
+
+                if (mediaFolder == null)
+                {
+                    await TryCreateFolderAsync(subfolder);
+                }
+
                 using (var outputStream = File.Create(GetPhysicalPath(subpath)))
                 {
                     await inputStream.CopyToAsync(outputStream);
