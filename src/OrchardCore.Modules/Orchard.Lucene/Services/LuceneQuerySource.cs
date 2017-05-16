@@ -44,10 +44,10 @@ namespace Orchard.Lucene
             return new LuceneQuery();
         }
 
-        public async Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public async Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var luceneQuery = query as LuceneQuery;
-            var result = new JArray();
+            object result = null;
 
             await _luceneIndexProvider.SearchAsync (luceneQuery.Index, async searcher =>
             {
@@ -64,14 +64,19 @@ namespace Orchard.Lucene
                     var contentItemVersionIds = docs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
                     var contentItems = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).List();
 
-                    result = JArray.FromObject(contentItems.ToArray());
+                    // Reorder the result to preserve the one from the lucene query
+                    var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                    result = contentItemVersionIds.Select(x => indexed[x]).ToArray();
                 }
                 else
                 {
+                    var results = new List<JObject>();
                     foreach (var document in docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
                     {
-                        result.Add(new JObject(document.Select(x => new JProperty(x.Name, x.StringValue))));
+                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.StringValue))));
                     }
+
+                    result = results;
                 }
             });
 
