@@ -1,12 +1,7 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Orchard.Events;
-using Orchard.Users.Models;
 
 namespace Orchard.Users.Services
 {
@@ -30,15 +25,7 @@ namespace Orchard.Users.Services
         public Task Setup(string userName, string email, string password, Action<string, string> reportError)
         {
             var userService = _serviceProvider.GetRequiredService<IUserService>();
-
-            var superUser = new User
-            {
-                UserName = userName,
-                Email = email,
-                RoleNames = { "Administrator" }
-            };
-
-            return userService.CreateUserAsync(superUser,password,reportError);
+            return userService.CreateUserAsync(userName, email, new string [] { "Administrator" }, password, reportError);
         }
     }
 }

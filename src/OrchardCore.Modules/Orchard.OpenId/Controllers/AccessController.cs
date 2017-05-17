@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -28,8 +28,8 @@ namespace Orchard.OpenId.Controllers
     {
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<IUser> _signInManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly IRoleClaimStore<Role> _roleStore;
         private readonly IStringLocalizer<AccessController> T;
 
@@ -37,8 +37,8 @@ namespace Orchard.OpenId.Controllers
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             IOptions<IdentityOptions> identityOptions,
             IStringLocalizer<AccessController> localizer,
-            SignInManager<User> signInManager,
-            UserManager<User> userManager,
+            SignInManager<IUser> signInManager,
+            UserManager<IUser> userManager,
             IRoleClaimStore<Role> roleStore)
         {
             T = localizer;
@@ -482,7 +482,7 @@ namespace Orchard.OpenId.Controllers
         }
 
         private async Task<AuthenticationTicket> CreateTicketAsync(
-            OpenIdConnectRequest request, User user,
+            OpenIdConnectRequest request, IUser user,
             AuthenticationProperties properties = null)
         {
             // Create a new ClaimsPrincipal containing the claims that

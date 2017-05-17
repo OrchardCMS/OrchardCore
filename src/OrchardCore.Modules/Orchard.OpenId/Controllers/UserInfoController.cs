@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Core;
-using Orchard.Users.Models;
+using Orchard.Security;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -15,11 +15,11 @@ namespace Orchard.OpenId.Controllers
     public class UserInfoController : Controller
     {
         private readonly IStringLocalizer<AccessController> T;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IUser> _userManager;
 
         public UserInfoController(
             IStringLocalizer<AccessController> localizer,
-            UserManager<User> userManager)
+            UserManager<IUser> userManager)
         {
             T = localizer;
             _userManager = userManager;
