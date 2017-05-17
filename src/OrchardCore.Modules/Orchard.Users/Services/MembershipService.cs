@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Orchard.Security;
@@ -9,12 +9,12 @@ namespace Orchard.Users.Services
 {
     public class MembershipService : IMembershipService
     {
-        private readonly UserManager<User> _userManager;
-        private readonly IUserClaimsPrincipalFactory<User> _claimsPrincipalFactory;
+        private readonly UserManager<IUser> _userManager;
+        private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
 
         public MembershipService(
-            IUserClaimsPrincipalFactory<User> claimsPrincipalFactory,
-            UserManager<User> userManager)
+            IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
+            UserManager<IUser> userManager)
         {
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _userManager = userManager;
