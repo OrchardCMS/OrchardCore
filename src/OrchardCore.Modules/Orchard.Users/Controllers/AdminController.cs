@@ -24,7 +24,7 @@ namespace Orchard.Users.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer T;
@@ -39,7 +39,7 @@ namespace Orchard.Users.Controllers
         public AdminController(
             IAuthorizationService authorizationService,
             ISession session,
-            UserManager<User> userManager,
+            UserManager<IUser> userManager,
             RoleManager<Role> roleManager,
             IRoleProvider roleProvider,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -197,13 +197,14 @@ namespace Orchard.Users.Controllers
             }
 
             var roleNames = await GetRoleNamesAsync();
-            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = currentUser.RoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+            var userRoleNames = await _userManager.GetRolesAsync(currentUser);
+            var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
 
             var model = new EditUserViewModel
             {
-                Id = currentUser.Id,
-                Email = currentUser.Email,
-                UserName = currentUser.UserName,
+                Id = id,
+                Email = await _userManager.GetEmailAsync(currentUser),
+                UserName = await _userManager.GetUserNameAsync(currentUser),
                 Roles = roles
             };
 
@@ -230,24 +231,35 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-                if (userWithSameName != null && userWithSameName.Id != currentUser.Id)
+                if (userWithSameName != null)
                 {
-                    ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
+                    if (userWithSameNameId != model.Id)
+                    {
+                        ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    }
                 }
 
                 var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-                if (userWithSameEmail != null && userWithSameEmail.Id != currentUser.Id)
+                if (userWithSameEmail != null)
                 {
-                    ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
+                    if (userWithSameEmailId != model.Id)
+                    {
+                        ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    }
                 }
             }
 
             if (ModelState.IsValid)
             {
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-                currentUser.RoleNames = roleNames;
-                currentUser.UserName = model.UserName;
-                currentUser.Email = model.Email;
+                await _userManager.SetUserNameAsync(currentUser, model.UserName);
+                await _userManager.SetEmailAsync(currentUser, model.Email);
+                foreach (var role in roleNames)
+                {
+                    await _userManager.AddToRoleAsync(currentUser, role);
+                }
 
                 var result = await _userManager.UpdateAsync(currentUser);
                 if (result.Succeeded)

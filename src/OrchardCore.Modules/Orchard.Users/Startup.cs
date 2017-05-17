@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -15,9 +16,7 @@ using Orchard.Security.Permissions;
 using Orchard.Security.Services;
 using Orchard.Users.Commands;
 using Orchard.Users.Indexes;
-using Orchard.Users.Models;
 using Orchard.Users.Services;
-using Microsoft.AspNetCore.DataProtection;
 using YesSql.Indexes;
 
 namespace Orchard.Users
@@ -75,7 +74,7 @@ namespace Orchard.Users
 
             // No interface for the error describer so we can add errors without rev'ing the interface
             services.TryAddScoped<IdentityErrorDescriber>();
-            services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<User>>();
+            services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<IUser>>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<IUser>, UserClaimsPrincipalFactory<IUser, Role>>();
             services.TryAddScoped<UserManager<IUser>>();
             services.TryAddScoped<SignInManager<IUser>>();

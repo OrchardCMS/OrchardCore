@@ -62,15 +62,15 @@ namespace Orchard.Users.Services
             return IdentityResult.Success;
         }
 
-        public Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             int id;
             if(!int.TryParse(userId, out id))
             {
-                return Task.FromResult<IUser>(null);
+                return null;
             }
 
-            return _session.GetAsync<IUser>(id);
+            return await _session.GetAsync<User>(id);
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
