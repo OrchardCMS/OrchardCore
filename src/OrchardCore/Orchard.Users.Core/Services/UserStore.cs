@@ -105,7 +105,7 @@ namespace Orchard.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.UserName);
+            return Task.FromResult(((User)user).UserName);
         }
 
         public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))

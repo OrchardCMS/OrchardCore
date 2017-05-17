@@ -12,14 +12,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Orchard.Mvc.ActionConstraints;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
+using Orchard.Mvc.ActionConstraints;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security;
-using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {

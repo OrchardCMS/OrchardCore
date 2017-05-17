@@ -72,9 +72,8 @@ namespace Orchard.Users.Services
         }
 
 
-        public async Task<bool> ChangePasswordAsync(string userName, string currentPassword, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
         {
-            var user = await _userManager.FindByNameAsync(userName);
             var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
 
             if(!identityResult.Succeeded)

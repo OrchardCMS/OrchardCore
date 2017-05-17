@@ -139,7 +139,7 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userService.GetAuthenticatedUserAsync(User);
-                if (await _userService.ChangePasswordAsync(user.UserName, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
+                if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
                     return RedirectToLocal(Url.Action("ChangePasswordConfirmation"));
                 }
