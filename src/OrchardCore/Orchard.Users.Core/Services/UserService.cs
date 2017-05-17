@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -7,25 +7,26 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using Orchard.Security;
 
 namespace Orchard.Users.Services
 {
     public class UserService: IUserService
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IStringLocalizer<UserService> T;
-        public UserService(UserManager<User> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer)
+        public UserService(UserManager<IUser> userManager, IOptions<IdentityOptions> identityOptions, IStringLocalizer<UserService> stringLocalizer)
         {
             _userManager = userManager;
             _identityOptions = identityOptions;
             T = stringLocalizer;
         }
 
-        public async Task<bool> CreateUserAsync(User user, string password, Action<string, string> reportError)
+        public async Task<bool> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
         {
             bool result = true;
-            if (string.IsNullOrWhiteSpace(user.UserName))
+            if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", T["A user name is required."]);
                 result = false;
@@ -35,7 +36,7 @@ namespace Orchard.Users.Services
                 reportError("Password", T["A password is required."]);
                 result = false;
             }
-            if (string.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(email))
             {
                 reportError("Email", T["An email is required."]);
                 result = false;
@@ -46,12 +47,19 @@ namespace Orchard.Users.Services
                 return result;
             }
 
-            if (await _userManager.FindByEmailAsync(user.Email) != null)
+            if (await _userManager.FindByEmailAsync(email) != null)
             {
                 reportError(string.Empty, T["The email is already used."]);
                 return false;
             }
-            
+
+            var user = new User
+            {
+                UserName = userName,
+                Email = email,
+                RoleNames = new List<string>(roleNames)
+            };
+
             var identityResult = await _userManager.CreateAsync(user, password);
                         
             if (!identityResult.Succeeded)
@@ -63,23 +71,24 @@ namespace Orchard.Users.Services
         }
 
 
-        public async Task<bool> ChangePasswordAsync(User user, string currentPassword, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ChangePasswordAsync(string userName, string currentPassword, string newPassword, Action<string, string> reportError)
         {
+            var user = await _userManager.FindByNameAsync(userName);
             var identityResult = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
 
             if(!identityResult.Succeeded)
             {
-                ProcessValidationErrors(identityResult.Errors, user, reportError);
+                ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
             }
 
             return identityResult.Succeeded;
         }
 
-        public Task<User> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
+        public Task<IUser> GetAuthenticatedUserAsync(ClaimsPrincipal principal)
         {
             if(principal == null)
             {
-                return Task.FromResult<User>(null);
+                return Task.FromResult<IUser>(null);
             }
 
             return _userManager.GetUserAsync(principal);

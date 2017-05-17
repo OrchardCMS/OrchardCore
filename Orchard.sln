@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26505.0
+VisualStudioVersion = 15.0.26510.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Cms", "OrchardCore.Modules.Cms", "{90030E85-0C4F-456F-B879-443E8A3F220D}"
 EndProject
@@ -266,6 +266,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Tokens.Core", "src\OrchardCore\Orchard.Tokens.Core\Orchard.Tokens.Core.csproj", "{5F6C21D3-7D8B-4CAE-9298-CA6791A13FC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Diagnostics.Elm", "src\OrchardCore.Modules\Orchard.Diagnostics.Elm\Orchard.Diagnostics.Elm.csproj", "{A1B6C857-7844-433E-B28A-9A86600771A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Users.Abstractions", "src\OrchardCore\Orchard.Users.Abstractions\Orchard.Users.Abstractions.csproj", "{5C2FCDBA-408B-4AEB-9920-D648324A270F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchard.Users.Core", "src\OrchardCore\Orchard.Users.Core\Orchard.Users.Core.csproj", "{1107E134-58ED-41CC-9B69-0B33AB91B8E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -741,6 +745,14 @@ Global
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B6C857-7844-433E-B28A-9A86600771A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2FCDBA-408B-4AEB-9920-D648324A270F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2FCDBA-408B-4AEB-9920-D648324A270F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2FCDBA-408B-4AEB-9920-D648324A270F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2FCDBA-408B-4AEB-9920-D648324A270F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1107E134-58ED-41CC-9B69-0B33AB91B8E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1107E134-58ED-41CC-9B69-0B33AB91B8E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1107E134-58ED-41CC-9B69-0B33AB91B8E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1107E134-58ED-41CC-9B69-0B33AB91B8E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -876,5 +888,7 @@ Global
 		{391F8D42-43B0-4DA5-A727-083ABBA55510} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{5F6C21D3-7D8B-4CAE-9298-CA6791A13FC0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{A1B6C857-7844-433E-B28A-9A86600771A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{5C2FCDBA-408B-4AEB-9920-D648324A270F} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{1107E134-58ED-41CC-9B69-0B33AB91B8E8} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 EndGlobal

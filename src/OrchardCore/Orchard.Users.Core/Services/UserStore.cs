@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Orchard.Security;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using YesSql;
@@ -10,11 +11,11 @@ using YesSql;
 namespace Orchard.Users.Services
 {
     public class UserStore :
-        IUserStore<User>,
-        IUserRoleStore<User>,
-        IUserPasswordStore<User>,
-        IUserEmailStore<User>,
-        IUserSecurityStampStore<User>
+        IUserStore<IUser>,
+        IUserRoleStore<IUser>,
+        IUserPasswordStore<IUser>,
+        IUserEmailStore<IUser>,
+        IUserSecurityStampStore<IUser>
     {
         private readonly ISession _session;
 
@@ -27,8 +28,8 @@ namespace Orchard.Users.Services
         {
         }
 
-        #region IUserStore<User>
-        public Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        #region IUserStore<IUser>
+        public Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -40,7 +41,7 @@ namespace Orchard.Users.Services
             return Task.FromResult(IdentityResult.Success);
         }
 
-        public async Task<IdentityResult> DeleteAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -61,43 +62,43 @@ namespace Orchard.Users.Services
             return IdentityResult.Success;
         }
 
-        public Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             int id;
             if(!int.TryParse(userId, out id))
             {
-                return Task.FromResult<User>(null);
+                return Task.FromResult<IUser>(null);
             }
 
-            return _session.GetAsync<User>(id);
+            return _session.GetAsync<IUser>(id);
         }
 
-        public Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
+            return await _session.QueryAsync<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefault();
         }
 
-        public Task<string> GetNormalizedUserNameAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return Task.FromResult(user.NormalizedUserName);
-        }
-
-        public Task<string> GetUserIdAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            return Task.FromResult(((User)user).NormalizedUserName);
         }
 
-        public Task<string> GetUserNameAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            return Task.FromResult(((User)user).Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -107,31 +108,31 @@ namespace Orchard.Users.Services
             return Task.FromResult(user.UserName);
         }
 
-        public Task SetNormalizedUserNameAsync(User user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.NormalizedUserName = normalizedName;
+            ((User)user).NormalizedUserName = normalizedName;
 
             return Task.CompletedTask;
         }
 
-        public Task SetUserNameAsync(User user, string userName, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.UserName = userName;
+            ((User)user).UserName = userName;
 
             return Task.CompletedTask;
         }
 
-        public async Task<IdentityResult> UpdateAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -154,185 +155,185 @@ namespace Orchard.Users.Services
 
         #endregion
 
-        #region IUserPasswordStore<User>
-        public Task<string> GetPasswordHashAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        #region IUserPasswordStore<IUser>
+        public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.PasswordHash);
+            return Task.FromResult(((User)user).PasswordHash);
         }
 
-        public Task SetPasswordHashAsync(User user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
+        public Task SetPasswordHashAsync(IUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.PasswordHash = passwordHash;
+            ((User)user).PasswordHash = passwordHash;
 
             return Task.CompletedTask;
         }
 
-        public Task<bool> HasPasswordAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<bool> HasPasswordAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.PasswordHash != null);
+            return Task.FromResult(((User)user).PasswordHash != null);
         }
 
         #endregion
 
-        #region ISecurityStampValidator<User>
-        public Task SetSecurityStampAsync(User user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+        #region ISecurityStampValidator<IUser>
+        public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.SecurityStamp = stamp;
+            ((User)user).SecurityStamp = stamp;
 
             return Task.CompletedTask;
         }
 
-        public Task<string> GetSecurityStampAsync(User user, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetSecurityStampAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
-            return Task.FromResult(user.SecurityStamp);
+            return Task.FromResult(((User)user).SecurityStamp);
         }
         #endregion
 
-        #region IUserEmailStore<User>
-        public Task SetEmailAsync(User user, string email, CancellationToken cancellationToken)
+        #region IUserEmailStore<IUser>
+        public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.Email = email;
+            ((User)user).Email = email;
 
             return Task.CompletedTask;
         }
 
-        public Task<string> GetEmailAsync(User user, CancellationToken cancellationToken)
+        public Task<string> GetEmailAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.Email);
+            return Task.FromResult(((User)user).Email);
         }
 
-        public Task<bool> GetEmailConfirmedAsync(User user, CancellationToken cancellationToken)
+        public Task<bool> GetEmailConfirmedAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.EmailConfirmed);
+            return Task.FromResult(((User)user).EmailConfirmed);
         }
 
-        public Task SetEmailConfirmedAsync(User user, bool confirmed, CancellationToken cancellationToken)
+        public Task SetEmailConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.EmailConfirmed = confirmed;
+            ((User)user).EmailConfirmed = confirmed;
             return Task.CompletedTask;
         }
 
-        public Task<User> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
         {
-            return _session.QueryAsync<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefault();
+            return await _session.QueryAsync<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefault();
         }
 
-        public Task<string> GetNormalizedEmailAsync(User user, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.NormalizedEmail);
+            return Task.FromResult(((User)user).NormalizedEmail);
         }
 
-        public Task SetNormalizedEmailAsync(User user, string normalizedEmail, CancellationToken cancellationToken)
+        public Task SetNormalizedEmailAsync(IUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.NormalizedEmail = normalizedEmail;
+            ((User)user).NormalizedEmail = normalizedEmail;
 
             return Task.CompletedTask;
         }
 
         #endregion
 
-        #region IUserRoleStore<User>
-        public Task AddToRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        #region IUserRoleStore<IUser>
+        public Task AddToRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.RoleNames.Add(roleName);
+            ((User)user).RoleNames.Add(roleName);
             _session.Save(roleName);
 
             return Task.CompletedTask;
         }
 
-        public Task RemoveFromRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        public Task RemoveFromRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            user.RoleNames.Remove(roleName);
+            ((User)user).RoleNames.Remove(roleName);
             _session.Save(roleName);
 
             return Task.CompletedTask;
         }
 
-        public Task<IList<string>> GetRolesAsync(User user, CancellationToken cancellationToken)
+        public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult<IList<string>>(user.RoleNames);
+            return Task.FromResult<IList<string>>(((User)user).RoleNames);
         }
 
-        public Task<bool> IsInRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        public Task<bool> IsInRoleAsync(IUser user, string roleName, CancellationToken cancellationToken)
         {
             if (user == null)
             {
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(user.RoleNames.Contains(roleName));
+            return Task.FromResult(((User)user).RoleNames.Contains(roleName));
         }
 
-        public Task<IList<User>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        public Task<IList<IUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

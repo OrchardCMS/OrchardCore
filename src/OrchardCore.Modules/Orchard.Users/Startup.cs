@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Modules;
@@ -64,7 +64,7 @@ namespace Orchard.Users
             /// Adds the default token providers used to generate tokens for reset passwords, change email
             /// and change telephone number operations, and for two factor authentication token generation.
 
-            new IdentityBuilder(typeof(User), typeof(Role), services).AddDefaultTokenProviders();
+            new IdentityBuilder(typeof(IUser), typeof(Role), services).AddDefaultTokenProviders();
 
             // Identity services
             services.TryAddSingleton<IdentityMarkerService>();
@@ -77,10 +77,10 @@ namespace Orchard.Users
             services.TryAddScoped<IdentityErrorDescriber>();
             services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<User>>();
             services.TryAddScoped<IUserClaimsPrincipalFactory<User>, UserClaimsPrincipalFactory<User, Role>>();
-            services.TryAddScoped<UserManager<User>>();
-            services.TryAddScoped<SignInManager<User>>();
+            services.TryAddScoped<UserManager<IUser>>();
+            services.TryAddScoped<SignInManager<IUser>>();
 
-            services.TryAddScoped<IUserStore<User>, UserStore>();
+            services.TryAddScoped<IUserStore<IUser>, UserStore>();
             
             services.Configure<IdentityOptions>(options =>
             {
