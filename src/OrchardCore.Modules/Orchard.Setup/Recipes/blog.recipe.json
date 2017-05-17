@@ -185,7 +185,7 @@
                 },
                 "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
                 "AllowCustomPath": "False",
-                "ShowHomepageOption": "True"
+                "ShowHomepageOption": "False"
               }
             },
             {
