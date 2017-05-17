@@ -68,15 +68,15 @@ namespace Orchard.Users
 
             // Identity services
             services.TryAddSingleton<IdentityMarkerService>();
-            services.TryAddScoped<IUserValidator<User>, UserValidator<User>>();
-            services.TryAddScoped<IPasswordValidator<User>, PasswordValidator<User>>();
-            services.TryAddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.TryAddScoped<IUserValidator<IUser>, UserValidator<IUser>>();
+            services.TryAddScoped<IPasswordValidator<IUser>, PasswordValidator<IUser>>();
+            services.TryAddScoped<IPasswordHasher<IUser>, PasswordHasher<IUser>>();
             services.TryAddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
             // No interface for the error describer so we can add errors without rev'ing the interface
             services.TryAddScoped<IdentityErrorDescriber>();
             services.TryAddScoped<ISecurityStampValidator, SecurityStampValidator<User>>();
-            services.TryAddScoped<IUserClaimsPrincipalFactory<User>, UserClaimsPrincipalFactory<User, Role>>();
+            services.TryAddScoped<IUserClaimsPrincipalFactory<IUser>, UserClaimsPrincipalFactory<IUser, Role>>();
             services.TryAddScoped<UserManager<IUser>>();
             services.TryAddScoped<SignInManager<IUser>>();
 
