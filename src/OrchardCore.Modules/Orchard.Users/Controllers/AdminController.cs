@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -166,9 +166,10 @@ namespace Orchard.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
-                var user = new User { UserName = model.UserName, Email = model.Email, RoleNames = roleNames };
-                if (await _userService.CreateUserAsync(user, model.Password, (key, message) => ModelState.AddModelError(key, message)))
+                var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+                var user = await _userService.CreateUserAsync(model.UserName, model.Email, roleNames, model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                if (user != null)
                 {
                     _notifier.Success(TH["User created successfully"]);
                     return RedirectToAction(nameof(Index));

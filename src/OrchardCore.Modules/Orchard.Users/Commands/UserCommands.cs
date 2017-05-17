@@ -1,12 +1,8 @@
-﻿using Microsoft.Extensions.Localization;
-using Orchard.Environment.Commands;
-using Orchard.Users.Models;
-using Orchard.Users.Services;
-using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using Microsoft.Extensions.Localization;
+using Orchard.Environment.Commands;
+using Orchard.Users.Services;
 
 namespace Orchard.Users.Commands
 {
@@ -37,14 +33,16 @@ namespace Orchard.Users.Commands
         [OrchardSwitches("UserName,Password,Email,Roles")]
         public void CreateUser()
         {
-            var user = new User
+            var user = _userService.CreateUserAsync(
+                    UserName,
+                    Email,
+                    (Roles ?? "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray(),
+                    Password,
+                    (key, message) => Context.Output.WriteLine(message));
+            if (user != null)
             {
-                UserName = UserName,
-                Email = Email,
-                RoleNames = (Roles ?? "").Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList()
-            };
-            if (_userService.CreateUserAsync(user, Password, (key, message) => Context.Output.WriteLine(message)).Result)
                 Context.Output.WriteLine(T["User created successfully"]);
+            }
         }
     }
 }

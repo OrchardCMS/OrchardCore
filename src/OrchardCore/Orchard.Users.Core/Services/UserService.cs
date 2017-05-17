@@ -23,9 +23,10 @@ namespace Orchard.Users.Services
             T = stringLocalizer;
         }
 
-        public async Task<bool> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
+        public async Task<IUser> CreateUserAsync(string userName, string email, string[] roleNames, string password, Action<string, string> reportError)
         {
             bool result = true;
+
             if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", T["A user name is required."]);
@@ -44,13 +45,13 @@ namespace Orchard.Users.Services
 
             if (!result)
             {
-                return result;
+                return null;
             }
 
             if (await _userManager.FindByEmailAsync(email) != null)
             {
                 reportError(string.Empty, T["The email is already used."]);
-                return false;
+                return null;
             }
 
             var user = new User
@@ -67,7 +68,7 @@ namespace Orchard.Users.Services
                 ProcessValidationErrors(identityResult.Errors, user, reportError);
             }
 
-            return identityResult.Succeeded;
+            return user;
         }
 
 

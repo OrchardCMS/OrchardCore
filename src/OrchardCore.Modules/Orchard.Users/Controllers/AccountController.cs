@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
 using Orchard.Users.Services;
+using Orchard.Security;
 
 namespace Orchard.Users.Controllers
 {
@@ -14,13 +15,13 @@ namespace Orchard.Users.Controllers
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
-        private readonly SignInManager<User> _signInManager;
+        private readonly SignInManager<IUser> _signInManager;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
         public AccountController(
             IUserService userService,
-            SignInManager<User> signInManager,
+            SignInManager<IUser> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             ILogger<AccountController> logger)
         {
@@ -93,8 +94,9 @@ namespace Orchard.Users.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.UserName, Email = model.Email };
-                if (await _userService.CreateUserAsync(user, model.Password, (key,message) => ModelState.AddModelError(key,message)))
+                var user = await _userService.CreateUserAsync(model.UserName, model.Email, new string[0], model.Password, (key, message) => ModelState.AddModelError(key, message));
+
+                if (user != null)
                 {
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
@@ -137,7 +139,7 @@ namespace Orchard.Users.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userService.GetAuthenticatedUserAsync(User);
-                if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
+                if (await _userService.ChangePasswordAsync(user.UserName, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
                 {
                     return RedirectToLocal(Url.Action("ChangePasswordConfirmation"));
                 }

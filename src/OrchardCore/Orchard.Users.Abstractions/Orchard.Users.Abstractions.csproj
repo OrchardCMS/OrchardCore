@@ -5,4 +5,8 @@
     <RootNamespace>Orchard.Users</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
