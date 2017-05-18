@@ -14,11 +14,11 @@ namespace Orchard.OpenId.Controllers
     [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
     public class UserInfoController : Controller
     {
-        private readonly IStringLocalizer<AccessController> T;
+        private readonly IStringLocalizer<UserInfoController> T;
         private readonly UserManager<IUser> _userManager;
 
         public UserInfoController(
-            IStringLocalizer<AccessController> localizer,
+            IStringLocalizer<UserInfoController> localizer,
             UserManager<IUser> userManager)
         {
             T = localizer;
