@@ -5,6 +5,7 @@ namespace Orchard.Settings
 {
     public class SiteSettings : Entity, ISite
     {
+        public int Id { get; set; }
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public string Culture { get; set; }

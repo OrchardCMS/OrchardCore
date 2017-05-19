@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Modules;
@@ -127,8 +127,8 @@ namespace Orchard.ContentTypes.Services
             if (deleteContent)
             {
                 var contentItems = _session
-                    .QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentType == name)
-                    .List().Result;
+                    .Query<ContentItem, ContentItemIndex>(x => x.ContentType == name)
+                    .ListAsync().GetAwaiter().GetResult();
 
                 foreach (var contentItem in contentItems)
                 {

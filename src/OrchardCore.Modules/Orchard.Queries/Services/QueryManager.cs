@@ -39,7 +39,7 @@ namespace Orchard.Queries.Services
             // as the new session is not tracking the cached object.
             // TODO: Solve by having an Import method in Session
 
-            var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
             if (existing.Queries.ContainsKey(name))
             {
@@ -73,7 +73,7 @@ namespace Orchard.Queries.Services
             // as the new session is not tracking the cached object.
             // TODO: Solve by having an Import method in Session
 
-            var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
             existing.Queries[query.Name] = query;
 
@@ -91,7 +91,7 @@ namespace Orchard.Queries.Services
 
             if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
             {
-                queries = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+                queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
                 if (queries == null)
                 {
@@ -117,7 +117,7 @@ namespace Orchard.Queries.Services
             return queries;
         }
 
-        public Task<JToken> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+        public Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
             

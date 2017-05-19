@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -45,14 +45,14 @@ namespace Orchard.OpenId.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>(o => o.ClientId == identifier).FirstOrDefault();
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.ClientId == identifier).FirstOrDefaultAsync();
         }
 
         public Task<OpenIdApplication> FindByLogoutRedirectUri(string url, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == url).FirstOrDefault();
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>(o => o.LogoutRedirectUri == url).FirstOrDefaultAsync();
         }
 
         public Task<string> GetClientTypeAsync(OpenIdApplication application, CancellationToken cancellationToken)
@@ -189,12 +189,12 @@ namespace Orchard.OpenId.Services
 
         public Task<IEnumerable<OpenIdApplication>> GetAppsAsync(int skip, int pageSize)
         {
-            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>().Skip(skip).Take(pageSize).List();
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().Skip(skip).Take(pageSize).ListAsync();
         }
 
         public Task<int> GetCount()
         {
-            return _session.QueryAsync<OpenIdApplication, OpenIdApplicationIndex>().Count();
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().CountAsync();
         }
     }
 }

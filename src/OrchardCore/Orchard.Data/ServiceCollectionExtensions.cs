@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -13,7 +13,6 @@ using Npgsql;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
 using YesSql.Indexes;
-using YesSql.Storage.Sql;
 using YesSql;
 using YesSql.Provider.MySql;
 using YesSql.Provider.Sqlite;
@@ -93,13 +92,6 @@ namespace Orchard.Data
                 {
                     storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
                 }
-
-                var sqlFactory = new SqlDocumentStorageFactory();
-                if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
-                {
-                    sqlFactory.TablePrefix = shellSettings.TablePrefix + "_";
-                }
-                storeConfiguration.DocumentStorageFactory = sqlFactory;
 
                 var store = new Store(storeConfiguration);
                 var indexes = sp.GetServices<IIndexProvider>();
