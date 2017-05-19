@@ -77,19 +77,19 @@ namespace Orchard.Deployment.Controllers
                 options = new DeploymentPlanIndexOptions();
             }
 
-            var deploymentPlans = _session.QueryAsync<DeploymentPlan, DeploymentPlanIndex>();
+            var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 deploymentPlans = deploymentPlans.Where(dp => dp.Name.Contains(options.Search));
             }
 
-            var count = await deploymentPlans.Count();
+            var count = await deploymentPlans.CountAsync();
 
             var results = await deploymentPlans
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .List();
+                .ListAsync();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();

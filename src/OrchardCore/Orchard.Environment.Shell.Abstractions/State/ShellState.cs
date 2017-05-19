@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.State
 {
@@ -9,6 +9,7 @@ namespace Orchard.Environment.Shell.State
     /// </summary>
     public class ShellState
     {
+        public int Id { get; set; }
         public List<ShellFeatureState> Features { get; } = new List<ShellFeatureState>();
     }
 }
