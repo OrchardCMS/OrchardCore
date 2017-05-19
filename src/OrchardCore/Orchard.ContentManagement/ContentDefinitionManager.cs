@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,8 +45,8 @@ namespace Orchard.ContentManagement
             }
 
             _contentDefinitionRecord = _session
-                .QueryAsync<ContentDefinitionRecord>()
-                .FirstOrDefault()
+                .Query<ContentDefinitionRecord>()
+                .FirstOrDefaultAsync()
                 .Result;
 
             if (_contentDefinitionRecord == null)

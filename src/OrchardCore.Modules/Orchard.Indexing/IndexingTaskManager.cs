@@ -122,15 +122,7 @@ namespace Orchard.Indexing.Services
             {
                 transaction.Commit();
                 transaction.Dispose();
-
-                if (_store.Configuration.ConnectionFactory.Disposable)
-                {
-                    connection.Dispose();
-                }
-                else
-                {
-                    connection.Close();
-                }
+                connection.Close();
             }
 
             _tasksQueue.Clear();
@@ -160,14 +152,7 @@ namespace Orchard.Indexing.Services
                 transaction.Commit();
                 transaction.Dispose();
 
-                if (_store.Configuration.ConnectionFactory.Disposable)
-                {
-                    connection.Dispose();
-                }
-                else
-                {
-                    connection.Close();
-                }
+                connection.Dispose();
             }
         }
     }
