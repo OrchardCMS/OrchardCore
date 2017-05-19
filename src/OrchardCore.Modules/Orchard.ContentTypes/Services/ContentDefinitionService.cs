@@ -128,7 +128,7 @@ namespace Orchard.ContentTypes.Services
             {
                 var contentItems = _session
                     .Query<ContentItem, ContentItemIndex>(x => x.ContentType == name)
-                    .ListAsync().Result;
+                    .ListAsync().GetAwaiter().GetResult();
 
                 foreach (var contentItem in contentItems)
                 {
