@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,7 +38,7 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             // Prevent multiple queries during the same request
             if (_shellDescriptor == null)
             {
-                _shellDescriptor = await _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
+                _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
             }
 
             return _shellDescriptor;

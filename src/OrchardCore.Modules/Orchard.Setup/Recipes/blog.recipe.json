@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
@@ -119,7 +119,7 @@
                 },
                 "Pattern": "{{slug}}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },
@@ -426,7 +426,7 @@
                 },
                 "Pattern": "{{slug}}",
                 "AllowCustomPath": "False",
-                "ShowHomepageOption": "False"
+                "ShowHomepageOption": "True"
               }
             },
             {

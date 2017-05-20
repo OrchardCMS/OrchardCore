@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -203,7 +203,7 @@ namespace Orchard.ResourceManagement.TagHelpers
             {
                 // Custom script content
 
-                var childContent = output.GetChildContentAsync().Result;
+                var childContent = output.GetChildContentAsync().GetAwaiter().GetResult();
 
                 var builder = new TagBuilder("script");
                 builder.InnerHtml.AppendHtml(childContent);

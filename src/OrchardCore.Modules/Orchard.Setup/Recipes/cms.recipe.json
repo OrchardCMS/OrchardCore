@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "CMS",
   "displayName": "Content Management System",
   "description": "Provides a functional set of CMS features.",
@@ -108,7 +108,7 @@
                 },
                 "Pattern": "{{slug}}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },
