@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -54,14 +54,14 @@ namespace Orchard.OpenId.Services
             cancellationToken.ThrowIfCancellationRequested();
 
             var key = int.Parse(identifier, CultureInfo.InvariantCulture);
-            return _session.QueryAsync<OpenIdToken, OpenIdTokenIndex>(o => o.TokenId == key).FirstOrDefault();
+            return _session.Query<OpenIdToken, OpenIdTokenIndex>(o => o.TokenId == key).FirstOrDefaultAsync();
         }
 
         public async Task<OpenIdToken[]> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return (await _session.QueryAsync<OpenIdToken, OpenIdTokenIndex>(o => o.Subject == subject).List()).ToArray();
+            return (await _session.Query<OpenIdToken, OpenIdTokenIndex>(o => o.Subject == subject).ListAsync()).ToArray();
         }
 
         public Task<string> GetIdAsync(OpenIdToken token, CancellationToken cancellationToken)

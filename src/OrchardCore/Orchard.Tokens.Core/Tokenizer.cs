@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Dynamic;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Orchard.Tokens.Services
@@ -22,7 +23,7 @@ namespace Orchard.Tokens.Services
             }
 
             var render = _memoryCache.GetOrCreate(template, t => _tokenHelper.Handlebars.Compile(template));
-            var result = render.Invoke(context);
+            var result = render.Invoke(new DynamicDictionary(context));
             return result;
         }
     }

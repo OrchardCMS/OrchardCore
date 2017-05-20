@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -38,7 +38,7 @@ namespace Orchard.Layers.Services
 
 			if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
 			{
-				layers = await _session.QueryAsync<LayersDocument>().FirstOrDefault();
+				layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
 				if (layers == null)
 				{
@@ -69,9 +69,9 @@ namespace Orchard.Layers.Services
 				entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
 
 				var allWidgets = await _session
-				    .QueryAsync<ContentItem, LayerMetadataIndex>()
+				    .Query<ContentItem, LayerMetadataIndex>()
 				    .With(predicate)
-				    .List();
+				    .ListAsync();
 
 				return (IEnumerable<LayerMetadata>)allWidgets
 					.Select(x => x.As<LayerMetadata>())
@@ -83,7 +83,7 @@ namespace Orchard.Layers.Services
 
 		public async Task UpdateAsync(LayersDocument layers)
 		{
-			var existing = await _session.QueryAsync<LayersDocument>().FirstOrDefault();
+			var existing = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
 			existing.Layers = layers.Layers;
 			_session.Save(existing);

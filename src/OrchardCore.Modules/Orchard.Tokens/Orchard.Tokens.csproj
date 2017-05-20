@@ -16,8 +16,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

@@ -151,7 +151,7 @@ namespace Orchard.Autoroute.Handlers
 
         private bool IsPathUnique(string path, AutoroutePart context)
         {
-            return _session.QueryIndexAsync<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).Count().GetAwaiter().GetResult() == 0;
+            return _session.QueryIndex<AutoroutePartIndex>(o => o.ContentItemId != context.ContentItem.ContentItemId && o.Path == path).CountAsync().GetAwaiter().GetResult() == 0;
         }
     }
 }

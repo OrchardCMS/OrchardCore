@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -91,29 +91,29 @@ namespace Orchard.ContentManagement
             if (options.IsLatest)
             {
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsDraft && !options.IsDraftRequired)
             {
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
                         x.ContentItemId == contentItemId &&
                         x.Published == false &&
                         x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
                 // Loaded whatever is the latest as it will be cloned
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
                         x.ContentItemId == contentItemId &&
                         x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsPublished)
             {
@@ -125,9 +125,9 @@ namespace Orchard.ContentManagement
                 }
 
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Published == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
 
             if (contentItem == null)
@@ -234,9 +234,9 @@ namespace Orchard.ContentManagement
             // Because of this query the content item will need to be re-enlisted
             // to be saved.
             var previous = await _session
-                .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                .Query<ContentItem, ContentItemIndex>(x =>
                     x.ContentItemId == contentItem.ContentItemId && x.Published)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             var context = new PublishContentContext(contentItem, previous);
 
@@ -317,10 +317,10 @@ namespace Orchard.ContentManagement
             else
             {
                 latestVersion = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                    .Query<ContentItem, ContentItemIndex>(x =>
                         x.ContentItemId == existingContentItem.ContentItemId &&
                         x.Latest)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
 
             if (latestVersion != null)
@@ -409,10 +409,10 @@ namespace Orchard.ContentManagement
 
         public async Task RemoveAsync(ContentItem contentItem)
         {
-            var activeVersions = await _session.QueryAsync<ContentItem, ContentItemIndex>()
+            var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x =>
                     x.ContentItemId == contentItem.ContentItemId &&
-                    (x.Published || x.Latest)).List();
+                    (x.Published || x.Latest)).ListAsync();
 
             var context = new RemoveContentContext(contentItem);
 
