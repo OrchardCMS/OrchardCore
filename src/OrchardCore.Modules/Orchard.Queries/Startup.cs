@@ -7,7 +7,9 @@ using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Queries.Drivers;
+using Orchard.Queries.Recipes;
 using Orchard.Queries.Services;
+using Orchard.Recipes;
 
 namespace Orchard.Queries
 {
@@ -23,6 +25,7 @@ namespace Orchard.Queries
             services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
+            services.AddRecipeExecutionStep<QueryStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
