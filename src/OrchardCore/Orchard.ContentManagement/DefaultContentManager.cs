@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -154,12 +154,12 @@ namespace Orchard.ContentManagement
                         // Try to load the highest of the 2 closest versions
                         // Or another existing version which might be higher
                         existingVersion = await _session
-                            .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                            .Query<ContentItem, ContentItemIndex>(x =>
                                 x.ContentItemId == contentItem.ContentItemId &&
                                 (x.Number == contentItem.Number - 1 ||
                                 x.Number > contentItem.Number))
                             .OrderByDescending(x => x.Number)
-                            .FirstOrDefault();
+                            .FirstOrDefaultAsync();
 
                         if (existingVersion != null)
                         {
@@ -217,8 +217,8 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
         {
-            var contentItem = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => 
-                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefault();
+            var contentItem = await _session.Query<ContentItem, ContentItemIndex>(x => 
+                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefaultAsync();
 
             return Load(contentItem);
         }
