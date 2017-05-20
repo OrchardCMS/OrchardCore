@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -307,11 +307,11 @@ namespace Orchard.ContentManagement
 
             // Look for another existing version which might be higher
             var highestVersion = await _session
-                .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                .Query<ContentItem, ContentItemIndex>(x =>
                     x.ContentItemId == existingContentItem.ContentItemId &&
                     x.Number > versionNumber)
                 .OrderByDescending(x => x.Number)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             // The new version should always be the next highest available number
             buildingContentItem.Number = (highestVersion?.Number ?? versionNumber) + 1;
