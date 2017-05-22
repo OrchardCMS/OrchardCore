@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,11 +82,10 @@ namespace Orchard.Indexing.Services
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             connection.Open();
             var transaction = connection.BeginTransaction(_store.Configuration.IsolationLevel);
-            
+            var dialect = SqlDialectFactory.For(connection);
+
             try
             {
-                var table = $"{_tablePrefix }{ nameof(IndexingTask)}";
-
                 var contentItemIds = new HashSet<string>();
 
                 // Remove duplicate tasks, only keep the last one
@@ -107,10 +106,10 @@ namespace Orchard.Indexing.Services
                 // At this point, content items ids should be unique in _taskQueue
                 var ids = localQueue.Select(x => x.ContentItemId).ToArray();
 
-                var deleteCmd = $"delete from [{table}] where [ContentItemId] in @Ids;";
+                var deleteCmd = $"delete from {dialect.QuoteForTableName(nameof(IndexingTask))} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
                 await connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
 
-                var insertCmd = $"insert into [{table}] ([CreatedUtc], [ContentItemId], [Type]) values (@CreatedUtc, @ContentItemId, @Type);";
+                var insertCmd = $"insert into {dialect.QuoteForTableName(nameof(IndexingTask))} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
                 await connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
             }
             catch(Exception e)
@@ -138,13 +137,20 @@ namespace Orchard.Indexing.Services
 
             try
             {
-                var table = $"{_tablePrefix}{nameof(IndexingTask)}";
+                var dialect = SqlDialectFactory.For(connection);
+                var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
 
-                return await connection.QueryAsync<IndexingTask>($"select top {count} * from [{table}] where Id > @Id", new { Id = afterTaskId }, transaction);
+                sqlBuilder.Select();
+                sqlBuilder.Table(nameof(IndexingTask));
+                sqlBuilder.Selector("*");
+                sqlBuilder.Take(count);
+                sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
+
+                return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(dialect), new { Id = afterTaskId }, transaction);
             }
             catch (Exception e)
             {
-                Logger.LogError("An error occured while reading indexing tasks", e);
+                Logger.LogError("An error occured while reading indexing tasks: " + e.Message);
                 throw;
             }
             finally
