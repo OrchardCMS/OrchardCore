@@ -35,19 +35,17 @@ For instance, if the source is `Lucene` then the file `Query-Lucene.Link.cshtml`
 
 ## Recipe step
 
-Queries can be created during recipes using the `query` step.
+Queries can be created during recipes using the `queries` step.
 Here is a sample step:
 
 ```json
 {
-    "name": "query",
-    "data": [ {
+    "name": "queries",
+    "Queries": [ {
         // Common properties
-        "$type": "Orchard.Lucene.LuceneQuery, Orchard.Lucene",
         "Name": "AwesomeQuery",
         "Source": "Lucene",
         // Properties of the concrete query
-        "Index": "Search",
         ...
         }
     ]
@@ -60,6 +58,8 @@ Here is a sample step:
 ### api/queries/{name}
 
 Executes a query with the specified name.
+
+Verbs: **POST** and **GET**
 
 | Parameter | Example | Description |
 | --------- | ---- |------------ |

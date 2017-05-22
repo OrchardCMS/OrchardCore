@@ -9,9 +9,11 @@ using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Lucene.Recipes;
 using Orchard.Lucene.Services;
 using Orchard.Lucene.Settings;
 using Orchard.Queries;
+using Orchard.Recipes;
 using Orchard.Security.Permissions;
 using Orchard.Settings;
 
@@ -43,6 +45,7 @@ namespace Orchard.Lucene
             // LuceneQuerySource is registered for both the Queries module and local usage
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
+            services.AddRecipeExecutionStep<LuceneIndexStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

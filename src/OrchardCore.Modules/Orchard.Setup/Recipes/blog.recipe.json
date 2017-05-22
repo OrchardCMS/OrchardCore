@@ -55,6 +55,7 @@
         "Orchard.Lists",
         "Orchard.Markdown",
         "Orchard.Menu",
+        "Orchard.Queries",
         "Orchard.Title",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
@@ -767,19 +768,35 @@
       ]
     },
     {
-      "name": "layers",
-      "Layers": [
-        {
-          "Name": "Always",
-          "Rule": "true",
-          "Description": "The widgets in this layer are displayed on any page of this site."
-        },
-        {
-          "Name": "Homepage",
-          "Rule": "isHomepage()",
-          "Description": "The widgets in this layer are only displayed o the homepage."
-        }
-      ]
+        "name": "layers",
+        "Layers": [
+            {
+                "Name": "Always",
+                "Rule": "true",
+                "Description": "The widgets in this layer are displayed on any page of this site."
+            },
+            {
+                "Name": "Homepage",
+                "Rule": "isHomepage()",
+                "Description": "The widgets in this layer are only displayed o the homepage."
+            }
+        ]
+    },
+    {
+        "name": "lucene-index",
+        "Indices": [ "Search" ]
+    },
+    {
+        "name": "queries",
+        "Queries": [
+            {
+                "Source": "Lucene",
+                "Name": "RecentBlogPosts",
+                "Index": "Search",
+                "Template": "{\r\n  \"query\": {\r\n    \"term\" : { \"Content.ContentItem.ContentType\" : \"BlogPost\" } \r\n  },\r\n  \"sort\": { \"Content.ContentItem.CreatedUtc\": { \"order\": \"desc\" } },\r\n  \"size\": 3\r\n}",
+                "ReturnContentItems": true
+            }
+        ]
     }
   ]
 }
