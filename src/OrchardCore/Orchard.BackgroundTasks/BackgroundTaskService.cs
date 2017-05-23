@@ -1,8 +1,10 @@
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
@@ -13,6 +15,8 @@ namespace Orchard.BackgroundTasks
 {
     public class BackgroundTaskService : IBackgroundTaskService, IDisposable
     {
+        private static Timer _timer = new Timer(DoWorkAsync, null, StartNow, TimeSpan.FromMinutes(1));
+        private static ConcurrentDictionary<string, BackgroundTaskGroup> _groups = new ConcurrentDictionary<string, BackgroundTaskGroup>();
         private static TimeSpan DontStart = TimeSpan.FromMilliseconds(-1);
         private static TimeSpan StartNow = TimeSpan.FromMilliseconds(0);
 
@@ -21,7 +25,6 @@ namespace Orchard.BackgroundTasks
         private readonly IShellHost _orchardHost;
         private readonly ShellSettings _shellSettings;
         private readonly Dictionary<IBackgroundTask, BackgroundTaskState> _states;
-        private readonly Dictionary<string, Timer> _timers;
         private readonly Dictionary<string, TimeSpan> _periods;
 
         public BackgroundTaskService(
@@ -36,7 +39,6 @@ namespace Orchard.BackgroundTasks
             _applicationLifetime = applicationLifetime;
             _tasks = tasks.GroupBy(GetGroupName).ToDictionary(x => x.Key, x => x.Select(i => i));
             _states = tasks.ToDictionary(x => x, x => BackgroundTaskState.Idle);
-            _timers = _tasks.Keys.ToDictionary(x => x, x => new Timer(DoWorkAsync, x, Timeout.Infinite, Timeout.Infinite));
             _periods = _tasks.Keys.ToDictionary(x => x, x => TimeSpan.FromMinutes(1));
             Logger = logger;
         }
@@ -47,24 +49,30 @@ namespace Orchard.BackgroundTasks
         {
             if (_shellSettings.State == TenantState.Running)
             {
-                foreach (var group in _timers.Keys)
+                foreach (var groupName in _tasks.Keys)
                 {
-                    var timer = _timers[group];
-                    var period = _periods[group];
-                    timer.Change(StartNow, period);
+                    _groups[_shellSettings.Name + groupName] = new BackgroundTaskGroup(
+                        groupName, DoWorkAsync, (int)_periods[groupName].TotalMinutes);
                 }
             }
         }
 
-        // NB: Async void should be avoided; it should only be used for event handlers.Timer.Elapsed is an event handler.So, it's not necessarily wrong here.
+        // NB: Async void should be avoided; it should only be used for event handlers. Timer.Elapsed is an event handler. So, it's not necessarily wrong here.
         // c.f. http://stackoverflow.com/questions/25007670/using-async-await-inside-the-timer-elapsed-event-handler-within-a-windows-servic
-        private async void DoWorkAsync(object group)
+
+        private static async void DoWorkAsync(object o)
+        {
+            foreach (var group in _groups.Values)
+            {
+                await group.DoWorkAsync();
+            }
+        }
+
+        private async Task DoWorkAsync(string groupName)
         {
             // DoWork is not re-entrant as Timer will not call the callback until the previous callback has returned.
             // This way if a tasks takes longer than the period itself, DoWork is not called while it's still running.
             ShellContext shellContext = _orchardHost.GetOrCreateShellContext(_shellSettings);
-
-            var groupName = group as string ?? "";
 
             foreach (var task in _tasks[groupName])
             {
@@ -152,19 +160,46 @@ namespace Orchard.BackgroundTasks
             return _states;
         }
 
-        public void SetDelay(string group, TimeSpan period)
+        public void SetDelay(string groupName, TimeSpan period)
         {
-            var groupName = group ?? "";
-
-            _periods[groupName] = period;
-            _timers[groupName].Change(DontStart, period);
+            _periods[groupName ?? ""] = period;
         }
 
         public void Dispose()
         {
-            foreach(var timer in _timers.Values)
+            BackgroundTaskGroup group;
+            foreach (var groupName in _tasks.Keys)
             {
-                timer.Dispose();
+                _groups.TryRemove(_shellSettings.Name + groupName, out group);
+            }
+        }
+    }
+
+    internal class BackgroundTaskGroup
+    {
+        internal delegate Task DoWorkAsyncDelegate(string group);
+
+        private string _name;
+        private DoWorkAsyncDelegate _doWorkAsync;
+        private int _remaining;
+
+        public BackgroundTaskGroup(string name, DoWorkAsyncDelegate doWorkAsync, int period)
+        {
+            _name = name;
+            _doWorkAsync = doWorkAsync;
+            _remaining = Delay = period;
+        }
+
+        public int Delay { get; set; }
+
+        public async Task DoWorkAsync()
+        {
+            _remaining -= 1;
+
+            if (Delay > 0 && _remaining <= 0)
+            {
+                _remaining = Delay;
+                await _doWorkAsync(_name);
             }
         }
     }
