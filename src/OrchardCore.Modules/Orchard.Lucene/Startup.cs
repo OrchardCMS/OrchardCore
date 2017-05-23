@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.BackgroundTasks;
+using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
 using Orchard.Lucene.Drivers;
+using Orchard.Lucene.Handlers;
 using Orchard.Lucene.Recipes;
 using Orchard.Lucene.Services;
 using Orchard.Lucene.Settings;
@@ -39,7 +41,7 @@ namespace Orchard.Lucene
             services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
-            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
+            services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
             services.AddLuceneQueries();
 
             // LuceneQuerySource is registered for both the Queries module and local usage
@@ -73,6 +75,15 @@ namespace Orchard.Lucene
 
             var luceneAnalyzerManager = serviceProvider.GetRequiredService<LuceneAnalyzerManager>();
             luceneAnalyzerManager.RegisterAnalyzer(new LuceneAnalyzer("StandardAnalyzer", new StandardAnalyzer(LuceneSettings.DefaultVersion)));
+        }
+    }
+
+    [Feature("Orchard.Lucene.Worker")]
+    public class LuceneWorkerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,8 @@ using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Shell;
 using Orchard.Indexing;
@@ -26,12 +29,15 @@ namespace Orchard.Lucene
     /// </summary>
     public class LuceneIndexManager : IDisposable
     {
+        private readonly IClock _clock;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ILogger<LuceneIndexManager> _logger;
         private readonly string _rootPath;
         private readonly DirectoryInfo _rootDirectory;
-
+        private bool _disposing;
         private ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
         private ConcurrentDictionary<string, IndexWriter> _writers = new ConcurrentDictionary<string, IndexWriter>(StringComparer.OrdinalIgnoreCase);
+        private ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
 
@@ -43,13 +49,16 @@ namespace Orchard.Lucene
         }
 
         public LuceneIndexManager(
+            IClock clock,
             IHostingEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
+            ShellSettings shellSettings,
+            ILogger<LuceneIndexManager> logger
             )
         {
+            _clock = clock;
             _hostingEnvironment = hostingEnvironment;
-
+            _logger = logger;
             _rootPath = Path.Combine(
                 _hostingEnvironment.ContentRootPath,
                 shellOptions.Value.ShellsRootContainerName,
@@ -99,6 +108,8 @@ namespace Orchard.Lucene
                 {
                     reader.Dispose();
                 }
+
+                _timestamps.TryRemove(indexName, out var timestamp);
                 
                 var indexFolder = Path.Combine(_rootPath, indexName);
 
@@ -151,6 +162,8 @@ namespace Orchard.Lucene
                 var indexSearcher = new IndexSearcher(reader.IndexReader);
                 await searcher(indexSearcher);
             }
+
+            _timestamps[indexName] = _clock.UtcNow;
         }
 
         public void Read(string indexName, Action<IndexReader> reader)
@@ -159,6 +172,16 @@ namespace Orchard.Lucene
             {
                 reader(indexReader.IndexReader);
             }
+
+            _timestamps[indexName] = _clock.UtcNow;
+        }
+
+        /// <summary>
+        /// Returns a list of open indices and the last time they were accessed.
+        /// </summary>
+        public IReadOnlyDictionary<string, DateTime> GetTimestamps()
+        {
+            return new ReadOnlyDictionary<string, DateTime>(_timestamps);
         }
 
         private Document CreateLuceneDocument(DocumentIndex documentIndex)
@@ -255,6 +278,8 @@ namespace Orchard.Lucene
                 _writers.TryRemove(indexName, out writer);
                 writer.Dispose();
             }
+
+            _timestamps[indexName] = _clock.UtcNow;
         }
 
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
@@ -276,17 +301,85 @@ namespace Orchard.Lucene
             return Path.Combine(_rootPath, indexName, documentId + ".json");
         }
 
+        /// <summary>
+        /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+        /// </summary>
+        public void FreeReaderWriter()
+        {
+            lock (this)
+            {
+                foreach (var writer in _writers)
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Freeing writer for: " + writer.Key);
+                    }
+
+                    writer.Value.Dispose();
+                }
+
+                foreach (var reader in _indexPools)
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Freeing reader for: " + reader.Key);
+                    }
+
+                    reader.Value.Dispose();
+                }
+
+                _writers.Clear();
+                _indexPools.Clear();
+                _timestamps.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+        /// </summary>
+        public void FreeReaderWriter(string indexName)
+        {
+            lock (this)
+            {
+                if(_writers.TryGetValue(indexName, out var writer))
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Freeing writer for: " + indexName);
+                    }
+
+                    writer.Dispose();
+                }
+
+                if (_indexPools.TryGetValue(indexName, out var reader))
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Freeing reader for: " + indexName);
+                    }
+
+                    reader.Dispose();
+                }
+
+                _timestamps.TryRemove(indexName, out var timestamp);
+            }
+        }
+
         public void Dispose()
         {
-            foreach(var writer in _writers.Values)
+            if (_disposing)
             {
-                writer.Dispose();
+                return;
             }
 
-            foreach(var reader in _indexPools.Values)
-            {
-                reader.Dispose();
-            }
+            _disposing = true;
+
+            FreeReaderWriter();
+        }
+
+        ~LuceneIndexManager()
+        {
+            Dispose();
         }
     }
 

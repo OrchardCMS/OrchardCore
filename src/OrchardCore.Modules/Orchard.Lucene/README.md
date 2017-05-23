@@ -56,3 +56,12 @@ Verbs: **POST** and **GET**
 | `indexName` | `search` | The name of the index to query |
 | `query` | `{ "query": { "match_all": {} } }` | A Json object representing the query |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
+
+# Lucene Worker (Orchard.Lucene.Worker)
+
+This feature creates a background task that will keep the local file system index synchronized with
+other instances that could have their own local index. It is recommended to use it only if you are 
+running the same tenant on multiple instances (farm) and are using a Lucene file system index.
+
+If you are running on Azure App Services or if you are using Elasticsearch, then you don't need this 
+feature.
