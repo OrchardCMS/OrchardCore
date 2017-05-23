@@ -1,4 +1,4 @@
-﻿@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
+@model Orchard.ContentFields.ViewModels.EditEnumerationFieldViewModel
 @using Orchard.ContentFields.Settings;
 @using Orchard.ContentManagement.Metadata.Models
 @{
@@ -20,8 +20,8 @@
             if (!string.IsNullOrWhiteSpace(option))
             {
                 <div class="form-check">
-                    <label for="@Html.IdFor(m => m.Value)-@index" class="form-check-label">
-                        <input class="form-check-input" type="checkbox" id="@Html.IdFor(m => m.Value)-@index" name="@Html.NameFor(m => m.Value)" value="@option" @((Model.Field.SelectedValues != null && Model.Field.SelectedValues.Contains(option)) ? "checked=\"checked\"" : "") />
+                    <label for="@Html.IdFor(m => m.SelectedValues)-@index" class="form-check-label">
+                        <input class="form-check-input" type="checkbox" id="@Html.IdFor(m => m.SelectedValues)-@index" name="@Html.NameFor(m => m.SelectedValues)" value="@option" @((Model.Field.SelectedValues != null && Model.Field.SelectedValues.Contains(option)) ? "checked=\"checked\"" : "") />
                         @T[option]
                     </label>
                 </div>
