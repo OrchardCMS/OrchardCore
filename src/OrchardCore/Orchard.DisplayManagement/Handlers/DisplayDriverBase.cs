@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 
 namespace Orchard.DisplayManagement.Handlers

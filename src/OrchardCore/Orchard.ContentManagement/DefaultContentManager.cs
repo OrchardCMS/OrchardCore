@@ -356,6 +356,9 @@ namespace Orchard.ContentManagement
 
             Handlers.Reverse().Invoke(handler => handler.Created(context), _logger);
 
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
+
             if (options.IsPublished)
             {
                 var publishContext = new PublishContentContext(contentItem, null);
@@ -366,9 +369,6 @@ namespace Orchard.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
-
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
         }
 
         public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)

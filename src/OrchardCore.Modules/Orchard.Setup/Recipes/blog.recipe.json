@@ -55,6 +55,7 @@
         "Orchard.Lists",
         "Orchard.Markdown",
         "Orchard.Menu",
+        "Orchard.Queries",
         "Orchard.Title",
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
@@ -84,557 +85,562 @@
       }
     },
     {
-      "name": "ContentDefinition",
-      "ContentTypes": [
-        {
-          "Name": "Page",
-          "DisplayName": "Page",
-          "Hidden": false,
-          "Settings": {
-            "Creatable": "True",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "False",
-            "Stereotype": null
-          },
-          "ContentTypePartDefinitionRecords": [
+        "name": "ContentDefinition",
+        "ContentTypes": [
             {
-              "PartName": "Page",
-              "Name": "Page",
-              "Settings": {
-                "Position": "2"
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                "Name": "Page",
+                "DisplayName": "Page",
+                "Hidden": false,
+                "Settings": {
+                    "Creatable": "True",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "False",
+                    "Stereotype": null
                 },
-                "Pattern": "{{slug}}",
-                "AllowCustomPath": "True",
-                "ShowHomepageOption": "True",
-                "Position": "1"
-              }
-            },
-            {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
-              "Settings": {
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "BodyPartSettings": {
-                  "RenderTokens": false,
-                  "Editor": "Wysiwyg"
-                },
-                "Position": "3"
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "BlogPost",
-          "DisplayName": "Blog Post",
-          "Hidden": false,
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "False",
-            "Securable": "True",
-            "Stereotype": null
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "BlogPost",
-              "Name": "BlogPost",
-              "Settings": {
-                "Position": "2"
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "Position": "1",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "False"
-              }
-            },
-            {
-              "PartName": "MarkdownPart",
-              "Name": "MarkdownPart",
-              "Settings": {
-                "Position": "3",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "MarkdownPartSettings": {
-                  "RenderTokens": false,
-                  "Editor": "Wysiwyg"
-                }
-              }
-            },
-            {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Blog",
-          "DisplayName": "Blog",
-          "Hidden": false,
-          "Settings": {
-            "Creatable": "True",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": null
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Blog",
-              "Name": "Blog",
-              "Settings": {
-                "Position": "0"
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "Position": "2",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Pattern": "{{slug}}",
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "True"
-              }
-            },
-            {
-              "PartName": "ListPart",
-              "Name": "ListPart",
-              "Settings": {
-                "Position": "3",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "PageSize": 10,
-                "ContainedContentTypes": [
-                  "BlogPost"
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Page",
+                        "Name": "Page",
+                        "Settings": {
+                            "Position": "2"
+                        }
+                    },
+                    {
+                        "PartName": "AutoroutePart",
+                        "Name": "AutoroutePart",
+                        "Settings": {
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Pattern": "{{slug}}",
+                            "AllowCustomPath": "True",
+                            "ShowHomepageOption": "True",
+                            "Position": "1"
+                        }
+                    },
+                    {
+                        "PartName": "BodyPart",
+                        "Name": "BodyPart",
+                        "Settings": {
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "BodyPartSettings": {
+                                "RenderTokens": false,
+                                "Editor": "Wysiwyg"
+                            },
+                            "Position": "3"
+                        }
+                    },
+                    {
+                        "PartName": "TitlePart",
+                        "Name": "TitlePart",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
                 ]
-              }
             },
             {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "1"
-              }
-            },
-            {
-              "PartName": "BodyPart",
-              "Name": "BodyPart",
-              "Settings": {}
-            }
-          ]
-        },
-        {
-          "Name": "Container",
-          "DisplayName": "Container",
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": "Widget"
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Container",
-              "Name": "Container",
-              "Settings": {
-                "Position": "0"
-              }
-            },
-            {
-              "PartName": "FlowPart",
-              "Name": "FlowPart",
-              "Settings": {
-                "Position": "1"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Blockquote",
-          "DisplayName": "Blockquote",
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": "Widget"
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Blockquote",
-              "Name": "Blockquote",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Image",
-          "DisplayName": "Image",
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": "Widget"
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Image",
-              "Name": "Image",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Paragraph",
-          "DisplayName": "Paragraph",
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": "Widget"
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "Paragraph",
-              "Name": "Paragraph",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "RawHtml",
-          "DisplayName": "Raw Html",
-          "Settings": {
-            "Creatable": "False",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": "Widget"
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "RawHtml",
-              "Name": "RawHtml",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "FlowPage",
-          "DisplayName": "Flow Page",
-          "Settings": {
-            "Creatable": "True",
-            "Draftable": "True",
-            "Listable": "True",
-            "Securable": "True",
-            "Stereotype": null
-          },
-          "ContentTypePartDefinitionRecords": [
-            {
-              "PartName": "FlowPage",
-              "Name": "FlowPage",
-              "Settings": {
-                "Position": "3"
-              }
-            },
-            {
-              "PartName": "AutoroutePart",
-              "Name": "AutoroutePart",
-              "Settings": {
-                "Position": "1",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                "Name": "BlogPost",
+                "DisplayName": "Blog Post",
+                "Hidden": false,
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "False",
+                    "Securable": "True",
+                    "Stereotype": null
                 },
-                "Pattern": "{{slug}}",
-                "AllowCustomPath": "False",
-                "ShowHomepageOption": "True"
-              }
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "BlogPost",
+                        "Name": "BlogPost",
+                        "Settings": {
+                            "Position": "2"
+                        }
+                    },
+                    {
+                        "PartName": "AutoroutePart",
+                        "Name": "AutoroutePart",
+                        "Settings": {
+                            "Position": "1",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
+                            "AllowCustomPath": "False",
+                            "ShowHomepageOption": "False"
+                        }
+                    },
+                    {
+                        "PartName": "MarkdownPart",
+                        "Name": "MarkdownPart",
+                        "Settings": {
+                            "Position": "3",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "MarkdownPartSettings": {
+                                "RenderTokens": false,
+                                "Editor": "Wysiwyg"
+                            }
+                        }
+                    },
+                    {
+                        "PartName": "TitlePart",
+                        "Name": "TitlePart",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
             },
             {
-              "PartName": "FlowPart",
-              "Name": "FlowPart",
-              "Settings": {
-                "Position": "2"
-              }
+                "Name": "Blog",
+                "DisplayName": "Blog",
+                "Hidden": false,
+                "Settings": {
+                    "Creatable": "True",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": null
+                },
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Blog",
+                        "Name": "Blog",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    },
+                    {
+                        "PartName": "AutoroutePart",
+                        "Name": "AutoroutePart",
+                        "Settings": {
+                            "Position": "2",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Pattern": "{{slug}}",
+                            "AllowCustomPath": "False",
+                            "ShowHomepageOption": "True"
+                        }
+                    },
+                    {
+                        "PartName": "ListPart",
+                        "Name": "ListPart",
+                        "Settings": {
+                            "Position": "3",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "PageSize": 10,
+                            "ContainedContentTypes": [
+                                "BlogPost"
+                            ]
+                        }
+                    },
+                    {
+                        "PartName": "TitlePart",
+                        "Name": "TitlePart",
+                        "Settings": {
+                            "Position": "1"
+                        }
+                    },
+                    {
+                        "PartName": "BodyPart",
+                        "Name": "BodyPart",
+                        "Settings": {}
+                    }
+                ]
             },
             {
-              "PartName": "TitlePart",
-              "Name": "TitlePart",
-              "Settings": {
-                "Position": "0"
-              }
-            }
-          ]
-        }
-      ],
-      "ContentParts": [
-        {
-          "Name": "BlogPost",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                "Name": "Container",
+                "DisplayName": "Container",
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": "Widget"
                 },
-                "Hint": null,
-                "Position": "0"
-              }
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Container",
+                        "Name": "Container",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    },
+                    {
+                        "PartName": "FlowPart",
+                        "Name": "FlowPart",
+                        "Settings": {
+                            "Position": "1"
+                        }
+                    }
+                ]
             },
             {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                "Name": "Blockquote",
+                "DisplayName": "Blockquote",
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": "Widget"
                 },
-                "Hint": "A url of the image to display in the header of the post. "
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Page",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Subtitle",
-              "Settings": {
-                "DisplayName": "Subtitle",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": null
-              }
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Blockquote",
+                        "Name": "Blockquote",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
             },
             {
-              "FieldName": "TextField",
-              "Name": "HeaderImageUrl",
-              "Settings": {
-                "DisplayName": "Header Image Url",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
-                },
-                "Hint": "A url to the image to display in the header of the page."
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Blockquote",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Quote",
-              "Settings": {
-                "DisplayName": "Quote",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false
-                },
-                "Hint": null,
-                "Editor": "TextArea",
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Image",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
-            {
-              "FieldName": "TextField",
-              "Name": "Image",
-              "Settings": {
+                "Name": "Image",
                 "DisplayName": "Image",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": "Widget"
                 },
-                "Hint": null,
-                "Editor": null,
-                "Position": "0"
-              }
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Image",
+                        "Name": "Image",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
             },
             {
-              "FieldName": "TextField",
-              "Name": "Caption",
-              "Settings": {
-                "DisplayName": "Caption",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false,
-                  "Template": null
+                "Name": "Paragraph",
+                "DisplayName": "Paragraph",
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": "Widget"
                 },
-                "Hint": null,
-                "Editor": null,
-                "Position": "1"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "Paragraph",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "Paragraph",
+                        "Name": "Paragraph",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
+            },
             {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "DisplayName": "Content",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false
+                "Name": "RawHtml",
+                "DisplayName": "Raw Html",
+                "Settings": {
+                    "Creatable": "False",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": "Widget"
                 },
-                "Hint": null,
-                "Editor": "Wysiwyg",
-                "Position": "0"
-              }
-            }
-          ]
-        },
-        {
-          "Name": "RawHtml",
-          "Settings": {},
-          "ContentPartFieldDefinitionRecords": [
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "RawHtml",
+                        "Name": "RawHtml",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
+            },
             {
-              "FieldName": "HtmlField",
-              "Name": "Content",
-              "Settings": {
-                "DisplayName": "Content",
-                "ContentIndexSettings": {
-                  "Included": false,
-                  "Stored": false,
-                  "Analyzed": false,
-                  "Sanitized": false,
-                  "Tokenized": false
+                "Name": "FlowPage",
+                "DisplayName": "Flow Page",
+                "Settings": {
+                    "Creatable": "True",
+                    "Draftable": "True",
+                    "Listable": "True",
+                    "Securable": "True",
+                    "Stereotype": null
                 },
-                "Hint": null,
-                "Editor": "Multiline",
-                "Position": "0"
-              }
+                "ContentTypePartDefinitionRecords": [
+                    {
+                        "PartName": "FlowPage",
+                        "Name": "FlowPage",
+                        "Settings": {
+                            "Position": "3"
+                        }
+                    },
+                    {
+                        "PartName": "AutoroutePart",
+                        "Name": "AutoroutePart",
+                        "Settings": {
+                            "Position": "1",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Pattern": "{{slug}}",
+                            "AllowCustomPath": "False",
+                            "ShowHomepageOption": "True"
+                        }
+                    },
+                    {
+                        "PartName": "FlowPart",
+                        "Name": "FlowPart",
+                        "Settings": {
+                            "Position": "2"
+                        }
+                    },
+                    {
+                        "PartName": "TitlePart",
+                        "Name": "TitlePart",
+                        "Settings": {
+                            "Position": "0"
+                        }
+                    }
+                ]
             }
-          ]
-        }
-      ]
+        ],
+        "ContentParts": [
+            {
+                "Name": "BlogPost",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "TextField",
+                        "Name": "Subtitle",
+                        "Settings": {
+                            "DisplayName": "Subtitle",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Hint": null,
+                            "Position": "0"
+                        }
+                    },
+                    {
+                        "FieldName": "TextField",
+                        "Name": "HeaderImageUrl",
+                        "Settings": {
+                            "DisplayName": "Header Image Url",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Hint": "A url of the image to display in the header of the post. "
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Page",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "TextField",
+                        "Name": "Subtitle",
+                        "Settings": {
+                            "DisplayName": "Subtitle",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Hint": null
+                        }
+                    },
+                    {
+                        "FieldName": "TextField",
+                        "Name": "HeaderImageUrl",
+                        "Settings": {
+                            "DisplayName": "Header Image Url",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Hint": "A url to the image to display in the header of the page."
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Blockquote",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "TextField",
+                        "Name": "Quote",
+                        "Settings": {
+                            "DisplayName": "Quote",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false
+                            },
+                            "Hint": null,
+                            "Editor": "TextArea",
+                            "Position": "0"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Image",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "TextField",
+                        "Name": "Image",
+                        "Settings": {
+                            "DisplayName": "Image",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false
+                            },
+                            "Hint": null,
+                            "Editor": null,
+                            "Position": "0"
+                        }
+                    },
+                    {
+                        "FieldName": "TextField",
+                        "Name": "Caption",
+                        "Settings": {
+                            "DisplayName": "Caption",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false,
+                                "Template": null
+                            },
+                            "Hint": null,
+                            "Editor": null,
+                            "Position": "1"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Paragraph",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "HtmlField",
+                        "Name": "Content",
+                        "Settings": {
+                            "DisplayName": "Content",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false
+                            },
+                            "Hint": null,
+                            "Editor": "Wysiwyg",
+                            "Position": "0"
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "RawHtml",
+                "Settings": {},
+                "ContentPartFieldDefinitionRecords": [
+                    {
+                        "FieldName": "HtmlField",
+                        "Name": "Content",
+                        "Settings": {
+                            "DisplayName": "Content",
+                            "ContentIndexSettings": {
+                                "Included": false,
+                                "Stored": false,
+                                "Analyzed": false,
+                                "Sanitized": false,
+                                "Tokenized": false
+                            },
+                            "Hint": null,
+                            "Editor": "Multiline",
+                            "Position": "0"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        // Create the indices before the content items so they are indexed automatically.
+        "name": "lucene-index",
+        "Indices": [ "Search" ]
     },
     {
       "name": "content",
@@ -767,19 +773,31 @@
       ]
     },
     {
-      "name": "layers",
-      "Layers": [
-        {
-          "Name": "Always",
-          "Rule": "true",
-          "Description": "The widgets in this layer are displayed on any page of this site."
-        },
-        {
-          "Name": "Homepage",
-          "Rule": "isHomepage()",
-          "Description": "The widgets in this layer are only displayed o the homepage."
-        }
-      ]
+        "name": "layers",
+        "Layers": [
+            {
+                "Name": "Always",
+                "Rule": "true",
+                "Description": "The widgets in this layer are displayed on any page of this site."
+            },
+            {
+                "Name": "Homepage",
+                "Rule": "isHomepage()",
+                "Description": "The widgets in this layer are only displayed o the homepage."
+            }
+        ]
+    },
+    {
+        "name": "queries",
+        "Queries": [
+            {
+                "Source": "Lucene",
+                "Name": "RecentBlogPosts",
+                "Index": "Search",
+                "Template": "{\r\n  \"query\": {\r\n    \"term\" : { \"Content.ContentItem.ContentType\" : \"BlogPost\" } \r\n  },\r\n  \"sort\": { \"Content.ContentItem.CreatedUtc\": { \"order\": \"desc\" } },\r\n  \"size\": 3\r\n}",
+                "ReturnContentItems": true
+            }
+        ]
     }
   ]
 }
