@@ -69,7 +69,8 @@ namespace Orchard.Lucene
                 return;
             }
 
-            IEnumerable<IndexingTask> batch;
+            IndexingTask[] batch;
+
             var shellContext = _shellHost.GetOrCreateShellContext(_shellSettings);
 
             do
@@ -133,7 +134,7 @@ namespace Orchard.Lucene
                     _indexingState.Update();
 
                 } 
-            } while (batch.Count() == BatchSize);
+            } while (batch.Length == BatchSize);
         }
 
         /// <summary>
