@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -105,11 +105,12 @@ namespace Orchard.Indexing.Services
 
                 // At this point, content items ids should be unique in _taskQueue
                 var ids = localQueue.Select(x => x.ContentItemId).ToArray();
+                var table = $"{_tablePrefix}{nameof(IndexingTask)}";
 
-                var deleteCmd = $"delete from {dialect.QuoteForTableName(nameof(IndexingTask))} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+                var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
                 await connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
 
-                var insertCmd = $"insert into {dialect.QuoteForTableName(nameof(IndexingTask))} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
                 await connection.ExecuteAsync(insertCmd, _tasksQueue, transaction);
             }
             catch(Exception e)
