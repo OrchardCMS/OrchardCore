@@ -105,7 +105,7 @@ namespace Orchard.Indexing.Services
 
                 // At this point, content items ids should be unique in _taskQueue
                 var ids = localQueue.Select(x => x.ContentItemId).ToArray();
-                var table = $"{_tablePrefix }{ nameof(IndexingTask)}";
+                var table = $"{_tablePrefix}{nameof(IndexingTask)}";
 
                 var deleteCmd = $"delete from {dialect.QuoteForTableName(table)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
                 await connection.ExecuteAsync(deleteCmd, new { Ids = ids }, transaction);
