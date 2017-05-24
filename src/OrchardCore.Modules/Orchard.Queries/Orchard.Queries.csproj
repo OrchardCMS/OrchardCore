@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Irony" Version="1.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
   </ItemGroup>
 
@@ -35,7 +36,13 @@
     <None Update="Views\Admin\Index.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
+    <None Update="Views\SqlQuery.Edit.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
     <None Update="Views\Query - Copy.Summary.cshtml">
+      <PackagePath>assets\$(PackageId)\</PackagePath>
+    </None>
+    <None Update="Views\Query-Sql.Link.cshtml">
       <PackagePath>assets\$(PackageId)\</PackagePath>
     </None>
     <None Update="Views\_ViewImports.cshtml">
