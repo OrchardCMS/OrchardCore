@@ -62,10 +62,7 @@ namespace Orchard.BackgroundTasks
 
         private static async void DoWorkAsync(object o)
         {
-            foreach (var group in _groups.Values)
-            {
-                await group.DoWorkAsync();
-            }
+            await Task.WhenAll(_groups.Values.Select(g => g.DoWorkAsync()));
         }
 
         private async Task DoWorkAsync(string groupName)
