@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -29,7 +29,7 @@ namespace Orchard.OpenId.Controllers
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
-        private readonly IRoleClaimStore<Role> _roleStore;
+        private readonly IRoleClaimStore<IRole> _roleStore;
         private readonly IStringLocalizer<AccessController> T;
 
         public AccessController(
@@ -38,7 +38,7 @@ namespace Orchard.OpenId.Controllers
             IStringLocalizer<AccessController> localizer,
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
-            IRoleClaimStore<Role> roleStore)
+            IRoleClaimStore<IRole> roleStore)
         {
             T = localizer;
             _applicationManager = applicationManager;

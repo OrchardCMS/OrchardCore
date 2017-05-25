@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,7 +31,7 @@ namespace Orchard.Users.Controllers
         private readonly IHtmlLocalizer TH;
         private readonly ISiteService _siteService;
         private readonly dynamic New;
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly IRoleProvider _roleProvider;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
@@ -40,7 +40,7 @@ namespace Orchard.Users.Controllers
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
-            RoleManager<Role> roleManager,
+            RoleManager<IRole> roleManager,
             IRoleProvider roleProvider,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,

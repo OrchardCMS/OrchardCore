@@ -27,7 +27,7 @@ namespace Orchard.Roles.Controllers
         private readonly IStringLocalizer T;
         private readonly ISiteService _siteService;
         private readonly IShapeFactory _shapeFactory;
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleProvider _roleProvider;
@@ -42,7 +42,7 @@ namespace Orchard.Roles.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            RoleManager<Role> roleManager,
+            RoleManager<IRole> roleManager,
             IRoleProvider roleProvider,
             INotifier notifier,
             IEnumerable<IPermissionProvider> permissionProviders
@@ -170,7 +170,7 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
+            var role = (Role) await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
             if (role == null)
             {
                 return NotFound();
@@ -198,7 +198,7 @@ namespace Orchard.Roles.Controllers
                 return Unauthorized();
             }
 
-            var role = await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
+            var role = (Role) await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
 
             if (role == null)
             {

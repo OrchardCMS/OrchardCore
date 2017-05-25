@@ -16,12 +16,12 @@ namespace Orchard.Roles.Recipes
     /// </summary>
     public class RolesStep : IRecipeStepHandler
     {
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
         public RolesStep(
-            RoleManager<Role> roleManager,
+            RoleManager<IRole> roleManager,
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IPermissionProvider> permissionProviders)
         {
@@ -44,7 +44,7 @@ namespace Orchard.Roles.Recipes
                 if (string.IsNullOrWhiteSpace(roleModel.Name)) 
                     continue;
 
-                var role = await _roleManager.FindByNameAsync(roleModel.Name);
+                var role = (Role) await _roleManager.FindByNameAsync(roleModel.Name);
                 bool isNewRole = role == null;
                 
                 if (isNewRole)
