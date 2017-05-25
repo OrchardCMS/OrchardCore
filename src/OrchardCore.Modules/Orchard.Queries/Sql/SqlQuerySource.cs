@@ -36,7 +36,7 @@ namespace Orchard.Queries.Sql
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
 
-            if (SqlParser.TryParse(sqlQuery.Template, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            if (SqlParser.TryParse(sqlQuery.Template, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
                 using (connection)
                 {

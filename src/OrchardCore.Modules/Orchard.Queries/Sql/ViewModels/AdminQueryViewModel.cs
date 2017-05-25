@@ -8,7 +8,7 @@ namespace Orchard.Queries.Sql.ViewModels
     public class AdminQueryViewModel
     {
         public string DecodedQuery { get; set; }
-        public string Parameters { get; set; }
+        public string Parameters { get; set; } = "";
 
         [BindNever]
         public string RawSql { get; set; }

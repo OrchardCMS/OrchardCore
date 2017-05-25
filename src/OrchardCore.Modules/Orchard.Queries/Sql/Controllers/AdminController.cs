@@ -67,7 +67,7 @@ namespace Orchard.Queries.Sql.Controllers
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedQuery = _tokenizer.Tokenize(model.DecodedQuery, parameters);
 
-            if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
                 model.RawSql = rawQuery;
                 model.RawParameters = JsonConvert.SerializeObject(rawParameters);

@@ -81,8 +81,7 @@ namespace Orchard.Queries.Sql
             optionalSemicolon.Rule = Empty | ";";
             statementList.Rule = MakePlusRule(statementList, statementLine);
 
-            statement.Rule = selectStatement
-                      | "GO";
+            statement.Rule = selectStatement;
 
             Id.Rule = MakePlusRule(Id, dot, Id_simple);
 

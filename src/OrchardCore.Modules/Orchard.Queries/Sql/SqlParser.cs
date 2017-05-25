@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Irony.Parsing;
+using YesSql;
 
 namespace Orchard.Queries.Sql
 {
@@ -10,20 +11,24 @@ namespace Orchard.Queries.Sql
     {
         private StringBuilder _builder;
         private Dictionary<string, object> _parameters;
+        private ISqlDialect _dialect;
         private string _tablePrefix;
         private HashSet<string> _aliases;
         private ParseTree _tree;
         private static LanguageData language = new LanguageData(new SqlGrammar());
+        private Stack<FormattingModes> _modes;
 
-        private SqlParser(ParseTree tree, string tablePrefix)
+        private SqlParser(ParseTree tree, ISqlDialect dialect, string tablePrefix)
         {
             _tree = tree;
+            _dialect = dialect;
             _tablePrefix = tablePrefix;
             _parameters = new Dictionary<string, object>();
             _builder = new StringBuilder(tree.SourceText.Length);
+            _modes = new Stack<FormattingModes>();
         }
 
-        public static bool TryParse(string sql, string tablePrefix, out string query, out Dictionary<string, object> parameters, out IEnumerable<string> messages)
+        public static bool TryParse(string sql, ISqlDialect dialect, string tablePrefix, out string query, out Dictionary<string, object> parameters, out IEnumerable<string> messages)
         {
             try
             {
@@ -36,13 +41,13 @@ namespace Orchard.Queries.Sql
 
                     messages = tree
                         .ParserMessages
-                        .Select(x => $"{x.Message} ({x.Location.Line}:{x.Location.Column})")
+                        .Select(x => $"{x.Message} at line:{x.Location.Line}, col:{x.Location.Column}")
                         .ToArray();
 
                     return false;
                 }
 
-                var sqlParser = new SqlParser(tree, tablePrefix);
+                var sqlParser = new SqlParser(tree, dialect, tablePrefix);
                 sqlParser.Evaluate();
 
                 query = sqlParser._builder.ToString();
@@ -69,6 +74,7 @@ namespace Orchard.Queries.Sql
             foreach (var selectStatement in statementList.ChildNodes)
             {
                 EvaluateSelectStatement(selectStatement);
+                _builder.Append(";");
             }
         }
 
@@ -90,7 +96,7 @@ namespace Orchard.Queries.Sql
 
         private void EvaluateSelectStatement(ParseTreeNode selectStatement)
         {
-            _builder.Append("SELECT");
+            _builder.Append("SELECT ");
             EvaluateSelectRestriction(selectStatement.ChildNodes[1]);
             EvaluateSelectorList(selectStatement.ChildNodes[2]);
             EvaluateFromClause(selectStatement.ChildNodes[3]);
@@ -98,7 +104,6 @@ namespace Orchard.Queries.Sql
             EvaluateGroupClause(selectStatement.ChildNodes[5]);
             EvaluateHavingClause(selectStatement.ChildNodes[6]);
             EvaluateOrderClause(selectStatement.ChildNodes[7]);
-            _builder.Append(";");
         }
 
         private void EvaluateOrderClause(ParseTreeNode parseTreeNode)
@@ -108,26 +113,28 @@ namespace Orchard.Queries.Sql
                 return;
             }
 
-            _builder.AppendLine().Append("ORDER BY");
+            _builder.AppendLine().Append("ORDER BY ");
 
             var idList = parseTreeNode.ChildNodes[2];
 
+            _modes.Push(FormattingModes.SelectClause);
             for (var i = 0; i < idList.ChildNodes.Count; i++)
             {
                 var id = idList.ChildNodes[i].ChildNodes[0];
 
                 if (i > 0)
                 {
-                    _builder.Append(",");
+                    _builder.Append(", ");
                 }
 
-                EvaluateId(id, true);
+                EvaluateId(id);
 
                 if (idList.ChildNodes[i].ChildNodes[1].ChildNodes.Count > 0)
                 {
                     _builder.Append(" ").Append(idList.ChildNodes[i].ChildNodes[1].ChildNodes[0].Term.Name);
                 }
             }
+            _modes.Pop();
         }
 
         private void EvaluateHavingClause(ParseTreeNode parseTreeNode)
@@ -137,8 +144,11 @@ namespace Orchard.Queries.Sql
                 return;
             }
 
-            _builder.AppendLine().Append("HAVING");
+            _builder.AppendLine().Append("HAVING ");
+
+            _modes.Push(FormattingModes.SelectClause);
             EvaluateExpression(parseTreeNode.ChildNodes[1]);
+            _modes.Pop();
         }
 
         private void EvaluateGroupClause(ParseTreeNode parseTreeNode)
@@ -148,21 +158,23 @@ namespace Orchard.Queries.Sql
                 return;
             }
 
-            _builder.AppendLine().Append("GROUP BY");
+            _builder.AppendLine().Append("GROUP BY ");
 
             var idList = parseTreeNode.ChildNodes[2];
 
+            _modes.Push(FormattingModes.SelectClause);
             for (var i = 0; i < idList.ChildNodes.Count; i++)
             {
                 var id = idList.ChildNodes[i];
 
                 if (i > 0)
                 {
-                    _builder.Append(",");
+                    _builder.Append(", ");
                 }
 
-                EvaluateId(id, true);
+                EvaluateId(id);
             }
+            _modes.Pop();
         }
 
         private void EvaluateWhereClause(ParseTreeNode parseTreeNode)
@@ -173,9 +185,11 @@ namespace Orchard.Queries.Sql
                 return;
             }
 
-            _builder.AppendLine().Append("WHERE");
+            _builder.AppendLine().Append("WHERE ");
 
+            _modes.Push(FormattingModes.SelectClause);
             EvaluateExpression(parseTreeNode.ChildNodes[1]);
+            _modes.Pop();
         }
 
         private void EvaluateExpression(ParseTreeNode parseTreeNode)
@@ -183,90 +197,84 @@ namespace Orchard.Queries.Sql
             switch (parseTreeNode.Term.Name)
             {
                 case "unExpr":
-                    _builder.Append(" ").Append(parseTreeNode.ChildNodes[0].Term.Name);
-                    EvaluateTerm(parseTreeNode.ChildNodes[1]);
+                    _builder.Append(parseTreeNode.ChildNodes[0].Term.Name);
+                    EvaluateExpression(parseTreeNode.ChildNodes[1]);
                     break;
                 case "binExpr":
                     EvaluateExpression(parseTreeNode.ChildNodes[0]);
-                    _builder.Append(" ").Append(parseTreeNode.ChildNodes[1].ChildNodes[0].Term.Name);
+                    _builder.Append(" ");
+                    _builder.Append(parseTreeNode.ChildNodes[1].ChildNodes[0].Term.Name).Append(" ");
                     EvaluateExpression(parseTreeNode.ChildNodes[2]);
                     break;
                 case "betweenExpr":
                     EvaluateExpression(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(" ");
                     if (parseTreeNode.ChildNodes[1].ChildNodes.Count > 0)
                     {
-                        _builder.Append(" NOT");
+                        _builder.Append("NOT ");
                     }
-                    _builder.Append(" BETWEEN");
+                    _builder.Append("BETWEEN ");
                     EvaluateExpression(parseTreeNode.ChildNodes[3]);
-                    _builder.Append(" AND");
+                    _builder.Append(" ");
+                    _builder.Append("AND ");
                     EvaluateExpression(parseTreeNode.ChildNodes[5]);
                     break;
-                default:
-                    EvaluateTerm(parseTreeNode);
+                // Term and Tuple are transient, to they appear directly
+                case "Id":
+                    EvaluateId(parseTreeNode);
+                    break;
+                case "boolean":
+                    _builder.Append(AddParameter(parseTreeNode.ChildNodes[0].Term.Name == "TRUE"));
+                    break;
+                case "string":
+                    _builder.Append(AddParameter(parseTreeNode.Token.ValueString));
+                    break;
+                case "number":
+                    _builder.Append(AddParameter(parseTreeNode.Token.Value));
+                    break;
+                case "funCall":
+                    _builder.Append(parseTreeNode.ChildNodes[0].ChildNodes[0].Token.ValueString);
+                    _builder.Append("(");
+                    if (parseTreeNode.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
+                    {
+                        // selectStatement
+                        EvaluateSelectStatement(parseTreeNode.ChildNodes[1].ChildNodes[0]);
+                    }
+                    else
+                    {
+                        // expressionList
+                        EvaluateExpressionList(parseTreeNode.ChildNodes[1].ChildNodes[0]);
+                    }
+                    _builder.Append(")");
+                    break;
+                case "exprList":
+                    _builder.Append("(");
+                    EvaluateExpression(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(")");
+                    break;
+                case "parSelectStmt":
+                    _builder.Append("(");
+                    EvaluateSelectStatement(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(")");
+                    break;
+                case "inStmt":
+                    EvaluateExpression(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(" IN (");
+                    EvaluateExpressionList(parseTreeNode.ChildNodes[2]);
+                    _builder.Append(")");
                     break;
             }
 
-            void EvaluateTerm(ParseTreeNode term)
+            void EvaluateExpressionList(ParseTreeNode expressionList)
             {
-                switch (term.Term.Name)
+                for (var i = 0; i < expressionList.ChildNodes.Count; i++)
                 {
-                    case "Id":
-                        EvaluateTermId(term);
-                        break;
-                    case "boolean":
-                        _builder.Append(" ").Append(AddParameter(term.ChildNodes[0].Term.Name == "TRUE"));
-                        break;
-                    case "string":
-                        _builder.Append(" ").Append(AddParameter(term.Token.ValueString));
-                        break;
-                    case "number":
-                        _builder.Append(" ").Append(AddParameter(term.Token.Value));
-                        break;
-                    case "funCall":
-                        EvaluateId(term.ChildNodes[0], false);
-                        _builder.Append("(");
-                        if (term.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
-                        {
-                            // selectStatement
-                            EvaluateSelectStatement(term.ChildNodes[1].ChildNodes[0]);
-                        }
-                        else
-                        {
-                            // expressionList
-                            EvaluateExpressionList(term.ChildNodes[1].ChildNodes[0]);
-                        }
-                        _builder.Append(")");
-                        break;
-                    case "tuple":
-                        _builder.Append(" (");
-                        EvaluateExpressionList(term.ChildNodes[1]);
-                        _builder.Append(")");
-                        break;
-                    case "parSelectStmt":
-                        _builder.Append(" (");
-                        EvaluateSelectStatement(term.ChildNodes[1]);
-                        _builder.Append(")");
-                        break;
-                    case "inStatement":
-                        EvaluateExpression(term.ChildNodes[0]);
-                        _builder.Append(" IN (");
-                        EvaluateExpressionList(term.ChildNodes[2]);
-                        _builder.Append(")");
-                        break;
-                }
-
-                void EvaluateExpressionList(ParseTreeNode expressionList)
-                {
-                    for (var i = 0; i < expressionList.ChildNodes.Count; i++)
+                    if (i > 0)
                     {
-                        if (i > 0)
-                        {
-                            _builder.Append(",");
-                        }
-
-                        EvaluateExpression(expressionList.ChildNodes[i]);
+                        _builder.Append(", ");
                     }
+
+                    EvaluateExpression(expressionList.ChildNodes[i]);
                 }
             }
         }
@@ -283,9 +291,10 @@ namespace Orchard.Queries.Sql
 
             if (aliasList.ChildNodes.Count > 0)
             {
-                _builder.AppendLine().Append("FROM");
+                _builder.AppendLine().Append("FROM ");
             }
 
+            _modes.Push(FormattingModes.FromClause);
             EvaluateAliasList(aliasList);
 
             var joins = parseTreeNode.ChildNodes[2];
@@ -301,18 +310,20 @@ namespace Orchard.Queries.Sql
                     _builder.Append(jointKindOpt.ChildNodes[0].Term.Name);
                 }
 
-                _builder.Append(" JOIN");
+                _builder.Append(" JOIN ");
 
                 EvaluateAliasList(joins.ChildNodes[2]);
 
-                _builder.Append(" ON");
+                _builder.Append(" ON ");
+                _modes.Push(FormattingModes.SelectClause);
 
-                EvaluateId(joins.ChildNodes[4], true);
+                EvaluateId(joins.ChildNodes[4]);
 
-                _builder.Append(" =");
+                _builder.Append(" = ");
 
-                EvaluateId(joins.ChildNodes[6], true);
+                EvaluateId(joins.ChildNodes[6]);
             }
+            _modes.Pop();
         }
 
         private void EvaluateAliasList(ParseTreeNode aliasList)
@@ -323,10 +334,10 @@ namespace Orchard.Queries.Sql
 
                 if (i > 0)
                 {
-                    _builder.Append(",");
+                    _builder.Append(", ");
                 }
 
-                EvaluateId(aliasItem.ChildNodes[0], true);
+                EvaluateId(aliasItem.ChildNodes[0]);
 
                 if (aliasItem.ChildNodes.Count > 1)
                 {
@@ -339,20 +350,20 @@ namespace Orchard.Queries.Sql
         {
             var selectorList = parseTreeNode.ChildNodes[0];
 
-            _builder.Append(" ");
-
             if (selectorList.Term.Name == "*")
             {
                 _builder.Append("*");
             }
             else
             {
+                _modes.Push(FormattingModes.SelectClause);
+
                 // columnItemList
                 for (var i = 0; i < selectorList.ChildNodes.Count; i++)
                 {
                     if (i > 0)
                     {
-                        _builder.Append(",");
+                        _builder.Append(", ");
                     }
 
                     var columnItem = selectorList.ChildNodes[i];
@@ -362,11 +373,22 @@ namespace Orchard.Queries.Sql
                     var aggregateOrId = columnSource.ChildNodes[0];
                     if (aggregateOrId.Term.Name == "Id")
                     {
-                        EvaluateId(aggregateOrId, true);
+                        EvaluateId(aggregateOrId);
                     }
                     else
                     {
-                        _builder.Append($" {aggregateOrId.ChildNodes[0].Token.ValueString} ({aggregateOrId.ChildNodes[1].Token.ValueString})");
+                        _builder.Append(aggregateOrId.ChildNodes[0].ChildNodes[0].Term.Name);
+                        
+                        if(aggregateOrId.ChildNodes[1].ChildNodes[0].Term.Name == "*")
+                        {
+                            _builder.Append("(*)");
+                        }
+                        else
+                        {
+                            _builder.Append("(");
+                            EvaluateExpression(aggregateOrId.ChildNodes[1].ChildNodes[0]);
+                            _builder.Append(")");
+                        }
                     }
 
                     if (columnItem.ChildNodes.Count > 1)
@@ -375,53 +397,64 @@ namespace Orchard.Queries.Sql
                         EvaluateAliasOptional(columnItem.ChildNodes[1]);
                     }
                 }
+
+                _modes.Pop();
             }
         }
 
-        private void EvaluateId(ParseTreeNode id, bool prefix)
+        private void EvaluateId(ParseTreeNode id)
         {
-            for (var i = 0; i < id.ChildNodes.Count; i++)
+            switch (_modes.Peek())
             {
-                if (i == 0)
-                {
-                    _builder.Append(" ");
-                }
-
-                if (prefix && i == 0 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
-                {
-                    _builder.Append(_tablePrefix);
-                }
-
-                if (i > 0)
-                {
-                    _builder.Append(".");
-                }
-
-                _builder.Append(id.ChildNodes[i].Token.Value);
+                case FormattingModes.SelectClause:
+                    EvaluateSelectId(id);
+                    break;
+                case FormattingModes.FromClause:
+                    EvaluateFromId(id);
+                    break;
             }
         }
 
-        private void EvaluateTermId(ParseTreeNode id)
+        private void EvaluateSelectId(ParseTreeNode id)
         {
-            // These ids represent columns but as not aliasable (WHERE clause)
             for (var i = 0; i < id.ChildNodes.Count; i++)
             {
-                if (i == 0)
-                {
-                    _builder.Append(" ");
-                }
-
                 if (i == 0 && id.ChildNodes.Count > 1 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
                 {
-                    _builder.Append(_tablePrefix);
+                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString));
                 }
-
-                if (i > 0)
+                else
                 {
-                    _builder.Append(".");
-                }
+                    if (i > 0)
+                    {
+                        _builder.Append(".");
+                    }
 
-                _builder.Append(id.ChildNodes[i].Token.Value);
+                    if (_aliases.Contains(id.ChildNodes[i].Token.ValueString))
+                    {
+                        _builder.Append(id.ChildNodes[i].Token.ValueString);
+                    }
+                    else
+                    {
+                        _builder.Append(_dialect.QuoteForColumnName(id.ChildNodes[i].Token.ValueString));
+                    }
+                    
+                }
+            }
+        }
+
+        private void EvaluateFromId(ParseTreeNode id)
+        {
+            for (var i = 0; i < id.ChildNodes.Count; i++)
+            {
+                if (i == 0 && !_aliases.Contains(id.ChildNodes[i].Token.ValueString))
+                {
+                    _builder.Append(_dialect.QuoteForTableName(_tablePrefix + id.ChildNodes[i].Token.ValueString));
+                }
+                else
+                {
+                    _builder.Append(_dialect.QuoteForColumnName(id.ChildNodes[i].Token.ValueString));
+                }
             }
         }
 
@@ -433,12 +466,12 @@ namespace Orchard.Queries.Sql
                 _builder.Append(parseTreeNode.ChildNodes[0].Token.ValueString);
             }
         }
-
+        
         private void EvaluateSelectRestriction(ParseTreeNode parseTreeNode)
         {
             if (parseTreeNode.ChildNodes.Count > 0)
             {
-                _builder.Append(" ").Append(parseTreeNode.ChildNodes[0].Term.Name);
+                _builder.Append(parseTreeNode.ChildNodes[0].Term.Name).Append(" ");
             }
         }
 
@@ -447,6 +480,11 @@ namespace Orchard.Queries.Sql
             var parameterName = "@p" + _parameters.Count;
             _parameters.Add(parameterName, value);
             return parameterName;
+        }
+        private enum FormattingModes
+        {
+            SelectClause,
+            FromClause
         }
     }
 }
