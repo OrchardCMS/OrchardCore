@@ -15,8 +15,10 @@ namespace Orchard.BackgroundTasks
 {
     public class BackgroundTaskService : IBackgroundTaskService, IDisposable
     {
-        private static Timer _timer = new Timer(DoWorkAsync, null, StartNow, TimeSpan.FromMinutes(1));
-        private static ConcurrentDictionary<string, BackgroundTaskGroup> _groups = new ConcurrentDictionary<string, BackgroundTaskGroup>();
+        private static Timer _timer;
+        private static ConcurrentDictionary<string, Group> _groups = new ConcurrentDictionary<string, Group>();
+        private static object _synLock = new object();
+
         private static TimeSpan DontStart = TimeSpan.FromMilliseconds(-1);
         private static TimeSpan StartNow = TimeSpan.FromMilliseconds(0);
 
@@ -51,8 +53,21 @@ namespace Orchard.BackgroundTasks
             {
                 foreach (var groupName in _tasks.Keys)
                 {
-                    _groups[_shellSettings.Name + groupName] = new BackgroundTaskGroup(
-                        groupName, DoWorkAsync, (int)_periods[groupName].TotalMinutes);
+                    _groups[_shellSettings.Name + groupName] = new Group(
+                        groupName, DoWorkAsync, _periods[groupName].TotalMinutes);
+                }
+
+                if (_timer != null || !_groups.Any())
+                {
+                    return;
+                }
+
+                lock (_synLock)
+                {
+                    if (_timer == null && _groups.Any())
+                    {
+                        _timer = new Timer(DoWorkAsync, null, StartNow, TimeSpan.FromMinutes(1));
+                    }
                 }
             }
         }
@@ -159,44 +174,65 @@ namespace Orchard.BackgroundTasks
 
         public void SetDelay(string groupName, TimeSpan period)
         {
-            _periods[groupName ?? ""] = period;
+            var name = groupName ?? "";
+
+            _periods[name] = period;
+
+            if (_groups.ContainsKey(name))
+            {
+                _groups[name].Delay = period.TotalMinutes;
+            }
         }
 
         public void Dispose()
         {
-            BackgroundTaskGroup group;
+            Group group;
             foreach (var groupName in _tasks.Keys)
             {
                 _groups.TryRemove(_shellSettings.Name + groupName, out group);
             }
-        }
-    }
 
-    internal class BackgroundTaskGroup
-    {
-        internal delegate Task DoWorkAsyncDelegate(string group);
-
-        private string _name;
-        private DoWorkAsyncDelegate _doWorkAsync;
-        private int _remaining;
-
-        public BackgroundTaskGroup(string name, DoWorkAsyncDelegate doWorkAsync, int period)
-        {
-            _name = name;
-            _doWorkAsync = doWorkAsync;
-            _remaining = Delay = period;
-        }
-
-        public int Delay { get; set; }
-
-        public async Task DoWorkAsync()
-        {
-            _remaining -= 1;
-
-            if (Delay > 0 && _remaining <= 0)
+            if (_timer == null || _groups.Any())
             {
-                _remaining = Delay;
-                await _doWorkAsync(_name);
+                return;
+            }
+
+            lock (_synLock)
+            {
+                if (_timer != null && !_groups.Any())
+                {
+                    _timer.Dispose();
+                    _timer = null;
+                }
+            }
+        }
+
+        internal delegate Task GroupCallback(string group);
+
+        internal class Group
+        {
+            private string _name;
+            private GroupCallback _callback;
+            private double _remaining;
+
+            public Group(string name, GroupCallback callback, double period)
+            {
+                _name = name;
+                _callback = callback;
+                _remaining = Delay = period;
+            }
+
+            public double Delay { get; set; }
+
+            public async Task DoWorkAsync()
+            {
+                _remaining -= 1;
+
+                if (Delay > 0 && _remaining <= 0)
+                {
+                    _remaining = Delay;
+                    await _callback(_name);
+                }
             }
         }
     }
