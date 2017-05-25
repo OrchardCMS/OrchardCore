@@ -2,7 +2,7 @@
 
 namespace Orchard.Security
 {
-    public class Role
+    public class Role: IRole
     {
         public string RoleName { get; set; }
         public string NormalizedRoleName { get; set; }

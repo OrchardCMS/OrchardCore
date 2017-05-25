@@ -15,9 +15,9 @@ namespace Orchard.Roles
     /// </summary>
     public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
     {
-        private readonly RoleManager<Role> _roleManager;
+        private readonly RoleManager<IRole> _roleManager;
 
-        public RolesPermissionsHandler(RoleManager<Role> roleManager)
+        public RolesPermissionsHandler(RoleManager<IRole> roleManager)
         {
             _roleManager = roleManager;
         }
@@ -57,7 +57,7 @@ namespace Orchard.Roles
 
                 if (role != null)
                 {
-                    foreach (var claim in role.RoleClaims)
+                    foreach (var claim in ((Role)role).RoleClaims)
                     {
                         if (!String.Equals(claim.ClaimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase))
                         {
