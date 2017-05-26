@@ -165,14 +165,21 @@ namespace Orchard.Queries.Sql
             _modes.Push(FormattingModes.SelectClause);
             for (var i = 0; i < idList.ChildNodes.Count; i++)
             {
-                var id = idList.ChildNodes[i];
+                var columnSource = idList.ChildNodes[i];
 
                 if (i > 0)
                 {
                     _builder.Append(", ");
                 }
 
-                EvaluateId(id);
+                if (columnSource.ChildNodes[0].Term.Name == "Id")
+                {
+                    EvaluateId(columnSource.ChildNodes[0]);
+                }
+                else
+                {
+                    EvaluateFunCall(columnSource.ChildNodes[0]);
+                }
             }
             _modes.Pop();
         }
@@ -233,19 +240,7 @@ namespace Orchard.Queries.Sql
                     _builder.Append(AddParameter(parseTreeNode.Token.Value));
                     break;
                 case "funCall":
-                    _builder.Append(parseTreeNode.ChildNodes[0].ChildNodes[0].Token.ValueString);
-                    _builder.Append("(");
-                    if (parseTreeNode.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
-                    {
-                        // selectStatement
-                        EvaluateSelectStatement(parseTreeNode.ChildNodes[1].ChildNodes[0]);
-                    }
-                    else
-                    {
-                        // expressionList
-                        EvaluateExpressionList(parseTreeNode.ChildNodes[1].ChildNodes[0]);
-                    }
-                    _builder.Append(")");
+                    EvaluateFunCall(parseTreeNode);
                     break;
                 case "exprList":
                     _builder.Append("(");
@@ -263,19 +258,43 @@ namespace Orchard.Queries.Sql
                     EvaluateExpressionList(parseTreeNode.ChildNodes[2]);
                     _builder.Append(")");
                     break;
+                case "*":
+                    _builder.Append("*");
+                    break;
             }
+        }
 
-            void EvaluateExpressionList(ParseTreeNode expressionList)
+        private void EvaluateFunCall(ParseTreeNode funCall)
+        {
+            _builder.Append(funCall.ChildNodes[0].ChildNodes[0].Token.ValueString);
+            _builder.Append("(");
+            if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
             {
-                for (var i = 0; i < expressionList.ChildNodes.Count; i++)
-                {
-                    if (i > 0)
-                    {
-                        _builder.Append(", ");
-                    }
+                // selectStatement
+                EvaluateSelectStatement(funCall.ChildNodes[1].ChildNodes[0]);
+            }
+            else if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "*")
+            {
+                _builder.Append("*");
+            }
+            else
+            {
+                // expressionList
+                EvaluateExpressionList(funCall.ChildNodes[1].ChildNodes[0]);
+            }
+            _builder.Append(")");
+        }
 
-                    EvaluateExpression(expressionList.ChildNodes[i]);
+        private void EvaluateExpressionList(ParseTreeNode expressionList)
+        {
+            for (var i = 0; i < expressionList.ChildNodes.Count; i++)
+            {
+                if (i > 0)
+                {
+                    _builder.Append(", ");
                 }
+
+                EvaluateExpression(expressionList.ChildNodes[i]);
             }
         }
 
@@ -370,25 +389,14 @@ namespace Orchard.Queries.Sql
 
                     // columnItem
                     var columnSource = columnItem.ChildNodes[0];
-                    var aggregateOrId = columnSource.ChildNodes[0];
-                    if (aggregateOrId.Term.Name == "Id")
+                    var funCallOrId = columnSource.ChildNodes[0];
+                    if (funCallOrId.Term.Name == "Id")
                     {
-                        EvaluateId(aggregateOrId);
+                        EvaluateId(funCallOrId);
                     }
                     else
                     {
-                        _builder.Append(aggregateOrId.ChildNodes[0].ChildNodes[0].Term.Name);
-                        
-                        if(aggregateOrId.ChildNodes[1].ChildNodes[0].Term.Name == "*")
-                        {
-                            _builder.Append("(*)");
-                        }
-                        else
-                        {
-                            _builder.Append("(");
-                            EvaluateExpression(aggregateOrId.ChildNodes[1].ChildNodes[0]);
-                            _builder.Append(")");
-                        }
+                        EvaluateFunCall(funCallOrId);
                     }
 
                     if (columnItem.ChildNodes.Count > 1)

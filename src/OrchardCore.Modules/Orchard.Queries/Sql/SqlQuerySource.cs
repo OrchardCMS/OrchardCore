@@ -1,8 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Newtonsoft.Json.Linq;
+using Orchard.ContentManagement;
+using Orchard.ContentManagement.Records;
 using Orchard.Tokens.Services;
 using YesSql;
+using YesSql.Services;
 
 namespace Orchard.Queries.Sql
 {
@@ -10,13 +15,16 @@ namespace Orchard.Queries.Sql
     {
         private readonly IStore _store;
         private readonly ITokenizer _tokenizer;
+        private readonly ISession _session;
 
         public SqlQuerySource(
             IStore store,
-            ITokenizer tokenizer)
+            ITokenizer tokenizer,
+            ISession session)
         {
             _store = store;
             _tokenizer = tokenizer;
+            _session = session;
         }
 
         public string Name => "Sql";
@@ -29,7 +37,6 @@ namespace Orchard.Queries.Sql
         public async Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
             var sqlQuery = query as SqlQuery;
-            object result = null;
 
             var tokenizedQuery = _tokenizer.Tokenize(sqlQuery.Template, parameters);
 
@@ -38,14 +45,45 @@ namespace Orchard.Queries.Sql
 
             if (SqlParser.TryParse(sqlQuery.Template, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
+                
+            }
+
+            var results = new List<JObject>();
+
+            
+            if (sqlQuery.ReturnContentItems)
+            {
+                IEnumerable<string> contentItemVersionIds;
+
                 using (connection)
                 {
                     connection.Open();
-                    result = await connection.QueryAsync(rawQuery, rawParameters);
+                    contentItemVersionIds = await connection.QueryAsync<string>(rawQuery, rawParameters);
                 }
-            }
 
-            return result;
+                var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).ListAsync();
+
+                // Reorder the result to preserve the one from the lucene query
+                var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                return contentItemVersionIds.Select(x => indexed[x]).ToArray();
+            }
+            else
+            {
+                IEnumerable<dynamic> queryResults;
+
+                using (connection)
+                {
+                    connection.Open();
+                    queryResults = await connection.QueryAsync(rawQuery, rawParameters);
+                }
+
+                foreach (var document in queryResults)
+                {
+                    results.Add(JObject.FromObject(document));
+                }
+
+                return results;
+            }
         }
     }
 }

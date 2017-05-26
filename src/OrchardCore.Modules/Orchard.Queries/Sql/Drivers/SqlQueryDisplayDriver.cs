@@ -40,6 +40,13 @@ namespace Orchard.Queries.Sql.Drivers
             {
                 model.Query = query.Template;
                 model.ReturnContentItems = query.ReturnContentItems;
+
+                // Extract query from the query string if we come from the main query editor
+                if (string.IsNullOrEmpty(query.Template))
+                {
+                    updater.TryUpdateModelAsync(model, "", m => m.Query);
+                }
+
             }).Location("Content:5");
         }
 

@@ -52,9 +52,6 @@ namespace Orchard.Queries.Sql
             var columnSource = new NonTerminal("columnSource");
             var asOpt = new NonTerminal("asOpt");
             var aliasOpt = new NonTerminal("aliasOpt");
-            var aggregate = new NonTerminal("aggregate");
-            var aggregateArg = new NonTerminal("aggregateArg");
-            var aggregateName = new NonTerminal("aggregateName");
             var tuple = new NonTerminal("tuple");
             var joinChainOpt = new NonTerminal("joinChainOpt");
             var joinKindOpt = new NonTerminal("joinKindOpt");
@@ -88,7 +85,7 @@ namespace Orchard.Queries.Sql
             aliasOpt.Rule = Empty | asOpt + Id;
             asOpt.Rule = Empty | AS;
 
-            idlist.Rule = MakePlusRule(idlist, comma, Id);
+            idlist.Rule = MakePlusRule(idlist, comma, columnSource);
 
             aliaslist.Rule = MakePlusRule(aliaslist, comma, aliasItem);
             aliasItem.Rule = Id + aliasOpt;
@@ -106,10 +103,7 @@ namespace Orchard.Queries.Sql
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
             columnItem.Rule = columnSource + aliasOpt;
 
-            columnSource.Rule = aggregate | Id;
-            aggregate.Rule = aggregateName + "(" + aggregateArg + ")";
-            aggregateArg.Rule = expression | "*";
-            aggregateName.Rule = COUNT | "Avg" | "Min" | "Max" | "StDev" | "StDevP" | "Sum" | "Var" | "VarP";
+            columnSource.Rule = funCall | Id;
             fromClauseOpt.Rule = Empty | FROM + aliaslist + joinChainOpt;
             joinChainOpt.Rule = Empty | joinKindOpt + JOIN + aliaslist + ON + Id + "=" + Id;
             joinKindOpt.Rule = Empty | "INNER" | "LEFT" | "RIGHT";
@@ -136,7 +130,7 @@ namespace Orchard.Queries.Sql
             notOpt.Rule = Empty | NOT;
             //funCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
-            functionArguments.Rule = selectStatement | expressionList;
+            functionArguments.Rule = selectStatement | expressionList | "*";
             inStatement.Rule = expression + "IN" + "(" + expressionList + ")";
 
             //Operators
@@ -156,8 +150,6 @@ namespace Orchard.Queries.Sql
             // in conflict resolution when binOp node is sitting on the stack
             base.MarkTransient(statement, term, asOpt, aliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
-
-        }//constructor
-
-    }//class
-}//namespace
+        }
+    }
+}

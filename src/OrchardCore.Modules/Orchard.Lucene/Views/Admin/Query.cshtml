@@ -55,6 +55,10 @@
 
 @if (Model.Documents.Any())
 {
+    <div class="form-group">
+        <a href="@Url.Action("Create", "Admin", new { area = "Orchard.Queries", id = "Lucene", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
+    </div>
+
     <table class="table table-striped table-hover table-responsive">
         <thead>
             <tr>

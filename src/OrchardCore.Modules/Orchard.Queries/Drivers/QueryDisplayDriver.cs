@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
@@ -8,6 +10,13 @@ namespace Orchard.Queries.Drivers
 {
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
+        private readonly StringLocalizer<QueryDisplayDriver> S;
+
+        public QueryDisplayDriver(StringLocalizer<QueryDisplayDriver> stringLocalizer)
+        {
+            S = stringLocalizer;
+        }
+
         public override IDisplayResult Display(Query query, IUpdateModel updater)
         {
             return Combine(
@@ -52,7 +61,10 @@ namespace Orchard.Queries.Drivers
         {
             await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source);
 
-            // TODO: Validate name is unique and not empty
+            if (String.IsNullOrEmpty(model.Name))
+            {
+                updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
+            }
 
             return await EditAsync(model, updater);
         }

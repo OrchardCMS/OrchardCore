@@ -13,7 +13,7 @@ namespace Orchard.Tests.Orchard.Queries
 
         private string FormatSql(string sql)
         {
-            return sql.Replace("\r\n", " ");
+            return sql.Replace("\r\n", " ").Replace("\n", " ");
         }
 
         [Theory]
@@ -25,8 +25,8 @@ namespace Orchard.Tests.Orchard.Queries
         [InlineData("SELECT a.b, c.d", "SELECT [tp_a].[b], [tp_c].[d];")]
         [InlineData("SELECT a as a1", "SELECT [a] AS a1;")]
         [InlineData("SELECT a as a1, b as b1", "SELECT [a] AS a1, [b] AS b1;")]
-        [InlineData("select avg(a)", "SELECT Avg([a]);")]
-        [InlineData("select min(*)", "SELECT Min(*);")]
+        [InlineData("select Avg(a)", "SELECT Avg([a]);")]
+        [InlineData("select Min(*)", "SELECT Min(*);")]
         [InlineData("select distinct a", "SELECT DISTINCT [a];")]
         public void ShouldParseSelectClause(string sql, string expectedSql)
         {
@@ -117,10 +117,11 @@ namespace Orchard.Tests.Orchard.Queries
         }
 
         [Theory]
-        [InlineData("select count(a) group by b", "SELECT COUNT([a]) GROUP BY [b];")]
-        [InlineData("select count(a) group by b, c", "SELECT COUNT([a]) GROUP BY [b], [c];")]
-        [InlineData("select count(a) group by b.c", "SELECT COUNT([a]) GROUP BY [tp_b].[c];")]
-        [InlineData("select count(a) from b as b1 group by b1.c", "SELECT COUNT([a]) FROM [tp_b] AS b1 GROUP BY b1.[c];")]
+        [InlineData("select count(a) group by b", "SELECT count([a]) GROUP BY [b];")]
+        [InlineData("select count(a) group by b, c", "SELECT count([a]) GROUP BY [b], [c];")]
+        [InlineData("select count(a) group by b.c", "SELECT count([a]) GROUP BY [tp_b].[c];")]
+        [InlineData("select count(a) from b as b1 group by b1.c", "SELECT count([a]) FROM [tp_b] AS b1 GROUP BY b1.[c];")]
+        [InlineData("select Month(a) as m group by Month(a)", "SELECT Month([a]) AS m GROUP BY Month([a]);")]
         public void ShouldParseGroupByClause(string sql, string expectedSql, object[] expectedParameters = null)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, out var rawQuery, out var rawParameters, out var messages);
