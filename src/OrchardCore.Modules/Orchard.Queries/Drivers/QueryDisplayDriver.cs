@@ -10,9 +10,9 @@ namespace Orchard.Queries.Drivers
 {
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
-        private readonly StringLocalizer<QueryDisplayDriver> S;
+        private readonly IStringLocalizer<QueryDisplayDriver> S;
 
-        public QueryDisplayDriver(StringLocalizer<QueryDisplayDriver> stringLocalizer)
+        public QueryDisplayDriver(IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
