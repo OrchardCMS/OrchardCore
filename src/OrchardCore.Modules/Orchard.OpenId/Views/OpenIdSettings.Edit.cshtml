@@ -193,29 +193,29 @@
         refreshTokenTypeHint();
         refreshTestingModeEnabled();
         refreshEndpoints();
-        $("#AccessTokenFormat").change(function () {
+        $("#@Html.IdFor(m => m.AccessTokenFormat)").change(function () {
             refreshTokenTypeHint();
         });
-        $("#CertificateThumbPrint").children("option").hide();
-        $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
-        $("#CertificateStoreLocation").change(function () {
-            $("#CertificateThumbPrint").children("option").hide();
-            $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $(this).val() + "][data-StoreName=" + $("#CertificateStoreName").val() + "]").show();
+        $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option").hide();
+        $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option[data-StoreLocation=" + $("#@Html.IdFor(m => m.CertificateStoreLocation)").val() + "][data-StoreName=" + $("#@Html.IdFor(m => m.CertificateStoreName)").val() + "]").show();
+        $("#@Html.IdFor(m => m.CertificateStoreLocation)").change(function () {
+            $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option").hide();
+            $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option[data-StoreLocation=" + $(this).val() + "][data-StoreName=" + $("#@Html.IdFor(m => m.CertificateStoreName)").val() + "]").show();
         });
-        $("#CertificateStoreName").change(function () {
-            $("#CertificateThumbPrint").children("option").hide();
-            $("#CertificateThumbPrint").children("option[data-StoreLocation=" + $("#CertificateStoreLocation").val() + "][data-StoreName=" + $(this).val() + "]").show();
+        $("#@Html.IdFor(m => m.CertificateStoreName)").change(function () {
+            $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option").hide();
+            $("#@Html.IdFor(m => m.CertificateThumbPrint)").children("option[data-StoreLocation=" + $("#@Html.IdFor(m => m.CertificateStoreLocation)").val() + "][data-StoreName=" + $(this).val() + "]").show();
         });
-        $("#EnableTokenEndpoint, #EnableAuthorizationEndpoint, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowHybridFlow").change(function () {
+        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").change(function () {
             refreshEndpoints();
         });
         function refreshTokenTypeHint() {
-            var accessTokenFormat = $("#AccessTokenFormat");
+            var accessTokenFormat = $("#@Html.IdFor(m => m.AccessTokenFormat)");
             $("#Hint_JWT").collapse(accessTokenFormat.val() == "@(OpenIdSettings.TokenFormat.JWT)" ? "show" : "hide");
             $("#Hint_Encrypted").collapse(accessTokenFormat.val() == "@(OpenIdSettings.TokenFormat.Encrypted)" ? "show" : "hide");
         }
         function refreshTestingModeEnabled() {
-            var testingModeEnabled = $("#TestingModeEnabled");
+            var testingModeEnabled = $("#@Html.IdFor(m => m.TestingModeEnabled)");
             $("#certArea").collapse(testingModeEnabled.prop("checked") ? "hide" : "show");
 
         }
@@ -226,9 +226,9 @@
             refreshAllowRefreshTokenFlowVisibility();
         }
         function refreshEnableTokenEndpoint() {
-            var enableTokenEndpoint = $("#EnableTokenEndpoint");
-            var allowPasswordFlow = $("#AllowPasswordFlow");
-            var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
+            var enableTokenEndpoint = $("#@Html.IdFor(m => m.EnableTokenEndpoint)");
+            var allowPasswordFlow = $("#@Html.IdFor(m => m.AllowPasswordFlow)");
+            var allowClientCredentialsFlow = $("#@Html.IdFor(m => m.AllowClientCredentialsFlow)");
             if (!enableTokenEndpoint.prop("checked")) {
                 allowPasswordFlow.prop("checked", false);
                 allowClientCredentialsFlow.prop("checked", false);
@@ -238,17 +238,17 @@
             allowClientCredentialsFlow.parent().parent().parent().collapse(showOrHide);
         }
         function refreshEnableAuthorizationEndpoint() {
-            var enableAuthorizationEndpoint = $("#EnableAuthorizationEndpoint");
-            var allowImplicitFlow = $("#AllowImplicitFlow");
+            var enableAuthorizationEndpoint = $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)");
+            var allowImplicitFlow = $("#@Html.IdFor(m => m.AllowImplicitFlow)");
             if (!enableAuthorizationEndpoint.prop("checked")) {
                 allowImplicitFlow.prop("checked", false);
             }
             allowImplicitFlow.parent().parent().parent().collapse(enableAuthorizationEndpoint.prop("checked") ? "show" : "hide");
         }
         function refreshAllowAuthorizationCodeFlowAndHybridFlowVisibility() {
-            var allowAuthorizationCodeFlow = $("#AllowAuthorizationCodeFlow");
-            var allowHybridFlow = $("#AllowHybridFlow");
-            if ($("#EnableTokenEndpoint").prop("checked") && $("#EnableAuthorizationEndpoint").prop("checked")) {
+            var allowAuthorizationCodeFlow = $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)");
+            var allowHybridFlow = $("#@Html.IdFor(m => m.AllowHybridFlow)");
+            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
                 allowAuthorizationCodeFlow.parent().parent().parent().collapse("show");
                 allowHybridFlow.parent().parent().parent().collapse("show");
             }
@@ -260,9 +260,9 @@
             }
         }
         function refreshAllowRefreshTokenFlowVisibility() {
-            var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
-            if ($("#EnableTokenEndpoint").prop("checked")
-                && ($("#AllowPasswordFlow").prop("checked") || $("#AllowAuthorizationCodeFlow").prop("checked") || $("#AllowHybridFlow").prop("checked"))) {
+            var allowRefreshTokenFlow = $("#@Html.IdFor(m => m.AllowRefreshTokenFlow)");
+            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked")
+                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") || $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked") || $("#@Html.IdFor(m => m.AllowHybridFlow)").prop("checked"))) {
                 allowRefreshTokenFlow.parent().parent().parent().collapse("show");
             }
             else {

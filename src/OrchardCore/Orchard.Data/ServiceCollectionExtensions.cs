@@ -1,14 +1,11 @@
 using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using MySql.Data.MySqlClient;
 using Npgsql;
 using Orchard.Data.Migration;
 using Orchard.Environment.Shell;
@@ -45,48 +42,31 @@ namespace Orchard.Data
                 {
                     return null;
                 }
-
-                var shellOptions = sp.GetService<IOptions<ShellOptions>>();
-
-                IConnectionFactory connectionFactory = null;
-                var isolationLevel = IsolationLevel.Unspecified;
+                
+                var storeConfiguration = new Configuration();
 
                 switch (shellSettings.DatabaseProvider)
                 {
                     case "SqlConnection":
-                        connectionFactory = new DbConnectionFactory<SqlConnection>(shellSettings.ConnectionString);
-                        isolationLevel = IsolationLevel.ReadUncommitted;
+                        storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
                         break;
                     case "Sqlite":
+                        var shellOptions = sp.GetService<IOptions<ShellOptions>>();
                         var option = shellOptions.Value;
                         var databaseFolder = Path.Combine(hostingEnvironment.ContentRootPath, option.ShellsRootContainerName, option.ShellsContainerName, shellSettings.Name);
                         var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                         Directory.CreateDirectory(databaseFolder);
-                        connectionFactory = new DbConnectionFactory<SqliteConnection>($"Data Source={databaseFile};Cache=Shared");
-                        isolationLevel = IsolationLevel.ReadUncommitted;
-						break;
+                        storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
+                        break;
 					case "MySql":
-						connectionFactory = new DbConnectionFactory<MySqlConnection>(shellSettings.ConnectionString);
-						isolationLevel = IsolationLevel.ReadUncommitted;
+                        storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
 						break;
 					case "Postgres":
-						connectionFactory = new DbConnectionFactory<NpgsqlConnection>(shellSettings.ConnectionString);
-						isolationLevel = IsolationLevel.ReadUncommitted;
-						break;
+                        storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                        break;
 					default:
                         throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
                 }
-
-                var storeConfiguration = new Configuration
-                {
-                    ConnectionFactory = connectionFactory,
-                    IsolationLevel = isolationLevel
-                };
-
-                storeConfiguration.RegisterMySql();
-                storeConfiguration.RegisterSqLite();
-                storeConfiguration.RegisterSqlServer();
-                storeConfiguration.RegisterPostgreSql();
 
                 if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
                 {
@@ -99,7 +79,7 @@ namespace Orchard.Data
                 return store;
             });
 
-            services.AddScoped<ISession>(sp =>
+            services.AddScoped(sp =>
             {
                 var store = sp.GetService<IStore>();
 
