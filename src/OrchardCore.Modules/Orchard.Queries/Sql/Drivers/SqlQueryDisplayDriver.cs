@@ -39,7 +39,7 @@ namespace Orchard.Queries.Sql.Drivers
             return Shape<SqlQueryViewModel>("SqlQuery_Edit", model =>
             {
                 model.Query = query.Template;
-                model.ReturnContentItems = query.ReturnContentItems;
+                model.ReturnDocuments = query.ReturnDocuments;
 
                 // Extract query from the query string if we come from the main query editor
                 if (string.IsNullOrEmpty(query.Template))
@@ -53,10 +53,10 @@ namespace Orchard.Queries.Sql.Drivers
         public override async Task<IDisplayResult> UpdateAsync(SqlQuery model, IUpdateModel updater)
         {
             var viewModel = new SqlQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnContentItems))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.ReturnDocuments))
             {
                 model.Template = viewModel.Query;
-                model.ReturnContentItems = viewModel.ReturnContentItems;
+                model.ReturnDocuments = viewModel.ReturnDocuments;
             }
 
             return Edit(model);

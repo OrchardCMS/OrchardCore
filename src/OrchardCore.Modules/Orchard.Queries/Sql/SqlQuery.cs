@@ -1,5 +1,3 @@
-using Orchard.Queries;
-
 namespace Orchard.Queries.Sql
 {
     public class SqlQuery : Query
@@ -9,6 +7,6 @@ namespace Orchard.Queries.Sql
         }
 
         public string Template { get; set; }
-        public bool ReturnContentItems { get; set; }
+        public bool ReturnDocuments { get; set; }
     }
 }

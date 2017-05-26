@@ -7,6 +7,6 @@ namespace Orchard.Queries.Sql.ViewModels
         [Required]
         public string Query { get; set; }
 
-        public bool ReturnContentItems { get; set; }
+        public bool ReturnDocuments { get; set; }
     }
 }

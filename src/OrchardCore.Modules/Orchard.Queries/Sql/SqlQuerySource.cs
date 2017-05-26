@@ -43,29 +43,25 @@ namespace Orchard.Queries.Sql
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);
 
-            if (SqlParser.TryParse(sqlQuery.Template, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
-            {
-                
-            }
-
             var results = new List<JObject>();
 
-            
-            if (sqlQuery.ReturnContentItems)
+            if (!SqlParser.TryParse(sqlQuery.Template, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
-                IEnumerable<string> contentItemVersionIds;
+                return results;
+            }
+                        
+            if (sqlQuery.ReturnDocuments)
+            {
+                IEnumerable<int> documentIds;
 
                 using (connection)
                 {
                     connection.Open();
-                    contentItemVersionIds = await connection.QueryAsync<string>(rawQuery, rawParameters);
+                    documentIds = await connection.QueryAsync<int>(rawQuery, rawParameters);
                 }
 
-                var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).ListAsync();
-
-                // Reorder the result to preserve the one from the lucene query
-                var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                return contentItemVersionIds.Select(x => indexed[x]).ToArray();
+                var documents = await _session.GetAsync<object>(documentIds.ToArray());
+                return documents;
             }
             else
             {
@@ -82,7 +78,7 @@ namespace Orchard.Queries.Sql
                     results.Add(JObject.FromObject(document));
                 }
 
-                return results;
+                return results.ToArray();
             }
         }
     }
