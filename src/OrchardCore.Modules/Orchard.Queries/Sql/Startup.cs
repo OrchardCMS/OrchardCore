@@ -23,9 +23,5 @@ namespace Orchard.Queries.Sql
             services.AddScoped<IQuerySource, SqlQuerySource>();
             services.AddScoped<INavigationProvider, AdminMenu>();
         }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-        }
     }
 }
