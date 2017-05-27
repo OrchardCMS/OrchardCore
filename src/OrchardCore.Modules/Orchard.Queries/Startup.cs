@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -10,6 +11,7 @@ using Orchard.Queries.Drivers;
 using Orchard.Queries.Recipes;
 using Orchard.Queries.Services;
 using Orchard.Recipes;
+using Orchard.Security.Permissions;
 
 namespace Orchard.Queries
 {
@@ -26,6 +28,7 @@ namespace Orchard.Queries
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
