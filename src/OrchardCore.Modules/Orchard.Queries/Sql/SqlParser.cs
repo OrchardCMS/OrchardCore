@@ -266,23 +266,37 @@ namespace Orchard.Queries.Sql
 
         private void EvaluateFunCall(ParseTreeNode funCall)
         {
-            _builder.Append(funCall.ChildNodes[0].ChildNodes[0].Token.ValueString);
-            _builder.Append("(");
+            
+            var funcName = funCall.ChildNodes[0].ChildNodes[0].Token.ValueString;
+            IList<string> arguments;
+            var tempBuilder = _builder;
+
             if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "selectStatement")
             {
                 // selectStatement
+                _builder = new StringBuilder();
                 EvaluateSelectStatement(funCall.ChildNodes[1].ChildNodes[0]);
+                arguments = new string[] { _builder.ToString() };
+                _builder = tempBuilder;
             }
             else if (funCall.ChildNodes[1].ChildNodes[0].Term.Name == "*")
             {
-                _builder.Append("*");
+                arguments = new string[] { "*" };
             }
             else
             {
                 // expressionList
-                EvaluateExpressionList(funCall.ChildNodes[1].ChildNodes[0]);
+                arguments = new List<string>();
+                for (var i = 0; i < funCall.ChildNodes[1].ChildNodes[0].ChildNodes.Count; i++)
+                {
+                    _builder = new StringBuilder();
+                    EvaluateExpression(funCall.ChildNodes[1].ChildNodes[0].ChildNodes[i]);
+                    arguments.Add(_builder.ToString());
+                    _builder = tempBuilder;
+                }
             }
-            _builder.Append(")");
+
+            _builder.Append(_dialect.RenderMethod(funcName.ToLowerInvariant(), arguments.ToArray()));
         }
 
         private void EvaluateExpressionList(ParseTreeNode expressionList)
