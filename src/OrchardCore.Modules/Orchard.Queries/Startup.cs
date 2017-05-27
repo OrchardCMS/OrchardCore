@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;

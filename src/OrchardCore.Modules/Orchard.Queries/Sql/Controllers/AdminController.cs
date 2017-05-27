@@ -37,7 +37,7 @@ namespace Orchard.Queries.Sql.Controllers
         public Task<IActionResult> Query(string query)
         {
             query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel { DecodedQuery = query }, _tokenizer);
+            return Query(new AdminQueryViewModel { DecodedQuery = query });
         }
 
         [HttpPost]
