@@ -296,7 +296,7 @@ namespace Orchard.Queries.Sql
                 }
             }
 
-            _builder.Append(_dialect.RenderMethod(funcName.ToLowerInvariant(), arguments.ToArray()));
+            _builder.Append(_dialect.RenderMethod(funcName, arguments.ToArray()));
         }
 
         private void EvaluateExpressionList(ParseTreeNode expressionList)
