@@ -177,6 +177,7 @@ profiling/
 #.vscode/
 .build/
 .testPublish/
+/temp
 
 nuget.exe
 .nuget/
