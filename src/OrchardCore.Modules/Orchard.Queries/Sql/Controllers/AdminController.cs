@@ -34,14 +34,14 @@ namespace Orchard.Queries.Sql.Controllers
             _stringLocalizer = stringLocalizer;
         }
 
-        public Task<IActionResult> Query(string query, [FromServices] ITokenizer tokenizer)
+        public Task<IActionResult> Query(string query)
         {
             query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel { DecodedQuery = query }, tokenizer);
+            return Query(new AdminQueryViewModel { DecodedQuery = query }, _tokenizer);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Query(AdminQueryViewModel model, [FromServices] ITokenizer tokenizer)
+        public async Task<IActionResult> Query(AdminQueryViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
