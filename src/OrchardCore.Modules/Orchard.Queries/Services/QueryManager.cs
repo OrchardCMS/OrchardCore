@@ -36,7 +36,7 @@ namespace Orchard.Queries.Services
 
             // Load the currently saved object otherwise it would create a new document
             // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session
+            // TODO: Solve by having an Import method in Session or an Id on the document
 
             var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
@@ -55,7 +55,14 @@ namespace Orchard.Queries.Services
 
         public async Task<Query> GetQueryAsync(string name)
         {
-            return (await GetDocumentAsync()).Queries[name];
+            var document = await GetDocumentAsync();
+
+            if(document.Queries.TryGetValue(name, out var query))
+            {
+                return query;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<Query>> ListQueriesAsync()

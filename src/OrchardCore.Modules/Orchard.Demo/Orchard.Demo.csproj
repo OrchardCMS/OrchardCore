@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.1" />
-    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1026" />
+    <PackageReference Include="YesSql.Abstractions" Version="2.0.0-beta-1035" />
   </ItemGroup>
 
 </Project>

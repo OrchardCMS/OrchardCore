@@ -28,11 +28,11 @@ namespace Orchard.Queries.Recipes
             _logger = logger;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Queries", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var model = context.Step.ToObject<QueryStepModel>();
@@ -48,10 +48,8 @@ namespace Orchard.Queries.Recipes
                 }
 
                 var query = token.ToObject(sample.GetType()) as Query;
-                _queryManager.SaveQueryAsync(query);
+                await _queryManager.SaveQueryAsync(query);
             }
-
-            return Task.CompletedTask;  
         }
     }
 

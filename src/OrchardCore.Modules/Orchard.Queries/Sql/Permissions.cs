@@ -1,19 +1,17 @@
 using Orchard.Security.Permissions;
 using System.Collections.Generic;
 
-namespace Orchard.Lucene
+namespace Orchard.Queries.Sql
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
-        public static readonly Permission QueryLuceneApi = new Permission("QueryLuceneApi", "Query Lucene Api", new[] { ManageIndexes });
+        public static readonly Permission ManageSqlQueries = new Permission("ManageSqlQueries", "Manage SQL Queries");
 
         public IEnumerable<Permission> GetPermissions()
         {
             return new[] 
             {
-                ManageIndexes,
-                QueryLuceneApi
+                ManageSqlQueries
             };
         }
 
@@ -24,12 +22,12 @@ namespace Orchard.Lucene
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageIndexes }
+                    Permissions = new[] { ManageSqlQueries }
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { QueryLuceneApi }
+                    Permissions = new[] { ManageSqlQueries }
                 }
             };
         }

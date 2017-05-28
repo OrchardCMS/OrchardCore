@@ -16,10 +16,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-    <PackageReference Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1026" />
-    <PackageReference Include="YesSql.Provider.MySql" Version="1.0.0-beta-1026" />
-    <PackageReference Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1026" />
-    <PackageReference Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1026" />
+    <PackageReference Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1035" />
+    <PackageReference Include="YesSql.Provider.MySql" Version="1.0.0-beta-1035" />
+    <PackageReference Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1035" />
+    <PackageReference Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1035" />
   </ItemGroup>
 
 </Project>

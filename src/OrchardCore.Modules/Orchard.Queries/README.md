@@ -65,3 +65,20 @@ Verbs: **POST** and **GET**
 | --------- | ---- |------------ |
 | `name` | `myQuery` | The name of the query to execute |
 | `parameters` | `{ size: 3}` | A Json object representing the parameters of the query |
+
+# SQL Queries (Orchard.Queries.Sql)
+
+This feature provide a new type of query targeting the SQL database.
+
+### Queries recipe step
+
+Here is an example for creating a SQL query from a Queries recipe step:
+
+```json
+{
+    "Source": "Sql",
+    "Name": "ContentItems",
+    "Template": "select * from ContentItemIndex", // json encoded query template
+    "ReturnDocuments": false
+}
+```

@@ -28,7 +28,7 @@
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-alpha" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-alpha" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1026" />
+    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1035" />
   </ItemGroup>
 
   <ItemGroup>
