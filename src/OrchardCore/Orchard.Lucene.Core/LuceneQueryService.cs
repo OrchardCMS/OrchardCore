@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Tokenattributes;
+using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
@@ -53,9 +53,9 @@ namespace Orchard.Lucene
             }
 
             TopDocs docs = context.IndexSearcher.Search(
-                query, 
+                query,
                 size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortField.Type_e.STRING, sortOrder == "desc"))
+                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
             );
 
             if (from > 0)
@@ -94,7 +94,7 @@ namespace Orchard.Lucene
             }
 
             var result = new List<string>();
-            using (var tokenStream = analyzer.TokenStream(fieldName, text))
+            using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
             {
                 tokenStream.Reset();
                 while (tokenStream.IncrementToken())
