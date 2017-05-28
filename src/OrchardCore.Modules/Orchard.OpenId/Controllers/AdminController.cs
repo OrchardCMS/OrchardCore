@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Notify;
@@ -14,6 +18,7 @@ using Orchard.OpenId.Services;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security.Services;
 using Orchard.Settings;
+using Orchard.Users.Models;
 
 namespace Orchard.OpenId.Controllers
 {
@@ -29,6 +34,9 @@ namespace Orchard.OpenId.Controllers
         private readonly OpenIdApplicationStore _applicationStore;
         private readonly INotifier _notifier;
         private readonly IOpenIdService _openIdService;
+        private readonly IEnumerable<IPasswordValidator<User>> _passwordValidators;
+        private readonly UserManager<User> _userManager;
+        private readonly IOptions<IdentityOptions> _identityOptions;
 
         public AdminController(
             IShapeFactory shapeFactory,
@@ -38,6 +46,9 @@ namespace Orchard.OpenId.Controllers
             IRoleProvider roleProvider,
             OpenIddictApplicationManager<OpenIdApplication> applicationManager,
             OpenIdApplicationStore applicationStore,
+            IEnumerable<IPasswordValidator<User>> passwordValidators,
+            UserManager<User> userManager,
+            IOptions<IdentityOptions> identityOptions,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
             IOpenIdService openIdService)
@@ -52,6 +63,9 @@ namespace Orchard.OpenId.Controllers
             _applicationStore = applicationStore;
             _notifier = notifier;
             _openIdService = openIdService;
+            _passwordValidators = passwordValidators;
+            _userManager = userManager;
+            _identityOptions = identityOptions;
         }
 
         public async Task<ActionResult> Index(PagerParameters pagerParameters)
@@ -143,11 +157,12 @@ namespace Orchard.OpenId.Controllers
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), T["No client secret can be set for public applications."]);
             }
-            else if (model.UpdateClientSecret && string.IsNullOrEmpty(model.ClientSecret))
+            else if (model.UpdateClientSecret)
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required"]);
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
-
+            
             OpenIdApplication application = null;
 
             if (ModelState.IsValid)
@@ -252,9 +267,10 @@ namespace Orchard.OpenId.Controllers
                 return Unauthorized();
             }
 
-            if (model.Type == ClientType.Confidential && string.IsNullOrEmpty(model.ClientSecret))
+            if (model.Type == ClientType.Confidential)
             {
-                ModelState.AddModelError(nameof(model.ClientSecret), T["The client secret is required for confidential applications."]);
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                await ValidateClientSecretAsync(user, model.ClientSecret, (key, message) => ModelState.AddModelError(key, message));
             }
             else if (model.Type == ClientType.Public && !string.IsNullOrEmpty(model.ClientSecret))
             {
@@ -303,8 +319,47 @@ namespace Orchard.OpenId.Controllers
             {
                 return RedirectToAction("Index");
             }
-
             return LocalRedirect(returnUrl);
+        }
+        private async Task<bool> ValidateClientSecretAsync(User user, string password, Action<string, string> reportError)
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                reportError("ClientSecret", T["The client secret is required for confidential applications."]);
+                return false;
+            }
+
+            var result = true;
+            foreach (var v in _passwordValidators)
+            {
+                var validationResult = await v.ValidateAsync(_userManager, user, password);
+                if (!validationResult.Succeeded)
+                {
+                    result = false;
+                    foreach (var error in validationResult.Errors)
+                    {
+                        switch (error.Code)
+                        {
+                            case "PasswordRequiresDigit":
+                                reportError("ClientSecret", T["Passwords must have at least one digit ('0'-'9')."]);
+                                break;
+                            case "PasswordRequiresLower":
+                                reportError("ClientSecret", T["Passwords must have at least one lowercase ('a'-'z')."]);
+                                break;
+                            case "PasswordRequiresUpper":
+                                reportError("ClientSecret", T["Passwords must have at least one uppercase('A'-'Z')."]);
+                                break;
+                            case "PasswordRequiresNonAlphanumeric":
+                                reportError("ClientSecret", T["Passwords must have at least one non letter or digit character."]);
+                                break;
+                            case "PasswordTooShort":
+                                reportError("ClientSecret", T["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
+                                break;
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         [HttpPost]
