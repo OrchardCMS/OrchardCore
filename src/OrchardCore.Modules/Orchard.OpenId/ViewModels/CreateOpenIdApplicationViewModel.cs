@@ -16,7 +16,6 @@ namespace Orchard.OpenId.ViewModels
         public string LogoutRedirectUri { get; set; }
         public ClientType Type { get; set; }
         public bool SkipConsent { get; set; }
-        [StringLength(100, MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string ClientSecret { get; set; }
         [DataType(DataType.Password)]
