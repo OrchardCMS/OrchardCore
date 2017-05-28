@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -122,7 +122,7 @@ namespace Orchard.Lucene
 
         public bool Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (string.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -186,17 +186,17 @@ namespace Orchard.Lucene
 
         private Document CreateLuceneDocument(DocumentIndex documentIndex)
         {
-            var doc = new Document();
-
-            // Always store the content item id
-            doc.Add(new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES));
+            var doc = new Document
+            {
+                // Always store the content item id
+                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES)
+            };
 
             foreach (var entry in documentIndex.Entries)
             {
                 var store = entry.Value.Options.HasFlag(DocumentIndexOptions.Store)
                             ? Field.Store.YES
-                            : Field.Store.NO
-                            ;
+                            : Field.Store.NO;
 
                 if (entry.Value.Value == null)
                 {
@@ -222,7 +222,7 @@ namespace Orchard.Lucene
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        doc.Add(new IntField(entry.Key, Convert.ToInt32(entry.Value.Value), store));
+                        doc.Add(new Int32Field(entry.Key, Convert.ToInt32(entry.Value.Value), store));
                         break;
 
                     case DocumentIndex.Types.Number:
@@ -265,8 +265,10 @@ namespace Orchard.Lucene
             var writer = _writers.GetOrAdd(indexName, name =>
             {
                 var directory = CreateDirectory(indexName);
-                var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion));
-                config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE_OR_APPEND);
+                var config = new IndexWriterConfig(LuceneVersion, new StandardAnalyzer(LuceneVersion))
+                {
+                    OpenMode = OpenMode.CREATE_OR_APPEND
+                };
 
                 return new IndexWriter(directory, config);
             });

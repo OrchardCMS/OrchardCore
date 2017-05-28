@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -73,7 +73,7 @@ namespace Orchard.Lucene
                     var results = new List<JObject>();
                     foreach (var document in docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
                     {
-                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.StringValue))));
+                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.GetStringValue()))));
                     }
 
                     result = results;

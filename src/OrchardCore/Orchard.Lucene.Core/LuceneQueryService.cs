@@ -27,7 +27,7 @@ namespace Orchard.Lucene
                 throw new ArgumentException("Query DSL requires a [query] property");
             }
 
-            Query query = CreateQueryFragment(context, queryProp);
+            var query = CreateQueryFragment(context, queryProp);
 
             var sortProperty = queryObj["sort"];
             var fromProperty = queryObj["from"];
@@ -88,7 +88,7 @@ namespace Orchard.Lucene
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
 
-            if (String.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
             {
                 return new List<string>();
             }

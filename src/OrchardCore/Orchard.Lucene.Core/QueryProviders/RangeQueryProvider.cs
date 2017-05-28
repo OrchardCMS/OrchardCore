@@ -24,7 +24,7 @@ namespace Orchard.Lucene.QueryProviders
 
                     JToken gt = null;
                     JToken lt = null;
-                    JTokenType tokenType = JTokenType.None;
+                    var tokenType = JTokenType.None;
                     float? boost = null;
 
                     bool includeLower = false, includeUpper = false;
