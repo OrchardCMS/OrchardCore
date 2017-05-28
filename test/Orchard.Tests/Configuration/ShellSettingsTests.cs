@@ -11,7 +11,8 @@ namespace Orchard.Tests.Configuration
     {
         private string _tempFolderName;
 
-        public ShellSettingsTests()
+        // Skip
+        internal ShellSettingsTests()
         {
             _tempFolderName = Path.GetTempFileName();
             File.Delete(_tempFolderName);
@@ -22,7 +23,7 @@ namespace Orchard.Tests.Configuration
             Directory.Delete(_tempFolderName, true);
         }
 
-        [Fact(Skip = "Not Complete")]
+        [Fact]
         public void Foo()
         {
             var yaml = @"---
