@@ -41,13 +41,6 @@ namespace Orchard.Lucene
 
         private static LuceneVersion LuceneVersion = LuceneVersion.LUCENE_48;
 
-        static LuceneIndexManager()
-        {
-            SPIClassIterator<LuceneNetCodecs.Codec>.Types.Add(typeof(LuceneNetCodecs.Lucene46.Lucene46Codec));
-            SPIClassIterator<LuceneNetCodecs.PostingsFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene41.Lucene41PostingsFormat));
-            SPIClassIterator<LuceneNetCodecs.DocValuesFormat>.Types.Add(typeof(LuceneNetCodecs.Lucene45.Lucene45DocValuesFormat));
-        }
-
         public LuceneIndexManager(
             IClock clock,
             IHostingEnvironment hostingEnvironment,
