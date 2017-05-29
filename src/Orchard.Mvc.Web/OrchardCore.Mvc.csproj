@@ -5,6 +5,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <WatchOnlyModuleProjectRazorFiles>true</WatchOnlyModuleProjectRazorFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +31,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
