@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -517,7 +517,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
             Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
-            Assert.StrictEqual("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
+            Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 
         public void Dispose()
