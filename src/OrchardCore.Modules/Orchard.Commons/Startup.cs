@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
@@ -39,11 +39,21 @@ namespace Orchard.Commons
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // TODO: Order to be the late in the return pipeline
-            app.AddDeferredTasks();
-
             serviceProvider.AddTagHelpers(typeof(ResourcesTagHelper).GetTypeInfo().Assembly);
             serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).GetTypeInfo().Assembly);
+        }
+    }
+
+    /// <summary>
+    /// Deferred tasks middleware is registered early as it has to run very late.
+    /// </summary>
+    public class DeferredTasksStartup : StartupBase
+    {
+        public override int Order => -50;
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.AddDeferredTasks();
         }
     }
 }

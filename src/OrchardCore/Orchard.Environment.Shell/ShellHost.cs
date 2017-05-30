@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -228,15 +228,9 @@ namespace Orchard.Environment.Shell
                 return Task.CompletedTask;
             }
 
-            ShellContext context;
-            if (!_shellContexts.TryGetValue(tenant, out context))
+            if (_shellContexts.TryRemove(tenant, out var context))
             {
-                return Task.CompletedTask;
-            }
-
-            if (_shellContexts.TryRemove(tenant, out context))
-            {
-                context.Dispose();
+                context.Release();
             }
 
             return Task.CompletedTask;
@@ -249,7 +243,7 @@ namespace Orchard.Environment.Shell
             if (_shellContexts.TryRemove(settings.Name, out context))
             {
                 _runningShellTable.Remove(settings);
-                context.Dispose();
+                context.Release();
             }
 
             GetOrCreateShellContext(settings);
