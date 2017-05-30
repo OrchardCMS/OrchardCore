@@ -55,9 +55,27 @@ namespace Orchard.Environment.Navigation
             return this;
         }
 
-        public List<MenuItem> Build()
+        public NavigationBuilder Remove(Predicate<MenuItem> match)
+        {
+            RemoveRecursive(Contained, match);
+            return this;
+        }
+
+        public virtual List<MenuItem> Build()
         {
             return (Contained ?? new List<MenuItem>()).ToList();
+        }
+
+        private static void RemoveRecursive(List<MenuItem> menuItems, Predicate<MenuItem> match)
+        {
+            menuItems.RemoveAll(match);
+            foreach (var menuItem in menuItems)
+            {
+                if (menuItem.Items?.Count > 0)
+                {
+                    RemoveRecursive(menuItem.Items, match);
+                }
+            }
         }
     }
 }
