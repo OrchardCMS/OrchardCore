@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ namespace Orchard.DeferredTasks
 
         public async Task ExecuteTasksAsync(DeferredTaskContext context)
         {
-            for(var i=0; i < _deferredTaskState.Tasks.Count; i++)
+            for (var i = 0; i < _deferredTaskState.Tasks.Count; i++)
             {
                 var task = _deferredTaskState.Tasks[i];
 
@@ -33,7 +33,7 @@ namespace Orchard.DeferredTasks
                 {
                     await task(context);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     _logger.LogError("An error occured while processing a deferred task: {0}", e);
                 }
