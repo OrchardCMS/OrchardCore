@@ -444,8 +444,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             Assert.Equal("Header:5", result6.Location);
         }
 
-        [Fact(Skip = "Path not supported yet")]
-        public void PathConstraintShouldMatch()
+        // "Path not supported yet"
+        [Fact]
+        internal void PathConstraintShouldMatch()
         {
             // all path have a trailing / as per the current implementation
             // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it

@@ -19,12 +19,12 @@
   <ItemGroup>
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
 
