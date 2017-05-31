@@ -1,7 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using Orchard.ContentManagement;
 using Orchard.Media.Models;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.Media.Indexes
 {

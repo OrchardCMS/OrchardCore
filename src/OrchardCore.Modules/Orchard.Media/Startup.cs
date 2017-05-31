@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +16,8 @@ using Orchard.Media.Indexes;
 using Orchard.Media.Models;
 using Orchard.Media.Tokens;
 using Orchard.StorageProviders.FileSystem;
-using Orchard.Tokens.Handlebars;
-using YesSql.Core.Indexes;
+using Orchard.Tokens;
+using YesSql.Indexes;
 
 namespace Orchard.Media
 {
@@ -85,9 +86,9 @@ namespace Orchard.Media
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var handlebars = serviceProvider.GetRequiredService<HandlebarsTokenizer>().Handlebar;
-
-            handlebars.RegisterMediaTokens();
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            var tokenHelper = serviceProvider.GetRequiredService<TokensHelper>();
+            tokenHelper.Handlebars.RegisterMediaTokens(httpContextAccessor);
         }
     }
 }

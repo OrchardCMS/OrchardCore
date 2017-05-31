@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.Media.Indexes;
-using YesSql.Core.Services;
+using YesSql;
+using ISession = YesSql.ISession;
 
 namespace Orchard.Media.Controllers
 {
@@ -42,7 +43,7 @@ namespace Orchard.Media.Controllers
             return Json(content.ToArray());
         }
 
-        public async Task<IActionResult> GetMediaItems(string path, [FromServices] IAuthorizationService authorizationService, [FromServices] YesSql.Core.Services.ISession session)
+        public async Task<IActionResult> GetMediaItems(string path, [FromServices] IAuthorizationService authorizationService, [FromServices] ISession session)
         {
             if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
             {
@@ -55,9 +56,9 @@ namespace Orchard.Media.Controllers
             }
 
             var media = await session
-                .QueryIndexAsync<MediaPartIndex>(x => x.Folder == path.ToLowerInvariant())
+                .QueryIndex<MediaPartIndex>(x => x.Folder == path.ToLowerInvariant())
                 .OrderBy(x => x.FileName)
-                .List();
+                .ListAsync();
 
             return Json(media.ToArray());
         }
@@ -146,7 +147,7 @@ namespace Orchard.Media.Controllers
         public async Task<IActionResult> DeleteFolder(
             string path,
             [FromServices] IAuthorizationService authorizationService,
-            [FromServices] YesSql.Core.Services.ISession session,
+            [FromServices] ISession session,
             [FromServices] IContentManager contentManager)
         {
             if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
@@ -166,7 +167,7 @@ namespace Orchard.Media.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete path");
             }
 
-            var mediaItems = await session.QueryAsync<ContentItem, MediaPartIndex>(x => x.Folder.StartsWith(path.ToLowerInvariant())).List();
+            var mediaItems = await session.Query<ContentItem, MediaPartIndex>(x => x.Folder.StartsWith(path.ToLowerInvariant())).ListAsync();
             foreach (var mediaItem in mediaItems)
             {
                 if (await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia, mediaItem))
