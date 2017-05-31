@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Modules;
@@ -12,8 +12,8 @@ using Orchard.ContentManagement.Records;
 using Orchard.ContentTypes.Events;
 using Orchard.ContentTypes.ViewModels;
 using Orchard.Events;
-using Microsoft.AspNetCore.Mvc.Modules.Utilities;
-using YesSql.Core.Services;
+using Orchard.Mvc.Utilities;
+using YesSql;
 
 namespace Orchard.ContentTypes.Services
 {
@@ -127,8 +127,8 @@ namespace Orchard.ContentTypes.Services
             if (deleteContent)
             {
                 var contentItems = _session
-                    .QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentType == name)
-                    .List().Result;
+                    .Query<ContentItem, ContentItemIndex>(x => x.ContentType == name)
+                    .ListAsync().GetAwaiter().GetResult();
 
                 foreach (var contentItem in contentItems)
                 {

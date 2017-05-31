@@ -11,7 +11,7 @@ using Orchard.ContentManagement.MetaData;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Menu.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Menu.Controllers
 {

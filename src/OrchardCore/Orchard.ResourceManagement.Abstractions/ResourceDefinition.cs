@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Concurrent;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -26,11 +25,7 @@ namespace Orchard.ResourceManagement
             { "script", TagRenderMode.Normal },
             { "link", TagRenderMode.SelfClosing }
         };
-        private static readonly Dictionary<string, string> _resourceTypeDirectories = new Dictionary<string, string> {
-            {"script", "scripts/"},
-            {"stylesheet", "styles/"}
-        };
-
+        
         private string _basePath;
 
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
@@ -43,29 +38,7 @@ namespace Orchard.ResourceManagement
             FilePathAttributeName = _filePathAttributes.ContainsKey(TagName) ? _filePathAttributes[TagName] : null;
             TagRenderMode = _fileTagRenderModes.ContainsKey(TagName) ? _fileTagRenderModes[TagName] : TagRenderMode.Normal;
         }
-
-        internal static string GetBasePathFromViewPath(string resourceType, string viewPath)
-        {
-            if (String.IsNullOrEmpty(viewPath))
-            {
-                return null;
-            }
-            string basePath = null;
-            var viewsPartIndex = viewPath.IndexOf("/Views", StringComparison.OrdinalIgnoreCase);
-            if (viewsPartIndex >= 0)
-            {
-                basePath = viewPath.Substring(0, viewsPartIndex + 1) + GetResourcePath(resourceType);
-            }
-            return basePath;
-        }
-
-        internal static string GetResourcePath(string resourceType)
-        {
-            string path;
-            _resourceTypeDirectories.TryGetValue(resourceType, out path);
-            return path ?? "";
-        }
-
+        
         private static string Coalesce(params string[] strings)
         {
             foreach (var str in strings)
@@ -85,22 +58,6 @@ namespace Orchard.ResourceManagement
         public string Name { get; private set; }
         public string Type { get; private set; }
         public string Version { get; private set; }
-        public string BasePath
-        {
-            get
-            {
-                if (!String.IsNullOrEmpty(_basePath))
-                {
-                    return _basePath;
-                }
-                var basePath = Manifest.BasePath;
-                if (!String.IsNullOrEmpty(basePath))
-                {
-                    basePath += GetResourcePath(Type);
-                }
-                return basePath ?? "";
-            }
-        }
         public string Url { get; private set; }
         public string UrlDebug { get; private set; }
         public string UrlCdn { get; private set; }
@@ -109,7 +66,7 @@ namespace Orchard.ResourceManagement
         public string CdnIntegrity { get; private set; }
         public string[] Cultures { get; private set; }
         public bool CdnSupportsSsl { get; private set; }
-        public IEnumerable<string> Dependencies { get; private set; }
+        public List<string> Dependencies { get; private set; }
         public string FilePathAttributeName { get; private set; }
         public AttributeDictionary Attributes { get; private set; }
 
@@ -214,7 +171,13 @@ namespace Orchard.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            Dependencies = dependencies;
+            if (Dependencies == null)
+            {
+                Dependencies = new List<string>();
+            }
+
+            Dependencies.AddRange(dependencies);
+
             return this;
         }
 

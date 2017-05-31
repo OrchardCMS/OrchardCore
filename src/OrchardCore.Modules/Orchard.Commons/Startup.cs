@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -7,10 +8,13 @@ using Orchard.BackgroundTasks;
 using Orchard.Data;
 using Orchard.DeferredTasks;
 using Orchard.DisplayManagement;
+using Orchard.DisplayManagement.TagHelpers;
 using Orchard.Environment.Cache;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Shell.Data;
+using Orchard.Mvc;
 using Orchard.ResourceManagement;
+using Orchard.ResourceManagement.TagHelpers;
 
 namespace Orchard.Commons
 {
@@ -35,7 +39,20 @@ namespace Orchard.Commons
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            // TODO: Order to be the late in the return pipeline
+            serviceProvider.AddTagHelpers(typeof(ResourcesTagHelper).GetTypeInfo().Assembly);
+            serviceProvider.AddTagHelpers(typeof(ShapeTagHelper).GetTypeInfo().Assembly);
+        }
+    }
+
+    /// <summary>
+    /// Deferred tasks middleware is registered early as it has to run very late.
+    /// </summary>
+    public class DeferredTasksStartup : StartupBase
+    {
+        public override int Order => -50;
+
+        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        {
             app.AddDeferredTasks();
         }
     }

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Orchard.Deployment.Remote.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Deployment.Remote.Services
 {
@@ -23,7 +23,7 @@ namespace Orchard.Deployment.Remote.Services
                 return _remoteInstanceList;
             }
 
-            _remoteInstanceList = await _session.QueryAsync<RemoteInstanceList>().FirstOrDefault();
+            _remoteInstanceList = await _session.Query<RemoteInstanceList>().FirstOrDefaultAsync();
 
             if (_remoteInstanceList == null)
             {

@@ -1,4 +1,5 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
+﻿using Orchard.Autoroute.Drivers;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
 using Orchard.Data.Migration;
@@ -22,7 +23,8 @@ namespace Orchard.Autoroute
 
             SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("Path", col => col.WithLength(1024))
+                .Column<string>("Path", col => col.WithLength(AutoroutePartDisplay.MaxPathLength))
+                .Column<bool>("Published")
             );
 
             SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table

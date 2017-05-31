@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -83,10 +83,7 @@ namespace Orchard.Environment.Shell
                     {
                         Features = shellState.Features
                             .Where(FeatureShouldBeLoadedForStateChangeNotifications)
-                            .Select(x => new ShellFeature
-                            {
-                                Id = x.Id
-                            })
+                            .Select(x => new ShellFeature { Id = x.Id })
                             .ToArray()
                     };
 

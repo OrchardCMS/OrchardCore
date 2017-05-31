@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Modules.ActionConstraints;
+using Orchard.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
@@ -22,7 +22,8 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
 using Orchard.Navigation;
 using Orchard.Settings;
-using YesSql.Core.Services;
+using YesSql;
+using YesSql.Services;
 
 namespace Orchard.Contents.Controllers
 {
@@ -75,7 +76,7 @@ namespace Orchard.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var query = _session.QueryAsync<ContentItem, ContentItemIndex>();
+            var query = _session.Query<ContentItem, ContentItemIndex>();
 
             switch (model.Options.ContentsStatus)
             {
@@ -154,8 +155,8 @@ namespace Orchard.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.Count());
-            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).List();
+            var pagerShape = New.Pager(pager).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync());
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var contentItemSummaries = new List<dynamic>();
             foreach(var contentItem in pageOfContentItems)
@@ -495,6 +496,12 @@ namespace Orchard.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
+            // The content item needs to be marked as saved (again) in case the drivers or the handlers have
+            // executed some query which would flush the saved entities. In this case the changes happening in handlers 
+            // would not be taken into account.
+
+            _session.Save(contentItem);
+
             //if (!string.IsNullOrWhiteSpace(returnUrl)
             //    && previousRoute != null
             //    && !String.Equals(contentItem.As<IAliasAspect>().Path, previousRoute, StringComparison.OrdinalIgnoreCase))
@@ -503,7 +510,7 @@ namespace Orchard.Contents.Controllers
             //}
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            
+
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });

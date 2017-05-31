@@ -1,0 +1,23 @@
+@model CustomFileDeploymentStepViewModel
+
+<h5>@T["Custom File"]</h5>
+
+<fieldset class="form-group">
+    <div class="row">
+        <div class="col-sm">
+            <span class="hint">@T["The custom file to add as part of the plan."]</span>
+        </div>
+    </div>
+</fieldset>
+
+<div class="form-group" asp-validation-class-for="FileName">
+    <label asp-for="FileName">@T["File Name"] <span asp-validation-for="FileName"></span></label>
+    <input asp-for="FileName" class="form-control" />
+    <span class="hint">@T["The filename as it will be added in the archive."]</span>
+</div>
+
+<div class="form-group">
+    <label asp-for="FileContent">@T["File Content"]</label>
+    <code><textarea asp-for="FileContent" class="form-control"></textarea></code>
+    <span class="hint">@T["The content of the file."]</span>
+</div>

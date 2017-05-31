@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ using Orchard.Settings;
 using Orchard.Users.Indexes;
 using Orchard.Users.Models;
 using Orchard.Users.ViewModels;
-using YesSql.Core.Services;
+using YesSql;
 using Orchard.Users.Services;
 
 namespace Orchard.Users.Controllers
@@ -78,7 +78,7 @@ namespace Orchard.Users.Controllers
                 options = new UserIndexOptions();
             }
 
-            var users = _session.QueryAsync<User, UserIndex>();
+            var users = _session.Query<User, UserIndex>();
 
             switch (options.Filter)
             {
@@ -114,12 +114,12 @@ namespace Orchard.Users.Controllers
                     break;
             }
 
-            var count = await users.Count();
+            var count = await users.CountAsync();
 
             var results = await users
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .List();
+                .ListAsync();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();

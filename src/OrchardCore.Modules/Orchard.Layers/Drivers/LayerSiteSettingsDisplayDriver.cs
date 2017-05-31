@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
+using Orchard.Entities.DisplayManagement;
 using Orchard.Layers.Models;
 using Orchard.Layers.ViewModels;
-using Orchard.Settings.Services;
+using Orchard.Settings;
 
 namespace Orchard.Layers.Drivers
 {
-    public class LayerSiteSettingsDisplayDriver : SiteSettingsSectionDisplayDriver<LayerSettings>
+    public class LayerSiteSettingsDisplayDriver : SectionDisplayDriver<ISite, LayerSettings>
     {
         public const string GroupId = "layers";
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
@@ -24,13 +24,8 @@ namespace Orchard.Contents.Controllers
             _contentManager = contentManager;
         }
 
-        public async Task<IActionResult> Display(string contentItemId, int? version)
+        public async Task<IActionResult> Display(string contentItemId)
         {
-            if (version.HasValue)
-            {
-                return await Preview(contentItemId, version);
-            }
-
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Published);
 
             if (contentItem == null)
@@ -48,7 +43,7 @@ namespace Orchard.Contents.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Preview(string contentItemId, int? version)
+        public async Task<IActionResult> Preview(string contentItemId)
         {
             if (contentItemId == null)
             {
@@ -56,11 +51,6 @@ namespace Orchard.Contents.Controllers
             }
 
             var versionOptions = VersionOptions.Latest;
-
-            if (version != null)
-            {
-                versionOptions = VersionOptions.Number((int)version);
-            }
 
             var contentItem = await _contentManager.GetAsync(contentItemId, versionOptions);
 

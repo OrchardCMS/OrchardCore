@@ -17,7 +17,7 @@ namespace Orchard.Lucene.Controllers
     public class SearchController : Controller
     {
         private readonly ISiteService _siteService;
-        private readonly LuceneIndexProvider _luceneIndexProvider;
+        private readonly LuceneIndexManager _luceneIndexProvider;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IContentManager _contentManager;
 
@@ -25,7 +25,7 @@ namespace Orchard.Lucene.Controllers
 
         public SearchController(
             ISiteService siteService,
-            LuceneIndexProvider luceneIndexProvider,
+            LuceneIndexManager luceneIndexProvider,
             LuceneIndexingService luceneIndexingService,
             IContentManager contentManager,
             ILogger<SearchController> logger
@@ -44,11 +44,11 @@ namespace Orchard.Lucene.Controllers
         public async Task<IActionResult> Index(string id, string q, PagerParameters pagerParameters)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            Pager pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var indexName = "Search";
 
-            if (!String.IsNullOrWhiteSpace(id))
+            if (!string.IsNullOrWhiteSpace(id))
             {
                 indexName = id;
             }
@@ -58,7 +58,7 @@ namespace Orchard.Lucene.Controllers
                 return NotFound();
             }
 
-            if (String.IsNullOrWhiteSpace(q))
+            if (string.IsNullOrWhiteSpace(q))
             {
                 return View(new SearchIndexViewModel
                 {
@@ -84,24 +84,26 @@ namespace Orchard.Lucene.Controllers
                 });
             }
 
-            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.SearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
+            var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, new StandardAnalyzer(LuceneSettings.DefaultVersion));
             var query = queryParser.Parse(QueryParser.Escape(q));
 
             var contentItemIds = new List<string>();
 
-            _luceneIndexProvider.Search(indexName, searcher =>
+            await _luceneIndexProvider.SearchAsync(indexName, searcher =>
             {
                 // Fetch one more result than PageSize to generate "More" links
-                TopScoreDocCollector collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
+                var collector = TopScoreDocCollector.Create(pager.PageSize + 1, true);
 
                 searcher.Search(query, collector);
-                TopDocs hits = collector.TopDocs(pager.GetStartIndex(), pager.PageSize + 1);
+                var hits = collector.GetTopDocs(pager.GetStartIndex(), pager.PageSize + 1);
 
                 foreach (var hit in hits.ScoreDocs)
                 {
                     var d = searcher.Doc(hit.Doc, IdSet);
-                    contentItemIds.Add(d.GetField("ContentItemId").StringValue);
+                    contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
                 }
+
+                return Task.CompletedTask;
             });
 
             var contentItems = new List<ContentItem>();

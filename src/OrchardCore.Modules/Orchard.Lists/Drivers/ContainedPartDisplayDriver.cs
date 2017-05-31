@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Lists.Models;
 using Orchard.Lists.ViewModels;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Lists.Drivers
 {

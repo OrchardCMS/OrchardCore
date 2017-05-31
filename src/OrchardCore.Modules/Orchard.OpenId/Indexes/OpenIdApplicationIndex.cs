@@ -1,5 +1,5 @@
 ﻿using Orchard.OpenId.Models;
-using YesSql.Core.Indexes;
+using YesSql.Indexes;
 
 namespace Orchard.OpenId.Indexes
 {

@@ -1,26 +1,45 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <ModuleProjectReferencesFile>obj/$(MSBuildProjectFile).ModuleProjectReferences.txt</ModuleProjectReferencesFile>
+  </PropertyGroup>
+
   <!--
-    Defines msbuild tasks on a Bundle package to copy all extensions assets to the project folder.
+    Defines msbuild tasks on a Bundle package to copy all modules assets (projects and packages) to the "Packages" folder.
   -->
 
   <Target Name="CopyPackageAssets" AfterTargets="Build" Condition="'$(IgnorePackageAssets)' != 'true'">
-    <ItemGroup>
-      <PackageAssetFiles
-        Include="$(Temp)\OrchardCorePackages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
-      <ProjectAssetFiles
-        Include="$(MSBuildProjectDirectory)\Packages\**\$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName(%(_MSBuildProjectReferenceExistent.Directory)))))\**\*"
-        Condition="'@(_MSBuildProjectReferenceExistent)' != ''" />
-    </ItemGroup>
-    <Delete
-      Files="@(ProjectAssetFiles)"
-      Condition="!Exists('$(Temp)\OrchardCorePackages\%(RecursiveDir)%(Filename)%(Extension)')"
-      ContinueOnError="true"/>
     <Message Text="Copying package assets" Importance="high" />
     <Copy
       SourceFiles="@(PackageAssetFiles)"
-      DestinationFolder="$(MSBuildProjectDirectory)\Packages\%(RecursiveDir)"
+      DestinationFolder="Packages\%(RecursiveDir)"
+      ContinueOnError="true" />
+
+    <ItemGroup>
+      <ModuleProjectReferences
+        Include="@(_MSBuildProjectReferenceExistent)"
+        Condition="Exists('%(RootDir)%(Directory)Module.txt') Or Exists('%(RootDir)%(Directory)obj\Module.txt') Or
+                   Exists('%(RootDir)%(Directory)Theme.txt') Or Exists('%(RootDir)%(Directory)obj\Theme.txt')" />
+    </ItemGroup>
+
+    <MSBuild
+      Targets="CopyPackageAssetFiles"
+      BuildInParallel="$(BuildInParallel)"
+      Properties="ApplicationDirectory=$(MSBuildProjectDirectory)"
+      Projects="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
+      ContinueOnError="true">
+    </MSBuild>
+
+    <Message Text="Generating module project references file: $(MSBuildProjectName)"
+      Condition="'@(ModuleProjectReferences)' != ''" Importance="high" />
+
+    <WriteLinesToFile
+      File="$(ModuleProjectReferencesFile)"
+      Lines="@(ModuleProjectReferences)"
+      Condition="'@(ModuleProjectReferences)' != ''"
+      Overwrite="true"
+      Encoding="Unicode"
       ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
@@ -31,28 +50,58 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanPackageAssets" AfterTargets="Clean" Condition="'$(IgnorePackageAssets)' != 'true'">
+  <Target Name="CleanPackageAssets" AfterTargets="Clean"
+          Condition="'$(IgnorePackageAssets)' != 'true' And Exists('Packages')">
     <ItemGroup>
-     <AllPackageAssetFiles
-       Include="$(MSBuildProjectDirectory)\Packages\**" />
+     <AllPackageAssetFiles Include="Packages\**" />
     </ItemGroup>
     <Delete
       Files="@(AllPackageAssetFiles)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
       ContinueOnError="true" />
     <RemoveDir
-      Directories="$(MSBuildProjectDirectory)\Packages\%(AllPackageAssetFiles.RecursiveDir)"
-      Condition="Exists('$(MSBuildProjectDirectory)\Packages')"
+      Directories="Packages\%(AllPackageAssetFiles.RecursiveDir)"
       ContinueOnError="true" />
   </Target>
 
+  <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects"
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true'">
+    <ItemGroup>
+      <ProjectReference Remove="@(ProjectReference)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="WatchModuleProjectRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
+    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
+      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
+    </ReadLinesFromFile>
+    <ItemGroup>
+      <Watch Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyModuleProjectRazorFiles"
+          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
+    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
+      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
+    </ReadLinesFromFile>
+    <ItemGroup>
+      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
+        <ProjectName>%(Filename)</ProjectName>
+      </ModuleProjectRazorFiles>
+    </ItemGroup>
+    <Message Text="Copying module project razor files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="@(ModuleProjectRazorFiles)"
+      DestinationFolder="Packages\%(ProjectName)\%(RecursiveDir)" />
+  </Target>
+
   <!--
-    Defines msbuild props and items on a Bundle package to publish all extensions assets (local and packages).
+    Defines msbuild props and items on a Bundle package to publish all modules assets (projects and packages).
   -->
 
   <PropertyGroup>
     <MvcRazorExcludeViewFilesFromPublish>false</MvcRazorExcludeViewFilesFromPublish>
-    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
   </PropertyGroup>
 
   <ItemGroup>

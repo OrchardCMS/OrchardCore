@@ -9,8 +9,8 @@ using Orchard.DisplayManagement.ModelBinding;
 using Orchard.Lists.Indexes;
 using Orchard.Lists.Models;
 using Orchard.Navigation;
-using YesSql.Core.Query;
-using YesSql.Core.Services;
+using YesSql;
+using YesSql.Services;
 
 namespace Orchard.Lists.Services
 {

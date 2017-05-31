@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +10,7 @@ using Orchard.Environment.Cache;
 using Orchard.Layers.Handlers;
 using Orchard.Layers.Indexes;
 using Orchard.Layers.Models;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Layers.Services
 {
@@ -38,7 +38,7 @@ namespace Orchard.Layers.Services
 
 			if (!_memoryCache.TryGetValue(LayersCacheKey, out layers))
 			{
-				layers = await _session.QueryAsync<LayersDocument>().FirstOrDefault();
+				layers = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
 				if (layers == null)
 				{
@@ -62,18 +62,18 @@ namespace Orchard.Layers.Services
 			return layers;
 		}
 
-		public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
+		public Task<IEnumerable<LayerMetadata>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
 		{
-			return await _memoryCache.GetOrCreateAsync("Orchard.Layers:Layers" + predicate.ToString(), async entry =>
+			return _memoryCache.GetOrCreateAsync("Orchard.Layers:Layers" + predicate.ToString(), async entry =>
 			{
 				entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
 
 				var allWidgets = await _session
-				.QueryAsync<ContentItem, LayerMetadataIndex>()
-				.With(predicate)
-				.List();
+				    .Query<ContentItem, LayerMetadataIndex>()
+				    .With(predicate)
+				    .ListAsync();
 
-				return allWidgets
+				return (IEnumerable<LayerMetadata>)allWidgets
 					.Select(x => x.As<LayerMetadata>())
 					.Where(x => x != null)
 					.OrderBy(x => x.Position)
@@ -83,7 +83,7 @@ namespace Orchard.Layers.Services
 
 		public async Task UpdateAsync(LayersDocument layers)
 		{
-			var existing = await _session.QueryAsync<LayersDocument>().FirstOrDefault();
+			var existing = await _session.Query<LayersDocument>().FirstOrDefaultAsync();
 
 			existing.Layers = layers.Layers;
 			_session.Save(existing);

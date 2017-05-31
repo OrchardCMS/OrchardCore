@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Orchard.ContentManagement;
 using Orchard.Alias.Indexes;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Alias.Services
 {
@@ -22,7 +22,7 @@ namespace Orchard.Alias.Services
             {
                 alias = alias.Substring(6);
 
-                var aliasPartIndex = await _session.QueryAsync<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefault();
+                var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
                 return aliasPartIndex?.ContentItemId;
             }
 

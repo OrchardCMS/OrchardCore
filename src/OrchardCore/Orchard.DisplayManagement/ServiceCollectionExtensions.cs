@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Modules.LocationExpander;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Orchard.Mvc;
+using Orchard.Mvc.LocationExpander;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Orchard.DisplayManagement.Descriptors;
@@ -43,7 +45,8 @@ namespace Orchard.DisplayManagement
             {
                 options.FileProviders.Add(new ThemingFileProvider());
             });
-			
+
+            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
             services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
 
@@ -61,7 +64,7 @@ namespace Orchard.DisplayManagement
             {
                 options.Filters.Add(typeof(NotifyFilter));
             });
-		
+
             services.AddScoped<IShapeTemplateHarvester, BasicShapeTemplateHarvester>();
             services.AddTransient<IShapeTableManager, DefaultShapeTableManager>();
 

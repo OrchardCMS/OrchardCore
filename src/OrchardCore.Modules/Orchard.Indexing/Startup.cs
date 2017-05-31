@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data.Migration;
@@ -14,7 +14,6 @@ namespace Orchard.Indexing
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
             services.AddScoped<IIndexingTaskManager, IndexingTaskManager>();
             services.AddScoped<IContentHandler, CreateIndexingTaskContentHandler>();
             services.AddScoped<IDataMigration, Migrations>();

@@ -1,11 +1,9 @@
-﻿using System.Threading.Tasks;
-using Orchard.ContentManagement;
+using System.Threading.Tasks;
 
 namespace Orchard.Indexing
 {
     /// <summary>
-    /// An implementation of <see cref="IContentItemIndexHandler"/> is able to take part in the rendering of
-    /// a <see cref="ContentItem"/> instance.
+    /// An implementation of <see cref="IContentItemIndexHandler"/> can provide property values for an index document.
     /// </summary>
     public interface IContentItemIndexHandler
     {

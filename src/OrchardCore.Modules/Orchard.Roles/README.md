@@ -1,4 +1,4 @@
-﻿# CONFIGURATION
+# CONFIGURATION
 Roles can be configured through the roles menu in admin dasboard but also through a recipe step.
 
 A sample of roles configuration step:

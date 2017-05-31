@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Orchard.ContentFields.Fields;
+using Orchard.ContentFields.Settings;
 using Orchard.Indexing;
 
 namespace Orchard.ContentFields.Indexing
@@ -8,8 +9,17 @@ namespace Orchard.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(NumericField field, BuildFieldIndexContext context)
         {
+            var settings = context.ContentPartFieldDefinition.Settings.ToObject<NumericFieldSettings>();
             var options = context.Settings.ToOptions();
-            context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Value, DocumentIndex.Types.Number, options));
+
+            if (settings.Scale == 0)
+            {
+                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry((int?)field.Value, DocumentIndex.Types.Integer, options));
+            }
+            else
+            {
+                context.DocumentIndex.Entries.Add(context.Key, new DocumentIndex.DocumentIndexEntry(field.Value, DocumentIndex.Types.Number, options));
+            }
 
             return Task.CompletedTask;
         }

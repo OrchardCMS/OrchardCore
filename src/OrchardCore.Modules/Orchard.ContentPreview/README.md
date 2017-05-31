@@ -1,4 +1,4 @@
-﻿## CREDITS
+## CREDITS
 
 ### jquery-resizable
 https://github.com/RickStrahl/jquery-resizable

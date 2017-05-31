@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Orchard.Body.Model;
 using Orchard.Body.Settings;
@@ -36,8 +37,7 @@ namespace Orchard.Body.Handlers
 
                 if (settings.RenderTokens && !string.IsNullOrEmpty(body))
                 {
-                    var tokenContext = _tokenizer.CreateViewModel().Content(part.ContentItem);
-                    body = _tokenizer.Tokenize(body, tokenContext);
+                    body = _tokenizer.Tokenize(body, new Dictionary<string, object> { ["Content"] = part.ContentItem });
                 }
 
                 bodyAspect.Body = new HtmlString(body);

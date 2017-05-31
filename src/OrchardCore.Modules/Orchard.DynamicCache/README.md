@@ -1,4 +1,4 @@
-﻿# Dynamic Cache (Orchard.DynamicCache)
+# Dynamic Cache (Orchard.DynamicCache)
 
 ## Purpose
 
