@@ -1,9 +1,14 @@
-﻿$(function () {
+$(function () {
     $('#fileupload').fileupload({
         dataType: 'json',
         url: $('#uploadFiles').val(),
         formData: function() {
-            return [{name: 'path', value: mediaApp.selectedFolder.path}]
+            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+            return [
+                {name: 'path', value: mediaApp.selectedFolder.path},
+                {name: '__RequestVerificationToken', value: antiForgeryToken},
+            ]
         },
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {

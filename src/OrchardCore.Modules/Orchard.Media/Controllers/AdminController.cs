@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.Media.Indexes;
 using YesSql;
@@ -15,10 +16,14 @@ namespace Orchard.Media.Controllers
     public class AdminController : Controller
     {
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly ILogger _logger;
 
-        public AdminController(IMediaFileStore mediaFileStore)
+        public AdminController(
+            IMediaFileStore mediaFileStore,
+            ILogger<AdminController> logger)
         {
             _mediaFileStore = mediaFileStore;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -56,7 +61,7 @@ namespace Orchard.Media.Controllers
             }
 
             var media = await session
-                .QueryIndex<MediaPartIndex>(x => x.Folder == path.ToLowerInvariant())
+                .QueryIndex<MediaPartIndex>(x => x.NormalizedFolder == path.ToUpperInvariant())
                 .OrderBy(x => x.FileName)
                 .ListAsync();
 
@@ -64,7 +69,6 @@ namespace Orchard.Media.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
         public async Task<ActionResult> Upload(
             string path,
             string contentType,
@@ -131,6 +135,8 @@ namespace Orchard.Media.Controllers
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError("An error occured while uploading a media: " + ex.Message);
+
                     result.Add(new
                     {
                         name = file.FileName,
@@ -167,7 +173,7 @@ namespace Orchard.Media.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, "Cannot delete path");
             }
 
-            var mediaItems = await session.Query<ContentItem, MediaPartIndex>(x => x.Folder.StartsWith(path.ToLowerInvariant())).ListAsync();
+            var mediaItems = await session.Query<ContentItem, MediaPartIndex>(x => x.NormalizedFolder.StartsWith(path.ToUpperInvariant())).ListAsync();
             foreach (var mediaItem in mediaItems)
             {
                 if (await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia, mediaItem))

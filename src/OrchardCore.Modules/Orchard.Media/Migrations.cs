@@ -1,4 +1,4 @@
-﻿using Orchard.ContentManagement.Metadata.Settings;
+using Orchard.ContentManagement.Metadata.Settings;
 using Orchard.ContentManagement.MetaData;
 using Orchard.Data.Migration;
 using Orchard.Media.Indexes;
@@ -26,18 +26,16 @@ namespace Orchard.Media
 
             SchemaBuilder.CreateMapIndexTable(nameof(MediaPartIndex), table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("MimeType", c => c.WithLength(64))
+                .Column<string>("MimeType", c => c.WithLength(127))
                 .Column<string>("Folder", col => col.WithLength(1024))
+                .Column<string>("NormalizedFolder", col => col.WithLength(1024))
                 .Column<string>("FileName", col => col.WithLength(1024))
-                .Column<long>("Length", col => col.WithLength(1024))
+                .Column<string>("NormalizedFileName", col => col.WithLength(1024))
+                .Column<long>("Length")
             );
 
             SchemaBuilder.AlterTable(nameof(MediaPartIndex), table => table
-                .CreateIndex("IDX_MediaPartIndex_Folder", "Folder")
-            );
-
-            SchemaBuilder.AlterTable(nameof(MediaPartIndex), table => table
-                .CreateIndex("IDX_MediaPartIndex_Folder_FileName", new[] { "Folder", "FileName" })
+                .CreateIndex("IDX_MediaPartIndex_NormalizedFolder", "NormalizedFolder")
             );
 
             return 1;

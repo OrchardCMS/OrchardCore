@@ -10,8 +10,15 @@ namespace Orchard.Media.Indexes
         public string ContentItemId { get; set; }
         public string MimeType { get; set; }
         public string Folder { get; set; }
+        public string NormalizedFolder { get; set; }
         public string FileName { get; set; }
+        public string NormalizedFileName { get; set; }
         public long Length { get; set; }
+
+        public static string Normalize(string filePart)
+        {
+            return filePart.ToUpperInvariant();
+        }
     }
 
     public class MediaPartIndexProvider : IndexProvider<ContentItem>
@@ -40,7 +47,9 @@ namespace Orchard.Media.Indexes
                             ContentItemId = contentItem.ContentItemId,
                             MimeType = imagePart.MimeType.ToLowerInvariant(),
                             Folder = folder,
+                            NormalizedFolder = MediaPartIndex.Normalize(folder),
                             FileName = filename,
+                            NormalizedFileName = MediaPartIndex.Normalize(filename),
                             Length = imagePart.Length
                         };
                     }
