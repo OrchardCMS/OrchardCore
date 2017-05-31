@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display;
@@ -64,12 +66,36 @@ namespace Orchard.ContentPreview.Controllers
             }
 
             var contentItem = _contentManager.New(id);
+
             
+            // Assign the ids from the currently edited item so that validation thinks
+            // it's working on the same item. For instance if drivers are checking name unicity
+            // they need to think this is the same existing item (AutoroutePart).
+
+            var contentItemId = Request.Form["PreviewContentItemId"];
+            var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
+            int.TryParse(Request.Form["PreviewId"], out var contentId);
+
+            contentItem.Id = contentId;
+            contentItem.ContentItemId = contentItemId;
+            contentItem.ContentItemVersionId = contentItemVersionId;
+
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this);
 
             if (!ModelState.IsValid)
             {
-                return StatusCode(500);
+                var errors = new List<string>();
+                foreach (var modelState in ValidationHelpers.GetModelStateList(ViewData, false))
+                {
+                    for (var i = 0; i < modelState.Errors.Count; i++)
+                    {
+                        var modelError = modelState.Errors[i];
+                        var errorText = ValidationHelpers.GetModelErrorMessageOrDefault(modelError);
+                        errors.Add(errorText);
+                    }
+                }
+
+                return StatusCode(500, new { errors = errors });
             }
 
             model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this, "Detail");
