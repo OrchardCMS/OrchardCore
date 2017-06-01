@@ -1,6 +1,6 @@
-@model UsersIndexViewModel
+﻿@model UsersIndexViewModel
 @using Orchard.Users.ViewModels;
-@inject Microsoft.AspNetCore.Identity.UserManager<Orchard.Security.IUser> UserNamanger
+@inject Microsoft.AspNetCore.Identity.UserManager<Orchard.Users.IUser> UserNamanger
 
 <h1>@RenderTitleSegments(T["Users"])</h1>
 

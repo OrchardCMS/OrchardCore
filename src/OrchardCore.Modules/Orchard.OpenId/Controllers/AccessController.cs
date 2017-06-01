@@ -19,6 +19,7 @@ using Orchard.Mvc.ActionConstraints;
 using Orchard.OpenId.Models;
 using Orchard.OpenId.ViewModels;
 using Orchard.Security;
+using Orchard.Users;
 
 namespace Orchard.OpenId.Controllers
 {

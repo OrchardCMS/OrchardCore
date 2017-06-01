@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using Orchard.Security;
 
 namespace Orchard.Users.Services
 {
