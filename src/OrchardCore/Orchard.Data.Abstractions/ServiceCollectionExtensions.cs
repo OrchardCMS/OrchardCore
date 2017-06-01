@@ -8,14 +8,13 @@ namespace Orchard.Data
     {
         public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString = false)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var databaseProvider = serviceProvider.GetServices<DatabaseProvider>()
-                .SingleOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+            var service = services.SingleOrDefault(s => s.ImplementationInstance is DatabaseProvider databaseProvider &&
+                string.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (databaseProvider != null)
+            if (service != null)
             {
-                var serviceDescriptor = new ServiceDescriptor(typeof(DatabaseProvider), databaseProvider);
-                services.Remove(serviceDescriptor);
+                var descriptor = new ServiceDescriptor(typeof(DatabaseProvider), service);
+                services.Remove(descriptor);
                 services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString });
             }
 
