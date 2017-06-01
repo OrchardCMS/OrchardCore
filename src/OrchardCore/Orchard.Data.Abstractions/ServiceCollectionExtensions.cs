@@ -1,26 +1,23 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Data
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString)
+        public static IServiceCollection TryAddDataProvider(this IServiceCollection services, string name, string value, bool hasConnectionString = false)
         {
-            for (var i = services.Count - 1; i >= 0; i--)
-            {
-                var entry = services[i];
-                if (entry.ImplementationInstance != null)
-                {
-                    var databaseProvider = entry.ImplementationInstance as DatabaseProvider;
-                    if (databaseProvider != null && String.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        services.RemoveAt(i);
-                    }
-                }
-            }
+            var serviceProvider = services.BuildServiceProvider();
+            var databaseProvider = serviceProvider.GetServices<DatabaseProvider>()
+                .SingleOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString });
+            if (databaseProvider != null)
+            {
+                var serviceDescriptor = new ServiceDescriptor(typeof(DatabaseProvider), databaseProvider);
+                services.Remove(serviceDescriptor);
+                services.AddSingleton(new DatabaseProvider { Name = name, Value = value, HasConnectionString = hasConnectionString });
+            }
 
             return services;
         }
