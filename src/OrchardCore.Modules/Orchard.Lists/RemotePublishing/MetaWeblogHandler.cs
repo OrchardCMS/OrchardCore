@@ -26,7 +26,7 @@ using YesSql;
 
 namespace Orchard.Lists.RemotePublishing
 {
-    [Feature("Orchard.RemotePublishing")]
+    [RequireFeatures("Orchard.RemotePublishing")]
     public class MetaWeblogHandler : IXmlRpcHandler
     {
         private readonly IContentManager _contentManager;
