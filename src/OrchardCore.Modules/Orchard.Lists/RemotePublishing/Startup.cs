@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -9,7 +9,7 @@ using Orchard.Core.XmlRpc;
 namespace Orchard.Lists.RemotePublishing
 {
 
-    [Feature("Orchard.RemotePublishing")]
+    [RequireFeatures("Orchard.RemotePublishing")]
     public class RemotePublishingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
