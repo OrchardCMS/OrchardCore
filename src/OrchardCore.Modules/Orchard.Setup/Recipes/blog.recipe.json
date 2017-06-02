@@ -340,10 +340,10 @@
                 "DisplayName": "Image",
                 "Settings": {
                     "Creatable": "False",
-                    "Draftable": "True",
-                    "Listable": "True",
-                    "Securable": "True",
-                    "Stereotype": "Widget"
+                    "Draftable": "False",
+                    "Listable": "False",
+                    "Securable": "False",
+                    "Stereotype": null
                 },
                 "ContentTypePartDefinitionRecords": [
                     {
