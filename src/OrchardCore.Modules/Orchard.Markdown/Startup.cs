@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.Indexing;
 using Orchard.Markdown.Drivers;
 using Orchard.Markdown.Fields;
@@ -33,6 +34,8 @@ namespace Orchard.Markdown
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
+
+            services.AddScoped<IShapeTableProvider, MediaShapes>();
 
             services.AddNullTokenizer();
         }

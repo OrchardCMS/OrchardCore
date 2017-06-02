@@ -1,4 +1,4 @@
-﻿@import '../../../Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss';
+@import '../../../Orchard.Resources/Assets/Bootstrap/scss/bootstrap.scss';
 
 .media-container {
 
@@ -102,6 +102,8 @@
 
     ol {
         li {
+            @extend .col-md-3;
+
             .media-container-main-item {
                 @extend .card;
                 margin-bottom: 16px;
@@ -125,7 +127,7 @@
 
 .media-container-main-item-title {
     @extend .card-block;
-
+    
     .media-filename {
         @extend .card-text;
         @extend .small;
@@ -135,6 +137,18 @@
         @extend .card-text;
         @extend .text-muted;
         @extend .small;
+    }
+}
+
+// Specific styles when the media application is in a modal dialog
+.modal-lg {
+    .media-container-main-list-item {
+        @extend .col-md-4;
+    } 
+    
+    .media-container-main-item-title {
+        // Hide the filename in modals
+        @extend .hidden-xl-down;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace Orchard.ResourceManagement.TagHelpers
@@ -50,6 +50,10 @@ namespace Orchard.ResourceManagement.TagHelpers
                 {
                     setting.AtLocation(At);
                 }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
@@ -72,6 +76,10 @@ namespace Orchard.ResourceManagement.TagHelpers
                 if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
                 }
 
                 setting.UseCdn(UseCdn);
@@ -127,6 +135,10 @@ namespace Orchard.ResourceManagement.TagHelpers
                 if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
                 }
 
                 setting.UseCdn(UseCdn);
