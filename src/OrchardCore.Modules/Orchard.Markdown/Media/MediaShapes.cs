@@ -1,7 +1,7 @@
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Descriptors;
 
-namespace Orchard.Markdown
+namespace Orchard.Markdown.Media
 {
     public class MediaShapes : IShapeTableProvider
     {

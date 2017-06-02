@@ -5,7 +5,6 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Descriptors;
 using Orchard.Indexing;
 using Orchard.Markdown.Drivers;
 using Orchard.Markdown.Fields;
@@ -17,7 +16,7 @@ using Orchard.Tokens;
 
 namespace Orchard.Markdown
 {
-	public class Startup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -34,8 +33,6 @@ namespace Orchard.Markdown
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
-
-            services.AddScoped<IShapeTableProvider, MediaShapes>();
 
             services.AddNullTokenizer();
         }

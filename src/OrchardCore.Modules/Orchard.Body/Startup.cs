@@ -10,7 +10,6 @@ using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
-using Orchard.DisplayManagement.Descriptors;
 using Orchard.Indexing;
 using Orchard.Tokens;
 
@@ -27,8 +26,6 @@ namespace Orchard.Body
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, BodyPartIndexHandler>();
             services.AddScoped<IContentPartHandler, BodyPartHandler>();
-
-            services.AddScoped<IShapeTableProvider, MediaShapes>();
 
             services.AddNullTokenizer();
         }

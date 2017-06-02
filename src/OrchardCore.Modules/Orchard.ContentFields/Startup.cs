@@ -44,8 +44,6 @@ namespace Orchard.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
-
-            services.AddScoped<IShapeTableProvider, MediaShapes>();
         }
     }
 }
