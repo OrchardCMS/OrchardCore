@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentFields.Fields;
 using Orchard.ContentFields.Indexing;
@@ -6,6 +6,7 @@ using Orchard.ContentFields.Settings;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentTypes.Editors;
+using Orchard.DisplayManagement.Descriptors;
 using Orchard.Indexing;
 
 namespace Orchard.ContentFields
@@ -43,6 +44,8 @@ namespace Orchard.ContentFields
             services.AddScoped<IContentFieldDisplayDriver, NumericFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, NumericFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, NumericFieldIndexHandler>();
+
+            services.AddScoped<IShapeTableProvider, MediaShapes>();
         }
     }
 }

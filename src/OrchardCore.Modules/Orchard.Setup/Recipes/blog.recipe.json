@@ -294,7 +294,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -321,7 +321,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -361,7 +361,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
@@ -381,7 +381,7 @@
                 "Settings": {
                     "Creatable": "False",
                     "Draftable": "True",
-                    "Listable": "True",
+                    "Listable": "False",
                     "Securable": "True",
                     "Stereotype": "Widget"
                 },
