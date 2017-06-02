@@ -286,7 +286,7 @@ namespace Orchard.Environment.Extensions
 
                 // Get all valid types from any extension
                 var allTypesByExtension = loadedExtensions.SelectMany(extension =>
-                    extension.Value.ExportedTypes.Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract)
+                    extension.Value.ExportedTypes.Where(IsComponentType)
                     .Select(type => new
                     {
                         ExtensionEntry = extension.Value,
@@ -307,11 +307,17 @@ namespace Orchard.Environment.Extensions
 
                     foreach (var feature in extension.ExtensionInfo.Features)
                     {
-                        var featureTypes = typesByFeature[feature.Id];
-
-                        foreach (var type in featureTypes)
+                        // Features can have no types
+                        if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                         {
-                            _typeFeatureProvider.TryAdd(type, feature);
+                            foreach (var type in featureTypes)
+                            {
+                                _typeFeatureProvider.TryAdd(type, feature);
+                            }
+                        }
+                        else
+                        {
+                            featureTypes = Array.Empty<Type>();
                         }
 
                         loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
@@ -325,6 +331,12 @@ namespace Orchard.Environment.Extensions
                 _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
                 _isInitialized = true;
             }
+        }
+
+        private bool IsComponentType(Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsClass && !typeInfo.IsAbstract && typeInfo.IsPublic;
         }
 
         private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
