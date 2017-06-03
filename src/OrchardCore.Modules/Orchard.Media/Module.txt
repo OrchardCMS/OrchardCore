@@ -1,4 +1,4 @@
-﻿Name: Media
+Name: Media
 AntiForgery: enabled
 Author: The Orchard Team
 Website: http://orchardproject.net
@@ -11,8 +11,5 @@ Features:
         Dependencies: Orchard.Contents, Orchard.ContentTypes, Orchard.Title
         Description: Media management.
         Category: Content Management
-    Orchard.Media.Tokens:
-        Name: Media Tokens
-        Dependencies: Orchard.Media, Orchard.Tokens
-        Category: Tokens
+
 

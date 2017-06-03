@@ -5,7 +5,7 @@ using Orchard.DisplayManagement.Descriptors;
 namespace Orchard.Markdown.Media
 {
     [RequireFeatures("Orchard.Media")]
-    public class MediaStartup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

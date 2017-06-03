@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +13,8 @@ using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Media.Indexes;
 using Orchard.Media.Models;
-using Orchard.Media.Tokens;
+using Orchard.Media.Services;
 using Orchard.StorageProviders.FileSystem;
-using Orchard.Tokens;
 using YesSql.Indexes;
 
 namespace Orchard.Media
@@ -74,21 +72,6 @@ namespace Orchard.Media
                 requestPath: (string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? "" : "/" + shellSettings.RequestUrlPrefix) + "/media", 
                 mediaPath: env.ContentRootFileProvider.GetFileInfo(relativeMediaPath).PhysicalPath
                 );
-        }
-    }
-
-    [Feature("Orchard.Media.Tokens")]
-    public class TokensStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-            var tokenHelper = serviceProvider.GetRequiredService<TokensHelper>();
-            tokenHelper.Handlebars.RegisterMediaTokens(httpContextAccessor);
         }
     }
 }
