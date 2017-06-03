@@ -1,4 +1,4 @@
-using DotLiquid;
+﻿using DotLiquid;
 using System.Collections.Concurrent;
 
 namespace Orchard.Liquid
@@ -10,7 +10,7 @@ namespace Orchard.Liquid
         // The caches is a singleton per tenant so that they can be cleared when the tenant
         // is restarted.
         private ConcurrentDictionary<string, Template> _templates = new ConcurrentDictionary<string, Template>();
-        
+
         public Template GetTemplate(string source)
         {
             if (string.IsNullOrWhiteSpace(source))
@@ -22,20 +22,18 @@ namespace Orchard.Liquid
             {
                 return template;
             }
-            else
+
+            try
             {
-                try
-                {
-                    template = Template.Parse(source);
-                    template.MakeThreadSafe();
-                    template = _templates.GetOrAdd(source, template);
-                    return template;
-                }
-                catch
-                {
-                    return Empty;
-                }
-            }            
-        }
+                template = Template.Parse(source);
+                template.MakeThreadSafe();
+                template = _templates.GetOrAdd(source, template);
+                return template;
+            }
+            catch
+            {
+                return Empty;
+            }
+        }          
     }
 }
