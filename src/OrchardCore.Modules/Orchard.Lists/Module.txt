@@ -10,4 +10,4 @@ Features:
         Name: Lists
         Description: Introduces a preconfigured container-enabled content type.
         Category: Content Management
-        Dependencies: Orchard.Contents, Orchard.ContentTypes, Orchard.Media
+        Dependencies: Orchard.Contents, Orchard.ContentTypes
