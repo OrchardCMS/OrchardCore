@@ -58,7 +58,11 @@ namespace Orchard.Queries.Sql
                 }
 
                 var documents = await _session.GetAsync<object>(documentIds.ToArray());
-                return documents;
+
+                foreach (var document in documents)
+                {
+                    results.Add(JObject.FromObject(document));
+                }
             }
             else
             {
@@ -74,9 +78,9 @@ namespace Orchard.Queries.Sql
                 {
                     results.Add(JObject.FromObject(document));
                 }
-
-                return results.ToArray();
             }
+
+            return results.ToArray();
         }
     }
 }

@@ -32,11 +32,6 @@ namespace Orchard.Liquid.Drops
                 return ((IEnumerable<JObject>)result).Select(x => new JTokenDrop(x)).ToArray();
             }
 
-            if (result is IEnumerable<object>)
-            {
-                return ((IEnumerable<object>)result).Select(x => (x is JObject) ? new JTokenDrop((JObject)x) : x).ToArray();
-            }
-
             return result;
         }
 
