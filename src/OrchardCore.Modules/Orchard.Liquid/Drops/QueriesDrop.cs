@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DotLiquid;
 using Newtonsoft.Json.Linq;
@@ -30,6 +30,11 @@ namespace Orchard.Liquid.Drops
             {
                 // BUG: Somehow Liquid doesn't accept JObject collections directly unlike ContentItem.
                 return ((IEnumerable<JObject>)result).Select(x => new JTokenDrop(x)).ToArray();
+            }
+
+            if (result is IEnumerable<object>)
+            {
+                return ((IEnumerable<object>)result).Select(x => (x is JObject) ? new JTokenDrop((JObject)x) : x).ToArray();
             }
 
             return result;
