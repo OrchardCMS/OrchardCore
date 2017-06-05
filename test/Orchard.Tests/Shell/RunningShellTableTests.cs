@@ -101,7 +101,7 @@ namespace Orchard.Tests.Shell
         }
 
         [Fact]
-        public void doport()
+        public void HostandPortShouldMatchWhenPortIsSpecified()
         {
             var table = (IRunningShellTable)new RunningShellTable();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "localhost:10000" };
