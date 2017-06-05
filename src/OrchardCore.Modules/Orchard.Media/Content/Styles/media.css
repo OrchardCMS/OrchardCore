@@ -485,8 +485,7 @@ hr {
 
 small,
 .small,
-.media-container-main-item-title .media-filename,
-.media-container-main-item-title .media-contentItemId {
+.media-container-main-item-title .media-filename {
   font-size: 80%;
   font-weight: normal; }
 
@@ -2902,7 +2901,7 @@ tbody.collapse.show {
   margin-top: -0.375rem;
   margin-bottom: 0; }
 
-.card-text:last-child, .media-container-main-item-title .media-filename:last-child, .media-container-main-item-title .media-contentItemId:last-child {
+.card-text:last-child, .media-container-main-item-title .media-filename:last-child {
   margin-bottom: 0; }
 
 .card-link:hover {
@@ -3018,8 +3017,6 @@ tbody.collapse.show {
   .card-inverse .card-text,
   .card-inverse .media-container-main-item-title .media-filename, .media-container-main-item-title
   .card-inverse .media-filename,
-  .card-inverse .media-container-main-item-title .media-contentItemId, .media-container-main-item-title
-  .card-inverse .media-contentItemId,
   .card-inverse .card-subtitle,
   .card-inverse .card-blockquote .blockquote-footer {
     color: rgba(255, 255, 255, 0.65); }
@@ -3415,9 +3412,7 @@ a.badge:focus, a.badge:hover {
     .list-group-item.active .list-group-item-heading > small,
     .list-group-item.active .list-group-item-heading > .small,
     .list-group-item.active .media-container-main-item-title .list-group-item-heading > .media-filename, .media-container-main-item-title
-    .list-group-item.active .list-group-item-heading > .media-filename,
-    .list-group-item.active .media-container-main-item-title .list-group-item-heading > .media-contentItemId, .media-container-main-item-title
-    .list-group-item.active .list-group-item-heading > .media-contentItemId {
+    .list-group-item.active .list-group-item-heading > .media-filename {
       color: inherit; }
     .list-group-item.active .list-group-item-text {
       color: #daeeff; }
@@ -5892,10 +5887,10 @@ a.bg-inverse:focus, a.bg-inverse:hover {
 .text-white {
   color: #fff !important; }
 
-.text-muted, .media-container-main-item-title .media-contentItemId {
+.text-muted {
   color: #636c72 !important; }
 
-a.text-muted:focus, .media-container-main-item-title a.media-contentItemId:focus, a.text-muted:hover, .media-container-main-item-title a.media-contentItemId:hover {
+a.text-muted:focus, a.text-muted:hover {
   color: #4b5257 !important; }
 
 .text-primary {

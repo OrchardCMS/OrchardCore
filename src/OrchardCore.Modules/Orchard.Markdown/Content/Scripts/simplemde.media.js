@@ -13,7 +13,7 @@
             var modal = $('#mediaModalMarkdown').modal();
             $('#mediaSelectButton').on('click', function (v) {
                 var cm = editor.codemirror;
-                cm.replaceSelection('{{{ image ' + mediaApp.selectedMedia.contentItemId + ' }}}')
+                cm.replaceSelection('{{{ image "' + mediaApp.selectedMedia.mediaPath + '" }}}')
                 $('#mediaModalMarkdown').modal('hide');
             });
         };

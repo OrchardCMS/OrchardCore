@@ -11,7 +11,6 @@ using Orchard.ContentManagement;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
-using Orchard.Media.Indexes;
 using Orchard.Media.Models;
 using Orchard.Media.Services;
 using Orchard.StorageProviders.FileSystem;
@@ -34,8 +33,6 @@ namespace Orchard.Media
                 return new MediaFileStore(new FileSystemStore(mediaPath, requestPath));
             });
 
-
-            services.AddScoped<IIndexProvider, MediaPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 

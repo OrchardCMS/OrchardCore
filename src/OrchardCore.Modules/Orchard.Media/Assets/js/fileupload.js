@@ -12,7 +12,7 @@ $(function () {
         },
         done: function (e, data) {
             $.each(data.result.files, function (index, file) {
-                mediaApp.mediaItems.push(file.model)
+                mediaApp.mediaItems.push(file)
             });
             $('#progress .progress-bar').css(
                 'width',

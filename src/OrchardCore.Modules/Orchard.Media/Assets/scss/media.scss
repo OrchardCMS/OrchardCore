@@ -132,12 +132,6 @@
         @extend .card-text;
         @extend .small;
     }
-
-    .media-contentItemId {
-        @extend .card-text;
-        @extend .text-muted;
-        @extend .small;
-    }
 }
 
 // Specific styles when the media application is in a modal dialog

@@ -14,14 +14,12 @@ namespace Orchard.Media.Tokens
             handlebars.RegisterHelper("image", (output, context, arguments) =>
             {
                 var services = httpContextAccessor.HttpContext.RequestServices;
-                var contentManager = services.GetRequiredService<IContentManager>();
                 var mediaFileStore = services.GetRequiredService<IMediaFileStore>();
 
-                var contentItem = contentManager.GetAsync(arguments[0].ToString()).GetAwaiter().GetResult();
-                var image = contentItem.As<ImagePart>();
-                var imageUrl = mediaFileStore.GetPublicUrl(image.Path);
+                var url = arguments[0].ToString();
+                var imageUrl = mediaFileStore.GetPublicUrl(url);
 
-                if (image != null)
+                if (imageUrl != null)
                 {
                     output.Write("<img src=\"" + imageUrl + "\" />");
                 }                

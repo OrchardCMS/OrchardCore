@@ -20,7 +20,7 @@
                             trumbowyg.saveRange();
                             var modal = $('#mediaModalBody').modal();
                             $('#mediaSelectButton').on('click', function (v) {
-                                var node = document.createTextNode('{{{ image ' + mediaApp.selectedMedia.contentItemId + ' }}}');
+                                var node = document.createTextNode('{{{ image "' + mediaApp.selectedMedia.mediaPath + '" }}}');
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
                                 trumbowyg.range.insertNode(node);
