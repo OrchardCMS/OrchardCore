@@ -112,7 +112,7 @@ The following properties are available on the `User` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `Name` | `admin` | The name of the authenticated user |
+| `Identity.Name` | `admin` | The name of the authenticated user |
 
 ### Queries
 
@@ -122,7 +122,7 @@ To access a named query, use the name as a property on the `Queries` object like
 
 ```
 {% for item in Queries.MyQuery %}
-{{ item.Content | DisplayText }}
+{{ item | DisplayText }}
 {% endfor %}
 ```
 
