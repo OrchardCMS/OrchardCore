@@ -101,6 +101,16 @@ namespace Orchard.Tests.Shell
         }
 
         [Fact]
+        public void doport()
+        {
+            var table = (IRunningShellTable)new RunningShellTable();
+            var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "localhost:10000" };
+            table.Add(settingsA);
+            var match = table.Match("localhost:10000", "/foo/bar");
+            Assert.Equal(settingsA, match);
+        }
+
+        [Fact]
         public void PathAlsoCausesMatch()
         {
             var table = (IRunningShellTable)new RunningShellTable();

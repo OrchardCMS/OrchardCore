@@ -100,24 +100,38 @@ namespace Orchard.Environment.Shell
         private bool TryMatchInternal(string host, string appRelativePath, out ShellSettings result)
         {
             // 1. Search for Host + Prefix match
-            string hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
+            var hostAndPrefix = GetHostAndPrefix(host, appRelativePath);
 
             if (!_shellsByHostAndPrefix.TryGetValue(hostAndPrefix, out result))
             {
-                // 2. Search for Host only match
+                // 2. Search for Full Host only match
 
-                var hostAndNoPrefix = GetHostAndPrefix(host, "/");
+                string fullHostAndPrefix = GetFullHostAndPrefix(host, appRelativePath);
 
-                if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
+                if (!_shellsByHostAndPrefix.TryGetValue(fullHostAndPrefix, out result))
                 {
-                    // 3. Search for Prefix only match
+                    // 3. Search for Host only match
 
-                    var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
+                    var hostAndNoPrefix = GetHostAndPrefix(host, "/");
 
-                    if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                    if (!_shellsByHostAndPrefix.TryGetValue(hostAndNoPrefix, out result))
                     {
-                        result = null;
-                        return false;
+                        // 3. Search for Full Host only match
+
+                        var fullHostAndNoPrefix = GetFullHostAndPrefix(host, "/");
+
+                        if (!_shellsByHostAndPrefix.TryGetValue(fullHostAndNoPrefix, out result))
+                        {
+                            // 4. Search for Prefix only match
+
+                            var noHostAndPrefix = GetHostAndPrefix("", appRelativePath);
+
+                            if (!_shellsByHostAndPrefix.TryGetValue(noHostAndPrefix, out result))
+                            {
+                                result = null;
+                                return false;
+                            }
+                        }
                     }
                 }
             }
@@ -145,6 +159,21 @@ namespace Orchard.Environment.Shell
 
             result = null;
             return false;
+        }
+
+        private string GetFullHostAndPrefix(string host, string appRelativePath)
+        {
+            // appRelativePath starts with /
+            int firstSegmentIndex = appRelativePath.IndexOf('/', 1);
+            if (firstSegmentIndex > -1)
+            {
+                return host + appRelativePath.Substring(0, firstSegmentIndex);
+            }
+            else
+            {
+                return host + appRelativePath;
+            }
+
         }
 
         private string GetHostAndPrefix(string host, string appRelativePath)
