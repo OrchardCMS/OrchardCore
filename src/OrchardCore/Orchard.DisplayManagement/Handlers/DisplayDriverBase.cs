@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Orchard.DisplayManagement.Views;
 
@@ -95,6 +96,11 @@ namespace Orchard.DisplayManagement.Handlers
         public CombinedResult Combine(params IDisplayResult[] results)
         {
             return new CombinedResult(results);
+        }
+
+        public CombinedResult Combine(IEnumerable<IDisplayResult> results)
+        {
+            return new CombinedResult( results );
         }
     }
 }
