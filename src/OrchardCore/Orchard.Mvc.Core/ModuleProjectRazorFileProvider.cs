@@ -19,20 +19,16 @@ namespace Orchard.Mvc
         private static ConcurrentDictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        private IHostingEnvironment _hostingEnvironment;
-
-        public ModuleProjectRazorFileProvider(IHostingEnvironment hostingEnvironment)
+        public ModuleProjectRazorFileProvider(IHostingEnvironment env)
         {
-            _hostingEnvironment = hostingEnvironment;
-
             if (_paths == null)
             {
                 lock (_synLock)
                 {
                     if (_paths == null)
                     {
-                        var path = Path.Combine(hostingEnvironment.ContentRootPath, "obj",
-                            hostingEnvironment.ApplicationName + ".ModuleProjectRazorFilesMapping.txt");
+                        var path = Path.Combine(env.ContentRootPath, "obj",
+                            env.ApplicationName + ".ModuleProjectRazorFilesMapping.txt");
 
                         if (File.Exists(path))
                         {

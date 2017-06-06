@@ -96,12 +96,16 @@ namespace Orchard.Mvc
 
         internal static IMvcCoreBuilder AddModularRazorViewEngine(this IMvcCoreBuilder builder, IServiceProvider services)
         {
-            var _hostingEnvironment = services.GetRequiredService<IHostingEnvironment>();
+            var env = services.GetRequiredService<IHostingEnvironment>();
 
             return builder.AddRazorViewEngine(options =>
             {
                 options.ViewLocationExpanders.Add(new CompositeViewLocationExpanderProvider());
-                options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(_hostingEnvironment));
+
+                if (env.IsDevelopment())
+                {
+                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env));
+                }
             });
         }
 
