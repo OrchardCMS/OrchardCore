@@ -36,7 +36,7 @@
       </ModuleProjectRazorFilesMapping>
     </ItemGroup>
 
-    <Message Text="Generating module project razor files mapping file : $(MSBuildProjectName)"
+    <Message Text="Generating module project razor files mapping file"
       Condition="'@(ModuleProjectRazorFilesMapping)' != ''" Importance="high" />
 
     <WriteLinesToFile

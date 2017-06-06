@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
@@ -15,12 +14,12 @@ namespace Orchard.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private const string MappingFileRelativePath = "obj\\ModuleProjectRazorFiles.map";
+        private const string MappingFilePath = "obj\\ModuleProjectRazorFiles.map";
 
         private static ConcurrentDictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        public ModuleProjectRazorFileProvider(IHostingEnvironment env)
+        public ModuleProjectRazorFileProvider(string rootPath)
         {
             if (_paths == null)
             {
@@ -28,7 +27,7 @@ namespace Orchard.Mvc
                 {
                     if (_paths == null)
                     {
-                        var path = Path.Combine(env.ContentRootPath, MappingFileRelativePath);
+                        var path = Path.Combine(rootPath, MappingFilePath);
 
                         if (File.Exists(path))
                         {

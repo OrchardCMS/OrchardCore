@@ -104,7 +104,7 @@ namespace Orchard.Mvc
 
                 if (env.IsDevelopment())
                 {
-                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env));
+                    options.FileProviders.Insert(0, new ModuleProjectRazorFileProvider(env.ContentRootPath));
                 }
             });
         }
