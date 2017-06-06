@@ -1,0 +1,28 @@
+@using Orchard.Liquid;
+@using Orchard.Liquid.Drops;
+@model Orchard.Liquid.ViewModels.LiquidPartViewModel
+@inject ILiquidManager LiquidManager
+@inject Orchard.ContentManagement.IContentManager ContentManager
+@inject IServiceProvider ServiceProvider
+@inject YesSql.ISession Session
+@inject Orchard.Queries.IQueryManager QueryManager
+
+@{ 
+    string liquid = Model.Liquid;
+
+    var model = new
+    {
+        ContentItem = Model.LiquidPart.ContentItem,
+        Context = Context,
+        User = User,
+        Content = new ContentQueryDrop(ContentManager, Session),
+        Queries = new QueriesDrop(QueryManager),
+        ServiceProvider = ServiceProvider,
+        Url = new UrlDrop(Url)
+    };
+
+    var template = LiquidManager.GetTemplate(liquid);
+    var html = template == null ? "" : template.Render(DotLiquid.Hash.FromAnonymousObject(model));
+}
+
+@Html.Raw(html ?? "")

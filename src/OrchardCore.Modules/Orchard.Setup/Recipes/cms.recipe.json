@@ -46,6 +46,7 @@
         "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Lists",
+        "Orchard.Liquid",
         "Orchard.Lucene",
         "Orchard.Menu",
         "Orchard.Title",

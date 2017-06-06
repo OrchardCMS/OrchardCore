@@ -1,4 +1,7 @@
-﻿
+
+<input type="hidden" name="PreviewId" value="@Model.ContentItem.Id" />
+<input type="hidden" name="PreviewContentItemId" value="@Model.ContentItem.ContentItemId" />
+<input type="hidden" name="PreviewContentItemVersionId" value="@Model.ContentItem.ContentItemVersionId" />
 
 <button id="previewButton" class="publish-button btn btn-secondary" data-start="@T["Preview"]" data-stop="@T["Close Preview"]" >@T["Preview"]</button>
 

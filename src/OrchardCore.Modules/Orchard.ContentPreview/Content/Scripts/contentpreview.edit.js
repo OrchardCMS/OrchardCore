@@ -1,35 +1,35 @@
 $(function () {
     $(document)
-    .on('input', '.content-preview-text', function () {
-        $(document).trigger('contentpreview:render');
-    })
-    .on('propertychange', '.content-preview-text', function () {
-        $(document).trigger('contentpreview:render');
-    })
-    .on('keyup', '.content-preview-text', function (event) {
-        // handle backspace
-        if (event.keyCode == 46 || event.ctrlKey) {
+        .on('input', '.content-preview-text', function () {
             $(document).trigger('contentpreview:render');
-        }
-    })
-    .on('change', '.content-preview-select', function () {
-        $(document).trigger('contentpreview:render');
-    });
+        })
+        .on('propertychange', '.content-preview-text', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', '.content-preview-text', function (event) {
+            // handle backspace
+            if (event.keyCode == 46 || event.ctrlKey) {
+                $(document).trigger('contentpreview:render');
+            }
+        })
+        .on('change', '.content-preview-select', function () {
+            $(document).trigger('contentpreview:render');
+        });
 
 
     $(document)
-    .on('input', '.trumbowyg-editor', function () {
-        $(document).trigger('contentpreview:render');
-    })
-    .on('propertychange', '.trumbowyg-editor', function () {
-        $(document).trigger('contentpreview:render');
-    })
-    .on('keyup', '.trumbowyg-editor', function (event) {
-        // handle backspace
-        if (event.keyCode == 46 || event.ctrlKey) {
+        .on('input', '.trumbowyg-editor', function () {
             $(document).trigger('contentpreview:render');
-        }
-    })
+        })
+        .on('propertychange', '.trumbowyg-editor', function () {
+            $(document).trigger('contentpreview:render');
+        })
+        .on('keyup', '.trumbowyg-editor', function (event) {
+            // handle backspace
+            if (event.keyCode == 46 || event.ctrlKey) {
+                $(document).trigger('contentpreview:render');
+            }
+        })
 });
 
 $(function () {
@@ -45,6 +45,7 @@ $(function () {
     var editBody = document.getElementsByClassName('edit-body');
     var editSidebar = document.getElementsByClassName('edit-sidebar');
     var editSidebarHandler = document.getElementsByClassName('edit-sidebar-handler');
+    var previewErrors = document.getElementById('contentPreviewErrors');
 
     hidePreview();
 
@@ -96,6 +97,7 @@ $(function () {
         $(editSidebarHandler).css('visibility', 'visible');
         $(editBody).width(localStorage.getItem('editBody:width'));
         $(contentPreviewNavigation).show();
+        $(previewErrors).hide();
     }
 
     function hidePreview() {
@@ -147,8 +149,9 @@ $(function () {
             var data = form.serialize();
             $.post(previewUrl + "?id=" + contentItemType, data)
                 .done(function (data) {
+                    $(previewErrors).hide();
 
-                    if (!iframe) {
+                    if (!iframe || !iframe.contentWindow) {
                         createIframe();
                         iframe.contentWindow.document.open();
                         iframe.contentWindow.document.close();
@@ -171,8 +174,12 @@ $(function () {
                         // body rendered successfully
                     }
                 })
-                .fail(function () {
-                    // An error occured, like validation
+                .fail(function (data) {
+                    $(contentPreviewContent).empty();
+                    $(previewErrors).empty().show();
+                    data.responseJSON.errors.forEach(function (error) {
+                        $(previewErrors).append('<div>' + error + '</div>')
+                    });
                 })
                 .always(function () {
                     rendering = false;
