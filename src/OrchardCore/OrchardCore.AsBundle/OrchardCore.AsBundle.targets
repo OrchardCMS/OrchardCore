@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <ModuleProjectRazorFilesMap>obj/$(MSBuildProjectName).ModuleProjectRazorFilesMap.txt</ModuleProjectRazorFilesMap>
+    <ModuleProjectRazorFilesMapping>obj/$(MSBuildProjectName).ModuleProjectRazorFilesMapping.txt</ModuleProjectRazorFilesMapping>
   </PropertyGroup>
 
   <!--
@@ -35,18 +35,18 @@
       <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
         <ProjectName>%(Filename)</ProjectName>
       </ModuleProjectRazorFiles>
-      <ModuleProjectRazorFilesMap
+      <ModuleProjectRazorFilesMapping
         Include="%(ModuleProjectRazorFiles.FullPath)|\Packages\%(ModuleProjectRazorFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
-      </ModuleProjectRazorFilesMap>
+      </ModuleProjectRazorFilesMapping>
     </ItemGroup>
 
-    <Message Text="Generate the module project razor files map file: $(MSBuildProjectName)"
+    <Message Text="Generate the mapping file of module project razor files : $(MSBuildProjectName)"
       Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
 
     <WriteLinesToFile
-      File="$(ModuleProjectRazorFilesMap)"
-      Lines="@(ModuleProjectRazorFilesMap)"
-      Condition="'@(ModuleProjectRazorFiles)' != ''"
+      File="$(ModuleProjectRazorFilesMapping)"
+      Lines="@(ModuleProjectRazorFilesMapping)"
+      Condition="'@(ModuleProjectRazorFilesMapping)' != ''"
       Overwrite="true"
       Encoding="Unicode"
       ContinueOnError="true" />

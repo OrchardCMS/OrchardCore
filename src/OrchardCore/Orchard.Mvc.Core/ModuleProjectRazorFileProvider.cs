@@ -32,7 +32,7 @@ namespace Orchard.Mvc
                     if (_paths == null)
                     {
                         var path = Path.Combine(hostingEnvironment.ContentRootPath, "obj",
-                            hostingEnvironment.ApplicationName + ".ModuleProjectRazorFilesMap.txt");
+                            hostingEnvironment.ApplicationName + ".ModuleProjectRazorFilesMapping.txt");
 
                         if (File.Exists(path))
                         {
