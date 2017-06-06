@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -16,6 +15,8 @@ namespace Orchard.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
+        private const string MappingFileRelativePath = "obj\\ModuleProjectRazorFiles.map";
+
         private static ConcurrentDictionary<string, string> _paths;
         private static object _synLock = new object();
 
@@ -27,8 +28,7 @@ namespace Orchard.Mvc
                 {
                     if (_paths == null)
                     {
-                        var path = Path.Combine(env.ContentRootPath, "obj",
-                            env.ApplicationName + ".ModuleProjectRazorFilesMapping.txt");
+                        var path = Path.Combine(env.ContentRootPath, MappingFileRelativePath);
 
                         if (File.Exists(path))
                         {

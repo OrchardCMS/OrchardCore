@@ -1,9 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <ModuleProjectRazorFilesMapping>obj/$(MSBuildProjectName).ModuleProjectRazorFilesMapping.txt</ModuleProjectRazorFilesMapping>
-  </PropertyGroup>
-
   <!--
     Defines msbuild tasks on a Bundle package to copy all modules assets (projects and packages) to the "Packages" folder.
   -->
@@ -40,11 +36,11 @@
       </ModuleProjectRazorFilesMapping>
     </ItemGroup>
 
-    <Message Text="Generate the mapping file of module project razor files : $(MSBuildProjectName)"
-      Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
+    <Message Text="Generating module project razor files mapping file : $(MSBuildProjectName)"
+      Condition="'@(ModuleProjectRazorFilesMapping)' != ''" Importance="high" />
 
     <WriteLinesToFile
-      File="$(ModuleProjectRazorFilesMapping)"
+      File="$(BaseIntermediateOutputPath)ModuleProjectRazorFiles.map"
       Lines="@(ModuleProjectRazorFilesMapping)"
       Condition="'@(ModuleProjectRazorFilesMapping)' != ''"
       Overwrite="true"
