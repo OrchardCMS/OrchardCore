@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <ModuleProjectReferencesFile>obj/$(MSBuildProjectFile).ModuleProjectReferences.txt</ModuleProjectReferencesFile>
+    <ModuleProjectRazorFilesMap>obj/$(MSBuildProjectName).ModuleProjectRazorFilesMap.txt</ModuleProjectRazorFilesMap>
   </PropertyGroup>
 
   <!--
@@ -31,13 +31,22 @@
       ContinueOnError="true">
     </MSBuild>
 
-    <Message Text="Generating module project references file: $(MSBuildProjectName)"
-      Condition="'@(ModuleProjectReferences)' != ''" Importance="high" />
+    <ItemGroup>
+      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
+        <ProjectName>%(Filename)</ProjectName>
+      </ModuleProjectRazorFiles>
+      <ModuleProjectRazorFilesMap
+        Include="%(ModuleProjectRazorFiles.FullPath)|\Packages\%(ModuleProjectRazorFiles.ProjectName)\%(RecursiveDir)%(Filename)%(Extension)">
+      </ModuleProjectRazorFilesMap>
+    </ItemGroup>
+
+    <Message Text="Generate the module project razor files map file: $(MSBuildProjectName)"
+      Condition="'@(ModuleProjectRazorFiles)' != ''" Importance="high" />
 
     <WriteLinesToFile
-      File="$(ModuleProjectReferencesFile)"
-      Lines="@(ModuleProjectReferences)"
-      Condition="'@(ModuleProjectReferences)' != ''"
+      File="$(ModuleProjectRazorFilesMap)"
+      Lines="@(ModuleProjectRazorFilesMap)"
+      Condition="'@(ModuleProjectRazorFiles)' != ''"
       Overwrite="true"
       Encoding="Unicode"
       ContinueOnError="true" />
@@ -61,39 +70,6 @@
     <RemoveDir
       Directories="Packages\%(AllPackageAssetFiles.RecursiveDir)"
       ContinueOnError="true" />
-  </Target>
-
-  <Target Name="ClearProjectReferences" BeforeTargets="_CollectWatchProjects"
-          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true'">
-    <ItemGroup>
-      <ProjectReference Remove="@(ProjectReference)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="WatchModuleProjectRazorFiles" BeforeTargets="_WriteGeneratedWatchList"
-          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
-    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
-      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
-    </ReadLinesFromFile>
-    <ItemGroup>
-      <Watch Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="CopyModuleProjectRazorFiles"
-          Condition="'$(WatchOnlyModuleProjectRazorFiles)' == 'true' And Exists('$(ModuleProjectReferencesFile)')">
-    <ReadLinesFromFile File="$(ModuleProjectReferencesFile)">
-      <Output TaskParameter="Lines" ItemName="ModuleProjectReferences" />
-    </ReadLinesFromFile>
-    <ItemGroup>
-      <ModuleProjectRazorFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)**\*.cshtml">
-        <ProjectName>%(Filename)</ProjectName>
-      </ModuleProjectRazorFiles>
-    </ItemGroup>
-    <Message Text="Copying module project razor files: $(MSBuildProjectName)" Importance="high" />
-    <Copy
-      SourceFiles="@(ModuleProjectRazorFiles)"
-      DestinationFolder="Packages\%(ProjectName)\%(RecursiveDir)" />
   </Target>
 
   <!--
