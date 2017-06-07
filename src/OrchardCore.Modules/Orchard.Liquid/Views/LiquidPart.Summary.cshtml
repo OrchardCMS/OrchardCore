@@ -1,0 +1,9 @@
+﻿@model Orchard.Liquid.ViewModels.LiquidPartViewModel
+@inject Orchard.Liquid.ILiquidManager LiquidManager
+
+@{
+    string liquid = Model.Liquid;
+    var html = LiquidManager.GetTemplate(liquid).Render();
+}
+
+@liquid.Substring(0, Math.Min(html.Length, 200))

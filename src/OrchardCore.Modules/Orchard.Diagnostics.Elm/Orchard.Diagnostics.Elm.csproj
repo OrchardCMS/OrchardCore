@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Elm" Version="0.2.2" />
   </ItemGroup>
 
   <ItemGroup>
