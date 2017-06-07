@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -62,7 +62,7 @@ namespace Orchard.Lucene
                 {
                     // Load corresponding content item versions
                     var contentItemVersionIds = docs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("Content.ContentItem.ContentItemVersionId")).ToArray();
-                    var contentItems = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).List();
+                    var contentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(contentItemVersionIds)).ListAsync();
 
                     // Reorder the result to preserve the one from the lucene query
                     var indexed = contentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
@@ -73,7 +73,7 @@ namespace Orchard.Lucene
                     var results = new List<JObject>();
                     foreach (var document in docs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)))
                     {
-                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.StringValue))));
+                        results.Add(new JObject(document.Select(x => new JProperty(x.Name, x.GetStringValue()))));
                     }
 
                     result = results;

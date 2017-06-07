@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.0" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1014" />
+    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1048" />
   </ItemGroup>
 
 </Project>

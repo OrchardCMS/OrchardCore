@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -43,6 +43,7 @@ namespace Orchard.Contents
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
             services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
+            services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
             services.AddScoped<IGlobalMethodProvider, IdGeneratorMethod>();
             services.AddScoped<IDataMigration, Migrations>();

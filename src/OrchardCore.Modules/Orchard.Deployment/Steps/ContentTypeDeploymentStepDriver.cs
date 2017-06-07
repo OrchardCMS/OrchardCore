@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Orchard.Deployment.ViewModels;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
@@ -19,7 +20,10 @@ namespace Orchard.Deployment.Steps
 
         public override IDisplayResult Edit(ContentTypeDeploymentStep step)
         {
-            return Shape("ContentTypeDeploymentStep_Fields_Edit", step).Location("Content");
+            return Shape<ContentTypeDeploymentStepViewModel>("ContentTypeDeploymentStep_Fields_Edit", model =>
+            {
+                model.ContentTypes = step.ContentTypes;
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDeploymentStep step, IUpdateModel updater)

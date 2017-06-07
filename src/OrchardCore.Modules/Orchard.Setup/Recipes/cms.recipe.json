@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "CMS",
   "displayName": "Content Management System",
   "description": "Provides a functional set of CMS features.",
@@ -46,6 +46,7 @@
         "Orchard.Flows",
         "Orchard.Indexing",
         "Orchard.Lists",
+        "Orchard.Liquid",
         "Orchard.Lucene",
         "Orchard.Menu",
         "Orchard.Title",
@@ -108,7 +109,7 @@
                 },
                 "Pattern": "{{slug}}",
                 "AllowCustomPath": "True",
-                "ShowHomepageOption": "False",
+                "ShowHomepageOption": "True",
                 "Position": "1"
               }
             },

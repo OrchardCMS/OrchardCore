@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
@@ -17,19 +17,19 @@ namespace Orchard.Lucene.QueryProviders
 
             foreach (var property in query.Properties())
             {
-                var occur = BooleanClause.Occur.MUST;
+                var occur = Occur.MUST;
 
                 switch (property.Name.ToLowerInvariant())
                 {
                     case "must":
-                        occur = BooleanClause.Occur.MUST;
+                        occur = Occur.MUST;
                         break;
                     case "mustnot":
                     case "must_not":
-                        occur = BooleanClause.Occur.MUST_NOT;
+                        occur = Occur.MUST_NOT;
                         break;
                     case "should":
-                        occur = BooleanClause.Occur.SHOULD;
+                        occur = Occur.SHOULD;
                         break;
                     case "boost":
                         boolQuery.Boost = query.Value<float>();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -100,7 +100,7 @@ namespace Orchard.Autoroute.Drivers
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
             }
 
-            if (autoroute.Path != null && await _session.QueryIndexAsync<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).Count() > 0)
+            if (autoroute.Path != null && (await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path && o.ContentItemId != autoroute.ContentItem.ContentItemId).CountAsync()) > 0)
             {
                 updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), T["Your permalink is already in use."]);
             }

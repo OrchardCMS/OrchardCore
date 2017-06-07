@@ -12,7 +12,8 @@ namespace Orchard.Lucene
         {
             return new[] 
             {
-                ManageIndexes
+                ManageIndexes,
+                QueryLuceneApi
             };
         }
 

@@ -4,17 +4,14 @@
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
 
-  <!-- Add the OrchardCore.AsTheme.props file in the package -->
+  <!-- Add a ".props" file in the package specific to the "Theme" module type -->
   <ItemGroup>
     <None Include="OrchardCore.AsTheme.props" Pack="true">
       <PackagePath>build\netstandard1.6\OrchardCore.AsTheme.props</PackagePath>
     </None>
-    <None Include="Package.Build.props" Pack="true">
-      <PackagePath>build\netstandard1.6\Package.Build.props</PackagePath>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.AsModule\OrchardCore.AsModule.csproj" PrivateAssets="none" />
   </ItemGroup>
 
 </Project>

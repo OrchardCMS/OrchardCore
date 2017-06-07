@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -157,7 +157,7 @@ namespace Orchard.Lists.RemotePublishing
                     continue;
                 }
 
-                foreach (var list in await _session.QueryAsync<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).List())
+                foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync())
                 {
                     // User needs to at least have permission to edit its own blog posts to access the service
                     if (await _authorizationService.AuthorizeAsync(user, Permissions.EditContent, list))
@@ -198,12 +198,12 @@ namespace Orchard.Lists.RemotePublishing
 
             var array = new XRpcArray();
 
-            var contentItems = await _session.QueryAsync<ContentItem>()
+            var contentItems = await _session.Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
                 .With<ContentItemIndex>(x => x.Latest)
                 .OrderByDescending(x => x.CreatedUtc)
                 .Take(numberOfPosts)
-                .List();
+                .ListAsync();
 
             foreach (var contentItem in contentItems)
             {

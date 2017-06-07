@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.MetaData;
+using Orchard.Indexing;
 
-namespace Orchard.Indexing
+namespace Orchard.Contents.Indexing
 {
     /// <summary>
     /// Enumerates all parts and fields of content item to extract indexed properties.

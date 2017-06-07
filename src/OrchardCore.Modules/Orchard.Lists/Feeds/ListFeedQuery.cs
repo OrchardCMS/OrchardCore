@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -101,12 +101,12 @@ namespace Orchard.Lists.Feeds
 
             items = itemsCount == 0
                 ? Enumerable.Empty<ContentItem>()
-                : await _session.QueryAsync<ContentItem>()
+                : await _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
                     .With<ContentItemIndex>(x => x.Published)
                     .OrderByDescending(x => x.CreatedUtc)
                     .Take(itemsCount)
-                    .List();
+                    .ListAsync();
 
             foreach (var item in items)
             {

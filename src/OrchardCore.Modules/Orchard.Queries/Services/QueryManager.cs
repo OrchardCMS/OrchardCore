@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json.Linq;
 using Orchard.Environment.Cache;
 using YesSql;
 
@@ -37,9 +36,9 @@ namespace Orchard.Queries.Services
 
             // Load the currently saved object otherwise it would create a new document
             // as the new session is not tracking the cached object.
-            // TODO: Solve by having an Import method in Session
+            // TODO: Solve by having an Import method in Session or an Id on the document
 
-            var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
             if (existing.Queries.ContainsKey(name))
             {
@@ -56,7 +55,14 @@ namespace Orchard.Queries.Services
 
         public async Task<Query> GetQueryAsync(string name)
         {
-            return (await GetDocumentAsync()).Queries[name];
+            var document = await GetDocumentAsync();
+
+            if(document.Queries.TryGetValue(name, out var query))
+            {
+                return query;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<Query>> ListQueriesAsync()
@@ -73,7 +79,7 @@ namespace Orchard.Queries.Services
             // as the new session is not tracking the cached object.
             // TODO: Solve by having an Import method in Session
 
-            var existing = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+            var existing = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
             existing.Queries[query.Name] = query;
 
@@ -91,7 +97,7 @@ namespace Orchard.Queries.Services
 
             if (!_memoryCache.TryGetValue(QueriesDocumentCacheKey, out queries))
             {
-                queries = await _session.QueryAsync<QueriesDocument>().FirstOrDefault();
+                queries = await _session.Query<QueriesDocument>().FirstOrDefaultAsync();
 
                 if (queries == null)
                 {

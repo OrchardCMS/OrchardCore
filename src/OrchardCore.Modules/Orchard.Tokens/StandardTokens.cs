@@ -16,7 +16,7 @@ namespace Orchard.Tokens
                 var services = httpContextAccessor.HttpContext.RequestServices;
                 var clock = services.GetRequiredService<IClock>();
                 var siteService = services.GetRequiredService<ISiteService>();
-                var site = siteService.GetSiteSettingsAsync().Result;
+                var site = siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(site.TimeZone);
                 var now = TimeZoneInfo.ConvertTime(clock.UtcNow, TimeZoneInfo.Utc, timeZone);
 
