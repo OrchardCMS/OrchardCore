@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -37,7 +37,7 @@ namespace Orchard.Roles.Services
         {
             return _memoryCache.GetOrCreateAsync(Key, async (entry) =>
             {
-                var roles = await _session.QueryAsync<RolesDocument>().FirstOrDefault();
+                var roles = await _session.Query<RolesDocument>().FirstOrDefaultAsync();
 
                 if (roles == null)
                 {

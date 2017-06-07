@@ -1,4 +1,4 @@
-@model dynamic
+@model ContentTypeDeploymentStepViewModel
 @inject Orchard.ContentManagement.MetaData.IContentDefinitionManager ContentDefinitionManager
 
 @{ 
@@ -24,14 +24,13 @@
                     <li class="list-group-item">
                         <div class="form-check">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" name="ContentTypes" value="@name" checked="@checkd">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.ContentTypes)" value="@name" checked="@checkd">
                                 @contentTypeDefinition.DisplayName
                             </label>
                         </div>
                     </li>
                 }
             </ul>
-            @*<input type="hidden" name="ContentTypes" value="" />*@
         </div>
     </div>
 </fieldset>

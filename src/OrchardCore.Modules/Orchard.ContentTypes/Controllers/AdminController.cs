@@ -371,8 +371,11 @@ namespace Orchard.ContentTypes.Controllers
 
         #region Parts
 
-        public ActionResult ListParts()
+        public async Task<ActionResult> ListParts()
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
+                return Unauthorized();
+
             return View(new ListContentPartsViewModel
             {
                 // only user-defined parts (not code as they are not configurable)

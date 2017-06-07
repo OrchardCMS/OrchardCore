@@ -25,18 +25,21 @@ namespace Orchard.Queries.Controllers
             string name,
             string parameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ExecuteQueryApi))
-            {
-                return Unauthorized();
-            }
-
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
             var query = await _queryManager.GetQueryAsync(name);
 
             if (query == null)
             {
                 return NotFound();
             }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CreatePermissionForQuery(query.Name)))
+            {
+                // Intentionally not returning Unauthorized as it is not usable from APIs and would
+                // expose the existence of a named query (not a concern per se).
+                return NotFound();
+            }
+
+            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
 

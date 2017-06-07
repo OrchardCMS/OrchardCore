@@ -90,29 +90,29 @@ namespace Orchard.ContentManagement
             if (options.IsLatest)
             {
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsDraft && !options.IsDraftRequired)
             {
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
                         x.ContentItemId == contentItemId &&
                         x.Published == false &&
                         x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsDraft || options.IsDraftRequired)
             {
                 // Loaded whatever is the latest as it will be cloned
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x =>
                         x.ContentItemId == contentItemId &&
                         x.Latest == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
             else if (options.IsPublished)
             {
@@ -124,9 +124,9 @@ namespace Orchard.ContentManagement
                 }
 
                 contentItem = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>()
+                    .Query<ContentItem, ContentItemIndex>()
                     .Where(x => x.ContentItemId == contentItemId && x.Published == true)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
 
             if (contentItem == null)
@@ -179,8 +179,8 @@ namespace Orchard.ContentManagement
 
         public async Task<ContentItem> GetVersionAsync(string contentItemVersionId)
         {
-            var contentItem = await _session.QueryAsync<ContentItem, ContentItemIndex>(x => 
-                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefault();
+            var contentItem = await _session.Query<ContentItem, ContentItemIndex>(x => 
+                    x.ContentItemVersionId == contentItemVersionId).FirstOrDefaultAsync();
 
             if (!_contentManagerSession.RecallVersionId(contentItem.Id, out contentItem))
             {
@@ -211,9 +211,9 @@ namespace Orchard.ContentManagement
             // Because of this query the content item will need to be re-enlisted
             // to be saved.
             var previous = await _session
-                .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                .Query<ContentItem, ContentItemIndex>(x =>
                     x.ContentItemId == contentItem.ContentItemId && x.Published)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             var context = new PublishContentContext(contentItem, previous);
 
@@ -294,10 +294,10 @@ namespace Orchard.ContentManagement
             else
             {
                 latestVersion = await _session
-                    .QueryAsync<ContentItem, ContentItemIndex>(x =>
+                    .Query<ContentItem, ContentItemIndex>(x =>
                         x.ContentItemId == existingContentItem.ContentItemId &&
                         x.Latest)
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
             }
 
             if (latestVersion != null)
@@ -356,6 +356,9 @@ namespace Orchard.ContentManagement
 
             Handlers.Reverse().Invoke(handler => handler.Created(context), _logger);
 
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
+
             if (options.IsPublished)
             {
                 var publishContext = new PublishContentContext(contentItem, null);
@@ -366,9 +369,6 @@ namespace Orchard.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
-
-            _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
         }
 
         public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
@@ -386,10 +386,10 @@ namespace Orchard.ContentManagement
 
         public async Task RemoveAsync(ContentItem contentItem)
         {
-            var activeVersions = await _session.QueryAsync<ContentItem, ContentItemIndex>()
+            var activeVersions = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x =>
                     x.ContentItemId == contentItem.ContentItemId &&
-                    (x.Published || x.Latest)).List();
+                    (x.Published || x.Latest)).ListAsync();
 
             var context = new RemoveContentContext(contentItem);
 

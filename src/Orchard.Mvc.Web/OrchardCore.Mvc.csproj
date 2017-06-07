@@ -5,6 +5,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
+    <WatchOnlyModuleProjectRazorFiles>true</WatchOnlyModuleProjectRazorFiles>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,15 +22,19 @@
   <ItemGroup>
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.3" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

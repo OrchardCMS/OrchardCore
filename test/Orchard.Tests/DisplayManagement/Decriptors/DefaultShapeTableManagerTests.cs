@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -444,8 +444,9 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             Assert.Equal("Header:5", result6.Location);
         }
 
-        [Fact(Skip = "Path not supported yet")]
-        public void PathConstraintShouldMatch()
+        // "Path not supported yet"
+        [Fact]
+        internal void PathConstraintShouldMatch()
         {
             // all path have a trailing / as per the current implementation
             // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
@@ -516,7 +517,7 @@ namespace Orchard.Tests.DisplayManagement.Decriptors
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
             Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
-            Assert.StrictEqual("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
+            Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 
         public void Dispose()

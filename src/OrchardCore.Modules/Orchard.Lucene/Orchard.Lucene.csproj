@@ -24,11 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lucene.Net.Core" Version="4.8.0-alpha" />
-    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-alpha" />
-    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-alpha" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
-    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1014" />
+    <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00004" />
+    <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00004" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
+    <PackageReference Include="YesSql.Core" Version="2.0.0-beta-1045" />
   </ItemGroup>
 
   <ItemGroup>

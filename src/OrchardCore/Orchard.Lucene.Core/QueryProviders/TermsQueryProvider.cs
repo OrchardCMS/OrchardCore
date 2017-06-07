@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -17,7 +17,7 @@ namespace Orchard.Lucene.QueryProviders
 
             var first = query.Properties().First();
 
-            string field = first.Name;
+            var field = first.Name;
             var boolQuery = new BooleanQuery();
 
             switch (first.Value.Type)
@@ -31,7 +31,7 @@ namespace Orchard.Lucene.QueryProviders
                             throw new ArgumentException($"Invalid term in terms query");
                         }
 
-                        boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), BooleanClause.Occur.SHOULD);
+                        boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), Occur.SHOULD);
                     }
 
                     break;

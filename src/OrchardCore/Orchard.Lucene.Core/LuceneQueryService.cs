@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Tokenattributes;
+using Lucene.Net.Analysis.TokenAttributes;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
 
@@ -27,7 +27,7 @@ namespace Orchard.Lucene
                 throw new ArgumentException("Query DSL requires a [query] property");
             }
 
-            Query query = CreateQueryFragment(context, queryProp);
+            var query = CreateQueryFragment(context, queryProp);
 
             var sortProperty = queryObj["sort"];
             var fromProperty = queryObj["from"];
@@ -53,9 +53,9 @@ namespace Orchard.Lucene
             }
 
             TopDocs docs = context.IndexSearcher.Search(
-                query, 
+                query,
                 size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortField.Type_e.STRING, sortOrder == "desc"))
+                sortField == null ? Sort.RELEVANCE : new Sort(new SortField(sortField, SortFieldType.STRING, sortOrder == "desc"))
             );
 
             if (from > 0)
@@ -88,13 +88,13 @@ namespace Orchard.Lucene
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
 
-            if (String.IsNullOrEmpty(text))
+            if (string.IsNullOrEmpty(text))
             {
                 return new List<string>();
             }
 
             var result = new List<string>();
-            using (var tokenStream = analyzer.TokenStream(fieldName, text))
+            using (var tokenStream = analyzer.GetTokenStream(fieldName, text))
             {
                 tokenStream.Reset();
                 while (tokenStream.IncrementToken())

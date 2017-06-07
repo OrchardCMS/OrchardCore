@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -52,7 +52,7 @@ namespace Orchard.Data.Migration
         {
             if (_dataMigrationRecord == null)
             {
-                _dataMigrationRecord = await _session.QueryAsync<DataMigrationRecord>().FirstOrDefault();
+                _dataMigrationRecord = await _session.Query<DataMigrationRecord>().FirstOrDefaultAsync();
 
                 if (_dataMigrationRecord == null)
                 {

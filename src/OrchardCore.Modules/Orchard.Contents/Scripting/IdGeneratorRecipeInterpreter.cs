@@ -12,8 +12,8 @@ namespace Orchard.ContentManagement
             Name = "uuid",
             Method = serviceProvider => (Func<object>) (() =>
             {
-                var idGenerator = serviceProvider.GetRequiredService<IContentItemIdGenerator>();
-                return idGenerator.GenerateUniqueId(new ContentItem());
+                var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
+                return idGenerator.GenerateUniqueId();
             })
         };
 

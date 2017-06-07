@@ -33,7 +33,7 @@ namespace Orchard.Markdown.Handlers
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(MarkdownPart));
                 var settings = contentTypePartDefinition.GetSettings<MarkdownPartSettings>();
 
-                var html = Markdig.Markdown.ToHtml(part.Markdown);
+                var html = Markdig.Markdown.ToHtml(part.Markdown ?? "");
 
                 if (settings.RenderTokens)
                 {

@@ -111,7 +111,6 @@ csx
 AppPackages/
 
 # Others
-sql/
 *.Cache
 !Orchard.Environment.Cache
 ClientBin/

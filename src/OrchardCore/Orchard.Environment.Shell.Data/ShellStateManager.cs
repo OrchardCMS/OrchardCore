@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.State;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace Orchard.Environment.Shell
                 return _shellState;
             }
 
-            _shellState = await _session.QueryAsync<ShellState>().FirstOrDefault();
+            _shellState = await _session.Query<ShellState>().FirstOrDefaultAsync();
 
             if (_shellState == null)
             {
