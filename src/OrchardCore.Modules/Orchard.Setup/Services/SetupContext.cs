@@ -1,4 +1,5 @@
-﻿using Orchard.Recipes.Models;
+﻿using Microsoft.Extensions.Primitives;
+using Orchard.Recipes.Models;
 using System.Collections.Generic;
 
 namespace Orchard.Setup.Services
@@ -12,6 +13,7 @@ namespace Orchard.Setup.Services
         public string DatabaseProvider { get; set; }
         public string DatabaseConnectionString { get; set; }
         public string DatabaseTablePrefix { get; set; }
+        public IDictionary<string, string> RecipeExtraParams { get; set; }
         public IEnumerable<string> EnabledFeatures { get; set; }
         public RecipeDescriptor Recipe { get; set; }
         public IDictionary<string, string> Errors { get; set; }

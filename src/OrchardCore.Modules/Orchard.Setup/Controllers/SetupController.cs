@@ -9,6 +9,8 @@ using Orchard.Environment.Shell;
 using Orchard.Recipes.Models;
 using Orchard.Setup.Services;
 using Orchard.Setup.ViewModels;
+using Orchard.DisplayManagement;
+using Microsoft.Extensions.Primitives;
 
 namespace Orchard.Setup.Controllers
 {
@@ -128,7 +130,8 @@ namespace Orchard.Setup.Controllers
                 AdminEmail = model.Email,
                 AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
-                Recipe = selectedRecipe
+                Recipe = selectedRecipe,
+                RecipeExtraParams = Request.Form.ToDictionary(keyValue => keyValue.Key, keyValue => keyValue.Value.ToString())
             };
 
             if (!model.DatabaseProviderPreset)

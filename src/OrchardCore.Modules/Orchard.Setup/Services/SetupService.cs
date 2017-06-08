@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using YesSql;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Primitives;
 
 namespace Orchard.Setup.Services
 {
@@ -181,18 +182,17 @@ namespace Orchard.Setup.Services
                     // to query the current execution.
                     //await Task.Run(async () =>
                     //{
-                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new 
-                    {
-                        SiteName  = context.SiteName,
-                        AdminUsername = context.AdminUsername,
-                        AdminEmail = context.AdminEmail,
-                        AdminPassword = context.AdminPassword,
-                        DatabaseProvider = context.DatabaseProvider,
-                        DatabaseConnectionString = context.DatabaseConnectionString,
-                        DatabaseTablePrefix = context.DatabaseTablePrefix
-                    }); 
-                    //});
+                    var recipeParams = context.RecipeExtraParams ?? new Dictionary<string,string>();
+                    recipeParams[nameof(context.SiteName)] = context.SiteName;
+                    recipeParams[nameof(context.AdminUsername)] = context.AdminUsername;
+                    recipeParams[nameof(context.AdminEmail)] = context.AdminEmail;
+                    recipeParams[nameof(context.AdminPassword)] = context.AdminPassword;
+                    recipeParams[nameof(context.DatabaseProvider)] = context.DatabaseProvider;
+                    recipeParams[nameof(context.DatabaseConnectionString)] = context.DatabaseConnectionString;
+                    recipeParams[nameof(context.DatabaseTablePrefix)] = context.DatabaseTablePrefix;
 
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, recipeParams);
+                    //});
                 }
             }
 
