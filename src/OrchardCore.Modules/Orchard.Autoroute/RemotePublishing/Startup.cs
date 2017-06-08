@@ -5,7 +5,7 @@ using Orchard.MetaWeblog;
 namespace Orchard.Autoroute.RemotePublishing
 {
 
-    [Feature("Orchard.RemotePublishing")]
+    [RequireFeatures("Orchard.RemotePublishing")]
     public class RemotePublishingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

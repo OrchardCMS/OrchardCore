@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
@@ -33,15 +34,22 @@ namespace Orchard.Environment.Shell.Builders
                 _logger.LogDebug("Composing blueprint");
             }
 
-            var features = await _extensionManager
-                .LoadFeaturesAsync(descriptor.Features.Select(x => x.Id).ToArray());
+            var featureNames = descriptor.Features.Select(x => x.Id).ToArray();
+
+            var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
             var entries = new Dictionary<Type, FeatureEntry>();
 
             foreach (var feature in features)
             {
-                foreach (var exportedType in feature.ExportedTypes) {
-                    entries.Add(exportedType, feature);
+                foreach (var exportedType in feature.ExportedTypes)
+                {
+                    var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
+
+                    if (requiredFeatures.All(x => featureNames.Contains(x)))
+                    {
+                        entries.Add(exportedType, feature);
+                    }
                 }
             }
 

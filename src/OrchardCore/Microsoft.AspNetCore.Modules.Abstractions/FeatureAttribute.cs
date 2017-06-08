@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -7,7 +7,7 @@ namespace Microsoft.AspNetCore.Modules
     /// a specific feature by its name. This component will only
     /// be used if the feature is enabled.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class FeatureAttribute : Attribute
     {
         public FeatureAttribute(string featureName)
