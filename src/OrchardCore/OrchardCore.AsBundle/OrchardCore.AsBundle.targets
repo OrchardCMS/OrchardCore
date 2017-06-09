@@ -40,7 +40,7 @@
       Condition="'@(ModuleProjectRazorFilesMapping)' != ''" Importance="high" />
 
     <WriteLinesToFile
-      File="$(BaseIntermediateOutputPath)ModuleProjectRazorFiles.map"
+      File="obj\ModuleProjectRazorFiles.map"
       Lines="@(ModuleProjectRazorFilesMapping)"
       Condition="'@(ModuleProjectRazorFilesMapping)' != ''"
       Overwrite="true"
