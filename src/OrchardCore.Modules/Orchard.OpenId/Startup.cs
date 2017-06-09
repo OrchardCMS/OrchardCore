@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Modules;
@@ -126,6 +127,13 @@ namespace Orchard.OpenId
             });
 
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
+
+            services.Configure<IdentityOptions>(options => {
+                options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
+                options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
+                options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
+            });
+			
         }
     }
 }
