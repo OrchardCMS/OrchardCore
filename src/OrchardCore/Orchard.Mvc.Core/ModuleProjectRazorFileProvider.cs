@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.FileProviders;
@@ -16,7 +16,7 @@ namespace Orchard.Mvc
     {
         private const string MappingFilePath = "obj\\ModuleProjectRazorFiles.map";
 
-        private static ConcurrentDictionary<string, string> _paths;
+        private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
         public ModuleProjectRazorFileProvider(string rootPath)
@@ -33,13 +33,13 @@ namespace Orchard.Mvc
                         {
                             var paths = File.ReadAllLines(path)
                                 .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                                .Where(x => x.Count() == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
+                                .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
 
-                            _paths = new ConcurrentDictionary<string, string>(paths);
+                            _paths = new Dictionary<string, string>(paths);
                         }
                         else
                         {
-                            _paths = new ConcurrentDictionary<string, string>();
+                            _paths = new Dictionary<string, string>();
                         }
                     }
                 }
@@ -53,19 +53,19 @@ namespace Orchard.Mvc
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (_paths.TryGetValue(subpath, out var path))
+            if (_paths.ContainsKey(subpath))
             {
-                return new PhysicalFileInfo(new FileInfo(path));
+                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
             }
-            
+
             return null;
         }
 
         public IChangeToken Watch(string filter)
         {
-            if (_paths.TryGetValue(filter, out var path))
+            if (_paths.ContainsKey(filter))
             {
-                return new PollingFileChangeToken(new FileInfo(path));
+                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
             }
 
             return null;
