@@ -14,7 +14,8 @@ namespace Orchard.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private const string MappingFilePath = "obj\\ModuleProjectRazorFiles.map";
+        private const string MappingFileFolder = "obj";
+        private const string MappingFileName = "ModuleProjectRazorFiles.map";
 
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
@@ -27,7 +28,7 @@ namespace Orchard.Mvc
                 {
                     if (_paths == null)
                     {
-                        var path = Path.Combine(rootPath, MappingFilePath);
+                        var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
 
                         if (File.Exists(path))
                         {
