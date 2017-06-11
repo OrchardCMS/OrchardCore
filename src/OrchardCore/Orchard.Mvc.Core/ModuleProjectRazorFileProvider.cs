@@ -22,26 +22,28 @@ namespace Orchard.Mvc
 
         public ModuleProjectRazorFileProvider(string rootPath)
         {
-            if (_paths == null)
+            if (_paths != null)
             {
-                lock (_synLock)
+                return;
+            }
+
+            lock (_synLock)
+            {
+                if (_paths == null)
                 {
-                    if (_paths == null)
+                    var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
+
+                    if (File.Exists(path))
                     {
-                        var path = Path.Combine(rootPath, MappingFileFolder, MappingFileName);
+                        var paths = File.ReadAllLines(path)
+                            .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                            .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
 
-                        if (File.Exists(path))
-                        {
-                            var paths = File.ReadAllLines(path)
-                                .Select(x => x.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-                                .Where(x => x.Length == 2).ToDictionary(x => x[1].Replace('\\', '/'), x => x[0]);
-
-                            _paths = new Dictionary<string, string>(paths);
-                        }
-                        else
-                        {
-                            _paths = new Dictionary<string, string>();
-                        }
+                        _paths = new Dictionary<string, string>(paths);
+                    }
+                    else
+                    {
+                        _paths = new Dictionary<string, string>();
                     }
                 }
             }
