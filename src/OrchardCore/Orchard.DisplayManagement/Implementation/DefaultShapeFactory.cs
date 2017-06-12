@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace Orchard.DisplayManagement.Implementation
             return _scopedShapeTable;
         }
 
-        public IShape Create(string shapeType, Func<dynamic> shapeFactory)
+        public IShape Create(string shapeType, Func<dynamic> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
         {
             ShapeDescriptor shapeDescriptor;
             GetShapeTable().Descriptors.TryGetValue(shapeType, out shapeDescriptor);
@@ -55,10 +55,11 @@ namespace Orchard.DisplayManagement.Implementation
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
-                OnCreated = new List<Action<ShapeCreatedContext>>()
+                OnCreated = new List<Action<ShapeCreatedContext>>(),
+                Create = shapeFactory
             };
-            
-            creatingContext.Create = shapeFactory;
+
+            creating?.Invoke(creatingContext);
 
             // "creating" events may add behaviors and alter base type
             foreach (var ev in _events)
@@ -74,7 +75,7 @@ namespace Orchard.DisplayManagement.Implementation
                 }
             }
 
-            // create the new instance
+            // Create the new instance
             var createdContext = new ShapeCreatedContext
             {
                 New = creatingContext.New,
@@ -125,6 +126,8 @@ namespace Orchard.DisplayManagement.Implementation
                     ev(createdContext);
                 }
             }
+
+            created?.Invoke(createdContext);
 
             return createdContext.Shape;
         }
