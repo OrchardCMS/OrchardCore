@@ -1,63 +1,56 @@
 using System;
-using DotLiquid;
-using Microsoft.AspNetCore.Html;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
-using Orchard.Liquid.Drops;
 
 namespace Orchard.Liquid.Filters
 {
-    public static class MetadataFilters
+    public class MetadataFilters : ITemplateContextHandler
     {
-        public static string DisplayText(Context context, object input)
+        private readonly IContentManager _contentManager;
+
+        public MetadataFilters(IContentManager contentManager)
         {
-            var contentItem = (input as ContentItemDrop)?.ContentItem;
-
-            if (contentItem == null)
-            {
-                throw new ArgumentException("Content Item was expected");
-            }
-
-            var serviceProvider = context.Environments[0]["ServiceProvider"] as IServiceProvider;
-
-            if (serviceProvider == null)
-            {
-                throw new ArgumentNullException("ServiceProvider");
-            }
-
-            var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-            var contentItemMetadata = contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
-
-            return contentItemMetadata.DisplayText;
+            _contentManager = contentManager;
         }
 
-        public static string DisplayUrl(Context context, object input)
+        public void OnTemplateProcessing(TemplateContext context)
         {
-            var contentItem = (input as ContentItemDrop)?.ContentItem;
-
-            if (contentItem == null)
+            context.Filters.AddFilter("display_text", (input, arguments, ctx) =>
             {
-                throw new ArgumentException("Content Item was expected");
-            }
+                var contentItem = input.ToObjectValue() as ContentItem;
 
-            var serviceProvider = context.Environments[0]["ServiceProvider"] as IServiceProvider;
+                if (contentItem == null)
+                {
+                    throw new ArgumentException("Content Item was expected");
+                }
 
-            if (serviceProvider == null)
+                var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+
+                return new StringValue(contentItemMetadata.DisplayText);
+            });
+
+            context.Filters.AddFilter("display_url", (input, arguments, ctx) =>
             {
-                throw new ArgumentNullException("ServiceProvider");
-            }
+                var contentItem = input.ToObjectValue() as ContentItem;
 
-            var urlHelper = (context.Environments[0]["Url"] as UrlDrop)?.Url;
-            var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-            var contentItemMetadata = contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
+                if (contentItem == null)
+                {
+                    throw new ArgumentException("Content Item was expected");
+                }
 
-            return urlHelper.RouteUrl(contentItemMetadata.DisplayRouteValues);
-        }
+                var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
 
-        public static IHtmlContent Raw(Context context, string input)
-        {
-            return new HtmlString(input);
+                object urlHelper;
+
+                if (!ctx.AmbientValues.TryGetValue("UrlHelper", out urlHelper))
+                {
+                    throw new ArgumentException("UrlHelper missing while invoking 'displayUrl'");
+                }
+
+                return new StringValue(((IUrlHelper)urlHelper).RouteUrl(contentItemMetadata.DisplayRouteValues));
+            });
         }
     }
 }
