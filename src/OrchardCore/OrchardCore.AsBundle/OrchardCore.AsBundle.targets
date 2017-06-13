@@ -44,7 +44,7 @@
       Lines="@(ModuleProjectRazorFilesMapping)"
       Condition="'@(ModuleProjectRazorFilesMapping)' != ''"
       Overwrite="true"
-      Encoding="Unicode"
+      Encoding="utf-8"
       ContinueOnError="true" />
 
     <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
