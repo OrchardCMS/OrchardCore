@@ -13,16 +13,13 @@ namespace Orchard.Environment.Shell
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IOptions<ShellOptions> _optionsAccessor;
-        private readonly ILogger _logger;
         
         public ShellSettingsConfigurationProvider(
             IHostingEnvironment hostingEnvironment,
-            IOptions<ShellOptions> optionsAccessor,
-            ILogger<ShellSettingsManager> logger)
+            IOptions<ShellOptions> optionsAccessor)
         {
             _hostingEnvironment = hostingEnvironment;
             _optionsAccessor = optionsAccessor;
-            _logger = logger;
         }
 
         public int Order => 1000;

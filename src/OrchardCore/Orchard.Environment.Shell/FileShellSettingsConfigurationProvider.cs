@@ -32,19 +32,11 @@ namespace Orchard.Environment.Shell
     {
         public ShellSettingsWithTenants(ShellSettings shellSettings) : base(shellSettings.Configuration)
         {
-            _features = shellSettings
+            Features = shellSettings
                 .Configuration
                 .Where(xd => xd.Key.StartsWith("Features:")).Select(xa => xa.Value).ToArray();
         }
 
-        private string[] _features = Array.Empty<string>();
-        public string[] Features
-        {
-            get => _features;
-            set
-            {
-                _features = value;
-            }
-        }
+        public string[] Features { get; set; }
     }
 }

@@ -11,6 +11,8 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
+        private TenantState _state;
+
         public IDictionary<string, string> Configuration { get; private set; }
 
         public ShellSettings() : this(new Dictionary<string, string>()) { }
@@ -59,8 +61,6 @@ namespace Orchard.Environment.Shell
             get => GetValue("ConnectionString");
             set => Configuration["ConnectionString"] = value;
         }
-
-        private TenantState _state;
 
         public TenantState State
         {
