@@ -28,7 +28,6 @@
 
         context.MemberAccessStrategy.Register(model.GetType());
 
-        var html = await template.RenderAsync(context);
-        @Html.Raw(html ?? "")
+        @Html.Raw(await template.RenderAsync(context));
     }
 }

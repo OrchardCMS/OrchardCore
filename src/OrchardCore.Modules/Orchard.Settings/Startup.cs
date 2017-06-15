@@ -1,13 +1,3 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Modules;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Orchard.DisplayManagement;
-using Orchard.DisplayManagement.Handlers;
-using Orchard.Environment.Navigation;
-using Orchard.Recipes;
-using Orchard.Security.Permissions;
 using Orchard.Settings.Drivers;
 using Orchard.Settings.Recipes;
 using Orchard.Settings.Services;
