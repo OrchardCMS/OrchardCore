@@ -75,7 +75,7 @@
             checkStrength($(this).val());
         });
 
-        this.parent('form').on('submit', function () {
+        this.parents('form').on('submit', function () {
             if (!valid) {
                 event.preventDefault();
             }
