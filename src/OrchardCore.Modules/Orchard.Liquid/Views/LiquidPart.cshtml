@@ -1,28 +1,33 @@
 @using Orchard.Liquid;
-@using Orchard.Liquid.Drops;
+@using Fluid;
 @model Orchard.Liquid.ViewModels.LiquidPartViewModel
-@inject ILiquidManager LiquidManager
-@inject Orchard.ContentManagement.IContentManager ContentManager
-@inject IServiceProvider ServiceProvider
-@inject YesSql.ISession Session
-@inject Orchard.Queries.IQueryManager QueryManager
-
-@{ 
+@inject IEnumerable<ITemplateContextHandler> TemplateContextHandlers;
+@{
     string liquid = Model.Liquid;
 
     var model = new
     {
         ContentItem = Model.LiquidPart.ContentItem,
-        Context = Context,
-        User = User,
-        Content = new ContentQueryDrop(ContentManager, Session),
-        Queries = new QueriesDrop(QueryManager),
-        ServiceProvider = ServiceProvider,
-        Url = new UrlDrop(Url)
+        Context = Context
     };
 
-    var template = LiquidManager.GetTemplate(liquid);
-    var html = template == null ? "" : template.Render(DotLiquid.Hash.FromAnonymousObject(model));
-}
+    FluidTemplate template;
+    IEnumerable<string> errors;
 
-@Html.Raw(html ?? "")
+    if (FluidTemplate.TryParse(liquid, out template, out errors))
+    {
+        var context = new TemplateContext();
+        context.AmbientValues.Add("UrlHelper", Url);
+        context.LocalScope.SetValue("ContentItem", Model.LiquidPart.ContentItem);
+        context.LocalScope.SetValue("Context", Context);
+
+        foreach (var handler in TemplateContextHandlers)
+        {
+            handler.OnTemplateProcessing(context);
+        }
+
+        context.MemberAccessStrategy.Register(model.GetType());
+
+        @Html.Raw(await template.RenderAsync(context));
+    }
+}

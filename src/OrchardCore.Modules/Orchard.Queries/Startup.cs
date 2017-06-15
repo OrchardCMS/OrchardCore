@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Modules;
 using Microsoft.AspNetCore.Routing;
@@ -7,7 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.Handlers;
 using Orchard.Environment.Navigation;
+using Orchard.Liquid;
 using Orchard.Queries.Drivers;
+using Orchard.Queries.Liquid;
 using Orchard.Queries.Recipes;
 using Orchard.Queries.Services;
 using Orchard.Recipes;
@@ -39,6 +40,16 @@ namespace Orchard.Queries
                 template: "api/queries/{name}",
                 defaults: new { controller = "Api", action = "Query" }
             );
+        }
+    }
+
+
+    [RequireFeatures("Orchard.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ITemplateContextHandler, QueryFilter>();
         }
     }
 }

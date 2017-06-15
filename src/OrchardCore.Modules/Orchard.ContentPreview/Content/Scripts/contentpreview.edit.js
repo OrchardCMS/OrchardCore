@@ -177,9 +177,14 @@ $(function () {
                 .fail(function (data) {
                     $(contentPreviewContent).empty();
                     $(previewErrors).empty().show();
-                    data.responseJSON.errors.forEach(function (error) {
-                        $(previewErrors).append('<div>' + error + '</div>')
-                    });
+                    if (data.responseJSON && data.responseJSON.errors) {
+                        responseJSON.errors.forEach(function (error) {
+                            $(previewErrors).append('<div>' + error + '</div>')
+                        });
+                    }
+                    else {
+                        $(previewErrors).append('<div>' + $('#unknownError').data('msg') + '</div>')
+                    }
                 })
                 .always(function () {
                     rendering = false;
