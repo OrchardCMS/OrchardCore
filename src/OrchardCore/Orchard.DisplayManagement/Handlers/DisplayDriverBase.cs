@@ -49,6 +49,17 @@ namespace Orchard.DisplayManagement.Handlers
         }
 
         /// <summary>
+        /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+        /// </summary>
+        public ShapeResult Shape(Type baseType, string shapeType, Action<object> initialize)
+        {
+            return new ShapeResult(
+                shapeType,
+                ctx => ctx.ShapeFactory.Create(baseType, shapeType, shape => initialize(shape))
+                ).Prefix(Prefix);
+        }
+
+        /// <summary>
         /// If the shape needs to be rendered, it is created automatically from its type name.
         /// </summary>
         public ShapeResult Shape(string shapeType)
