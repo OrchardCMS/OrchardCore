@@ -7,5 +7,7 @@ namespace Orchard.Environment.Shell
     {
         void AddSource(IConfigurationBuilder builder);
         void SaveToSource(string name, IDictionary<string, string> configuration);
+
+        int Order { get; }
     }
 }

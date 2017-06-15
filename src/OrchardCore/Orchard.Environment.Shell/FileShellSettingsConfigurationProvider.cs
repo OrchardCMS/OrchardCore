@@ -16,6 +16,8 @@ namespace Orchard.Environment.Shell
             _hostingEnvironment = hostingEnvironment;
         }
 
+        public int Order => 1000;
+
         public void AddSource(IConfigurationBuilder builder)
         {
             builder.AddJsonFile(Path.Combine(_hostingEnvironment.ContentRootPath, "tenants.json"));

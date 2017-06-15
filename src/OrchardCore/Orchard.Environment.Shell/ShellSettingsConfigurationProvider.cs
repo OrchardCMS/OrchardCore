@@ -25,6 +25,8 @@ namespace Orchard.Environment.Shell
             _logger = logger;
         }
 
+        public int Order => 1000;
+
         public void AddSource(IConfigurationBuilder builder)
         {
             foreach (var tenant in

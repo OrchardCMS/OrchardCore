@@ -10,7 +10,7 @@ namespace Orchard.Environment.Shell
 
         public ShellSettingsManager(IEnumerable<IShellSettingsConfigurationProvider> configurationProviders)
         {
-            _configurationProviders = configurationProviders;
+            _configurationProviders = configurationProviders.OrderBy(x => x.Order);
         }
 
         public IEnumerable<ShellSettings> LoadSettings()
