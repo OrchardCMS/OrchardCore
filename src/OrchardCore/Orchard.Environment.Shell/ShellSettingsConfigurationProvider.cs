@@ -50,12 +50,21 @@ namespace Orchard.Environment.Shell
                 Optional = false
             });
 
-            foreach (var key in configuration.Keys)
-            {
-                configurationProvider.Set(key, configuration[key]);
-            }
+            configurationProvider.Set(name, null);
+            configurationProvider.Set($"{name}:RequestUrlHost", ObtainValue(configuration,$"{name}:RequestUrlHost"));
+            configurationProvider.Set($"{name}:RequestUrlPrefix", ObtainValue(configuration,$"{name}:RequestUrlPrefix"));
+            configurationProvider.Set($"{name}:DatabaseProvider", ObtainValue(configuration,$"{name}:DatabaseProvider"));
+            configurationProvider.Set($"{name}:TablePrefix", ObtainValue(configuration,$"{name}:TablePrefix"));
+            configurationProvider.Set($"{name}:ConnectionString", ObtainValue(configuration,$"{name}:ConnectionString"));
+            configurationProvider.Set($"{name}:State", ObtainValue(configuration,$"{name}:State"));
 
             configurationProvider.Commit();
+        }
+
+        private string ObtainValue(IDictionary<string, string> configuration, string key)
+        {
+            configuration.TryGetValue(key, out string value);
+            return value;
         }
 
         private string ObtainSettingsPath(string tenantPath) => Path.Combine(tenantPath, "Settings.txt");
