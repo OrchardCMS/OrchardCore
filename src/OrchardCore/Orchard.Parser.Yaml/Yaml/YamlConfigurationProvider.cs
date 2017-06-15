@@ -76,14 +76,16 @@ namespace Orchard.Parser.Yaml
         }
 
 
-        internal void GenerateNewConfig(Stream stream)
+        internal void GenerateNewConfig(Stream outputStream)
         {
+            var outputWriter = new StreamWriter(outputStream);
+
             var rootNodeName = Data.ElementAt(0).Key;
 
             var docMapping = new YamlMappingNode();
             foreach (var item in Data.Skip(1))
             {
-                docMapping.Add(item.Key.Replace((rootNodeName + ":"), string.Empty), item.Value ?? string.Empty);
+                docMapping.Add(item.Key.Replace((rootNodeName + ":"), string.Empty), (item.Value ?? EmptyValue));
                 // TODO: If contains ":" then Mapping node etc
             }
             
@@ -95,12 +97,9 @@ namespace Orchard.Parser.Yaml
                     )
                 )
             );
-
-            using (var writer = new StreamWriter(stream))
-            {
-                yamlStream.Save(writer);
-                writer.Flush();
-            }
+            
+            yamlStream.Save(outputWriter);
+            outputWriter.Flush();
         }
     }
 }
