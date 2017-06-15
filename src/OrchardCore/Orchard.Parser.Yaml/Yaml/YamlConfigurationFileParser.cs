@@ -23,7 +23,7 @@ namespace Orchard.Parser.Yaml
             if (yamlConfig.Documents.Any())
             {
                 var mapping = (YamlMappingNode)yamlConfig.Documents[0].RootNode;
-
+                
                 VisitYamlMappingNode(mapping);
             };
 
