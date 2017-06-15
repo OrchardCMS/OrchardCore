@@ -23,6 +23,8 @@
         var number = new RegExp('[0-9]');
         var specialchar = new RegExp('[^A-Za-z0-9]');
 
+        var valid = false;
+
         createProgressBar(0, '');
 
         function getPercentage(a, b) {
@@ -57,6 +59,8 @@
             var total = minLength + capitalletters + lowerletters + numbers + specialchars;
             var percentage = getPercentage(5, total);
 
+            valid = percentage >= 100;
+
             createProgressBar(percentage, getLevel(percentage));
         }
 
@@ -69,6 +73,12 @@
 
         this.bind('keyup keydown', function (event) {
             checkStrength($(this).val());
+        });
+
+        this.parents('form').on('submit', function () {
+            if (!valid) {
+                event.preventDefault();
+            }
         });
     };
 }(jQuery));
