@@ -47,19 +47,19 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
-	  <ItemGroup>
+    <ItemGroup>
       <ModuleProjectContentFiles Include="%(ModuleProjectReferences.RootDir)%(Directory)Content\**\*">
         <ProjectName>%(Filename)</ProjectName>
       </ModuleProjectContentFiles>
-		  <ModuleProjectContentFilesMapping
-			  Include="%(ModuleProjectContentFiles.FullPath)|\Packages\%(ModuleProjectContentFiles.ProjectName)\Content\%(RecursiveDir)%(Filename)%(Extension)">
-		  </ModuleProjectContentFilesMapping>
-	  </ItemGroup>
+      <ModuleProjectContentFilesMapping
+        Include="%(ModuleProjectContentFiles.FullPath)|\Packages\%(ModuleProjectContentFiles.ProjectName)\Content\%(RecursiveDir)%(Filename)%(Extension)">
+      </ModuleProjectContentFilesMapping>
+    </ItemGroup>
 
-	  <Message Text="Generating module project content files mapping file"
-		  Condition="'@(ModuleProjectContentFilesMapping)' != ''" Importance="high" />
+    <Message Text="Generating module project content files mapping file"
+      Condition="'@(ModuleProjectContentFilesMapping)' != ''" Importance="high" />
 
-	  <WriteLinesToFile
+    <WriteLinesToFile
       File="obj\ModuleProjectContentFiles.map"
       Lines="@(ModuleProjectContentFilesMapping)"
       Condition="'@(ModuleProjectContentFilesMapping)' != ''"
@@ -67,7 +67,7 @@
       Encoding="utf-8"
       ContinueOnError="true" />
 
-	  <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
+    <CreateItem Include="@(Content)" Condition="'%(Extension)'=='.cshtml'">
       <Output TaskParameter="Include" ItemName="MvcContentRazorFiles"/>
     </CreateItem>
     <ItemGroup Condition="'@(MvcRazorFilesToCompile)' == ''">
