@@ -24,7 +24,7 @@ namespace Microsoft.AspNetCore.Modules
 
         public ModuleProjectContentFileProvider(string rootPath, string contentPath)
         {
-            _contentPath = '/' + contentPath.Replace('\\', '/').TrimStart('/');
+            _contentPath = '/' + contentPath.Replace('\\', '/').Trim('/');
 
             if (_paths != null)
             {
