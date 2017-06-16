@@ -1,6 +1,6 @@
-﻿# Scripting (Orchard.Scripting)
+# Scripting (Orchard.Scripting)
 
-## Purpose 
+## Purpose
 
 The scripting provides an API allowing you to evaluate custom scripts in different languages.
 
