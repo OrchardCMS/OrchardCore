@@ -11,74 +11,77 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _state;
+        private TenantState _tenantState;
 
-        public IDictionary<string, string> Configuration { get; private set; }
+        private readonly IDictionary<string, string> _values;
 
         public ShellSettings() : this(new Dictionary<string, string>()) { }
 
         public ShellSettings(IDictionary<string, string> configuration)
         {
-            Configuration = configuration;
+            _values = configuration;
 
-            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _state)) {
-                _state = TenantState.Invalid;
+            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
+                _tenantState = TenantState.Invalid;
             }
         }
 
+        public string this[string key]
+        {
+            get
+            {
+                string retVal;
+                return _values.TryGetValue(key, out retVal) ? retVal : null;
+            }
+            set { _values[key] = value; }
+        }
+
+        public IDictionary<string, string> Configuration => _values;
+
         public string Name
         {
-            get => GetValue("Name");
-            set => Configuration["Name"] = value;
+            get { return this["Name"] ?? ""; }
+            set { this["Name"] = value; }
         }
 
         public string RequestUrlHost
         {
-            get => GetValue("RequestUrlHost");
-            set => Configuration["RequestUrlHost"] = value;
+            get { return this["RequestUrlHost"]; }
+            set { this["RequestUrlHost"] = value; }
         }
 
         public string RequestUrlPrefix
         {
-            get => GetValue("RequestUrlPrefix");
-            set => Configuration["RequestUrlPrefix"] = value;
+            get { return this["RequestUrlPrefix"]; }
+            set { _values["RequestUrlPrefix"] = value; }
         }
 
         public string DatabaseProvider
         {
-            get => GetValue("DatabaseProvider");
-            set => Configuration["DatabaseProvider"] = value;
+            get { return this["DatabaseProvider"]; }
+            set { _values["DatabaseProvider"] = value; }
         }
 
         public string TablePrefix
         {
-            get => GetValue("TablePrefix");
-            set => Configuration["TablePrefix"] = value;
+            get { return this["TablePrefix"]; }
+            set { _values["TablePrefix"] = value; }
         }
 
         public string ConnectionString
         {
-            get => GetValue("ConnectionString");
-            set => Configuration["ConnectionString"] = value;
+            get { return this["ConnectionString"]; }
+            set { _values["ConnectionString"] = value; }
         }
 
         public TenantState State
         {
-            get => _state;
+            get => _tenantState;
             set
             {
-                _state = value;
-                Configuration["State"] = value.ToString();
+                _tenantState = value;
+                this["State"] = value.ToString();
             }
-        }
-
-        private string GetValue(string key)
-        {
-            if (!Configuration.ContainsKey(key))
-            {
-                return null;
-            }
-            return Configuration[key];
         }
     }
 }
