@@ -6,22 +6,26 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Primitives;
 
-namespace Orchard.Mvc
+namespace Microsoft.AspNetCore.Modules
 {
     /// <summary>
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
-    /// of Module Project Razor files while in a development environment.
+    /// of Module Project Content files while in a development environment.
     /// </summary>
-    public class ModuleProjectRazorFileProvider : IFileProvider
+    public class ModuleProjectContentFileProvider : IFileProvider
     {
         private const string MappingFileFolder = "obj";
-        private const string MappingFileName = "ModuleProjectRazorFiles.map";
+        private const string MappingFileName = "ModuleProjectContentFiles.map";
 
         private static Dictionary<string, string> _paths;
         private static object _synLock = new object();
 
-        public ModuleProjectRazorFileProvider(string rootPath)
+        private string _contentPath;
+
+        public ModuleProjectContentFileProvider(string rootPath, string contentPath)
         {
+            _contentPath = '/' + contentPath.Replace('\\', '/').TrimStart('/');
+
             if (_paths != null)
             {
                 return;
@@ -56,9 +60,16 @@ namespace Orchard.Mvc
 
         public IFileInfo GetFileInfo(string subpath)
         {
-            if (subpath != null && _paths.ContainsKey(subpath))
+            if (subpath == null)
             {
-                return new PhysicalFileInfo(new FileInfo(_paths[subpath]));
+                return null;
+            }
+
+            var path = _contentPath + subpath;
+
+            if (_paths.ContainsKey(path))
+            {
+                return new PhysicalFileInfo(new FileInfo(_paths[path]));
             }
 
             return null;
@@ -66,11 +77,6 @@ namespace Orchard.Mvc
 
         public IChangeToken Watch(string filter)
         {
-            if (filter != null && _paths.ContainsKey(filter))
-            {
-                return new PollingFileChangeToken(new FileInfo(_paths[filter]));
-            }
-
             return null;
         }
     }

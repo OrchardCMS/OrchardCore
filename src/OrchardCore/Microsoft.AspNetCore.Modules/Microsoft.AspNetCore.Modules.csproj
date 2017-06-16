@@ -15,7 +15,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="1.1.2" />
+	<PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="1.1.1" />
+	<PackageReference Include="Microsoft.Extensions.Localization" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
   </ItemGroup>
   
