@@ -1,6 +1,6 @@
 # Liquid (Orchard.Liquid)
 
-This module provides way to create templates securly from the admin site.
+This module provides a way to create templates securely from the admin site.
 For more information about the Liquid syntax, please refer to this site: https://shopify.github.io/liquid/
 
 ## General concepts
