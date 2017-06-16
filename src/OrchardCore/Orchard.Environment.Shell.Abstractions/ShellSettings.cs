@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Shell.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Orchard.Environment.Shell.Models;
 
 namespace Orchard.Environment.Shell
 {
@@ -11,92 +11,74 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private readonly IDictionary<string, string> _values;
-        private TenantState _tenantState = TenantState.Invalid;
+        private TenantState _state;
 
-        public ShellSettings()
-        {
-            _values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            State = TenantState.Invalid;
-        }
+        public IDictionary<string, string> Configuration { get; private set; }
 
-        public ShellSettings(ShellSettings settings)
-        {
-            _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
-            State = settings.State;
-        }
+        public ShellSettings() : this(new Dictionary<string, string>()) { }
 
-        public string this[string key]
+        public ShellSettings(IDictionary<string, string> configuration)
         {
-            get
-            {
-                string retVal;
-                return _values.TryGetValue(key, out retVal) ? retVal : null;
+            Configuration = configuration;
+
+            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _state)) {
+                _state = TenantState.Invalid;
             }
-            set { _values[key] = value; }
         }
 
-        /// <summary>
-        /// Gets all keys held by this shell settings.
-        /// </summary>
-        public IEnumerable<string> Keys { get { return _values.Keys; } }
-
-        /// <summary>
-        /// The name of the tenant
-        /// </summary>
         public string Name
         {
-            get { return this["Name"] ?? ""; }
-            set { this["Name"] = value; }
+            get => GetValue("Name");
+            set => Configuration["Name"] = value;
         }
 
-        /// <summary>
-        /// The host name of the tenant
-        /// </summary>
         public string RequestUrlHost
         {
-            get { return this["RequestUrlHost"]; }
-            set { this["RequestUrlHost"] = value; }
+            get => GetValue("RequestUrlHost");
+            set => Configuration["RequestUrlHost"] = value;
         }
 
-        /// <summary>
-        /// The request url prefix of the tenant
-        /// </summary>
         public string RequestUrlPrefix
         {
-            get { return this["RequestUrlPrefix"]; }
-            set { _values["RequestUrlPrefix"] = value; }
-        }
-
-        public string ConnectionString
-        {
-            get { return this["ConnectionString"]; }
-            set { _values["ConnectionString"] = value; }
-        }
-
-        public string TablePrefix
-        {
-            get { return this["TablePrefix"]; }
-            set { _values["TablePrefix"] = value; }
+            get => GetValue("RequestUrlPrefix");
+            set => Configuration["RequestUrlPrefix"] = value;
         }
 
         public string DatabaseProvider
         {
-            get { return this["DatabaseProvider"]; }
-            set { _values["DatabaseProvider"] = value; }
+            get => GetValue("DatabaseProvider");
+            set => Configuration["DatabaseProvider"] = value;
         }
 
-        /// <summary>
-        /// The state is which the tenant is
-        /// </summary>
+        public string TablePrefix
+        {
+            get => GetValue("TablePrefix");
+            set => Configuration["TablePrefix"] = value;
+        }
+
+        public string ConnectionString
+        {
+            get => GetValue("ConnectionString");
+            set => Configuration["ConnectionString"] = value;
+        }
+
         public TenantState State
         {
-            get { return _tenantState; }
+            get => _state;
             set
             {
-                _tenantState = value;
-                this["State"] = value.ToString();
+                _state = value;
+                Configuration["State"] = value.ToString();
             }
+        }
+
+        private string GetValue(string key)
+        {
+            if (!Configuration.ContainsKey(key))
+            {
+                return null;
+            }
+            return Configuration[key];
         }
     }
 }
