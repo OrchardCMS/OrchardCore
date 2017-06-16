@@ -1,18 +1,17 @@
 # Orchard.OpenId
 
 Orchard.OpenId provides an implementation of an OpenID Connect server based on [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
-It allows Orchard 2 to act as identity provider to support token authentication without the need of an external identity provider.
-So, Orchard 2 can be used also as an identity provider for centralizing the user access permissions to external applications not only to Orchard 2 services.
+It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
+So, Orchard Core can be used also as an identity provider for centralizing the user access permissions to external applications not only to Orchard Core services.
 
 Flows supported: [code/implicit/hybrid flows](http://openid.net/specs/openid-connect-core-1_0.html) and [client credentials/resource owner password grants](https://tools.ietf.org/html/rfc6749).
-
-
 
 ## Configuration
 
 Configuration can be set through OpenID Connect settings menu in the admin dashboard and also through a recipe step.
 
 Available settings are:
+
 + Testing Mode: Enabling Testing mode, removes the need of providing a certificate for signing tokens providing an ephemeral key. Also removes the requirement of using an HTTPS for issuing tokens.
 + Token Format: there are two options:
   + JWT: This format uses signed JWT standard tokens (not encrypted). It requires the SSL certificate being used is accepted as a trusted certificate by the client.
@@ -63,6 +62,7 @@ OpenID Connect apps can be set through OpenID Connect Apps menu in the admin das
 
 
 OpenID Connect apps require the following configuration.
+
 + Id: Unique identifier.
 + Client Id: Client identifier of the application. It have to be provided by a client when requesting a valid token.
 + Display Name: Display name associated with the current application.
