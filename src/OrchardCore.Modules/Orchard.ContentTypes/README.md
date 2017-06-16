@@ -4,7 +4,8 @@
 
 ### SelectContentTypes
 
-Renders an editor to select a list of content types. It can optionally filter content types of a specific stereotype.
+Renders an editor to select a list of content types. 
+It can optionally filter content types of a specific stereotype.
 The editor returns the selection as a `string[]` on the model.
 
 #### Parameters
