@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +9,7 @@ using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
+using Orchard.DisplayManagement.ModelBinding;
 using YesSql;
 
 namespace Orchard.ContentManagement
@@ -369,6 +370,17 @@ namespace Orchard.ContentManagement
                 // invoke handlers to acquire state, or at least establish lazy loading callbacks
                 Handlers.Reverse().Invoke(handler => handler.Published(publishContext), _logger);
             }
+        }
+
+        public void Update(ContentItem contentItem, IUpdateModel updater)
+        {
+            var context = new UpdateContentContext(contentItem, updater);
+
+            Handlers.Invoke(handler => handler.Updating(context), _logger);
+            Handlers.Reverse().Invoke(handler => handler.Updated(context), _logger);
+
+            _session.Save(contentItem);
+            _contentManagerSession.Store(contentItem);
         }
 
         public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)

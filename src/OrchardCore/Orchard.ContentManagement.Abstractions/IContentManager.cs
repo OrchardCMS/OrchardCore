@@ -1,4 +1,5 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Orchard.DisplayManagement.ModelBinding;
 
 namespace Orchard.ContentManagement
 {
@@ -28,6 +29,12 @@ namespace Orchard.ContentManagement
         /// <param name="contentItem">The content instance filled with all necessary data</param>
         /// <param name="options">The version to create the item with</param>
         void Create(ContentItem contentItem, VersionOptions options);
+
+        /// <summary>
+        /// Update a content item in place without creating a new version
+        /// </summary>
+        /// <param name="contentItem">The existing content item with updated data</param>
+        void Update(ContentItem contentItem, IUpdateModel updater);
 
         /// <summary>
         /// Gets the published content item with the specified id
