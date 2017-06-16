@@ -16,6 +16,7 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - markdown.extensions.nl2br
   - markdown.extensions.toc(permalink=Link)
   
 # Page tree
