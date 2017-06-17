@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Modules;
+﻿using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using Orchard.DisplayManagement.ModelBinding;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using YesSql;
 
 namespace Orchard.ContentManagement
@@ -372,9 +371,9 @@ namespace Orchard.ContentManagement
             }
         }
 
-        public void Update(ContentItem contentItem, IUpdateModel updater)
+        public void Update(ContentItem contentItem)
         {
-            var context = new UpdateContentContext(contentItem, updater);
+            var context = new UpdateContentContext(contentItem);
 
             Handlers.Invoke(handler => handler.Updating(context), _logger);
             Handlers.Reverse().Invoke(handler => handler.Updated(context), _logger);
