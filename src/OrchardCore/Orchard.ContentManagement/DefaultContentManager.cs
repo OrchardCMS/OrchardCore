@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Modules;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using Orchard.ContentManagement.Handlers;
 using Orchard.ContentManagement.Metadata.Builders;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Records;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using YesSql;
 
 namespace Orchard.ContentManagement
@@ -379,7 +379,6 @@ namespace Orchard.ContentManagement
             Handlers.Reverse().Invoke(handler => handler.Updated(context), _logger);
 
             _session.Save(contentItem);
-            _contentManagerSession.Store(contentItem);
         }
 
         public TAspect PopulateAspect<TAspect>(IContent content, TAspect aspect)
