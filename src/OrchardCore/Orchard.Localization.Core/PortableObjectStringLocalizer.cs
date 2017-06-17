@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
-using Orchard.Localization.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Orchard.Localization.Abstractions;
 
 namespace Orchard.Localization.Core
 {
-    public class StringLocalizer : IStringLocalizer
+    public class PortableObjectStringLocalizer : IStringLocalizer
     {
         private readonly ILocalizationManager _localizationManager;
         private readonly ILogger _logger;
@@ -19,7 +19,7 @@ namespace Orchard.Localization.Core
 
         public string Context { get; private set; }
 
-        public StringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager, ILogger logger)
+        public PortableObjectStringLocalizer(CultureInfo culture, string context, ILocalizationManager localizationManager, ILogger logger)
         {
             Context = context;
             _localizationManager = localizationManager;
@@ -78,7 +78,7 @@ namespace Orchard.Localization.Core
 
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            return new StringLocalizer(culture, Context, _localizationManager, _logger);
+            return new PortableObjectStringLocalizer(culture, Context, _localizationManager, _logger);
         }
 
         private string GetTranslation(string[] pluralForms, int? count)

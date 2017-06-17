@@ -22,7 +22,7 @@ namespace Orchard.Tests.Localization
         {
             _pluralRuleProvider = new Mock<IPluralRuleProvider>();
             _pluralRuleProvider.SetupGet(o => o.Order).Returns(0);
-            _pluralRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(_csPluralRule);
+            _pluralRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out _csPluralRule)).Returns(true);
 
             _translationProvider = new Mock<ITranslationProvider>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
@@ -64,7 +64,7 @@ namespace Orchard.Tests.Localization
 
             var highPriorityRuleProvider = new Mock<IPluralRuleProvider>();
             highPriorityRuleProvider.SetupGet(o => o.Order).Returns(-1);
-            highPriorityRuleProvider.Setup(o => o.GetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"))).Returns(csPluralRuleOverride);
+            highPriorityRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out csPluralRuleOverride)).Returns(true);
 
             _translationProvider.Setup(o => o.LoadTranslations(
                 It.Is<string>(culture => culture == "cs"),

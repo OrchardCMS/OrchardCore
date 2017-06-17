@@ -6,6 +6,10 @@ using System.Text;
 
 namespace Orchard.Localization.Core
 {
+    /// <summary>
+    /// This class provides the pluralization rules based on the Unicode Common Locale Data Repository.
+    /// c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+    /// </summary>
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
         private static Dictionary<string, PluralizationRuleDelegate> Rules;
@@ -47,19 +51,21 @@ namespace Orchard.Localization.Core
 
         public int Order => 0;
 
-        PluralizationRuleDelegate IPluralRuleProvider.GetRule(CultureInfo culture)
+        bool IPluralRuleProvider.TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
         {
-            if (Rules.TryGetValue(culture.Name, out var rule))
+            rule = null;
+            
+            if (Rules.TryGetValue(culture.Name, out rule))
             {
-                return rule;
+                return true;
             }
 
             if (culture.Parent != null && Rules.TryGetValue(culture.Parent.Name, out rule))
             {
-                return rule;
+                return true;
             }
 
-            return null;
+            return false;
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Orchard.Localization.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Orchard.Localization.Abstractions;
 using Orchard.Localization.PortableObject;
 
 namespace Orchard.Localization.Core
@@ -21,7 +21,7 @@ namespace Orchard.Localization.Core
             services.AddScoped<ITranslationProvider, PoFilesTranslationsProvider>();
             services.AddScoped<ILocalizationFileLocationProvider, DefaultPoFileLocationProvider>();
             services.AddScoped<ILocalizationManager, LocalizationManager>();
-            services.AddScoped<IStringLocalizerFactory, StringLocalizerFactory>();
+            services.AddScoped<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
 
             services.Configure(setupAction);
 
