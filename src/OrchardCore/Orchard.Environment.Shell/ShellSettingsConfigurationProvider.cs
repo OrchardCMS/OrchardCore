@@ -64,7 +64,7 @@ namespace Orchard.Environment.Shell
         private string ObtainValue(IDictionary<string, string> configuration, string key)
         {
             configuration.TryGetValue(key, out string value);
-            return (item.Value ?? "~");
+            return (value ?? "~");
         }
 
         private string ObtainSettingsPath(string tenantPath) => Path.Combine(tenantPath, "Settings.txt");
