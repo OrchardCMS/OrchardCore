@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Mvc.Configuration;
 
 namespace Orchard.Mvc.Web
 {
@@ -28,6 +29,7 @@ namespace Orchard.Mvc.Web
             // Add ASP.NET MVC and support for modules
             services.AddModules(configure => configure
                 .WithConfiguration(Configuration)
+                .WithEnvironmentConfiguration()
             );
         }
 
