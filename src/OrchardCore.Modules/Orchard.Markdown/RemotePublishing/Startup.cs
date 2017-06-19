@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.MetaWeblog;
 
 namespace Orchard.Markdown.RemotePublishing
 {
 
-    [Feature("Orchard.RemotePublishing")]
+    [RequireFeatures("Orchard.RemotePublishing")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

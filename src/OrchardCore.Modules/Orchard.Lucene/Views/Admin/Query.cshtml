@@ -1,4 +1,4 @@
-@model AdminQueryViewModel
+﻿@model AdminQueryViewModel
 @using Orchard.ContentManagement;
 @inject IContentManager ContentManager
 
@@ -77,7 +77,7 @@
                 <th scope="row">@(row++)</th>
                 @foreach (var field in document)
                 {
-                    <td>@field.StringValue</td>
+                    <td>@field.GetStringValue()</td>
                 }
             </tr>
             }

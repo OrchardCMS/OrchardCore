@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -24,7 +24,7 @@ namespace Orchard.Lucene.QueryProviders
 
                     JToken gt = null;
                     JToken lt = null;
-                    JTokenType tokenType = JTokenType.None;
+                    var tokenType = JTokenType.None;
                     float? boost = null;
 
                     bool includeLower = false, includeUpper = false;
@@ -67,7 +67,7 @@ namespace Orchard.Lucene.QueryProviders
                         case JTokenType.Integer:
                             var minInt = gt?.Value<int>();
                             var maxInt = lt?.Value<int>();
-                            rangeQuery = NumericRangeQuery.NewIntRange(field, minInt, maxInt, includeLower, includeUpper);
+                            rangeQuery = NumericRangeQuery.NewInt32Range(field, minInt, maxInt, includeLower, includeUpper);
                             break;
                         case JTokenType.Float:
                             var minFloat = gt?.Value<double>();

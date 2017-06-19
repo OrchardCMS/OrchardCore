@@ -1,6 +1,6 @@
-﻿# Scripting (Orchard.Scripting)
+# Scripting (Orchard.Scripting)
 
-## Purpose 
+## Purpose
 
 The scripting provides an API allowing you to evaluate custom scripts in different languages.
 
@@ -18,8 +18,8 @@ public interface IScriptingManager
 }
 ```
 
-To evaluate an expression using a scripting engine, you must know which ones are available
-in the system. For instance, a JavaScript one is available by default and its prefix is `js`.
+To evaluate an expression using a scripting engine, you must know which ones are available in the system. 
+For instance, a JavaScript one is available by default and its prefix is `js`.
 To return the current date and time as a string we could to something like this:
 
 ```
@@ -32,8 +32,8 @@ a new scripting engine by implementing the `IScriptingEngine` interface.
 
 ### Customizing the scripting environment
 
-Any module can provide custom methods for scripts independently of the chosen language. For instance
-the Contents module provides a `uuid()` helper method that computes a unique content item identifier.
+Any module can provide custom methods for scripts independently of the chosen language. 
+For instance the Contents module provides a `uuid()` helper method that computes a unique content item identifier.
 
 To create a global method implement `IGlobalMethod` then add it to the current `IScriptingManager` 
 instance like this:

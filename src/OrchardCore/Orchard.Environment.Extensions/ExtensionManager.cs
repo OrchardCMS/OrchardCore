@@ -295,7 +295,7 @@ namespace Orchard.Environment.Extensions
 
                 var typesByFeature = allTypesByExtension
                     .GroupBy(typeByExtension => GetSourceFeatureNameForType(
-                        typeByExtension.Type,
+                        typeByExtension.Type, 
                         typeByExtension.ExtensionEntry.ExtensionInfo.Id))
                     .ToDictionary(
                         group => group.Key,

@@ -16,6 +16,7 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+#  - markdown.extensions.nl2br
   - markdown.extensions.toc(permalink=Link)
   
 # Page tree
@@ -30,9 +31,15 @@ pages:
         - Markdown: OrchardCore.Modules/Orchard.Markdown/README.md
         - Menu: OrchardCore.Modules/Orchard.Menu/README.md
         - Navigation: OrchardCore.Modules/Orchard.Navigation/README.md
+        - Indexing: OrchardCore.Modules/Orchard.Indexing/README.md
+        - Lucene: OrchardCore.Modules/Orchard.Lucene/README.md
+        - Queries: OrchardCore.Modules/Orchard.Queries/README.md
+        - Liquid: OrchardCore.Modules/Orchard.Liquid/README.md
     - Core Modules:
+        - Placement: OrchardCore/Orchard.DisplayManagement/README.md
         - Dynamic Cache: OrchardCore.Modules/Orchard.DynamicCache/README.md
         - OpenId: OrchardCore.Modules/Orchard.OpenId/README.md
+        - Recipes: OrchardCore.Modules/Orchard.Recipes/README.md
         - Resources: OrchardCore.Modules/Orchard.Resources/README.md
         - Roles: OrchardCore.Modules/Orchard.Roles/README.md
         - Scripting: OrchardCore.Modules/Orchard.Scripting/README.md
