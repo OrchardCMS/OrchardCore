@@ -14,14 +14,14 @@ namespace Orchard.Environment.Shell.Descriptor.Settings
         private readonly ShellSettingsWithTenants _shellSettings;
         private ShellDescriptor _shellDescriptor;
 
-        public FileShellDescriptorManager(ShellSettings shellSettings)
+        public FileShellDescriptorManager(ShellSettingsWithTenants shellSettings)
         {
-            _shellSettings = shellSettings as ShellSettingsWithTenants;
-
-            if (_shellSettings == null)
+            if (shellSettings == null)
             {
                 throw new ArgumentException(nameof(shellSettings));
             }
+
+            _shellSettings = shellSettings;
         }
 
         public Task<ShellDescriptor> GetShellDescriptorAsync()

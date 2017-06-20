@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Orchard.Environment.Shell.Data.Descriptors;
 using Orchard.Environment.Shell.Descriptor;
 
@@ -20,6 +20,7 @@ namespace Orchard.Environment.Shell.Data
                 options.ShellsContainerName = sitesPath;
             });
 
+            services.AddSingleton<IShellSettingsConfigurationProvider, ShellSettingsConfigurationProvider>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
 
             return services;

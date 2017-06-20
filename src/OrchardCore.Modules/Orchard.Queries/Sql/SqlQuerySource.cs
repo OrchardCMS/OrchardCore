@@ -1,13 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Newtonsoft.Json.Linq;
-using Orchard.ContentManagement;
-using Orchard.ContentManagement.Records;
 using Orchard.Tokens.Services;
 using YesSql;
-using YesSql.Services;
 
 namespace Orchard.Queries.Sql
 {
@@ -45,7 +42,7 @@ namespace Orchard.Queries.Sql
 
             var results = new List<JObject>();
 
-            if (!SqlParser.TryParse(sqlQuery.Template, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
+            if (!SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, out var rawQuery, out var rawParameters, out var messages))
             {
                 return results;
             }
@@ -61,7 +58,11 @@ namespace Orchard.Queries.Sql
                 }
 
                 var documents = await _session.GetAsync<object>(documentIds.ToArray());
-                return documents;
+
+                foreach (var document in documents)
+                {
+                    results.Add(JObject.FromObject(document));
+                }
             }
             else
             {
@@ -77,9 +78,9 @@ namespace Orchard.Queries.Sql
                 {
                     results.Add(JObject.FromObject(document));
                 }
-
-                return results.ToArray();
             }
+
+            return results.ToArray();
         }
     }
 }

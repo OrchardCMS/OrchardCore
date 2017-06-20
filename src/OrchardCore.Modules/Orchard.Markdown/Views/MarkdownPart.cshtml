@@ -3,7 +3,7 @@
 
 @{ 
     string markdown = Model.Markdown;
-    var html = Markdig.Markdown.ToHtml(markdown);
+    var html = Markdig.Markdown.ToHtml(markdown ?? "");
 
     if (Model.TypePartSettings.RenderTokens)
     {

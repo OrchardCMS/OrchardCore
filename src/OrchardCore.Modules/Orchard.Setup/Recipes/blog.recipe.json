@@ -19,54 +19,55 @@
     {
       "name": "feature",
       "disable": [],
-      "enable": [
-        // SaaS
-        "Orchard.Mvc",
-        "Orchard.HomeRoute",
-        "Orchard.Admin",
-        "Orchard.Commons",
-        "Orchard.Diagnostics",
-        "Orchard.DynamicCache",
-        "Orchard.Modules",
-        "Orchard.Navigation",
-        "Orchard.Recipes",
-        "Orchard.Resources",
-        "Orchard.Roles",
-        "Orchard.Settings",
-        "Orchard.Tenants",
-        "Orchard.Themes",
-        "Orchard.Users",
+        "enable": [
+            // SaaS
+            "Orchard.Mvc",
+            "Orchard.HomeRoute",
+            "Orchard.Admin",
+            "Orchard.Commons",
+            "Orchard.Diagnostics",
+            "Orchard.DynamicCache",
+            "Orchard.Modules",
+            "Orchard.Navigation",
+            "Orchard.Recipes",
+            "Orchard.Resources",
+            "Orchard.Roles",
+            "Orchard.Settings",
+            "Orchard.Tenants",
+            "Orchard.Themes",
+            "Orchard.Users",
 
-        // Content Management
-        "Orchard.Alias",
-        "Orchard.Autoroute",
-        "Orchard.Body",
-        "Orchard.ContentFields",
-        "Orchard.ContentPreview",
-        "Orchard.Contents",
-        "Orchard.ContentTypes",
-        "Orchard.Deployment",
-        "Orchard.Deployment.Remote",
-        "Orchard.Feeds",
-        "Orchard.Flows",
-        "Orchard.Indexing",
-        "Orchard.Layers",
-        "Orchard.Lucene",
-        "Orchard.Lists",
-        "Orchard.Markdown",
+            // Content Management
+            "Orchard.Alias",
+            "Orchard.Autoroute",
+            "Orchard.Body",
+            "Orchard.ContentFields",
+            "Orchard.ContentPreview",
+            "Orchard.Contents",
+            "Orchard.ContentTypes",
+            "Orchard.Deployment",
+            "Orchard.Deployment.Remote",
+            "Orchard.Feeds",
+            "Orchard.Flows",
+            "Orchard.Indexing",
+            "Orchard.Layers",
+            "Orchard.Lucene",
+            "Orchard.Lists",
+            "Orchard.Liquid",
+            "Orchard.Markdown",
         "Orchard.Media",
-        "Orchard.Menu",
+            "Orchard.Menu",
         "Orchard.Queries",
-        "Orchard.Title",
-        "Orchard.Tokens",
-        "Orchard.Tokens.Content",
-        "Orchard.Widgets",
+            "Orchard.Title",
+            "Orchard.Tokens",
+            "Orchard.Tokens.Content",
+            "Orchard.Widgets",
 
-        // Themes
-        "TheBlogTheme",
-        "TheAdmin",
-        "SafeMode"
-      ]
+            // Themes
+            "TheBlogTheme",
+            "TheAdmin",
+            "SafeMode"
+        ]
     },
     {
       "name": "themes",
@@ -154,6 +155,67 @@
                 ]
             },
             {
+            "Name": "LiquidPage",
+            "DisplayName": "Liquid Page",
+            "Hidden": false,
+            "Settings": {
+                "Creatable": "True",
+                "Draftable": "True",
+                "Listable": "True",
+                "Securable": "False",
+                "Stereotype": null
+            },
+            "ContentTypePartDefinitionRecords": [
+                {
+                    "PartName": "LiquidPage",
+                    "Name": "LiquidPage",
+                    "Settings": {
+                        "Position": "2"
+                    }
+                },
+                {
+                    "PartName": "AutoroutePart",
+                    "Name": "AutoroutePart",
+                    "Settings": {
+                        "ContentIndexSettings": {
+                            "Included": false,
+                            "Stored": false,
+                            "Analyzed": false,
+                            "Sanitized": false,
+                            "Tokenized": false,
+                            "Template": null
+                        },
+                        "Pattern": "{{slug}}",
+                        "AllowCustomPath": "True",
+                        "ShowHomepageOption": "False",
+                        "Position": "1"
+                    }
+                },
+                {
+                    "PartName": "LiquidPart",
+                    "Name": "LiquidPart",
+                    "Settings": {
+                        "ContentIndexSettings": {
+                            "Included": false,
+                            "Stored": false,
+                            "Analyzed": false,
+                            "Sanitized": false,
+                            "Tokenized": false,
+                            "Template": null
+                        },
+                        "Position": "3"
+                    }
+                },
+                {
+                    "PartName": "TitlePart",
+                    "Name": "TitlePart",
+                    "Settings": {
+                        "Position": "0"
+                    }
+                }
+            ]
+        },
+        {
                 "Name": "BlogPost",
                 "DisplayName": "Blog Post",
                 "Hidden": false,
@@ -329,6 +391,26 @@
                     {
                         "PartName": "Blockquote",
                         "Name": "Blockquote",
+              "Settings": {
+                "Position": "0"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "LiquidWidget",
+          "DisplayName": "Liquid",
+          "Settings": {
+            "Creatable": "False",
+            "Draftable": "True",
+            "Listable": "True",
+            "Securable": "True",
+            "Stereotype": "Widget"
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "LiquidPart",
+              "Name": "LiquidPart",
                         "Settings": {
                             "Position": "0"
                         }
@@ -795,7 +877,7 @@
                 "Source": "Lucene",
                 "Name": "RecentBlogPosts",
                 "Index": "Search",
-                "Template": "{\r\n  \"query\": {\r\n    \"term\" : { \"Content.ContentItem.ContentType\" : \"BlogPost\" } \r\n  },\r\n  \"sort\": { \"Content.ContentItem.CreatedUtc\": { \"order\": \"desc\" } },\r\n  \"size\": 3\r\n}",
+                "Template": "[js:base64('ew0KICAicXVlcnkiOiB7DQogICAgInRlcm0iIDogeyAiQ29udGVudC5Db250ZW50SXRlbS5Db250ZW50VHlwZSIgOiAiQmxvZ1Bvc3QiIH0gDQogIH0sDQogICJzb3J0IjogeyAiQ29udGVudC5Db250ZW50SXRlbS5DcmVhdGVkVXRjIjogeyAib3JkZXIiOiAiZGVzYyIgfSB9LA0KICAic2l6ZSI6IDMNCn0=')]",
                 "ReturnContentItems": true
             }
         ]
