@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -90,6 +90,11 @@ namespace Orchard.Environment.Extensions
 
         public IExtensionInfo GetExtension(string extensionId)
         {
+            if (string.IsNullOrEmpty(extensionId))
+            {
+                return new NotFoundExtensionInfo(extensionId);
+            }
+
             EnsureInitialized();
 
             ExtensionEntry extension;

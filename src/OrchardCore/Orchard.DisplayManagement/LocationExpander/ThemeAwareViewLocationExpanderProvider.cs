@@ -43,6 +43,11 @@ namespace Orchard.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
+            if (string.IsNullOrEmpty(context.AreaName))
+            {
+                return Enumerable.Empty<string>();
+            }
+
             var themeManager = context
                 .ActionContext
                 .HttpContext
