@@ -13,6 +13,7 @@ using Orchard.Liquid.Filters;
 using Orchard.Liquid.Handlers;
 using Orchard.Liquid.Indexing;
 using Orchard.Liquid.Model;
+using Orchard.Liquid.Services;
 
 namespace Orchard.Liquid
 {
@@ -39,6 +40,7 @@ namespace Orchard.Liquid
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
             services.AddScoped<IContentPartHandler, LiquidPartHandler>();
 
+            services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
             services.AddScoped<ITemplateContextHandler, MetadataFilters>();
             services.AddScoped<ITemplateContextHandler, UrlContentFilter>();
         }
