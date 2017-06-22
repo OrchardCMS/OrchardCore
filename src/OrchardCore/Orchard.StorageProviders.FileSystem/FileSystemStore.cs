@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Orchard.StorageProviders.FileSystem
@@ -21,7 +22,12 @@ namespace Orchard.StorageProviders.FileSystem
 
         public string Combine(params string[] paths)
         {
-            return Path.Combine(paths);
+            return String.Join("/", paths.Select(NormalizePath));
+        }
+
+        private string NormalizePath(string path)
+        {
+            return path.Replace('\\', '/').Replace("//", "/").TrimEnd('/');
         }
 
         public Task<bool> TryCopyFileAsync(string originalPath, string duplicatePath)
@@ -73,9 +79,9 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new DirectoryInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length + 1);
+                    var fileSubPath = f.Substring(_localPathPrefix.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
-                })
+                }).ToArray()
             );
 
             // Add files
@@ -84,9 +90,9 @@ namespace Orchard.StorageProviders.FileSystem
                 .Select(f =>
                 {
                     var fileInfo = new FileInfo(f);
-                    var fileSubPath = f.Substring(_localPathPrefix.Length + 1);
+                    var fileSubPath = f.Substring(_localPathPrefix.Length);
                     return new FileSystemFile(fileSubPath, _publicPathPrefix, fileInfo);
-                })
+                }).ToArray()
             );
 
             return Task.FromResult((IEnumerable<IFile>)results);
@@ -140,7 +146,7 @@ namespace Orchard.StorageProviders.FileSystem
                 return null;
             }
 
-            return GetFileAsync(GetPhysicalPath(absoluteUrl.Substring(_publicPathPrefix.Length)));
+            return GetFileAsync(absoluteUrl.Substring(_publicPathPrefix.Length));
         }
 
         public Task<bool> TryMoveFileAsync(string oldPath, string newPath)
@@ -196,7 +202,7 @@ namespace Orchard.StorageProviders.FileSystem
         
         private string GetPhysicalPath(string subpath)
         {
-            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPathPrefix : Path.Combine(_localPathPrefix, subpath);
+            string physicalPath = string.IsNullOrEmpty(subpath) ? _localPathPrefix : _localPathPrefix + subpath;
             return ValidatePath(_localPathPrefix, physicalPath);
         }
 
@@ -223,7 +229,7 @@ namespace Orchard.StorageProviders.FileSystem
 
         public string GetPublicUrl(string subpath)
         {
-            return Combine(_publicPathPrefix, subpath).Replace('\\', '/');
+            return Combine(_publicPathPrefix, subpath);
         }
     }
 }

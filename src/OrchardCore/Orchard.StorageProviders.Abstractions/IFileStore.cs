@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -28,7 +28,7 @@ namespace Orchard.StorageProviders
         string GetPublicUrl(string subpath);
 
         /// <summary>
-        /// Retrieves a within the file store for a public url.
+        /// Retrieves a file within the store for a public url.
         /// </summary>
         /// <param name="absoluteUrl">The public url of a media.</param>
         /// <returns>An <see cref="IFile"/> object retpresenting the file found.</returns>
