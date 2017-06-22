@@ -6,21 +6,18 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Liquid.Services
 {
     public class LiquidTemplateManager : ILiquidTemplateManager
     {
         private readonly IMemoryCache _memoryCache;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<ITemplateContextHandler> _templateContextHandlers;
 
-        private IEnumerable<ITemplateContextHandler> _contextHandlers;
-
-        public LiquidTemplateManager(IMemoryCache memoryCache, IServiceProvider serviceProvider)
+        public LiquidTemplateManager(IMemoryCache memoryCache, IEnumerable<ITemplateContextHandler> templateContextHandlers)
         {
             _memoryCache = memoryCache;
-            _serviceProvider = serviceProvider;
+            _templateContextHandlers = templateContextHandlers;
         }
 
         public Task RenderAsync(string template, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
@@ -49,10 +46,7 @@ namespace Orchard.Liquid.Services
                 FluidTemplate.TryParse(String.Join(System.Environment.NewLine, errors), out result, out errors);
             }
 
-            // Resolve the handlers lazyly to prevent cylic dependencies
-            _contextHandlers = _contextHandlers ?? _serviceProvider.GetService<IEnumerable<ITemplateContextHandler>>();
-
-            foreach (var contextHandler in _contextHandlers)
+            foreach (var contextHandler in _templateContextHandlers)
             {
                 contextHandler.OnTemplateProcessing(context);
             }
