@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Modules;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Orchard.ContentManagement;
 using Orchard.ContentManagement.Display.ContentDisplay;
@@ -14,7 +14,6 @@ using Orchard.Alias.Services;
 using Orchard.Alias.Settings;
 using Orchard.Indexing;
 using YesSql.Indexes;
-using Orchard.Tokens;
 
 namespace Orchard.Alias
 {
@@ -32,9 +31,6 @@ namespace Orchard.Alias
             services.AddScoped<IContentPartHandler, AliasPartHandler>();
             services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
-
-            services.AddNullTokenizer();
-
         }
     }
 }

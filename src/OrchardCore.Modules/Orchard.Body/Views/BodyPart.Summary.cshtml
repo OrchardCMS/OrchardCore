@@ -1,14 +1,14 @@
+@using Fluid;
 @model Orchard.Body.ViewModels.BodyPartViewModel
-@inject Orchard.Tokens.Services.ITokenizer Tokenizer
-@using Orchard.Mvc.Utilities
+@inject Orchard.Liquid.ILiquidTemplateManager TemplateManager
 
 @{
     string body = Model.Body;
+    var templateContext = new TemplateContext();
+    templateContext.SetValue("ContentItem", Model.BodyPart.ContentItem);
 
-    if (Model.TypePartSettings.RenderTokens)
-    {
-        body = Tokenizer.Tokenize(body, new Dictionary<string, object> { ["Content"] = Model.BodyPart.ContentItem });
-    }
+    var renderedBody = await TemplateManager.RenderAsync(body, templateContext);
 }
 
-@Html.Raw(body.RemoveTags(true).Ellipsize(200))
+@Html.Raw(renderedBody.RemoveTags(true).Ellipsize(200))
+

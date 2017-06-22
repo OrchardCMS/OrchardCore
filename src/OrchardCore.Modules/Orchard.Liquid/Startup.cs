@@ -40,7 +40,10 @@ namespace Orchard.Liquid
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
             services.AddScoped<IContentPartHandler, LiquidPartHandler>();
 
+            services.AddScoped<ISlugService, SlugService>();
+
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+            services.AddScoped<ITemplateContextHandler, ContentFilters>();
             services.AddScoped<ITemplateContextHandler, MetadataFilters>();
             services.AddScoped<ITemplateContextHandler, UrlContentFilter>();
         }

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Fluid;
 using Newtonsoft.Json.Linq;
-using Orchard.Tokens.Services;
+using Orchard.Liquid;
 using YesSql;
 
 namespace Orchard.Queries.Sql
@@ -11,16 +12,16 @@ namespace Orchard.Queries.Sql
     public class SqlQuerySource : IQuerySource
     {
         private readonly IStore _store;
-        private readonly ITokenizer _tokenizer;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
 
         public SqlQuerySource(
             IStore store,
-            ITokenizer tokenizer,
+            ILiquidTemplateManager liquidTemplateManager,
             ISession session)
         {
             _store = store;
-            _tokenizer = tokenizer;
+            _liquidTemplateManager = liquidTemplateManager;
             _session = session;
         }
 
@@ -35,7 +36,13 @@ namespace Orchard.Queries.Sql
         {
             var sqlQuery = query as SqlQuery;
 
-            var tokenizedQuery = _tokenizer.Tokenize(sqlQuery.Template, parameters);
+            var templateContext = new TemplateContext();
+            foreach (var parameter in parameters)
+            {
+                templateContext.SetValue(parameter.Key, parameter.Value);
+            }
+
+            var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, templateContext);
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = SqlDialectFactory.For(connection);

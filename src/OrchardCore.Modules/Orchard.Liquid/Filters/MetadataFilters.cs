@@ -23,7 +23,7 @@ namespace Orchard.Liquid.Filters
 
                 if (contentItem == null)
                 {
-                    throw new ArgumentException("Content Item was expected");
+                    throw new ArgumentException("A Content Item was expected");
                 }
 
                 var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
@@ -37,7 +37,7 @@ namespace Orchard.Liquid.Filters
 
                 if (contentItem == null)
                 {
-                    throw new ArgumentException("Content Item was expected");
+                    throw new ArgumentException("A Content Item was expected");
                 }
 
                 var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);
@@ -46,7 +46,7 @@ namespace Orchard.Liquid.Filters
 
                 if (!ctx.AmbientValues.TryGetValue("UrlHelper", out urlHelper))
                 {
-                    throw new ArgumentException("UrlHelper missing while invoking 'displayUrl'");
+                    throw new ArgumentException("UrlHelper missing while invoking 'display_url'");
                 }
 
                 return new StringValue(((IUrlHelper)urlHelper).RouteUrl(contentItemMetadata.DisplayRouteValues));

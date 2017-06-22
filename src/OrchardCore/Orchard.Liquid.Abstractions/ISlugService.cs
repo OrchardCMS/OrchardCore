@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Orchard.Tokens.Content.Abstractions
+namespace Orchard.Liquid
 {
     public interface ISlugService
     {

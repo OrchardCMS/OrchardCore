@@ -8,7 +8,7 @@ Description: The media module adds media management support.
 Features:
     Orchard.Media:
         Name: Media
-        Dependencies: Orchard.Contents, Orchard.ContentTypes, Orchard.Title
+        Dependencies: Orchard.Contents, Orchard.ContentTypes, Orchard.Title, Orchard.Liquid
         Description: Media management.
         Category: Content Management
 

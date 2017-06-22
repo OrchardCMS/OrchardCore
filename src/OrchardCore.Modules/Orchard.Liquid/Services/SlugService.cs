@@ -1,10 +1,8 @@
-﻿using Orchard.Tokens.Content.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Orchard.Tokens.Content.Services
+namespace Orchard.Liquid.Services
 {
     public class SlugService : ISlugService
     {

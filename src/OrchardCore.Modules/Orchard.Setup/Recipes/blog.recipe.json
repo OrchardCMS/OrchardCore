@@ -55,12 +55,10 @@
             "Orchard.Lists",
             "Orchard.Liquid",
             "Orchard.Markdown",
-        "Orchard.Media",
+            "Orchard.Media",
             "Orchard.Menu",
-        "Orchard.Queries",
+            "Orchard.Queries",
             "Orchard.Title",
-            "Orchard.Tokens",
-            "Orchard.Tokens.Content",
             "Orchard.Widgets",
 
             // Themes
@@ -120,7 +118,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "True",
                             "ShowHomepageOption": "True",
                             "Position": "1"
@@ -139,7 +137,6 @@
                                 "Template": null
                             },
                             "BodyPartSettings": {
-                                "RenderTokens": false,
                                 "Editor": "Wysiwyg"
                             },
                             "Position": "3"
@@ -185,7 +182,7 @@
                             "Tokenized": false,
                             "Template": null
                         },
-                        "Pattern": "{{slug}}",
+                        "Pattern": "{{ ContentItem | display_text | slugify }}",
                         "AllowCustomPath": "True",
                         "ShowHomepageOption": "False",
                         "Position": "1"
@@ -247,7 +244,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{#container}}{{slug}}/{{/container}}{{slug}}",
+                            "Pattern": "{{ ContentItem | container | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "False"
                         }
@@ -266,7 +263,6 @@
                                 "Template": null
                             },
                             "MarkdownPartSettings": {
-                                "RenderTokens": false,
                                 "Editor": "Wysiwyg"
                             }
                         }
@@ -312,7 +308,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "True"
                         }
@@ -508,7 +504,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{slug}}",
+                            "Pattern": "{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "True"
                         }

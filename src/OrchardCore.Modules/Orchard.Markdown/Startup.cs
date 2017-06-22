@@ -12,7 +12,6 @@ using Orchard.Markdown.Handlers;
 using Orchard.Markdown.Indexing;
 using Orchard.Markdown.Model;
 using Orchard.Markdown.Settings;
-using Orchard.Tokens;
 
 namespace Orchard.Markdown
 {
@@ -33,8 +32,6 @@ namespace Orchard.Markdown
             services.AddScoped<IContentFieldDisplayDriver, MarkdownFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
-
-            services.AddNullTokenizer();
         }
     }
 }

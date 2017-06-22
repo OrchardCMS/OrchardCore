@@ -11,10 +11,11 @@ using Orchard.ContentManagement;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
+using Orchard.Liquid;
+using Orchard.Media.Filters;
 using Orchard.Media.Models;
 using Orchard.Media.Services;
 using Orchard.StorageProviders.FileSystem;
-using YesSql.Indexes;
 
 namespace Orchard.Media
 {
@@ -37,8 +38,9 @@ namespace Orchard.Media
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<ContentPart, ImagePart>();
-
             services.AddMedia();
+
+            services.AddScoped<ITemplateContextHandler, MediaFilters>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
