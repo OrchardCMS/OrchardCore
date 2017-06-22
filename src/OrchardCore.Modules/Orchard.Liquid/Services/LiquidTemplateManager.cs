@@ -20,20 +20,19 @@ namespace Orchard.Liquid.Services
             _templateContextHandlers = templateContextHandlers;
         }
 
-        public Task RenderAsync(string template, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
+        public Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
         {
             var errors = Enumerable.Empty<string>();
-            FluidTemplate result;
 
-            result = _memoryCache.GetOrCreate<FluidTemplate>(template, (ICacheEntry e) =>
+            var result = _memoryCache.GetOrCreate<FluidTemplate>(source, (ICacheEntry e) =>
             {
-                if (FluidTemplate.TryParse(template, out result, out errors))
+                if (FluidTemplate.TryParse(source, out var parsed, out errors))
                 {
                     // Define a default sliding expiration to prevent the 
                     // cache from being filled and still apply some micro-caching
                     // in case the template is use commonly
                     e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
-                    return result;
+                    return parsed;
                 }
                 else
                 {

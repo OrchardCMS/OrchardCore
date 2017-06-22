@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.5.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.6.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -194,6 +194,7 @@ jQuery.trumbowyg = {
                 type: 'GET',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 dataType: 'xml',
+                crossDomain : true,
                 url: svgPathOption,
                 data: null,
                 beforeSend: null,
@@ -1024,7 +1025,11 @@ jQuery.trumbowyg = {
             if (!force && t.$ed.is(':visible')) {
                 t.syncTextarea();
             } else {
-                t.$ed.html(t.$ta.val());
+                // wrap the content in a div it's easier to get the innerhtml
+                var html = '<div>' + t.$ta.val() + '</div>';
+                //scrub the html before loading into the doc
+                html = $(t.o.tagsToRemove.join(','), html).remove().end().html();
+                t.$ed.html(html);
             }
 
             if (t.o.autogrow) {
@@ -1044,8 +1049,6 @@ jQuery.trumbowyg = {
             var t = this;
             t.saveRange();
             t.syncCode(force);
-
-            $(t.o.tagsToRemove.join(','), t.$ed).remove();
 
             if (t.o.semantic) {
                 t.semanticTag('b', 'strong');
@@ -1130,6 +1133,7 @@ jQuery.trumbowyg = {
                 target = $a.attr('target');
                 var range = t.doc.createRange();
                 range.selectNode(node);
+                documentSelection.removeAllRanges();
                 documentSelection.addRange(range);
             }
 
@@ -1179,6 +1183,7 @@ jQuery.trumbowyg = {
                 if (node && node.nodeName === 'A') {
                     var range = t.doc.createRange();
                     range.selectNode(node);
+                    documentSelection.removeAllRanges();
                     documentSelection.addRange(range);
                 }
             }

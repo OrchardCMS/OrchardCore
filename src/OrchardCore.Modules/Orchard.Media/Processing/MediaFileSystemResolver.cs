@@ -42,9 +42,9 @@ namespace Orchard.Media.Processing
         public IDictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
         /// <inheritdoc/>
-        public async Task<bool> IsValidRequestAsync(HttpContext context, ILogger logger)
+        public Task<bool> IsValidRequestAsync(HttpContext context, ILogger logger)
         {
-            return await Task.FromResult(GetExtension(this.options.Configuration, context.Request.GetDisplayUrl()) != null);
+            return Task.FromResult(GetExtension(this.options.Configuration, context.Request.GetDisplayUrl()) != null);
         }
 
         /// <inheritdoc/>

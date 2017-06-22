@@ -131,7 +131,7 @@ namespace Orchard.StorageProviders.FileSystem
             try
             {
                 Directory.CreateDirectory(GetPhysicalPath(subpath));
-                return Task.FromResult(true); ;
+                return Task.FromResult(true);
             }
             catch
             {

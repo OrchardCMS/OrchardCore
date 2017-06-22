@@ -41,18 +41,13 @@ namespace Orchard.Media
 
         public IMediaFactory GetMediaFactory(Stream stream, string fileName, string mimeType, string contentType)
         {
-            var requestMediaFactoryResults = _mediaFactorySelectors
+            var requestMediaFactoryResult = _mediaFactorySelectors
                 .Select(x => x.GetMediaFactory(stream, fileName, mimeType, contentType))
                 .Where(x => x != null)
                 .OrderByDescending(x => x.Priority)
-                .ToArray();
+                .FirstOrDefault();
 
-            if (requestMediaFactoryResults.Length == 0)
-            {
-                return null;
-            }
-
-            return requestMediaFactoryResults[0].MediaFactory;
+            return requestMediaFactoryResult?.MediaFactory;
         }
     }
 }
