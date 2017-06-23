@@ -1,0 +1,43 @@
+@using Orchard.Utility.Extensions
+@using Orchard.Workflows.Models
+<h1>@Html.TitleForPage(T("Running workflows").ToString()) </h1>
+
+@using (Html.BeginFormAntiForgeryPost()) {
+    <fieldset>		
+        <table class="items">
+            <thead>
+                <tr>
+                    <th scope="col" class="checkbox"><input type="checkbox" class="check-all"/></th>
+                    <th scope="col">@T("Worfklow Definition")</th>
+                    <th scope="col">Blocking activities</th>
+                    <th scope="col" class="actions">&nbsp;</th>
+                </tr>
+            </thead>
+            @if (Model.Workflows.Count == 0) {
+                @T("No workflows associated with this content item.")
+            }
+
+            @foreach (WorkflowRecord workflow in Model.Workflows) {
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        @Html.ActionLink(workflow.WorkflowDefinitionRecord.Name, "Edit", new {id = workflow.WorkflowDefinitionRecord.Id}) 
+                    </td>
+                    <td>
+                        @foreach (AwaitingActivityRecord awaiting in workflow.AwaitingActivities) {
+                            @awaiting.ActivityRecord.Name.CamelFriendly()
+                            <br/>
+                        }
+                        &nbsp;
+                    </td>
+                    <td>
+                        @Html.ActionLink(T("Status").ToString(), "Edit", new {id = workflow.WorkflowDefinitionRecord.Id, workflowId = workflow.Id, ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl}) |
+                        @Html.ActionLink(T("Delete").ToString(), "DeleteWorkflow", new {id = workflow.Id}, new {itemprop = "RemoveUrl UnsafeUrl", ReturnUrl = Html.ViewContext.HttpContext.Request.RawUrl})
+                    </td>
+                </tr>
+            }
+        </table>
+    </fieldset>
+}

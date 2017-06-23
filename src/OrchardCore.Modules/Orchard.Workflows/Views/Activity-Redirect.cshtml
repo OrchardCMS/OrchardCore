@@ -1,0 +1,8 @@
+﻿@{
+    var name = (string)Model.Name;
+    var url = (string) Model.State.Url;
+    var description = String.IsNullOrEmpty(url) ? T("Redirect") : T("Redirect to {0}", url);
+}
+<div class="activity-redirect" title="@description">
+    <div>@name</div>
+</div>

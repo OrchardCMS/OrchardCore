@@ -1,0 +1,288 @@
+﻿.activity {
+    position: absolute;
+    z-index: 20;
+    padding: 1em; /*min-width: 5em;*/
+    border: 1px solid #999;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    background-color: white;
+    text-align: center;
+    font-size: 0.9em;
+    font-family: helvetica;
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    white-space: nowrap;
+}
+
+    .activity:hover, .dragHover {
+        -moz-box-shadow: 2px 2px 19px #aaa;
+        -o-box-shadow: 2px 2px 19px #aaa;
+        -webkit-box-shadow: 2px 2px 19px #aaa;
+        box-shadow: 2px 2px 19px #aaa;
+    }
+
+.event {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAANNJREFUOE+VkbENhDAMRcOtRElDRRsxB5MwAxNQ0yAGYAJqWiagASFfbMmRHXzcXfGk+Nvf+UocAPzDyxIfMcUnZJF94WYg0ziOkOc50TQNHMehZlQRyLqui4a+74Ok+jrSeZ5TXdc0XJYl7Psu+4Qssm3boKoqMrRtGyRwqHnvo1kZZH4JmxFpcDI/UxQFrOsa2okh5HecH19nGAY6y+1IPKTgbel2RA0xfNsv/0Dwa83zHErdUwWzLIu5HbkJCOa3tiM34bouMljbEVN8whQ/A+4NnH6HdIESjBQAAAAASUVORK5CYII=');
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+.awaiting {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAARCAYAAADUryzEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAADpJREFUOE9j+P//P0UYqyApGKsgKRhM/P79m+F/TTuEC8P+sf+/fv2KV27UgFEDhpsBlGCsgsTj/wwAFS7Z3zr+A08AAAAASUVORK5CYII=');
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+.start {
+    border-width: 2px;
+    background-color: #eee;
+}
+
+._jsPlumb_connector {
+    z-index: 4;
+}
+
+._jsPlumb_endpoint {
+    z-index: 21;
+    cursor: pointer;
+}
+
+.sourceEndpoint {
+    fill: red;
+}
+
+.sourceEndpointLabel, .targetEndpointLabel {
+    z-index: 21;
+    cursor: pointer;
+}
+
+.active {
+    border: 1px dotted green;
+}
+
+.hover {
+    border: 1px dotted red;
+}
+
+
+/* attempt to make the editor section to take the full height */
+#layout-main, #main, #content {
+    height: 100%;
+}
+
+
+.connection-label {
+    z-index: 10;
+    padding: 0 0.5em;
+    border: 1px solid #999;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    background-color: white;
+    -moz-opacity: 0.8;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    filter: alpha(opacity=80);
+}
+
+#workflow-container {
+    position: relative;
+}
+
+#editor-wrapper {
+    display: block;
+    float: left;
+    width: 100%;
+}
+
+#workflow-footer {
+    clear: left;
+}
+
+#activity-editor {
+    display: block;
+    padding: 0;
+    margin: 0;
+    min-height: 600px;
+    overflow:auto;
+    margin-right: 302px; /* width + borders */
+}
+
+/* toolbox */
+
+#activity-toolbox {
+    display: block;
+    padding: 0;
+    margin: 0;
+    height: 600px;
+    overflow-y: scroll;
+    border: 1px solid #E4E5E6;
+    background-color: #F3F4F5;
+    float:left;
+
+    width: 300px;
+    margin-left: -302px; /* width + borders */
+}
+
+#activity-toolbox .bulk-actions {
+    margin-top: 10px; 
+    margin-bottom: 5px; 
+    margin-left: 5px;
+}
+
+    #activity-toolbox .activity-toolbox-item {
+        display: block;
+        margin: 5px 5px;
+        width: auto;
+        border: 1px solid #EAEAEA;
+        background-color: white;
+    }
+
+    #activity-toolbox .activity-toolbox-item > div {
+        display: block;
+        padding: 0 5px 0 10px;
+        width: auto;
+        height: auto;
+    }
+
+        #activity-toolbox .activity-toolbox-item > div > h2 {
+            color: #333;
+            font-size: 1.077em;
+        }
+
+#activity-toolbar {
+    position: absolute;
+    z-index: 30;
+    left: -2000px;
+    padding: 2px 0;
+    min-width: 0;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+    #activity-toolbar > div {
+        width: 24px;
+        height: 24px;
+        margin: 0;
+        padding: 0 2px;
+        float: left;
+        border-right: 1px solid #ccc;
+    }
+
+        #activity-toolbar > div:last-child {
+            border-right: none;
+        }
+
+        #activity-toolbar > div label {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            padding: 0;
+            margin: 0;
+            background-color: #eaeaea;
+            background-repeat: no-repeat;
+            border: 1px solid #999;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+            #activity-toolbar > div label:hover {
+                border-color: #333;
+            }
+
+    /* Start button */
+    #activity-toolbar #activity-toolbar-start-checkbox { /* hide the checkbox and rely on the label for two-state button */
+        display: none;
+    }
+
+        #activity-toolbar #activity-toolbar-start-checkbox + label {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAANCAYAAACdKY9CAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAK1JREFUKFN1ULsNxSAQY6eUNKnSM0dGyERswARMkJqWASIoQMgP8gTigBQuwJ/zHQNAkFJi13XhPE+EECZ++ogxMiEE9n2Hc27iiaikeu+b4Xmed1pvbhW2bfs0VK5UZEop8jFW6gOllGgPrXWeuN7hvu8W2pOvYXWlHIKqmwwrEMNYaQVSaVx6FE9L9x+ccxhjsu4vttbiOA4S+BL1MoVYob9YG11Qu/agu4H9AENqkP+wqtOOAAAAAElFTkSuQmCC');
+            background-position: center;
+        }
+
+    /* Edit button */
+    #activity-toolbar #activity-toolbar-edit > label {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAJFJREFUKFOVkLENAyEMRdmJBajoaakpkCgpmYAZGIoxmOAaJPQjLPmSiCN3KV6D3rOMBYAtYwyRUkIIAb13elskhmUpJcHRVi6loNZ6BpOc87XMk+fUz2gJWPbeI8b4FS0rXcnM8umnMgX/yBRM2TkHrfWtTIG1FsdxoLV2RjuZAmMMlFIUzdv/kicU3K3xBuIFb6p0auW2YMcAAAAASUVORK5CYII=');
+        background-position: center;
+    }
+
+
+    /* Delete button */
+    #activity-toolbar #activity-toolbar-delete > label {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAJCAYAAADkZNYtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAGVJREFUKFOVkLENwCAMBL2TS3p2YwbvwwSuaRnjEywZBRJHSXEFr3sDJgCkqmBmlFLOIywbiIjltVbLqfeOnLOF14KLg5QSWmvrhAgfcLsyEhd5sBf2P4TiU+FVdOabf2/j255BB4ch671zW3IBAAAAAElFTkSuQmCC');
+        background-position: center;
+    }
+
+    #activity-toolbar #activity-toolbar-start-checkbox:checked + label {
+        background-color: white;
+    }
+
+.toolbox-task {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAASFJREFUSEvFlbEVhCAMQNnJ0sbK3jkcwQmcwQncwAmcwNqWCWz0+XLGEy/EAHo+74rPewRCSAKJAoAgXddBFEUWbdsuS/J+iijkNE1zMFDX9bIk76ccBHhYkiQwDMMyfcuqqjoYKMtyX5+mSWVZJnplTfhNUUFrDWmaWnIkjmPo+x54+LhnzsPvQD1Zh3meVVEU4uZvyPMcxnG0PTBxlBSuwPO3G0Ck53gFkxd65ikD/FY+b/lLWgdfgrd4WkqIL2/kQhCMu+/HhkKKhrwGeGg4oYfxfwPI7RDhRt9N6KehhD7nVjJspceeqcFV2K7gNBBK2Fm4t+vwk2J3tw5RaE/YDSCPNhwDKvA4nm2ZUp+2Ji6kYigdJiEKOVJ+fD/8A6gXPdsrCgSlf2sAAAAASUVORK5CYII=');
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+}
+
+.toolbox-task div {
+    margin-left: 36px;
+}
+
+.toolbox-event {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAaCAYAAACHD21cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAQNJREFUOE+Vk7ERgzAMAL0TJQ0VPXMwAhMwAxOwARMwATUtE9DAcYrlRJxsSfaleF2wpdgPkgOAwPM8bhgGqKpKMI6jT/nmEe+P4zigbVu1cF1Xn2IUbtumFjVNA+d5+hSjcFkWtVC7JhJCzk+7JhLCfd+u6zpR1Pc9XNclipAQLL95nv22LEJC0PzquoZ93/22/GN8YVk/C7yJ6WdBn8f0syBv8/tpcO+//HgzRH789afu/DQkBI206dPWi5I53D09DYmSOdM0vYVa60UPROqXnUcO97MaXSwg3C87VinkVxwrDvcrjhWH/H7NLPYJsUB+udMQsYB+pdOQ6IGGunQaALgPuFaRbIPh6Z8AAAAASUVORK5CYII=');
+    background-repeat: no-repeat;
+    background-position: 10px 10px;
+}
+
+.toolbox-event div {
+    margin-left: 36px;
+}
+
+/* RTL */
+.dir-rtl #editor-wrapper {
+    float: right;
+}
+
+.dir-rtl #workflow-footer {
+    clear: right;
+}
+
+.dir-rtl #activity-editor {
+    margin-right: inherit;
+    margin-left: 302px;
+}
+
+/* RTL toolbox */
+
+.dir-rtl #activity-toolbox {
+    float:right;
+
+    margin-left: inherit; /* width + borders */
+    margin-right: -302px; /* width + borders */
+}
+
+    .dir-rtl #activity-toolbox .activity-toolbox-item > div {
+        padding: 0 10px 0 5px;
+    }
+
+
+.dir-rtl #activity-toolbar > div {
+    float: right;
+}
+
+    .dir-rtl #activity-toolbar > div:last-child {
+        border-right: inherit;
+        border-left: none;
+    }
+
+.dir-rtl .toolbox-task div {
+    margin-left: inherit;
+    margin-right: 36px;
+}
+
+.dir-rtl .toolbox-event div {
+    margin-left: inherit;
+    margin-right: 36px;
+}

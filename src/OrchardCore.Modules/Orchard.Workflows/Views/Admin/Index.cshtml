@@ -1,0 +1,78 @@
+@model AdminIndexViewModel
+@using Orchard.Workflows.ViewModels;
+
+@{
+    var index = 0;
+
+	var pageSizes = new List<int?>() { 10, 50, 100 };
+	var defaultPageSize = WorkContext.CurrentSite.PageSize;
+	if(!pageSizes.Contains(defaultPageSize)) { 
+		pageSizes.Add(defaultPageSize);
+	}
+}
+
+<h1>@Html.TitleForPage(T("Manage Workflow Definitions").ToString()) </h1>
+@using (Html.BeginFormAntiForgeryPost()) { 
+    @Html.ValidationSummary()
+    <div class="manage">@Html.ActionLink(T("Create new Workflow Definition").Text, "EditProperties", new { Area = "Orchard.Workflows", returnurl = HttpContext.Current.Request.RawUrl }, new { @class = "button primaryAction" })</div>
+
+    <fieldset class="bulk-actions">
+        <label for="publishActions">@T("Actions:")</label>
+        <select id="publishActions" name="@Html.NameOf(m => m.Options.BulkAction)">
+            @Html.SelectOption(Model.Options.BulkAction, WorkflowDefinitionBulk.None, T("Choose action...").ToString())
+            @Html.SelectOption(Model.Options.BulkAction, WorkflowDefinitionBulk.Delete, T("Delete").ToString())
+        </select>
+        <button type="submit" name="submit.BulkEdit" value="@T("Apply")">@T("Apply")</button>
+    </fieldset>
+    <fieldset class="bulk-actions">
+		<label for="filterResults">@T("Sort by:")</label>
+        <select id="filterResults" name="@Html.NameOf(m => m.Options.Order)">
+            @Html.SelectOption(Model.Options.Order, WorkflowDefinitionOrder.Name, T("Name").ToString())
+        </select>
+		<input type="hidden" name="Page" value="1" />
+		<label for="pageSize">@T("Show:")</label>
+		<select id="pageSize" name="PageSize">
+			@Html.SelectOption((int)Model.Pager.PageSize, 0, T("All").ToString())
+			@foreach(int size in pageSizes.OrderBy(p => p)) {
+				@Html.SelectOption((int)Model.Pager.PageSize, size, size.ToString())
+			}
+		</select>
+        <button type="submit" name="submit.Filter" value="@T("Filter")">@T("Filter")</button>
+    </fieldset>
+    <fieldset>		
+        <table class="items">
+            <thead>
+                <tr>
+                    <th scope="col" class="checkbox"><input type="checkbox" class="check-all"/></th>
+                    <th scope="col">@T("Name")</th>
+                    <th scope="col">&nbsp;</th>
+                    <th scope="col" class="actions">&nbsp;</th>
+                </tr>
+            </thead>
+            @foreach (var entry in Model.WorkflowDefinitions) { 
+                <tr>
+                    <td>
+                        <input type="hidden" value="@Model.WorkflowDefinitions[index].WokflowDefinitionId" name="@Html.NameOf(m => m.WorkflowDefinitions[index].WokflowDefinitionId)"/>
+                        <input type="checkbox" value="true" name="@Html.NameOf(m => m.WorkflowDefinitions[index].IsChecked)"/>
+                    </td>
+                    <td>
+                        @Html.ActionLink(entry.Name, "Edit", new { id = entry.WokflowDefinitionId }) 
+                    </td>
+                    <td>
+                        @if (entry.WorkflowDefinitionRecord.WorkflowRecords.Any()) {
+                             @T("{0} Running", entry.WorkflowDefinitionRecord.WorkflowRecords.Count)
+                        }
+                        &nbsp;
+                    </td>
+                    <td>
+                        @Html.ActionLink(T("Properties").Text, "EditProperties", new { Id = entry.WokflowDefinitionId, ReturnUrl = HttpContext.Current.Request.RawUrl }) |
+                        @Html.ActionLink(T("Edit").Text, "Edit", new { Id = entry.WokflowDefinitionId }) |
+                        @Html.ActionLink(T("Delete").Text, "Delete", new { Id = entry.WokflowDefinitionId }, new { ItemProp = "RemoveUrl UnsafeUrl" })
+                    </td>
+                </tr>
+                index++;
+            }
+        </table>
+	@Display(Model.Pager)
+    </fieldset>
+} 

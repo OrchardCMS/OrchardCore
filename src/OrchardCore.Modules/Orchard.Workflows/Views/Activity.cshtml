@@ -1,0 +1,12 @@
+﻿@using Orchard.Utility.Extensions
+
+@{
+    string name = Model.Name;
+    string isEventClass = Model.IsEvent ? "event" : null;
+    string canStartClass = Model.CanStartWorkflow ? "canStart" : null;
+}
+
+<div class="@isEventClass @canStartClass activity-@name.HtmlClassify()" title="@Model.Description">
+    <div>@name.CamelFriendly()</div>
+</div>
+

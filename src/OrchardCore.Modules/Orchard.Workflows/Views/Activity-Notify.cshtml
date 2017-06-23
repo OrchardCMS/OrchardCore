@@ -1,0 +1,13 @@
+﻿@using Orchard.Utility.Extensions
+
+@{
+    string name = Model.Name;
+    string notification = Model.State.Notification;
+    string message = Model.State.Message;
+
+    string description = String.IsNullOrEmpty(notification) ? "" : T("{0}: {1}", notification, message).ToString();
+}
+
+<div class="activity-notify" title="@description">
+    <div>@name.CamelFriendly()</div>
+</div>

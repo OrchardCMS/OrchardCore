@@ -1,0 +1,8 @@
+﻿@using Orchard.Workflows.Helpers
+@{
+    var outcomes = ((string)Model.State.Branches).FormatOutcomesJson();
+}
+
+<div data-outcomes="@outcomes" title="First of @outcomes">
+    <div class="exclusive-branch" ></div>
+</div>
