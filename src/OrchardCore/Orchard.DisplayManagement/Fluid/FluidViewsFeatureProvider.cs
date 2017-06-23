@@ -39,11 +39,16 @@ namespace Orchard.DisplayManagement.Fluid
                     var matcher = new Matcher();
                     foreach (var option in _expanderOptions.Options)
                     {
-                        matcher.AddInclude(option.SearchPath.Replace("\\", "/").TrimEnd('/') + "/**/*" + FluidView.ViewExtension);
+                        var searchPath = option.SearchPath.Replace("\\", "/")
+                            .Trim('/') + "/**/*" + FluidView.ViewExtension;
+
+                        matcher.AddInclude(searchPath);
                     }
 
-                    var matches = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(_rootPath)));
-                    _paths = new List<string>(matches.Files.Select(f => '/' + f.Path));
+                    var paths = matcher.Execute(new DirectoryInfoWrapper(
+                        new DirectoryInfo(_rootPath))).Files.Select(f => '/' + f.Path);
+
+                    _paths = new List<string>(paths);
                 }
             }
         }
@@ -52,7 +57,8 @@ namespace Orchard.DisplayManagement.Fluid
         {
             foreach (var path in _paths)
             {
-                feature.Views[path.Replace(FluidView.ViewExtension, RazorViewEngine.ViewExtension)] = typeof(FluidView);
+                var viewPath = path.Replace(FluidView.ViewExtension, RazorViewEngine.ViewExtension);
+                feature.Views[viewPath] = typeof(FluidView);
             }
         }
     }

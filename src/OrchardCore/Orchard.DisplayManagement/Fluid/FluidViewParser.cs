@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Fluid;
 using Fluid.Ast;
 using Irony.Parsing;
@@ -35,29 +33,18 @@ namespace Orchard.DisplayManagement.Fluid
         private RenderSectionStatement BuildRenderSectionStatement(ParseTreeNode tag)
         {
             var sectionName = string.Empty;
-            if (tag.ChildNodes.Count > 0 && tag.ChildNodes[1].Term.Name.Equals("identifier"))
+            if (tag.ChildNodes.Count > 0 && tag.ChildNodes[0].Term.Name.Equals("identifier"))
             {
-                sectionName = tag.ChildNodes[1].FindToken().ValueString;
+                sectionName = tag.ChildNodes[0].FindToken().ValueString;
             }
 
             var required = false;
-            if (tag.ChildNodes.Count > 1 && tag.ChildNodes[2].Term.Name.Equals("filterArguments"))
+            if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].Term.Name.Equals("filterArguments"))
             {
-                //var arguments = tag.ChildNodes[2].ChildNodes.Select(BuildFilterArgument).ToArray();
-
-                //foreach (var argument in arguments)
-                //{
-                //    if (argument.Name.Equals("required"))
-                //    {
-                //        required = argument.Expression.EvaluateAsync(new TemplateContext())
-                //            .GetAwaiter().GetResult().ToBooleanValue();
-                //    }
-                //}
-
-                // faster for a simple value
-                foreach (var argument in tag.ChildNodes[2].ChildNodes)
+                foreach (var argument in tag.ChildNodes[1].ChildNodes)
                 {
-                    if (argument.ChildNodes.Count > 1 && argument.ChildNodes[0].FindToken().ValueString.Equals("required"))
+                    if (argument.ChildNodes.Count > 1 &&
+                        argument.ChildNodes[0].FindToken().ValueString.Equals("required"))
                     {
                         required = Convert.ToBoolean(argument.ChildNodes[1].FindToken().ValueString);
                     }

@@ -15,8 +15,8 @@ namespace Orchard.DisplayManagement.Fluid
             KnownTags.Rule |= RenderBody | RenderSection;
 
             // Prevent the text from being added in the parsed tree.
-            // Only Identifier and Range will be in the tree.
-            //MarkPunctuation("rendersection");
+            // Only Identifier and Arguments will be in the tree.
+            MarkPunctuation("rendersection");
         }
     }
 }
