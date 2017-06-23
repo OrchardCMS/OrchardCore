@@ -1,4 +1,4 @@
-# Orchard.OpenId
+﻿# Orchard.OpenId
 
 Orchard.OpenId provides an implementation of an OpenID Connect server based on [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
 It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
@@ -103,3 +103,25 @@ OpenID Connect apps require the following configuration.
       "AllowHybridFlow": false
 }
 ```
+
+## Configuring Certificates
+
+### Windows / IIS
+
+Several tools are availble for generating a signing certificate on Windows and/or IIS, for example:
+
++ IIS Server Manager _(offers not much control)_
+    1. Server Certificates
+    2. Create Self-Signed Certificate 
++ PowerShell _(offers full control)_
+    1. `New-SelfSignedCertificate` https://technet.microsoft.com/en-us/itpro/powershell/windows/pkiclient/new-selfsignedcertificate
+
+**Important:** In order for the Orchard.OpenId module to use the certificate's keys for signing, it requires `Read` access to the certificate in the store. This can be granted in various ways, for example:
+
++ MMC.exe
+    1. Add Snap-In 'Certificates' for Computer Account
+    2. Right-Click relevant certificate and select All Tasks, Manage Private Keys
+    3. Add the relevant identity (e.g. IIS AppPool\PoolName)
+    4. Check Allow Read
++ WinHttpCertCfg.exe
+    1. `winhttpcertcfg -g -c LOCAL_MACHINE\My -s MyCertificate -a TESTUSER` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
