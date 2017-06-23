@@ -1,87 +1,85 @@
-using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Orchard.Liquid;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Media.Filters
 {
-    public class MediaFilters : ITemplateContextHandler
+    public class MediaUrlFilter : ILiquidFilter
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IMediaFileStore _mediaFileStore;
 
-        private IMediaFileStore _mediaStore;
-
-        public MediaFilters(IServiceProvider serviceProvider)
+        public MediaUrlFilter(IMediaFileStore mediaFileStore)
         {
-            _serviceProvider = serviceProvider;
+            _mediaFileStore = mediaFileStore;
         }
 
-        public void OnTemplateProcessing(TemplateContext context)
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            context.Filters.AddFilter("media_url", (input, arguments, ctx) =>
+            var url = input.ToStringValue();
+            var imageUrl = _mediaFileStore.GetPublicUrl(url);
+
+            return Task.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
+        }
+    }
+
+    public class ImageTagFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var url = input.ToStringValue();
+            var alt = arguments.At(0).Or(arguments["tag"]);
+            var css = arguments.At(1).Or(arguments["class"]);
+
+            var imgTag = $"<img src=\"{url}\"";
+
+            if (!alt.IsNil())
             {
-                _mediaStore = _mediaStore ?? _serviceProvider.GetService<IMediaFileStore>();
+                imgTag += $" alt=\"{alt.ToStringValue()}\"";
+            }
 
-                var url = input.ToStringValue();
-                var imageUrl = _mediaStore.GetPublicUrl(url);
-
-                return new StringValue(imageUrl ?? url);
-            });
-
-            context.Filters.AddFilter("img_tag", (input, arguments, ctx) =>
+            if (!css.IsNil())
             {
-                var url = input.ToStringValue();
-                var alt = arguments.At(0).Or(arguments["tag"]);
-                var css = arguments.At(1).Or(arguments["class"]);
+                imgTag += $" class=\"{css.ToStringValue()}\"";
+            }
 
-                var imgTag = $"<img src=\"{url}\"";
+            imgTag += " />";
 
-                if (!alt.IsNil())
-                {
-                    imgTag += $" alt=\"{alt.ToStringValue()}\"";
-                }
+            return Task.FromResult<FluidValue>(new StringValue(imgTag) { Encode = false });
+        }
+    }
 
-                if (!css.IsNil())
-                {
-                    imgTag += $" class=\"{css.ToStringValue()}\"";
-                }
+    public class ResizeUrlFilter : ILiquidFilter
+    {
+        public Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        {
+            var url = input.ToStringValue();
 
-                imgTag += " />";
-
-                return new StringValue(imgTag) { Encode = false };
-            });
-
-            context.Filters.AddFilter("resize_url", (input, arguments, ctx) =>
+            if (!url.Contains("?"))
             {
-                var url = input.ToStringValue();
-                
-                if (!url.Contains("?"))
-                {
-                    url += "?";
-                }
+                url += "?";
+            }
 
-                var width = arguments.At(0).Or(arguments["width"]);
-                var height = arguments.At(1).Or(arguments["height"]);
-                var mode = arguments.At(2).Or(arguments["mode"]);
+            var width = arguments.At(0).Or(arguments["width"]);
+            var height = arguments.At(1).Or(arguments["height"]);
+            var mode = arguments.At(2).Or(arguments["mode"]);
 
-                if (!width.IsNil())
-                {
-                    url += "&width=" + width.ToStringValue();
-                }
+            if (!width.IsNil())
+            {
+                url += "&width=" + width.ToStringValue();
+            }
 
-                if (!height.IsNil())
-                {
-                    url += "&height=" + height.ToStringValue();
-                }
-                
-                if (!mode.IsNil())
-                {
-                    url += "&rmode=" + mode.ToStringValue();
-                }
-                
-                return new StringValue(url);
-            });
+            if (!height.IsNil())
+            {
+                url += "&height=" + height.ToStringValue();
+            }
+
+            if (!mode.IsNil())
+            {
+                url += "&rmode=" + mode.ToStringValue();
+            }
+
+            return Task.FromResult<FluidValue>(new StringValue(url));
         }
     }
 }

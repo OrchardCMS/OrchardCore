@@ -43,9 +43,14 @@ namespace Orchard.Liquid
             services.AddScoped<ISlugService, SlugService>();
 
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
-            services.AddScoped<ITemplateContextHandler, ContentFilters>();
-            services.AddScoped<ITemplateContextHandler, MetadataFilters>();
-            services.AddScoped<ITemplateContextHandler, UrlContentFilter>();
+
+            services.AddLiquidFilter<DateFilter>("date");
+            services.AddLiquidFilter<SlugifyFilter>("slugify");
+            services.AddLiquidFilter<ContainerFilter>("container");
+            services.AddLiquidFilter<DisplayTextFilter>("display_text");
+            services.AddLiquidFilter<DisplayUrlFilter>("display_url");
+            services.AddLiquidFilter<ContentUrlFilter>("content_url");
+            
         }
     }
 }

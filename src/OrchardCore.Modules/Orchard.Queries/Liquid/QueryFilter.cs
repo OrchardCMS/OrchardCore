@@ -1,45 +1,39 @@
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Orchard.Liquid;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.Queries.Liquid
 {
-    public class QueryFilter : ITemplateContextHandler
+    public class QueryFilter : ILiquidFilter
     {
         private IQueryManager _queryManager;
-        private readonly IServiceProvider _serviceProvider;
 
-        public QueryFilter(IServiceProvider serviceProvider)
+        public QueryFilter(IQueryManager queryManager)
         {
-            _serviceProvider = serviceProvider;
+            _queryManager = queryManager;
         }
-        public void OnTemplateProcessing(TemplateContext context)
+
+        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
-            context.Filters.AddAsyncFilter("query", async (input, arguments, ctx) =>
+            var query = await _queryManager.GetQueryAsync(input.ToStringValue());
+
+            if (query == null)
             {
-                _queryManager = _queryManager ?? _serviceProvider.GetService<IQueryManager>();
+                return null;
+            }
 
-                var query = await _queryManager.GetQueryAsync(input.ToStringValue());
+            var parameters = new Dictionary<string, object>();
 
-                if (query == null)
-                {
-                    return null;
-                }
+            foreach (var name in arguments.Names)
+            {
+                parameters.Add(name, arguments[name]);
+            }
 
-                var parameters = new Dictionary<string, object>();
+            var result = await _queryManager.ExecuteQueryAsync(query, parameters);
 
-                foreach(var name in arguments.Names)
-                {
-                    parameters.Add(name, arguments[name]);
-                }
-
-                var result = await _queryManager.ExecuteQueryAsync(query, parameters);
-                
-                return FluidValue.Create(result);
-            });
+            return FluidValue.Create(result);
         }
     }
 }

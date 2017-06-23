@@ -48,7 +48,9 @@ namespace Orchard.Media
             services.AddSingleton<ContentPart, ImagePart>();
             services.AddMedia();
 
-            services.AddScoped<ITemplateContextHandler, MediaFilters>();
+            services.AddLiquidFilter<MediaUrlFilter>("media_url");
+            services.AddLiquidFilter<ResizeUrlFilter>("resize_url");
+            services.AddLiquidFilter<ImageTagFilter>("img_tag");
 
             // ImageSharp
 
