@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
+using Orchard.DisplayManagement.Fluid;
 using Orchard.DisplayManagement.Implementation;
 
 namespace Orchard.DisplayManagement.Razor
@@ -29,13 +31,14 @@ namespace Orchard.DisplayManagement.Razor
         {
             get
             {
-                return new[] { ".cshtml" };
+                return new[] { RazorViewEngine.ViewExtension, FluidView.ViewExtension };
             }
         }
 
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
         {
             var viewName = "/" + relativePath;
+            viewName = viewName.Replace(Path.GetExtension(viewName), RazorViewEngine.ViewExtension);
 
             if (displayContext.ViewContext.View != null)
             {

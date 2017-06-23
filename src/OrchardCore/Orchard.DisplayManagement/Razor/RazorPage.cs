@@ -162,7 +162,7 @@ namespace Orchard.DisplayManagement.Razor
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
-        protected IHtmlContent RenderLayoutBody()
+        public IHtmlContent RenderLayoutBody()
         {
             var result = base.RenderBody();
             return result;
@@ -173,17 +173,17 @@ namespace Orchard.DisplayManagement.Razor
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        protected TagBuilder Tag(dynamic shape)
+        public TagBuilder Tag(dynamic shape)
         {
             return Shape.GetTagBuilder(shape);
         }
 
-        protected TagBuilder Tag(dynamic shape, string tag)
+        public TagBuilder Tag(dynamic shape, string tag)
         {
             return Shape.GetTagBuilder(shape, tag);
         }
 
-        protected Task<IHtmlContent> RenderBodyAsync()
+        public Task<IHtmlContent> RenderBodyAsync()
         {
             return DisplayAsync(ThemeLayout.Content);
         }
