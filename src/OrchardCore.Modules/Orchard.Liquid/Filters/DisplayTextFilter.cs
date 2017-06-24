@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -21,7 +21,7 @@ namespace Orchard.Liquid.Filters
 
             if (contentItem == null)
             {
-                throw new ArgumentException("A Content Item was expected");
+                return Task.FromResult<FluidValue>(NilValue.Instance);
             }
 
             var contentItemMetadata = _contentManager.PopulateAspect<ContentItemMetadata>(contentItem);

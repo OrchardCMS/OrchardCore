@@ -1947,8 +1947,6 @@ $(function () {
 var mediaFieldApps = [];
 
 $(function () {
-    // Hide the media application on load  by moving it in the modal
-    $("#mediaApp").detach().appendTo('#mediaFieldModalBody .modal-body');
 
     $(".mediafield-editor").each(function () {
         var target = $(document.getElementById($(this).data('for')));
@@ -2005,7 +2003,7 @@ $(function () {
                     $('#mediaFieldSelectButton').off('click').on('click', function (v) {
                         mediaFieldApp.mediaItems.push(mediaApp.selectedMedia);
                         
-                        modal('hide');
+                        modal.modal('hide');
                         return true;
                     });
                 },
@@ -2021,7 +2019,7 @@ $(function () {
             watch: {
                 mediaItems: function () {
                     // Trigger preview rendering
-                    $(document).trigger('contentpreview:render');
+                    setTimeout(function() { $(document).trigger('contentpreview:render'); }, 100);
                 }
             }
         }));
