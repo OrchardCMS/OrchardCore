@@ -73,6 +73,30 @@ namespace Orchard.Media.Controllers
             }).ToArray());
         }
 
+        public async Task<IActionResult> GetMediaItem(string path)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            {
+                return Unauthorized();
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                return StatusCode(404);
+            }
+
+            var f = await _mediaFileStore.GetFileAsync(path);
+
+            return Json(new
+            {
+                name = f.Name,
+                size = f.Length,
+                folder = f.Folder,
+                url = f.AbsolutePath,
+                mediaPath = f.Path
+            });
+        }
+
         [HttpPost]
         public async Task<ActionResult> Upload(
             string path,

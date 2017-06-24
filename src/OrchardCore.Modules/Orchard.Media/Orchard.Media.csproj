@@ -16,6 +16,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\Microsoft.AspNetCore.Modules.Abstractions\Microsoft.AspNetCore.Modules.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Display\Orchard.ContentManagement.Display.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentTypes.Abstractions\Orchard.ContentTypes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
@@ -28,10 +30,6 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Security\Orchard.Security.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.StorageProviders.FileSystem\Orchard.StorageProviders.FileSystem.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.XmlRpc.Abstractions\Orchard.XmlRpc.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Content\Scripts\" />
   </ItemGroup>
 
 </Project>

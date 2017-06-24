@@ -27,6 +27,11 @@ namespace Orchard.Liquid.Services
 
         public Task RenderAsync(string source, TextWriter textWriter, TextEncoder encoder, TemplateContext context)
         {
+            if (String.IsNullOrWhiteSpace(source))
+            {
+                return Task.CompletedTask;
+            }
+
             var errors = Enumerable.Empty<string>();
 
             var result = _memoryCache.GetOrCreate<FluidTemplate>(source, (ICacheEntry e) =>

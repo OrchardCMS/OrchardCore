@@ -101,8 +101,18 @@
 .media-container-main {
 
     ol {
+        display: flex;
+        flex-direction: row;
+
         li {
-            @extend .col-md-3;
+            /* Fixed size or the preview side bar would make these shrink to nothing as
+             bootstrap cols are based on the browser size and not the container element. */
+            flex-grow: 4;
+            flex-shrink: 1;
+            max-width: 6cm;
+            margin-left: 0.75em;
+            margin-right: 0.75em;
+            width: 3cm;
 
             .media-container-main-item {
                 @extend .card;
@@ -138,8 +148,8 @@
 .modal-lg {
     .media-container-main-list-item {
         @extend .col-md-4;
-    } 
-    
+    }
+
     .media-container-main-item-title {
         // Hide the filename in modals
         @extend .hidden-xl-down;
@@ -147,12 +157,12 @@
 }
 
 /* Toolbar */
-.breadcrumb {
-    button {
-        cursor: pointer;
-    }
-}
+            .breadcrumb {
+                button {
+                    cursor: pointer;
+                }
+            }
 
-.breadcrumb-item.active {
-    margin-right: 1rem;
-}
+            .breadcrumb-item.active {
+                margin-right: 1rem;
+            }

@@ -13,14 +13,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Orchard.ContentManagement;
+using Orchard.ContentManagement.Display.ContentDisplay;
+using Orchard.ContentTypes.Editors;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Environment.Shell;
 using Orchard.Liquid;
+using Orchard.Media.Drivers;
+using Orchard.Media.Fields;
 using Orchard.Media.Filters;
 using Orchard.Media.Models;
 using Orchard.Media.Processing;
 using Orchard.Media.Services;
+using Orchard.Media.Settings;
 using Orchard.StorageProviders.FileSystem;
 
 namespace Orchard.Media
@@ -117,6 +122,10 @@ namespace Orchard.Media
                     .AddResolver<MediaFileSystemResolver>()
                     .AddProcessor<ResizeWebProcessor>();
 
+            // Media Field
+            services.AddSingleton<ContentField, MediaField>();
+            services.AddScoped<IContentFieldDisplayDriver, MediaFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)

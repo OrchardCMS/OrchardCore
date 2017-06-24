@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace Orchard.StorageProviders.FileSystem
@@ -16,7 +16,7 @@ namespace Orchard.StorageProviders.FileSystem
             _publicPathPrefix = publicPathPrefix.Replace("\\", "/");
         }
 
-        public string AbsolutePath => _publicPathPrefix + "/" + _path;
+        public string AbsolutePath => _publicPathPrefix + "/" + _path.TrimStart('/', '\\');
         public string Path => _path;
         public string Name => _fileInfo.Name;
         public string Folder => _path.Substring(0, _path.Length - Name.Length).TrimEnd('/');

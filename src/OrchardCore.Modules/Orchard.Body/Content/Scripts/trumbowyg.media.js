@@ -18,6 +18,7 @@
                     var btnDef = {
                         fn: function () {
                             trumbowyg.saveRange();
+                            $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
                             var modal = $('#mediaModalBody').modal();
                             $('#mediaSelectButton').on('click', function (v) {
                                 var node = document.createTextNode('{{ "' + mediaApp.selectedMedia.mediaPath + '" | media_url | img_tag }}');

@@ -143,7 +143,7 @@ namespace Orchard.StorageProviders.FileSystem
         {
             if (!absoluteUrl.StartsWith(_publicPathPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                return null;
+                return Task.FromResult(default(IFile));
             }
 
             return GetFileAsync(absoluteUrl.Substring(_publicPathPrefix.Length));
