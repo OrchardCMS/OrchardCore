@@ -1,0 +1,8 @@
+@model EditQueryViewModel
+
+<fieldset class="form-group" asp-validation-class-for="Name">
+    <label asp-for="Name">@T["Name"] <span asp-validation-for="Name"></span></label>
+    <input asp-for="Name" class="form-control text-muted" autofocus />
+    <span class="hint">@T["The technical name of the query."]</span>
+    <input asp-for="Source" type="hidden" />
+</fieldset>

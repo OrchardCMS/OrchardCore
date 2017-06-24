@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Mvc.Abstractions\Orchard.Mvc.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Admin.Abstractions\Orchard.Admin.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Extensions.Abstractions\Orchard.Environment.Extensions.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Shell\Orchard.Environment.Shell.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Shell.Abstractions\Orchard.Environment.Shell.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ResourceManagement.Abstractions\Orchard.ResourceManagement.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

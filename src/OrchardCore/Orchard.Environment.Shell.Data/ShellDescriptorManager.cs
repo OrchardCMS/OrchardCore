@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell.Descriptor;
 using Orchard.Environment.Shell.Descriptor.Models;
 using Orchard.Events;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.Environment.Shell.Data.Descriptors
 {
@@ -38,7 +38,7 @@ namespace Orchard.Environment.Shell.Data.Descriptors
             // Prevent multiple queries during the same request
             if (_shellDescriptor == null)
             {
-                _shellDescriptor = await _session.QueryAsync<ShellDescriptor>().FirstOrDefault();
+                _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
             }
 
             return _shellDescriptor;

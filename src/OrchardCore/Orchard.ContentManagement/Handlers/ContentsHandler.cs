@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
 
 namespace Orchard.ContentManagement.Handlers
@@ -17,7 +17,10 @@ namespace Orchard.ContentManagement.Handlers
         public override void Creating(CreateContentContext context)
         {
             var utcNow = _clock.UtcNow;
-            context.ContentItem.CreatedUtc = utcNow;
+            if (!context.ContentItem.CreatedUtc.HasValue)
+            {
+                context.ContentItem.CreatedUtc = utcNow;
+            }
             context.ContentItem.ModifiedUtc = utcNow;
 
             var httpContext = _httpContextAccessor.HttpContext;
@@ -54,7 +57,7 @@ namespace Orchard.ContentManagement.Handlers
             var utcNow = _clock.UtcNow;
 
             // The first time the content is published, reassign the CreateUtc value
-            if(!context.ContentItem.PublishedUtc.HasValue)
+            if (!context.ContentItem.PublishedUtc.HasValue)
             {
                 context.ContentItem.CreatedUtc = utcNow;
             }

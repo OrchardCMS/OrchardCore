@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Orchard.Environment.Shell.Descriptor.Models
 {
@@ -9,6 +9,8 @@ namespace Orchard.Environment.Shell.Descriptor.Models
     /// </summary>
     public class ShellDescriptor
     {
+        public int Id { get; set; }
+
         /// <summary>
         /// Gets or sets the version number of the shell descriptor.
         /// </summary>

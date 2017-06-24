@@ -1,6 +1,6 @@
-﻿using Orchard.Environment.Shell.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Orchard.Environment.Shell.Models;
 
 namespace Orchard.Environment.Shell
 {
@@ -11,27 +11,19 @@ namespace Orchard.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        private TenantState _tenantState = TenantState.Invalid;
+        private TenantState _tenantState;
+
         private readonly IDictionary<string, string> _values;
 
-        public ShellSettings()
-        {
-            _values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            State = TenantState.Invalid;
-        }
+        public ShellSettings() : this(new Dictionary<string, string>()) { }
 
-        public ShellSettings(ShellSettings settings)
+        public ShellSettings(IDictionary<string, string> configuration)
         {
-            _values = new Dictionary<string, string>(settings._values, StringComparer.OrdinalIgnoreCase);
+            _values = configuration;
 
-            Name = settings.Name;
-            RequestUrlHost = settings.RequestUrlHost;
-            RequestUrlPrefix = settings.RequestUrlPrefix;
-            State = settings.State;
-            DatabaseProvider = settings.DatabaseProvider;
-            ConnectionString = settings.ConnectionString;
-            TablePrefix = settings.TablePrefix;
-            State = settings.State;
+            if (!configuration.ContainsKey("State") || !Enum.TryParse(configuration["State"], true, out _tenantState)) {
+                _tenantState = TenantState.Invalid;
+            }
         }
 
         public string this[string key]
@@ -44,48 +36,24 @@ namespace Orchard.Environment.Shell
             set { _values[key] = value; }
         }
 
-        /// <summary>
-        /// Gets all keys held by this shell settings.
-        /// </summary>
-        public IEnumerable<string> Keys { get { return _values.Keys; } }
+        public IDictionary<string, string> Configuration => _values;
 
-        /// <summary>
-        /// The name of the tenant
-        /// </summary>
         public string Name
         {
             get { return this["Name"] ?? ""; }
             set { this["Name"] = value; }
         }
 
-        /// <summary>
-        /// The host name of the tenant
-        /// </summary>
         public string RequestUrlHost
         {
             get { return this["RequestUrlHost"]; }
             set { this["RequestUrlHost"] = value; }
         }
 
-        /// <summary>
-        /// The request url prefix of the tenant
-        /// </summary>
         public string RequestUrlPrefix
         {
             get { return this["RequestUrlPrefix"]; }
             set { _values["RequestUrlPrefix"] = value; }
-        }
-
-        public string ConnectionString
-        {
-            get { return this["ConnectionString"]; }
-            set { _values["ConnectionString"] = value; }
-        }
-
-        public string TablePrefix
-        {
-            get { return this["TablePrefix"]; }
-            set { _values["TablePrefix"] = value; }
         }
 
         public string DatabaseProvider
@@ -94,12 +62,21 @@ namespace Orchard.Environment.Shell
             set { _values["DatabaseProvider"] = value; }
         }
 
-        /// <summary>
-        /// The state is which the tenant is
-        /// </summary>
+        public string TablePrefix
+        {
+            get { return this["TablePrefix"]; }
+            set { _values["TablePrefix"] = value; }
+        }
+
+        public string ConnectionString
+        {
+            get { return this["ConnectionString"]; }
+            set { _values["ConnectionString"] = value; }
+        }
+
         public TenantState State
         {
-            get { return _tenantState; }
+            get => _tenantState;
             set
             {
                 _tenantState = value;

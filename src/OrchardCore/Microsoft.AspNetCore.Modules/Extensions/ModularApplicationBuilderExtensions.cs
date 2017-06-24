@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Environment.Extensions;
 
-namespace Microsoft.AspNetCore.Modules
+namespace Microsoft.AspNetCore.Builder
 {
     public static class ModularApplicationBuilderExtensions
     {
@@ -42,7 +41,6 @@ namespace Microsoft.AspNetCore.Modules
             modularApp.Configure(app =>
             {
                 var extensionManager = app.ApplicationServices.GetRequiredService<IExtensionManager>();
-                var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
 
                 // TODO: configure the location and parameters (max-age) per module.
                 var availableExtensions = extensionManager.GetExtensions();

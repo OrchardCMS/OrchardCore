@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Entities.DisplayManagement\Orchard.Entities.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.ContentManagement.Abstractions\Orchard.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Data.Abstractions\Orchard.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Recipes.Abstractions\Orchard.Recipes.Abstractions.csproj" />
+    <ProjectReference Include="..\Orchard.Roles\Orchard.Roles.csproj" />
+    <ProjectReference Include="..\Orchard.Settings\Orchard.Settings.csproj" />
+    <ProjectReference Include="..\Orchard.Users\Orchard.Users.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.2" />
+    <PackageReference Include="OpenIddict" Version="1.0.0-beta2-0615" />
+  </ItemGroup>
+
+</Project>

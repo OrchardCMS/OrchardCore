@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -6,12 +6,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Environment.Extensions.Features.Attributes;
 using Orchard.Environment.Extensions.Loaders;
 using Orchard.Environment.Extensions.Manifests;
 using Orchard.Environment.Extensions.Utility;
@@ -148,16 +148,14 @@ namespace Orchard.Environment.Extensions
         {
             EnsureInitialized();
 
-            var orderedFeaturesIds = GetFeatures().Select(f => f.Id).ToList();
+            var orderedFeaturesIds = GetFeatures(featureIdsToLoad).Select(f => f.Id).ToList();
 
             var loadedFeatures = _features.Values
-                .Where(f => featureIdsToLoad.Contains(f.FeatureInfo.Id))
+                .Where(f => orderedFeaturesIds.Contains(f.FeatureInfo.Id))
                 .OrderBy(f => orderedFeaturesIds.IndexOf(f.FeatureInfo.Id));
 
             return Task.FromResult<IEnumerable<FeatureEntry>>(loadedFeatures);
         }
-
-
 
         public IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId)
         {
@@ -208,8 +206,7 @@ namespace Orchard.Environment.Extensions
                     return Enumerable.Empty<IFeatureInfo>();
                 }
 
-                return
-                    GetDependentFeatures(feature, _allOrderedFeatureInfos);
+                return GetDependentFeatures(feature, _allOrderedFeatureInfos);
             })).Value;
         }
 
@@ -244,12 +241,9 @@ namespace Orchard.Environment.Extensions
 
         private static string GetSourceFeatureNameForType(Type type, string extensionId)
         {
-            foreach (OrchardFeatureAttribute featureAttribute in type.GetTypeInfo().GetCustomAttributes(typeof(OrchardFeatureAttribute), false))
-            {
-                return featureAttribute.FeatureName;
-            }
+            var attribute = type.GetTypeInfo().GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-            return extensionId;
+            return attribute?.FeatureName ?? extensionId;
         }
 
         private void EnsureInitialized()
@@ -268,9 +262,9 @@ namespace Orchard.Environment.Extensions
 
                 var extensions = HarvestExtensions();
 
-                var loadedExtensions =
-                    new ConcurrentDictionary<string, ExtensionEntry>();
+                var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
+                // Load all extensions in parallel
                 Parallel.ForEach(extensions, (extension) =>
                 {
                     if (!extension.Exists)
@@ -282,56 +276,48 @@ namespace Orchard.Environment.Extensions
 
                     if (entry.IsError && L.IsEnabled(LogLevel.Warning))
                     {
-                        L.LogError("No suitable loader found for extension \"{0}\"", extension.Id);
+                        L.LogWarning("No loader found for extension \"{0}\". This might denote a dependency is missing or the extension doesn't have an assembly.", extension.Id);
                     }
 
                     loadedExtensions.TryAdd(extension.Id, entry);
                 });
 
-                var loadedFeatures =
-                    new Dictionary<string, FeatureEntry>();
+                var loadedFeatures = new Dictionary<string, FeatureEntry>();
+
+                // Get all valid types from any extension
+                var allTypesByExtension = loadedExtensions.SelectMany(extension =>
+                    extension.Value.ExportedTypes.Where(IsComponentType)
+                    .Select(type => new
+                    {
+                        ExtensionEntry = extension.Value,
+                        Type = type
+                    })).ToArray();
+
+                var typesByFeature = allTypesByExtension
+                    .GroupBy(typeByExtension => GetSourceFeatureNameForType(
+                        typeByExtension.Type, 
+                        typeByExtension.ExtensionEntry.ExtensionInfo.Id))
+                    .ToDictionary(
+                        group => group.Key, 
+                        group => group.Select(typesByExtension => typesByExtension.Type).ToArray());
 
                 foreach (var loadedExtension in loadedExtensions)
                 {
                     var extension = loadedExtension.Value;
 
-                    var extensionTypes = extension
-                        .ExportedTypes
-                        .Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract);
-
                     foreach (var feature in extension.ExtensionInfo.Features)
                     {
-                        var featureTypes = new HashSet<Type>();
-
-                        // Search for all types from the extensions that are not assigned to a different
-                        // feature.
-                        foreach (var type in extensionTypes)
+                        // Features can have no types
+                        if (typesByFeature.TryGetValue(feature.Id, out var featureTypes))
                         {
-                            string sourceFeature = GetSourceFeatureNameForType(type, extension.ExtensionInfo.Id);
-
-                            if (sourceFeature == feature.Id)
+                            foreach (var type in featureTypes)
                             {
-                                featureTypes.Add(type);
                                 _typeFeatureProvider.TryAdd(type, feature);
                             }
                         }
-
-                        // Search in other extensions for types that are assigned to this feature.
-                        var otherExtensionInfos = extensions.Where(x => x.Id != extension.ExtensionInfo.Id);
-
-                        foreach (var otherExtensionInfo in otherExtensionInfos)
+                        else
                         {
-                            var otherExtension = loadedExtensions[otherExtensionInfo.Id];
-                            foreach (var type in otherExtension.ExportedTypes)
-                            {
-                                string sourceFeature = GetSourceFeatureNameForType(type, null);
-
-                                if (sourceFeature == feature.Id)
-                                {
-                                    featureTypes.Add(type);
-                                    _typeFeatureProvider.TryAdd(type, feature);
-                                }
-                            }
+                            featureTypes = Array.Empty<Type>();
                         }
 
                         loadedFeatures.Add(feature.Id, new CompiledFeatureEntry(feature, featureTypes));
@@ -339,6 +325,7 @@ namespace Orchard.Environment.Extensions
                 };
 
                 _extensions = loadedExtensions;
+
                 // Could we get rid of _allOrderedFeatureInfos and just have _features?
                 _features = loadedFeatures;
                 _allOrderedFeatureInfos = Order(loadedFeatures.Values.Select(x => x.FeatureInfo));
@@ -346,14 +333,18 @@ namespace Orchard.Environment.Extensions
             }
         }
 
+        private bool IsComponentType(Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsClass && !typeInfo.IsAbstract && typeInfo.IsPublic;
+        }
+
         private IFeatureInfo[] Order(IEnumerable<IFeatureInfo> featuresToOrder)
         {
             return featuresToOrder
                 .OrderBy(x => x.Id)
                 .Distinct()
-                .OrderByDependenciesAndPriorities(
-                    HasDependency,
-                    GetPriority)
+                .OrderByDependenciesAndPriorities(HasDependency, GetPriority)
                 .ToArray();
         }
 
@@ -414,8 +405,7 @@ namespace Orchard.Environment.Extensions
                     var manifestInfo = new ManifestInfo(configurationRoot, manifestConfiguration.Type);
                     
                     // Manifest tells you what your loading, subpath is where you are loading it
-                    var extensionInfo = _extensionProvider
-                        .GetExtensionInfo(manifestInfo, manifestsubPath);
+                    var extensionInfo = _extensionProvider.GetExtensionInfo(manifestInfo, manifestsubPath);
 
                     extensionSet.Add(extensionInfo);
                 }

@@ -22,11 +22,11 @@ namespace Orchard.Environment.Cache.CacheContextProviders
                 var httpContext = _httpContextAccessor.HttpContext;
                 if (httpContext.User.Identity.IsAuthenticated)
                 {
-                    entries.Add(new CacheContextEntry("user", ""));
+                    entries.Add(new CacheContextEntry("user", httpContext.User.Identity.Name));
                 }
                 else
                 {
-                    entries.Add(new CacheContextEntry("user", httpContext.User.Identity.Name));
+                    entries.Add(new CacheContextEntry("user", ""));
                 }
             }
 

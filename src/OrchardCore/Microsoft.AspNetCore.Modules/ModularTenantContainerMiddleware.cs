@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Orchard.Environment.Shell;
-using Orchard.Hosting;
 
 namespace Microsoft.AspNetCore.Modules
 {
@@ -15,18 +14,15 @@ namespace Microsoft.AspNetCore.Modules
         private readonly RequestDelegate _next;
         private readonly IShellHost _orchardHost;
         private readonly IRunningShellTable _runningShellTable;
-        private readonly ILogger _logger;
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
             IShellHost orchardHost,
-            IRunningShellTable runningShellTable,
-            ILogger<ModularTenantContainerMiddleware> logger)
+            IRunningShellTable runningShellTable)
         {
             _next = next;
             _orchardHost = orchardHost;
             _runningShellTable = runningShellTable;
-            _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)
@@ -44,7 +40,10 @@ namespace Microsoft.AspNetCore.Modules
             {
                 var shellContext = _orchardHost.GetOrCreateShellContext(shellSetting);
 
-                using (var scope = shellContext.CreateServiceScope())
+                var existingRequestServices = httpContext.RequestServices;
+                var scope = shellContext.CreateServiceScope();
+
+                try
                 {
                     httpContext.RequestServices = scope.ServiceProvider;
 
@@ -74,7 +73,15 @@ namespace Microsoft.AspNetCore.Modules
                         }
                     }
 
+                    shellContext.RequestStarted();
                     await _next.Invoke(httpContext);
+                }
+                finally
+                {
+                    // We dispose httpContext.RequestServices and not a local reference in case another middleware changed it 
+                    (httpContext.RequestServices as IDisposable)?.Dispose();
+                    shellContext.RequestEnded();
+                    httpContext.RequestServices = existingRequestServices;
                 }
             }
         }

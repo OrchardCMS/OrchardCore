@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Modules;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Theming;
@@ -31,7 +30,6 @@ namespace Orchard.DisplayManagement.Implementation
             IShapeTableManager shapeTableManager,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
-            IStringLocalizer<DefaultHtmlDisplay> localizer,
             IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
@@ -42,11 +40,7 @@ namespace Orchard.DisplayManagement.Implementation
             _serviceProvider = serviceProvider;
 
             _logger = logger;
-
-            T = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task<IHtmlContent> ExecuteAsync(DisplayContext context)
         {
@@ -78,6 +72,7 @@ namespace Orchard.DisplayManagement.Implementation
             };
 
             // Use the same prefix as the shape
+            var originalHtmlFieldPrefix = context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
             context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = shapeMetadata.Prefix ?? "";
 
             // Evaluate global Shape Display Events
@@ -112,7 +107,11 @@ namespace Orchard.DisplayManagement.Implementation
                 ShapeBinding actualBinding;
                 if (TryGetDescriptorBinding(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable, out actualBinding))
                 {
-                    await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                    // There might be no shape binding for the main shape, and only for its alternates.
+                    if (shapeBinding != null)
+                    {
+                        await shapeBinding.ShapeDescriptor.ProcessingAsync.InvokeAsync(action => action(displayContext), _logger);
+                    }
 
                     // invoking ShapeMetadata processing events, this includes the Drivers results
                     await shapeMetadata.ProcessingAsync.InvokeAsync(processing => processing(displayContext.Shape), _logger);
@@ -121,7 +120,7 @@ namespace Orchard.DisplayManagement.Implementation
                 }
                 else
                 {
-                    throw new Exception(T["Shape type {0} not found", shapeMetadata.Type]);
+                    throw new Exception($"Shape type '{shapeMetadata.Type}' not found");
                 }
             }
 
@@ -157,6 +156,9 @@ namespace Orchard.DisplayManagement.Implementation
 
             // invoking ShapeMetadata displayed events
             shapeMetadata.Displayed.Invoke(action => action(displayContext), _logger);
+
+            //restore original HtmlFieldPrefix
+            context.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = originalHtmlFieldPrefix;
 
             return shape.Metadata.ChildContent;
         }

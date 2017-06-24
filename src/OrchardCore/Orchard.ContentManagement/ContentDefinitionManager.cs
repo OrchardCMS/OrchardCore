@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ using Orchard.ContentManagement.Metadata.Records;
 using Orchard.ContentManagement.MetaData;
 using Orchard.ContentManagement.Metadata.Models;
 using Orchard.Environment.Cache;
-using YesSql.Core.Services;
+using YesSql;
 
 namespace Orchard.ContentManagement
 {
@@ -45,8 +45,8 @@ namespace Orchard.ContentManagement
             }
 
             _contentDefinitionRecord = _session
-                .QueryAsync<ContentDefinitionRecord>()
-                .FirstOrDefault()
+                .Query<ContentDefinitionRecord>()
+                .FirstOrDefaultAsync()
                 .Result;
 
             if (_contentDefinitionRecord == null)

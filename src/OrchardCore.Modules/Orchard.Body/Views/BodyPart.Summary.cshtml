@@ -1,0 +1,14 @@
+@model Orchard.Body.ViewModels.BodyPartViewModel
+@inject Orchard.Tokens.Services.ITokenizer Tokenizer
+@using Orchard.Mvc.Utilities
+
+@{
+    string body = Model.Body;
+
+    if (Model.TypePartSettings.RenderTokens)
+    {
+        body = Tokenizer.Tokenize(body, new Dictionary<string, object> { ["Content"] = Model.BodyPart.ContentItem });
+    }
+}
+
+@Html.Raw(body.RemoveTags(true).Ellipsize(200))

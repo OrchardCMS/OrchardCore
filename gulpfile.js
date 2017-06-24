@@ -79,7 +79,7 @@ gulp.task("watch", function () {
 */
 
 function getAssetGroups() {
-    var assetManifestPaths = glob.sync("./src/Orchard.Cms.Web/{Modules,Themes}/*/Assets.json", {});
+    var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/Assets.json", {});
     var assetGroups = [];
     assetManifestPaths.forEach(function (assetManifestPath) {
         var assetManifest = require("./" + assetManifestPath);
