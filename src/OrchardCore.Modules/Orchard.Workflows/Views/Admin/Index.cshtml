@@ -1,4 +1,4 @@
-@model AdminIndexViewModel
+﻿@model AdminIndexViewModel
 @using Orchard.Workflows.ViewModels;
 
 @{
@@ -12,7 +12,7 @@
 }
 
 <h1>@Html.TitleForPage(T("Manage Workflow Definitions").ToString()) </h1>
-@using (Html.BeginFormAntiForgeryPost()) { 
+@using (Html.BeginForm())
     @Html.ValidationSummary()
     <div class="manage">@Html.ActionLink(T("Create new Workflow Definition").Text, "EditProperties", new { Area = "Orchard.Workflows", returnurl = HttpContext.Current.Request.RawUrl }, new { @class = "button primaryAction" })</div>
 
@@ -73,6 +73,8 @@
                 index++;
             }
         </table>
-	@Display(Model.Pager)
     </fieldset>
 } 
+
+
+@await DisplayAsync(Model.Pager)
