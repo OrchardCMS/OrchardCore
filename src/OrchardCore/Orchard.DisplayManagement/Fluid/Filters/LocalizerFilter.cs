@@ -17,7 +17,6 @@ namespace Orchard.DisplayManagement.Fluid.Filters
                     throw new ParseException("FluidView missing while invoking 'T'.");
                 }
 
-                var test = new StringValue((view as FluidView).T[input.ToStringValue()].Value);
                 return new StringValue((view as FluidView).T[input.ToStringValue()].Value);
             });
         }

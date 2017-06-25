@@ -18,6 +18,9 @@ namespace Orchard.DisplayManagement.Fluid
             var Script = new NonTerminal("script");
             Script.Rule = "script" + FilterArguments;
 
+            FilterArgument.Rule |= Identifier + ToTerm(":") + Term + FilterList;
+            FilterArgument.Rule |= Term + FilterList;
+
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Script;
 
             // Prevent the text from being added in the parsed tree.
