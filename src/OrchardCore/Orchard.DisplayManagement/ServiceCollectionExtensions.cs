@@ -49,7 +49,7 @@ namespace Orchard.DisplayManagement
             });
 
             services.AddScoped<ITemplateContextHandler, LocalizerFilter>();
-            services.AddScoped<ITemplateContextHandler, RenderTitleSegmentsFilter>();
+            //services.AddScoped<ITemplateContextHandler, RenderTitleSegmentsFilter>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
 
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();

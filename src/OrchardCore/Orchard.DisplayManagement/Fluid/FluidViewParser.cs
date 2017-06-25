@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Fluid;
 using Fluid.Ast;
 using Irony.Parsing;
+using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.Fluid.Statements;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -20,6 +22,12 @@ namespace Orchard.DisplayManagement.Fluid
                 case "rendersection":
                     return BuildRenderSectionStatement(tag);
 
+                case "render_title_segments":
+                    return BuildRenderRenderTitleSegmentsStatement(tag);
+
+                case "script":
+                    return BuildScriptStatement(tag);
+
                 default:
                     return base.BuildTagStatement(node);
             }
@@ -32,26 +40,23 @@ namespace Orchard.DisplayManagement.Fluid
 
         private RenderSectionStatement BuildRenderSectionStatement(ParseTreeNode tag)
         {
-            var sectionName = string.Empty;
-            if (tag.ChildNodes.Count > 0 && tag.ChildNodes[0].Term.Name.Equals("identifier"))
-            {
-                sectionName = tag.ChildNodes[0].FindToken().ValueString;
-            }
+            return new RenderSectionStatement(BuildFilterArgumentsExpression(tag));
+        }
 
-            var required = false;
-            if (tag.ChildNodes.Count > 1 && tag.ChildNodes[1].Term.Name.Equals("filterArguments"))
-            {
-                foreach (var argument in tag.ChildNodes[1].ChildNodes)
-                {
-                    if (argument.ChildNodes.Count > 1 &&
-                        argument.ChildNodes[0].FindToken().ValueString.Equals("required"))
-                    {
-                        required = Convert.ToBoolean(argument.ChildNodes[1].FindToken().ValueString);
-                    }
-                }
-            }
+        private RenderTitleSegmentsStatement BuildRenderRenderTitleSegmentsStatement(ParseTreeNode tag)
+        {
+            return new RenderTitleSegmentsStatement(BuildFilterArgumentsExpression(tag));
+        }
 
-            return new RenderSectionStatement(sectionName, required);
+        private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
+        {
+            FilterArgument[] parameters = tag.ChildNodes[0].ChildNodes.Select(BuildFilterArgument).ToArray();
+            return new ScriptStatement(BuildFilterArgumentsExpression(tag));
+        }
+
+        protected virtual FilterArgumentsExpression BuildFilterArgumentsExpression(ParseTreeNode node)
+        {
+            return new FilterArgumentsExpression(node.ChildNodes[0].ChildNodes.Select(BuildFilterArgument).ToArray());
         }
     }
 }

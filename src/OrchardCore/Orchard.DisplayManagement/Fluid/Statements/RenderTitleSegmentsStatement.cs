@@ -4,15 +4,16 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Html;
 using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
-    public class RenderSectionStatement : Statement
+    public class RenderTitleSegmentsStatement : Statement
     {
         private readonly FilterArgumentsExpression _arguments;
 
-        public RenderSectionStatement(FilterArgumentsExpression arguments)
+        public RenderTitleSegmentsStatement(FilterArgumentsExpression arguments)
         {
             _arguments = arguments;
         }
@@ -23,14 +24,16 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
-                var name = arguments.HasNamed("name") ? arguments["name"].ToStringValue() : String.Empty;
-                var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
+                var segment = arguments.HasNamed("segment") ? arguments["segment"].ToStringValue() : String.Empty;
+                var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
+                var separator = arguments.HasNamed("separator") ? arguments["separator"].ToStringValue() : String.Empty;
 
-                await writer.WriteAsync((await (view as FluidView).RenderSectionAsync(name, required)).ToString());
+                (view as FluidView).RenderTitleSegments(new HtmlString(segment), position,
+                    new HtmlString(separator)).WriteTo(writer, HtmlEncoder.Default);
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'rendersection'.");
+                throw new ParseException("FluidView missing while invoking 'render_title_segments'.");
             }
 
             return Completion.Normal;

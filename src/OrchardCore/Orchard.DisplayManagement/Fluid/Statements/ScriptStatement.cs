@@ -8,11 +8,11 @@ using Orchard.DisplayManagement.Fluid.Ast;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
-    public class RenderSectionStatement : Statement
+    public class ScriptStatement : Statement
     {
         private readonly FilterArgumentsExpression _arguments;
 
-        public RenderSectionStatement(FilterArgumentsExpression arguments)
+        public ScriptStatement(FilterArgumentsExpression arguments)
         {
             _arguments = arguments;
         }
@@ -23,14 +23,15 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
-                var name = arguments.HasNamed("name") ? arguments["name"].ToStringValue() : String.Empty;
-                var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
+                var aspName = arguments.HasNamed("asp_name") ? arguments["asp_name"].ToStringValue() : String.Empty;
+                var useCdn = arguments.HasNamed("use_cdn") ? arguments["use_cdn"].ToStringValue() : String.Empty;
+                var at = arguments.HasNamed("at") ? arguments["at"].ToStringValue() : String.Empty;
 
-                await writer.WriteAsync((await (view as FluidView).RenderSectionAsync(name, required)).ToString());
+                // To be continued...
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'rendersection'.");
+                throw new ParseException("FluidView missing while invoking 'script'.");
             }
 
             return Completion.Normal;

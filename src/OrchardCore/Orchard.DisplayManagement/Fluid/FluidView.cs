@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.Liquid;
+using Orchard.Settings;
 
 
 namespace Orchard.DisplayManagement.Fluid
@@ -38,10 +39,19 @@ namespace Orchard.DisplayManagement.Fluid
             var template = ParseFluidFile(path, environment.ContentRootFileProvider);
 
             var context = new TemplateContext();
+            context.AmbientValues.Add("FluidView", this);
+
+            var site = await ServiceProvider.GetService<ISiteService>().GetSiteSettingsAsync();
+            context.MemberAccessStrategy.Register(site.GetType());
+            context.LocalScope.SetValue("Site", site);
+
+            var urlHelperFactory = ServiceProvider.GetService<IUrlHelperFactory>();
+            context.AmbientValues.Add("UrlHelper", urlHelperFactory.GetUrlHelper(ViewContext));
+
             context.MemberAccessStrategy.Register(Context.GetType());
             context.MemberAccessStrategy.Register(Context.Request.GetType());
-
             context.LocalScope.SetValue("Context", Context);
+
             context.LocalScope.SetValue("ViewData", ViewData);
             context.LocalScope.SetValue("ViewContext", ViewContext);
 
@@ -51,10 +61,6 @@ namespace Orchard.DisplayManagement.Fluid
                 context.LocalScope.SetValue("ModelState", ViewContext.ModelState);
                 context.MemberAccessStrategy.Register(((object)Model).GetType());
             }
-
-            var urlHelperFactory = ServiceProvider.GetService<IUrlHelperFactory>();
-            context.AmbientValues.Add("UrlHelper", urlHelperFactory.GetUrlHelper(ViewContext));
-            context.AmbientValues.Add("FluidView", this);
 
             var handlers = ServiceProvider.GetService<IEnumerable<ITemplateContextHandler>>();
 

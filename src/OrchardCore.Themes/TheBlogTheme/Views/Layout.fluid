@@ -1,13 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>{{ "Orchard Fluid" | t | render_title_segments: position:"before", separator:"-" }}</title>
+    {% assign siteName = "Orchard Fluid" | t %}
+    <title>{% render_title_segments segment:siteName, position:"before", separator:"-" %}</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
 
-    <script asp-name="jquery" use-cdn="true" at="Foot"></script>
+    {% script asp_name:"jquery", use_cdn:"true", at:"Foot" %}
     <script asp-name="bootstrap" use-cdn="true" at="Foot"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script asp-src="/TheBlogTheme/Scripts/clean-blog.min.js" debug-src="/TheBlogTheme/Scripts/clean-blog.js" at="Foot"></script>
@@ -37,7 +38,7 @@
                     <span class="sr-only">@T["Toggle navigation"]</span>
                     "Menu" <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href= {{ "~/" | content_url }}>Orchard Fluid</a>
+                <a class="navbar-brand" href= {{ "~/" | content_url }}>{{ Site.SiteName }}</a>
             </div>
 
             <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
@@ -48,7 +49,7 @@
         </div>
     </nav>
 
-    {% rendersection Header required:false %}
+    {% rendersection name:"Header", required:false %}
 
     <div class="container">
         <div class="row">
@@ -61,7 +62,7 @@
     <footer>
         <div class="container">
             <div class="row">
-                {% rendersection Footer required:false %}
+                {% rendersection name:"Footer", required:false %}
             </div>
         </div>
     </footer>
