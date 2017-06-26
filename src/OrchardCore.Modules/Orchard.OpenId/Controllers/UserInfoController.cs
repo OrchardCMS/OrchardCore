@@ -2,6 +2,7 @@
 using AspNet.Security.OAuth.Validation;
 using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -12,6 +13,7 @@ using Orchard.Users.Models;
 namespace Orchard.OpenId.Controllers
 {
     [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
+    [EnableCors(Constants.OpenIdConnectPolicy)]
     public class UserInfoController : Controller
     {
         private readonly IStringLocalizer<AccessController> T;

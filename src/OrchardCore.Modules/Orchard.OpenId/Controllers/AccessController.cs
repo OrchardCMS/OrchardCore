@@ -9,6 +9,8 @@ using AspNet.Security.OpenIdConnect.Server;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,7 @@ using Orchard.Users.Models;
 namespace Orchard.OpenId.Controllers
 {
     [Authorize]
+    [EnableCors(Constants.OpenIdConnectPolicy)]
     public class AccessController : Controller
     {
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
