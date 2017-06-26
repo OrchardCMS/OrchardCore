@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.Settings;
-using Newtonsoft.Json.Linq;
 
 
 namespace Orchard.DisplayManagement.Fluid
@@ -28,9 +28,6 @@ namespace Orchard.DisplayManagement.Fluid
         static FluidView()
         {
             TemplateContext.GlobalFilters.WithFluidViewFilters();
-            //TemplateContext.GlobalMemberAccessStrategy.Register<ViewDataDictionary>();
-            //TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateDictionary>();
-            //TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateEntry>();
             TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
         }
 
@@ -61,10 +58,17 @@ namespace Orchard.DisplayManagement.Fluid
             context.LocalScope.SetValue("ViewData", ViewData);
             context.LocalScope.SetValue("ViewContext", ViewContext);
 
+            var modelState = ViewContext.ModelState
+                .Select(kvp => new { Name = kvp.Key, Value = new ModelStateNode(kvp.Value) })
+                .ToDictionary(kv => kv.Name, kv => (object)kv.Value);
+
+            modelState["IsValid"] = ViewContext.ModelState.IsValid;
+            context.MemberAccessStrategy.Register<ModelStateNode>();
+            context.LocalScope.SetValue("ModelState", modelState);
+
             if (Model != null)
             {
                 context.LocalScope.SetValue("Model", Model);
-                context.LocalScope.SetValue("ModelState", ViewContext.ModelState);
                 context.MemberAccessStrategy.Register(((object)Model).GetType());
             }
 
@@ -95,6 +99,28 @@ namespace Orchard.DisplayManagement.Fluid
                     }
                 }
             });
+        }
+
+        private class ModelStateNode
+        {
+            public ModelStateNode(ModelStateEntry entry)
+            {
+                RawValue = entry.RawValue;
+                AttemptedValue = entry.AttemptedValue;
+
+                Errors = new ModelErrorCollection();
+                for (var i = 0; i < entry.Errors.Count; i++)
+                {
+                    Errors.Add(entry.Errors[i]);
+                }
+
+                ValidationState = entry.ValidationState;
+            }
+
+            public object RawValue { get; set; }
+            public string AttemptedValue { get; set; }
+            public ModelErrorCollection Errors { get; }
+            public ModelValidationState ValidationState { get; set; }
         }
     }
 }
