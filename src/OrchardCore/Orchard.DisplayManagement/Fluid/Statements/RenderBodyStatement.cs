@@ -16,7 +16,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'renderbody'.");
+                throw new ParseException("FluidView missing while invoking 'RenderBody'.");
             }
 
             return Completion.Normal;

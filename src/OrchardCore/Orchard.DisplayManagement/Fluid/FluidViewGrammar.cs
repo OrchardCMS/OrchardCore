@@ -7,25 +7,22 @@ namespace Orchard.DisplayManagement.Fluid
     {
         public FluidViewGrammar() : base()
         {
-            var RenderBody = ToTerm("renderbody");
+            var RenderBody = ToTerm("RenderBody");
 
-            var RenderSection = new NonTerminal("rendersection");
-            RenderSection.Rule = "rendersection" + FilterArguments;
+            var RenderSection = new NonTerminal("RenderSection");
+            RenderSection.Rule = "RenderSection" + FilterArguments;
 
-            var RenderTitleSegments = new NonTerminal("render_title_segments");
-            RenderTitleSegments.Rule = "render_title_segments" + FilterArguments;
+            var RenderTitleSegments = new NonTerminal("RenderTitleSegments");
+            RenderTitleSegments.Rule = "RenderTitleSegments" + FilterArguments;
 
             var Script = new NonTerminal("script");
             Script.Rule = "script" + FilterArguments;
-
-            FilterArgument.Rule |= Identifier + ToTerm(":") + Term + FilterList;
-            FilterArgument.Rule |= Term + FilterList;
 
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Script;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
-            MarkPunctuation("rendersection", "render_title_segments", "script");
+            MarkPunctuation("RenderSection", "RenderTitleSegments", "script");
         }
     }
 }

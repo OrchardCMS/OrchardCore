@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -11,9 +10,9 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class RenderTitleSegmentsStatement : Statement
     {
-        private readonly FilterArgumentsExpression _arguments;
+        private readonly ArgumentsExpression _arguments;
 
-        public RenderTitleSegmentsStatement(FilterArgumentsExpression arguments)
+        public RenderTitleSegmentsStatement(ArgumentsExpression arguments)
         {
             _arguments = arguments;
         }
@@ -24,16 +23,20 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
-                var segment = arguments.HasNamed("segment") ? arguments["segment"].ToStringValue() : String.Empty;
-                var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
-                var separator = arguments.HasNamed("separator") ? arguments["separator"].ToStringValue() : String.Empty;
+                var segment = new HtmlString(arguments.At(0).ToStringValue());
 
-                (view as FluidView).RenderTitleSegments(new HtmlString(segment), position,
-                    new HtmlString(separator)).WriteTo(writer, HtmlEncoder.Default);
+                var position = arguments.HasNamed("position") ?
+                    arguments["position"].ToStringValue() : "0";
+
+                var separator = arguments.HasNamed("separator") ?
+                    new HtmlString(arguments["separator"].ToStringValue()) : null;
+
+                (view as FluidView).RenderTitleSegments(segment, position, separator)
+                    .WriteTo(writer, HtmlEncoder.Default);
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'render_title_segments'.");
+                throw new ParseException("FluidView missing while invoking 'RenderTitleSegments'.");
             }
 
             return Completion.Normal;

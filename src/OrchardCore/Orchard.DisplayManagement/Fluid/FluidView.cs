@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Orchard.Liquid;
+using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.Settings;
+using Newtonsoft.Json.Linq;
 
 
 namespace Orchard.DisplayManagement.Fluid
@@ -25,6 +27,10 @@ namespace Orchard.DisplayManagement.Fluid
 
         static FluidView()
         {
+            TemplateContext.GlobalFilters.WithFluidViewFilters();
+            //TemplateContext.GlobalMemberAccessStrategy.Register<ViewDataDictionary>();
+            //TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateDictionary>();
+            //TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateEntry>();
             TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
         }
 
@@ -60,13 +66,6 @@ namespace Orchard.DisplayManagement.Fluid
                 context.LocalScope.SetValue("Model", Model);
                 context.LocalScope.SetValue("ModelState", ViewContext.ModelState);
                 context.MemberAccessStrategy.Register(((object)Model).GetType());
-            }
-
-            var handlers = ServiceProvider.GetService<IEnumerable<ITemplateContextHandler>>();
-
-            foreach (var handler in handlers)
-            {
-                handler.OnTemplateProcessing(context);
             }
 
             WriteLiteral(await template.RenderAsync(context));

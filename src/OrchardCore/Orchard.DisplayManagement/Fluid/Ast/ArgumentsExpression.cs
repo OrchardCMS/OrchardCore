@@ -5,11 +5,11 @@ using Fluid.Values;
 
 namespace Orchard.DisplayManagement.Fluid.Ast
 {
-    public class FilterArgumentsExpression : Expression
+    public class ArgumentsExpression : Expression
     {
         private readonly FilterArgument[] _arguments;
 
-        public FilterArgumentsExpression(FilterArgument[] arguments)
+        public ArgumentsExpression(FilterArgument[] arguments)
         {
             _arguments = arguments;
         }

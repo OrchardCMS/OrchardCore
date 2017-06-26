@@ -16,13 +16,13 @@ namespace Orchard.DisplayManagement.Fluid
 
             switch (tag.Term.Name)
             {
-                case "renderbody":
+                case "RenderBody":
                     return BuildRenderBodyStatement(tag);
 
-                case "rendersection":
+                case "RenderSection":
                     return BuildRenderSectionStatement(tag);
 
-                case "render_title_segments":
+                case "RenderTitleSegments":
                     return BuildRenderRenderTitleSegmentsStatement(tag);
 
                 case "script":
@@ -40,23 +40,22 @@ namespace Orchard.DisplayManagement.Fluid
 
         private RenderSectionStatement BuildRenderSectionStatement(ParseTreeNode tag)
         {
-            return new RenderSectionStatement(BuildFilterArgumentsExpression(tag));
+            return new RenderSectionStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         private RenderTitleSegmentsStatement BuildRenderRenderTitleSegmentsStatement(ParseTreeNode tag)
         {
-            return new RenderTitleSegmentsStatement(BuildFilterArgumentsExpression(tag));
+            return new RenderTitleSegmentsStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
         {
-            FilterArgument[] parameters = tag.ChildNodes[0].ChildNodes.Select(BuildFilterArgument).ToArray();
-            return new ScriptStatement(BuildFilterArgumentsExpression(tag));
+            return new ScriptStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
-        protected virtual FilterArgumentsExpression BuildFilterArgumentsExpression(ParseTreeNode node)
+        protected virtual ArgumentsExpression BuildArgumentsExpression(ParseTreeNode node)
         {
-            return new FilterArgumentsExpression(node.ChildNodes[0].ChildNodes.Select(BuildFilterArgument).ToArray());
+            return new ArgumentsExpression(node.ChildNodes.Select(BuildFilterArgument).ToArray());
         }
     }
 }

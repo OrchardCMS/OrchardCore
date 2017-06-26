@@ -10,9 +10,9 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 {
     public class ScriptStatement : Statement
     {
-        private readonly FilterArgumentsExpression _arguments;
+        private readonly ArgumentsExpression _arguments;
 
-        public ScriptStatement(FilterArgumentsExpression arguments)
+        public ScriptStatement(ArgumentsExpression arguments)
         {
             _arguments = arguments;
         }
@@ -23,9 +23,13 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
-                var aspName = arguments.HasNamed("asp_name") ? arguments["asp_name"].ToStringValue() : String.Empty;
-                var useCdn = arguments.HasNamed("use_cdn") ? arguments["use_cdn"].ToStringValue() : String.Empty;
-                var at = arguments.HasNamed("at") ? arguments["at"].ToStringValue() : String.Empty;
+                var aspName = arguments.At(0).ToStringValue();
+
+                var useCdn = arguments.HasNamed("use_cdn") ?
+                    arguments["use_cdn"].ToStringValue() : String.Empty;
+
+                var at = arguments.HasNamed("at") ?
+                    arguments["at"].ToStringValue() : String.Empty;
 
                 // To be continued...
             }

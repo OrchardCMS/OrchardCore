@@ -11,7 +11,6 @@ using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Fluid;
-using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.LocationExpander;
@@ -24,7 +23,6 @@ using Orchard.DisplayManagement.Title;
 using Orchard.DisplayManagement.Zones;
 using Orchard.Environment.Extensions;
 using Orchard.Environment.Extensions.Features;
-using Orchard.Liquid;
 using Orchard.Mvc.LocationExpander;
 
 namespace Orchard.DisplayManagement
@@ -48,10 +46,7 @@ namespace Orchard.DisplayManagement
                 options.FileProviders.Add(new ThemingFileProvider());
             });
 
-            services.AddScoped<ITemplateContextHandler, LocalizerFilter>();
-            //services.AddScoped<ITemplateContextHandler, RenderTitleSegmentsFilter>();
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
-
             services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, ThemingViewsFeatureProvider>();
             services.AddScoped<IUpdateModelAccessor, LocalModelBinderAccessor>();
             services.AddScoped<IViewLocationExpanderProvider, ThemeAwareViewLocationExpanderProvider>();
