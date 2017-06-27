@@ -40,7 +40,7 @@ namespace Orchard.DisplayManagement.Fluid
                     foreach (var option in _expanderOptions.Options)
                     {
                         var searchPath = option.SearchPath.Replace("\\", "/")
-                            .Trim('/') + "/**/*" + FluidPage.ViewExtension;
+                            .Trim('/') + "/**/*" + FluidViewTemplate.ViewExtension;
 
                         matcher.AddInclude(searchPath);
                     }
@@ -57,7 +57,7 @@ namespace Orchard.DisplayManagement.Fluid
         {
             foreach (var path in _paths)
             {
-                var viewPath = path.Replace(FluidPage.ViewExtension, RazorViewEngine.ViewExtension);
+                var viewPath = path.Replace(FluidViewTemplate.ViewExtension, RazorViewEngine.ViewExtension);
                 feature.Views[viewPath] = typeof(FluidPage);
             }
         }

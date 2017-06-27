@@ -31,7 +31,7 @@ namespace Orchard.DisplayManagement.Razor
         {
             get
             {
-                return new[] { RazorViewEngine.ViewExtension, FluidPage.ViewExtension };
+                return new[] { RazorViewEngine.ViewExtension, FluidViewTemplate.ViewExtension };
             }
         }
 

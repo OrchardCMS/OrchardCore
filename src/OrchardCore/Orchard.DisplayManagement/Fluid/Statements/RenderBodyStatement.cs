@@ -10,9 +10,9 @@ namespace Orchard.DisplayManagement.Fluid.Statements
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidPage", out var view) && view is FluidPage)
+            if (context.AmbientValues.TryGetValue("FluidPage", out var page) && page is FluidPage)
             {
-                await writer.WriteAsync((await (view as FluidPage).RenderBodyAsync()).ToString());
+                await writer.WriteAsync((await (page as FluidPage).RenderBodyAsync()).ToString());
             }
             else
             {
