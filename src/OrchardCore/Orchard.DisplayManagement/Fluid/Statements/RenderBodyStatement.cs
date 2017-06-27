@@ -10,15 +10,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
     {
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidPage", out var page) && page is FluidPage)
-            {
-                await writer.WriteAsync((await (page as FluidPage).RenderBodyAsync()).ToString());
-            }
-            else
-            {
-                throw new ParseException("FluidPage missing while invoking 'RenderBody'.");
-            }
-
+            var page = FluidViewTemplate.EnsureFluidPage(context, "RenderBody");
+            await writer.WriteAsync((await page.RenderBodyAsync()).ToString());
             return Completion.Normal;
         }
     }

@@ -94,5 +94,15 @@ namespace Orchard.DisplayManagement.Fluid
                 }
             });
         }
+
+        public static FluidPage EnsureFluidPage(TemplateContext context, string action)
+        {
+            if (!context.AmbientValues.TryGetValue("FluidPage", out var page))
+            {
+                throw new ParseException("FluidPage missing while invoking: " + action);
+            }
+
+            return (FluidPage)page;
+        }
     }
 }

@@ -19,26 +19,14 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidPage", out var page) && page is FluidPage)
-            {
-                var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
+            var page = FluidViewTemplate.EnsureFluidPage(context, "RenderTitleSegments");
+            var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-                var segment = new HtmlString(arguments.At(0).ToStringValue());
+            var segment = new HtmlString(arguments.At(0).ToStringValue());
+            var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
+            var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 
-                var position = arguments.HasNamed("position") ?
-                    arguments["position"].ToStringValue() : "0";
-
-                var separator = arguments.HasNamed("separator") ?
-                    new HtmlString(arguments["separator"].ToStringValue()) : null;
-
-                (page as FluidPage).RenderTitleSegments(segment, position, separator)
-                    .WriteTo(writer, HtmlEncoder.Default);
-            }
-            else
-            {
-                throw new ParseException("FluidPage missing while invoking 'RenderTitleSegments'.");
-            }
-
+            page.RenderTitleSegments(segment, position, separator).WriteTo(writer, HtmlEncoder.Default);
             return Completion.Normal;
         }
     }

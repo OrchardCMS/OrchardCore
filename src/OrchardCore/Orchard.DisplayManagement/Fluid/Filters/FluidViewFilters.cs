@@ -1,6 +1,9 @@
 ﻿using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
 {
@@ -16,22 +19,14 @@ namespace Orchard.DisplayManagement.Fluid.Filters
 
         public static FluidValue Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("FluidPage", out var page))
-            {
-                throw new ParseException("FluidPage missing while invoking 't'.");
-            }
-
-            return new StringValue(((FluidPage)page).T[input.ToStringValue()].Value);
+            var page = FluidViewTemplate.EnsureFluidPage(context, "t");
+            return new StringValue(page.T[input.ToStringValue()].Value);
         }
 
         public static FluidValue UrlContent(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("UrlHelper", out var urlHelper))
-            {
-                throw new ParseException("UrlHelper missing while invoking 'url_content'.");
-            }
-
-            return new StringValue(((IUrlHelper)urlHelper).Content(input.ToStringValue()));
+            var page = FluidViewTemplate.EnsureFluidPage(context, "url_content");
+            return new StringValue(page.Url.Content(input.ToStringValue()));
         }
     }
 }

@@ -19,24 +19,14 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidPage", out var page) && page is FluidPage)
-            {
-                var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
+            var page = FluidViewTemplate.EnsureFluidPage(context, "script");
+            var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-                var aspName = arguments.At(0).ToStringValue();
+            var aspName = arguments.At(0).ToStringValue();
+            var useCdn = arguments.HasNamed("use_cdn") ? arguments["use_cdn"].ToStringValue() : String.Empty;
+            var at = arguments.HasNamed("at") ? arguments["at"].ToStringValue() : String.Empty;
 
-                var useCdn = arguments.HasNamed("use_cdn") ?
-                    arguments["use_cdn"].ToStringValue() : String.Empty;
-
-                var at = arguments.HasNamed("at") ?
-                    arguments["at"].ToStringValue() : String.Empty;
-
-                // To be continued...
-            }
-            else
-            {
-                throw new ParseException("FluidPage missing while invoking 'script'.");
-            }
+            // To be continued...
 
             return Completion.Normal;
         }
