@@ -51,8 +51,6 @@
         "Orchard.Media",
         "Orchard.Menu",
         "Orchard.Title",
-        "Orchard.Tokens",
-        "Orchard.Tokens.Content",
         "Orchard.Widgets",
 
         // Themes
