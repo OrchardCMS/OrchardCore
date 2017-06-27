@@ -13,8 +13,13 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.DisplayManagement\Orchard.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Environment.Navigation\Orchard.Environment.Navigation.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Security.Abstractions\Orchard.Security.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Workflows.Abstractions\Orchard.Workflows.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

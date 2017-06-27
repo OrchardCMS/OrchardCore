@@ -5,7 +5,7 @@ using Orchard.Workflows.Models;
 
 namespace Orchard.Workflows.Services
 {
-    public abstract class Event : IActivity
+    public abstract class TaskActivity : IActivity
     {
         public abstract string Name { get; }
         public abstract LocalizedString Category { get; }
@@ -13,17 +13,14 @@ namespace Orchard.Workflows.Services
 
         public virtual bool IsEvent
         {
-            get { return true; }
+            get { return false; }
         }
+
+        public bool CanStartWorkflow { get { return false; } }
 
         public virtual string Form
         {
             get { return null; }
-        }
-
-        public virtual bool CanStartWorkflow
-        {
-            get { return false; }
         }
 
         public abstract IEnumerable<LocalizedString> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext);
