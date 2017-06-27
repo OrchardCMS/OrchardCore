@@ -16,12 +16,12 @@ namespace Orchard.DisplayManagement.Fluid.Filters
 
         public static FluidValue Localize(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("FluidView", out var view))
+            if (!context.AmbientValues.TryGetValue("FluidPage", out var view))
             {
-                throw new ParseException("FluidView missing while invoking 't'.");
+                throw new ParseException("FluidPage missing while invoking 't'.");
             }
 
-            return new StringValue(((FluidView)view).T[input.ToStringValue()].Value);
+            return new StringValue(((FluidPage)view).T[input.ToStringValue()].Value);
         }
 
         public static FluidValue UrlContent(FluidValue input, FilterArguments arguments, TemplateContext context)

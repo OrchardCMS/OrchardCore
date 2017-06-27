@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidView", out var view) && view is FluidView)
+            if (context.AmbientValues.TryGetValue("FluidPage", out var view) && view is FluidPage)
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
@@ -31,12 +31,12 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 var separator = arguments.HasNamed("separator") ?
                     new HtmlString(arguments["separator"].ToStringValue()) : null;
 
-                (view as FluidView).RenderTitleSegments(segment, position, separator)
+                (view as FluidPage).RenderTitleSegments(segment, position, separator)
                     .WriteTo(writer, HtmlEncoder.Default);
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'RenderTitleSegments'.");
+                throw new ParseException("FluidPage missing while invoking 'RenderTitleSegments'.");
             }
 
             return Completion.Normal;

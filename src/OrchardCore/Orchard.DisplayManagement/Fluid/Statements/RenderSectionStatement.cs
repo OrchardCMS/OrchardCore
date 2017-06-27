@@ -19,7 +19,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (context.AmbientValues.TryGetValue("FluidView", out var view) && view is FluidView)
+            if (context.AmbientValues.TryGetValue("FluidPage", out var view) && view is FluidPage)
             {
                 var arguments = (await _arguments.EvaluateAsync(context)).ToObjectValue() as FilterArguments;
 
@@ -28,11 +28,11 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 var required = arguments.HasNamed("required") ?
                     Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
 
-                await writer.WriteAsync((await (view as FluidView).RenderSectionAsync(name, required)).ToString());
+                await writer.WriteAsync((await (view as FluidPage).RenderSectionAsync(name, required)).ToString());
             }
             else
             {
-                throw new ParseException("FluidView missing while invoking 'RenderSection'.");
+                throw new ParseException("FluidPage missing while invoking 'RenderSection'.");
             }
 
             return Completion.Normal;
