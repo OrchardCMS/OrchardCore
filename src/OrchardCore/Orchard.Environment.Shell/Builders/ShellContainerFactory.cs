@@ -81,8 +81,14 @@ namespace Orchard.Environment.Shell.Builders
             // Index all service descriptors by their feature id
             var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
 
+            var startups = moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>();
+
+            // IStartup instances are ordered by module dependency with an Order of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal Order values.
+            startups = startups.OrderBy(s => s.Order);
+            
             // Let any module add custom service descriptors to the tenant
-            foreach (var startup in moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>())
+            foreach (var startup in startups)
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
 
