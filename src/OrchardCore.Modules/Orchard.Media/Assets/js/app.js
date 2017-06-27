@@ -29,7 +29,7 @@ Vue.component('folder', {
     },
     created: function () {
         var self = this;
-        bus.$on('delete', function (folder) {
+        bus.$on('deleteFolder', function (folder) {
             if (self.children) {
                 var index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
@@ -38,7 +38,7 @@ Vue.component('folder', {
                 }
             }
         });
-       
+
         bus.$on('addFolder', function (target, folder) {
             if (self.model == target) {
 
@@ -164,7 +164,7 @@ var mediaApp = new Vue({
                 return;
             }
 
-            if (!confirm($('#deleteMessage').val())) {
+            if (!confirm($('#deleteFolderMessage').val())) {
                 return;
             }
 
@@ -175,7 +175,7 @@ var mediaApp = new Vue({
                     __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
                 },
                 success: function (data) {
-                    bus.$emit('delete', folder);
+                    bus.$emit('deleteFolder', folder);
                 },
                 error: function (error) {
                     alert(JSON.stringify(error));
@@ -185,7 +185,37 @@ var mediaApp = new Vue({
         createFolder: function () {
             $('#createFolderModal').modal('show');
             $('.modal-body input').val('').focus();
-        }
+        },
+        deleteMedia: function () {
+            var media = this.selectedMedia;
+            var self = this;
+
+            if (!media) {
+                return;
+            }
+
+            if (!confirm($('#deleteMediaMessage').val())) {
+                return;
+            }
+
+            $.ajax({
+                url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(self.selectedMedia.mediaPath),
+                method: 'POST',
+                data: {
+                    __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                },
+                success: function (data) {
+                    var index = self.mediaItems && self.mediaItems.indexOf(media)
+                    if (index > -1) {
+                        self.mediaItems.splice(index, 1)
+                        bus.$emit('mediaDeleted', media);
+                    }
+                },
+                error: function (error) {
+                    alert(JSON.stringify(error));
+                }
+            });
+        },
     }
 });
 
