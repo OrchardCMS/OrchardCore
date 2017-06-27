@@ -87,16 +87,18 @@ namespace Orchard.Environment.Shell.Builders
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
 
                 ServiceCollection featureServiceCollection;
-                ServiceCollection startupServices = new ServiceCollection();
-
+                
                 if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
                 {
                     featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
                 }
 
-                startup.ConfigureServices(startupServices);
-                tenantServiceCollection.Add(startupServices);
-                featureServiceCollection.Add(startupServices);
+                int previousTenantServiceCount = tenantServiceCollection.Count;
+                startup.ConfigureServices(tenantServiceCollection);
+
+                // Determine and store any new services the startup class has added for this feature 
+                var newTenantServices = tenantServiceCollection.Skip(previousTenantServiceCount);
+                featureServiceCollection.Add(newTenantServices);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
