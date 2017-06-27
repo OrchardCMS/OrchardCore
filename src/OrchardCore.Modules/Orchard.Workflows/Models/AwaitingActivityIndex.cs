@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using YesSql.Indexes;
+﻿using YesSql.Indexes;
 
 namespace Orchard.Workflows.Models
 {
     public class AwaitingActivityIndex : MapIndex
     {
+        public string ActivityName { get; set; }
+        public bool ActivityStart { get; set; }
     }
 
     public class AwaitingActivityndexProvider : IndexProvider<AwaitingActivity>
@@ -18,7 +17,8 @@ namespace Orchard.Workflows.Models
                 {
                     return new AwaitingActivityIndex
                     {
-
+                        ActivityName = awaitingActivity.Activity.Name,
+                        ActivityStart = awaitingActivity.Activity.Start
                     };
                 });
         }
