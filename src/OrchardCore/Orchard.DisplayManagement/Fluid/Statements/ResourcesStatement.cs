@@ -26,33 +26,22 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, "resources");
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            if (arguments.Count == 0)
-            {
-                return Completion.Continue;
-            }
-
-            var attributes = new TagHelperAttributeList();
-            foreach (var name in arguments.Names)
-            {
-                var attributeName = name.Replace("_", "-");
-                attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
-            }
-
             var resourcesTagHelper = new ResourcesTagHelper(page.GetService<IResourceManager>(),
                 page.GetService<IRequireSettingsProvider>());
 
-            TagHelperAttribute attribute;
-            if (attributes.TryGetAttribute("type", out attribute))
+            var attributes = new TagHelperAttributeList();
+
+            if (arguments.HasNamed("type"))
             {
-                resourcesTagHelper.Type = (ResourceType)Enum.Parse(typeof(ResourceType), attribute.Value.ToString());
+                attributes.Add(new TagHelperAttribute("type", arguments["type"].ToObjectValue()));
+                resourcesTagHelper.Type = (ResourceType)Enum.Parse(typeof(ResourceType), arguments["type"].ToStringValue());
             }
 
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput("script", attributes,
-                getChildContentAsync: (useCachedResult, htmlEncoder) =>
-                    Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
+            var tagHelperOutput = new TagHelperOutput("resources", attributes, (_, e)
+                => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             await resourcesTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 

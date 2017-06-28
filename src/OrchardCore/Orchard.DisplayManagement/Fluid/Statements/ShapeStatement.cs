@@ -8,8 +8,6 @@ using Fluid.Ast;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Fluid.Ast;
 using Orchard.DisplayManagement.TagHelpers;
-using Orchard.ResourceManagement;
-using Orchard.ResourceManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
@@ -26,13 +24,8 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "resources");
+            var page = FluidViewTemplate.EnsureFluidPage(context, _name);
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
-
-            if (arguments.Count == 0)
-            {
-                return Completion.Continue;
-            }
 
             var attributes = new TagHelperAttributeList();
             foreach (var name in arguments.Names)
@@ -41,20 +34,10 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
             }
 
-            var resourcesTagHelper = new ResourcesTagHelper(page.GetService<IResourceManager>(),
-                page.GetService<IRequireSettingsProvider>());
-
-            TagHelperAttribute attribute;
-            if (attributes.TryGetAttribute("type", out attribute))
-            {
-                resourcesTagHelper.Type = (ResourceType)Enum.Parse(typeof(ResourceType), attribute.Value.ToString());
-            }
-
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput(_name, attributes,
-                getChildContentAsync: (useCachedResult, htmlEncoder) =>
+            var tagHelperOutput = new TagHelperOutput(_name, attributes, (_, e) =>
                     Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             var shapeTagHelper = new ShapeTagHelper(page.GetService<IShapeFactory>(),

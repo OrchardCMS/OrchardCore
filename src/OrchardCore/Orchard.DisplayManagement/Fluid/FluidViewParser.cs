@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Fluid;
 using Fluid.Ast;
 using Irony.Parsing;
@@ -62,37 +61,42 @@ namespace Orchard.DisplayManagement.Fluid
 
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
         {
-            if (tag?.Term.Name == "script")
+            if (tag != null)
             {
-                foreach (var node in tag.ChildNodes[0].ChildNodes)
+                if (tag?.Term.Name == "script")
                 {
-                    var name = node.FindToken().ValueString;
-                    if (name == "asp_name" || name == "asp_source")
+                    foreach (var node in tag.ChildNodes[0].ChildNodes)
                     {
-                        // here we assume that the tag has no content, so it is self closed
-                        return new ScriptStatement(BuildArgumentsExpression(tag.ChildNodes[0]), null);
+                        var name = node.FindToken().ValueString;
+                        if (name == "asp_name" || name == "asp_source")
+                        {
+                            return new ScriptStatement(BuildArgumentsExpression(tag.ChildNodes[0]), null);
+                        }
                     }
+
+                    EnterBlock(tag);
+                    return null;
+                }
+            }
+            else
+            {
+                if (_currentContext.Tag == null)
+                {
+                    return null;
                 }
 
-                EnterBlock(tag);
-                return null;
+                if (_currentContext.Tag.Term.Name == "script")
+                {
+
+                    var statement = new ScriptStatement(BuildArgumentsExpression(
+                        _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+
+                    ExitBlock();
+                    return statement;
+                }
             }
 
-            if (_currentContext.Tag == null)
-            {
-                return null;
-            }
-
-            if (_currentContext.Tag.Term.Name != "script")
-            {
-                throw new ParseException($"Unexpected tag: ${tag.Term.Name} not matching script tag.");
-            }
-
-            var scriptStatement = new ScriptStatement(BuildArgumentsExpression(
-                _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
-
-            ExitBlock();
-            return scriptStatement;
+            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
         }
 
         private StyleStatement BuildStyleStatement(ParseTreeNode tag)

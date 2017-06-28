@@ -26,11 +26,6 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, "style");
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            if (arguments.Count == 0)
-            {
-                return Completion.Continue;
-            }
-
             var attributes = new TagHelperAttributeList();
             foreach (var name in arguments.Names)
             {
@@ -112,8 +107,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput("script", attributes,
-                getChildContentAsync: (useCachedResult, htmlEncoder) =>
+            var tagHelperOutput = new TagHelperOutput("style", attributes, (_, e) =>
                     Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             await styleTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);

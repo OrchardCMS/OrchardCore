@@ -28,11 +28,6 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, "script");
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            if (arguments.Count == 0)
-            {
-                return Completion.Continue;
-            }
-
             var attributes = new TagHelperAttributeList();
             foreach (var name in arguments.Names)
             {
