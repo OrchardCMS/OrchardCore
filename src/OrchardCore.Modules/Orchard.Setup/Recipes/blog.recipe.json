@@ -244,7 +244,7 @@
                                 "Tokenized": false,
                                 "Template": null
                             },
-                            "Pattern": "{{ ContentItem | container | display_text | slugify }}",
+                            "Pattern": "{{ ContentItem | container | display_text | slugify }}/{{ ContentItem | display_text | slugify }}",
                             "AllowCustomPath": "False",
                             "ShowHomepageOption": "False"
                         }
