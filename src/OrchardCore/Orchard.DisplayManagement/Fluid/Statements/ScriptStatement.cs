@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
@@ -12,11 +14,11 @@ using Orchard.ResourceManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
-    public class ScriptStatement : Statement
+    public class ScriptStatement : TagStatement
     {
         private readonly ArgumentsExpression _arguments;
 
-        public ScriptStatement(ArgumentsExpression arguments)
+        public ScriptStatement(ArgumentsExpression arguments, IList<Statement> statements) : base(statements)
         {
             _arguments = arguments;
         }
@@ -113,18 +115,29 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 attributes.Remove(attribute);
             }
 
-            string content = String.Empty;
-            //if (arguments.Count > 1)
-            //{
-            //    content = arguments[1].ToString();
-            //}
+            var content = new StringWriter();
+            if (Statements?.Any() ?? false)
+            {
+                var test = new StringWriter();
+                Completion completion = Completion.Break;
+                for (var index = 0; index < Statements.Count; index++)
+                {
+                    completion = await Statements[index].WriteToAsync(
+                        content, encoder, context);
+
+                    if (completion != Completion.Normal)
+                    {
+                        return completion;
+                    }
+                }
+            }
 
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
             var tagHelperOutput = new TagHelperOutput("script", attributes,
                 getChildContentAsync: (useCachedResult, htmlEncoder) =>
-                    Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
+                    Task.FromResult(new DefaultTagHelperContent().AppendHtml(content.ToString())));
 
             await scriptTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
