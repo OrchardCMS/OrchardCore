@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link type="image/x-icon" rel="shortcut icon" href="TheBlogTheme/favicon.ico" />
 
-    {% script asp_name:"jquery", use_cdn:"true", at:"Foot" %}{% endscript %}
+    {% script asp_name:"jquery", use_cdn:"true", at:"Foot" %}
 
     {% script at:"Foot" %}
         var foo = { bar: "ééé" };
@@ -48,10 +48,11 @@
 
             <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
 
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-duration="00:05:00" cache-tag="alias:main-menu" />
+                {% menu alias: "alias:main-menu", cache_id: "main-menu", cache_duration: "00:05:00", cache_tag: "alias:main-menu" %}
 
-            </div>
+            </div><!--/.nav-collapse -->
         </div>
+        <!-- /.container -->
     </nav>
 
     {% RenderSection "Header", required: false %}

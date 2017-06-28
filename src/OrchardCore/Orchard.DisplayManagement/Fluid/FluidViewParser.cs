@@ -37,6 +37,9 @@ namespace Orchard.DisplayManagement.Fluid
                 case "resources":
                     return BuildResourcesStatement(tag);
 
+                case "menu":
+                    return BuildShapeStatement(tag);
+
                 default:
                     return base.BuildTagStatement(node);
             }
@@ -100,6 +103,11 @@ namespace Orchard.DisplayManagement.Fluid
         private ResourcesStatement BuildResourcesStatement(ParseTreeNode tag)
         {
             return new ResourcesStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+        }
+
+        private ShapeStatement BuildShapeStatement(ParseTreeNode tag)
+        {
+            return new ShapeStatement(tag.Term.Name , BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         protected virtual ArgumentsExpression BuildArgumentsExpression(ParseTreeNode node)

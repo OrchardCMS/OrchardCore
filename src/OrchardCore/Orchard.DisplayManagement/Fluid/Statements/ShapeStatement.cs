@@ -7,17 +7,20 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Orchard.DisplayManagement.Fluid.Ast;
+using Orchard.DisplayManagement.TagHelpers;
 using Orchard.ResourceManagement;
 using Orchard.ResourceManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
-    public class ResourcesStatement : Statement
+    public class ShapeStatement : Statement
     {
+        private readonly string _name;
         private readonly ArgumentsExpression _arguments;
 
-        public ResourcesStatement(ArgumentsExpression arguments)
+        public ShapeStatement(string name, ArgumentsExpression arguments)
         {
+            _name = name;
             _arguments = arguments;
         }
 
@@ -50,11 +53,14 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
-            var tagHelperOutput = new TagHelperOutput("script", attributes,
+            var tagHelperOutput = new TagHelperOutput(_name, attributes,
                 getChildContentAsync: (useCachedResult, htmlEncoder) =>
                     Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
-            await resourcesTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
+            var shapeTagHelper = new ShapeTagHelper(page.GetService<IShapeFactory>(),
+                page.GetService<IDisplayHelperFactory>()) { ViewContext = page.ViewContext };
+
+            await shapeTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
             tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
 

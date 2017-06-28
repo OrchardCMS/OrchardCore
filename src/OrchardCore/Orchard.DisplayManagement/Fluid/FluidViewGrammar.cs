@@ -25,14 +25,17 @@ namespace Orchard.DisplayManagement.Fluid
             var Resources = new NonTerminal("resources");
             Resources.Rule = "resources" + FilterArguments;
 
+            var Menu = new NonTerminal("menu");
+            Menu.Rule = "menu" + FilterArguments;
+
             KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
-                | Script | ScriptEnd
-                | Style | Resources;
+                | Script | ScriptEnd | Style | Resources
+                | Menu;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
             MarkPunctuation("RenderSection", "RenderTitleSegments",
-                "script", "style", "resources");
+                "script", "style", "resources", "menu");
         }
     }
 }
