@@ -146,49 +146,57 @@ $(function () {
         while (renderRequested) {
             renderRequested = false;
             rendering = true;
-            var data = form.serialize();
-            $.post(previewUrl + "?id=" + contentItemType, data)
-                .done(function (data) {
-                    $(previewErrors).hide();
+            try { 
+                var data = form.serialize();
+                $.post(previewUrl + "?id=" + contentItemType, data)
+                    .done(function (data) {
+                        $(previewErrors).hide();
 
-                    if (!iframe || !iframe.contentWindow) {
-                        createIframe();
-                        iframe.contentWindow.document.open();
-                        iframe.contentWindow.document.close();
-                    }
+                        if (!iframe || !iframe.contentWindow) {
+                            createIframe();
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.close();
+                        }
 
-                    iframe.contentWindow.document.body.innerHTML = '';
-                    iframe.contentWindow.document.write(data);
-
-                    if (!iframe.contentWindow.document.body || iframe.contentWindow.document.body.innerHTML == '') {
-                        // the the html is invalid we need to rebuild an iframe or it fails to render
-                        $(contentPreviewContent).empty();
-
-                        createIframe();
-
-                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.body.innerHTML = '';
                         iframe.contentWindow.document.write(data);
-                        iframe.contentWindow.document.close();
+
+                        if (!iframe.contentWindow.document.body || iframe.contentWindow.document.body.innerHTML == '') {
+                            // the the html is invalid we need to rebuild an iframe or it fails to render
+                            $(contentPreviewContent).empty();
+
+                            createIframe();
+
+                            iframe.contentWindow.document.open();
+                            iframe.contentWindow.document.write(data);
+                            iframe.contentWindow.document.close();
+                        }
+                        else {
+                            // body rendered successfully
+                        }
+                    })
+                    .fail(function (data) {
+                        $(contentPreviewContent).empty();
+                        $(previewErrors).empty().show();
+                        if (data.responseJSON && data.responseJSON.errors) {
+                            responseJSON.errors.forEach(function (error) {
+                                $(previewErrors).append('<div>' + error + '</div>')
+                            });
+                        }
+                        else {
+                            $(previewErrors).append('<div>' + $('#unknownError').data('msg') + '</div>')
+                        }
+                    })
+                    .always(function () {
                     }
-                    else {
-                        // body rendered successfully
-                    }
-                })
-                .fail(function (data) {
-                    $(contentPreviewContent).empty();
-                    $(previewErrors).empty().show();
-                    if (data.responseJSON && data.responseJSON.errors) {
-                        responseJSON.errors.forEach(function (error) {
-                            $(previewErrors).append('<div>' + error + '</div>')
-                        });
-                    }
-                    else {
-                        $(previewErrors).append('<div>' + $('#unknownError').data('msg') + '</div>')
-                    }
-                })
-                .always(function () {
-                    rendering = false;
-                });
+                );
+            }
+            catch(e) {
+                console.log('Error while previewing: ' + e);
+            }
+            finally {
+                rendering = false;
+            }
         }
     }
 });
