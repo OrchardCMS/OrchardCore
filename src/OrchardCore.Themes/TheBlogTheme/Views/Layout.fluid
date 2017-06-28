@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/TheBlogTheme/Styles/blog.min.css">
 
     <!-- Custom Fonts -->
-    <style asp-name="font-awesome" use-cdn="true"></style>
+    {% style asp_name:"font-awesome", use_cdn:"true" %}
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
@@ -25,10 +25,10 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     
-    <resources type="Meta" />
-    <resources type="HeadLink" />
-    <resources type="Stylesheet" />
-    <resources type="HeadScript" />
+    {% resources type: "Meta" %}
+    {% resources type: "HeadLink" %}
+    {% resources type: "Stylesheet" %}
+    {% resources type: "HeadScript" %}
 </head>
 <body>
     <nav class="navbar navbar-default  navbar-custom navbar-fixed-top">
@@ -55,8 +55,6 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 {% RenderBody %}
-                <div>Test1: {{ ModelState.IsValid }}</div>
-                <div>Test2: {{ ModelState["contentItemId"].RawValue }}</div>
             </div>
         </div>
     </div><!-- /.container -->
@@ -69,6 +67,6 @@
         </div>
     </footer>
 
-    <resources type="FootScript" />
+    {% resources type: "FootScript" %}
 </body>
 </html>

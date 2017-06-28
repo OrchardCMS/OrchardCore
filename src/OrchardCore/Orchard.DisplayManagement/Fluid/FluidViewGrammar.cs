@@ -18,11 +18,19 @@ namespace Orchard.DisplayManagement.Fluid
             var Script = new NonTerminal("script");
             Script.Rule = "script" + FilterArguments;
 
-            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Script;
+            var Style = new NonTerminal("style");
+            Style.Rule = "style" + FilterArguments;
+
+            var Resources = new NonTerminal("resources");
+            Resources.Rule = "resources" + FilterArguments;
+
+            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments |
+                Script | Style | Resources;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
-            MarkPunctuation("RenderSection", "RenderTitleSegments", "script");
+            MarkPunctuation("RenderSection", "RenderTitleSegments",
+                "script", "style", "resources");
         }
     }
 }

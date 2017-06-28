@@ -30,22 +30,18 @@ namespace Orchard.DisplayManagement.Fluid
 
         internal static async Task RenderAsync(FluidPage page)
         {
-            var serviceProvider = page.Context.RequestServices;
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
 
             // Todo: use custom FileProviders
-            var environment = serviceProvider.GetRequiredService<IHostingEnvironment>();
+            var environment = page.GetService<IHostingEnvironment>();
             var template = Parse(path, environment.ContentRootFileProvider);
 
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
 
-            var site = await serviceProvider.GetService<ISiteService>().GetSiteSettingsAsync();
+            var site = await page.GetService<ISiteService>().GetSiteSettingsAsync();
             context.MemberAccessStrategy.Register(site.GetType());
             context.LocalScope.SetValue("Site", site);
-
-            var urlHelperFactory = serviceProvider.GetService<IUrlHelperFactory>();
-            context.AmbientValues.Add("UrlHelper", urlHelperFactory.GetUrlHelper(page.ViewContext));
 
             context.MemberAccessStrategy.Register(page.Context.GetType());
             context.MemberAccessStrategy.Register(page.Context.Request.GetType());

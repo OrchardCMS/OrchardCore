@@ -12,18 +12,18 @@ using Orchard.ResourceManagement.TagHelpers;
 
 namespace Orchard.DisplayManagement.Fluid.Statements
 {
-    public class ScriptStatement : Statement
+    public class StyleStatement : Statement
     {
         private readonly ArgumentsExpression _arguments;
 
-        public ScriptStatement(ArgumentsExpression arguments)
+        public StyleStatement(ArgumentsExpression arguments)
         {
             _arguments = arguments;
         }
 
         public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "script");
+            var page = FluidViewTemplate.EnsureFluidPage(context, "style");
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
             if (arguments.Count == 0)
@@ -38,95 +38,85 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 attributes.Add(new TagHelperAttribute(attributeName, arguments[name].ToObjectValue()));
             }
 
-            var scriptTagHelper = new ScriptTagHelper(page.GetService<IResourceManager>());
+            var styleTagHelper = new StyletTagHelper(page.GetService<IResourceManager>());
 
             TagHelperAttribute attribute;
             if (attributes.TryGetAttribute("asp-name", out attribute))
             {
-                scriptTagHelper.Name = attribute.Value.ToString();
-                attributes.Remove(attribute);
+                styleTagHelper.Name = attribute.Value.ToString();
             }
 
             if (attributes.TryGetAttribute("asp-src", out attribute))
             {
-                scriptTagHelper.Src = attribute.Value.ToString();
+                styleTagHelper.Src = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("cdn-src", out attribute))
             {
-                scriptTagHelper.CdnSrc = attribute.Value.ToString();
+                styleTagHelper.CdnSrc = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("debug-src", out attribute))
             {
-                scriptTagHelper.DebugSrc = attribute.Value.ToString();
+                styleTagHelper.DebugSrc = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("debug-cdn-src", out attribute))
             {
-                scriptTagHelper.DebugCdnSrc = attribute.Value.ToString();
+                styleTagHelper.DebugCdnSrc = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("use-cdn", out attribute))
             {
-                scriptTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
-                attributes.Remove(attribute);
+                styleTagHelper.UseCdn = Convert.ToBoolean(attribute.Value);
             }
 
             if (attributes.TryGetAttribute("condition", out attribute))
             {
-                scriptTagHelper.Condition = attribute.Value.ToString();
+                styleTagHelper.Condition = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("culture", out attribute))
             {
-                scriptTagHelper.Culture = attribute.Value.ToString();
+                styleTagHelper.Culture = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("debug", out attribute))
             {
-                scriptTagHelper.Debug = Convert.ToBoolean(attribute.Value);
+                styleTagHelper.Debug = Convert.ToBoolean(attribute.Value);
                 attributes.Remove(attribute);
             }
 
-            if (attributes.TryGetAttribute("depend-on", out attribute))
+            if (attributes.TryGetAttribute("dependencies", out attribute))
             {
-                scriptTagHelper.DependsOn = attribute.Value.ToString();
+                styleTagHelper.Dependencies = attribute.Value.ToString();
                 attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("version", out attribute))
             {
-                scriptTagHelper.Version = attribute.Value.ToString();
-                attributes.Remove(attribute);
+                styleTagHelper.Version = attribute.Value.ToString();
             }
 
             if (attributes.TryGetAttribute("at", out attribute))
             {
-                scriptTagHelper.At = (ResourceLocation)Enum.Parse(typeof(ResourceLocation), attribute.Value.ToString());
-                attributes.Remove(attribute);
+                styleTagHelper.At = (ResourceLocation)Enum.Parse(typeof(ResourceLocation), attribute.Value.ToString());
             }
-
-            string content = String.Empty;
-            //if (arguments.Count > 1)
-            //{
-            //    content = arguments[1].ToString();
-            //}
 
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
             var tagHelperOutput = new TagHelperOutput("script", attributes,
                 getChildContentAsync: (useCachedResult, htmlEncoder) =>
-                    Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
+                    Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
-            await scriptTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
+            await styleTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
             return Completion.Normal;
         }

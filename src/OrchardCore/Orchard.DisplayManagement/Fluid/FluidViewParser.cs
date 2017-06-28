@@ -28,6 +28,12 @@ namespace Orchard.DisplayManagement.Fluid
                 case "script":
                     return BuildScriptStatement(tag);
 
+                case "style":
+                    return BuildStyleStatement(tag);
+
+                case "resources":
+                    return BuildResourcesStatement(tag);
+
                 default:
                     return base.BuildTagStatement(node);
             }
@@ -51,6 +57,16 @@ namespace Orchard.DisplayManagement.Fluid
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
         {
             return new ScriptStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+        }
+
+        private StyleStatement BuildStyleStatement(ParseTreeNode tag)
+        {
+            return new StyleStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+        }
+
+        private ResourcesStatement BuildResourcesStatement(ParseTreeNode tag)
+        {
+            return new ResourcesStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         protected virtual ArgumentsExpression BuildArgumentsExpression(ParseTreeNode node)
