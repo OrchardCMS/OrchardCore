@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Orchard.Environment.Extensions;
-using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Shell.Builders.Models;
 using Orchard.Events;
 
@@ -79,7 +78,7 @@ namespace Orchard.Environment.Shell.Builders
             var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider();
 
             // Index all service descriptors by their feature id
-            var featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
+            var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
             var startups = moduleServiceProvider.GetServices<Microsoft.AspNetCore.Modules.IStartup>();
 
@@ -91,20 +90,9 @@ namespace Orchard.Environment.Shell.Builders
             foreach (var startup in startups)
             {
                 var feature = blueprint.Dependencies.FirstOrDefault(x => x.Key == startup.GetType()).Value.FeatureInfo;
+                featureAwareServiceCollection.SetCurrentFeature(feature);
 
-                ServiceCollection featureServiceCollection;
-                
-                if (!featureServiceCollections.TryGetValue(feature, out featureServiceCollection))
-                {
-                    featureServiceCollections.Add(feature, featureServiceCollection = new ServiceCollection());
-                }
-
-                int previousTenantServiceCount = tenantServiceCollection.Count;
-                startup.ConfigureServices(tenantServiceCollection);
-
-                // Determine and store any new services the startup class has added for this feature 
-                var newTenantServices = tenantServiceCollection.Skip(previousTenantServiceCount);
-                featureServiceCollection.Add(newTenantServices);
+                startup.ConfigureServices(featureAwareServiceCollection);
             }
 
             (moduleServiceProvider as IDisposable).Dispose();
@@ -167,7 +155,7 @@ namespace Orchard.Environment.Shell.Builders
             // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
 
-            foreach (var featureServiceCollection in featureServiceCollections)
+            foreach (var featureServiceCollection in featureAwareServiceCollection.FeatureCollections)
             {
                 foreach (var serviceDescriptor in featureServiceCollection.Value)
                 {

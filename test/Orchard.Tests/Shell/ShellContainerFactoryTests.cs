@@ -1,3 +1,4 @@
+﻿using System;
 using Orchard.Environment.Shell;
 using System.Collections.Generic;
 using Xunit;
@@ -11,22 +12,22 @@ using Orchard.Environment.Extensions.Features;
 using Orchard.Environment.Extensions;
 
 namespace Orchard.Tests.Shell
-{   
+{
     public class ShellContainerFactoryTests
     {
-        private TypeFeatureProvider _typeFeatureProvider;
-        
-        private ShellContainerFactory _shellContainerFactory;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
+
+        private readonly IShellContainerFactory _shellContainerFactory;
 
         public ShellContainerFactoryTests()
-        {     
+        {
             var applicationServices = new ServiceCollection();
             _typeFeatureProvider = new TypeFeatureProvider();
-            applicationServices.AddScoped<ITypeFeatureProvider>(x => _typeFeatureProvider);
+            applicationServices.AddScoped(x => _typeFeatureProvider);
 
             _shellContainerFactory = new ShellContainerFactory(
-                new ServiceCollection().BuildServiceProvider(), 
-                new StubLoggerFactory(), 
+                new ServiceCollection().BuildServiceProvider(),
+                new StubLoggerFactory(),
                 new NullLogger<ShellContainerFactory>(),
                 applicationServices
             );
@@ -35,13 +36,12 @@ namespace Orchard.Tests.Shell
         [Fact]
         public void CanRegisterDefaultServiceWithFeatureInfo()
         {
-            var shellBlueprint = CreateBlueprint();  
+            var shellBlueprint = CreateBlueprint();
 
-            var expectedFeatureInfo = CreateFeatureInfo(nameof(RegisterServiceStartup));
-            shellBlueprint.Dependencies.Add(typeof(RegisterServiceStartup), new NonCompiledFeatureEntry(expectedFeatureInfo));
-            
+            var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
+
             var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint);
-            
+
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
             Assert.Same(expectedFeatureInfo, _typeFeatureProvider.GetFeatureForDependency(typeof(TestService)));
         }
@@ -49,14 +49,13 @@ namespace Orchard.Tests.Shell
         [Fact]
         public void CanReplaceDefaultServiceWithCustomService()
         {
-            var shellBlueprint = CreateBlueprint();           
-            shellBlueprint.Dependencies.Add(typeof(RegisterServiceStartup), new NonCompiledFeatureEntry(CreateFeatureInfo(nameof(RegisterServiceStartup))));
-            
-            var expectedFeatureInfo = CreateFeatureInfo(nameof(ReplaceServiceStartup));
-            shellBlueprint.Dependencies.Add(typeof(ReplaceServiceStartup), new NonCompiledFeatureEntry(expectedFeatureInfo));
-            
+            var shellBlueprint = CreateBlueprint();
+
+            var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(ReplaceServiceStartup));
+            AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
+
             var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint);
-            
+
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
             Assert.IsType<CustomTestService>(container.GetRequiredService(typeof(ITestService)));
             Assert.Same(expectedFeatureInfo, _typeFeatureProvider.GetFeatureForDependency(typeof(CustomTestService)));
@@ -64,23 +63,33 @@ namespace Orchard.Tests.Shell
 
         private ShellBlueprint CreateBlueprint()
         {
-            return  new ShellBlueprint { 
-                Settings = new ShellSettings(), 
-                Descriptor = new ShellDescriptor(), 
-                Dependencies = new Dictionary<System.Type, FeatureEntry>() 
+            return new ShellBlueprint
+            {
+                Settings = new ShellSettings(),
+                Descriptor = new ShellDescriptor(),
+                Dependencies = new Dictionary<Type, FeatureEntry>()
             };
         }
 
-        private IFeatureInfo CreateFeatureInfo(string name)
+        public static IFeatureInfo AddStartup(ShellBlueprint shellBlueprint, Type startupType)
         {
-            return new FeatureInfo(name, name, 1, "ShellContainerTests", null, null, null);
+            var featureInfo = new FeatureInfo(startupType.Name, startupType.Name, 1, "Tests", null, null, null);
+            shellBlueprint.Dependencies.Add(startupType, new NonCompiledFeatureEntry(featureInfo));
+
+            return featureInfo;
         }
 
-        private interface ITestService {}
+        private interface ITestService
+        {
+        }
 
-        private class TestService : ITestService {}
+        private class TestService : ITestService
+        {
+        }
 
-        private class CustomTestService : ITestService {}
+        private class CustomTestService : ITestService
+        {
+        }
 
         private class RegisterServiceStartup : StartupBase
         {
