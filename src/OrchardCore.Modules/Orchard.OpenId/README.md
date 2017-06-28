@@ -1,4 +1,4 @@
-# Orchard.OpenId
+﻿# Orchard.OpenId
 
 Orchard.OpenId provides an implementation of an OpenID Connect server based on [OpenIddict](https://github.com/openiddict/openiddict-core) library. 
 It allows Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
@@ -103,3 +103,64 @@ OpenID Connect apps require the following configuration.
       "AllowHybridFlow": false
 }
 ```
+
+## Configuring Certificates
+
+### Windows / IIS
+
+Several tools are available for generating a signing certificate on Windows and/or IIS, for example:
+
++ IIS Server Manager _(offers not much control)_
+    1. Server Certificates
+    2. Create Self-Signed Certificate 
++ PowerShell _(offers full control)_
+    1. `New-SelfSignedCertificate`, for example:
+
+```
+# See https://technet.microsoft.com/en-us/itpro/powershell/windows/pkiclient/new-selfsignedcertificate
+
+New-SelfSignedCertificate `
+    -Subject "connect.example.com" `
+    -FriendlyName "Example.com Signing Certificate" `
+    -CertStoreLocation "cert:\LocalMachine\My" `
+    -KeySpec Signature `
+    -KeyUsage DigitalSignature `
+    -KeyUsageProperty Sign `
+    -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1") `
+    -KeyExportPolicy NonExportable `
+    -KeyAlgorithm RSA `
+    -KeyLength 4096 `
+    -HashAlgorithm SHA256 `
+    -NotAfter (Get-Date).AddDays(825) `
+    -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider"
+```
+
+**This snippet must be run as admin.** It generates a 4096-bit signing certificate, stores it in the machine store and returns the certificate's thumbprint, which you need in the OpenID Connect Settings recipe or when exporting the certficate through PowerShell. _You should update this example according to your requirements!_
+
+In multi-node environments consider creating the certificate with `-KeyExportPolicy Exportable`, then export the certificate (PFX) to a secure location, using the MMC Certificates Snap-In or PowerShell `Export-PfxCertificate`, and subsequently import the certificate on each node as non-exportable, which is the default when using `Import-PfxCertificate`. For example:
+
+```
+# See https://technet.microsoft.com/en-us/itpro/powershell/windows/pkiclient/export-pfxcertificate
+# Run this on the machine where the certificate was generated:
+
+$mypwd = ConvertTo-SecureString -String "MySecretPassword123" -Force -AsPlainText
+
+Export-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\localMachine\my\thumbprintfromnewselfsignedcertificate -Password $mypwd
+
+# See https://technet.microsoft.com/en-us/itpro/powershell/windows/pkiclient/import-pfxcertificate
+# Run this on the target node:
+
+$mypwd = ConvertTo-SecureString -String "MySecretPassword123" -Force -AsPlainText
+
+Import-PfxCertificate -FilePath C:\securelocation\connect.example.com.pfx cert:\localMachine\my -Password $mypwd
+```
+
+**Important:** In order for the Orchard.OpenId module to use the certificate's keys for signing, it requires `Read` access to the certificate in the store. This can be granted in various ways, for example:
+
++ MMC.exe
+    1. Add Snap-In 'Certificates' for Computer Account
+    2. Right-Click relevant certificate and select All Tasks, Manage Private Keys
+    3. Add the relevant identity (e.g. IIS AppPool\PoolName)
+    4. Check Allow Read
++ WinHttpCertCfg.exe (grants Full Control)
+    1. For example: `winhttpcertcfg -g -c LOCAL_MACHINE\My -s connect.example.com -a AppPoolIdentityName` https://msdn.microsoft.com/en-us/library/windows/desktop/aa384088(v=vs.85).aspx
