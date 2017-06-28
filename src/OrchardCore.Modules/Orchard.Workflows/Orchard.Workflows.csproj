@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +18,10 @@
     <ProjectReference Include="..\..\OrchardCore\Orchard.Tokens.Abstractions\Orchard.Tokens.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\Orchard.Workflows.Abstractions\Orchard.Workflows.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.AsModule\OrchardCore.AsModule.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

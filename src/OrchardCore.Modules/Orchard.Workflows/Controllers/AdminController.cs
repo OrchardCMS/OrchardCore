@@ -347,7 +347,7 @@ namespace Orchard.Workflows.Controllers
                 activity.Left = x.X;
                 activity.Top = x.Y;
                 activity.Start = x.Start;
-                activity.State = FormParametersHelper.FromJsonString(x.State);
+                //activity.State = FormParametersHelper.FromJsonString(x.State);
 
                 return activity;
             }));
@@ -362,7 +362,7 @@ namespace Orchard.Workflows.Controllers
                 return connection;
             }));
 
-            workflowDefinitionModel.JsonData = FormParametersHelper.ToJsonString(workflow);
+            //workflowDefinitionModel.JsonData = FormParametersHelper.ToJsonString(workflow);
 
             return workflowDefinitionModel;
         }
@@ -385,69 +385,69 @@ namespace Orchard.Workflows.Controllers
 
             workflowDefinition.Enabled = true;
 
-            var state = FormParametersHelper.FromJsonString(data);
-            var activitiesIndex = new Dictionary<string, Activity>();
+            //var state = FormParametersHelper.FromJsonString(data);
+            //var activitiesIndex = new Dictionary<string, Activity>();
 
-            workflowDefinition.Activities.Clear();
+            //workflowDefinition.Activities.Clear();
 
-            foreach (var activity in state.Activities)
-            {
-                Activity internalActivity;
+            //foreach (var activity in state.Activities)
+            //{
+            //    Activity internalActivity;
 
-                workflowDefinition.Activities.Add(internalActivity = new Activity
-                {
-                    Name = activity.Name,
-                    X = activity.Left,
-                    Y = activity.Top,
-                    Start = activity.Start,
-                    State = FormParametersHelper.ToJsonString(activity.State),
-                    Definition = workflowDefinition
-                });
+            //    workflowDefinition.Activities.Add(internalActivity = new Activity
+            //    {
+            //        Name = activity.Name,
+            //        X = activity.Left,
+            //        Y = activity.Top,
+            //        Start = activity.Start,
+            //        State = FormParametersHelper.ToJsonString(activity.State),
+            //        Definition = workflowDefinition
+            //    });
 
-                activitiesIndex.Add((string)activity.ClientId, activity);
-            }
+            //    activitiesIndex.Add((string)activity.ClientId, activity);
+            //}
 
-            workflowDefinition.Transitions.Clear();
+            //workflowDefinition.Transitions.Clear();
 
-            foreach (var connection in state.Connections)
-            {
-                workflowDefinition.Transitions.Add(new Transition
-                {
-                    SourceActivity = activitiesIndex[(string)connection.SourceId],
-                    DestinationActivity = activitiesIndex[(string)connection.TargetId],
-                    SourceEndpoint = connection.SourceEndpoint,
-                    Definition = workflowDefinition
-                });
-            }
+            //foreach (var connection in state.Connections)
+            //{
+            //    workflowDefinition.Transitions.Add(new Transition
+            //    {
+            //        SourceActivity = activitiesIndex[(string)connection.SourceId],
+            //        DestinationActivity = activitiesIndex[(string)connection.TargetId],
+            //        SourceEndpoint = connection.SourceEndpoint,
+            //        Definition = workflowDefinition
+            //    });
+            //}
 
-            if (clearWorkflows)
-            {
-                workflowDefinition.Workflows.Clear();
-            }
-            else
-            {
-                foreach (var workflowRecord in workflowDefinition.Workflows)
-                {
-                    // Update any awaiting activity records with the new activity record.
-                    foreach (var awaitingActivityRecord in workflowRecord.AwaitingActivities)
-                    {
-                        var clientId = awaitingActivityRecord.Activity.GetClientId();
-                        if (activitiesIndex.ContainsKey(clientId))
-                        {
-                            awaitingActivityRecord.Activity = activitiesIndex[clientId];
-                        }
-                        else
-                        {
-                            workflowRecord.AwaitingActivities.Remove(awaitingActivityRecord);
-                        }
-                    }
-                    // Remove any workflows with no awaiting activities.
-                    if (!workflowRecord.AwaitingActivities.Any())
-                    {
-                        workflowDefinition.Workflows.Remove(workflowRecord);
-                    }
-                }
-            }
+            //if (clearWorkflows)
+            //{
+            //    workflowDefinition.Workflows.Clear();
+            //}
+            //else
+            //{
+            //    foreach (var workflowRecord in workflowDefinition.Workflows)
+            //    {
+            //        // Update any awaiting activity records with the new activity record.
+            //        foreach (var awaitingActivityRecord in workflowRecord.AwaitingActivities)
+            //        {
+            //            var clientId = awaitingActivityRecord.Activity.GetClientId();
+            //            if (activitiesIndex.ContainsKey(clientId))
+            //            {
+            //                awaitingActivityRecord.Activity = activitiesIndex[clientId];
+            //            }
+            //            else
+            //            {
+            //                workflowRecord.AwaitingActivities.Remove(awaitingActivityRecord);
+            //            }
+            //        }
+            //        // Remove any workflows with no awaiting activities.
+            //        if (!workflowRecord.AwaitingActivities.Any())
+            //        {
+            //            workflowDefinition.Workflows.Remove(workflowRecord);
+            //        }
+            //    }
+            //}
 
             _notifier.Success(H["Workflow saved successfully"]);
 
@@ -467,7 +467,7 @@ namespace Orchard.Workflows.Controllers
             return View();
         }
 
-        [Themed(false)]
+        //[Themed(false)]
         [HttpPost]
         public async Task<IActionResult> RenderActivity(ActivityViewModel model)
         {
@@ -485,19 +485,20 @@ namespace Orchard.Workflows.Controllers
 
             dynamic shape = New.Activity(activity);
 
-            if (model.State != null)
-            {
-                var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-                shape.State(state);
-            }
-            else
-            {
-                shape.State(FormParametersHelper.FromJsonString("{}"));
-            }
+            //if (model.State != null)
+            //{
+            //    var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
+            //    shape.State(state);
+            //}
+            //else
+            //{
+            //    shape.State(FormParametersHelper.FromJsonString("{}"));
+            //}
 
-            shape.Metadata.Alternates.Add("Activity__" + activity.Name);
+            //shape.Metadata.Alternates.Add("Activity__" + activity.Name);
 
-            return new ShapeResult(this, shape);
+            //return new ShapeResult(this, shape);
+            return null;
         }
 
         public async Task<IActionResult> EditActivity(string localId, string clientId, ActivityViewModel model)
@@ -515,7 +516,7 @@ namespace Orchard.Workflows.Controllers
             }
 
             // build the form, and let external components alter it
-            var form = activity.Form == null ? null : _formManager.Build(activity.Form);
+            var form = "{ }";//activity.Form == null ? null : _formManager.Build(activity.Form);
 
             // form is bound on client side
             var viewModel = New.ViewModel(LocalId: localId, ClientId: clientId, Form: form);
@@ -539,33 +540,33 @@ namespace Orchard.Workflows.Controllers
                 return NotFound();
             }
 
-            // validating form values
-            _formManager.Validate(new ValidatingContext { FormName = activity.Form, ModelState = ModelState, ValueProvider = ValueProvider });
+            //// validating form values
+            //_formManager.Validate(new ValidatingContext { FormName = activity.Form, ModelState = ModelState, ValueProvider = ValueProvider });
 
-            // stay on the page if there are validation errors
-            if (!ModelState.IsValid)
-            {
+            //// stay on the page if there are validation errors
+            //if (!ModelState.IsValid)
+            //{
 
-                // build the form, and let external components alter it
-                var form = activity.Form == null ? null : _formManager.Build(activity.Form);
+            //    // build the form, and let external components alter it
+            //    var form = activity.Form == null ? null : _formManager.Build(activity.Form);
 
-                // bind form with existing values.
-                _formManager.Bind(form, ValueProvider);
+            //    // bind form with existing values.
+            //    _formManager.Bind(form, ValueProvider);
 
-                var viewModel = New.ViewModel(Id: id, LocalId: localId, Form: form);
+            //    var viewModel = New.ViewModel(Id: id, LocalId: localId, Form: form);
 
-                return View(viewModel);
-            }
+            //    return View(viewModel);
+            //}
 
-            var model = new UpdatedActivityModel
-            {
-                ClientId = clientId,
-                Data = JsonConvert.SerializeObject(
-                    FormParametersHelper.ToJsonString(formValues),
-                    new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml })
-            };
+            //var model = new UpdatedActivityModel
+            //{
+            //    ClientId = clientId,
+            //    Data = JsonConvert.SerializeObject(
+            //        FormParametersHelper.ToJsonString(formValues),
+            //        new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml })
+            //};
 
-            TempData["UpdatedViewModel"] = model;
+            //TempData["UpdatedViewModel"] = model;
 
             return RedirectToAction("Edit", new
             {
