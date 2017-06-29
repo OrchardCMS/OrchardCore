@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Microsoft.Extensions.Options;
+using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.Environment.Extensions;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -17,16 +17,10 @@ namespace Orchard.DisplayManagement.Fluid
         private static List<string> _paths;
         private static object _synLock = new object();
 
-        private readonly string _rootPath;
-        private readonly ExtensionExpanderOptions _expanderOptions;
-
         public FluidViewsFeatureProvider(
-            IHostingEnvironment hostingEnvironment,
+            IFluidViewFileProviderAccessor fileProviderAccessor,
             IOptions<ExtensionExpanderOptions> expanderOptionsAccessor)
         {
-            _rootPath = hostingEnvironment.ContentRootPath;
-            _expanderOptions = expanderOptionsAccessor.Value;
-
             if (_paths != null)
             {
                 return;
@@ -36,19 +30,23 @@ namespace Orchard.DisplayManagement.Fluid
             {
                 if (_paths == null)
                 {
+                    _paths = new List<string>();
+
                     var matcher = new Matcher();
-                    foreach (var option in _expanderOptions.Options)
+                    matcher.AddInclude("/**/*" + FluidViewTemplate.ViewExtension);
+
+                    foreach (var option in expanderOptionsAccessor.Value.Options)
                     {
-                        var searchPath = option.SearchPath.Replace("\\", "/")
-                            .Trim('/') + "/**/*" + FluidViewTemplate.ViewExtension;
+                        var fileInfo = fileProviderAccessor.FileProvider.GetFileInfo(option.SearchPath);
+                        var directoryInfo = new DirectoryInfo(fileInfo.PhysicalPath);
 
-                        matcher.AddInclude(searchPath);
+                        if (directoryInfo.Exists)
+                        {
+                            var files = matcher.Execute(new DirectoryInfoWrapper(directoryInfo)).Files;
+                            var searchPath = option.SearchPath.Replace("\\", "/").Trim('/');
+                            _paths.AddRange(files.Select(f => '/' + searchPath + '/' + f.Path));
+                        }
                     }
-
-                    var paths = matcher.Execute(new DirectoryInfoWrapper(
-                        new DirectoryInfo(_rootPath))).Files.Select(f => '/' + f.Path);
-
-                    _paths = new List<string>(paths);
                 }
             }
         }

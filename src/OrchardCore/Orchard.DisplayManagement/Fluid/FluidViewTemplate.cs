@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Orchard.DisplayManagement.Fluid.Filters;
+using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Fluid.ModelBinding;
 using Orchard.Settings;
 
@@ -29,10 +29,8 @@ namespace Orchard.DisplayManagement.Fluid
         internal static async Task RenderAsync(FluidPage page)
         {
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
-
-            // Todo: use custom FileProviders
-            var environment = page.GetService<IHostingEnvironment>();
-            var template = Parse(path, environment.ContentRootFileProvider);
+            var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
+            var template = Parse(path, fileProvider);
 
             var context = new TemplateContext();
             context.AmbientValues.Add("FluidPage", page);
