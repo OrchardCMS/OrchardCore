@@ -7,5 +7,5 @@
     var templateContext = new TemplateContext();
     templateContext.SetValue("ContentItem", Model.BodyPart.ContentItem);
 
-    await TemplateManager.RenderAsync(body, Output, HtmlEncoder, templateContext);
+    await TemplateManager.RenderAsync(body, Output, NullEncoder.Default, templateContext);
 }

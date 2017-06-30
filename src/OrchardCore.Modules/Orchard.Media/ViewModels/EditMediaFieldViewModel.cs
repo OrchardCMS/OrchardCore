@@ -6,7 +6,7 @@ namespace Orchard.Media.ViewModels
 {
     public class EditMediaFieldViewModel
     {
-        // A Jsong serialized array of media paths
+        // A Json serialized array of media paths
         public string Paths { get; set; }
         public MediaField Field { get; set; }
         public ContentPart Part { get; set; }
