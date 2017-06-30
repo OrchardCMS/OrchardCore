@@ -18,6 +18,11 @@ namespace Orchard.DisplayManagement.Fluid
             var Display = new NonTerminal("Display");
             Display.Rule = "Display" + FilterArguments;
 
+            var ClearAlternates = ToTerm("ClearAlternates");
+
+            var SetMetadata = new NonTerminal("SetMetadata");
+            SetMetadata.Rule = "SetMetadata" + FilterArguments;
+
             var Script = new NonTerminal("script");
             Script.Rule = "script" + FilterArguments;
             var ScriptEnd = ToTerm("endscript");
@@ -31,14 +36,17 @@ namespace Orchard.DisplayManagement.Fluid
             var Menu = new NonTerminal("menu");
             Menu.Rule = "menu" + FilterArguments;
 
-            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments | Display
+            KnownTags.Rule |= RenderBody | RenderSection | RenderTitleSegments
+                | Display | ClearAlternates | SetMetadata
                 | Script | ScriptEnd | Style | Resources
                 | Menu;
 
             // Prevent the text from being added in the parsed tree.
             // Only Identifier and Arguments will be in the tree.
-            MarkPunctuation("RenderSection", "RenderTitleSegments", "Display",
-                "script", "style", "resources", "menu");
+            MarkPunctuation("RenderSection", "RenderTitleSegments",
+                "Display", "SetMetadata",
+                "script", "style", "resources",
+                "menu");
         }
     }
 }

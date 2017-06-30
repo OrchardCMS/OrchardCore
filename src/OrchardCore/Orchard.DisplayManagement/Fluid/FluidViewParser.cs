@@ -27,6 +27,12 @@ namespace Orchard.DisplayManagement.Fluid
                 case "Display":
                     return BuildDisplayStatement(tag);
 
+                case "ClearAlternates":
+                    return BuildClearAlternatesStatement(tag);
+
+                case "SetMetadata":
+                    return BuildSetMetadataStatement(tag);
+
                 case "script":
                     return BuildScriptStatement(tag);
 
@@ -65,6 +71,16 @@ namespace Orchard.DisplayManagement.Fluid
         private DisplayStatement BuildDisplayStatement(ParseTreeNode tag)
         {
             return new DisplayStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+        }
+
+        private ClearAlternates BuildClearAlternatesStatement(ParseTreeNode tag)
+        {
+            return new ClearAlternates();
+        }
+
+        private SetMetadataStatement BuildSetMetadataStatement(ParseTreeNode tag)
+        {
+            return new SetMetadataStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
