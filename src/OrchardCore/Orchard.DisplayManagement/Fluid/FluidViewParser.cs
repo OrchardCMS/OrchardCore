@@ -22,7 +22,10 @@ namespace Orchard.DisplayManagement.Fluid
                     return BuildRenderSectionStatement(tag);
 
                 case "RenderTitleSegments":
-                    return BuildRenderRenderTitleSegmentsStatement(tag);
+                    return BuildRenderTitleSegmentsStatement(tag);
+
+                case "Display":
+                    return BuildDisplayStatement(tag);
 
                 case "script":
                     return BuildScriptStatement(tag);
@@ -54,9 +57,14 @@ namespace Orchard.DisplayManagement.Fluid
             return new RenderSectionStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
-        private RenderTitleSegmentsStatement BuildRenderRenderTitleSegmentsStatement(ParseTreeNode tag)
+        private RenderTitleSegmentsStatement BuildRenderTitleSegmentsStatement(ParseTreeNode tag)
         {
             return new RenderTitleSegmentsStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
+        }
+
+        private DisplayStatement BuildDisplayStatement(ParseTreeNode tag)
+        {
+            return new DisplayStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)

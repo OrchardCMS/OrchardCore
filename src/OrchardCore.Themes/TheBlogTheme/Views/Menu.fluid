@@ -1,0 +1,7 @@
+﻿<nav>
+    <ul class="nav navbar-nav navbar-right">
+        {% for item in Model.Items %}
+            {% Display shape: item %}
+        {% endfor %}
+    </ul>
+</nav>

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
@@ -30,6 +31,14 @@ namespace Orchard.DisplayManagement.Fluid
         {
             var path = page.ViewContext.ExecutingFilePath.Replace(RazorViewEngine.ViewExtension, ViewExtension);
             var fileProvider = page.GetService<IFluidViewFileProviderAccessor>().FileProvider;
+
+            var modelType = ((object)page.Model)?.GetType();
+
+            if (page.Model is IShape && !FluidValue.TypeMappings.TryGetValue(modelType, out var value))
+            {
+                FluidValue.TypeMappings.Add(modelType, obj => new ObjectValue(obj));
+            }
+
             var template = Parse(path, fileProvider);
 
             var context = new TemplateContext();
@@ -52,10 +61,10 @@ namespace Orchard.DisplayManagement.Fluid
             modelState["IsValid"] = page.ViewContext.ModelState.IsValid;
             context.LocalScope.SetValue("ModelState", modelState);
 
-            if (page.Model != null)
+            if (modelType != null)
             {
+                context.MemberAccessStrategy.Register(modelType);
                 context.LocalScope.SetValue("Model", page.Model);
-                context.MemberAccessStrategy.Register(((object)page.Model).GetType());
             }
 
             page.WriteLiteral(await template.RenderAsync(context));
