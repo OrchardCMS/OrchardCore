@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Orchard.Data.Migration;
 using Orchard.Environment.Navigation;
 using Orchard.Security.Permissions;
-using Orchard.Workflows.Indexes;
+using Orchard.Workflows.Models;
 using Orchard.Workflows.Services;
 using YesSql.Indexes;
 
@@ -19,6 +19,7 @@ namespace Orchard.Workflows
             services.AddScoped<IIndexProvider, ActivityIndexProvider>();
             services.AddScoped<IIndexProvider, AwaitingActivityndexProvider>();
             services.AddScoped<IIndexProvider, WorkflowDefinitionIndexProvider>();
+
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<INavigationProvider, AdminMenu>();

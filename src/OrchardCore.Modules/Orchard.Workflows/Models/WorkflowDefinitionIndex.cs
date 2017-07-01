@@ -1,7 +1,6 @@
-﻿using Orchard.Workflows.Models;
-using YesSql.Indexes;
+﻿using YesSql.Indexes;
 
-namespace Orchard.Workflows.Indexes
+namespace Orchard.Workflows.Models
 {
     public class WorkflowDefinitionIndex : MapIndex
     {

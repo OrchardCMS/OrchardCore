@@ -17,7 +17,6 @@ using Orchard.DisplayManagement.Views;
 using Orchard.Mvc.ActionConstraints;
 using Orchard.Navigation;
 using Orchard.Settings;
-using Orchard.Workflows.Indexes;
 using Orchard.Workflows.Models;
 using Orchard.Workflows.Services;
 using Orchard.Workflows.ViewModels;

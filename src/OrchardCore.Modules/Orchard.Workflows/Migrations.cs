@@ -1,5 +1,5 @@
 ﻿using Orchard.Data.Migration;
-using Orchard.Workflows.Indexes;
+using Orchard.Workflows.Models;
 
 namespace Orchard.Workflows
 {
@@ -17,7 +17,7 @@ namespace Orchard.Workflows
                 .Column<bool>("ActivityStart")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndexProvider), table => table
+            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowDefinitionIndex), table => table
                 .Column<string>("Name")
             );
 
