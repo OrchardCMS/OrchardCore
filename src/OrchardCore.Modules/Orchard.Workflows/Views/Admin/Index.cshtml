@@ -3,6 +3,20 @@
 
 <h1>@RenderTitleSegments(T["Manage Workflow Definitions"])</h1>
 
+
+<nav class="admin-toolbar">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a asp-route-action="EditProperties" class="btn btn-primary" role="button">@T["Create new Workflow Definition"]</a>
+        </li>
+    </ul>
+    <form asp-action="Index" method="get" class="form-inline">
+        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+        <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
+    </form>
+</nav>
+
+
 @using (Html.BeginForm())
 {
     <ul class="list-group">
@@ -16,7 +30,7 @@
                         <a asp-action="Delete" asp-route-id="@entry.Definition.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                     </div>
 
-                    @entry.User.UserName
+                    @User.Identity.Name
                 </div>
             </li>
         }
