@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orchard.ContentManagement;
 using Orchard.Tokens.Services;
+using Orchard.Workflows.Indexes;
 using Orchard.Workflows.Models;
 using YesSql;
 
@@ -318,15 +319,16 @@ namespace Orchard.Workflows.Services
 
         private dynamic GetState(string state, IDictionary<string, object> tokens)
         {
-            if (!string.IsNullOrWhiteSpace(state))
-            {
-                var formatted = JsonConvert.DeserializeXNode(state, "Root").ToString();
-                var tokenized = _tokenizer.Replace(formatted, tokens);
-                var serialized = string.IsNullOrEmpty(tokenized) ? "{}" : JsonConvert.SerializeXNode(XElement.Parse(tokenized));
-                return FormParametersHelper.FromJsonString(serialized).Root;
-            }
+            return null;
+            //if (!string.IsNullOrWhiteSpace(state))
+            //{
+            //    var formatted = JsonConvert.DeserializeXNode(state, "Root").ToString();
+            //    var tokenized = _tokenizer.Replace(formatted, tokens);
+            //    var serialized = string.IsNullOrEmpty(tokenized) ? "{}" : JsonConvert.SerializeXNode(XElement.Parse(tokenized));
+            //    return FormParametersHelper.FromJsonString(serialized).Root;
+            //}
 
-            return FormParametersHelper.FromJsonString("{}");
+            //return FormParametersHelper.FromJsonString("{}");
         }
     }
 }

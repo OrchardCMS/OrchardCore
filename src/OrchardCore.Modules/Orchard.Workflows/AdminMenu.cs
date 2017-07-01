@@ -19,11 +19,13 @@ namespace Orchard.Workflows {
                 return;
             }
 
-            builder.Add(T["Workflows"], content => content
-                .Add(T["Workflows"], "1", contentItems => contentItems
-                    .Action("Index", "Admin", new { area = "Orchard.Workflows" })
-                    .Permission(Permissions.ManageWorkflows)
-                    .LocalNav())
+            builder
+                .Add(T["Workflows"], "5", design => design
+                    .Add(T["Definition"], "1", contentItems => contentItems
+                        .Action("Index", "Admin", new { area = "Orchard.Workflows" })
+                        .Permission(Permissions.ManageWorkflows)
+                        .LocalNav()
+                    )
                 );
         }
     }

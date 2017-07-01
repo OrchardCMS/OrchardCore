@@ -20,7 +20,7 @@ namespace Orchard.Workflows.Models
 
         private dynamic State
         {
-            get { return _workflowState ?? (_workflowState = FormParametersHelper.FromJsonString(Record.State)); }
+            get { return _workflowState ?? null; } //(_workflowState = FormParametersHelper.FromJsonString(Record.State)); }
         }
 
         public Workflow Record
@@ -82,7 +82,7 @@ namespace Orchard.Workflows.Models
 
         private void SerializeState()
         {
-            Record.State = FormParametersHelper.ToJsonString(State);
+            //Record.State = FormParametersHelper.ToJsonString(State);
         }
 
         private string KeyFor(Activity record, string key)
@@ -114,7 +114,7 @@ namespace Orchard.Workflows.Models
                 .Transitions
                 .Where(transition =>
                     transition.SourceActivity == activityRecord
-                    && transition.SourceEndpoint == outcome.TextHint
+                    && transition.SourceEndpoint == outcome.Value
                 ).ToArray();
         }
 
