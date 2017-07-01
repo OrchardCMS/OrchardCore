@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "CMS",
   "displayName": "Content Management System",
   "description": "Provides a functional set of CMS features.",
@@ -53,6 +53,7 @@
         "Orchard.Tokens",
         "Orchard.Tokens.Content",
         "Orchard.Widgets",
+        "Orchard.Workflows",
 
         // Themes
         "TheTheme",
