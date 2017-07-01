@@ -26,7 +26,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var position = arguments.HasNamed("position") ? arguments["position"].ToStringValue() : "0";
             var separator = arguments.HasNamed("separator") ? new HtmlString(arguments["separator"].ToStringValue()) : null;
 
-            page.RenderTitleSegments(segment, position, separator).WriteTo(writer, HtmlEncoder.Default);
+            page.RenderTitleSegments(segment, position, separator).WriteTo(writer, page.HtmlEncoder);
             return Completion.Normal;
         }
     }

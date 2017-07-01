@@ -1,0 +1,11 @@
+﻿
+{% assign contentItem = Model.Properties["ContentItem"] %}
+{% assign linkMenuItemPart = contentItem.Content.LinkMenuItemPart %}
+
+<a {% if Model.HasItems == true %}class="dropdown-toggle" data-toggle="dropdown"{% endif %}
+    href="{{ linkMenuItemPart.Url | href }}">
+    {{ linkMenuItemPart.Name }}
+    {% if Model.HasItems == true %}
+        <b class="caret"></b>
+    {% endif %}
+</a>

@@ -1,9 +1,5 @@
 ﻿using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Fluid.Filters
 {
@@ -12,7 +8,7 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         public static FilterCollection WithFluidViewFilters(this FilterCollection filters)
         {
             filters.AddFilter("t", Localize);
-            filters.AddFilter("url_content", UrlContent);
+            filters.AddFilter("href", UrlContent);
 
             return filters;
         }
@@ -25,8 +21,8 @@ namespace Orchard.DisplayManagement.Fluid.Filters
 
         public static FluidValue UrlContent(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var page = FluidViewTemplate.EnsureFluidPage(context, "url_content");
-            return new StringValue(page.Url.Content(input.ToStringValue()));
+            var page = FluidViewTemplate.EnsureFluidPage(context, "href");
+            return new StringValue(page.Href(input.ToStringValue()));
         }
     }
 }

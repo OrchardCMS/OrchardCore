@@ -2,16 +2,12 @@
 {% SetMetadata type: "MenuItemLink" %}
 
 <li {% if Model.HasItems == true %}class="dropdown"{% endif %}>
+    {% Display shape: Model %}
     {% if Model.HasItems == true %}
-        {% Display shape: Model %}
         <ul class="dropdown-menu">
             {% for item in Model.Items %}
                 {% Display shape: item %}
             {% endfor %}
         </ul>
-    {% endif %}
-
-    {% if Model.HasItems == false %}
-        {% Display shape: Model %}
     {% endif %}
 </li>

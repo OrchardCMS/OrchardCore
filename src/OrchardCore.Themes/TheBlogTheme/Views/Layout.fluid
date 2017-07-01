@@ -39,7 +39,7 @@
                     <span class="sr-only">@T["Toggle navigation"]</span>
                     "Menu" <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href= {{ "~/" | url_content }}>{{ Site.SiteName }}</a>
+                <a class="navbar-brand" href= {{ "~/" | href }}>{{ Site.SiteName }}</a>
             </div>
 
             <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">

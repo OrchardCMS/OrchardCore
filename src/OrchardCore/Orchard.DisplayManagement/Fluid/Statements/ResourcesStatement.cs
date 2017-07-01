@@ -45,7 +45,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
             await resourcesTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 
-            tagHelperOutput.WriteTo(writer, HtmlEncoder.Default);
+            tagHelperOutput.WriteTo(writer, page.HtmlEncoder);
 
             return Completion.Normal;
         }

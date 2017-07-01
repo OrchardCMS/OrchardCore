@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -15,41 +13,18 @@ namespace Orchard.DisplayManagement.Fluid
             await FluidViewTemplate.RenderAsync(this);
         }
 
-        public IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return Context.RequestServices;
-            }
-        }
-
         public T GetService<T>()
         {
-            return ServiceProvider.GetService<T>();
+            return Context.RequestServices.GetService<T>();
         }
 
-        public IHtmlHelper Html
-        {
-            get
-            {
-                var htmlHelper = GetService<IHtmlHelper>();
+        [RazorInject]
+        public IUrlHelper Url { get; private set; }
 
-                var contextable = htmlHelper as IViewContextAware;
-                if (contextable != null)
-                {
-                    contextable.Contextualize(ViewContext);
-                }
+        [RazorInject]
+        public IHtmlHelper Html { get; private set; }
 
-                return htmlHelper;
-            }
-        }
-
-        public IUrlHelper Url
-        {
-            get
-            {
-                return GetService<IUrlHelperFactory>().GetUrlHelper(ViewContext);
-            }
-        }
+        [RazorInject]
+        public IViewComponentHelper Component { get; private set; }
     }
 }
