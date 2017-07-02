@@ -1,16 +1,26 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Orchard.ContentManagement.Metadata.Models;
 using Orchard.ContentManagement.Display.ContentDisplay;
 using Orchard.ContentManagement.Display.Models;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Views;
 using Orchard.Media.Fields;
+using Orchard.Media.Settings;
 using Orchard.Media.ViewModels;
 
 namespace Orchard.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
+        public MediaFieldDisplayDriver(IStringLocalizer<MediaFieldDisplayDriver> localizer)
+        {
+            T = localizer;
+        }
+
+        public IStringLocalizer T { get; set; }
+
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
             return Shape<DisplayMediaFieldViewModel>("MediaField", model =>
@@ -42,6 +52,18 @@ namespace Orchard.Media.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
                 field.Paths = JsonConvert.DeserializeObject<string[]>(model.Paths);
+
+                var settings = context.PartFieldDefinition.Settings.ToObject<MediaFieldSettings>();
+                
+                if (settings.Required && field.Paths.Length < 1)
+                {
+                    updater.ModelState.AddModelError(Prefix, T["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
+                }
+
+                if (field.Paths.Length > 1 && !settings.Multiple)
+                {
+                    updater.ModelState.AddModelError(Prefix, T["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
+                }                
             }
 
             return Edit(field, context);
