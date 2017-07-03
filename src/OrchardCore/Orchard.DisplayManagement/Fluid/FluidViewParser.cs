@@ -33,6 +33,12 @@ namespace Orchard.DisplayManagement.Fluid
                 case "SetMetadata":
                     return BuildSetMetadataStatement(tag);
 
+                case "zone":
+                    return BuildZoneStatement(tag);
+
+                case "endzone":
+                    return BuildZoneStatement(null);
+
                 case "script":
                     return BuildScriptStatement(tag);
 
@@ -83,6 +89,36 @@ namespace Orchard.DisplayManagement.Fluid
             return new SetMetadataStatement(BuildArgumentsExpression(tag.ChildNodes[0]));
         }
 
+        private ZoneStatement BuildZoneStatement(ParseTreeNode tag)
+        {
+            if (tag != null)
+            {
+                if (tag?.Term.Name == "zone")
+                {
+                    EnterBlock(tag);
+                    return null;
+                }
+            }
+            else
+            {
+                if (_currentContext.Tag == null)
+                {
+                    return null;
+                }
+
+                if (_currentContext.Tag.Term.Name == "zone")
+                {
+                    var statement = new ZoneStatement(BuildArgumentsExpression(
+                        _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
+
+                    ExitBlock();
+                    return statement;
+                }
+            }
+
+            throw new ParseException($"Unexpected tag: ${_currentContext.Tag.Term.Name} not matching script tag.");
+        }
+
         private ScriptStatement BuildScriptStatement(ParseTreeNode tag)
         {
             if (tag != null)
@@ -111,7 +147,6 @@ namespace Orchard.DisplayManagement.Fluid
 
                 if (_currentContext.Tag.Term.Name == "script")
                 {
-
                     var statement = new ScriptStatement(BuildArgumentsExpression(
                         _currentContext.Tag.ChildNodes[0]), _currentContext.Statements);
 

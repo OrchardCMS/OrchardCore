@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Orchard.DisplayManagement.Fluid
 {
-    public class FluidPage : Razor.RazorPage<dynamic>
+    public class FluidPage : Razor.RazorPage
     {
         public override async Task ExecuteAsync()
         {
@@ -23,8 +24,11 @@ namespace Orchard.DisplayManagement.Fluid
 
         [RazorInject]
         public IHtmlHelper Html { get; private set; }
-
+ 
         [RazorInject]
         public IViewComponentHelper Component { get; private set; }
+
+        [RazorInject]
+        public IModelExpressionProvider ModelExpressionProvider { get; private set; }
     }
 }

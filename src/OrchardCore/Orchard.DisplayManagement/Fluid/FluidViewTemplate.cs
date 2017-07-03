@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement.Fluid.Filters;
 using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Fluid.ModelBinding;
+using Orchard.DisplayManagement.Shapes;
 using Orchard.Settings;
 
 namespace Orchard.DisplayManagement.Fluid
@@ -22,9 +24,18 @@ namespace Orchard.DisplayManagement.Fluid
 
         static FluidViewTemplate()
         {
-            TemplateContext.GlobalFilters.WithFluidViewFilters();
+            TemplateContext.GlobalMemberAccessStrategy.Register<JObject>((obj, name) => obj[name]);
+
+            if (!FluidValue.TypeMappings.TryGetValue(typeof(JObject), out var value))
+            {
+                FluidValue.TypeMappings.Add(typeof(JObject), o => new ObjectValue(o));
+                FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
+            }
+
             TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
             TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateNode>();
+
+            TemplateContext.GlobalFilters.WithFluidViewFilters();
         }
 
         internal static async Task RenderAsync(FluidPage page)
@@ -65,6 +76,18 @@ namespace Orchard.DisplayManagement.Fluid
             {
                 context.MemberAccessStrategy.Register(modelType);
                 context.LocalScope.SetValue("Model", page.Model);
+
+                if (page.Model is Shape && page.Model.Properties?.Count > 0)
+                {
+                    foreach (var prop in page.Model.Properties)
+                    {
+                        if (Type.GetTypeCode(((object)prop?.Value).GetType()) == TypeCode.Object)
+                        {
+                            context.MemberAccessStrategy.Register(((object)prop.Value).GetType());
+                            context.LocalScope.SetValue(prop.Key, prop.Value);
+                        }
+                    }
+                }
             }
 
             page.WriteLiteral(await template.RenderAsync(context));
@@ -72,12 +95,12 @@ namespace Orchard.DisplayManagement.Fluid
 
         internal static IFluidTemplate Parse(string path, IFileProvider fileProvider)
         {
-            return Cache.GetOrCreate(path, viewEntry =>
+            return Cache.GetOrCreate(path, entry =>
             {
-                viewEntry.SlidingExpiration = TimeSpan.FromHours(1);
+                entry.SlidingExpiration = TimeSpan.FromHours(1);
 
                 var fileInfo = fileProvider.GetFileInfo(path);
-                viewEntry.ExpirationTokens.Add(fileProvider.Watch(path));
+                entry.ExpirationTokens.Add(fileProvider.Watch(path));
 
                 using (var stream = fileInfo.CreateReadStream())
                 {

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
@@ -73,7 +75,7 @@ namespace Orchard.DisplayManagement
 
         public static IServiceCollection AddTheming(this IServiceCollection services)
         {
-		    services.Configure<MvcOptions>((options) =>
+            services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(NotifyFilter));
             });

@@ -38,7 +38,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
             var tagHelperOutput = new TagHelperOutput(_name, attributes, (_, e) =>
-                    Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
+                Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             var shapeTagHelper = new ShapeTagHelper(page.GetService<IShapeFactory>(),
                 page.GetService<IDisplayHelperFactory>()) { ViewContext = page.ViewContext };

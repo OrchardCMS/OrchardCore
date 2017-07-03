@@ -1,5 +1,5 @@
 ﻿<nav>
-    <ul class="nav navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right {{ Model.Classes | join: " " }}">
         {% for item in Model.Items %}
             {% Display shape: item %}
         {% endfor %}

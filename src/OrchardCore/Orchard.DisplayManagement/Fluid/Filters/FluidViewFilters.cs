@@ -9,6 +9,8 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         {
             filters.AddFilter("t", Localize);
             filters.AddFilter("href", UrlContent);
+            filters.AddFilter("ordefault", OrDefault);
+            filters.AddFilter("bodyaspect", BodyAspect);
 
             return filters;
         }
@@ -23,6 +25,19 @@ namespace Orchard.DisplayManagement.Fluid.Filters
         {
             var page = FluidViewTemplate.EnsureFluidPage(context, "href");
             return new StringValue(page.Href(input.ToStringValue()));
+        }
+
+        public static FluidValue OrDefault(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var page = FluidViewTemplate.EnsureFluidPage(context, "ordefault");
+            var output = page.OrDefault(input.ToObjectValue(), arguments.At(0).ToObjectValue()).ToString();
+            return new StringValue(output);
+        }
+
+        public static FluidValue BodyAspect(FluidValue input, FilterArguments arguments, TemplateContext context)
+        {
+            var page = FluidViewTemplate.EnsureFluidPage(context, "bodyaspect");
+            return new ObjectValue(page.New.BodyAspect(input.ToObjectValue()));
         }
     }
 }

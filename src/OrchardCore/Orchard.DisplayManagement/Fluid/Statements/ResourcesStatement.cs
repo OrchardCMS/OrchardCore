@@ -33,7 +33,6 @@ namespace Orchard.DisplayManagement.Fluid.Statements
 
             if (arguments.HasNamed("type"))
             {
-                attributes.Add(new TagHelperAttribute("type", arguments["type"].ToObjectValue()));
                 resourcesTagHelper.Type = (ResourceType)Enum.Parse(typeof(ResourceType), arguments["type"].ToStringValue());
             }
 

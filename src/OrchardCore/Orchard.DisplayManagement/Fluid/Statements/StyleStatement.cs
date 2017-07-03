@@ -39,6 +39,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             if (attributes.TryGetAttribute("asp-name", out attribute))
             {
                 styleTagHelper.Name = attribute.Value.ToString();
+                attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("asp-src", out attribute))
@@ -97,18 +98,20 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             if (attributes.TryGetAttribute("version", out attribute))
             {
                 styleTagHelper.Version = attribute.Value.ToString();
+                attributes.Remove(attribute);
             }
 
             if (attributes.TryGetAttribute("at", out attribute))
             {
                 styleTagHelper.At = (ResourceLocation)Enum.Parse(typeof(ResourceLocation), attribute.Value.ToString());
+                attributes.Remove(attribute);
             }
 
             var tagHelperContext = new TagHelperContext(attributes,
                 new Dictionary<object, object>(), Guid.NewGuid().ToString("N"));
 
             var tagHelperOutput = new TagHelperOutput("style", attributes, (_, e) =>
-                    Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
+                Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
 
             await styleTagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
 

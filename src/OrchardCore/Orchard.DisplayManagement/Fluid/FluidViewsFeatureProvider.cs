@@ -33,7 +33,7 @@ namespace Orchard.DisplayManagement.Fluid
                     _paths = new List<string>();
 
                     var matcher = new Matcher();
-                    matcher.AddInclude("/**/*" + FluidViewTemplate.ViewExtension);
+                    matcher.AddInclude("/**/Views/**/*" + FluidViewTemplate.ViewExtension);
 
                     foreach (var option in expanderOptionsAccessor.Value.Options)
                     {

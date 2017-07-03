@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -113,7 +112,6 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var content = new StringWriter();
             if (Statements?.Any() ?? false)
             {
-                var test = new StringWriter();
                 Completion completion = Completion.Break;
                 for (var index = 0; index < Statements.Count; index++)
                 {
