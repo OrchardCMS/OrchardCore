@@ -1,13 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Orchard.DisplayManagement.Descriptors;
 using Orchard.DisplayManagement.Descriptors.ShapeAttributeStrategy;
 using Orchard.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -15,7 +11,6 @@ using Orchard.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using Orchard.DisplayManagement.Events;
 using Orchard.DisplayManagement.Extensions;
 using Orchard.DisplayManagement.Fluid;
-using Orchard.DisplayManagement.Fluid.Internal;
 using Orchard.DisplayManagement.Implementation;
 using Orchard.DisplayManagement.Layout;
 using Orchard.DisplayManagement.LocationExpander;
@@ -51,12 +46,7 @@ namespace Orchard.DisplayManagement
                 options.FileProviders.Add(new ThemingFileProvider());
             });
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<FluidViewOptions>, FluidViewOptionsSetup>());
-            services.TryAddSingleton<IFluidViewFileProviderAccessor, FluidViewFileProviderAccessor>();
-            services.AddScoped<IApplicationFeatureProvider<ViewsFeature>, FluidViewsFeatureProvider>();
-
-            services.Configure<FluidViewOptions>(options =>
+            services.AddFluidViews().Configure<FluidViewOptions>(options =>
             {
                 //options.FileProviders.Add();
             });
