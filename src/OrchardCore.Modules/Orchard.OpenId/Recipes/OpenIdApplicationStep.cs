@@ -47,6 +47,7 @@ namespace Orchard.OpenId.Recipes
             application.SkipConsent = model.SkipConsent;
             application.RoleNames = model.RoleNames;
             application.Type = model.Type;
+            application.AllowedOrigins = model.AllowedOrigins;
 
             if (model.Type == ClientType.Confidential)
             {
@@ -77,5 +78,6 @@ namespace Orchard.OpenId.Recipes
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
+        public string[] AllowedOrigins { get; set; }
     }
 }

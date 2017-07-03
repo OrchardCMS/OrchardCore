@@ -127,7 +127,7 @@ namespace Orchard.OpenId
             });
 
             services.AddScoped<IConfigureOptions<OpenIddictOptions>, OpenIdConfiguration>();
-            services.AddSingleton<IConfigureOptions<CorsOptions>, OpenIdCorsConfiguration>();
+            services.AddTransient<IConfigureOptions<CorsOptions>, OpenIdCorsConfiguration>();
         }
     }
 }

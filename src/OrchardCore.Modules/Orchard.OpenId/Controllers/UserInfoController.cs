@@ -13,7 +13,6 @@ using Orchard.Users.Models;
 namespace Orchard.OpenId.Controllers
 {
     [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
-    [EnableCors(Constants.OpenIdConnectPolicy)]
     public class UserInfoController : Controller
     {
         private readonly IStringLocalizer<AccessController> T;
@@ -31,6 +30,7 @@ namespace Orchard.OpenId.Controllers
         [HttpGet]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
+        [EnableCors(Constants.OpenIdConnectUserInfoPolicy)]
         public async Task<IActionResult> Me()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

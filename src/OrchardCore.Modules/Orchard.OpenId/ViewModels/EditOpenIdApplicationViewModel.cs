@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Orchard.OpenId.ModelBinders;
 
 namespace Orchard.OpenId.ViewModels
 {
@@ -35,5 +36,7 @@ namespace Orchard.OpenId.ViewModels
         public bool AllowRefreshTokenFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowHybridFlow { get; set; }
+        [ModelBinder(BinderType = typeof(UrlsBinder))]
+        public string[] AllowedOrigins { get; set; }
     }
 }

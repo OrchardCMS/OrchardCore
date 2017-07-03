@@ -26,7 +26,6 @@ using Orchard.Users.Models;
 namespace Orchard.OpenId.Controllers
 {
     [Authorize]
-    [EnableCors(Constants.OpenIdConnectPolicy)]
     public class AccessController : Controller
     {
         private readonly OpenIddictApplicationManager<OpenIdApplication> _applicationManager;
@@ -135,6 +134,7 @@ namespace Orchard.OpenId.Controllers
 
         [ActionName(nameof(Authorize))]
         [HttpPost, FormValueRequired("submit.Accept")]
+        [EnableCors(Constants.OpenIdConnectAuthPolicy)]
         public async Task<IActionResult> Accept()
         {
             var response = HttpContext.GetOpenIdConnectResponse();
@@ -220,6 +220,7 @@ namespace Orchard.OpenId.Controllers
         [AllowAnonymous, HttpPost]
         [IgnoreAntiforgeryToken]
         [Produces("application/json")]
+        [EnableCors(Constants.OpenIdConnectAuthPolicy)]
         public async Task<IActionResult> Token()
         {
             // Warning: this action is decorated with IgnoreAntiforgeryTokenAttribute to override

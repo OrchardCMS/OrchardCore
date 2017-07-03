@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
@@ -195,6 +195,11 @@ namespace Orchard.OpenId.Services
         public Task<int> GetCount()
         {
             return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().CountAsync();
+        }
+
+        public Task<IEnumerable<OpenIdApplication>> GetAllApps()
+        {
+            return _session.Query<OpenIdApplication, OpenIdApplicationIndex>().ListAsync();
         }
     }
 }
