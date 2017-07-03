@@ -1,4 +1,4 @@
-﻿@using Orchard.Utility.Extensions
+﻿@using Orchard.Mvc.Utilities
 @using Orchard.Workflows.Models
 @using Orchard.Workflows.Services
 
@@ -6,7 +6,7 @@
     IList<IActivity> allActivities = Model.AllActivities;
 }
 <fieldset class="bulk-actions">
-    <label for="search-box">@T("Filter:")</label>
+    <label for="search-box">@T["Filter:"]</label>
     <input id="search-box" class="text" type="text" autocomplete="off" />
 </fieldset>
 <!-- List of available activities -->
@@ -20,22 +20,3 @@
         </li>
     }   
 </ul> 
-
-@* Render script to initialize a new jsplumb shape in the form of activities['activity-name'].create() *@
-@using (Script.Foot()) {
-    <script type="text/javascript">
-        //<![CDATA[
-        var activities = { @foreach (var activity in allActivities) { <text>
-            '@activity.Name': {
-                outcomes: [@Html.Raw(String.Join(",", activity.GetPossibleOutcomes(new WorkflowContext(), new ActivityContext()).Where(x => !String.IsNullOrEmpty(x.Text)).Select(x => "{ Id: '" + HttpUtility.JavaScriptStringEncode(x.TextHint) + "', Label: '" + HttpUtility.JavaScriptStringEncode(x.Text) + "' }").ToArray()))],
-                category: '@HttpUtility.JavaScriptStringEncode(activity.Category.Text)',
-                description: '@HttpUtility.JavaScriptStringEncode(activity.Description.Text)',
-                IsEvent: @(activity.IsEvent ? "true" : "false"),
-                hasForm: @(!String.IsNullOrWhiteSpace(activity.Form) ? "true" : "false")
-            },</text> 
-                           }
-
-        };
-        //]]>
-    </script>
-}

@@ -48,7 +48,7 @@ namespace Orchard.DisplayManagement.Notify
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var messages = Convert.ToString(filterContext.HttpContext.Request.Cookies[CookiePrefix]);
-            if (String.IsNullOrEmpty(messages))
+            if (string.IsNullOrEmpty(messages))
             {
                 return;
             }

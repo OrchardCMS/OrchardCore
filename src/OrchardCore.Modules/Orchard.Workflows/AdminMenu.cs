@@ -19,14 +19,14 @@ namespace Orchard.Workflows {
                 return;
             }
 
-            builder
-                .Add(T["Workflows"], "5", design => design
+            builder.Add(T["Workflows"], "5", contentDefinition => contentDefinition
+                .AddClass("workflows").Id("workflows")
+                .LinkToFirstChild(true)
                     .Add(T["Definition"], "1", contentItems => contentItems
                         .Action("Index", "Admin", new { area = "Orchard.Workflows" })
                         .Permission(Permissions.ManageWorkflows)
                         .LocalNav()
-                    )
-                );
+                    ));
         }
     }
 }

@@ -1,85 +1,79 @@
 ﻿@model AdminEditViewModel
-@using Orchard.Forms.Services
 @using Orchard.Workflows.ViewModels;
 
-@{
-    Layout.Title = @T("Edit Workflow {0}", Model.WorkflowDefinition.Name);
-    Style.Require("WorkflowsAdmin");
-    Style.Require("WorkflowsActivities");
-    Style.Require("jQueryUI_Orchard");
-    Script.Require("jQueryUI_Dialog").AtFoot();
-    Script.Require("jsPlumb").AtFoot();
-    Script.Include("orchard-workflows-serialize.js").AtFoot();
-    Script.Include("orchard-workflows.js").AtFoot();
-}
+<h1>@RenderTitleSegments(T["Edit Workflow {0}", Model.WorkflowDefinition.Name])</h1>
 
-@using (Html.BeginFormAntiForgeryPost("Edit")) {
-    @Html.ValidationSummary()
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Edit" method="post">
 
     <div id="workflow-container">
         <div id="editor-wrapper">
             <div id="activity-editor">
                 <div id="activity-toolbar">
                     <div id="activity-toolbar-start">
-                        <input type="checkbox" id="activity-toolbar-start-checkbox"/>
-                        <label for="activity-toolbar-start-checkbox" title="@T("Starts workflow")"></label>
+                        <input type="checkbox" id="activity-toolbar-start-checkbox" />
+                        <label for="activity-toolbar-start-checkbox" title="@T["Starts workflow"]"></label>
                     </div>
                     <div id="activity-toolbar-edit">
-                        <label title="@T("Edit")"></label>
+                        <label title="@T["Edit"]"></label>
                     </div>
                     <div id="activity-toolbar-delete">
-                        <label title="@T("Delete")"></label>
+                        <label title="@T["Delete"]"></label>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="activity-toolbox" @if(Model.Workflow != null) { <text>style="visibility:hidden"</text>}>
-            @Display.ActivityToolbox(Model)
+        <div id="activity-toolbox" @if (Model.Workflow != null) { <text> style="visibility:hidden" </text> }>
+            @await DisplayAsync(New.ActivityToolbox(Model))
         </div>
         <div id="workflow-footer"></div>
     </div>
-    using (Script.Head()) {
-<script type="text/javascript">
+
+    @Html.HiddenFor(m => m.WorkflowDefinition.Id)
+    @Html.HiddenFor(m => m.LocalId)
+
+    @Html.Hidden("confirm-delete-activity", T["Are you sure you want to remove this activity?"])
+    @Html.Hidden("confirm-delete-instances", T["You have running instances of this workflow, do you want to stop them?"])
+
+    <fieldset>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>
+
+<script asp-name="jsplumb" depends-on="jQuery.ui" asp-src="/Orchard.Workflows/Scripts/jsplumb.min.js" type="text/javascript" at="Foot"></script>
+<script asp-name="orchard-workflows" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows.js" type="text/javascript" at="Foot"></script>
+<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
+
+<style asp-src="/Orchard.Workflows/Styles/orchard-workflows-admin.css" at="Head"></style>
+
+@foreach (var activity in Model.AllActivities)
+{
+    <style asp-src="/Orchard.Workflows/Styles/workflows-@(activity.Name).css" at="Head"></style>
+}
+
+<script type="text/javascript" depends-on="jQuery">
     //<![CDATA[
-    var renderActivityUrl = '@HttpUtility.JavaScriptStringEncode(Url.Action("RenderActivity", "Admin", new { area = "Orchard.Workflows" }))';
-    var editActivityUrl = '@HttpUtility.JavaScriptStringEncode(Url.Action("EditActivity", "Admin", new { area = "Orchard.Workflows" }))';
-    var stateUrl = '@HttpUtility.JavaScriptStringEncode(Url.Action("State", "Admin", new { area = "Orchard.Workflows" }))';
-    var requestAntiForgeryToken = '@HttpUtility.JavaScriptStringEncode(Html.AntiForgeryTokenValueOrchard().ToString())';
-    var localId = '@HttpUtility.JavaScriptStringEncode(Model.LocalId)';
+    var renderActivityUrl = '';
+    var editActivityUrl = '';
+    var stateUrl = '';
+    var requestAntiForgeryToken = '''' + $("[name='__RequestVerificationToken']")["value"] + '''';
+    var localId = '';
     var updatedActivityClientId = null;
     var updatedActivityState = null;
     var awaitingRecords = [];
-    
-    @if (TempData.ContainsKey("UpdatedViewModel")) {
-        var model = TempData["UpdatedViewModel"] as UpdatedActivityModel;
-        if (model != null) {
-            @: updatedActivityClientId = '@(model.ClientId)';
-            @: updatedActivityState = '@Html.Raw(model.Data)';
-        }
-    }
-    else if (!Model.IsLocal) {
-        @: var state = @Html.Raw(Model.WorkflowDefinition.JsonData);
-        @: sessionStorage.setItem(localId, JSON.stringify(state));
-    }
-    
-    @if (Model.Workflow != null) {
-        @: awaitingRecords = [@String.Join(",", Model.Workflow.AwaitingActivities.Select(x => x.ActivityRecord.Id.ToString()).ToArray())];
-    }
-    
-    //]]>
-</script>
-    }
 
-@Html.Hidden("id", Model.WorkflowDefinition.Id)
-@Html.Hidden("localId", Model.LocalId)
-@Html.Hidden("data", String.Empty)
+@if (!Model.IsLocal) {
+    @: var state = @Html.Raw(Model.WorkflowDefinition.JsonData);
+    @: sessionStorage.setItem(localId, JSON.stringify(state));
+}
 
-@Html.Hidden("confirm-delete-activity", T("Are you sure you want to remove this activity?"))
-@Html.Hidden("confirm-delete-instances", T("You have running instances of this workflow, do you want to stop them?"))
+@if (Model.Workflow != null) {
+    @: awaitingRecords = [@String.Join(",", Model.Workflow.AwaitingActivities.Select(x => x.Activity.Id.ToString()).ToArray())];
+}
 
-    using (Script.Foot()) {
-<script type="text/javascript">
-    //<![CDATA[
     $("form").submit(function (e, submit, clearWorkflows) {
         if(submit){
             saveLocal(localId);
@@ -100,14 +94,14 @@
                 if (state.isRunning) {
                     var dialog = $('<p>' + $("#confirm-delete-instances").val() + '</p>').dialog({
                         buttons: {
-                            '@T("Yes")': function() { $('form').trigger('submit', [true, true]); },
-                            '@T("No")': function() { $('form').trigger('submit', [true, false]); },
-                            '@T("Cancel")': function() {
+                            '@T["Yes"]': function() { $('form').trigger('submit', [true, true]); },
+                            '@T["No"]': function() { $('form').trigger('submit', [true, false]); },
+                            '@T["Cancel"]': function() {
                                 dialog.dialog('close');
                             }
                         }
                     });
-                } 
+                }
                 else {
                     $('form').trigger('submit', [true, false]);
                 }
@@ -116,19 +110,3 @@
     });
     //]]>
 </script>
-    }
-
-    <fieldset>
-        @* Can only save if not debugging a workflow *@
-        @if (Model.Workflow == null) {
-            <button class="primaryAction" type="submit" name="submit.Save" value="@T("Save")">@T("Save")</button>    
-        }
-        
-        @Html.ActionLink(T("Close").Text, "Index", "Admin", new { area = "Orchard.Workflows" }, new { @class = "primaryAction button" })
-    </fieldset>
-}
-
-@using (Capture(Layout.Messages)) {
-    <div id="save-message" class="message message-Warning" style="display:none">@T("You need to hit \"Save\" in order to save your changes.")</div>
-    <div id="start-message" class="message message-Warning" style="display:none">@T("The workflow needs at least one activity to be set as a starting state.")</div>
-}

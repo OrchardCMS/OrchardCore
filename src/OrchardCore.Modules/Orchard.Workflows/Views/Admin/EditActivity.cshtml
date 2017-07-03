@@ -1,38 +1,30 @@
-﻿@{
-    Layout.Title = @T("Edit Activity");
-    Script.Include("orchard-workflows-serialize.js").AtFoot();
-}
+﻿<h1>@RenderTitleSegments(T["Edit Activity"])</h1>
 
-@Html.ValidationSummary()
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="EditActivity" method="post">
 
-@using (Html.BeginFormAntiForgeryPost()) {
+    @* Render the dynamic form *@
+    @*if (Model.Form != null) {
+    <fieldset>
+        @DisplayChildren(Model.Form)
+    </fieldset>
+    }*@
 
-    @* Render the dynamic form *@    
-    if (Model.Form != null) {
-        <fieldset>
-            @DisplayChildren(Model.Form)
-        </fieldset>
-    }
+    <fieldset>
+        <button class="primaryAction" type="submit" name="_submit.Save" value="@T["Save"]">@T["Save"]</button>
+        <button class="cancel" type="submit" name="_submit.Cancel" value="@T["Cancel"]">@T["Cancel"]</button>
+    </fieldset>
+</form>
 
-    @Display.TokenHint()
+<script asp-name="orchard-workflows-serialize" depends-on="admin" asp-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.min.js" debug-src="/Orchard.Workflows/Scripts/orchard-workflows-serialize.js" type="text/javascript" at="Foot"></script>
 
-<fieldset>
-    <button class="primaryAction" type="submit" name="_submit.Save" value="@T("Save")">@T("Save")</button>
-    <button class="cancel" type="submit" name="_submit.Cancel" value="@T("Cancel")">@T("Cancel")</button>
-</fieldset>
-}
-
-@using (Script.Head()) {
-<script type="text/javascript">
-    //<![CDATA[
-    var requestAntiForgeryToken = '@Html.AntiForgeryTokenValueOrchard()';
-    var localId = '@Model.LocalId';
-    //]]>
+<script type="text/javascript" at="Head">
+//<![CDATA[
+var requestAntiForgeryToken = '''' + $("[name='__RequestVerificationToken']")["value"] + '''';
+var localId = '@Model.LocalId';
+//]]>
 </script>
-}
 
-@using (Script.Foot()) {
-    <script type="text/javascript">
-        loadForm('@Model.LocalId', '@Model.ClientId');
-    </script>
-}
+<script type="text/javascript" at="Foot">
+loadForm('@Model.LocalId', '@Model.ClientId');
+</script>

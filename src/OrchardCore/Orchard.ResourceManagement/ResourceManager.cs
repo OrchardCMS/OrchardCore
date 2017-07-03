@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -198,7 +198,7 @@ namespace Orchard.ResourceManagement
                             where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
                             select r.Value).SelectMany(x => x);
 
-                if (!String.IsNullOrEmpty(settings.Version))
+                if (!string.IsNullOrEmpty(settings.Version))
                 {
                     // Specific version, filter
                     var upper = GetUpperBoundVersion(settings.Version);
@@ -284,7 +284,7 @@ namespace Orchard.ResourceManagement
 
         private bool ResolveInlineDefinitions(string resourceType)
         {
-            bool anyWereDefined = false;
+            var anyWereDefined = false;
             foreach (var settings in ResolveRequiredResources(resourceType).Where(settings => settings.InlineDefinition != null))
             {
                 // defining it on the fly
@@ -328,12 +328,12 @@ namespace Orchard.ResourceManagement
 
         public IEnumerable<IHtmlContent> GetRegisteredHeadScripts()
         {
-            return _headScripts == null ? Enumerable.Empty<IHtmlContent>() : _headScripts;
+            return _headScripts ?? Enumerable.Empty<IHtmlContent>();
         }
 
         public IEnumerable<IHtmlContent> GetRegisteredFootScripts()
         {
-            return _footScripts == null ? Enumerable.Empty<IHtmlContent>() : _footScripts;
+            return _footScripts ?? Enumerable.Empty<IHtmlContent>();
         }
 
         public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
@@ -429,7 +429,7 @@ namespace Orchard.ResourceManagement
 
             var index = meta.Name ?? meta.HttpEquiv;
 
-            if (String.IsNullOrEmpty(index))
+            if (string.IsNullOrEmpty(index))
             {
                 return;
             }
@@ -452,7 +452,7 @@ namespace Orchard.ResourceManagement
         {
             var first = true;
 
-            foreach (var meta in this.GetRegisteredMetas())
+            foreach (var meta in GetRegisteredMetas())
             {
                 if (!first)
                 {

@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Orchard.DisplayManagement;
 using Orchard.DisplayManagement.ModelBinding;
 using Orchard.DisplayManagement.Notify;
-using Orchard.DisplayManagement.Views;
 using Orchard.Mvc.ActionConstraints;
 using Orchard.Navigation;
 using Orchard.Settings;
@@ -346,7 +344,7 @@ namespace Orchard.Workflows.Controllers
                 activity.Left = x.X;
                 activity.Top = x.Y;
                 activity.Start = x.Start;
-                //activity.State = FormParametersHelper.FromJsonString(x.State);
+                activity.State = FormParametersHelper.FromJsonString(x.State);
 
                 return activity;
             }));
@@ -361,7 +359,7 @@ namespace Orchard.Workflows.Controllers
                 return connection;
             }));
 
-            //workflowDefinitionModel.JsonData = FormParametersHelper.ToJsonString(workflow);
+            workflowDefinitionModel.JsonData = FormParametersHelper.ToJsonString(workflow);
 
             return workflowDefinitionModel;
         }
@@ -384,69 +382,69 @@ namespace Orchard.Workflows.Controllers
 
             workflowDefinition.Enabled = true;
 
-            //var state = FormParametersHelper.FromJsonString(data);
-            //var activitiesIndex = new Dictionary<string, Activity>();
+            var state = FormParametersHelper.FromJsonString(data);
+            var activitiesIndex = new Dictionary<string, Activity>();
 
-            //workflowDefinition.Activities.Clear();
+            workflowDefinition.Activities.Clear();
 
-            //foreach (var activity in state.Activities)
-            //{
-            //    Activity internalActivity;
+            foreach (var activity in state.Activities)
+            {
+                Activity internalActivity;
 
-            //    workflowDefinition.Activities.Add(internalActivity = new Activity
-            //    {
-            //        Name = activity.Name,
-            //        X = activity.Left,
-            //        Y = activity.Top,
-            //        Start = activity.Start,
-            //        State = FormParametersHelper.ToJsonString(activity.State),
-            //        Definition = workflowDefinition
-            //    });
+                workflowDefinition.Activities.Add(internalActivity = new Activity
+                {
+                    Name = activity.Name,
+                    X = activity.Left,
+                    Y = activity.Top,
+                    Start = activity.Start,
+                    State = FormParametersHelper.ToJsonString(activity.State),
+                    Definition = workflowDefinition
+                });
 
-            //    activitiesIndex.Add((string)activity.ClientId, activity);
-            //}
+                activitiesIndex.Add((string)activity.ClientId, activity);
+            }
 
-            //workflowDefinition.Transitions.Clear();
+            workflowDefinition.Transitions.Clear();
 
-            //foreach (var connection in state.Connections)
-            //{
-            //    workflowDefinition.Transitions.Add(new Transition
-            //    {
-            //        SourceActivity = activitiesIndex[(string)connection.SourceId],
-            //        DestinationActivity = activitiesIndex[(string)connection.TargetId],
-            //        SourceEndpoint = connection.SourceEndpoint,
-            //        Definition = workflowDefinition
-            //    });
-            //}
+            foreach (var connection in state.Connections)
+            {
+                workflowDefinition.Transitions.Add(new Transition
+                {
+                    SourceActivity = activitiesIndex[(string)connection.SourceId],
+                    DestinationActivity = activitiesIndex[(string)connection.TargetId],
+                    SourceEndpoint = connection.SourceEndpoint,
+                    Definition = workflowDefinition
+                });
+            }
 
-            //if (clearWorkflows)
-            //{
-            //    workflowDefinition.Workflows.Clear();
-            //}
-            //else
-            //{
-            //    foreach (var workflowRecord in workflowDefinition.Workflows)
-            //    {
-            //        // Update any awaiting activity records with the new activity record.
-            //        foreach (var awaitingActivityRecord in workflowRecord.AwaitingActivities)
-            //        {
-            //            var clientId = awaitingActivityRecord.Activity.GetClientId();
-            //            if (activitiesIndex.ContainsKey(clientId))
-            //            {
-            //                awaitingActivityRecord.Activity = activitiesIndex[clientId];
-            //            }
-            //            else
-            //            {
-            //                workflowRecord.AwaitingActivities.Remove(awaitingActivityRecord);
-            //            }
-            //        }
-            //        // Remove any workflows with no awaiting activities.
-            //        if (!workflowRecord.AwaitingActivities.Any())
-            //        {
-            //            workflowDefinition.Workflows.Remove(workflowRecord);
-            //        }
-            //    }
-            //}
+            if (clearWorkflows)
+            {
+                workflowDefinition.Workflows.Clear();
+            }
+            else
+            {
+                foreach (var workflowRecord in workflowDefinition.Workflows)
+                {
+                    // Update any awaiting activity records with the new activity record.
+                    foreach (var awaitingActivityRecord in workflowRecord.AwaitingActivities)
+                    {
+                        var clientId = awaitingActivityRecord.Activity.GetClientId();
+                        if (activitiesIndex.ContainsKey(clientId))
+                        {
+                            awaitingActivityRecord.Activity = activitiesIndex[clientId];
+                        }
+                        else
+                        {
+                            workflowRecord.AwaitingActivities.Remove(awaitingActivityRecord);
+                        }
+                    }
+                    // Remove any workflows with no awaiting activities.
+                    if (!workflowRecord.AwaitingActivities.Any())
+                    {
+                        workflowDefinition.Workflows.Remove(workflowRecord);
+                    }
+                }
+            }
 
             _notifier.Success(H["Workflow saved successfully"]);
 
@@ -484,17 +482,17 @@ namespace Orchard.Workflows.Controllers
 
             dynamic shape = New.Activity(activity);
 
-            //if (model.State != null)
-            //{
-            //    var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
-            //    shape.State(state);
-            //}
-            //else
-            //{
-            //    shape.State(FormParametersHelper.FromJsonString("{}"));
-            //}
+            if (model.State != null)
+            {
+                var state = FormParametersHelper.ToDynamic(FormParametersHelper.ToString(model.State));
+                shape.State(state);
+            }
+            else
+            {
+                shape.State(FormParametersHelper.FromJsonString("{}"));
+            }
 
-            //shape.Metadata.Alternates.Add("Activity__" + activity.Name);
+            shape.Metadata.Alternates.Add("Activity__" + activity.Name);
 
             //return new ShapeResult(this, shape);
             return null;

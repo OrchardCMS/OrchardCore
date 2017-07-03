@@ -1,19 +1,15 @@
 ﻿@model Orchard.Workflows.ViewModels.AdminEditViewModel
-@using Orchard.Workflows.Models;
-@using Orchard.Workflows.ViewModels;
 
-@using (Html.BeginFormAntiForgeryPost()) {
-    @Html.ValidationSummary()
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post">
+    <fieldset class="form-group" asp-validation-class-for="Name">
+        <label asp-for="Rule">@T["Name"] <span asp-validation-for="Name"></span></label>
+        <input asp-for="Name" class="form-control" type="text" />
+    </fieldset>
 
     <fieldset>
-        <div>
-            <label for="name">@T("Name")</label>
-            @Html.TextBox("name", String.Empty, new { @class= "text medium" })
-            <span class="hint">@T("The name of the Workflow")</span>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">@T["Save"]</button>
         </div>
     </fieldset>
-    
-    <fieldset>
-        <button class="primaryAction" type="submit">@T("Save")</button>
-    </fieldset>
-}
+</form>
