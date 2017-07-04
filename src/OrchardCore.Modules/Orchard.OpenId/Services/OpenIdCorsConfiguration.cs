@@ -27,7 +27,8 @@ namespace Orchard.OpenId.Services
                               && app.AllowedOrigins != null && app.AllowedOrigins.Any())
                 .SelectMany(app => app.AllowedOrigins)
                 .ToArray();
-
+            if (!appOrigins.Any()) return;
+            
             //Auth end-points policy
             options.AddPolicy(Constants.OpenIdConnectAuthPolicy, builder => builder
                 .WithOrigins(appOrigins)
