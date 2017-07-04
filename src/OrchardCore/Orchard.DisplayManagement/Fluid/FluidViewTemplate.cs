@@ -32,6 +32,11 @@ namespace Orchard.DisplayManagement.Fluid
                 FluidValue.TypeMappings.Add(typeof(JValue), o => FluidValue.Create(((JValue)o).Value));
             }
 
+            if (!FluidValue.TypeMappings.TryGetValue(typeof(DateTime?), out value))
+            {
+                FluidValue.TypeMappings.Add(typeof(DateTime?), o => new ObjectValue(o));
+            }
+
             TemplateContext.GlobalMemberAccessStrategy.Register(typeof(ViewContext));
             TemplateContext.GlobalMemberAccessStrategy.Register<ModelStateNode>();
 
@@ -77,15 +82,23 @@ namespace Orchard.DisplayManagement.Fluid
                 context.MemberAccessStrategy.Register(modelType);
                 context.LocalScope.SetValue("Model", page.Model);
 
-                if (page.Model is Shape && page.Model.Properties?.Count > 0)
+                if (page.Model is Shape && page.Model.Properties.Count > 0)
                 {
                     foreach (var prop in page.Model.Properties)
                     {
-                        if (Type.GetTypeCode(((object)prop?.Value).GetType()) == TypeCode.Object)
+                        var propType = ((object)prop.Value).GetType();
+
+                        if (Type.GetTypeCode(propType) == TypeCode.Object)
                         {
                             context.MemberAccessStrategy.Register(((object)prop.Value).GetType());
-                            context.LocalScope.SetValue(prop.Key, prop.Value);
                         }
+
+                        if (prop.Value is IShape && !FluidValue.TypeMappings.TryGetValue(propType, out value))
+                        {
+                            FluidValue.TypeMappings.Add(propType, obj => new ObjectValue(obj));
+                        }
+
+                        context.LocalScope.SetValue(prop.Key, prop.Value);
                     }
                 }
             }

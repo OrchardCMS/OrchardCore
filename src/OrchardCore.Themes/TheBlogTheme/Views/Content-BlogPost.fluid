@@ -1,0 +1,34 @@
+﻿{% assign fields = ContentItem.Content | prop_named: ContentItem.ContentType %}
+
+{% zone name: "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('{{ fields.HeaderImageUrl.Text | or_default: "https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/img/post-bg.jpg" }}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>{{ ContentItem.Content.TitlePart.Title }}</h1>
+                        {% if fields.Subtitle.Text | is_nil != true %}
+                        <h2 class="subheading">
+                            {{ fields.Subtitle.Text }}
+                        </h2>
+                        {% endif %}
+                        <span class="meta">
+                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign dateTime = ContentItem.CreatedUtc | date_time: format: format %}
+                            {% assign owner = "<a href=\"#\">" + ContentItem.Owner + "</a>" %}
+                            {{ "Posted by {0} on {1}" | t: owner, dateTime | raw }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+{% assign contentsMetadata = Content | item_named: "Contents_Metadata" %}
+{% assign bodyAspect = ContentItem | body_aspect %}
+
+{% Display shape: contentsMetadata %}
+{% Display shape: bodyAspect %}

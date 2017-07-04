@@ -13,7 +13,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
         {
             var model = (dynamic)context.LocalScope.GetValue("Model").ToObjectValue();
 
-            if (model is IShape && model.Metadata?.Alternates?.Count > 0)
+            if (model is IShape && model.Metadata.Alternates.Count > 0)
             {
                 ((ShapeMetadata)model.Metadata).Alternates.Clear();
             }

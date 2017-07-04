@@ -21,9 +21,7 @@ namespace Orchard.DisplayManagement.Fluid.Statements
             var page = FluidViewTemplate.EnsureFluidPage(context, "Display");
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
 
-            var name = arguments.At(0).ToStringValue();
             var shape = arguments.HasNamed("shape") ? arguments["shape"].ToObjectValue() : null;
-
             await writer.WriteAsync((await page.DisplayAsync(shape)).ToString());
             return Completion.Normal;
         }
